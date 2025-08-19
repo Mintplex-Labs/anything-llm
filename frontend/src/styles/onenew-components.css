@@ -2,15 +2,15 @@
 .onenew-page {
   background: radial-gradient(
       1200px 1200px at -10% 10%,
-      color-mix(in srgb, var(--accent), transparent 82%),
+      color-mix(in srgb, var(--brand), transparent 82%),
       transparent 55%
     ),
     radial-gradient(
       1200px 1200px at 110% 10%,
-      color-mix(in srgb, var(--primary), transparent 92%),
+      color-mix(in srgb, var(--brand), transparent 92%),
       transparent 55%
     );
-  color: var(--text);
+  color: var(--fg-1);
 }
 
 /* Ensure SVGs inherit text color */
@@ -22,17 +22,17 @@
 /* Strong focus ring everywhere */
 :focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 4px var(--ring) !important;
+  box-shadow: 0 0 0 var(--space-1) var(--brand) !important;
 }
 
 .onenew-card {
-  background: var(--card-bg);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px var(--shadow);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 var(--space-2) var(--space-6) rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(var(--space-3));
+  -webkit-backdrop-filter: blur(var(--space-3));
+  padding: var(--space-6);
 }
 
 /* Respect reduced transparency */
@@ -54,7 +54,7 @@
   height: 60%;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--accent), transparent 75%),
+    color-mix(in srgb, var(--brand), transparent 75%),
     transparent 70%
   );
   filter: blur(40px);
@@ -63,39 +63,39 @@
 }
 
 .onenew-input {
-  background: var(--input);
+  background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 0.65rem 0.8rem;
+  color: var(--fg-1);
+  border-radius: calc(var(--radius-sm) + var(--space-1) / 2);
+  padding: var(--space-3) var(--space-3);
 }
 .onenew-input::placeholder {
-  color: color-mix(in srgb, var(--text), transparent 55%);
+  color: color-mix(in srgb, var(--fg-1), transparent 55%);
 }
 .onenew-input:focus {
   outline: none;
-  box-shadow: 0 0 0 4px var(--ring);
+  box-shadow: 0 0 0 var(--space-1) var(--brand);
 }
 
 .onenew-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   font-weight: 600;
-  padding: 0.7rem 1.2rem;
-  border-radius: 12px;
-  background: var(--primary);
-  color: #fff;
-  border: 1px solid var(--primary);
+  padding: var(--space-3) var(--space-4);
+  border-radius: calc(var(--radius-sm) + var(--space-1) / 2);
+  background: var(--brand);
+  color: var(--fg-1);
+  border: 1px solid var(--brand);
   transition:
     transform 60ms ease,
     box-shadow 200ms ease;
-  box-shadow: 0 2px 4px var(--shadow);
+  box-shadow: 0 calc(var(--space-1) / 2) var(--space-1) rgb(0 0 0 / 0.18);
 }
 .onenew-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px var(--shadow);
+  box-shadow: 0 var(--space-1) var(--radius-sm) rgb(0 0 0 / 0.18);
 }
 .onenew-btn:disabled {
   opacity: 0.6;
@@ -105,62 +105,62 @@
 /* Chat bubbles */
 .bubble {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 0.8rem 1rem;
+  border-radius: calc(var(--radius-lg) - var(--space-1) / 2);
+  padding: var(--space-3) var(--space-4);
 }
 
 .bubble-assistant {
-  background: color-mix(in srgb, var(--card-bg), #000 6%);
-  color: var(--text);
+  background: color-mix(in srgb, var(--surface), var(--bg) 6%);
+  color: var(--fg-1);
 }
 
 .bubble-user {
-  background: color-mix(in srgb, var(--primary), transparent 80%);
-  color: var(--text);
+  background: color-mix(in srgb, var(--brand), transparent 80%);
+  color: var(--fg-1);
 }
 
 /* Sidebar navigation */
 .nav-item {
-  color: var(--muted-foreground);
+  color: var(--muted);
 }
 
 .nav-item:hover {
-  color: var(--text);
-  background: color-mix(in srgb, var(--card-bg), #000 8%);
+  color: var(--fg-1);
+  background: color-mix(in srgb, var(--surface), var(--bg) 8%);
 }
 
 .nav-item.active {
-  color: var(--text);
-  background: color-mix(in srgb, var(--primary), transparent 88%);
-  border-left: 3px solid var(--primary);
+  color: var(--fg-1);
+  background: color-mix(in srgb, var(--brand), transparent 88%);
+  border-left: 3px solid var(--brand);
 }
 
 /* Onboarding progress */
 .onb-progress {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 .onb-dot {
-  width: 10px;
-  height: 10px;
+  width: var(--radius-sm);
+  height: var(--radius-sm);
   border-radius: 999px;
   background: var(--border);
 }
 .onb-dot.active {
-  background: var(--primary);
+  background: var(--brand);
 }
 
 .onenew-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.55rem;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border-radius: 999px;
   font-weight: 600;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent), transparent 88%);
-  border: 1px solid color-mix(in srgb, var(--accent), transparent 76%);
+  color: var(--brand);
+  background: color-mix(in srgb, var(--brand), transparent 88%);
+  border: 1px solid color-mix(in srgb, var(--brand), transparent 76%);
 }
 
 .onenew-table {
@@ -169,29 +169,29 @@
 }
 .onenew-table th {
   text-align: left;
-  padding: 0.6rem 0.75rem;
-  color: var(--text-muted);
+  padding: var(--space-3) var(--space-3);
+  color: var(--fg-2);
   border-bottom: 1px solid var(--border);
 }
 .onenew-table td {
-  padding: 0.6rem 0.75rem;
+  padding: var(--space-3) var(--space-3);
   border-bottom: 1px solid var(--border);
 }
 
 /* Tooltips/Popovers */
 .tooltip,
 .popover {
-  background: var(--card);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--fg-1);
   border: 1px solid var(--border);
 }
 
 /* Scrollbars (webkit) */
 *::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+  height: var(--radius-sm);
+  width: var(--radius-sm);
 }
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  border-radius: 20px;
+  background: linear-gradient(180deg, var(--brand), var(--brand));
+  border-radius: var(--radius-lg);
 }

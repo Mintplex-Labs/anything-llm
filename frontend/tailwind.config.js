@@ -4,16 +4,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: "var(--primary)",
-        accent: "var(--accent)",
-        card: "var(--card)",
-        border: "var(--border)"
+        bg: "var(--bg)",
+        surface: "var(--surface)",
+        elev: "var(--elev)",
+        border: "var(--border)",
+        "fg-1": "var(--fg-1)",
+        "fg-2": "var(--fg-2)",
+        muted: "var(--muted)",
+        brand: "var(--brand)"
+      },
+      spacing: {
+        1: "var(--space-1)",
+        2: "var(--space-2)",
+        3: "var(--space-3)",
+        4: "var(--space-4)",
+        6: "var(--space-6)",
+        8: "var(--space-8)"
       },
       borderRadius: {
-        xl: "var(--radius)",
-        "2xl": "calc(var(--radius) + 8px)"
+        sm: "var(--radius-sm)",
+        lg: "var(--radius-lg)"
       }
     }
   },
