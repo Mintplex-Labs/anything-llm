@@ -95,11 +95,11 @@ async function loadGitlabRepo(args, response) {
       `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
 
-    writeToServerDocuments(
+    writeToServerDocuments({
       data,
-      sanitizeFileName(`${slugify(doc.metadata.source)}-${data.id}`),
-      outFolderPath
-    );
+      filename: sanitizeFileName(`${slugify(doc.metadata.source)}-${data.id}`),
+      destinationOverride: outFolderPath,
+    });
   }
 
   return {

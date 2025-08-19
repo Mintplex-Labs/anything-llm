@@ -207,18 +207,18 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
-        // Check if the user has seen the recovery codes
+        // Generate a session token for the user then check if they have seen the recovery codes
+        // and if not, generate recovery codes and return them to the frontend.
+        const sessionToken = makeJWT(
+          { id: existingUser.id, username: existingUser.username },
+          process.env.JWT_EXPIRY
+        );
         if (!existingUser.seen_recovery_codes) {
           const plainTextCodes = await generateRecoveryCodes(existingUser.id);
-
-          // Return recovery codes to frontend
           response.status(200).json({
             valid: true,
             user: User.filterFields(existingUser),
-            token: makeJWT(
-              { id: existingUser.id, username: existingUser.username },
-              "30d"
-            ),
+            token: sessionToken,
             message: null,
             recoveryCodes: plainTextCodes,
           });
@@ -228,10 +228,7 @@ function systemEndpoints(app) {
         response.status(200).json({
           valid: true,
           user: User.filterFields(existingUser),
-          token: makeJWT(
-            { id: existingUser.id, username: existingUser.username },
-            "30d"
-          ),
+          token: sessionToken,
           message: null,
         });
         return;
@@ -264,7 +261,7 @@ function systemEndpoints(app) {
           valid: true,
           token: makeJWT(
             { p: new EncryptionManager().encrypt(password) },
-            "30d"
+            process.env.JWT_EXPIRY
           ),
           message: null,
         });

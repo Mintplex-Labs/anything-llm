@@ -369,7 +369,7 @@ const TRANSLATIONS = {
     snippets: {
       title: "Max Context Snippets",
       description:
-        "This setting controls the maximum amount of context snippets the will be sent to the LLM for per chat or query.",
+        "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
       recommend: "Recommended: 4",
     },
     doc: {
@@ -620,8 +620,6 @@ const TRANSLATIONS = {
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
       title: "Embedding Provider",
-      description:
-        "There is no set up required when using AnythingLLM's native embedding engine.",
     },
   },
 
@@ -631,9 +629,6 @@ const TRANSLATIONS = {
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
       "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
     size: {
       title: "Text Chunk Size",
       description:
@@ -687,28 +682,26 @@ const TRANSLATIONS = {
     },
   },
 
-  multi: {
-    title: "Multi-User Mode",
-    description:
-      "Set up your instance to support your team by activating Multi-User Mode.",
-    enable: {
-      "is-enable": "Multi-User Mode is Enabled",
-      enable: "Enable Multi-User Mode",
+  security: {
+    title: "Security",
+    multiuser: {
+      title: "Multi-User Mode",
       description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
-      username: "Admin account username",
-      password: "Admin account password",
+        "Set up your instance to support your team by activating Multi-User Mode.",
+      enable: {
+        "is-enable": "Multi-User Mode is Enabled",
+        enable: "Enable Multi-User Mode",
+        description:
+          "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
+        username: "Admin account username",
+        password: "Admin account password",
+      },
     },
     password: {
       title: "Password Protection",
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Password Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
-      password: "Instance password",
+      "password-label": "Instance Password",
     },
   },
 
@@ -1001,7 +994,7 @@ const TRANSLATIONS = {
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
     username_description:
-      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",

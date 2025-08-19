@@ -13,7 +13,7 @@ function utilEndpoints(app) {
           : "single-user",
         vectorDB: process.env.VECTOR_DB || "lancedb",
         storage: await getDiskStorage(),
-        version: getDeploymentVersion(),
+        appVersion: getDeploymentVersion(),
       };
       response.status(200).json(metrics);
     } catch (e) {
@@ -141,6 +141,9 @@ function getModelTag() {
       break;
     case "gemini":
       model = process.env.GEMINI_LLM_MODEL_PREF;
+      break;
+    case "moonshotai":
+      model = process.env.MOONSHOT_AI_MODEL_PREF;
       break;
     default:
       model = "--";

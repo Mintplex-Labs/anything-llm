@@ -7,6 +7,7 @@ const {
   trashFile,
   writeToServerDocuments,
   documentsFolder,
+  directUploadsFolder,
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -26,14 +27,16 @@ function convertToCSV(data) {
     .join("\n");
 }
 
-async function asXlsx({ fullFilePath = "", filename = "" }) {
+async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
   const documents = [];
   const folderName = slugify(`${path.basename(filename)}-${v4().slice(0, 4)}`, {
     lower: true,
     trim: true,
   });
+  const outFolderPath = options.parseOnly
+    ? path.resolve(directUploadsFolder, folderName)
+    : path.resolve(documentsFolder, folderName);
 
-  const outFolderPath = path.resolve(documentsFolder, folderName);
   try {
     const workSheetsFromFile = xlsx.parse(fullFilePath);
     if (!fs.existsSync(outFolderPath))
@@ -64,11 +67,12 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
           token_count_estimate: tokenizeString(content),
         };
 
-        const document = writeToServerDocuments(
-          sheetData,
-          `sheet-${slugify(name)}`,
-          outFolderPath
-        );
+        const document = writeToServerDocuments({
+          data: sheetData,
+          filename: `sheet-${slugify(name)}`,
+          destinationOverride: outFolderPath,
+          options: { parseOnly: options.parseOnly },
+        });
         documents.push(document);
         console.log(
           `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`
