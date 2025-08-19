@@ -20,10 +20,7 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
         showing ? "!opacity-100" : ""
       }`}
     >
-      <At
-        color="var(--theme-sidebar-footer-icon-fill)"
-        className={`w-[22px] h-[22px] pointer-events-none text-theme-text-primary opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
-      />
+      <At className="w-[22px] h-[22px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60" />
       <Tooltip
         id="tooltip-agent-list-btn"
         place="top"

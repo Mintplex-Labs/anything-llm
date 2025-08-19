@@ -18,10 +18,7 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
         showing ? "!opacity-100" : ""
       }`}
     >
-      <SlashCommandIcon
-        color="var(--theme-sidebar-footer-icon-fill)"
-        className={`w-[20px] h-[20px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
-      />
+      <SlashCommandIcon className="w-[20px] h-[20px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60" />
       <Tooltip
         id="tooltip-slash-cmd-btn"
         place="top"

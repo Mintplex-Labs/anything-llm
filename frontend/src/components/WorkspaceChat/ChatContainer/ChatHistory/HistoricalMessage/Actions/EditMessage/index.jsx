@@ -56,11 +56,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
-        <Pencil
-          color="var(--theme-sidebar-footer-icon-fill)"
-          size={21}
-          className="mb-1"
-        />
+        <Pencil size={21} className="mb-1" />
       </button>
     </div>
   );

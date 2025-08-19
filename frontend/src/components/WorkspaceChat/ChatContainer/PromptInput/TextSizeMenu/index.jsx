@@ -27,9 +27,8 @@ export default function TextSizeButton() {
         className="border-none flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer h-10 w-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-button focus-visible:ring-offset-2 focus-visible:ring-offset-theme-bg-chat"
       >
         <TextT
-          color="var(--theme-sidebar-footer-icon-fill)"
           weight="fill"
-          className="w-[22px] h-[22px] pointer-events-none text-white"
+          className="w-[22px] h-[22px] pointer-events-none"
         />
       </button>
       <Tooltip
