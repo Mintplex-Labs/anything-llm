@@ -153,8 +153,7 @@ const TRANSLATIONS = {
     checklist: {
       title: "Primeiros Passos",
       tasksLeft: "tarefas restantes",
-      completed:
-        "Você está no caminho para se tornar um expert em OneNew!",
+      completed: "Você está no caminho para se tornar um expert em OneNew!",
       dismiss: "fechar",
       tasks: {
         create_workspace: {
@@ -855,7 +854,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        "add_to_library": null,
+        add_to_library: null,
       },
     },
     pinning: {

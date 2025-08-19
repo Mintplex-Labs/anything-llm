@@ -153,7 +153,7 @@ export default function AgentFlows({ entity }) {
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="flex items-center gap-1 px-2 py-1 text-sm text-theme-text-primary bg-white/10 light:bg-black/10 rounded-md"
+                  className="flex items-center gap-1 px-2 py-1 text-sm text-theme-text-primary bg-card light:bg-black/10 rounded-md"
                 >
                   {tag}
                   <button

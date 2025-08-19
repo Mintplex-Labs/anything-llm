@@ -105,7 +105,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                       tabIndex={0}
                     >
                       {isUserSelected(user.id) && (
-                        <div className="w-2 h-2 bg-white light:bg-black rounded-[2px]" />
+                        <div className="w-2 h-2 bg-card light:bg-black rounded-[2px]" />
                       )}
                     </div>
                     <p className="text-theme-text-primary text-sm font-medium">
@@ -137,7 +137,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                   tabIndex={0}
                 >
                   {selectedUsers.length === filteredUsers.length && (
-                    <div className="w-2 h-2 bg-white rounded-[2px]" />
+                    <div className="w-2 h-2 bg-card rounded-[2px]" />
                   )}
                 </div>
                 <p className="text-white text-sm font-medium">Select All</p>

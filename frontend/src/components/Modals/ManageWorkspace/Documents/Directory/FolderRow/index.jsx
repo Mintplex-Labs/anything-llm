@@ -43,7 +43,7 @@ export default function FolderRow({
               toggleSelection(item);
             }}
           >
-            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+            {selected && <div className="w-2 h-2 bg-card rounded-[2px]" />}
           </div>
           <div
             onClick={handleExpandClick}

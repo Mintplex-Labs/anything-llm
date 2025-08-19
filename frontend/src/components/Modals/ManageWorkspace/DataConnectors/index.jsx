@@ -104,7 +104,7 @@ export default function DataConnectors() {
           )}
         </div>
       </div>
-      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-card -translate-x-1/2"></div>
       <div className="w-full p-4 top-0 text-white min-w-[500px]">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>

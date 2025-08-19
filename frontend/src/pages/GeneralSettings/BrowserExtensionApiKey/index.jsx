@@ -54,8 +54,8 @@ export default function BrowserExtensionApiKeys() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
-              Manage API keys for browser extensions connecting to your
-              OneNew instance.
+              Manage API keys for browser extensions connecting to your OneNew
+              instance.
             </p>
           </div>
           <div className="w-full justify-end flex">

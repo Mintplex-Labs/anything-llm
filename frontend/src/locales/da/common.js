@@ -53,8 +53,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "Opret dit første arbejdsområde",
-      description:
-        "Opret dit første arbejdsområde og kom i gang med OneNew.",
+      description: "Opret dit første arbejdsområde og kom i gang med OneNew.",
       adminWarning: null,
     },
   },
@@ -677,7 +676,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        "add_to_library": null,
+        add_to_library: null,
       },
     },
     pinning: {

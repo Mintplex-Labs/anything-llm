@@ -196,7 +196,7 @@ export default function BlockList({
                 className="peer sr-only"
                 aria-label="Toggle direct output"
               />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
             </label>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function BlockList({
               className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-lg bg-white/10 light:bg-white flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-card light:bg-card flex items-center justify-center">
                   {React.cloneElement(BLOCK_INFO[block.type].icon, {
                     className: "w-4 h-4 text-white",
                   })}

@@ -25,9 +25,9 @@ export default function Introduction({ settings, setSettings, setStep }) {
               agent-skills, system prompts, slash commands, and more!
             </p>
             <p>
-              These items are created by the OneNew team and community, and
-              are a great way to get started with OneNew as well as extend
-              OneNew in a way that is customized to your needs.
+              These items are created by the OneNew team and community, and are
+              a great way to get started with OneNew as well as extend OneNew in
+              a way that is customized to your needs.
             </p>
             <p>
               There are both <b>private</b> and <b>public</b> items in the

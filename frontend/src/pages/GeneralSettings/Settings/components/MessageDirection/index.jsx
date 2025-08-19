@@ -58,7 +58,7 @@ function ItemDirection({ active, reverse, onSelect, msg }) {
             className={`flex items-center justify-end gap-2 ${reverse && index % 2 === 0 ? "flex-row-reverse" : ""}`}
           >
             <div
-              className={`w-4 h-4 rounded-full ${index % 2 === 0 ? "bg-primary-button" : "bg-white light:bg-black"} flex-shrink-0`}
+              className={`w-4 h-4 rounded-full ${index % 2 === 0 ? "bg-primary-button" : "bg-card light:bg-black"} flex-shrink-0`}
             />
             <div className="bg-gray-600 light:bg-gray-200 rounded-2xl px-4 py-2 h-[20px] w-full" />
           </div>

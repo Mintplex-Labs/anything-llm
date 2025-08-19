@@ -48,7 +48,7 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-theme-text-secondary shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-card text-theme-text-secondary shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
             className="rounded-md p-2 flex items-center justify-center text-theme-text-secondary"
@@ -94,7 +94,7 @@ export default function SettingsSidebar() {
                     style={{ objectFit: "contain" }}
                   />
                 </div>
-                <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
+                <div className="flex gap-x-2 items-center text-foreground shrink-0">
                   <a
                     href={paths.home()}
                     className="transition-all duration-300 p-2 rounded-full text-white bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover hover:border-slate-100 hover:border-opacity-50 border-transparent border"

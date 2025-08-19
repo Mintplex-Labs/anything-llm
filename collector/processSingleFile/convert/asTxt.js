@@ -8,7 +8,9 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-const CHUNK_LIMIT = Number(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH || 1000);
+const CHUNK_LIMIT = Number(
+  process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH || 1000
+);
 
 function chunkText(text = "", limit = CHUNK_LIMIT) {
   const words = text.split(/\s+/);

@@ -88,7 +88,7 @@ function AttachmentItem({ attachment }) {
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -143,7 +143,7 @@ function AttachmentItem({ attachment }) {
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -192,7 +192,7 @@ function AttachmentItem({ attachment }) {
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>

@@ -95,8 +95,8 @@ export default function CustomLogo() {
                 htmlFor="logo-upload"
               >
                 <div className="flex flex-col items-center justify-center">
-                  <div className="rounded-full bg-white/40">
-                    <Plus className="w-6 h-6 text-black/80 m-2" />
+                  <div className="rounded-full bg-card">
+                    <Plus className="w-6 h-6 text-foreground m-2" />
                   </div>
                   <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1">
                     {t("customization.items.logo.add")}

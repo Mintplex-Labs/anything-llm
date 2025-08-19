@@ -68,8 +68,7 @@ export default function CustomSiteSettings() {
               });
             }}
             value={
-              settings.title ??
-              "OneNew | Your personal LLM trained on anything"
+              settings.title ?? "OneNew | Your personal LLM trained on anything"
             }
           />
         </div>
@@ -108,7 +107,7 @@ export default function CustomSiteSettings() {
       {hasChanges && (
         <button
           type="submit"
-          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
         >
           Save
         </button>

@@ -44,8 +44,7 @@ const EMBEDDERS = [
     value: "native",
     logo: OneNewIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
-    description:
-      "Use the built-in embedding provider for OneNew. Zero setup!",
+    description: "Use the built-in embedding provider for OneNew. Zero setup!",
   },
   {
     name: "OpenAI",

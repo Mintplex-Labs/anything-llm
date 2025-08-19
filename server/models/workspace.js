@@ -265,8 +265,7 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
-    if ([ROLES.admin].includes(user.role))
-      return this.get(clause);
+    if ([ROLES.admin].includes(user.role)) return this.get(clause);
 
     try {
       const baseWhere = { ...clause };

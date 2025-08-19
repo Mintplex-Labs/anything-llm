@@ -351,7 +351,7 @@ export function Chartable({ props, workspace }) {
               height={260}
               data={data}
               dataKey="value"
-              stroke="#fff"
+              stroke="currentColor"
               fill={getTremorColor(color || "blue")}
               content={<CustomCell colors={Object.values(Colors)} />}
             >

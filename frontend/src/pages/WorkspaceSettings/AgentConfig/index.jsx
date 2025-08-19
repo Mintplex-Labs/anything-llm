@@ -91,7 +91,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             {!hasChanges && (
               <div className="flex flex-col gap-y-4">
                 <a
-                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
                   href={paths.settings.agentSkills()}
                 >
                   Configure Agent Skills
@@ -110,7 +110,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           <button
             type="submit"
             form="agent-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
           >
             {saving ? "Updating agent..." : "Update workspace agent"}
           </button>
@@ -133,7 +133,7 @@ function LoadingSkeleton() {
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1"
         />
-        <div className="bg-white/10 h-[1px] w-full" />
+        <div className="bg-card h-[1px] w-full" />
         <Skeleton.default
           height={100}
           width="100%"

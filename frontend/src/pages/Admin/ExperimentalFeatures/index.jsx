@@ -126,9 +126,9 @@ function FeatureList({
             index === Object.keys(features).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300 hover:bg-white/5 ${
+          } cursor-pointer transition-all duration-300 hover:bg-card ${
             selectedFeature === feature
-              ? "bg-white/10 light:bg-theme-bg-sidebar  "
+              ? "bg-card light:bg-theme-bg-sidebar  "
               : ""
           }`}
           onClick={() => handleClick?.(feature)}
@@ -198,8 +198,8 @@ function FeatureVerification({ children }) {
               <div className="py-7 px-9 space-y-4 flex-col">
                 <div className="w-full text-white text-md flex flex-col gap-y-4">
                   <p>
-                    Experimental features of OneNew are features that we
-                    are piloting and are <b>opt-in</b>. We proactively will
+                    Experimental features of OneNew are features that we are
+                    piloting and are <b>opt-in</b>. We proactively will
                     condition or warn you on any potential concerns should any
                     exist prior to approval of any feature.
                   </p>
@@ -270,7 +270,7 @@ function FeatureVerification({ children }) {
                 </a>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
+                  className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
                 >
                   I understand
                 </button>

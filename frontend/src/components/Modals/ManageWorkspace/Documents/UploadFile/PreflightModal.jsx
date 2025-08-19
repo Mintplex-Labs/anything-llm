@@ -33,7 +33,10 @@ export default function PreflightModal({
   const renderTree = (node) => (
     <ul className="ml-4 list-disc">
       {Object.entries(node).map(([key, value]) => (
-        <li key={key} className="text-xs text-white light:text-theme-text-primary">
+        <li
+          key={key}
+          className="text-xs text-white light:text-theme-text-primary"
+        >
           {key}
           {Object.keys(value || {}).length > 0 && renderTree(value)}
         </li>
@@ -43,7 +46,7 @@ export default function PreflightModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40">
-      <div className="bg-theme-bg-primary light:bg-white rounded-lg p-6 w-[360px] shadow-xl">
+      <div className="bg-theme-bg-primary light:bg-card rounded-lg p-6 w-[360px] shadow-xl">
         <h2 className="text-white light:text-theme-text-primary text-lg font-bold mb-4">
           {t("connectors.upload.preflight.title", "Ready to upload?")}
         </h2>
@@ -57,9 +60,7 @@ export default function PreflightModal({
             `${files.length} files, total size ${humanFileSize(totalSize)}`
           )}
         </p>
-        <div className="max-h-40 overflow-auto mb-4">
-          {renderTree(tree)}
-        </div>
+        <div className="max-h-40 overflow-auto mb-4">{renderTree(tree)}</div>
         <div className="mb-6">
           <p className="text-white light:text-theme-text-primary text-sm font-semibold mb-2">
             {t("connectors.upload.preflight.conflict", "If a file exists:")}
@@ -128,4 +129,3 @@ export default function PreflightModal({
     </div>
   );
 }
-

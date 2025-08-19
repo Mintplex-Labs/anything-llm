@@ -151,8 +151,7 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason } =
-          await Collector.processDocument(targetName);
+        const { success, reason } = await Collector.processDocument(targetName);
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
@@ -742,7 +741,9 @@ function workspaceEndpoints(app) {
         const isPathError = /Invalid path/.test(error.message);
         response
           .status(isPathError ? 400 : 500)
-          .json({ message: isPathError ? error.message : "Internal server error" });
+          .json({
+            message: isPathError ? error.message : "Internal server error",
+          });
       }
     }
   );
@@ -789,7 +790,9 @@ function workspaceEndpoints(app) {
         const isPathError = /Invalid path/.test(error.message);
         response
           .status(isPathError ? 400 : 500)
-          .json({ message: isPathError ? error.message : "Internal server error" });
+          .json({
+            message: isPathError ? error.message : "Internal server error",
+          });
       }
     }
   );
@@ -999,7 +1002,11 @@ function workspaceEndpoints(app) {
           const data = await fileData(document.location);
           const { vectorized, error } = await VectorDb.addDocumentToNamespace(
             namespace,
-            { ...data, docId: existingDoc.docId, version: existingDoc.version + 1 },
+            {
+              ...data,
+              docId: existingDoc.docId,
+              version: existingDoc.version + 1,
+            },
             document.location
           );
           if (!vectorized)
@@ -1009,11 +1016,12 @@ function workspaceEndpoints(app) {
 
           await Document.replace(existingDoc.id, document.location);
         } else {
-          const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
-            currWorkspace,
-            [document.location],
-            response.locals?.user?.id
-          );
+          const { failedToEmbed = [], errors = [] } =
+            await Document.addDocuments(
+              currWorkspace,
+              [document.location],
+              response.locals?.user?.id
+            );
 
           if (failedToEmbed.length > 0)
             return response

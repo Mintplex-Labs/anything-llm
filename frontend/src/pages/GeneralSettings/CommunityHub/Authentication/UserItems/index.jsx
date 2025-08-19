@@ -31,8 +31,8 @@ export default function UserItems({ connectionKey }) {
           </a>
         </div>
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-          Items you have created and shared publicly on the OneNew
-          Community Hub.
+          Items you have created and shared publicly on the OneNew Community
+          Hub.
         </p>
         <div className="flex flex-col gap-4 mt-4">
           {Object.keys(createdByMe).map((type) => {

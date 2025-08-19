@@ -139,7 +139,7 @@ function WidgetList({ selectedView, handleClick }) {
               ? "rounded-b-xl"
               : "border-b border-white/10"
           } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
-            selectedView === view ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
+            selectedView === view ? "bg-card light:bg-theme-bg-sidebar" : ""
           }`}
           onClick={() => handleClick?.(view)}
         >

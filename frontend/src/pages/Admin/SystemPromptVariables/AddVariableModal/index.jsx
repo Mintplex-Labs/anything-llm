@@ -116,7 +116,7 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
                 Create variable
               </button>
