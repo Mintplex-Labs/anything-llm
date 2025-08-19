@@ -55,8 +55,8 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   }, []);
 
   return (
-    <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
+    <div className="onenew-page p-6 w-full flex items-center justify-center flex-col gap-y-6">
+      <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
         <div className=" text-white text-sm font-semibold md:-ml-44">
           {t("onboarding.userSetup.howManyUsers")}
         </div>
@@ -167,7 +167,7 @@ const JustMe = ({
   });
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
+      <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
         <div className=" text-white text-sm font-semibold md:-ml-56">
           {t("onboarding.userSetup.setPassword")}
         </div>
@@ -201,14 +201,14 @@ const JustMe = ({
           <form className="w-full mt-4" onSubmit={handleSubmit}>
             <label
               htmlFor="name"
-              className="block mb-3 text-sm font-medium text-white"
+              className="block mb-3 text-sm font-medium"
             >
               {t("onboarding.userSetup.instancePassword")}
             </label>
             <input
               name="password"
               type="password"
-              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
+              className="onenew-input w-full"
               placeholder="Your admin password"
               minLength={6}
               required={true}
@@ -274,7 +274,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     }
   }, [username, password]);
   return (
-    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20 light:border-theme-sidebar-border">
+    <div className="onenew-card w-full max-w-[600px]">
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col w-full md:px-8 px-2 py-4">
           <div className="space-y-6 flex h-full w-full">
@@ -282,14 +282,14 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block mb-3 text-sm font-medium text-white"
+                  className="block mb-3 text-sm font-medium"
                 >
                   {t("onboarding.userSetup.adminUsername")}
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
+                  className="onenew-input w-full"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -303,14 +303,14 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
               <div className="mt-4">
                 <label
                   htmlFor="name"
-                  className="block mb-3 text-sm font-medium text-white"
+                  className="block mb-3 text-sm font-medium"
                 >
                   {t("onboarding.userSetup.adminPassword")}
                 </label>
                 <input
                   name="password"
                   type="password"
-                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
+                  className="onenew-input w-full"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
@@ -324,7 +324,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-theme-sidebar-border">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b">
           <div className="text-theme-text-secondary text-opacity-80 text-xs font-base">
             {t("onboarding.userSetup.teamHint")}
           </div>

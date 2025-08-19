@@ -344,20 +344,20 @@ export default function LLMPreference({
   }, [searchQuery, selectedLLM]);
 
   return (
-    <div>
-      <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg text-white">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
-            <div className="w-full flex items-center sticky top-0">
+    <div className="onenew-page p-6">
+      <div className="onenew-card">
+        <form ref={formRef} onSubmit={handleSubmit} className="w-full">
+          <div className="w-full relative">
+            <div className="w-full flex items-center">
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="absolute left-4 z-30 text-theme-text-primary"
+                className="absolute left-4 z-30"
               />
               <input
                 type="text"
                 placeholder="Search LLM providers"
-                className="bg-theme-bg-secondary placeholder:text-theme-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary"
+                className="onenew-input z-20 pl-10 h-[38px] rounded-full w-full"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {
@@ -366,7 +366,7 @@ export default function LLMPreference({
               />
             </div>
           </div>
-          <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
+          <div className="px-4 pt-4 flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
             {filteredLLMs.map((llm) => {
               if (llm.value === "native" && isHosted) return null;
               return (
@@ -382,18 +382,18 @@ export default function LLMPreference({
               );
             })}
           </div>
-        </div>
-        <div className="mt-4 flex flex-col gap-y-1">
-          {selectedLLM &&
-            LLMS.find((llm) => llm.value === selectedLLM)?.options(settings)}
-        </div>
-        <button
-          type="submit"
-          ref={hiddenSubmitButtonRef}
-          hidden
-          aria-hidden="true"
-        ></button>
-      </form>
+          <div className="mt-4 flex flex-col gap-y-1">
+            {selectedLLM &&
+              LLMS.find((llm) => llm.value === selectedLLM)?.options(settings)}
+          </div>
+          <button
+            type="submit"
+            ref={hiddenSubmitButtonRef}
+            hidden
+            aria-hidden="true"
+          ></button>
+        </form>
+      </div>
     </div>
   );
 }

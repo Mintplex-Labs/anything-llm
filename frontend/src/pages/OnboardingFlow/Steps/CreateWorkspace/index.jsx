@@ -59,40 +59,35 @@ export default function CreateWorkspace({
   }
 
   return (
-    <form
-      onSubmit={handleCreate}
-      className="w-full flex items-center justify-center flex-col gap-y-2"
-    >
-      <img src={illustration} alt="Create workspace" />
-      <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
-        {" "}
-        <div className="w-full mt-4">
-          <label
-            htmlFor="name"
-            className="block mb-3 text-sm font-medium text-white"
-          >
-            {t("common.workspaces-name")}
-          </label>
-          <input
-            name="name"
-            type="text"
-            className="border-none bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm rounded-lg block w-full p-2.5"
-            placeholder="My Workspace"
-            required={true}
-            autoComplete="off"
-            onChange={(e) => setWorkspaceName(e.target.value)}
-          />
-          <p className="text-theme-text-secondary text-xs mt-2">
-            {t("onboarding.workspace.adminWarning")}
-          </p>
-        </div>
+    <div className="onenew-page p-6 flex items-center justify-center">
+      <div className="onenew-card flex flex-col items-center gap-y-4 w-full max-w-[600px]">
+        <img src={illustration} alt="Create workspace" />
+        <form onSubmit={handleCreate} className="w-full flex flex-col gap-y-2">
+          <div className="w-full mt-4">
+            <label htmlFor="name" className="block mb-3 text-sm font-medium">
+              {t("common.workspaces-name")}
+            </label>
+            <input
+              name="name"
+              type="text"
+              className="onenew-input w-full"
+              placeholder="My Workspace"
+              required={true}
+              autoComplete="off"
+              onChange={(e) => setWorkspaceName(e.target.value)}
+            />
+            <p className="text-theme-text-secondary text-xs mt-2">
+              {t("onboarding.workspace.adminWarning")}
+            </p>
+          </div>
+          <button
+            type="submit"
+            ref={createWorkspaceRef}
+            hidden
+            aria-hidden="true"
+          ></button>
+        </form>
       </div>
-      <button
-        type="submit"
-        ref={createWorkspaceRef}
-        hidden
-        aria-hidden="true"
-      ></button>
-    </form>
+    </div>
   );
 }
