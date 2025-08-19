@@ -120,19 +120,24 @@
 }
 
 /* Sidebar navigation */
-.nav-item {
+.nav .item {
   color: var(--muted);
 }
 
-.nav-item:hover {
+.nav .item:hover {
   color: var(--fg-1);
   background: color-mix(in srgb, var(--surface), var(--bg) 8%);
 }
 
-.nav-item.active {
+.nav .item.active {
   color: var(--fg-1);
-  background: color-mix(in srgb, var(--brand), transparent 88%);
+  background: rgba(106, 163, 255, 0.12);
   border-left: 3px solid var(--brand);
+}
+
+/* Indent nested navigation items */
+.nav .item .item {
+  margin-left: 1rem;
 }
 
 /* Onboarding progress */
