@@ -160,7 +160,11 @@ function AttachmentItem({ attachment }) {
     <>
       <div
         data-tooltip-id={`attachment-uid-${uid}-success`}
-        data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
+        data-tooltip-content={
+          status === "embedded"
+            ? `${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`
+            : `${file.name} will be used as context for this chat only.`
+        }
         className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
       >
         <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
@@ -186,7 +190,7 @@ function AttachmentItem({ attachment }) {
             {file.name}
           </p>
           <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
-            File embedded!
+            {status === "embedded" ? "File embedded!" : "Added as context!"}
           </p>
         </div>
       </div>

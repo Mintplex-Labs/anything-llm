@@ -389,7 +389,6 @@ const TRANSLATIONS = {
       "嵌入是將文字轉換成向量的過程。這些憑證是用於將您的檔案和提示詞轉換成 AnythingLLM 可以處理的格式。",
     provider: {
       title: "向量嵌入提供者",
-      description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
   text: {
@@ -398,9 +397,6 @@ const TRANSLATIONS = {
       "有時您可能需要修改新文件在插入向量資料庫之前的預設分割和區塊化方式。",
     "desc-end":
       "只有在了解文字分割的運作方式及其副作用的情況下，才應該修改此設定。",
-    "warn-start": "此處的修改只會套用至",
-    "warn-center": "新嵌入的文件",
-    "warn-end": "，而不會套用至現有文件。",
     size: {
       title: "文字區塊大小",
       description: "這是單一向量中可包含的最大字元長度。",
@@ -442,29 +438,6 @@ const TRANSLATIONS = {
       message: "訊息",
       response: "回應",
       at: "傳送時間",
-    },
-  },
-  multi: {
-    title: "多使用者模式",
-    description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
-    enable: {
-      "is-enable": "多使用者模式已啟用",
-      enable: "啟用多使用者模式",
-      description:
-        "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
-      username: "管理員帳號使用者名稱",
-      password: "管理員帳號密碼",
-    },
-    password: {
-      title: "密碼保護",
-      description:
-        "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
-    },
-    instance: {
-      title: "系統密碼保護",
-      description:
-        "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
-      password: "系統密碼",
     },
   },
   event: {
@@ -1019,6 +992,27 @@ const TRANSLATIONS = {
         prompt_description: "這是觸發斜線指令時將使用的提示。",
         prompt_placeholder: "在此輸入您的提示...",
       },
+    },
+  },
+  security: {
+    title: "安全性設定",
+    multiuser: {
+      title: "多使用者模式",
+      description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
+      enable: {
+        "is-enable": "多使用者模式已啟用",
+        enable: "啟用多使用者模式",
+        description:
+          "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
+        username: "管理員帳號使用者名稱",
+        password: "管理員帳號密碼",
+      },
+    },
+    password: {
+      title: "密碼保護",
+      description:
+        "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
+      "password-label": "實例密碼",
     },
   },
 };

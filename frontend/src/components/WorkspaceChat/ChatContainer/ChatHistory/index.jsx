@@ -82,7 +82,7 @@ export default function ChatHistory({
   };
 
   const handleSendSuggestedMessage = (heading, message) => {
-    sendCommand(`${heading} ${message}`, true);
+    sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
   };
 
   const saveEditedMessage = async ({
@@ -107,7 +107,12 @@ export default function ChatHistory({
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
       // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand(editedMessage, true, updatedHistory, attachments);
+      sendCommand({
+        text: editedMessage,
+        autoSubmit: true,
+        history: updatedHistory,
+        attachments,
+      });
       return;
     }
 

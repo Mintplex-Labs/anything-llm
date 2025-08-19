@@ -573,8 +573,6 @@ const TRANSLATIONS = {
       "Embedding muudab teksti vektoriteks. Need võtmed on vajalikud, et AnythingLLM saaks sinu failid ja päringud töödelda.",
     provider: {
       title: "Embedding-i pakkuja",
-      description:
-        "AnythingLLM-i sisseehitatud embedding-mootor ei vaja seadistust.",
     },
   },
   text: {
@@ -582,9 +580,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Vahel soovid muuta, kuidas uued dokumendid enne vektoriandmebaasi lisamist tükeldatakse.",
     "desc-end": "Muuda seda ainult siis, kui mõistad tekstilõike mõju.",
-    "warn-start": "Muudatused kehtivad ainult",
-    "warn-center": "uutele dokumentidele",
-    "warn-end": ", mitte olemasolevatele.",
     size: {
       title: "Tekstitüki suurus",
       description: "Maksimaalne märgipikkus ühes vektoris.",
@@ -626,30 +621,6 @@ const TRANSLATIONS = {
       message: "Sõnum",
       response: "Vastus",
       at: "Saadetud",
-    },
-  },
-  multi: {
-    title: "Mitme kasutaja režiim",
-    description:
-      "Lülita mitme kasutaja tugi sisse, et meeskond saaks instantsi kasutada.",
-    enable: {
-      "is-enable": "Mitme kasutaja režiim on sisse lülitatud",
-      enable: "Lülita sisse",
-      description:
-        "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
-      username: "Admini kasutajanimi",
-      password: "Admini parool",
-    },
-    password: {
-      title: "Paroolikaitse",
-      description:
-        "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
-    },
-    instance: {
-      title: "Kaitse instants parooliga",
-      description:
-        "Adminid peavad looma kontod uutele kasutajatele. Parooli kaotus = taastada saab vaid admin.",
-      password: "Instantsi parool",
     },
   },
   event: {
@@ -1043,6 +1014,28 @@ const TRANSLATIONS = {
           button: "Ühendu Community Hubiga",
         },
       },
+    },
+  },
+  security: {
+    title: "Turvalisus",
+    multiuser: {
+      title: "Mitme kasutaja režiim",
+      description:
+        "Lülita mitme kasutaja tugi sisse, et meeskond saaks instantsi kasutada.",
+      enable: {
+        "is-enable": "Mitme kasutaja režiim on sisse lülitatud",
+        enable: "Lülita sisse",
+        description:
+          "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
+        username: "Admini kasutajanimi",
+        password: "Admini parool",
+      },
+    },
+    password: {
+      title: "Paroolikaitse",
+      description:
+        "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
+      "password-label": "Instantsi parool",
     },
   },
 };

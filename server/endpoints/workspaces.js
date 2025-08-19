@@ -32,14 +32,15 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
+const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 
 function workspaceEndpoints(app) {
   if (!app) return;
-
   const responseCache = new Map();
 
   app.post(
@@ -1060,6 +1061,9 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  // Parsed Files in separate endpoint just to keep the workspace endpoints clean
+  workspaceParsedFilesEndpoints(app);
 }
 
 module.exports = { workspaceEndpoints };

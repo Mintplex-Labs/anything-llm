@@ -202,7 +202,11 @@ class DrupalWiki {
     console.log(
       `[DrupalWiki Loader]: Saving page '${page.title}' (${page.id}) to '${this.storagePath}/${fileName}'`
     );
-    writeToServerDocuments(data, fileName, this.storagePath);
+    writeToServerDocuments({
+      data,
+      filename: fileName,
+      destinationOverride: this.storagePath,
+    });
   }
 
   /**

@@ -259,7 +259,7 @@ const TRANSLATIONS = {
     snippets: {
       title: "Max Context Snippets",
       description:
-        "This setting controls the maximum amount of context snippets the will be sent to the LLM for per chat or query.",
+        "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
       recommend: "Recommended: 4",
     },
     doc: {
@@ -400,8 +400,6 @@ const TRANSLATIONS = {
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
       title: "Embedding Provider",
-      description:
-        "There is no set up required when using AnythingLLM's native embedding engine.",
     },
   },
   text: {
@@ -410,9 +408,6 @@ const TRANSLATIONS = {
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
       "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
     size: {
       title: "Text Chunk Size",
       description:
@@ -457,30 +452,6 @@ const TRANSLATIONS = {
       message: "Message",
       response: "Response",
       at: "Sent At",
-    },
-  },
-  multi: {
-    title: "Multi-Người dùng Mode",
-    description:
-      "Set up your instance to support your team by activating Multi-Người dùng Mode.",
-    enable: {
-      "is-enable": "Multi-Người dùng Mode is Enabled",
-      enable: "Enable Multi-Người dùng Mode",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      username: "Quản trị viên account username",
-      password: "Quản trị viên account password",
-    },
-    password: {
-      title: "Mật khẩu Protection",
-      description:
-        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Mật khẩu Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      password: "Instance password",
     },
   },
   event: {
@@ -1005,6 +976,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Bảo mật",
+    multiuser: {
+      title: "Multi-Người dùng Mode",
+      description:
+        "Set up your instance to support your team by activating Multi-Người dùng Mode.",
+      enable: {
+        "is-enable": "Multi-Người dùng Mode is Enabled",
+        enable: "Enable Multi-Người dùng Mode",
+        description:
+          "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
+        username: "Quản trị viên account username",
+        password: "Quản trị viên account password",
+      },
+    },
+    password: {
+      title: "Mật khẩu Protection",
+      description:
+        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
+      "password-label": "Mật khẩu của instance",
     },
   },
 };

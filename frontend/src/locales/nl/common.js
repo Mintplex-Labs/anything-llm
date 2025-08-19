@@ -401,8 +401,6 @@ const TRANSLATIONS = {
       "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
     provider: {
       title: "Inbedding Provider",
-      description:
-        "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
     },
   },
   text: {
@@ -411,9 +409,6 @@ const TRANSLATIONS = {
       "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
     "desc-end":
       "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
-    "warn-start": "Wijzigingen hier zijn alleen van toepassing op",
-    "warn-center": "nieuw ingebedde documenten",
-    "warn-end": ", niet op bestaande documenten.",
     size: {
       title: "Tekst Chunk Grootte",
       description:
@@ -458,30 +453,6 @@ const TRANSLATIONS = {
       message: "Bericht",
       response: "Reactie",
       at: "Verzonden Om",
-    },
-  },
-  multi: {
-    title: "Multi-Gebruikersmodus",
-    description:
-      "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
-    enable: {
-      "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
-      enable: "Schakel Multi-Gebruikersmodus In",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      username: "Beheerdersaccount gebruikersnaam",
-      password: "Beheerdersaccount wachtwoord",
-    },
-    password: {
-      title: "Wachtwoordbeveiliging",
-      description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
-    },
-    instance: {
-      title: "Instantie Wachtwoord Beveiligen",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      password: "Instantie wachtwoord",
     },
   },
   event: {
@@ -1006,6 +977,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Veiligheid",
+    multiuser: {
+      title: "Multi-Gebruikersmodus",
+      description:
+        "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
+      enable: {
+        "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
+        enable: "Schakel Multi-Gebruikersmodus In",
+        description:
+          "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
+        username: "Beheerdersaccount gebruikersnaam",
+        password: "Beheerdersaccount wachtwoord",
+      },
+    },
+    password: {
+      title: "Wachtwoordbeveiliging",
+      description:
+        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+      "password-label": "Instances wachtwoord",
     },
   },
 };
