@@ -79,7 +79,7 @@ export default function ActiveWorkspaces() {
           <ul
             role="list"
             aria-label="Workspaces"
-            className="flex flex-col gap-y-2"
+            className="nav flex flex-col gap-y-2"
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -97,7 +97,7 @@ export default function ActiveWorkspaces() {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={cn(
-                          "group nav-item flex items-center gap-2 px-3 py-2 rounded-lg",
+                          "group nav-item item flex items-center gap-2 px-3 py-2 rounded-lg",
                           isActive && "active font-semibold",
                           snapshot.isDragging && "opacity-50"
                         )}
