@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as WorkspaceChatContainer } from "@/components/WorkspaceChat";
-import AppShell from "@/layouts/AppShell";
+import AppLayout from "@/layouts/AppLayout";
 import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
@@ -43,8 +43,8 @@ function ShowWorkspaceChat() {
   }, []);
 
   return (
-    <AppShell>
+    <AppLayout>
       <WorkspaceChatContainer loading={loading} workspace={workspace} />
-    </AppShell>
+    </AppLayout>
   );
 }

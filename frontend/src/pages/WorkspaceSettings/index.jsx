@@ -4,7 +4,7 @@ import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
-import AppShell from "@/layouts/AppShell";
+import AppLayout from "@/layouts/AppLayout";
 import {
   ArrowUUpLeft,
   ChatText,
@@ -76,7 +76,7 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <AppShell>
+    <AppLayout>
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll"
@@ -119,7 +119,7 @@ function ShowWorkspaceChat() {
           <TabContent slug={slug} workspace={workspace} />
         </div>
       </div>
-    </AppShell>
+    </AppLayout>
   );
 }
 

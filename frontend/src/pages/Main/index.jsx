@@ -3,7 +3,7 @@ import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { FullScreenLoader } from "@/components/Preloader";
 import Home from "./Home";
 import DefaultChatContainer from "@/components/DefaultChat";
-import AppShell from "@/layouts/AppShell";
+import AppLayout from "@/layouts/AppLayout";
 import { userFromStorage } from "@/utils/request";
 
 export default function Main() {
@@ -15,8 +15,8 @@ export default function Main() {
 
   const user = userFromStorage();
   return (
-    <AppShell>
+    <AppLayout>
       {!!user && user?.role !== "admin" ? <DefaultChatContainer /> : <Home />}
-    </AppShell>
+    </AppLayout>
   );
 }
