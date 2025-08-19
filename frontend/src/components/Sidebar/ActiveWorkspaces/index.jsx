@@ -97,10 +97,8 @@ export default function ActiveWorkspaces() {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={cn(
-                          "group flex items-center gap-2 px-3 py-2 rounded-lg",
-                          "text-[var(--text)] hover:bg-[color-mix(in srgb,var(--accent),transparent 90%)]",
-                          isActive &&
-                            "bg-[color-mix(in srgb,var(--accent),transparent 86%)] font-semibold",
+                          "group nav-item flex items-center gap-2 px-3 py-2 rounded-lg",
+                          isActive && "active font-semibold",
                           snapshot.isDragging && "opacity-50"
                         )}
                         role="listitem"
@@ -112,8 +110,8 @@ export default function ActiveWorkspaces() {
                           >
                             <DotsSixVertical
                               size={20}
-                              color="var(--theme-sidebar-item-workspace-active)"
                               weight="bold"
+                              className="text-[var(--theme-sidebar-item-workspace-active)]"
                             />
                           </div>
                         )}
@@ -166,13 +164,12 @@ export default function ActiveWorkspaces() {
                               aria-label="General appearance settings"
                             >
                               <GearSix
-                                color={
+                                className={cn(
+                                  "h-[20px] w-[20px]",
                                   isInWorkspaceSettings &&
-                                  workspace.slug === slug
-                                    ? "#46C8FF"
-                                    : undefined
-                                }
-                                className="h-[20px] w-[20px]"
+                                    workspace.slug === slug &&
+                                    "text-[#46C8FF]"
+                                )}
                               />
                             </button>
                           </div>

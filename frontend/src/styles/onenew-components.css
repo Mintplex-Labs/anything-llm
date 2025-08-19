@@ -1,11 +1,22 @@
 /* OneNew utility layer */
 .onenew-page {
-  background:
-    radial-gradient(1200px 1200px at -10% 10%,
-      color-mix(in srgb, var(--accent), transparent 82%), transparent 55%),
-    radial-gradient(1200px 1200px at 110% 10%,
-      color-mix(in srgb, var(--primary), transparent 92%), transparent 55%);
+  background: radial-gradient(
+      1200px 1200px at -10% 10%,
+      color-mix(in srgb, var(--accent), transparent 82%),
+      transparent 55%
+    ),
+    radial-gradient(
+      1200px 1200px at 110% 10%,
+      color-mix(in srgb, var(--primary), transparent 92%),
+      transparent 55%
+    );
   color: var(--text);
+}
+
+/* Ensure SVGs inherit text color */
+.theme-onenew svg {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .onenew-card {
@@ -44,7 +55,9 @@
   background: var(--primary);
   color: #fff;
   border: 1px solid var(--primary);
-  transition: transform 60ms ease, box-shadow 200ms ease;
+  transition:
+    transform 60ms ease,
+    box-shadow 200ms ease;
   box-shadow: 0 2px 4px var(--shadow);
 }
 .onenew-btn:hover {
@@ -56,10 +69,54 @@
   cursor: not-allowed;
 }
 
+/* Chat bubbles */
+.bubble {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+}
+
+.bubble-assistant {
+  background: color-mix(in srgb, var(--card-bg), #000 6%);
+  color: var(--text);
+}
+
+.bubble-user {
+  background: color-mix(in srgb, var(--primary), transparent 80%);
+  color: var(--text);
+}
+
+/* Sidebar navigation */
+.nav-item {
+  color: var(--muted-foreground);
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--card-bg), #000 8%);
+}
+
+.nav-item.active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--primary), transparent 88%);
+  border-left: 3px solid var(--primary);
+}
+
 /* Onboarding progress */
-.onb-progress { display: flex; gap: 8px; margin-bottom: 12px; }
-.onb-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--border); }
-.onb-dot.active { background: var(--primary); }
+.onb-progress {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.onb-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+}
+.onb-dot.active {
+  background: var(--primary);
+}
 
 .onenew-chip {
   display: inline-flex;

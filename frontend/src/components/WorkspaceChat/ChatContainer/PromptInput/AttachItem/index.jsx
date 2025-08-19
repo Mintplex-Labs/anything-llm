@@ -24,10 +24,7 @@ export default function AttachItem() {
         }}
         className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
-        <PaperclipHorizontal
-          color="var(--theme-sidebar-footer-icon-fill)"
-          className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100"
-        />
+        <PaperclipHorizontal className="w-[22px] h-[22px] pointer-events-none rotate-90 -scale-y-100" />
       </button>
       <Tooltip
         id="attach-item-btn"

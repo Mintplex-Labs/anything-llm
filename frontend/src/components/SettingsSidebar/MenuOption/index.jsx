@@ -60,22 +60,13 @@ export default function MenuOption({
   return (
     <div>
       <div
-        className={`
-          flex items-center justify-between w-full
-          transition-all duration-300
-          rounded-[6px]
-          ${
-            isActive
-              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
-              : "hover:bg-theme-sidebar-subitem-hover"
-          }
-        `}
+        className={`nav-item flex items-center justify-between w-full transition-all duration-300 rounded-[6px] ${
+          isActive ? "active font-medium" : ""
+        }`}
       >
         <Link
           to={href}
-          className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
-            isChild ? "hover:text-white" : "text-white light:text-black"
-          }`}
+          className="flex flex-grow items-center px-[12px] h-[32px] font-medium"
           onClick={hasChildren ? handleClick : undefined}
         >
           {icon}
@@ -83,23 +74,18 @@ export default function MenuOption({
             className={`${
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
-              isActive
-                ? "text-white font-semibold"
-                : "text-white light:text-black"
+              isActive ? "font-semibold" : ""
             } ${!icon && "pl-5"}`}
           >
             {btnText}
           </p>
         </Link>
         {hasChildren && (
-          <button onClick={handleClick} className="p-2 text-white">
+          <button onClick={handleClick} className="p-2">
             <CaretRight
               size={16}
               weight="bold"
-              // color={isExpanded ? "#000000" : "var(--theme-sidebar-subitem-icon)"}
-              className={`transition-transform text-white light:text-black ${
-                isExpanded ? "rotate-90" : ""
-              }`}
+              className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
             />
           </button>
         )}

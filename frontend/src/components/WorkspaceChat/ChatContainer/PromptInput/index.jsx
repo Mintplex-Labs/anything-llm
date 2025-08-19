@@ -276,7 +276,7 @@ export default function PromptInput({
                 }}
                 value={promptInput}
                 spellCheck={Appearance.get("enableSpellCheck")}
-                className={`onenew-input flex-grow resize-none max-h-[50vh] md:max-h-[350px] md:min-h-[40px] ${textSizeClass}`}
+                className={`onenew-input w-full resize-none max-h-[50vh] md:max-h-[350px] md:min-h-[40px] ${textSizeClass}`}
                 placeholder={t("chat_window.send_message")}
               />
               {isStreaming ? (
@@ -297,7 +297,6 @@ export default function PromptInput({
                     aria-label={t("chat_window.send")}
                   >
                     <PaperPlaneRight
-                      color="var(--theme-sidebar-footer-icon-fill)"
                       className="w-[22px] h-[22px] pointer-events-none group-disabled:opacity-[25%]"
                       weight="fill"
                     />
