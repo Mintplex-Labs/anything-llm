@@ -9,7 +9,7 @@ test('Login: loads, no console errors, themed', async ({ page }) => {
   await page.evaluate(() => {
     document.documentElement.setAttribute('data-theme','dark');
     document.body.classList.remove('light');
-    localStorage.setItem('theme','default');
+    localStorage.setItem('theme','dark');
   });
   await page.reload();
   await expect(page).toHaveScreenshot('login-dark.png', { fullPage: true });
@@ -24,7 +24,7 @@ test('Chat: composer & message bubbles present', async ({ page }) => {
   await page.evaluate(() => {
     document.documentElement.setAttribute('data-theme','dark');
     document.body.classList.remove('light');
-    localStorage.setItem('theme','default');
+    localStorage.setItem('theme','dark');
   });
   await page.reload();
   await expect(page).toHaveScreenshot('chat-dark.png', { fullPage: true });
