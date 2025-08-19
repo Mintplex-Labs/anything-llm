@@ -19,6 +19,12 @@
   stroke: currentColor;
 }
 
+/* Strong focus ring everywhere */
+:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 4px var(--ring) !important;
+}
+
 .onenew-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -143,6 +149,14 @@
 .onenew-table td {
   padding: 0.6rem 0.75rem;
   border-bottom: 1px solid var(--border);
+}
+
+/* Tooltips/Popovers */
+.tooltip,
+.popover {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 /* Scrollbars (webkit) */
