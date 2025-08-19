@@ -612,7 +612,7 @@ function systemEndpoints(app) {
   app.get("/system/logo", async function (request, response) {
     try {
       const darkMode =
-        !request?.query?.theme || request?.query?.theme === "default";
+        !request?.query?.theme || request?.query?.theme === "dark";
       const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
@@ -752,11 +752,9 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture upload:", error);
         const isPathError = /Invalid path/.test(error.message);
-        response
-          .status(isPathError ? 400 : 500)
-          .json({
-            message: isPathError ? error.message : "Internal server error",
-          });
+        response.status(isPathError ? 400 : 500).json({
+          message: isPathError ? error.message : "Internal server error",
+        });
       }
     }
   );
@@ -793,11 +791,9 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture removal:", error);
         const isPathError = /Invalid path/.test(error.message);
-        response
-          .status(isPathError ? 400 : 500)
-          .json({
-            message: isPathError ? error.message : "Internal server error",
-          });
+        response.status(isPathError ? 400 : 500).json({
+          message: isPathError ? error.message : "Internal server error",
+        });
       }
     }
   );

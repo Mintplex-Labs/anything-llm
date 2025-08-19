@@ -16,7 +16,7 @@ import i18n from "./i18n";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
-import { ThemeProvider } from "./ThemeContext";
+import { ThemeProvider } from "./ThemeProvider";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 
 const Main = lazy(() => import("@/pages/Main"));
