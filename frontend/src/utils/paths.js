@@ -211,6 +211,16 @@ export default {
     },
   },
 
+  // TODO: Migrate all docs.anythingllm.com links to the new docs.
+  documentation: {
+    mobileIntroduction: () => {
+      return "https://docs.anythingllm.com/mobile/overview";
+    },
+    contextWindows: () => {
+      return "https://docs.anythingllm.com/chatting-with-documents/introduction#you-exceed-the-context-window---what-now";
+    },
+  },
+
   experimental: {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,
