@@ -38,6 +38,8 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -242,6 +244,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: DPAISLogo,
   },
+  moonshotai: {
+    name: "Moonshot AI",
+    description: [
+      "Your chats may be used by Moonshot AI for training and model refinement",
+      "Your prompts and document text used in response creation are visible to Moonshot AI",
+    ],
+    logo: MoonshotAiLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -258,6 +268,14 @@ export const VECTOR_DB_PRIVACY = {
     description: [
       "Your vectors and document text are stored on your Chroma instance",
       "Access to your instance is managed by you",
+    ],
+    logo: ChromaLogo,
+  },
+  chromacloud: {
+    name: "Chroma Cloud",
+    description: [
+      "Your vectors and document text are stored on Chroma's cloud service",
+      "Access to your data is managed by Chroma",
     ],
     logo: ChromaLogo,
   },

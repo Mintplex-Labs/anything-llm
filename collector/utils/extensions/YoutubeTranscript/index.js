@@ -2,7 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../files");
+const {
+  writeToServerDocuments,
+  sanitizeFileName,
+  documentsFolder,
+} = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { YoutubeLoader } = require("./YoutubeLoader");
 
@@ -89,17 +93,10 @@ async function loadYouTubeTranscript({ url }) {
     };
   }
   const { content, metadata } = transcriptResults;
-  const outFolder = slugify(
-    `${metadata.author} YouTube transcripts`
-  ).toLowerCase();
-
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolder = sanitizeFileName(
+    slugify(`${metadata.author} YouTube transcripts`).toLowerCase()
+  );
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
@@ -119,11 +116,11 @@ async function loadYouTubeTranscript({ url }) {
   };
 
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
-  writeToServerDocuments(
+  writeToServerDocuments({
     data,
-    `${slugify(metadata.title)}-${data.id}`,
-    outFolderPath
-  );
+    filename: sanitizeFileName(`${slugify(metadata.title)}-${data.id}`),
+    destinationOverride: outFolderPath,
+  });
 
   return {
     success: true,

@@ -401,8 +401,6 @@ const TRANSLATIONS = {
       "Gömme, metni vektörlere dönüştürme sürecidir. Dosyalarınızın ve komutlarınızın işlenebilmesi için AnythingLLM, bu kimlik bilgilerine ihtiyaç duyar.",
     provider: {
       title: "Embedding Sağlayıcısı",
-      description:
-        "AnythingLLM'nin yerel gömme motoru kullanıldığında ek bir kurulum gerekmez.",
     },
   },
   text: {
@@ -411,9 +409,6 @@ const TRANSLATIONS = {
       "Bazı durumlarda, yeni belgelerin vektör veritabanınıza eklenmeden önce hangi varsayılan yöntemle bölünüp parçalanacağını değiştirmek isteyebilirsiniz.",
     "desc-end":
       "Metin bölmenin nasıl çalıştığını ve olası yan etkilerini tam olarak bilmiyorsanız bu ayarı değiştirmemelisiniz.",
-    "warn-start": "Buradaki değişiklikler yalnızca",
-    "warn-center": "yeni eklenen belgeler",
-    "warn-end": "için geçerli olacak, mevcut belgelere uygulanmaz.",
     size: {
       title: "Metin Parça Boyutu",
       description:
@@ -458,30 +453,6 @@ const TRANSLATIONS = {
       message: "Mesaj",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
-    },
-  },
-  multi: {
-    title: "Çoklu Kullanıcı Modu",
-    description:
-      "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
-    enable: {
-      "is-enable": "Çoklu Kullanıcı Modu Etkin",
-      enable: "Çoklu Kullanıcı Modunu Etkinleştir",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      username: "Yönetici hesap kullanıcı adı",
-      password: "Yönetici hesap şifresi",
-    },
-    password: {
-      title: "Şifre Koruması",
-      description:
-        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
-    },
-    instance: {
-      title: "Örneği Şifreyle Koru",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      password: "Örnek Şifresi",
     },
   },
   event: {
@@ -1006,6 +977,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Güvenlik",
+    multiuser: {
+      title: "Çoklu Kullanıcı Modu",
+      description:
+        "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
+      enable: {
+        "is-enable": "Çoklu Kullanıcı Modu Etkin",
+        enable: "Çoklu Kullanıcı Modunu Etkinleştir",
+        description:
+          "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
+        username: "Yönetici hesap kullanıcı adı",
+        password: "Yönetici hesap şifresi",
+      },
+    },
+    password: {
+      title: "Şifre Koruması",
+      description:
+        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
+      "password-label": "Örnek şifresi",
     },
   },
 };

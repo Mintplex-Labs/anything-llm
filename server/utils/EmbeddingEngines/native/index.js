@@ -2,35 +2,112 @@ const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
+const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
 
 class NativeEmbedder {
+  static defaultModel = "Xenova/all-MiniLM-L6-v2";
+
+  /**
+   * Supported embedding models for native.
+   * @type {Record<string, {
+   *   chunkPrefix: string;
+   *   queryPrefix: string;
+   *   apiInfo: {
+   *     id: string;
+   *     name: string;
+   *     description: string;
+   *     lang: string;
+   *     size: string;
+   *     modelCard: string;
+   *   };
+   * }>}
+   */
+  static supportedModels = SUPPORTED_NATIVE_EMBEDDING_MODELS;
+
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
   // and may go offline at any time at Mintplex Labs's discretion.
   #fallbackHost = "https://cdn.anythingllm.com/support/models/";
 
   constructor() {
-    // Model Card: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
-    this.model = "Xenova/all-MiniLM-L6-v2";
+    this.model = this.getEmbeddingModel();
+    this.modelInfo = this.getEmbedderInfo();
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../storage/models`)
     );
-    this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
+    this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     this.modelDownloaded = fs.existsSync(this.modelPath);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 25;
-    this.embeddingMaxChunkLength = 1_000;
+    this.maxConcurrentChunks = this.modelInfo.maxConcurrentChunks;
+    this.embeddingMaxChunkLength = this.modelInfo.embeddingMaxChunkLength;
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
-    this.log("Initialized");
+    this.log(`Initialized ${this.model}`);
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[NativeEmbedder]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Get the selected model from the environment variable.
+   * @returns {string}
+   */
+  static _getEmbeddingModel() {
+    const envModel =
+      process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
+    if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
+    return NativeEmbedder.defaultModel;
+  }
+
+  get embeddingPrefix() {
+    return NativeEmbedder.supportedModels[this.model]?.chunkPrefix || "";
+  }
+
+  get queryPrefix() {
+    return NativeEmbedder.supportedModels[this.model]?.queryPrefix || "";
+  }
+
+  /**
+   * Get the available models in an API response format
+   * we can use to populate the frontend dropdown.
+   * @returns {{id: string, name: string, description: string, lang: string, size: string, modelCard: string}[]}
+   */
+  static availableModels() {
+    return Object.values(NativeEmbedder.supportedModels).map(
+      (model) => model.apiInfo
+    );
+  }
+
+  /**
+   * Get the embedding model to use.
+   * We only support a few models and will default to the default model if the environment variable is not set or not supported.
+   *
+   * Why only a few? Because we need to mirror them on the CDN so non-US users can download them.
+   * eg: "Xenova/all-MiniLM-L6-v2"
+   * eg: "Xenova/nomic-embed-text-v1"
+   * @returns {string}
+   */
+  getEmbeddingModel() {
+    const envModel =
+      process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
+    if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
+    return NativeEmbedder.defaultModel;
+  }
+
+  /**
+   * Get the embedding model info.
+   *
+   * Will always fallback to the default model if the model is not supported.
+   * @returns {Object}
+   */
+  getEmbedderInfo() {
+    const model = this.getEmbeddingModel();
+    return NativeEmbedder.supportedModels[model];
   }
 
   #tempfilePath() {
@@ -124,7 +201,27 @@ class NativeEmbedder {
     throw fetchResponse.error;
   }
 
+  /**
+   * Apply the query prefix to the text input if it is required by the model.
+   * eg: nomic-embed-text-v1 requires a query prefix for embedding/searching.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {string|string[]} The text with the prefix applied.
+   */
+  #applyQueryPrefix(textInput) {
+    if (!this.queryPrefix) return textInput;
+    if (Array.isArray(textInput))
+      textInput = textInput.map((text) => `${this.queryPrefix}${text}`);
+    else textInput = `${this.queryPrefix}${textInput}`;
+    return textInput;
+  }
+
+  /**
+   * Embed a single text input.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {Promise<Array<number>>} The embedded text.
+   */
   async embedTextInput(textInput) {
+    textInput = this.#applyQueryPrefix(textInput);
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );
@@ -165,7 +262,7 @@ class NativeEmbedder {
 
       data = JSON.stringify(output.tolist());
       await this.#writeToTempfile(tmpFilePath, data);
-      this.log(`Embedded Chunk ${idx + 1} of ${chunkLen}`);
+      this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
       pipeline = null;

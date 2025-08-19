@@ -102,7 +102,7 @@ class OpenAiLLM {
         type: "image_url",
         image_url: {
           url: attachment.contentString,
-          detail: "high",
+          detail: "auto",
         },
       });
     }

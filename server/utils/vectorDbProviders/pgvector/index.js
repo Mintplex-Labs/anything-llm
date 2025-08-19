@@ -536,10 +536,11 @@ const PGVector = {
           20
         ),
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      this.log("Chunks created from document:", textChunks.length);
+      this.log("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];

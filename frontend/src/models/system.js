@@ -762,7 +762,7 @@ const System = {
         if (!res.ok) throw new Error("Could not fetch app version.");
         return res.json();
       })
-      .then((res) => res?.version)
+      .then((res) => res?.appVersion)
       .catch(() => null);
 
     if (!newVersion) return null;
@@ -771,6 +771,25 @@ const System = {
       JSON.stringify({ version: newVersion, lastFetched: Date.now() })
     );
     return newVersion;
+  },
+
+  /**
+   * Validates a SQL connection string.
+   * @param {'postgresql'|'mysql'|'sql-server'} engine - the database engine identifier
+   * @param {string} connectionString - the connection string to validate
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  validateSQLConnection: async function (engine, connectionString) {
+    return fetch(`${API_BASE}/system/validate-sql-connection`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ engine, connectionString }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error("Failed to validate SQL connection:", e);
+        return { success: false, error: e.message };
+      });
   },
 
   experimentalFeatures: {
