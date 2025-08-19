@@ -28,11 +28,11 @@
   </ns0:defs>
 
   
-  <ns0:rect x="0.5" y="0.5" width="92" height="92" rx="16" fill="#FFFFFF" stroke="#EEF1F6" />
+  <ns0:rect x="0.5" y="0.5" width="92" height="92" rx="16" fill="currentColor" stroke="#EEF1F6" />
 
   
   <ns0:g filter="url(#shadow)">
-    <ns0:rect x="10" y="10" width="73" height="73" rx="18" fill="#FFFFFF" />
+    <ns0:rect x="10" y="10" width="73" height="73" rx="18" fill="currentColor" />
     <ns0:rect x="10" y="10" width="73" height="73" rx="18" fill="url(#glass)" />
   </ns0:g>
 
@@ -44,6 +44,6 @@
     <ns0:rect x="0" y="0" width="49" height="49" rx="14" fill="url(#centerGlow)" />
 
     
-    <ns0:circle cx="24.5" cy="24.5" r="12" fill="#FFFFFF" opacity="0.92" />
+    <ns0:circle cx="24.5" cy="24.5" r="12" fill="currentColor" opacity="0.92" />
   </ns0:g>
 </ns0:g></ns0:svg>

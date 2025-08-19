@@ -27,11 +27,11 @@
   </defs>
 
   <!-- Background (light) -->
-  <rect x="0.5" y="0.5" width="92" height="92" rx="16" fill="#FFFFFF" stroke="#EEF1F6"/>
+  <rect x="0.5" y="0.5" width="92" height="92" rx="16" fill="currentColor" stroke="#EEF1F6"/>
 
   <!-- Premium glass card (slight elevation) -->
   <g filter="url(#shadow)">
-    <rect x="10" y="10" width="73" height="73" rx="18" fill="#FFFFFF" />
+    <rect x="10" y="10" width="73" height="73" rx="18" fill="currentColor" />
     <rect x="10" y="10" width="73" height="73" rx="18" fill="url(#glass)"/>
   </g>
 
@@ -43,6 +43,6 @@
     <rect x="0" y="0" width="49" height="49" rx="14" fill="url(#centerGlow)"/>
 
     <!-- Central mark: plain white circle (no "1") -->
-    <circle cx="24.5" cy="24.5" r="12" fill="#FFFFFF" opacity="0.92"/>
+    <circle cx="24.5" cy="24.5" r="12" fill="currentColor" opacity="0.92"/>
   </g>
 </svg>
