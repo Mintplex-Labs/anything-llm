@@ -271,7 +271,7 @@ function Directory({
             </div>
             {amountSelected !== 0 && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-                <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
+                <div className="mx-auto bg-card light:bg-card rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={moveToWorkspace}

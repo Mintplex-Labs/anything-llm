@@ -25,4 +25,3 @@ export function isProcessingStatus(status) {
     DOCUMENT_JOB_STATUSES.includes(status.toUpperCase())
   );
 }
-

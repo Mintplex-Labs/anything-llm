@@ -173,7 +173,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
     const promises = [];
 
     for (const attachment of newAttachments) {
-
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
       promises.push(

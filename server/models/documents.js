@@ -186,7 +186,9 @@ const Document = {
   replace: async function (id = null, newDocpath = null) {
     if (!id || !newDocpath) return null;
     return await prisma.$transaction(async (tx) => {
-      const existing = await tx.workspace_documents.findUnique({ where: { id } });
+      const existing = await tx.workspace_documents.findUnique({
+        where: { id },
+      });
       if (!existing) return null;
 
       await tx.file_versions.create({
@@ -216,7 +218,9 @@ const Document = {
    */
   docpathForVersion: async function (id = null, version = 1) {
     if (!id) return null;
-    const current = await prisma.workspace_documents.findUnique({ where: { id } });
+    const current = await prisma.workspace_documents.findUnique({
+      where: { id },
+    });
     if (!current) return null;
     if (current.version === version) return current.docpath;
     const historic = await prisma.file_versions.findFirst({

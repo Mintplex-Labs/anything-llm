@@ -754,7 +754,9 @@ function systemEndpoints(app) {
         const isPathError = /Invalid path/.test(error.message);
         response
           .status(isPathError ? 400 : 500)
-          .json({ message: isPathError ? error.message : "Internal server error" });
+          .json({
+            message: isPathError ? error.message : "Internal server error",
+          });
       }
     }
   );
@@ -793,7 +795,9 @@ function systemEndpoints(app) {
         const isPathError = /Invalid path/.test(error.message);
         response
           .status(isPathError ? 400 : 500)
-          .json({ message: isPathError ? error.message : "Internal server error" });
+          .json({
+            message: isPathError ? error.message : "Internal server error",
+          });
       }
     }
   );
@@ -1098,9 +1102,7 @@ function systemEndpoints(app) {
         if (user.role === ROLES.manager) {
           if (Number(id) === -1) return response.sendStatus(403).end();
 
-          const chat = (
-            await WorkspaceChats.where({ id: Number(id) }, 1)
-          )[0];
+          const chat = (await WorkspaceChats.where({ id: Number(id) }, 1))[0];
           if (!chat) return response.sendStatus(404).end();
 
           const workspaceIds = await workspaceIdsCreatedBy(user.id);

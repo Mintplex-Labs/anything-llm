@@ -175,7 +175,7 @@ function ProfileImage({ role, workspace }) {
         <img
           src={workspace.pfpUrl}
           alt="Workspace profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-card"
         />
       </div>
     );

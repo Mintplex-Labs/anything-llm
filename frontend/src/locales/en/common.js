@@ -53,8 +53,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "Create your first workspace",
-      description:
-        "Create your first workspace and get started with OneNew.",
+      description: "Create your first workspace and get started with OneNew.",
       adminWarning:
         "Each workspace must always have at least one admin or manager. Removing all elevated users can break workspace features.",
     },
@@ -478,8 +477,7 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Branding & Whitelabeling",
-      description:
-        "White-label your OneNew instance with custom branding.",
+      description: "White-label your OneNew instance with custom branding.",
     },
     chat: {
       title: "Chat",
@@ -918,7 +916,7 @@ const TRANSLATIONS = {
         replace: "Replace",
         keep_both: "Keep both",
         skip: "Skip",
-        "add_to_library": "Also add to Library",
+        add_to_library: "Also add to Library",
       },
     },
     pinning: {

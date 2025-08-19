@@ -111,7 +111,10 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
         <div className="onenew-card flex flex-col gap-y-1 items-center">
           <CheckCircle size={60} className="text-green-500" />
           <p className="text-lg">{t("onboarding.survey.thankYou")}</p>
-          <a href={paths.mailToMintplex()} className="text-sky-400 underline text-xs">
+          <a
+            href={paths.mailToMintplex()}
+            className="text-sky-400 underline text-xs"
+          >
             team@mintplexlabs.com
           </a>
         </div>
@@ -124,10 +127,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
       <div className="onenew-card">
         <form onSubmit={handleSubmit} ref={formRef} className="">
           <div className="md:min-w-[400px]">
-            <label
-              htmlFor="email"
-              className="text-base font-medium"
-            >
+            <label htmlFor="email" className="text-base font-medium">
               {t("onboarding.survey.email")}{" "}
             </label>
             <input
@@ -139,126 +139,126 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             />
           </div>
 
-        <div className="mt-8">
-          <label className="text-base font-medium" htmlFor="use_case">
-            {t("onboarding.survey.useCase")}{" "}
-          </label>
-          <div className="mt-2 gap-y-3 flex flex-col">
-            <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
-                selectedOption === "job"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"job"}
-                checked={selectedOption === "job"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+          <div className="mt-8">
+            <label className="text-base font-medium" htmlFor="use_case">
+              {t("onboarding.survey.useCase")}{" "}
+            </label>
+            <div className="mt-2 gap-y-3 flex flex-col">
+              <label
+                className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
                   selectedOption === "job"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
-              ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                {t("onboarding.survey.useCaseWork")}
-              </div>
-            </label>
-            <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
-                selectedOption === "personal"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"personal"}
-                checked={selectedOption === "personal"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                    ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                    : "border-theme-sidebar-border"
+                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              >
+                <input
+                  type="radio"
+                  name="use_case"
+                  value={"job"}
+                  checked={selectedOption === "job"}
+                  onChange={(e) => setSelectedOption(e.target.value)}
+                  className="hidden"
+                />
+                <div
+                  className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                    selectedOption === "job"
+                      ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                      : ""
+                  }`}
+                ></div>
+                <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                  {t("onboarding.survey.useCaseWork")}
+                </div>
+              </label>
+              <label
+                className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                   selectedOption === "personal"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
-              ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                {t("onboarding.survey.useCasePersonal")}
-              </div>
-            </label>
-            <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
-                selectedOption === "other"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"other"}
-                checked={selectedOption === "other"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                    ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                    : "border-theme-sidebar-border"
+                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              >
+                <input
+                  type="radio"
+                  name="use_case"
+                  value={"personal"}
+                  checked={selectedOption === "personal"}
+                  onChange={(e) => setSelectedOption(e.target.value)}
+                  className="hidden"
+                />
+                <div
+                  className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                    selectedOption === "personal"
+                      ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                      : ""
+                  }`}
+                ></div>
+                <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                  {t("onboarding.survey.useCasePersonal")}
+                </div>
+              </label>
+              <label
+                className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                   selectedOption === "other"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
-              ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                {t("onboarding.survey.useCaseOther")}
-              </div>
-            </label>
+                    ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                    : "border-theme-sidebar-border"
+                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              >
+                <input
+                  type="radio"
+                  name="use_case"
+                  value={"other"}
+                  checked={selectedOption === "other"}
+                  onChange={(e) => setSelectedOption(e.target.value)}
+                  className="hidden"
+                />
+                <div
+                  className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                    selectedOption === "other"
+                      ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                      : ""
+                  }`}
+                ></div>
+                <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                  {t("onboarding.survey.useCaseOther")}
+                </div>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-8">
-          <label htmlFor="comment" className="text-base font-medium">
-            {t("onboarding.survey.comment")}{" "}
-            <span className="text-neutral-400 text-base font-light">
-              ({t("common.optional")})
-            </span>
-          </label>
-          <textarea
-            name="comment"
-            rows={5}
-            className="onenew-input mt-2 w-full"
-            placeholder={t("onboarding.survey.commentPlaceholder")}
-            wrap="soft"
-            autoComplete="off"
-          />
-        </div>
-        <button
-          type="submit"
-          ref={submitRef}
-          hidden
-          aria-hidden="true"
-        ></button>
-
-        <div className="w-full flex items-center justify-center">
+          <div className="mt-8">
+            <label htmlFor="comment" className="text-base font-medium">
+              {t("onboarding.survey.comment")}{" "}
+              <span className="text-neutral-400 text-base font-light">
+                ({t("common.optional")})
+              </span>
+            </label>
+            <textarea
+              name="comment"
+              rows={5}
+              className="onenew-input mt-2 w-full"
+              placeholder={t("onboarding.survey.commentPlaceholder")}
+              wrap="soft"
+              autoComplete="off"
+            />
+          </div>
           <button
-            type="button"
-            onClick={skipSurvey}
-            className="onenew-btn mt-8"
-          >
-            {t("onboarding.survey.skip")}
-          </button>
-        </div>
-      </form>
+            type="submit"
+            ref={submitRef}
+            hidden
+            aria-hidden="true"
+          ></button>
+
+          <div className="w-full flex items-center justify-center">
+            <button
+              type="button"
+              onClick={skipSurvey}
+              className="onenew-btn mt-8"
+            >
+              {t("onboarding.survey.skip")}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
   );
 }

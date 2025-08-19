@@ -104,7 +104,15 @@ export default function UploadFile({
   });
 
   const Row = ({ index, style, data }) => {
-    const { files, slug, setFiles, handleUploadSuccess, handleUploadError, setLoading, setLoadingMessage } = data;
+    const {
+      files,
+      slug,
+      setFiles,
+      handleUploadSuccess,
+      handleUploadError,
+      setLoading,
+      setLoadingMessage,
+    } = data;
     const left = files[index * 2];
     const right = files[index * 2 + 1];
     return (
@@ -222,7 +230,7 @@ export default function UploadFile({
         <button
           disabled={fetchingUrl}
           type="submit"
-          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
+          className="disabled:bg-card disabled:text-foreground disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-card hover:text-foreground w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
         >
           {fetchingUrl
             ? t("connectors.upload.fetching")

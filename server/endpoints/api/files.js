@@ -16,12 +16,8 @@ function apiFilesEndpoints(app) {
         const results = [];
 
         for (const op of ops) {
-          const {
-            workspaceDocumentId,
-            fromWorkspaceId,
-            toWorkspaceId,
-            mode,
-          } = op;
+          const { workspaceDocumentId, fromWorkspaceId, toWorkspaceId, mode } =
+            op;
 
           const document = await Document.get({
             id: Number(workspaceDocumentId),
@@ -57,19 +53,20 @@ function apiFilesEndpoints(app) {
               where: { id: Number(fromWorkspaceId) },
             });
             if (fromWorkspace) {
-              await Document.removeDocuments(fromWorkspace, [document.docpath], null);
+              await Document.removeDocuments(
+                fromWorkspace,
+                [document.docpath],
+                null
+              );
             }
           }
 
-          await EventLogs.logEvent(
-            "api_cross_workspace_file_operation",
-            {
-              mode,
-              workspaceDocumentId,
-              fromWorkspaceId,
-              toWorkspaceId,
-            }
-          );
+          await EventLogs.logEvent("api_cross_workspace_file_operation", {
+            mode,
+            workspaceDocumentId,
+            fromWorkspaceId,
+            toWorkspaceId,
+          });
 
           results.push({ workspaceDocumentId, success: true, error: null });
         }
@@ -77,14 +74,10 @@ function apiFilesEndpoints(app) {
         response.status(200).json({ success: true, results });
       } catch (e) {
         console.error(e);
-        response
-          .status(500)
-          .json({ success: false, error: e.message })
-          .end();
+        response.status(500).json({ success: false, error: e.message }).end();
       }
     }
   );
 }
 
 module.exports = { apiFilesEndpoints };
-

@@ -19,7 +19,7 @@ export default function EditingChatBubble({
   return (
     <div>
       <p
-        className={`text-xs text-white light:text-black/80 ${isUser ? "text-right" : ""}`}
+        className={`text-xs text-white light:text-foreground ${isUser ? "text-right" : ""}`}
       >
         {isUser
           ? t("common.user")
@@ -40,7 +40,7 @@ export default function EditingChatBubble({
           <X className="m-0.5" size={20} />
         </button>
         <div
-          className={`p-2 max-w-full md:w-[290px] text-black rounded-[8px] ${
+          className={`p-2 max-w-full md:w-[290px] text-foreground rounded-[8px] ${
             isUser ? "bg-[#41444C] text-white" : "bg-[#2E3036] text-white"
           }
         }`}

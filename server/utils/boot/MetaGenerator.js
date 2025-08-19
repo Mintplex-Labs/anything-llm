@@ -190,8 +190,7 @@ class MetaGenerator {
           tag: "title",
           props: null,
           content:
-            customTitle ??
-            "OneNew | Your personal LLM trained on anything",
+            customTitle ?? "OneNew | Your personal LLM trained on anything",
         },
       ];
     }

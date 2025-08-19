@@ -134,7 +134,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           <button
             ref={historyButtonRef}
             type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
+            className="text-theme-text-secondary hover:text-white light:hover:text-foreground text-xs font-medium"
             onClick={(e) => {
               e.preventDefault();
               setShowPromptHistory(!showPromptHistory);
@@ -204,7 +204,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                 <button
                   type="button"
                   onClick={() => handleRestore(DEFAULT_PROMPT)}
-                  className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
+                  className="text-theme-text-primary hover:text-white light:hover:text-foreground text-xs font-medium"
                 >
                   Clear
                 </button>
@@ -240,7 +240,7 @@ function PublishPromptCTA({ hidden = false, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="border-none text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
+      className="border-none text-primary-button hover:text-white light:hover:text-foreground text-xs font-medium"
     >
       Publish to Community Hub
     </button>

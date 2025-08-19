@@ -84,8 +84,8 @@ export default function NewBrowserExtensionApiKeyModal({
                 </p>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                After clicking "Create API Key", OneNew will attempt to
-                connect to your browser extension automatically.
+                After clicking "Create API Key", OneNew will attempt to connect
+                to your browser extension automatically.
               </p>
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 If you see "Connected to OneNew" in the extension, the
@@ -105,7 +105,7 @@ export default function NewBrowserExtensionApiKeyModal({
                   </button>
                   <button
                     type="submit"
-                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                    className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                   >
                     Create API Key
                   </button>
@@ -115,7 +115,7 @@ export default function NewBrowserExtensionApiKeyModal({
                   onClick={copyApiKey}
                   type="button"
                   disabled={copied}
-                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm cursor-pointer"
+                  className="w-full transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm cursor-pointer"
                 >
                   {copied ? "API Key Copied!" : "Copy API Key"}
                 </button>

@@ -118,7 +118,7 @@ export default function SuggestedChatMessages({ slug }) {
         {suggestedMessages.map((suggestion, index) => (
           <div key={index} className="relative w-full">
             <button
-              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
+              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-card rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
               style={{
                 top: -8,
                 left: 265,
@@ -183,7 +183,7 @@ export default function SuggestedChatMessages({ slug }) {
         <div className="flex justify-start py-6">
           <button
             type="button"
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
             onClick={handleSaveSuggestedMessages}
           >
             {t("general.message.save")}

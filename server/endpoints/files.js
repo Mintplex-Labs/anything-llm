@@ -20,12 +20,8 @@ function filesEndpoints(app) {
         const results = [];
 
         for (const op of ops) {
-          const {
-            workspaceDocumentId,
-            fromWorkspaceId,
-            toWorkspaceId,
-            mode,
-          } = op;
+          const { workspaceDocumentId, fromWorkspaceId, toWorkspaceId, mode } =
+            op;
 
           const document = await Document.get({
             id: Number(workspaceDocumentId),
@@ -90,14 +86,10 @@ function filesEndpoints(app) {
         response.status(200).json({ success: true, results });
       } catch (e) {
         console.error(e);
-        response
-          .status(500)
-          .json({ success: false, error: e.message })
-          .end();
+        response.status(500).json({ success: false, error: e.message }).end();
       }
     }
   );
 }
 
 module.exports = { filesEndpoints };
-

@@ -135,7 +135,7 @@ function FeatureCard({
         {secondaryAction && (
           <div className="relative w-full">
             {isNew && (
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 px-2 font-semibold rounded-md text-[10px] text-theme-checklist-item-text bg-theme-checklist-item-bg light:bg-white/60">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 px-2 font-semibold rounded-md text-[10px] text-theme-checklist-item-text bg-theme-checklist-item-bg light:bg-card">
                 New
               </div>
             )}

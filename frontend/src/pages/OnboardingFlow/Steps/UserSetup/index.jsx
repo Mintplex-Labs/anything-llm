@@ -199,10 +199,7 @@ const JustMe = ({
         </div>
         {enablePassword && (
           <form className="w-full mt-4" onSubmit={handleSubmit}>
-            <label
-              htmlFor="name"
-              className="block mb-3 text-sm font-medium"
-            >
+            <label htmlFor="name" className="block mb-3 text-sm font-medium">
               {t("onboarding.userSetup.instancePassword")}
             </label>
             <input

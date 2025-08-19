@@ -150,7 +150,7 @@ function WorkspaceDirectory({
                       files.items.reduce(
                         (sum, folder) => sum + folder.items.length,
                         0
-                      ) && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+                      ) && <div className="w-2 h-2 bg-card rounded-[2px]" />}
                   </div>
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
@@ -196,11 +196,11 @@ function WorkspaceDirectory({
 
             {Object.keys(selectedItems).length > 0 && !hasChanges && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-                <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
+                <div className="mx-auto bg-card light:bg-card rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {Object.keys(selectedItems).length ===
                       files.items.reduce(
@@ -212,7 +212,7 @@ function WorkspaceDirectory({
                     </button>
                     <button
                       onClick={removeSelectedItems}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {t("connectors.directory.remove_selected")}
                     </button>
@@ -241,7 +241,7 @@ function WorkspaceDirectory({
 
             <button
               onClick={(e) => handleSaveChanges(e)}
-              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
             >
               {t("connectors.directory.save_embed")}
             </button>
@@ -310,7 +310,7 @@ const PinAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             {t("connectors.pinning.accept")}
           </button>
@@ -378,7 +378,7 @@ const DocumentWatchAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             {t("connectors.watching.accept")}
           </button>
