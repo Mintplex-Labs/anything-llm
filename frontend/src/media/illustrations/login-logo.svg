@@ -35,6 +35,6 @@
     <!-- Transparent glass overlay -->
     <rect x="0" y="0" width="49" height="49" rx="14" fill="url(#glass)"/>
     <!-- Central mark: plain white circle -->
-    <circle cx="24.5" cy="24.5" r="12" fill="#FFFFFF" opacity="0.92"/>
+    <circle cx="24.5" cy="24.5" r="12" fill="currentColor" opacity="0.92"/>
   </g>
 </svg>
