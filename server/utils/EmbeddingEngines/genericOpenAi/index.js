@@ -14,6 +14,9 @@ class GenericOpenAiEmbedder {
     });
     this.model = process.env.EMBEDDING_MODEL_PREF ?? null;
     this.embeddingMaxChunkLength = maximumChunkLength();
+    // Delay to apply after each embedding API call
+    // For some implementation (e.g. llama.cpp) this is necessary to avoid 429 errors
+    this.apiRequestDelay = process.env.GENERIC_OPEN_AI_EMBEDDING_API_DELAY_MS ?? null;
 
     // this.maxConcurrentChunks is delegated to the getter below.
     // Refer to your specific model and provider you use this class with to determine a valid maxChunkLength
@@ -76,6 +79,10 @@ class GenericOpenAiEmbedder {
             });
         })
       );
+      // Apply delay before dispatching the next api request
+      if (this.apiRequestDelay) {
+        await new Promise((resolve) => setTimeout(resolve, this.apiRequestDelay));
+      }
     }
 
     const { data = [], error = null } = await Promise.all(
