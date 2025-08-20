@@ -42,13 +42,13 @@ export default function KoboldCPPOptions({ settings }) {
           basePath={basePath.value}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
+          <label className="text-foreground text-sm font-semibold block mb-2">
             Token context window
           </label>
           <input
             type="number"
             name="KoboldCPPTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             min={1}
             value={tokenLimit}
@@ -57,18 +57,18 @@ export default function KoboldCPPOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
             Maximum number of tokens for context and response.
           </p>
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
+          <label className="text-foreground text-sm font-semibold block mb-2">
             Max response tokens
           </label>
           <input
             type="number"
             name="KoboldCPPMaxTokens"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="2048"
             min={1}
             value={maxTokens}
@@ -77,7 +77,7 @@ export default function KoboldCPPOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
             Maximum number of tokens for the response.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function KoboldCPPOptions({ settings }) {
         <div className="w-full flex items-start gap-4">
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
-              <label className="text-white text-sm font-semibold">
+              <label className="text-foreground text-sm font-semibold">
                 KoboldCPP Base URL
               </label>
               {loading ? (
@@ -113,7 +113,7 @@ export default function KoboldCPPOptions({ settings }) {
                   {!basePathValue.value && (
                     <button
                       onClick={handleAutoDetectClick}
-                      className="border-none bg-primary-button text-xs font-medium px-2 py-1 rounded-sm hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                      className="border-none bg-primary-button text-xs font-medium px-2 py-1 rounded-sm hover:bg-secondary hover:text-foreground shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
                       Auto-Detect
                     </button>
@@ -124,7 +124,7 @@ export default function KoboldCPPOptions({ settings }) {
             <input
               type="url"
               name="KoboldCPPBasePath"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://127.0.0.1:5000/v1"
               value={basePathValue.value}
               required={true}
@@ -133,7 +133,7 @@ export default function KoboldCPPOptions({ settings }) {
               onChange={basePath.onChange}
               onBlur={basePath.onBlur}
             />
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
               Enter the URL where KoboldCPP is running.
             </p>
           </div>
@@ -174,13 +174,13 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-2">
+        <label className="text-foreground text-sm font-semibold block mb-2">
           KoboldCPP Model
         </label>
         <select
           name="KoboldCPPModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -188,7 +188,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
               : "Enter KoboldCPP URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
           Select the KoboldCPP model you want to use. Models will load after
           entering a valid KoboldCPP URL.
         </p>
@@ -198,13 +198,13 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-2">
+      <label className="text-foreground text-sm font-semibold block mb-2">
         KoboldCPP Model
       </label>
       <select
         name="KoboldCPPModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
       >
         {customModels.map((model) => (
           <option
@@ -216,7 +216,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
           </option>
         ))}
       </select>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+      <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
         Choose the KoboldCPP model you want to use for your conversations.
       </p>
     </div>

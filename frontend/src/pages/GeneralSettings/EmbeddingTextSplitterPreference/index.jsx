@@ -103,13 +103,13 @@ export default function EmbeddingTextSplitterPreference() {
             id="text-splitter-chunking-form"
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-4 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+              <div className="w-full flex flex-col gap-y-1 pb-4 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-white">
+                  <p className="text-lg leading-6 font-bold text-foreground">
                     {t("text.title")}
                   </p>
                 </div>
-                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
                   {t("text.desc-start")} <br />
                   {t("text.desc-end")}
                 </p>
@@ -125,10 +125,10 @@ export default function EmbeddingTextSplitterPreference() {
               <div className="flex flex-col gap-y-4 mt-8">
                 <div className="flex flex-col max-w-[300px]">
                   <div className="flex flex-col gap-y-2 mb-4">
-                    <label className="text-white text-sm font-semibold block">
+                    <label className="text-foreground text-sm font-semibold block">
                       {t("text.size.title")}
                     </label>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-foreground/60">
                       {t("text.size.description")}
                     </p>
                   </div>
@@ -138,7 +138,7 @@ export default function EmbeddingTextSplitterPreference() {
                     min={1}
                     max={settings?.max_embed_chunk_size || 1000}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_size)
@@ -148,7 +148,7 @@ export default function EmbeddingTextSplitterPreference() {
                     required={true}
                     autoComplete="off"
                   />
-                  <p className="text-xs text-white/40 mt-2">
+                  <p className="text-xs text-foreground/40 mt-2">
                     {t("text.size.recommend")}{" "}
                     {numberWithCommas(settings?.max_embed_chunk_size || 1000)}.
                   </p>
@@ -158,10 +158,10 @@ export default function EmbeddingTextSplitterPreference() {
               <div className="flex flex-col gap-y-4 mt-8">
                 <div className="flex flex-col max-w-[300px]">
                   <div className="flex flex-col gap-y-2 mb-4">
-                    <label className="text-white text-sm font-semibold block">
+                    <label className="text-foreground text-sm font-semibold block">
                       {t("text.overlap.title")}
                     </label>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-foreground/60">
                       {t("text.overlap.description")}
                     </p>
                   </div>
@@ -170,7 +170,7 @@ export default function EmbeddingTextSplitterPreference() {
                     name="text_splitter_chunk_overlap"
                     min={0}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_overlap)

@@ -11,7 +11,7 @@ export default function UnknownItem({ item, setSettings, setStep }) {
           Unsupported item
         </h2>
       </div>
-      <div className="flex flex-col gap-y-[25px] text-white/80 text-sm">
+      <div className="flex flex-col gap-y-[25px] text-foreground/80 text-sm">
         <p>
           We found an item in the community hub, but we don't know what it is or
           it is not yet supported for import into OneNew.

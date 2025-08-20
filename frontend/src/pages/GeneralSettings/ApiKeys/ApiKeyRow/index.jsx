@@ -41,7 +41,7 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
 
   return (
     <>
-      <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
+      <tr className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10">
         <td scope="row" className="px-6 whitespace-nowrap">
           {apiKey.secret}
         </td>
@@ -51,13 +51,13 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="text-xs font-medium text-blue-300 rounded-sm hover:text-white hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
+            className="text-xs font-medium text-blue-300 rounded-sm hover:text-foreground hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+            className="text-xs font-medium text-foreground/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
           >
             <Trash className="h-5 w-5" />
           </button>

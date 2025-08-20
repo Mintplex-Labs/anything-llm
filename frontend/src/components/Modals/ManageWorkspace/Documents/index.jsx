@@ -215,7 +215,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
               libraryEnabled={libraryEnabled}
             />
             <div className="upload-modal-arrow">
-              <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
+              <ArrowsDownUp className="text-foreground text-base font-bold rotate-90 w-11 h-11" />
             </div>
           </>
         )}

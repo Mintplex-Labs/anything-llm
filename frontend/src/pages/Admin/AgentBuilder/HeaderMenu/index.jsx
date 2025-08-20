@@ -38,7 +38,7 @@ export default function HeaderMenu({
         <div className="flex items-center gap-x-2">
           <button
             onClick={() => navigate(paths.settings.agentSkills())}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-theme-settings-input-bg border border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-theme-settings-input-bg border border-border/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
           >
             <CaretLeft
               weight="bold"
@@ -46,12 +46,12 @@ export default function HeaderMenu({
             />
           </button>
           <div
-            className="flex items-center bg-theme-settings-input-bg rounded-md border border-white/10 pointer-events-auto"
+            className="flex items-center bg-theme-settings-input-bg rounded-md border border-border/10 pointer-events-auto"
             ref={dropdownRef}
           >
             <button
               onClick={() => navigate(paths.settings.agentSkills())}
-              className="!border-t-transparent !border-l-transparent !border-b-transparent flex items-center gap-x-2 px-4 py-2 border-r border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
+              className="!border-t-transparent !border-l-transparent !border-b-transparent flex items-center gap-x-2 px-4 py-2 border-r border-border/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
             >
               <img
                 src={AnythingInfinityLogo}
@@ -90,7 +90,7 @@ export default function HeaderMenu({
                 )}
               </button>
               {showDropdown && (
-                <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[350px] bg-theme-settings-input-bg border border-white/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
+                <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[350px] bg-theme-settings-input-bg border border-border/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
                   {availableFlows
                     .filter((flow) => flow.uuid !== flowId)
                     .map((flow) => (
@@ -117,20 +117,20 @@ export default function HeaderMenu({
           <div className="flex items-center gap-x-[15px]">
             <button
               onClick={onNewFlow}
-              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-sm border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
+              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-sm border border-border bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
             >
               <Plus className="w-4 h-4" />
               New Flow
             </button>
             <button
               onClick={onPublishFlow}
-              className="px-3 py-2 rounded-sm text-sm font-medium flex items-center justify-center gap-2 border border-white/10 bg-theme-bg-primary text-theme-text-primary hover:bg-theme-action-menu-bg transition-all duration-300"
+              className="px-3 py-2 rounded-sm text-sm font-medium flex items-center justify-center gap-2 border border-border/10 bg-theme-bg-primary text-theme-text-primary hover:bg-theme-action-menu-bg transition-all duration-300"
             >
               Publish
             </button>
             <button
               onClick={onSaveFlow}
-              className="border-none bg-primary-button hover:opacity-80 text-foreground light:text-white px-3 py-2 rounded-sm text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
+              className="border-none bg-primary-button hover:opacity-80 text-foreground light:text-foreground px-3 py-2 rounded-sm text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
             >
               Save
             </button>

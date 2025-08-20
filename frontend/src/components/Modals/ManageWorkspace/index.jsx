@@ -43,7 +43,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
         <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
-              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {t("connectors.manage.editing")} "{workspace.name}"
               </h3>
             </div>
@@ -52,7 +52,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               type="button"
               className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={24} weight="bold" className="text-white" />
+              <X size={24} weight="bold" className="text-foreground" />
             </button>
           </div>
           <div
@@ -60,7 +60,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             style={{ maxHeight: "calc(100vh - 200px)" }}
           >
             <div className="py-7 px-9 space-y-2 flex-col">
-              <p className="text-white">
+              <p className="text-foreground">
                 {t("connectors.manage.desktop-only")}
               </p>
             </div>
@@ -88,9 +88,9 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <button
               onClick={hideModal}
               type="button"
-              className="z-29 text-white bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="z-29 text-foreground bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={20} weight="bold" className="text-white" />
+              <X size={20} weight="bold" className="text-foreground" />
             </button>
           </div>
 
@@ -123,8 +123,8 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
           onClick={() => setSelectedTab("documents")}
           className={`border-none px-4 py-2 rounded-sm font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
             selectedTab === "documents"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-foreground light:bg-[#E0F2FE] light:text-[#026AA2]"
+              : "text-foreground/20 font-medium hover:text-foreground light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
           {t("connectors.manage.documents")}
@@ -133,8 +133,8 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
           onClick={() => setSelectedTab("dataConnectors")}
           className={`border-none px-4 py-2 rounded-sm font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
             selectedTab === "dataConnectors"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-foreground light:bg-[#E0F2FE] light:text-[#026AA2]"
+              : "text-foreground/20 font-medium hover:text-foreground light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
           {t("connectors.manage.data-connectors")}

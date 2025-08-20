@@ -35,7 +35,7 @@ export default function PreflightModal({
       {Object.entries(node).map(([key, value]) => (
         <li
           key={key}
-          className="text-xs text-white light:text-theme-text-primary"
+          className="text-xs text-foreground light:text-theme-text-primary"
         >
           {key}
           {Object.keys(value || {}).length > 0 && renderTree(value)}
@@ -47,10 +47,10 @@ export default function PreflightModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40">
       <div className="bg-theme-bg-primary light:bg-card rounded-lg p-6 w-[360px] shadow-xl">
-        <h2 className="text-white light:text-theme-text-primary text-lg font-bold mb-4">
+        <h2 className="text-foreground light:text-theme-text-primary text-lg font-bold mb-4">
           {t("connectors.upload.preflight.title", "Ready to upload?")}
         </h2>
-        <p className="text-white/80 light:text-theme-text-secondary text-sm mb-4">
+        <p className="text-foreground/80 light:text-theme-text-secondary text-sm mb-4">
           {t(
             "connectors.upload.preflight.summary",
             {
@@ -62,10 +62,10 @@ export default function PreflightModal({
         </p>
         <div className="max-h-40 overflow-auto mb-4">{renderTree(tree)}</div>
         <div className="mb-6">
-          <p className="text-white light:text-theme-text-primary text-sm font-semibold mb-2">
+          <p className="text-foreground light:text-theme-text-primary text-sm font-semibold mb-2">
             {t("connectors.upload.preflight.conflict", "If a file exists:")}
           </p>
-          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm">
+          <label className="flex items-center gap-x-2 text-foreground light:text-theme-text-primary text-sm">
             <input
               type="radio"
               name="conflictPolicy"
@@ -75,7 +75,7 @@ export default function PreflightModal({
             />
             {t("connectors.upload.preflight.replace", "Replace")}
           </label>
-          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mt-2">
+          <label className="flex items-center gap-x-2 text-foreground light:text-theme-text-primary text-sm mt-2">
             <input
               type="radio"
               name="conflictPolicy"
@@ -85,7 +85,7 @@ export default function PreflightModal({
             />
             {t("connectors.upload.preflight.keep_both", "Keep both")}
           </label>
-          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mt-2">
+          <label className="flex items-center gap-x-2 text-foreground light:text-theme-text-primary text-sm mt-2">
             <input
               type="radio"
               name="conflictPolicy"
@@ -97,7 +97,7 @@ export default function PreflightModal({
           </label>
         </div>
         {libraryEnabled && (
-          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mb-6">
+          <label className="flex items-center gap-x-2 text-foreground light:text-theme-text-primary text-sm mb-6">
             <input
               type="checkbox"
               checked={addToLibrary}
@@ -112,14 +112,14 @@ export default function PreflightModal({
         <div className="flex justify-end gap-x-2">
           <button
             type="button"
-            className="bg-transparent border border-white light:border-theme-modal-border text-white light:text-theme-text-primary rounded-md px-4 py-1 text-sm"
+            className="bg-transparent border border-border light:border-theme-modal-border text-foreground light:text-theme-text-primary rounded-md px-4 py-1 text-sm"
             onClick={onCancel}
           >
             {t("common.cancel", "Cancel")}
           </button>
           <button
             type="button"
-            className="bg-primary-button text-white rounded-md px-4 py-1 text-sm disabled:opacity-50"
+            className="bg-primary-button text-foreground rounded-md px-4 py-1 text-sm disabled:opacity-50"
             onClick={() => onConfirm(policy, addToLibrary)}
           >
             {t("common.confirm", "Upload")}

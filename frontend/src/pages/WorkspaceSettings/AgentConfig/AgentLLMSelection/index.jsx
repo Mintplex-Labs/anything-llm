@@ -104,9 +104,9 @@ export default function AgentLLMSelection({
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
   return (
-    <div className="border-b border-white/40 pb-8">
+    <div className="border-b border-border/40 pb-8">
       {WARN_PERFORMANCE.includes(selectedLLM) && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-foreground mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Gauge className="shrink-0" size={25} />
             <p className="text-sm">{t("agent.performance-warning")}</p>
@@ -118,7 +118,7 @@ export default function AgentLLMSelection({
         <label htmlFor="name" className="block input-label">
           {t("agent.provider.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("agent.provider.description")}
         </p>
       </div>
@@ -188,7 +188,7 @@ export default function AgentLLMSelection({
                 className="w-10 h-10 rounded-md"
               />
               <div className="flex flex-col text-left">
-                <div className="text-sm font-semibold text-white">
+                <div className="text-sm font-semibold text-foreground">
                   {selectedLLMObject.name}
                 </div>
                 <div className="mt-1 text-xs text-description">
@@ -196,7 +196,7 @@ export default function AgentLLMSelection({
                 </div>
               </div>
             </div>
-            <CaretUpDown size={24} weight="bold" className="text-white" />
+            <CaretUpDown size={24} weight="bold" className="text-foreground" />
           </button>
         )}
       </div>

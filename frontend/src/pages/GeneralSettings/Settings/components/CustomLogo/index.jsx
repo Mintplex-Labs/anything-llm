@@ -70,10 +70,10 @@ export default function CustomLogo() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-foreground">
         {t("customization.items.logo.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-foreground/60">
         {t("customization.items.logo.description")}
       </p>
       {isDefaultLogo ? (
@@ -118,7 +118,7 @@ export default function CustomLogo() {
               className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-2xl"
             />
 
-            <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
+            <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-border">
               <button
                 onClick={triggerFileInputClick}
                 className="text-foreground text-base font-medium hover:text-opacity-60 mx-2"

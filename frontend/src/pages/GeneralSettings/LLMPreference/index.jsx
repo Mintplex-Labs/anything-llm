@@ -413,13 +413,13 @@ export default function GeneralLLMPreference() {
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+              <div className="w-full flex flex-col gap-y-1 pb-6 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-white">
+                  <p className="text-lg leading-6 font-bold text-foreground">
                     {t("llm.title")}
                   </p>
                 </div>
-                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
                   {t("llm.description")}
                 </p>
               </div>
@@ -433,7 +433,7 @@ export default function GeneralLLMPreference() {
                   </CTAButton>
                 )}
               </div>
-              <div className="text-base font-bold text-white mt-6 mb-4">
+              <div className="text-base font-bold text-foreground mt-6 mb-4">
                 {t("llm.provider")}
               </div>
               <div className="relative">
@@ -467,7 +467,7 @@ export default function GeneralLLMPreference() {
                         <X
                           size={20}
                           weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
+                          className="cursor-pointer text-foreground hover:text-x-button"
                           onClick={handleXButton}
                         />
                       </div>
@@ -501,7 +501,7 @@ export default function GeneralLLMPreference() {
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-foreground">
                           {selectedLLMObject?.name || "None selected"}
                         </div>
                         <div className="mt-1 text-xs text-description">
@@ -513,7 +513,7 @@ export default function GeneralLLMPreference() {
                     <CaretUpDown
                       size={24}
                       weight="bold"
-                      className="text-white"
+                      className="text-foreground"
                     />
                   </button>
                 )}

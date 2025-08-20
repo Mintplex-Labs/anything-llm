@@ -61,7 +61,7 @@ export default function ConfluenceOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
+                  <label className="text-foreground text-sm font-bold flex gap-x-2 items-center">
                     <p className="font-bold text-theme-text-primary">
                       {t("connectors.confluence.deployment_type")}
                     </p>
@@ -72,7 +72,7 @@ export default function ConfluenceOptions() {
                 </div>
                 <select
                   name="isCloud"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
@@ -85,8 +85,8 @@ export default function ConfluenceOptions() {
 
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">
+                  <label className="text-foreground text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-foreground">
                       {t("connectors.confluence.base_url")}
                     </p>
                   </label>
@@ -97,7 +97,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="url"
                   name="baseUrl"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: https://example.atlassian.net, http://localhost:8211, etc..."
                   required={true}
                   autoComplete="off"
@@ -106,7 +106,7 @@ export default function ConfluenceOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-foreground text-sm font-bold">
                     {t("connectors.confluence.space_key")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -116,7 +116,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="text"
                   name="spaceKey"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: ~7120208c08555d52224113949698b933a3bb56"
                   required={true}
                   autoComplete="off"
@@ -125,7 +125,7 @@ export default function ConfluenceOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-foreground text-sm font-bold">
                     {t("connectors.confluence.auth_type")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -134,7 +134,7 @@ export default function ConfluenceOptions() {
                 </div>
                 <select
                   name="accessType"
-                  className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-sm block py-2"
+                  className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 border-border text-foreground text-sm rounded-sm block py-2"
                   defaultValue={accessType}
                   onChange={(e) => setAccessType(e.target.value)}
                 >
@@ -160,7 +160,7 @@ export default function ConfluenceOptions() {
                 <>
                   <div className="flex flex-col pr-10">
                     <div className="flex flex-col gap-y-1 mb-4">
-                      <label className="text-white text-sm font-bold">
+                      <label className="text-foreground text-sm font-bold">
                         {t("connectors.confluence.username")}
                       </label>
                       <p className="text-xs font-normal text-theme-text-secondary">
@@ -170,7 +170,7 @@ export default function ConfluenceOptions() {
                     <input
                       type="text"
                       name="username"
-                      className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="jdoe@example.com"
                       required={true}
                       autoComplete="off"
@@ -179,8 +179,8 @@ export default function ConfluenceOptions() {
                   </div>
                   <div className="flex flex-col pr-10">
                     <div className="flex flex-col gap-y-1 mb-4">
-                      <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                        <p className="font-bold text-white">
+                      <label className="text-foreground text-sm font-bold flex gap-x-2 items-center">
+                        <p className="font-bold text-foreground">
                           {t("connectors.confluence.token")}
                         </p>
                         <Warning
@@ -217,7 +217,7 @@ export default function ConfluenceOptions() {
                     <input
                       type="password"
                       name="accessToken"
-                      className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="abcd1234"
                       required={true}
                       autoComplete="off"
@@ -229,7 +229,7 @@ export default function ConfluenceOptions() {
               {accessType === "personalToken" && (
                 <div className="flex flex-col pr-10">
                   <div className="flex flex-col gap-y-1 mb-4">
-                    <label className="text-white text-sm font-bold">
+                    <label className="text-foreground text-sm font-bold">
                       {t("connectors.confluence.pat_token")}
                     </label>
                     <p className="text-xs font-normal text-theme-text-secondary">
@@ -239,7 +239,7 @@ export default function ConfluenceOptions() {
                   <input
                     type="password"
                     name="personalAccessToken"
-                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="abcd1234"
                     required={true}
                     autoComplete="off"
@@ -254,7 +254,7 @@ export default function ConfluenceOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-foreground text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading ? "Collecting pages..." : "Submit"}
             </button>
