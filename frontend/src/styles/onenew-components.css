@@ -114,8 +114,8 @@ textarea.onenew-input {
 /* Chat bubbles */
 .bubble {
   border: 1px solid var(--border);
-  border-radius: calc(var(--radius-lg) - var(--space-1) / 2);
-  padding: var(--space-3) var(--space-4);
+  border-radius: 16px;
+  padding: 12px 16px;
 }
 
 .bubble-assistant {
@@ -124,8 +124,14 @@ textarea.onenew-input {
 }
 
 .bubble-user {
-  background: color-mix(in srgb, var(--brand), transparent 80%);
+  background: color-mix(in srgb, var(--brand), transparent 92%);
   color: var(--fg-1);
+}
+
+.bubble-meta {
+  color: var(--text-2);
+  margin-top: 8px;
+  font-size: 12px;
 }
 
 /* Sidebar navigation */
