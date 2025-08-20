@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
 import { isMobile } from "react-device-detect";
+import { useThemeContext } from "@/ThemeProvider";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
 import UserSetup from "./UserSetup";
@@ -35,10 +36,13 @@ export function OnboardingLayout({ children }) {
     onClick: () => null,
   });
 
+  const { theme } = useThemeContext();
+
   if (isMobile) {
     return (
       <div
         data-layout="onboarding"
+        data-theme={theme}
         className="w-screen h-screen overflow-y-auto bg-theme-bg-primary overflow-hidden"
       >
         <div className="flex flex-col">
@@ -92,6 +96,7 @@ export function OnboardingLayout({ children }) {
   return (
     <div
       data-layout="onboarding"
+      data-theme={theme}
       className="w-screen overflow-y-auto bg-theme-bg-primary flex justify-center overflow-hidden"
     >
       <div className="flex w-1/5 h-screen justify-center items-center">
