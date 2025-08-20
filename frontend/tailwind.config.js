@@ -14,14 +14,12 @@ export default {
     },
     extend: {
       colors: {
-        bg: "var(--bg)",
-        surface: "var(--surface)",
-        elev: "var(--elev)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        card: "var(--card)",
         border: "var(--border)",
-        "fg-1": "var(--fg-1)",
-        "fg-2": "var(--fg-2)",
-        muted: "var(--muted)",
-        brand: "var(--brand)"
+        primary: "var(--primary)",
+        accent: "var(--accent)"
       },
       spacing: {
         1: "var(--space-1)",

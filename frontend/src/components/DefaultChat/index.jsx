@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   GithubLogo,
   GitMerge,
@@ -26,6 +26,7 @@ export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
   const [fetchedMessages, setFetchedMessages] = useState([]);
+  const endRef = useRef(null);
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -71,7 +72,7 @@ export default function DefaultChatContainer() {
               href={paths.github()}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+            className="mt-5 w-fit transition-all duration-300 border border-border px-4 py-2 rounded-lg text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-primary"
             >
               <GitMerge className="h-4 w-4" />
               <p>{t("welcomeMessage.githubIssue")}</p>
@@ -100,7 +101,7 @@ export default function DefaultChatContainer() {
             {(!user || user?.role !== "default") && (
               <button
                 onClick={showNewWsModal}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-border px-4 py-2 rounded-sm text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-primary"
               >
                 <Plus className="h-4 w-4" />
                 <p>{t("welcomeMessage.createWorkspace")}</p>
@@ -158,14 +159,14 @@ export default function DefaultChatContainer() {
                 href={paths.github()}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-border px-4 py-2 rounded-lg text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-primary"
               >
                 <GithubLogo className="h-4 w-4" />
                 <p>{t("welcomeMessage.starOnGitHub")}</p>
               </a>
               <a
                 href={paths.mailToMintplex()}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-border px-4 py-2 rounded-lg text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-primary"
               >
                 <EnvelopeSimple className="h-4 w-4" />
                 <p>{t("welcomeMessage.contact")}</p>
@@ -202,10 +203,14 @@ export default function DefaultChatContainer() {
     processMsgs();
   }, []);
 
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [mockMsgs, fetchedMessages]);
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
+      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-auto ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
     >
@@ -229,6 +234,7 @@ export default function DefaultChatContainer() {
               </React.Fragment>
             );
           })}
+      <div ref={endRef} />
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );
@@ -250,7 +256,7 @@ function MessageContent({ children, alignmentCls = "" }) {
 
 function MessageText({ children }) {
   return (
-    <span className="text-white/80 light:text-theme-text-primary font-light text-[14px] flex flex-col gap-y-1 mt-2">
+    <span className="text-foreground/80 font-light text-[14px] flex flex-col gap-y-1 mt-2">
       {children}
     </span>
   );

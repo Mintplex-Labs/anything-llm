@@ -100,7 +100,7 @@ export default function App() {
   }, []);
 
   return (
-    <div id="root" className="theme-onenew dark">
+    <div className="theme-onenew dark">
       <ThemeProvider>
         <Suspense fallback={<FullScreenLoader />}>
           <ContextWrapper>
