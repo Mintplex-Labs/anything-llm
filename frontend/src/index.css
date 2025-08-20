@@ -9,3 +9,5 @@ body {
   background: var(--bg);
   color: var(--fg-1);
 }
+
+@import "./styles/overrides.css";

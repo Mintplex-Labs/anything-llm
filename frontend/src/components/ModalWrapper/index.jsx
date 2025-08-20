@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import FocusTrap from "focus-trap-react";
 /**
  * @typedef {Object} ModalWrapperProps
@@ -23,8 +23,6 @@ export default function ModalWrapper({
   noPortal = false,
   onClose,
 }) {
-  const overlayRef = useRef(null);
-
   useEffect(() => {
     if (!onClose) return;
     function handleKeydown(e) {
@@ -37,15 +35,12 @@ export default function ModalWrapper({
   if (!isOpen) return null;
 
   const overlay = (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 flex items-center justify-center"
-      onMouseDown={(e) => {
-        if (e.target === overlayRef.current && onClose) onClose();
-      }}
-    >
-      <FocusTrap>{children}</FocusTrap>
-    </div>
+    <>
+      <div className="modal__backdrop" onMouseDown={onClose}></div>
+      <div className="modal">
+        <FocusTrap>{children}</FocusTrap>
+      </div>
+    </>
   );
 
   if (noPortal) return overlay;

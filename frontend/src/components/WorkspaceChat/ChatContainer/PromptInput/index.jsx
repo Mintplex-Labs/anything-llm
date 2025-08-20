@@ -257,81 +257,77 @@ export default function PromptInput({
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
+        className="md:w-3/4 w-full mx-auto max-w-xl"
       >
-        <div className="flex items-center rounded-lg md:mb-4 md:w-full">
-          <div className="w-[95vw] md:w-[635px] shadow-sm rounded-2xl flex flex-col px-2 overflow-hidden">
-            <AttachmentManager attachments={attachments} />
-            <div className="flex items-center mx-3">
-              <textarea
-                ref={textareaRef}
-                onChange={handleChange}
-                onKeyDown={captureEnterOrUndo}
-                onPaste={(e) => {
-                  saveCurrentState();
-                  handlePasteEvent(e);
-                }}
-                required={true}
-                onFocus={() => setFocused(true)}
-                onBlur={(e) => {
-                  setFocused(false);
-                  adjustTextArea(e);
-                }}
-                value={promptInput}
-                spellCheck={Appearance.get("enableSpellCheck")}
-                className={`onenew-input w-full resize-none max-h-[40vh] min-h-[40px] py-2 ${textSizeClass} focus:border-blue-400/60 focus:shadow-[0_0_0_2px_rgba(96,165,250,0.6)_inset]`}
-                placeholder={t("chat_window.send_message")}
+        <AttachmentManager attachments={attachments} />
+        <div className="chat-composer">
+          <textarea
+            ref={textareaRef}
+            onChange={handleChange}
+            onKeyDown={captureEnterOrUndo}
+            onPaste={(e) => {
+              saveCurrentState();
+              handlePasteEvent(e);
+            }}
+            required={true}
+            onFocus={() => setFocused(true)}
+            onBlur={(e) => {
+              setFocused(false);
+              adjustTextArea(e);
+            }}
+            value={promptInput}
+            spellCheck={Appearance.get("enableSpellCheck")}
+            className={`onenew-input resize-none max-h-[40vh] min-h-[40px] ${textSizeClass}`}
+            placeholder={t("chat_window.send_message")}
+          />
+          {isStreaming ? (
+            <StopGenerationButton />
+          ) : (
+            <>
+              <button
+                ref={formRef}
+                type="submit"
+                disabled={isDisabled}
+                className="chat__send btn btn--primary disabled:cursor-not-allowed group"
+                data-tooltip-id="send-prompt"
+                data-tooltip-content={
+                  isDisabled
+                    ? t("chat_window.attachments_processing")
+                    : t("chat_window.send")
+                }
+                aria-label={t("chat_window.send")}
+              >
+                <PaperPlaneRight
+                  className="w-[22px] h-[22px] pointer-events-none group-disabled:opacity-[25%]"
+                  weight="fill"
+                />
+                <span className="sr-only">Send message</span>
+              </button>
+              <Tooltip
+                id="send-prompt"
+                place="bottom"
+                delayShow={300}
+                className="tooltip !text-xs z-99"
               />
-              {isStreaming ? (
-                <StopGenerationButton />
-              ) : (
-                <>
-                  <button
-                    ref={formRef}
-                    type="submit"
-                    disabled={isDisabled}
-                    className="onenew-btn onenew-btn--primary ml-4 disabled:cursor-not-allowed group"
-                    data-tooltip-id="send-prompt"
-                    data-tooltip-content={
-                      isDisabled
-                        ? t("chat_window.attachments_processing")
-                        : t("chat_window.send")
-                    }
-                    aria-label={t("chat_window.send")}
-                  >
-                    <PaperPlaneRight
-                      className="w-[22px] h-[22px] pointer-events-none group-disabled:opacity-[25%]"
-                      weight="fill"
-                    />
-                    <span className="sr-only">Send message</span>
-                  </button>
-                  <Tooltip
-                    id="send-prompt"
-                    place="bottom"
-                    delayShow={300}
-                    className="tooltip !text-xs z-99"
-                  />
-                </>
-              )}
-            </div>
-            <div className="flex justify-between py-3.5 mx-3 mb-1">
-              <div className="flex gap-x-2">
-                <AttachItem />
-                <SlashCommandsButton
-                  showing={showSlashCommand}
-                  setShowSlashCommand={setShowSlashCommand}
-                />
-                <AvailableAgentsButton
-                  showing={showAgents}
-                  setShowAgents={setShowAgents}
-                />
-                <TextSizeButton />
-                <LLMSelectorAction />
-              </div>
-              <div className="flex gap-x-2">
-                <SpeechToText sendCommand={sendCommand} />
-              </div>
-            </div>
+            </>
+          )}
+        </div>
+        <div className="chat__toolbar flex justify-between">
+          <div className="flex gap-x-2">
+            <AttachItem />
+            <SlashCommandsButton
+              showing={showSlashCommand}
+              setShowSlashCommand={setShowSlashCommand}
+            />
+            <AvailableAgentsButton
+              showing={showAgents}
+              setShowAgents={setShowAgents}
+            />
+            <TextSizeButton />
+            <LLMSelectorAction />
+          </div>
+          <div className="flex gap-x-2">
+            <SpeechToText sendCommand={sendCommand} />
           </div>
         </div>
       </form>

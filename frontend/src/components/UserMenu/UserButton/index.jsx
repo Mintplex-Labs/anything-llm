@@ -57,50 +57,43 @@ export default function UserButton() {
   if (mode === null) return null;
   return (
     <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
-      <button
-        ref={buttonRef}
-        onClick={() => setShowMenu(!showMenu)}
-        type="button"
-        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-[var(--text)] p-2 border border-transparent hover:border-[var(--border)]"
-      >
-        {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
-      </button>
-
-      {showMenu && (
-        <div
-          ref={menuRef}
-          className="w-fit rounded-lg absolute top-12 right-0 bg-theme-action-menu-bg p-2 flex items-center-justify-center"
+      <div className="menu">
+        <button
+          ref={buttonRef}
+          onClick={() => setShowMenu(!showMenu)}
+          type="button"
+          className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-[var(--text)] p-2 border border-transparent hover:border-[var(--border)]"
         >
-          <div className="flex flex-col gap-y-2">
-            {mode === "multi" && !!user && (
+          {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
+        </button>
+
+        {showMenu && (
+          <div ref={menuRef} className="menu__popover">
+            <div className="flex flex-col gap-y-2">
+              {mode === "multi" && !!user && (
+                <button onClick={handleOpenAccountModal} className="menu__item">
+                  {t("profile_settings.account")}
+                </button>
+              )}
+              <a href={supportEmail} className="menu__item">
+                {t("profile_settings.support")}
+              </a>
               <button
-                onClick={handleOpenAccountModal}
-                className="border-none text-[var(--text)] hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
+                onClick={() => {
+                  window.localStorage.removeItem(AUTH_USER);
+                  window.localStorage.removeItem(AUTH_TOKEN);
+                  window.localStorage.removeItem(AUTH_TIMESTAMP);
+                  window.location.replace(paths.home());
+                }}
+                type="button"
+                className="menu__item"
               >
-                {t("profile_settings.account")}
+                {t("profile_settings.signout")}
               </button>
-            )}
-            <a
-              href={supportEmail}
-              className="text-[var(--text)] hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
-            >
-              {t("profile_settings.support")}
-            </a>
-            <button
-              onClick={() => {
-                window.localStorage.removeItem(AUTH_USER);
-                window.localStorage.removeItem(AUTH_TOKEN);
-                window.localStorage.removeItem(AUTH_TIMESTAMP);
-                window.location.replace(paths.home());
-              }}
-              type="button"
-              className="text-[var(--text)] hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
-            >
-              {t("profile_settings.signout")}
-            </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       {user && showAccountSettings && (
         <AccountModal
           user={user}
