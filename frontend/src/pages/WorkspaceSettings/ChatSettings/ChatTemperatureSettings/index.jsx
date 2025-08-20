@@ -21,7 +21,7 @@ export default function ChatTemperatureSettings({
         <label htmlFor="name" className="block input-label">
           {t("chat.temperature.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("chat.temperature.desc-start")}
           <br />
           {t("chat.temperature.desc-end")}
@@ -37,7 +37,7 @@ export default function ChatTemperatureSettings({
         step={0.1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.openAiTemp ?? defaults.temp}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="0.7"
         required={true}
         autoComplete="off"

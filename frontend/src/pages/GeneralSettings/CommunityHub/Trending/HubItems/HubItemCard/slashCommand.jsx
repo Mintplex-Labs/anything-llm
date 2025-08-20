@@ -12,22 +12,22 @@ export default function SlashCommandHubCard({ item }) {
         className="bg-black/70 light:bg-card rounded-lg p-3 hover:bg-black/60 light:hover:bg-card transition-all duration-200 cursor-pointer group border border-transparent hover:border-slate-400"
       >
         <div className="flex gap-x-2 items-center">
-          <p className="text-white text-sm font-medium">{item.name}</p>
+          <p className="text-foreground text-sm font-medium">{item.name}</p>
           <VisibilityIcon visibility={item.visibility} />
         </div>
         <div className="flex flex-col gap-2">
-          <p className="text-white/60 text-xs mt-1">{item.description}</p>
-          <label className="text-white/60 text-xs font-semibold mt-4">
+          <p className="text-foreground/60 text-xs mt-1">{item.description}</p>
+          <label className="text-foreground/60 text-xs font-semibold mt-4">
             Command
           </label>
-          <p className="text-white/60 text-xs bg-zinc-900 light:bg-card px-2 py-1 rounded-md font-mono border border-slate-800 light:border-slate-300">
+          <p className="text-foreground/60 text-xs bg-zinc-900 light:bg-card px-2 py-1 rounded-md font-mono border border-slate-800 light:border-slate-300">
             {item.command}
           </p>
 
-          <label className="text-white/60 text-xs font-semibold mt-4">
+          <label className="text-foreground/60 text-xs font-semibold mt-4">
             Prompt
           </label>
-          <p className="text-white/60 text-xs bg-zinc-900 light:bg-card px-2 py-1 rounded-md font-mono border border-slate-800 light:border-slate-300">
+          <p className="text-foreground/60 text-xs bg-zinc-900 light:bg-card px-2 py-1 rounded-md font-mono border border-slate-800 light:border-slate-300">
             {truncate(item.prompt, 90)}
           </p>
         </div>

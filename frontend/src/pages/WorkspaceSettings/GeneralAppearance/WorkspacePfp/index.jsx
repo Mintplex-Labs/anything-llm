@@ -49,13 +49,13 @@ export default function WorkspacePfp({ workspace, slug }) {
     <div className="mt-6">
       <div className="flex flex-col">
         <label className="block input-label">{t("general.pfp.title")}</label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("general.pfp.description")}
         </p>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8">
         <div className="flex flex-col items-center">
-          <label className="w-36 h-36 flex flex-col items-center justify-center bg-theme-settings-input-bg transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white border-opacity-60 cursor-pointer hover:opacity-60">
+          <label className="w-36 h-36 flex flex-col items-center justify-center bg-theme-settings-input-bg transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-border border-opacity-60 cursor-pointer hover:opacity-60">
             <input
               id="workspace-pfp-upload"
               type="file"

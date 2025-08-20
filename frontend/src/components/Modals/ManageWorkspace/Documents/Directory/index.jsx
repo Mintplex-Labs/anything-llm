@@ -199,7 +199,7 @@ function Directory({
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
         <div className="flex flex-col gap-y-6">
           <div className="flex items-center justify-between w-[560px] px-5 relative">
-            <h3 className="text-white text-base font-bold">
+            <h3 className="text-foreground text-base font-bold">
               {t("connectors.directory.my-documents")}
             </h3>
             <div className="relative">
@@ -211,7 +211,7 @@ function Directory({
               />
               <MagnifyingGlass
                 size={14}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground"
                 weight="bold"
               />
             </div>
@@ -231,7 +231,7 @@ function Directory({
           </div>
 
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
+            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-border/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
             </div>
 
@@ -239,7 +239,7 @@ function Directory({
               {loading ? (
                 <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                   <PreLoader />
-                  <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3">
+                  <p className="text-foreground text-sm font-semibold animate-pulse text-center w-1/3">
                     {loadingMessage}
                   </p>
                 </div>
@@ -263,7 +263,7 @@ function Directory({
                 )
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-white text-opacity-40 text-sm font-medium">
+                  <p className="text-foreground text-opacity-40 text-sm font-medium">
                     {t("connectors.directory.no-documents")}
                   </p>
                 </div>
@@ -288,7 +288,7 @@ function Directory({
                         }
                         className="onenew-btn onenew-btn-secondary h-[32px] w-[32px] flex justify-center items-center group"
                       >
-                        <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
+                        <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-foreground" />
                       </button>
                       {showFolderSelection && (
                         <FolderSelectionPopup
@@ -358,7 +358,7 @@ function DirectoryTooltips() {
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white light:invert font-medium break-all">
+            <p className="text-foreground light:invert font-medium break-all">
               {data.title}
             </p>
             <div className="flex mt-1 gap-x-2">

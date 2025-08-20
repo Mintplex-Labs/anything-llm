@@ -27,7 +27,7 @@ export default function LogRow({ log }) {
     <>
       <tr
         onClick={handleRowClick}
-        className={`bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10 ${
+        className={`bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10 ${
           hasMetadata ? "cursor-pointer hover:bg-card" : ""
         }`}
       >
@@ -45,14 +45,14 @@ export default function LogRow({ log }) {
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretUp weight="bold" size={20} />
-                <p className="text-xs text-white/50 w-[20px]">hide</p>
+                <p className="text-xs text-foreground/50 w-[20px]">hide</p>
               </td>
             ) : (
               <td
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretDown weight="bold" size={20} />
-                <p className="text-xs text-white/50 w-[20px]">show</p>
+                <p className="text-xs text-foreground/50 w-[20px]">show</p>
               </td>
             )}
           </div>
@@ -74,7 +74,7 @@ const EventMetadata = ({ metadata, expanded = false }) => {
         Event Metadata
       </td>
       <td colSpan="4" className="px-6 py-4 rounded-r-2xl">
-        <div className="w-full rounded-lg bg-theme-bg-secondary p-2 text-white shadow-sm border-white/10 border bg-opacity-10">
+        <div className="w-full rounded-lg bg-theme-bg-secondary p-2 text-foreground shadow-sm border-border/10 border bg-opacity-10">
           <pre className="overflow-scroll">
             {JSON.stringify(metadata, null, 2)}
           </pre>
@@ -106,7 +106,7 @@ const EventBadge = ({ event }) => {
     };
 
   return (
-    <td className="px-6 py-2 font-medium whitespace-nowrap text-white flex items-center">
+    <td className="px-6 py-2 font-medium whitespace-nowrap text-foreground flex items-center">
       <span
         className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs font-medium ${colorTheme.text} shadow-sm`}
       >

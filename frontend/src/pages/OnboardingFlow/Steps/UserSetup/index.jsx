@@ -57,7 +57,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   return (
     <div className="onenew-page p-6 w-full flex items-center justify-center flex-col gap-y-6">
       <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold md:-ml-44">
+        <div className=" text-foreground text-sm font-semibold md:-ml-44">
           {t("onboarding.userSetup.howManyUsers")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
@@ -168,7 +168,7 @@ const JustMe = ({
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold md:-ml-56">
+        <div className=" text-foreground text-sm font-semibold md:-ml-56">
           {t("onboarding.userSetup.setPassword")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
@@ -212,7 +212,7 @@ const JustMe = ({
               autoComplete="off"
               onChange={handlePasswordChange}
             />
-            <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
+            <div className="mt-4 text-foreground text-opacity-80 text-xs font-base -mb-2">
               {t("onboarding.userSetup.passwordReq")}
               <br />
               <i>{t("onboarding.userSetup.passwordWarn")}</i>{" "}
@@ -294,7 +294,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handleUsernameChange}
                 />
               </div>
-              <p className=" text-white text-opacity-80 text-xs font-base">
+              <p className=" text-foreground text-opacity-80 text-xs font-base">
                 {t("onboarding.userSetup.adminUsernameReq")}
               </p>
               <div className="mt-4">
@@ -315,7 +315,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handlePasswordChange}
                 />
               </div>
-              <p className=" text-white text-opacity-80 text-xs font-base">
+              <p className=" text-foreground text-opacity-80 text-xs font-base">
                 {t("onboarding.userSetup.adminPasswordReq")}
               </p>
             </div>

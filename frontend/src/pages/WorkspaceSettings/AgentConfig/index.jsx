@@ -91,12 +91,12 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             {!hasChanges && (
               <div className="flex flex-col gap-y-4">
                 <a
-                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
                   href={paths.settings.agentSkills()}
                 >
                   Configure Agent Skills
                 </a>
-                <p className="text-white text-opacity-60 text-xs font-medium">
+                <p className="text-foreground text-opacity-60 text-xs font-medium">
                   Customize and enhance the default agent's capabilities by
                   enabling or disabling specific skills. These settings will be
                   applied across all workspaces.
@@ -110,7 +110,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           <button
             type="submit"
             form="agent-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-sm text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-sm text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
           >
             {saving ? "Updating agent..." : "Update workspace agent"}
           </button>

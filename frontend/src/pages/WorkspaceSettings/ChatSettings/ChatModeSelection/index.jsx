@@ -21,7 +21,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("chat");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md"
+            className="transition-bg duration-200 px-6 py-1 text-md text-foreground/60 disabled:text-foreground bg-transparent disabled:bg-[#687280] rounded-md"
           >
             {t("chat.mode.chat.title")}
           </button>
@@ -32,12 +32,12 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("query");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md"
+            className="transition-bg duration-200 px-6 py-1 text-md text-foreground/60 disabled:text-foreground bg-transparent disabled:bg-[#687280] rounded-md"
           >
             {t("chat.mode.query.title")}
           </button>
         </div>
-        <p className="text-sm text-white/60">
+        <p className="text-sm text-foreground/60">
           {chatMode === "chat" ? (
             <>
               <b>{t("chat.mode.chat.title")}</b>{" "}

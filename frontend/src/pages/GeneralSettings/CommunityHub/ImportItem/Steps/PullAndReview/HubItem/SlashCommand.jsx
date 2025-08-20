@@ -29,7 +29,7 @@ export default function SlashCommand({ item, setStep }) {
           Review Slash Command "{item.name}"
         </h2>
         {item.creatorUsername && (
-          <p className="text-white/60 text-xs font-mono">
+          <p className="text-foreground/60 text-xs font-mono">
             Created by{" "}
             <a
               href={paths.communityHub.profile(item.creatorUsername)}
@@ -42,7 +42,7 @@ export default function SlashCommand({ item, setStep }) {
           </p>
         )}
       </div>
-      <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm">
+      <div className="flex flex-col gap-y-[25px] text-foreground/80 light:text-theme-text-secondary text-sm">
         <p>
           Slash commands are used to prefill information into a prompt while
           chatting with a OneNew workspace.
@@ -58,13 +58,13 @@ export default function SlashCommand({ item, setStep }) {
 
         <div className="flex flex-col gap-y-2 mt-2">
           <div className="w-full text-theme-text-primary text-md gap-x-2 flex items-center">
-            <p className="text-white/60 light:text-theme-text-secondary w-fit font-mono bg-zinc-900 light:bg-card px-2 py-1 rounded-md text-sm whitespace-pre-line">
+            <p className="text-foreground/60 light:text-theme-text-secondary w-fit font-mono bg-zinc-900 light:bg-card px-2 py-1 rounded-md text-sm whitespace-pre-line">
               {item.command}
             </p>
           </div>
 
           <div className="w-full text-theme-text-primary text-md flex flex-col gap-y-2">
-            <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-card p-4 rounded-md text-sm whitespace-pre-line max-h-[calc(200px)] overflow-y-auto">
+            <p className="text-foreground/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-card p-4 rounded-md text-sm whitespace-pre-line max-h-[calc(200px)] overflow-y-auto">
               {item.prompt}
             </p>
           </div>

@@ -62,10 +62,10 @@ export default function CustomMessages() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-foreground">
         {t("customization.items.welcome-messages.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-foreground/60">
         {t("customization.items.welcome-messages.description")}
       </p>
       <div className="mt-2 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
@@ -93,7 +93,7 @@ export default function CustomMessages() {
         ))}
         <div className="flex gap-4 mt-12 justify-between pb-[15px]">
           <button
-            className="border-none self-end text-white hover:text-white/60 light:hover:text-foreground transition"
+            className="border-none self-end text-foreground hover:text-foreground/60 light:hover:text-foreground transition"
             onClick={() => addMessage("response")}
           >
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
@@ -108,7 +108,7 @@ export default function CustomMessages() {
             </div>
           </button>
           <button
-            className="border-none self-end text-white hover:text-white/60 light:hover:text-foreground transition"
+            className="border-none self-end text-foreground hover:text-foreground/60 light:hover:text-foreground transition"
             onClick={() => addMessage("user")}
           >
             <div className="flex items-center justify-start text-sm font-normal">
@@ -127,7 +127,7 @@ export default function CustomMessages() {
       {hasChanges && (
         <div className="flex justify-start pt-2">
           <button
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
             onClick={handleMessageSave}
           >
             {t("customization.items.welcome-messages.save")}

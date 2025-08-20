@@ -12,13 +12,13 @@ export default function AgentSkillHubCard({ item }) {
         className="bg-black/70 light:bg-card rounded-lg p-3 hover:bg-black/60 light:hover:bg-card transition-all duration-200 cursor-pointer group border border-transparent hover:border-slate-400"
       >
         <div className="flex gap-x-2 items-center">
-          <p className="text-white text-sm font-medium">{item.name}</p>
+          <p className="text-foreground text-sm font-medium">{item.name}</p>
           <VisibilityIcon visibility={item.visibility} />
         </div>
         <div className="flex flex-col gap-2">
-          <p className="text-white/60 text-xs mt-1">{item.description}</p>
+          <p className="text-foreground/60 text-xs mt-1">{item.description}</p>
 
-          <p className="font-mono text-xs mt-1 text-white/60">
+          <p className="font-mono text-xs mt-1 text-foreground/60">
             {item.verified ? (
               <span className="text-green-500">Verified</span>
             ) : (
@@ -26,7 +26,7 @@ export default function AgentSkillHubCard({ item }) {
             )}{" "}
             Skill
           </p>
-          <p className="font-mono text-xs mt-1 text-white/60">
+          <p className="font-mono text-xs mt-1 text-foreground/60">
             {item.manifest.files?.length || 0}{" "}
             {pluralize("file", item.manifest.files?.length || 0)} found
           </p>

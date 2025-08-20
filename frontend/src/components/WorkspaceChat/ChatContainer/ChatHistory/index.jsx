@@ -183,11 +183,11 @@ export default function ChatHistory({
     return (
       <div className="chat__messages flex flex-col md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
-          <p className="text-white/60 text-lg font-base py-4">
+          <p className="text-foreground/60 text-lg font-base py-4">
             {t("chat_window.welcome")}
           </p>
           {!user || user.role !== "default" ? (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-foreground/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
               {t("chat_window.get_started")}
               <span
                 className="underline font-medium cursor-pointer"
@@ -199,7 +199,7 @@ export default function ChatHistory({
               <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
           ) : (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-foreground/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
               {t("chat_window.get_started_default")}{" "}
               <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
@@ -221,7 +221,7 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`chat__messages chat-messages markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} pt-6 md:pt-0 md:mx-0 flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+      className={`chat__messages chat-messages markdown text-foreground/80 light:text-theme-text-primary font-light ${textSizeClass} pt-6 md:pt-0 md:mx-0 flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
@@ -236,13 +236,13 @@ export default function ChatHistory({
         <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
             <div
-              className="p-1 rounded-full border border-white/10 bg-card hover:bg-card hover:text-white"
+              className="p-1 rounded-full border border-border/10 bg-card hover:bg-card hover:text-foreground"
               onClick={() => {
                 scrollToBottom(true);
                 setIsUserScrolling(false);
               }}
             >
-              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
+              <ArrowDown weight="bold" className="text-foreground/60 w-5 h-5" />
             </div>
           </div>
         </div>

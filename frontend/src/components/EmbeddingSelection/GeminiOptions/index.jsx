@@ -18,13 +18,13 @@ export default function GeminiOptions({ settings }) {
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-foreground text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="GeminiEmbeddingApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Gemini API Key"
             defaultValue={settings?.GeminiEmbeddingApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -33,13 +33,13 @@ export default function GeminiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-foreground text-sm font-semibold block mb-3">
             Model Preference
           </label>
           <select
             name="EmbeddingModelPref"
             required={true}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
               {DEFAULT_MODELS.map((model) => {

@@ -73,12 +73,12 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="p-1.5 rounded-lg text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+        className="p-1.5 rounded-lg text-foreground hover:bg-theme-action-menu-item-hover transition-colors duration-300"
       >
         <Gear className="h-5 w-5" weight="bold" />
       </button>
       {open && (
-        <div className="absolute w-[150px] top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div className="absolute w-[150px] top-1 left-7 mt-1 border-[1.5px] border-border/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-foreground z-99 md:z-10">
           <button
             type="button"
             onClick={handleToggleServer}
@@ -109,7 +109,7 @@ export default function ServerPanel({ server, toggleServer, onDelete }) {
           <div className="flex w-full justify-between">
             <div className="flex items-center gap-x-2">
               <img src={MCPLogo} className="w-6 h-6 light:invert" />
-              <label htmlFor="name" className="text-white text-md font-bold">
+              <label htmlFor="name" className="text-foreground text-md font-bold">
                 {titleCase(server.name.replace(/[_-]/g, " "))}
               </label>
               {server.tools.length > 0 && (

@@ -62,8 +62,8 @@ export default function DrupalWikiOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Drupal Wiki base URL</p>
+                  <label className="text-foreground text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-foreground">Drupal Wiki base URL</p>
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
                     This is the base URL of your&nbsp;
@@ -81,7 +81,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="url"
                   name="baseUrl"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: https://mywiki.drupal-wiki.net, https://drupalwiki.mycompany.tld, etc..."
                   required={true}
                   autoComplete="off"
@@ -90,7 +90,7 @@ export default function DrupalWikiOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-foreground text-sm font-bold">
                     Drupal Wiki Space IDs
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -111,7 +111,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="text"
                   name="spaceIds"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: 12,34,69"
                   required={true}
                   autoComplete="off"
@@ -120,8 +120,8 @@ export default function DrupalWikiOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">
+                  <label className="text-foreground text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-foreground">
                       Drupal Wiki API Token
                     </p>
                     <Warning
@@ -158,7 +158,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="password"
                   name="accessToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="pat:123"
                   required={true}
                   autoComplete="off"
@@ -172,7 +172,7 @@ export default function DrupalWikiOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-foreground text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading ? "Collecting pages..." : "Submit"}
             </button>

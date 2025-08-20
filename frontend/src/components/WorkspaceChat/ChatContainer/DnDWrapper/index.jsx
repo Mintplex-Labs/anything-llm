@@ -236,15 +236,15 @@ export default function DnDFileUploaderWrapper({ children }) {
     >
       <div
         hidden={!dragging}
-        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-white z-[9999]"
+        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-border z-[9999]"
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
             <img src={DndIcon} width={69} height={69} />
-            <p className="text-white text-[24px] font-semibold">
+            <p className="text-foreground text-[24px] font-semibold">
               Add {canUploadAll ? "anything" : "an image"}
             </p>
-            <p className="text-white text-[16px] text-center">
+            <p className="text-foreground text-[16px] text-center">
               {canUploadAll ? (
                 <>
                   Drop your file here to embed it into your <br />

@@ -73,7 +73,7 @@ export default function AccountModal({ user, hideModal }) {
       <div className="modal__dialog">
         <div className="modal__header relative">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
               {t("profile_settings.edit_account")}
             </h3>
           </div>
@@ -82,7 +82,7 @@ export default function AccountModal({ user, hideModal }) {
             type="button"
             className="btn btn--ghost absolute top-4 right-4 p-1"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-foreground" />
           </button>
         </div>
         <form onSubmit={handleUpdate}>
@@ -207,13 +207,13 @@ function LanguagePreference() {
     <div>
       <label
         htmlFor="userLang"
-        className="block mb-2 text-sm font-medium text-white"
+        className="block mb-2 text-sm font-medium text-foreground"
       >
         {t("profile_settings.language")}
       </label>
       <select
         name="userLang"
-        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-sm block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-foreground text-sm rounded-sm block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -236,7 +236,7 @@ function ThemePreference() {
     <div>
       <label
         htmlFor="theme"
-        className="block mb-2 text-sm font-medium text-white"
+        className="block mb-2 text-sm font-medium text-foreground"
       >
         {t("profile_settings.theme")}
       </label>
@@ -244,7 +244,7 @@ function ThemePreference() {
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-foreground text-sm rounded-lg block py-2"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>
@@ -276,7 +276,7 @@ function AutoSubmitPreference() {
       <div className="flex items-center gap-x-1 mb-2">
         <label
           htmlFor="autoSubmit"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-foreground"
         >
           {t("customization.chat.auto_submit.title")}
         </label>
@@ -285,7 +285,7 @@ function AutoSubmitPreference() {
           data-tooltip-content={t("customization.chat.auto_submit.description")}
           className="cursor-pointer h-fit"
         >
-          <Info size={16} weight="bold" className="text-white" />
+          <Info size={16} weight="bold" className="text-foreground" />
         </div>
       </div>
       <div className="flex items-center gap-x-4">
@@ -298,7 +298,7 @@ function AutoSubmitPreference() {
             onChange={handleChange}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
       <Tooltip
@@ -334,7 +334,7 @@ function AutoSpeakPreference() {
       <div className="flex items-center gap-x-1 mb-2">
         <label
           htmlFor="autoSpeak"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-foreground"
         >
           {t("customization.chat.auto_speak.title")}
         </label>
@@ -343,7 +343,7 @@ function AutoSpeakPreference() {
           data-tooltip-content={t("customization.chat.auto_speak.description")}
           className="cursor-pointer h-fit"
         >
-          <Info size={16} weight="bold" className="text-white" />
+          <Info size={16} weight="bold" className="text-foreground" />
         </div>
       </div>
       <div className="flex items-center gap-x-4">
@@ -356,7 +356,7 @@ function AutoSpeakPreference() {
             onChange={handleChange}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
       <Tooltip

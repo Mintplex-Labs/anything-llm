@@ -36,8 +36,8 @@ export default function RecoveryCodeModal({
     <ModalWrapper isOpen={true} onClose={handleClose}>
       <div className="onenew-card p-5 shadow-2xl max-w-lg w-[90vw]">
         <div className="flex gap-x-2 items-center mb-5">
-          <Key size={24} className="text-white" weight="bold" />
-          <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+          <Key size={24} className="text-foreground" weight="bold" />
+          <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
             Recovery Codes
           </h3>
         </div>
@@ -46,14 +46,14 @@ export default function RecoveryCodeModal({
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="space-y-2 flex-col">
-            <p className="text-sm text-white flex flex-col">
+            <p className="text-sm text-foreground flex flex-col">
               In order to reset your password in the future, you will need these
               recovery codes. Download or copy your recovery codes to save them{" "}
               <br />
               <b className="mt-4">These recovery codes are only shown once!</b>
             </p>
             <div
-              className="border-none bg-theme-settings-input-bg text-white hover:text-primary-button flex items-center justify-center rounded-md mt-6 cursor-pointer"
+              className="border-none bg-theme-settings-input-bg text-foreground hover:text-primary-button flex items-center justify-center rounded-md mt-6 cursor-pointer"
               onClick={handleCopyToClipboard}
             >
               <ul className="space-y-2 md:p-6 p-4">

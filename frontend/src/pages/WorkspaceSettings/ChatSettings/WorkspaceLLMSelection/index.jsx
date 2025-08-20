@@ -71,12 +71,12 @@ export default function WorkspaceLLMSelection({
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
 
   return (
-    <div className="border-b border-white/40 pb-8">
+    <div className="border-b border-border/40 pb-8">
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
           {t("chat.llm.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("chat.llm.description")}
         </p>
       </div>
@@ -146,7 +146,7 @@ export default function WorkspaceLLMSelection({
                 className="w-10 h-10 rounded-md"
               />
               <div className="flex flex-col text-left">
-                <div className="text-sm font-semibold text-white">
+                <div className="text-sm font-semibold text-foreground">
                   {selectedLLMObject.name}
                 </div>
                 <div className="mt-1 text-xs text-description">
@@ -154,7 +154,7 @@ export default function WorkspaceLLMSelection({
                 </div>
               </div>
             </div>
-            <CaretUpDown size={24} weight="bold" className="text-white" />
+            <CaretUpDown size={24} weight="bold" className="text-foreground" />
           </button>
         )}
       </div>
@@ -173,7 +173,7 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
     if (selectedLLM !== "default") {
       return (
         <div className="w-full h-10 justify-center items-center flex mt-4">
-          <p className="text-sm font-base text-white text-opacity-60 text-center">
+          <p className="text-sm font-base text-foreground text-opacity-60 text-center">
             Multi-model support is not supported for this provider yet.
             <br />
             This workspace will use{" "}
@@ -207,7 +207,7 @@ function FreeFormLLMInput({ workspace, setHasChanges }) {
   return (
     <div className="mt-4 flex flex-col gap-y-1">
       <label className="block input-label">{t("chat.model.title")}</label>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+      <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
         {t("chat.model.description")}
       </p>
       <input
@@ -215,7 +215,7 @@ function FreeFormLLMInput({ workspace, setHasChanges }) {
         name="chatModel"
         defaultValue={workspace?.chatModel || ""}
         onChange={() => setHasChanges(true)}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="Enter model name exactly as referenced in the API (e.g., gpt-3.5-turbo)"
       />
     </div>

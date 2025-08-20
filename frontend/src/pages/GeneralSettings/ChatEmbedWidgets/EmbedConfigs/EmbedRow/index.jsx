@@ -64,7 +64,7 @@ export default function EmbedRow({ embed }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
+        className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10"
       >
         <th
           scope="row"
@@ -74,7 +74,7 @@ export default function EmbedRow({ embed }) {
             href={paths.workspace.chat(embed.workspace.slug)}
             target="_blank"
             rel="noreferrer"
-            className="text-white flex items-center hover:underline"
+            className="text-foreground flex items-center hover:underline"
           >
             {embed.workspace.name}
           </a>

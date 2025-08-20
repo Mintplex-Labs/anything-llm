@@ -23,7 +23,7 @@ export default function ChatModelSelection({
               provider,
             })}
           </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
             {t(
               "chat_window.workspace_llm_manager.available_models_description"
             )}
@@ -32,7 +32,7 @@ export default function ChatModelSelection({
         <select
           required={true}
           disabled={true}
-          className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- waiting for models --
@@ -50,7 +50,7 @@ export default function ChatModelSelection({
             provider,
           })}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("chat_window.workspace_llm_manager.available_models_description")}
         </p>
       </div>
@@ -63,7 +63,7 @@ export default function ChatModelSelection({
           setHasChanges(true);
           setSelectedLLMModel(e.target.value);
         }}
-        className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-foreground text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
           <optgroup label="General models">

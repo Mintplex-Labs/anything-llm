@@ -40,7 +40,7 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-[2]"
+            ? "border-l-2 border-b-2 border-border light:border-theme-sidebar-border z-[2]"
             : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
         } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
@@ -50,7 +50,7 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white light:border-theme-sidebar-border z-[2]"
+              ? "border-l-2 border-border light:border-theme-sidebar-border z-[2]"
               : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
           } h-[100%] absolute top-0 left-3`}
         ></div>
@@ -80,7 +80,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <ArrowCounterClockwise
-                  className="text-zinc-300 hover:text-white light:text-theme-text-secondary hover:light:text-theme-text-primary"
+                  className="text-zinc-300 hover:text-foreground light:text-theme-text-secondary hover:light:text-theme-text-primary"
                   size={18}
                 />
               </button>
@@ -96,7 +96,7 @@ export default function ThreadItem({
           >
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
-                isActive ? "font-medium text-white" : "text-theme-text-primary"
+                isActive ? "font-medium text-foreground" : "text-theme-text-primary"
               }`}
             >
               {thread.name}
@@ -114,7 +114,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
-                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                  className="text-zinc-300 light:text-theme-text-secondary hover:text-foreground hover:light:text-theme-text-primary"
                   weight="bold"
                   size={18}
                 />
@@ -128,7 +128,7 @@ export default function ThreadItem({
                   aria-label="Thread options"
                 >
                   <DotsThree
-                    className="text-foreground light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                    className="text-foreground light:text-theme-text-secondary hover:text-foreground hover:light:text-theme-text-primary"
                     size={25}
                   />
                 </button>

@@ -27,11 +27,11 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     <ModalWrapper isOpen={true} onClose={hideModal}>
       <div className="onenew-card p-5 shadow-2xl max-w-lg w-[90vw]">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+          <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
             {t("new-workspace.title")}
           </h3>
           <button onClick={hideModal} type="button" className="onenew-btn">
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-foreground" />
           </button>
         </div>
         <div
@@ -44,7 +44,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-white"
+                    className="block mb-2 text-sm font-medium text-foreground"
                   >
                     {t("common.workspaces-name")}
                   </label>

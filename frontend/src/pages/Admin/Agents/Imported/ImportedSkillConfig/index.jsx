@@ -111,8 +111,8 @@ export default function ImportedSkillConfig({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Plug size={24} weight="bold" className="text-white" />
-            <label htmlFor="name" className="text-white text-md font-bold">
+            <Plug size={24} weight="bold" className="text-foreground" />
+            <label htmlFor="name" className="text-foreground text-md font-bold">
               {sentenceCase(config.name)}
             </label>
             <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
@@ -122,7 +122,7 @@ export default function ImportedSkillConfig({
                 checked={config.active}
                 onChange={() => toggleSkill()}
               />
-              <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+              <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
               <span className="ml-3 text-sm font-medium"></span>
             </label>
             <ManageSkillMenu
@@ -130,13 +130,13 @@ export default function ImportedSkillConfig({
               setImportedSkills={setImportedSkills}
             />
           </div>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
             {config.description} by{" "}
             <a
               href={config.author_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white hover:underline"
+              className="text-foreground hover:underline"
             >
               {config.author}
             </a>
@@ -146,7 +146,7 @@ export default function ImportedSkillConfig({
             <div className="flex flex-col gap-y-2">
               {Object.entries(config.setup_args).map(([key, props]) => (
                 <div key={key} className="flex flex-col gap-y-1">
-                  <label htmlFor={key} className="text-white text-sm font-bold">
+                  <label htmlFor={key} className="text-foreground text-sm font-bold">
                     {key}
                   </label>
                   <input
@@ -161,9 +161,9 @@ export default function ImportedSkillConfig({
                       setInputs({ ...inputs, [key]: e.target.value })
                     }
                     placeholder={props?.input?.placeholder || ""}
-                    className="border-solid bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm"
+                    className="border-solid bg-transparent border border-border light:border-black rounded-md p-2 text-foreground text-sm"
                   />
-                  <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                  <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
                     {props?.input?.hint}
                   </p>
                 </div>
@@ -172,14 +172,14 @@ export default function ImportedSkillConfig({
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  className="bg-blue-500 text-white light:text-white rounded-md p-2"
+                  className="bg-blue-500 text-foreground light:text-foreground rounded-md p-2"
                 >
                   Save
                 </button>
               )}
             </div>
           ) : (
-            <p className="text-white text-opacity-60 text-sm font-medium py-1.5">
+            <p className="text-foreground text-opacity-60 text-sm font-medium py-1.5">
               There are no options to modify for this skill.
             </p>
           )}
@@ -231,12 +231,12 @@ function ManageSkillMenu({ config, setImportedSkills }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="p-1.5 rounded-lg text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+        className="p-1.5 rounded-lg text-foreground hover:bg-theme-action-menu-item-hover transition-colors duration-300"
       >
         <Gear className="h-5 w-5" weight="bold" />
       </button>
       {open && (
-        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-border/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-foreground z-99 md:z-10">
           <button
             type="button"
             onClick={deleteSkill}

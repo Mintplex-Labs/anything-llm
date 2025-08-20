@@ -9,8 +9,8 @@ export default function GenericHubCard({ item }) {
       key={item.id}
       className="bg-zinc-800 light:bg-card rounded-lg p-3 hover:bg-zinc-700 light:hover:bg-card transition-all duration-200"
     >
-      <p className="text-white text-sm font-medium">{item.name}</p>
-      <p className="text-white/60 text-xs mt-1">{item.description}</p>
+      <p className="text-foreground text-sm font-medium">{item.name}</p>
+      <p className="text-foreground/60 text-xs mt-1">{item.description}</p>
       <div className="flex justify-end mt-2">
         <Link
           className="text-primary-button hover:text-primary-button/80 text-xs"
@@ -32,7 +32,7 @@ export function VisibilityIcon({ visibility = "public" }) {
         data-tooltip-id="visibility-icon"
         data-tooltip-content={`This item is ${visibility === "private" ? "private" : "public"}`}
       >
-        <Icon className="w-4 h-4 text-white/60" />
+        <Icon className="w-4 h-4 text-foreground/60" />
       </div>
       <Tooltip
         id="visibility-icon"

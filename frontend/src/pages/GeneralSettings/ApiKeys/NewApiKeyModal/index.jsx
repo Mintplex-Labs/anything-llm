@@ -49,7 +49,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
       <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
               Create new API key
             </h3>
           </div>
@@ -58,7 +58,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-foreground" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -71,7 +71,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                     type="text"
                     defaultValue={`${apiKey.secret}`}
                     disabled={true}
-                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm outline-none block w-full p-2.5 pr-10"
+                    className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm outline-none block w-full p-2.5 pr-10"
                   />
                   <button
                     type="button"
@@ -86,12 +86,12 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                         weight="bold"
                       />
                     ) : (
-                      <Copy size={20} className="text-white" weight="bold" />
+                      <Copy size={20} className="text-foreground" weight="bold" />
                     )}
                   </button>
                 </div>
               )}
-              <p className="text-white text-opacity-60 text-xs md:text-sm">
+              <p className="text-foreground text-opacity-60 text-xs md:text-sm">
                 Once created the API key can be used to programmatically access
                 and configure this OneNew instance.
               </p>
@@ -110,7 +110,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                   <button
                     onClick={closeModal}
                     type="button"
-                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm mr-2"
+                    className="transition-all duration-300 text-foreground hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm mr-2"
                   >
                     Cancel
                   </button>
@@ -125,7 +125,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                 <button
                   onClick={closeModal}
                   type="button"
-                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm"
+                  className="transition-all duration-300 text-foreground hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm"
                 >
                   Close
                 </button>

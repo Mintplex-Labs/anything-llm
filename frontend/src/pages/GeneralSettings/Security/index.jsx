@@ -88,14 +88,14 @@ function MultiUserMode() {
       onChange={() => setHasChanges(true)}
       className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
-        <div className="w-full flex flex-col gap-y-1 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 pb-8">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10 pb-8">
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
+            <p className="text-lg leading-6 font-bold text-foreground">
               {t("multi.title")}
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
             {t("multi.description")}
           </p>
         </div>
@@ -115,7 +115,7 @@ function MultiUserMode() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
+                  <label className="mb-2.5 block font-medium text-foreground">
                     {multiUserModeEnabled
                       ? t("multi.enable.is-enable")
                       : t("multi.enable.enable")}
@@ -130,7 +130,7 @@ function MultiUserMode() {
                     />
                     <div
                       hidden={multiUserModeEnabled}
-                      className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"
+                      className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"
                     />
                   </label>
                 </div>
@@ -139,14 +139,14 @@ function MultiUserMode() {
                     <div className="w-80">
                       <label
                         htmlFor="username"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-foreground"
                       >
                         {t("multi.enable.username")}
                       </label>
                       <input
                         name="username"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -158,14 +158,14 @@ function MultiUserMode() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-foreground"
                       >
                         {t("multi.enable.password")}
                       </label>
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -178,7 +178,7 @@ function MultiUserMode() {
               </div>
             </div>
             <div className="flex items-center justify-between space-x-14">
-              <p className="text-white text-opacity-80 text-xs rounded-lg w-96">
+              <p className="text-foreground text-opacity-80 text-xs rounded-lg w-96">
                 {t("multi.enable.description")}
               </p>
             </div>
@@ -265,14 +265,14 @@ function PasswordProtection() {
       onChange={() => setHasChanges(true)}
       className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
         <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
+            <p className="text-lg leading-6 font-bold text-foreground">
               {t("multi.password.title")}
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
             {t("multi.password.description")}
           </p>
         </div>
@@ -292,7 +292,7 @@ function PasswordProtection() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
+                  <label className="mb-2.5 block font-medium text-foreground">
                     {t("multi.instance.title")}
                   </label>
 
@@ -303,7 +303,7 @@ function PasswordProtection() {
                       defaultChecked={usePassword}
                       className="peer sr-only pointer-events-none"
                     />
-                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent" />
+                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent" />
                   </label>
                 </div>
                 {usePassword && (
@@ -311,14 +311,14 @@ function PasswordProtection() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-foreground"
                       >
                         {t("multi.instance.password")}
                       </label>
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
+                        className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}
@@ -331,7 +331,7 @@ function PasswordProtection() {
               </div>
             </div>
             <div className="flex items-center justify-between space-x-14">
-              <p className="text-white text-opacity-80 light:text-theme-text text-xs rounded-lg w-96">
+              <p className="text-foreground text-opacity-80 light:text-theme-text text-xs rounded-lg w-96">
                 {t("multi.instance.description")}
               </p>
             </div>

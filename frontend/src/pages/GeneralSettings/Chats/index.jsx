@@ -124,7 +124,7 @@ export default function WorkspaceChats() {
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-border/10 border-b-2">
               <div className="flex flex-wrap gap-4 items-center">
                 <p className="text-lg leading-6 font-bold text-theme-text-primary">
                   {t("recorded.title")}
@@ -153,7 +153,7 @@ export default function WorkspaceChats() {
                             handleDumpChats(key);
                             setShowMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                          className="w-full text-left px-4 py-2 text-foreground text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                         >
                           {data.name}
                         </button>
@@ -164,7 +164,7 @@ export default function WorkspaceChats() {
                 {chats.length > 0 && (
                   <button
                     onClick={handleClearAllChats}
-                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-sm bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-border/40 text-foreground/40 light:text-theme-text-secondary rounded-sm bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Trash size={18} weight="bold" />
                     Clear Chats
@@ -231,7 +231,7 @@ function ChatsContainer({
   return (
     <>
       <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
-        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-border/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}

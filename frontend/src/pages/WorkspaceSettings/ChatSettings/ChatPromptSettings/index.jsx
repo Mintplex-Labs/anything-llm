@@ -98,10 +98,10 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
               {t("chat.prompt.title")}
             </label>
           </div>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
             {t("chat.prompt.description")}
           </p>
-          <p className="text-white text-opacity-60 text-xs font-medium mb-2">
+          <p className="text-foreground text-opacity-60 text-xs font-medium mb-2">
             You can insert{" "}
             <Link
               to={paths.settings.systemPromptVariables()}
@@ -134,7 +134,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           <button
             ref={historyButtonRef}
             type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-foreground text-xs font-medium"
+            className="text-theme-text-secondary hover:text-foreground light:hover:text-foreground text-xs font-medium"
             onClick={(e) => {
               e.preventDefault();
               setShowPromptHistory(!showPromptHistory);
@@ -175,7 +175,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                   minHeight: "150px",
                 }}
                 defaultValue={prompt}
-                className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+                className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
               />
             ) : (
               <div
@@ -185,7 +185,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                   overflowY: "scroll",
                   minHeight: "150px",
                 }}
-                className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+                className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
               >
                 <Highlighter
                   className="whitespace-pre-wrap"
@@ -204,7 +204,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                 <button
                   type="button"
                   onClick={() => handleRestore(DEFAULT_PROMPT)}
-                  className="text-theme-text-primary hover:text-white light:hover:text-foreground text-xs font-medium"
+                  className="text-theme-text-primary hover:text-foreground light:hover:text-foreground text-xs font-medium"
                 >
                   Clear
                 </button>
@@ -240,7 +240,7 @@ function PublishPromptCTA({ hidden = false, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="border-none text-primary-button hover:text-white light:hover:text-foreground text-xs font-medium"
+      className="border-none text-primary-button hover:text-foreground light:hover:text-foreground text-xs font-medium"
     >
       Publish to Community Hub
     </button>

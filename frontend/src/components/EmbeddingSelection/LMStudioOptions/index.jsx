@@ -32,13 +32,13 @@ export default function LMStudioEmbeddingOptions({ settings }) {
       <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
+          <label className="text-foreground text-sm font-semibold block mb-2">
             Max Embedding Chunk Length
           </label>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
             value={maxChunkLength}
@@ -47,7 +47,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
             Maximum length of text chunks for embedding.
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
         <div className="w-full flex items-start gap-4">
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
-              <label className="text-white text-sm font-semibold">
+              <label className="text-foreground text-sm font-semibold">
                 LM Studio Base URL
               </label>
               {loading ? (
@@ -83,7 +83,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
                   {!basePathValue.value && (
                     <button
                       onClick={handleAutoDetectClick}
-                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-sm hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-sm hover:bg-secondary hover:text-foreground shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
                       Auto-Detect
                     </button>
@@ -94,7 +94,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
             <input
               type="url"
               name="EmbeddingBasePath"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}
@@ -103,7 +103,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
               onChange={basePath.onChange}
               onBlur={basePath.onBlur}
             />
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
               Enter the URL where LM Studio is running.
             </p>
           </div>
@@ -144,13 +144,13 @@ function LMStudioModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-2">
+        <label className="text-foreground text-sm font-semibold block mb-2">
           LM Studio Embedding Model
         </label>
         <select
           name="EmbeddingModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!basePath
@@ -158,7 +158,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
               : "Enter LM Studio URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
           Select the LM Studio model for embeddings. Models will load after
           entering a valid LM Studio URL.
         </p>
@@ -168,13 +168,13 @@ function LMStudioModelSelection({ settings, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-2">
+      <label className="text-foreground text-sm font-semibold block mb-2">
         LM Studio Embedding Model
       </label>
       <select
         name="EmbeddingModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">
@@ -192,7 +192,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           </optgroup>
         )}
       </select>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+      <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
         Choose the LM Studio model you want to use for generating embeddings.
       </p>
     </div>

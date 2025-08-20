@@ -46,7 +46,7 @@ export default function AgentModelSelection({
   if (DISABLED_PROVIDERS.includes(provider)) {
     return (
       <div className="w-full h-10 justify-center items-center flex">
-        <p className="text-sm font-base text-white text-opacity-60 text-center">
+        <p className="text-sm font-base text-foreground text-opacity-60 text-center">
           Multi-model support is not supported for this provider yet.
           <br />
           Agent's will use{" "}
@@ -72,7 +72,7 @@ export default function AgentModelSelection({
           <label htmlFor="name" className="block input-label">
             {t("agent.mode.chat.title")}
           </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
             {t("agent.mode.chat.description")}
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function AgentModelSelection({
           name="agentModel"
           required={true}
           disabled={true}
-          className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {t("agent.mode.wait")}
@@ -96,7 +96,7 @@ export default function AgentModelSelection({
         <label htmlFor="name" className="block input-label">
           {t("agent.mode.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
           {t("agent.mode.description")}
         </p>
       </div>
@@ -107,7 +107,7 @@ export default function AgentModelSelection({
         onChange={() => {
           setHasChanges(true);
         }}
-        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-foreground text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
           <optgroup label="General models">

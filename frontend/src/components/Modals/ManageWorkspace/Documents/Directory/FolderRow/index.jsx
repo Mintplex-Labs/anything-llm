@@ -23,17 +23,17 @@ export default function FolderRow({
       <tr
         onClick={onRowClick}
         className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
-          selected ? "selected light:text-white !text-white" : ""
+          selected ? "selected light:text-foreground !text-foreground" : ""
         }`}
       >
         <div
           className={`col-span-6 flex gap-x-[4px] items-center ${
-            selected ? "!text-white" : "text-theme-text-primary"
+            selected ? "!text-foreground" : "text-theme-text-primary"
           }`}
         >
           <div
-            className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
-              selected ? "text-white" : "text-theme-text-primary light:invert"
+            className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-border ${
+              selected ? "text-foreground" : "text-theme-text-primary light:invert"
             } flex justify-center items-center cursor-pointer`}
             role="checkbox"
             aria-checked={selected}

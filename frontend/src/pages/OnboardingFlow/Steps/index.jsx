@@ -62,7 +62,7 @@ export function OnboardingLayout({ children }) {
                   className="group p-2 rounded-sm border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
                 >
                   <ArrowLeft
-                    className="text-white group-hover:text-foreground group-disabled:text-gray-500"
+                    className="text-foreground group-hover:text-foreground group-disabled:text-foreground"
                     size={30}
                   />
                 </button>
@@ -77,7 +77,7 @@ export function OnboardingLayout({ children }) {
                   className="group p-2 rounded-sm border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-card disabled:hover:bg-transparent"
                 >
                   <ArrowRight
-                    className="text-white group-hover:text-primary group-disabled:text-gray-500"
+                    className="text-foreground group-hover:text-primary group-disabled:text-foreground"
                     size={30}
                   />
                 </button>
@@ -103,7 +103,7 @@ export function OnboardingLayout({ children }) {
             aria-label="Back"
           >
             <ArrowLeft
-              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
+              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-foreground"
               size={30}
             />
           </button>
@@ -131,7 +131,7 @@ export function OnboardingLayout({ children }) {
             aria-label="Continue"
           >
             <ArrowRight
-              className="text-theme-text-secondary group-hover:text-white group-disabled:text-gray-500"
+              className="text-theme-text-secondary group-hover:text-foreground group-disabled:text-foreground"
               size={30}
             />
           </button>
