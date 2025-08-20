@@ -230,6 +230,8 @@ export default function DefaultChatContainer() {
                   }
                   type={fetchedMessage.user === "" ? "response" : "user"}
                   popMsg={popMsg}
+                  timestamp={fetchedMessage.timestamp}
+                  status={fetchedMessage.status}
                 />
               </React.Fragment>
             );

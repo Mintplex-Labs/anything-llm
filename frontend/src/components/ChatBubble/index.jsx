@@ -5,8 +5,9 @@ import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "@/utils/chat/purify";
 import { cn } from "@/lib/utils";
 
-export default function ChatBubble({ message, type, popMsg }) {
+export default function ChatBubble({ message, type, popMsg, timestamp, status }) {
   const isUser = type === "user";
+  const meta = [timestamp, status].filter(Boolean).join(" • ");
 
   return (
     <div className="flex justify-center items-end w-full">
@@ -17,15 +18,18 @@ export default function ChatBubble({ message, type, popMsg }) {
             role={type}
           />
 
-          <div
-            className={cn(
-              "markdown whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2 bubble",
-              isUser ? "bubble-user" : "bubble-assistant"
-            )}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(renderMarkdown(message)),
-            }}
-          />
+          <div className="flex flex-col">
+            <div
+              className={cn(
+                "markdown whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2 bubble",
+                isUser ? "bubble-user" : "bubble-assistant"
+              )}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(renderMarkdown(message)),
+              }}
+            />
+            {meta && <div className="bubble-meta">{meta}</div>}
+          </div>
         </div>
       </div>
     </div>
