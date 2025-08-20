@@ -1,19 +1,7 @@
-::placeholder {
-  color: var(--muted);
+.input, .select{
+  height:40px; border-radius:12px; padding:0 12px; border:1px solid color-mix(in hsl, currentColor 12%, transparent);
+  background:Canvas; color:CanvasText;
 }
-
-.select {
-  appearance: none;
-  background: var(--elev)
-    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%20fill='none'%20stroke='currentColor'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%206l4%204%204-4'%20/%3E%3C/svg%3E")
-    no-repeat right 12px center;
-  padding: 10px 36px 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--fg-1);
-}
-
-.select:focus {
-  outline: none;
-  box-shadow: 0 0 0 var(--space-1) var(--brand);
-}
+.input:focus, .select:focus{ outline:2px solid color-mix(in hsl, AccentColor 60%, transparent); outline-offset:2px; }
+.dropdown{ position:relative; }
+.dropdown-menu{ position:absolute; inset-inline-start:0; top:calc(100% + 6px); z-index: 60; min-width: 220px; }

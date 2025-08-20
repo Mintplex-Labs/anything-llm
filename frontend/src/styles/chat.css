@@ -1,50 +1,15 @@
-.msg {
-  max-width: 68ch;
-  padding: 12px 14px;
-  border-radius: 14px;
-  overflow-wrap: anywhere;
+.chat{
+  min-height:100dvh; display:flex; flex-direction:column;
 }
-
-.msg.user {
-  background: #2a3340;
-  margin-left: auto;
+.chat__messages{
+  flex:1 1 auto; min-height:0; overflow:auto; padding:16px;
+  scroll-behavior:smooth; /* better feel */
 }
-
-.msg.bot {
-  background: #1c232c;
-  margin-right: auto;
+.chat__composer{
+  position:sticky; bottom:0; inset-inline:0;
+  background:Canvas; border-top:1px solid color-mix(in hsl, CanvasText 10%, transparent);
+  padding:12px clamp(12px, 2vw, 20px) max(12px, env(safe-area-inset-bottom));
 }
-
-.chat-composer {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-}
-
-.chat-composer .chat-input {
-  flex: 1;
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: transparent;
-  color: var(--text);
-}
-
-.chat-composer .icon-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--text);
+.chat__input{
+  width:100%; min-height:44px; max-height:172px; border-radius:14px; padding:10px 14px; resize:vertical; overflow:auto;
 }
