@@ -127,7 +127,7 @@ export default function CustomMessages() {
       {hasChanges && (
         <div className="flex justify-start pt-2">
           <button
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
             onClick={handleMessageSave}
           >
             {t("customization.items.welcome-messages.save")}

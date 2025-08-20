@@ -70,7 +70,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             <div className="relative">
               <input
                 onChange={handleSearch}
-                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white placeholder:text-theme-text-secondary text-sm px-10 pl-10"
+                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-sm text-white placeholder:text-theme-text-secondary text-sm px-10 pl-10"
                 placeholder="Search for a user"
               />
               <MagnifyingGlass
@@ -83,7 +83,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
           <button
             onClick={closeModal}
             type="button"
-            className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="border-none bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X className="text-white text-lg" />
           </button>
@@ -105,7 +105,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                       tabIndex={0}
                     >
                       {isUserSelected(user.id) && (
-                        <div className="w-2 h-2 bg-card light:bg-black rounded-[2px]" />
+                        <div className="w-2 h-2 bg-card light:bg-black rounded-sm" />
                       )}
                     </div>
                     <p className="text-theme-text-primary text-sm font-medium">
@@ -137,7 +137,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                   tabIndex={0}
                 >
                   {selectedUsers.length === filteredUsers.length && (
-                    <div className="w-2 h-2 bg-card rounded-[2px]" />
+                    <div className="w-2 h-2 bg-card rounded-sm" />
                   )}
                 </div>
                 <p className="text-white text-sm font-medium">Select All</p>
@@ -156,7 +156,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             </div>
             <button
               type="submit"
-              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-sm bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
               Save
             </button>

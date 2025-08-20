@@ -59,7 +59,7 @@ export default function CustomSiteSettings() {
           <input
             name="meta_page_title"
             type="text"
-            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
             placeholder="OneNew | Your personal LLM trained on anything"
             autoComplete="off"
             onChange={(e) => {
@@ -91,7 +91,7 @@ export default function CustomSiteSettings() {
           <input
             name="meta_page_favicon"
             type="url"
-            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
             placeholder="url to your image"
             onChange={(e) => {
               setSettings((prev) => {
@@ -107,7 +107,7 @@ export default function CustomSiteSettings() {
       {hasChanges && (
         <button
           type="submit"
-          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-sm text-white text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
         >
           Save
         </button>

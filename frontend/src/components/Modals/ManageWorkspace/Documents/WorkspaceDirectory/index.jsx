@@ -150,7 +150,7 @@ function WorkspaceDirectory({
                       files.items.reduce(
                         (sum, folder) => sum + folder.items.length,
                         0
-                      ) && <div className="w-2 h-2 bg-card rounded-[2px]" />}
+                      ) && <div className="w-2 h-2 bg-card rounded-sm" />}
                   </div>
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
@@ -200,7 +200,7 @@ function WorkspaceDirectory({
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-sm hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {Object.keys(selectedItems).length ===
                       files.items.reduce(
@@ -212,7 +212,7 @@ function WorkspaceDirectory({
                     </button>
                     <button
                       onClick={removeSelectedItems}
-                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-sm hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {t("connectors.directory.remove_selected")}
                     </button>
@@ -310,7 +310,7 @@ const PinAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
           >
             {t("connectors.pinning.accept")}
           </button>
@@ -378,7 +378,7 @@ const DocumentWatchAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
           >
             {t("connectors.watching.accept")}
           </button>

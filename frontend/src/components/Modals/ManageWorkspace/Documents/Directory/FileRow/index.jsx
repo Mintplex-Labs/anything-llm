@@ -32,7 +32,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
           aria-checked={selected}
           tabIndex={0}
         >
-          {selected && <div className="w-2 h-2 bg-card rounded-[2px]" />}
+          {selected && <div className="w-2 h-2 bg-card rounded-sm" />}
         </div>
         <File
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"

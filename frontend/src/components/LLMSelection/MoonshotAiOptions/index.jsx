@@ -16,7 +16,7 @@ export default function MoonshotAiOptions({ settings }) {
         <input
           type="password"
           name="MoonshotAiApiKey"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Moonshot AI API Key"
           defaultValue={settings?.MoonshotAiApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -63,7 +63,7 @@ function MoonshotAiModelSelection({ apiKey, settings }) {
         <select
           name="MoonshotAiModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- Enter API key --
@@ -82,7 +82,7 @@ function MoonshotAiModelSelection({ apiKey, settings }) {
         <select
           name="MoonshotAiModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -100,7 +100,7 @@ function MoonshotAiModelSelection({ apiKey, settings }) {
       <select
         name="MoonshotAiModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
       >
         {models.map((model) => (
           <option

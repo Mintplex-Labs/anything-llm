@@ -24,7 +24,7 @@ export default function GeminiOptions({ settings }) {
           <input
             type="password"
             name="GeminiEmbeddingApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Gemini API Key"
             defaultValue={settings?.GeminiEmbeddingApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -39,7 +39,7 @@ export default function GeminiOptions({ settings }) {
           <select
             name="EmbeddingModelPref"
             required={true}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
               {DEFAULT_MODELS.map((model) => {

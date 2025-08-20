@@ -37,7 +37,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X size={24} weight="bold" className="text-white" />
           </button>
@@ -68,7 +68,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                       maxLength={25}
                       autoComplete="off"
                       required={true}
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     />
                   </div>
                 </div>
@@ -85,7 +85,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     autoComplete="off"
                     placeholder={t("chat_window.placeholder_prompt")}
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   ></textarea>
                 </div>
                 <div>
@@ -103,7 +103,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     maxLength={80}
                     autoComplete="off"
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   />
                 </div>
               </div>
@@ -112,13 +112,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
               <button
                 onClick={onClose}
                 type="button"
-                className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-sm text-sm"
               >
                 {t("chat_window.cancel")}
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
               >
                 {t("chat_window.save")}
               </button>

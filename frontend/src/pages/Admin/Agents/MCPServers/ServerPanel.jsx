@@ -82,7 +82,7 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
           <button
             type="button"
             onClick={handleToggleServer}
-            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center rounded-sm gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <span className="text-sm">
               {running ? "Stop MCP Server" : "Start MCP Server"}
@@ -91,7 +91,7 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
           <button
             type="button"
             onClick={deleteServer}
-            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center rounded-sm gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <span className="text-sm">Delete MCP Server</span>
           </button>

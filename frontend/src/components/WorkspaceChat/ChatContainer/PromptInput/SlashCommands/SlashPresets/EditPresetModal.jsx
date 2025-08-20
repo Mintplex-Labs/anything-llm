@@ -57,7 +57,7 @@ export default function EditPresetModal({
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X size={24} weight="bold" className="text-white" />
           </button>
@@ -85,7 +85,7 @@ export default function EditPresetModal({
                       value={command}
                       onChange={handleCommandChange}
                       required={true}
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     />
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function EditPresetModal({
                     placeholder="This is a test prompt. Please respond with a poem about LLMs."
                     defaultValue={preset.prompt}
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   ></textarea>
                 </div>
                 <div>
@@ -117,7 +117,7 @@ export default function EditPresetModal({
                     defaultValue={preset.description}
                     placeholder="Responds with a poem about LLMs."
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   />
                 </div>
               </div>
@@ -127,7 +127,7 @@ export default function EditPresetModal({
                 disabled={deleting}
                 onClick={handleDelete}
                 type="button"
-                className="border-none transition-all duration-300 bg-transparent text-red-500 hover:bg-red-500/25 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+                className="border-none transition-all duration-300 bg-transparent text-red-500 hover:bg-red-500/25 px-4 py-2 rounded-sm text-sm disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete Preset"}
               </button>
@@ -135,13 +135,13 @@ export default function EditPresetModal({
                 <button
                   onClick={onClose}
                   type="button"
-                  className="border-none transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="border-none transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-sm text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
                 >
                   Save
                 </button>

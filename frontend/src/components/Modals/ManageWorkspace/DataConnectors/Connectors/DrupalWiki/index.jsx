@@ -81,7 +81,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="url"
                   name="baseUrl"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: https://mywiki.drupal-wiki.net, https://drupalwiki.mycompany.tld, etc..."
                   required={true}
                   autoComplete="off"
@@ -111,7 +111,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="text"
                   name="spaceIds"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: 12,34,69"
                   required={true}
                   autoComplete="off"
@@ -158,7 +158,7 @@ export default function DrupalWikiOptions() {
                 <input
                   type="password"
                   name="accessToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="pat:123"
                   required={true}
                   autoComplete="off"
@@ -172,7 +172,7 @@ export default function DrupalWikiOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-lg text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading ? "Collecting pages..." : "Submit"}
             </button>

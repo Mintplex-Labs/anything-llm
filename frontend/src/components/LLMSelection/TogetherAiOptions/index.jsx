@@ -14,7 +14,7 @@ export default function TogetherAiOptions({ settings }) {
         <input
           type="password"
           name="TogetherAiApiKey"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Together AI API Key"
           defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -73,7 +73,7 @@ function TogetherAiModelSelection({ settings, apiKey }) {
         <select
           name="TogetherAiModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -91,7 +91,7 @@ function TogetherAiModelSelection({ settings, apiKey }) {
       <select
         name="TogetherAiModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()

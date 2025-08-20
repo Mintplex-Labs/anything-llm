@@ -80,7 +80,7 @@ export default function AccountModal({ user, hideModal }) {
           <button
             onClick={hideModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X size={24} weight="bold" className="text-white" />
           </button>
@@ -140,7 +140,7 @@ export default function AccountModal({ user, hideModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
                   minLength={2}
                   defaultValue={user.username}
@@ -161,7 +161,7 @@ export default function AccountModal({ user, hideModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   minLength={8}
                 />
@@ -178,7 +178,7 @@ export default function AccountModal({ user, hideModal }) {
                 </label>
                 <textarea
                   name="bio"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
                   placeholder="Tell us about yourself..."
                   defaultValue={user.bio}
                 />
@@ -198,13 +198,13 @@ export default function AccountModal({ user, hideModal }) {
               <button
                 onClick={hideModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm"
               >
                 {t("profile_settings.cancel")}
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
               >
                 {t("profile_settings.update_account")}
               </button>
@@ -234,7 +234,7 @@ function LanguagePreference() {
       </label>
       <select
         name="userLang"
-        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-sm block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >

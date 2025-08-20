@@ -15,7 +15,7 @@ export default function GeneralSecurity() {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <MultiUserMode />
         <PasswordProtection />
@@ -74,7 +74,7 @@ function MultiUserMode() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-lg p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>
@@ -146,7 +146,7 @@ function MultiUserMode() {
                       <input
                         name="username"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -165,7 +165,7 @@ function MultiUserMode() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -250,7 +250,7 @@ function PasswordProtection() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-lg p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>
@@ -318,7 +318,7 @@ function PasswordProtection() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}

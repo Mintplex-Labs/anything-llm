@@ -32,7 +32,7 @@ export default function ChatModelSelection({
         <select
           required={true}
           disabled={true}
-          className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-theme-modal-border border border-solid bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- waiting for models --

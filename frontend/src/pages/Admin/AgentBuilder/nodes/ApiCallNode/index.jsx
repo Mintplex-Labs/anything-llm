@@ -123,7 +123,7 @@ export default function ApiCallNode({
           </label>
           <button
             onClick={addHeader}
-            className="p-1.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+            className="p-1.5 rounded-sm border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
             title="Add header"
           >
             <Plus className="w-3.5 h-3.5" />

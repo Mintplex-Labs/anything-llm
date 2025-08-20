@@ -156,7 +156,7 @@ export default function ObsidianOptions() {
             <button
               type="submit"
               disabled={loading || selectedFiles.length === 0}
-              className="border-none mt-2 w-full justify-center px-4 py-2 rounded-lg text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
+              className="border-none mt-2 w-full justify-center px-4 py-2 rounded-sm text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading
                 ? t("connectors.obsidian.importing")

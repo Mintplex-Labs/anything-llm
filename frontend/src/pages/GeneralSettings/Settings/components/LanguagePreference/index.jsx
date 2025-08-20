@@ -21,7 +21,7 @@ export default function LanguagePreference() {
       <div className="flex items-center gap-x-4">
         <select
           name="userLang"
-          className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+          className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
           defaultValue={currentLanguage || "en"}
           onChange={(e) => changeLanguage(e.target.value)}
         >

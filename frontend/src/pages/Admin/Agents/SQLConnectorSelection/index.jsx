@@ -98,7 +98,7 @@ export default function AgentSQLConnectorSelection({
                   <button
                     type="button"
                     onClick={openModal}
-                    className="w-fit relative flex h-[40px] items-center border-none hover:bg-theme-bg-secondary rounded-lg"
+                    className="w-fit relative flex h-[40px] items-center border-none hover:bg-theme-bg-secondary rounded-sm"
                   >
                     <div className="flex w-full gap-x-2 items-center p-4">
                       <div className="bg-theme-bg-secondary p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">

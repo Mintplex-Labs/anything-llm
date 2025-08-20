@@ -17,7 +17,7 @@ export default function AnthropicAiOptions({ settings }) {
           <input
             type="password"
             name="AnthropicApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Anthropic Claude-2 API Key"
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -104,7 +104,7 @@ function AnthropicModelSelection({ apiKey, settings }) {
         <select
           name="AnthropicModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -122,7 +122,7 @@ function AnthropicModelSelection({ apiKey, settings }) {
       <select
         name="AnthropicModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
       >
         {models.map((model) => (
           <option

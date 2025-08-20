@@ -13,7 +13,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="url"
             name="AzureOpenAiEndpoint"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="https://my-azure.openai.azure.com"
             defaultValue={settings?.AzureOpenAiEndpoint}
             required={true}
@@ -29,7 +29,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="password"
             name="AzureOpenAiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI API Key"
             defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
@@ -45,7 +45,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="text"
             name="AzureOpenAiModelPref"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI chat model deployment name"
             defaultValue={settings?.AzureOpenAiModelPref}
             required={true}
@@ -63,7 +63,7 @@ export default function AzureAiOptions({ settings }) {
           <select
             name="AzureOpenAiTokenLimit"
             defaultValue={settings?.AzureOpenAiTokenLimit || 4096}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             required={true}
           >
             <option value={4096}>4,096 (gpt-3.5-turbo)</option>
@@ -85,7 +85,7 @@ export default function AzureAiOptions({ settings }) {
           <select
             name="AzureOpenAiModelType"
             defaultValue={settings?.AzureOpenAiModelType || "default"}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             required={true}
           >
             <option value="default">

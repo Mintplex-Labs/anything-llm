@@ -119,7 +119,7 @@ export default function AgentFlows({ entity }) {
               placeholder={t(
                 "community_hub.publish.agent_flow.name_placeholder"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-sm p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
@@ -139,7 +139,7 @@ export default function AgentFlows({ entity }) {
               placeholder={t(
                 "community_hub.publish.agent_flow.description_description"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-sm p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
@@ -248,7 +248,7 @@ export default function AgentFlows({ entity }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="border-none mt-4 w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-none mt-4 w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? t("community_hub.publish.agent_flow.submitting")
