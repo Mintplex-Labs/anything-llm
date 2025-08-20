@@ -26,13 +26,13 @@
 }
 
 .onenew-card {
-  background: var(--surface);
+  background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 var(--space-2) var(--space-6) rgb(0 0 0 / 0.18);
-  backdrop-filter: blur(var(--space-3));
-  -webkit-backdrop-filter: blur(var(--space-3));
-  padding: var(--space-6);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.25rem;
 }
 
 /* Respect reduced transparency */
@@ -63,18 +63,18 @@
 }
 
 .onenew-input {
-  background: var(--surface);
+  background: var(--input);
   border: 1px solid var(--border);
-  color: var(--fg-1);
-  border-radius: calc(var(--radius-sm) + var(--space-1) / 2);
-  padding: var(--space-3) var(--space-3);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
 }
 .onenew-input::placeholder {
-  color: color-mix(in srgb, var(--fg-1), transparent 55%);
+  color: color-mix(in srgb, var(--text), transparent 55%);
 }
 .onenew-input:focus {
   outline: none;
-  box-shadow: 0 0 0 var(--space-1) var(--brand);
+  box-shadow: 0 0 0 4px var(--ring);
 }
 select.onenew-input,
 textarea.onenew-input {
@@ -92,21 +92,19 @@ textarea.onenew-input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
   font-weight: 600;
-  padding: var(--space-3) var(--space-4);
-  border-radius: calc(var(--radius-sm) + var(--space-1) / 2);
-  background: var(--brand);
-  color: var(--fg-1);
-  border: 1px solid var(--brand);
-  transition:
-    transform 60ms ease,
-    box-shadow 200ms ease;
-  box-shadow: 0 calc(var(--space-1) / 2) var(--space-1) rgb(0 0 0 / 0.18);
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  transition: transform 60ms ease, box-shadow 200ms ease;
+  box-shadow: 0 2px 4px var(--shadow);
 }
 .onenew-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 var(--space-1) var(--radius-sm) rgb(0 0 0 / 0.18);
+  box-shadow: 0 4px 10px var(--shadow);
 }
 .onenew-btn:disabled {
   opacity: 0.6;
