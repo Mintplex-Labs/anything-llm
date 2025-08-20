@@ -18,6 +18,10 @@ const KEY_MAPPING = {
     envKey: "OPEN_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  OpenAiMaxTokens: {
+    envKey: "OPEN_AI_MAX_TOKENS",
+    checks: [],
+  },
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
     envKey: "AZURE_OPENAI_ENDPOINT",
@@ -329,6 +333,14 @@ const KEY_MAPPING = {
   },
   ChromaApiKey: {
     envKey: "CHROMA_API_KEY",
+    checks: [],
+  },
+  ChromaTenant: {
+    envKey: "CHROMA_TENANT",
+    checks: [],
+  },
+  ChromaDatabaseName: {
+    envKey: "CHROMA_DATABASE_NAME",
     checks: [],
   },
 
