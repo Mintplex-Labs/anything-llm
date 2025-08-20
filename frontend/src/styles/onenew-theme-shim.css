@@ -1,8 +1,30 @@
+/* Dark theme (default) */
 .theme-onenew {
+  --bg: #0b1220;
+  --text: #e6edf3;
+  --muted: #9aa9bd;
+  --border: #243045;
+  --primary: #14b8a6;
+  --accent: #7c9cff;
+  --card-bg: rgba(13, 19, 33, 0.65);
+  --shadow: rgba(0, 0, 0, 0.18);
+  --ring: color-mix(in srgb, var(--primary), transparent 60%);
+  --radius: 16px;
+
+  /* bridges to Tailwind tokens */
   --background: var(--bg);
-  --foreground: var(--fg-1);
-  --card: var(--surface);
-  --border: var(--border);
-  --primary: var(--brand);
-  --accent: var(--brand);
+  --foreground: var(--text);
+  --card: var(--card-bg);
+  --input: color-mix(in srgb, var(--bg), var(--border) 35%);
+}
+
+/* Light theme override */
+.theme-onenew.light {
+  --bg: #f7f9fc;
+  --text: #101623;
+  --muted: #5d6b80;
+  --border: #dbe3f1;
+  --card-bg: #fff;
+  --shadow: rgba(16, 22, 35, 0.08);
+  --ring: color-mix(in srgb, var(--primary), transparent 70%);
 }
