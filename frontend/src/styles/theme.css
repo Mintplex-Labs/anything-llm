@@ -12,6 +12,8 @@
   --text-1: #334155;
   --stroke-0: #d1d5db;
   --stroke-1: #94a3b8;
+  --success-600: #16a34a;
+  --danger-600: #dc2626;
 }
 
 [data-theme="dark"] {
@@ -24,6 +26,8 @@
   --text-1: #c9cdd2;
   --stroke-0: #2b333b;
   --stroke-1: #3f4852;
+  --success-600: #16a34a;
+  --danger-600: #dc2626;
 }
 
 /* semantic mappings */
