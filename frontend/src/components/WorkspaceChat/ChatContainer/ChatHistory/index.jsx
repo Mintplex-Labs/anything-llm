@@ -221,7 +221,7 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} flex-1 min-h-0 overflow-auto pt-6 md:pt-0 md:mx-0 pb-4 flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+      className={`chat-messages markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} flex-1 min-h-0 overflow-auto pt-6 md:pt-0 md:mx-0 pb-4 flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
