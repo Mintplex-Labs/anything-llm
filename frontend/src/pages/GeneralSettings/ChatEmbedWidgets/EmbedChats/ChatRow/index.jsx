@@ -1,11 +1,12 @@
 import truncate from "truncate";
-import { X, Trash, LinkSimple } from "@phosphor-icons/react";
+import { X, Trash } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
+import MarkdownRenderer from "../MarkdownRenderer";
 
-export default function ChatRow({ chat, onDelete }) {
+export default function ChatRow({ chat, onDelete, showThinking }) {
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -83,7 +84,12 @@ export default function ChatRow({ chat, onDelete }) {
       </ModalWrapper>
       <ModalWrapper isOpen={isResponseOpen}>
         <TextPreview
-          text={JSON.parse(chat.response)?.text}
+          text={
+            <MarkdownRenderer
+              content={JSON.parse(chat.response)?.text}
+              showThinking={showThinking}
+            />
+          }
           closeModal={closeResponseModal}
         />
       </ModalWrapper>
@@ -118,9 +124,9 @@ const TextPreview = ({ text, closeModal }) => {
           </button>
         </div>
         <div className="w-full p-6">
-          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
+          <div className="w-full h-[60vh] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
             {text}
-          </pre>
+          </div>
         </div>
       </div>
     </div>

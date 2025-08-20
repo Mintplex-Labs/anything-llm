@@ -55,6 +55,7 @@ export default function EmbedChatsView() {
   const query = useQuery();
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const [showThinking, setShowThinking] = useState(false);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -92,6 +93,7 @@ export default function EmbedChatsView() {
 
   useEffect(() => {
     async function fetchChats() {
+      setLoading(true);
       const { chats: _chats, hasPages = false } = await Embed.chats(offset);
       setChats(_chats);
       setCanNext(hasPages);
@@ -133,6 +135,14 @@ export default function EmbedChatsView() {
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
             {t("embed-chats.title")}
           </p>
+          <div className="flex items-center">
+            <label className="text-sm mr-2">Show "thinking"</label>
+            <input
+              type="checkbox"
+              checked={showThinking}
+              onChange={(e) => setShowThinking(e.target.checked)}
+            />
+          </div>
           <div className="relative">
             <button
               ref={openMenuButton}
@@ -196,7 +206,12 @@ export default function EmbedChatsView() {
           </thead>
           <tbody>
             {chats.map((chat) => (
-              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+              <ChatRow
+                key={chat.id}
+                chat={chat}
+                onDelete={handleDeleteChat}
+                showThinking={showThinking}
+              />
             ))}
           </tbody>
         </table>
