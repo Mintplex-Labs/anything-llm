@@ -2,16 +2,6 @@ export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    borderRadius: {
-      none: "0px",
-      sm: "var(--radius-sm)",
-      DEFAULT: "var(--radius-sm)",
-      md: "var(--radius-sm)",
-      lg: "var(--radius-lg)",
-      xl: "var(--radius-lg)",
-      "2xl": "var(--radius-lg)",
-      full: "9999px"
-    },
     extend: {
       colors: {
         background: "var(--background)",
@@ -20,6 +10,10 @@ export default {
         border: "var(--border)",
         primary: "var(--primary)",
         accent: "var(--accent)"
+      },
+      borderRadius: {
+        xl: "var(--radius)",
+        "2xl": "calc(var(--radius) + 8px)"
       },
       spacing: {
         1: "var(--space-1)",
