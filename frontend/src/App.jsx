@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { ContextWrapper } from "@/AuthContext";
@@ -91,6 +91,14 @@ const SystemPromptVariables = lazy(
 );
 
 export default function App() {
+  useEffect(() => {
+    document.title = "OneNew — Dashboard";
+    const favicon = document.querySelector("link[rel='icon']");
+    if (favicon) {
+      favicon.setAttribute("href", "/favicon.png");
+    }
+  }, []);
+
   return (
     <div id="root" className="theme-onenew dark">
       <ThemeProvider>
