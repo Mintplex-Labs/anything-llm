@@ -35,7 +35,7 @@ export default function Sidebar() {
           width: showSidebar ? "292px" : "0px",
           paddingLeft: showSidebar ? "0px" : "16px",
         }}
-        className="onenew-card h-full p-3 md:p-4 transition-all duration-500"
+        className="h-full p-3 md:p-4 bg-background text-foreground transition-all duration-500"
       >
         <div className="flex shrink-0 w-full justify-center my-[18px]">
           <div className="flex justify-between w-[250px] min-w-[250px]">

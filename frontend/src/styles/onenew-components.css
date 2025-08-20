@@ -76,6 +76,17 @@
   outline: none;
   box-shadow: 0 0 0 var(--space-1) var(--brand);
 }
+select.onenew-input,
+textarea.onenew-input {
+  appearance: none;
+}
+
+.dropdown-menu {
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
 
 .onenew-btn {
   display: inline-flex;

@@ -1,0 +1,8 @@
+.theme-onenew {
+  --background: var(--bg);
+  --foreground: var(--fg-1);
+  --card: var(--surface);
+  --border: var(--border);
+  --primary: var(--brand);
+  --accent: var(--brand);
+}
