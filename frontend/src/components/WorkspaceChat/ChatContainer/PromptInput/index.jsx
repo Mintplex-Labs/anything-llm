@@ -42,6 +42,7 @@ export default function PromptInput({
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
+  const composerRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
@@ -68,6 +69,23 @@ export default function PromptInput({
     if (!isStreaming && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
   }, [isStreaming]);
+
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--composer-h",
+        `${el.offsetHeight}px`
+      );
+    };
+    updateHeight();
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(updateHeight);
+      observer.observe(el);
+      return () => observer.disconnect();
+    }
+  }, []);
 
   /**
    * Save the current state before changes
@@ -240,6 +258,7 @@ export default function PromptInput({
 
   return (
     <div
+      ref={composerRef}
       className="w-full sticky bottom-0 left-0 z-20 flex justify-center items-center bg-[var(--surface)]/80 backdrop-blur-md border-t border-[var(--border)] p-3"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
