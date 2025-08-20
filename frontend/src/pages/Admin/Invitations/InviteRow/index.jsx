@@ -60,13 +60,13 @@ export default function InviteRow({ invite }) {
               <button
                 onClick={copyInviteLink}
                 disabled={copied}
-                className="text-xs font-medium text-blue-300 rounded-lg hover:text-blue-400 hover:underline"
+                className="text-xs font-medium text-blue-300 rounded-sm hover:text-blue-400 hover:underline"
               >
                 {copied ? "Copied" : "Copy Invite Link"}
               </button>
               <button
                 onClick={handleDelete}
-                className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+                className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
               >
                 <Trash className="h-5 w-5" />
               </button>

@@ -128,7 +128,7 @@ export default function NewSQLConnection({
             <button
               onClick={handleClose}
               type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
               <X size={24} weight="bold" className="text-white" />
             </button>
@@ -185,7 +185,7 @@ export default function NewSQLConnection({
                   <input
                     type="text"
                     name="name"
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="a unique name to identify this SQL connection"
                     required={true}
                     autoComplete="off"
@@ -201,7 +201,7 @@ export default function NewSQLConnection({
                     <input
                       type="text"
                       name="username"
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="root"
                       required={true}
                       autoComplete="off"
@@ -215,7 +215,7 @@ export default function NewSQLConnection({
                     <input
                       type="text"
                       name="password"
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="password123"
                       required={true}
                       autoComplete="off"
@@ -232,7 +232,7 @@ export default function NewSQLConnection({
                     <input
                       type="text"
                       name="host"
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="the hostname or endpoint for your database"
                       required={true}
                       autoComplete="off"
@@ -246,7 +246,7 @@ export default function NewSQLConnection({
                     <input
                       type="text"
                       name="port"
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="3306"
                       required={false}
                       autoComplete="off"
@@ -262,7 +262,7 @@ export default function NewSQLConnection({
                   <input
                     type="text"
                     name="database"
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="the database the agent will interact with"
                     required={true}
                     autoComplete="off"
@@ -278,7 +278,7 @@ export default function NewSQLConnection({
                     <input
                       type="text"
                       name="schema"
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="public (default schema if not specified)"
                       required={false}
                       autoComplete="off"
@@ -314,7 +314,7 @@ export default function NewSQLConnection({
               <button
                 type="button"
                 onClick={handleClose}
-                className="transition-all duration-300 text-white hover:bg-zinc-700 light:hover:bg-theme-bg-primary px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white hover:bg-zinc-700 light:hover:bg-theme-bg-primary px-4 py-2 rounded-sm text-sm"
               >
                 Cancel
               </button>
@@ -322,7 +322,7 @@ export default function NewSQLConnection({
                 type="submit"
                 form="sql-connection-form"
                 disabled={isValidating}
-                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm disabled:opacity-50"
               >
                 {isValidating ? "Validating..." : "Save connection"}
               </button>

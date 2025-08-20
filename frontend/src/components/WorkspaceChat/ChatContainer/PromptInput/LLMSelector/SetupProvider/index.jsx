@@ -47,7 +47,7 @@ export default function SetupProvider({
             <button
               onClick={closeModal}
               type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
               <X size={24} weight="bold" className="text-white" />
             </button>
@@ -68,14 +68,14 @@ export default function SetupProvider({
               <button
                 type="button"
                 onClick={closeModal}
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 form="provider-form"
-                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
               >
                 Save settings
               </button>
@@ -96,7 +96,7 @@ export function NoSetupWarning({ showing, onSetupClick }) {
     <button
       type="button"
       onClick={onSetupClick}
-      className="border border-blue-500 rounded-lg p-2 flex flex-col items-center gap-y-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 transition-all duration-300"
+      className="border border-blue-500 rounded-sm p-2 flex flex-col items-center gap-y-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 transition-all duration-300"
     >
       <p className="text-sm text-center">
         <b>{t("chat_window.workspace_llm_manager.missing_credentials")}</b>

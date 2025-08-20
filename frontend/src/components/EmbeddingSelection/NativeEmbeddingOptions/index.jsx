@@ -45,7 +45,7 @@ export default function NativeEmbeddingOptions({ settings }) {
             name="EmbeddingModelPref"
             required={true}
             defaultValue={selectedModel}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-theme-text-primary text-sm rounded-lg block w-60 p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-theme-text-primary text-sm rounded-sm block w-60 p-2.5"
             onChange={(e) => setSelectedModel(e.target.value)}
           >
             {loading ? (

@@ -56,7 +56,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X size={24} weight="bold" className="text-white" />
           </button>
@@ -71,7 +71,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                     type="text"
                     defaultValue={`${apiKey.secret}`}
                     disabled={true}
-                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5 pr-10"
+                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm outline-none block w-full p-2.5 pr-10"
                   />
                   <button
                     type="button"
@@ -110,13 +110,13 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                   <button
                     onClick={closeModal}
                     type="button"
-                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm mr-2"
+                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm mr-2"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                    className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
                   >
                     Create API Key
                   </button>
@@ -125,7 +125,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                 <button
                   onClick={closeModal}
                   type="button"
-                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-sm text-sm"
                 >
                   Close
                 </button>

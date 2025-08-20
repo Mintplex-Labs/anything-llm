@@ -86,7 +86,7 @@ export default function WorkspaceFileRow({
               tabIndex={0}
               onClick={handleRowSelection}
             >
-              {selected && <div className="w-2 h-2 bg-card rounded-[2px]" />}
+              {selected && <div className="w-2 h-2 bg-card rounded-sm" />}
             </div>
           ) : null}
         </div>

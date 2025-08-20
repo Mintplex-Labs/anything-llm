@@ -100,7 +100,7 @@ export default function DefaultChatContainer() {
             {(!user || user?.role !== "default") && (
               <button
                 onClick={showNewWsModal}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
               >
                 <Plus className="h-4 w-4" />
                 <p>{t("welcomeMessage.createWorkspace")}</p>
@@ -205,7 +205,7 @@ export default function DefaultChatContainer() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
+      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
     >

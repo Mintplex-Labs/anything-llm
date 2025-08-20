@@ -211,7 +211,7 @@ export default function UploadFile({
         type="button"
         onClick={open}
         disabled={!ready}
-        className="mt-3 w-[560px] bg-primary-button text-white rounded-lg py-2 disabled:opacity-50"
+        className="mt-3 w-[560px] bg-primary-button text-white rounded-sm py-2 disabled:opacity-50"
       >
         {t("connectors.upload.upload-button", "Upload")}
       </button>
@@ -223,14 +223,14 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
+          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
           placeholder={t("connectors.upload.placeholder-link")}
           autoComplete="off"
         />
         <button
           disabled={fetchingUrl}
           type="submit"
-          className="disabled:bg-card disabled:text-foreground disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-card hover:text-foreground w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
+          className="disabled:bg-card disabled:text-foreground disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-card hover:text-foreground w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-sm"
         >
           {fetchingUrl
             ? t("connectors.upload.fetching")

@@ -99,7 +99,7 @@ export default function BrowserExtensionApiKeyRow({
       <td className="px-6 py-2">
         <button
           onClick={handleRevoke}
-          className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+          className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
         >
           <Trash className="h-4 w-4" />
         </button>

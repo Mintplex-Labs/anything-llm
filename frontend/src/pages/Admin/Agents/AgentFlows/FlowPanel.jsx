@@ -60,7 +60,7 @@ function ManageFlowMenu({ flow, onDelete }) {
           <button
             type="button"
             onClick={deleteFlow}
-            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center rounded-sm gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <span className="text-sm">Delete Flow</span>
           </button>

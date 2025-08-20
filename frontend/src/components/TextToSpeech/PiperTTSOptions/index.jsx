@@ -75,7 +75,7 @@ function PiperTTSModelSelection({ settings }) {
           name="TTSPiperTTSVoiceModel"
           value=""
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-sm block w-full p-2.5"
         >
           <option value="" disabled={true}>
             -- loading available models --

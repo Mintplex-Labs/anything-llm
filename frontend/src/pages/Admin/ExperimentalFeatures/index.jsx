@@ -35,7 +35,7 @@ export default function ExperimentalFeatures() {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg w-full h-full flex justify-center items-center"
       >
         <FullScreenLoader />
       </div>
@@ -95,7 +95,7 @@ function FeatureLayout({ children }) {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg w-full h-full flex"
       >
         {children}
       </div>
@@ -270,7 +270,7 @@ function FeatureVerification({ children }) {
                 </a>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
+                  className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm border border-theme-modal-border"
                 >
                   I understand
                 </button>

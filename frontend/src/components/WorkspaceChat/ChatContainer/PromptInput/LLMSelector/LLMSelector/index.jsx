@@ -15,7 +15,7 @@ export default function LLMSelectorSidePanel({
         type="search"
         placeholder={t("chat_window.workspace_llm_manager.search")}
         onChange={onSearchChange}
-        className="search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder outline-none text-sm rounded-lg px-2 py-2 w-full h-[32px] border-theme-modal-border border border-solid"
+        className="search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder outline-none text-sm rounded-sm px-2 py-2 w-full h-[32px] border-theme-modal-border border border-solid"
       />
       <div className="flex flex-col gap-y-2 overflow-y-scroll ">
         {availableProviders.map((llm) => (

@@ -198,7 +198,7 @@ function ShortWidthNewWorkspaceButton({ user, showNewWsModal }) {
         data-tooltip-id="new-workspace-tooltip"
         data-tooltip-content={t("new-workspace.title")}
         onClick={showNewWsModal}
-        className="border-none flex items-center justify-center bg-card rounded-lg p-[8px] hover:bg-card transition-all duration-300"
+        className="border-none flex items-center justify-center bg-card rounded-sm p-[8px] hover:bg-card transition-all duration-300"
       >
         <Plus size={16} weight="bold" className="text-foreground" />
       </button>

@@ -12,7 +12,7 @@ export default function PPIOLLMOptions({ settings }) {
           <input
             type="password"
             name="PPIOApiKey"
-            className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="PPIO API Key"
             defaultValue={settings?.PPIOApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -59,7 +59,7 @@ function PPIOModelSelection({ settings }) {
           name="PPIOModelPref"
           required={true}
           disabled={true}
-          className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:ring-primary-button focus:border-primary-button block w-full p-2.5"
+          className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-sm focus:ring-primary-button focus:border-primary-button block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -77,7 +77,7 @@ function PPIOModelSelection({ settings }) {
       <select
         name="PPIOModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-sm block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()

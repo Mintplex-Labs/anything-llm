@@ -20,7 +20,7 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
         name="queryRefusalResponse"
         rows={2}
         defaultValue={chatQueryRefusalResponse(workspace)}
-        className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+        className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
         placeholder="The text returned in query mode when there is no relevant context found for a response."
         required={true}
         wrap="soft"

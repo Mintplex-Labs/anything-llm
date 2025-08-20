@@ -69,7 +69,7 @@ export default function ChatRow({ chat, onDelete }) {
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+            className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
           >
             <Trash className="h-5 w-5" />
           </button>
@@ -96,7 +96,7 @@ const TextPreview = ({ text, closeModal }) => {
           <button
             onClick={closeModal}
             type="button"
-            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X className="text-white text-lg" />
           </button>

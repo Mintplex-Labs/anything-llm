@@ -174,7 +174,7 @@ function NewThreadButton({ workspace }) {
   return (
     <button
       onClick={onClick}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-sm"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
         <div className="bg-card p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
@@ -214,7 +214,7 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
     <button
       type="button"
       onClick={onDelete}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-lg group"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-sm group"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
         <div className="bg-transparent p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">

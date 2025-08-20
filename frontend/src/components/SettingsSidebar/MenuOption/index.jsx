@@ -60,7 +60,7 @@ export default function MenuOption({
   return (
     <div>
       <div
-        className={`nav-item flex items-center justify-between w-full transition-all duration-300 rounded-[6px] ${
+        className={`nav-item flex items-center justify-between w-full transition-all duration-300 rounded-sm ${
           isActive ? "active font-medium" : ""
         }`}
       >

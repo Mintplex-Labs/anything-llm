@@ -117,20 +117,20 @@ export default function HeaderMenu({
           <div className="flex items-center gap-x-[15px]">
             <button
               onClick={onNewFlow}
-              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
+              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-sm border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
             >
               <Plus className="w-4 h-4" />
               New Flow
             </button>
             <button
               onClick={onPublishFlow}
-              className="px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border border-white/10 bg-theme-bg-primary text-theme-text-primary hover:bg-theme-action-menu-bg transition-all duration-300"
+              className="px-3 py-2 rounded-sm text-sm font-medium flex items-center justify-center gap-2 border border-white/10 bg-theme-bg-primary text-theme-text-primary hover:bg-theme-action-menu-bg transition-all duration-300"
             >
               Publish
             </button>
             <button
               onClick={onSaveFlow}
-              className="border-none bg-primary-button hover:opacity-80 text-foreground light:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
+              className="border-none bg-primary-button hover:opacity-80 text-foreground light:text-white px-3 py-2 rounded-sm text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
             >
               Save
             </button>
