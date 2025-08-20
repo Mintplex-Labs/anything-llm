@@ -200,3 +200,18 @@
   background: linear-gradient(180deg, var(--brand), var(--brand));
   border-radius: var(--radius-lg);
 }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: box-shadow .2s, transform .2s;
+}
+.card:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  transform: translateY(-1px);
+}
+.clickable {
+  cursor: pointer;
+}
+
