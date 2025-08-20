@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
+import "@/index.css";
 import { FullScreenLoader } from "@/components/Preloader";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { useThemeContext } from "@/ThemeProvider";
 
 export default function SimpleSSOPassthrough() {
   const query = useQuery();
   const redirectPath = query.get("redirectTo") || paths.home();
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(null);
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     try {
@@ -39,7 +42,10 @@ export default function SimpleSSOPassthrough() {
 
   if (error)
     return (
-      <div className="w-screen h-screen overflow-hidden bg-theme-bg-primary flex items-center justify-center flex-col gap-4">
+      <div
+        className="w-screen h-screen overflow-hidden bg-theme-bg-primary flex items-center justify-center flex-col gap-4"
+        data-theme={theme}
+      >
         <p className="text-theme-text-primary font-mono text-lg">{error}</p>
         <p className="text-theme-text-secondary font-mono text-sm">
           Please contact the system administrator about this error.

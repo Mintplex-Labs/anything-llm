@@ -13,7 +13,7 @@ import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import i18n from "./i18n";
 
-import "./styles/onenew-theme-shim.css";
+import "./styles/onenew-theme.css";
 
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
@@ -102,7 +102,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="theme-onenew dark">
+    <div className="theme-onenew">
       <ThemeProvider>
         <Suspense fallback={<FullScreenLoader />}>
           <ContextWrapper>
