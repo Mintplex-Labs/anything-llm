@@ -4,12 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        card: "var(--card)",
-        border: "var(--border)",
-        primary: "var(--primary)",
-        accent: "var(--accent)"
+        "bg-0": "var(--bg-0)",
+        "bg-1": "var(--bg-1)",
+        "bg-2": "var(--bg-2)",
+        "text-0": "var(--text-0)",
+        "text-1": "var(--text-1)",
+        "stroke-0": "var(--stroke-0)",
+        "stroke-1": "var(--stroke-1)",
+        "brand-blue-600": "var(--brand-blue-600)",
+        "brand-violet-600": "var(--brand-violet-600)",
+        "success-600": "var(--success-600)",
+        "danger-600": "var(--danger-600)"
+      },
+      backgroundImage: {
+        onenew: "linear-gradient(135deg, var(--brand-blue-600), var(--brand-violet-600))"
       },
       borderRadius: {
         xl: "var(--radius)",

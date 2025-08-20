@@ -1,7 +1,7 @@
 # Onenew Theme Style Guide
 
 ## Theme usage
-Use `.onenew-*` utilities or CSS variables for app chrome. Avoid Tailwind color utilities except in content (markdown), charts, and third-party widgets.
+Use `.onenew-*` utilities, CSS variables, or the Tailwind token classes for app chrome. Avoid the default Tailwind palette except in content (markdown), charts, and third-party widgets.
 
 ## Palette tokens
 | Token | Purpose |
@@ -16,6 +16,23 @@ Use `.onenew-*` utilities or CSS variables for app chrome. Avoid Tailwind color 
 | `--success` | Positive status color. |
 | `--warning` | Cautionary or pending status color. |
 | `--danger` | Error and destructive status color. |
+
+## Tailwind color utilities
+Tailwind exposes theme tokens as color classes so components can use semantic names instead of raw values.
+
+```jsx
+<div className="bg-bg-0 text-text-0">
+  <button className="bg-onenew text-white">Continue</button>
+  <p className="text-success-600">Saved!</p>
+</div>
+```
+
+Available classes include:
+- `bg-bg-0`, `bg-bg-1`, `bg-bg-2`
+- `text-text-0`, `text-text-1`
+- `border-stroke-0`, `border-stroke-1`
+- `bg-brand-blue-600`, `bg-brand-violet-600`
+- `text-success-600`, `text-danger-600`
 
 ## Adding a new surface or status color
 1. Add the CSS variable to `onenew-theme.css`.
