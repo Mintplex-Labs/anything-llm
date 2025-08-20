@@ -239,7 +239,10 @@ export default function PromptInput({
   }
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center bg-[var(--surface)] border-t border-[var(--border)] p-3">
+    <div
+      className="w-full sticky bottom-0 left-0 z-20 flex justify-center items-center bg-[var(--surface)]/80 backdrop-blur-md border-t border-[var(--border)] p-3"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
+    >
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -276,7 +279,7 @@ export default function PromptInput({
                 }}
                 value={promptInput}
                 spellCheck={Appearance.get("enableSpellCheck")}
-                className={`onenew-input w-full resize-none max-h-[50vh] md:max-h-[350px] md:min-h-[40px] ${textSizeClass}`}
+                className={`onenew-input w-full resize-none max-h-[40vh] min-h-[40px] py-2 ${textSizeClass} focus:border-blue-400/60 focus:shadow-[0_0_0_2px_rgba(96,165,250,0.6)_inset]`}
                 placeholder={t("chat_window.send_message")}
               />
               {isStreaming ? (
