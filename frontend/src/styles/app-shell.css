@@ -1,0 +1,16 @@
+:root{
+  --radius:14px; --gap:16px; --gap-lg:24px;
+  --card-bg: color-mix(in hsl, Canvas 96%, black 6%); /* light */
+  --card-bg-dark: color-mix(in hsl, Canvas 92%, white 6%); /* dark */
+  --elev: 0 6px 18px rgba(0,0,0,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --card-bg: var(--card-bg-dark); }
+}
+.app{
+  min-height:100dvh; display:grid; grid-template-columns: 264px 1fr;
+}
+.sidebar{ position:sticky; top:0; align-self:start; height:100dvh; overflow:auto; }
+.main{ padding: clamp(16px,2vw,32px); }
+.container{ max-width: 1200px; margin-inline:auto; }
+.card{ background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--elev); }

@@ -42,7 +42,6 @@ export default function PromptInput({
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
-  const composerRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
@@ -70,22 +69,6 @@ export default function PromptInput({
     resetTextAreaHeight();
   }, [isStreaming]);
 
-  useEffect(() => {
-    const el = composerRef.current;
-    if (!el) return;
-    const updateHeight = () => {
-      document.documentElement.style.setProperty(
-        "--composer-h",
-        `${el.offsetHeight}px`
-      );
-    };
-    updateHeight();
-    if (typeof ResizeObserver !== "undefined") {
-      const observer = new ResizeObserver(updateHeight);
-      observer.observe(el);
-      return () => observer.disconnect();
-    }
-  }, []);
 
   /**
    * Save the current state before changes
@@ -257,11 +240,7 @@ export default function PromptInput({
   }
 
   return (
-    <div
-      ref={composerRef}
-      className="w-full sticky bottom-0 left-0 z-20 flex justify-center items-center bg-[var(--surface)]/80 backdrop-blur-md border-t border-[var(--border)] p-3"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
-    >
+    <div className="chat__composer">
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -274,12 +253,9 @@ export default function PromptInput({
         sendCommand={sendCommand}
         promptRef={textareaRef}
       />
-      <form
-        onSubmit={handleSubmit}
-        className="md:w-3/4 w-full mx-auto max-w-xl"
-      >
+      <form onSubmit={handleSubmit} className="md:w-3/4 w-full mx-auto max-w-xl">
         <AttachmentManager attachments={attachments} />
-        <div className="chat-composer">
+        <div className="flex items-center gap-2">
           <textarea
             ref={textareaRef}
             onChange={handleChange}
@@ -296,7 +272,7 @@ export default function PromptInput({
             }}
             value={promptInput}
             spellCheck={Appearance.get("enableSpellCheck")}
-            className={`onenew-input resize-none max-h-[40vh] min-h-[40px] ${textSizeClass}`}
+            className={`chat__input onenew-input resize-none max-h-[40vh] ${textSizeClass}`}
             placeholder={t("chat_window.send_message")}
           />
           {isStreaming ? (

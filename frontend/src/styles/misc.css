@@ -1,0 +1,2 @@
+@supports (scrollbar-width:thin){ *{ scrollbar-width: thin; } }
+.main{ padding-bottom: max(24px, env(safe-area-inset-bottom)); }

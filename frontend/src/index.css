@@ -11,3 +11,11 @@ body {
 }
 
 @import "./styles/overrides.css";
+@import "./styles/app-shell.css";
+@import "./styles/tables.css";
+@import "./styles/forms.css";
+@import "./styles/states.css";
+@import "./styles/chat.css";
+@import "./styles/misc.css";
+@import "./styles/buttons.css";
+@import "./pages/ui-preferences.css";

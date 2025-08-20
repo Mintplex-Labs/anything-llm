@@ -32,6 +32,8 @@ export default function ChatRow({ chat, onDelete }) {
     closeModal: closeResponseModal,
   } = useModal();
 
+  const responseText = parseText(chat.response);
+
   const handleDelete = async () => {
     if (
       !window.confirm(
@@ -61,15 +63,16 @@ export default function ChatRow({ chat, onDelete }) {
         </td>
         <td
           onClick={openResponseModal}
-          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 trunc cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          title={responseText}
         >
-          {truncate(parseText(chat.response), 40)}
+          {responseText}
         </td>
         <td className="px-6">{chat.createdAt}</td>
-        <td className="px-6 flex items-center gap-x-6 h-full mt-1">
+        <td className="px-6 cell-actions">
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+            className="icon-btn text-white/80 light:text-foreground hover:text-red-300 light:hover:text-red-500"
           >
             <Trash className="h-5 w-5" />
           </button>
