@@ -334,6 +334,7 @@ function buildMessages({
           error={props.error}
           workspace={workspace}
           closed={props.closed}
+          sentAt={props.sentAt}
         />
       );
     } else {
@@ -354,6 +355,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           alignmentCls={getMessageAlignment?.(props.role)}
+          sentAt={props.sentAt}
         />
       );
     }

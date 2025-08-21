@@ -56,6 +56,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         content: message,
         role: "user",
         attachments: parseAttachments(),
+        sentAt: Math.floor(Date.now() / 1000),
       },
       {
         content: "",
@@ -63,6 +64,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         pending: true,
         userMessage: message,
         animate: true,
+        sentAt: Math.floor(Date.now() / 1000),
       },
     ];
 

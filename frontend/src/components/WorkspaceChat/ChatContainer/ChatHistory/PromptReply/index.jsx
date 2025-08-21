@@ -3,6 +3,7 @@ import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
+import moment from "moment";
 import {
   THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
@@ -18,6 +19,7 @@ const PromptReply = ({
   workspace,
   sources = [],
   closed = true,
+  sentAt,
 }) => {
   const assistantBackgroundColor = "bg-theme-bg-chat";
 
@@ -67,11 +69,18 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <div className="onenew-card p-3 md:p-4">
-            <RenderAssistantChatContent
-              key={`${uuid}-prompt-reply-content`}
-              message={reply}
-            />
+          <div className="flex flex-col">
+            <div className="onenew-card p-3 md:p-4">
+              <RenderAssistantChatContent
+                key={`${uuid}-prompt-reply-content`}
+                message={reply}
+              />
+            </div>
+            {sentAt && (
+              <div className="bubble-meta">
+                {moment.unix(sentAt).format("h:mm A")}
+              </div>
+            )}
           </div>
         </div>
         <Citations sources={sources} />
