@@ -1,3 +1,12 @@
+/**
+ * Message component: renders a single chat message with styling based on the sender.
+ *
+ * Props:
+ *  - sender: "user" | "bot" - determines alignment and appearance.
+ *  - children: ReactNode - message content to display.
+ *
+ * Used within chat transcripts to display messages from either the user or the assistant.
+ */
 import React, { ReactNode } from "react";
 import "@/styles/chat.css";
 

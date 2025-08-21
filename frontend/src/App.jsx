@@ -92,6 +92,12 @@ const SystemPromptVariables = lazy(
   () => import("@/pages/Admin/SystemPromptVariables")
 );
 
+/**
+ * App component: entry point for the dashboard with routing and global providers.
+ *
+ * Sets up contexts, theming, and lazy-loaded routes. This component does not
+ * accept any props and is mounted by `main.jsx`.
+ */
 export default function App() {
   useEffect(() => {
     document.title = "OneNew — Dashboard";

@@ -1,3 +1,11 @@
+/**
+ * Composer component: text entry field for chat messages with send, attach, and voice options.
+ *
+ * Props:
+ *  - onSend?: (message: string) => void - callback invoked with the message when submitted.
+ *
+ * Renders at the bottom of the chat interface, providing controls for composing and sending messages.
+ */
 import React, { useState, FormEvent } from "react";
 import { PaperPlaneRight, PaperclipHorizontal, Microphone } from "@phosphor-icons/react";
 import "@/styles/chat.css";
