@@ -1,0 +1,167 @@
+/* ===== ONE-NEW HOTFIX: THEME + LAYOUT STABILIZERS ===== */
+
+/* Guarantee theme surface + text sane defaults even if toggler is inverted */
+:root {
+  --one-bg: #0c0f1a;            /* deep ink */
+  --one-surface: #12162a;       /* chat surface dark */
+  --one-surface-2: #171c33;     /* panels / inputs */
+  --one-text: #e8ecff;          /* main text light */
+  --one-muted: #b9c0e6;
+  --one-primary: #5a66ff;       /* blue */
+  --one-primary-2: #7a40ff;     /* violet */
+  --one-border: rgba(255,255,255,0.08);
+  --one-outline: rgba(90,102,255,0.75);
+  --one-chat-shadow: rgba(0,0,0,0.25);
+}
+
+/* Light theme variables (auto flip by attribute) */
+:root[data-theme="light"] {
+  --one-bg: #f8f9ff;           
+  --one-surface: #ffffff;      
+  --one-surface-2: #f1f3ff;    
+  --one-text: #141a2f;         
+  --one-muted: #536094;        
+  --one-primary: #3a4bff;      
+  --one-primary-2: #6a35ff;    
+  --one-border: rgba(20,26,47,0.08);
+  --one-outline: rgba(58,75,255,0.55);
+  --one-chat-shadow: rgba(20,26,47,0.09);
+}
+
+/* Global reset to kill white-on-white immediately */
+html, body {
+  background: var(--one-bg) !important;
+  color: var(--one-text) !important;
+}
+
+/* Panels / app shell */
+.app, .app-shell, .page, .workspace-layout, .settings-layout {
+  background: var(--one-bg) !important;
+  color: var(--one-text) !important;
+}
+
+/* Sidebar pinned left + proper contrast */
+.sidebar, aside[role="navigation"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--one-primary) 0%, var(--one-primary-2) 60%, var(--one-surface) 100%) !important;
+  color: var(--one-text) !important;
+  border-right: 1px solid var(--one-border);
+}
+.sidebar .footer, .sidebar .bottom, .sidebar [data-slot="footer"] {
+  margin-top: auto;
+}
+
+/* Prevent icons drifting to center if container breaks */
+.sidebar .icon, .sidebar .nav-icon, .sidebar [aria-label*="Settings"], .sidebar [aria-label*="GitHub"] {
+  color: var(--one-text) !important;
+  opacity: 0.9;
+}
+
+/* Header/topbar separation so profile isn’t invisible */
+.header, .topbar, header[role="banner"] {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--one-surface);
+  border-bottom: 1px solid var(--one-border);
+}
+
+/* Profile/avatar visibility in both themes */
+.header .profile, .topbar .profile, .header [data-profile], .topbar [data-profile] {
+  color: var(--one-text);
+  filter: none !important;
+}
+
+/* Chat layout: middle scrollable, composer fixed bottom */
+.chat-area,
+.chat-layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* header | messages | composer */
+  min-height: calc(100vh - 0px);
+}
+
+/* Ensure the scroll region exists */
+.chat-messages, .messages, [data-chat="messages"] {
+  overflow-y: auto;
+  min-height: 0; /* critical so grid child can shrink/scroll */
+  background: var(--one-surface);
+}
+
+/* Thinking indicator distinctly separate + no clipping */
+.thinking, .assistant-typing, [data-chat="thinking"] {
+  margin: 8px 12px;
+  padding: 8px 12px;
+  background: var(--one-surface-2);
+  border: 1px solid var(--one-border);
+  border-radius: 8px;
+  color: var(--one-muted);
+}
+
+/* Composer full-width bottom-anchored */
+.chat-composer, .composer, [data-chat="composer"] {
+  background: var(--one-surface);
+  border-top: 1px solid var(--one-border);
+  padding: 10px 12px;
+}
+.chat-composer input[type="text"],
+.chat-composer textarea,
+.composer input[type="text"],
+.composer textarea {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  background: var(--one-surface-2);
+  color: var(--one-text);
+  border: 1px solid var(--one-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+}
+.chat-composer input:focus,
+.chat-composer textarea:focus {
+  box-shadow: 0 0 0 3px var(--one-outline);
+  border-color: transparent;
+}
+
+/* Prevent chat history from covering composer */
+.chat-messages { padding-bottom: 12px; }
+
+/* Settings / forms: kill OS defaults + enforce contrast */
+select, input, textarea, button {
+  background: var(--one-surface-2);
+  color: var(--one-text);
+  border: 1px solid var(--one-border);
+}
+:root[data-theme="light"] select,
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea,
+:root[data-theme="light"] button {
+  background: var(--one-surface-2);
+  color: var(--one-text);
+}
+
+/* Search bar under logo respects theme */
+.sidebar .search, .sidebar [role="search"] input {
+  background: var(--one-surface-2);
+  color: var(--one-text);
+  border: 1px solid var(--one-border);
+}
+
+/* Icons must always be visible */
+svg, i, .icon {
+  color: currentColor;
+  fill: currentColor;
+}
+
+/* Make dropdown menus readable in both themes */
+[role="menu"], .dropdown-menu {
+  background: var(--one-surface);
+  color: var(--one-text);
+  border: 1px solid var(--one-border);
+  box-shadow: 0 6px 18px var(--one-chat-shadow);
+}
+
+/* Fix tiny/centered composer variants we’ve seen */
+.composer { width: 100% !important; margin: 0 auto; }
