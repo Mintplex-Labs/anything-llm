@@ -18,6 +18,8 @@ const { createSessionForEngines } = require("../../../aiapplications_utils/sessi
 const { getEngineResponse, pareseRelatedQuestions, generateRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 const { performance } = require('perf_hooks');
+const { serve } = require("swagger-ui-express");
+const { fetchAndProcessRAGData } = require("../../../aiapplications_utils/docRag");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -816,6 +818,211 @@ function apiWorkspaceThreadEndpoints(app) {
           }
         }
 
+        answers["user_query"] = message;
+        const main_llm_query = JSON.stringify(answers);
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        await ApiChatHandler.streamChat({
+          response,
+          workspace,
+          message: main_llm_query,
+          message_db_save: message,
+          mode,
+          user,
+          user_pseudo_id,
+          thread,
+          attachments,
+          reset,
+          related_questions: related_questions,
+          engine_sources: citationsMapping,
+          bestReferences: bestReferences,
+        });
+        await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
+          LLMModel: getModelTag(),
+        });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
+          threadName: thread?.name,
+          userId: user?.id,
+        });
+        response.end();
+      } catch (e) {
+        console.error(e.message, e);
+        writeResponseChunk(response, {
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.end();
+      }
+    }
+  );
+
+
+  app.post(
+    "/v1/workspace/:slug/thread/:threadSlug/docs-rag/stream-chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Stream chat with a workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['threadSlug'] = {
+          in: 'path',
+          description: 'Unique slug of thread',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
+        required: true,
+        content: {
+          "application/json": {
+            example: {
+              message: "What is AnythingLLM?",
+              mode: "query | chat",
+              userId: 1,
+              attachments: [
+               {
+                 name: "image.png",
+                 mime: "image/png",
+                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               }
+              ],
+              reset: false
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "text/event-stream": {
+            schema: {
+              type: 'array',
+              items: {
+                  type: 'string',
+              },
+              example: [
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "First chunk",
+                  sources: [],
+                  close: false,
+                  error: "null | text string of the failure mode."
+                },
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "chunk two",
+                  sources: [],
+                  close: false,
+                  error: "null | text string of the failure mode."
+                },
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "final chunk of LLM output!",
+                  sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
+                  close: true,
+                  error: "null | text string of the failure mode."
+                }
+              ]
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { slug, threadSlug } = request.params;
+        const {
+          message,
+          mode = "query",
+          userId,
+          user_pseudo_id,
+          attachments = [],
+          reset = false,
+        } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+        const thread = await WorkspaceThread.get({
+          slug: threadSlug,
+          workspace_id: workspace.id,
+        });
+
+        if (!workspace || !thread) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
+          });
+          return;
+        }
+
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "Message is empty"
+              : `${mode} is not a valid mode.`,
+          });
+          return;
+        }
+
+        const user = userId ? await User.get({ id: Number(userId) }) : null;
+
+        // front needs:
+        // followup questions
+        // real links to documents
+        // best references (documents)
+
+        // get chunks from doc-rag service
+        const data = {
+          query: message,
+          limit: 25
+        };
+        const documents = await fetchAndProcessRAGData(data);
+
+        // build document data for LLM (without summaries ect)
+        let ragData = {};
+
+        // build best references
+        let bestReferences = [];
+
+        // build citations mapping - a dict with id->real_doc_url, title, summary
+        let citationsMapping = {};
+
+
+        answers["grounding_data"] = ragData;
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
 
