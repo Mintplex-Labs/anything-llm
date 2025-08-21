@@ -2,6 +2,5 @@
   height:40px; border-radius:12px; padding:0 12px; border:1px solid color-mix(in hsl, currentColor 12%, transparent);
   background:Canvas; color:CanvasText;
 }
-.input:focus, .select:focus{ outline:2px solid color-mix(in hsl, AccentColor 60%, transparent); outline-offset:2px; }
 .dropdown{ position:relative; }
 .dropdown-menu{ position:absolute; inset-inline-start:0; top:calc(100% + 6px); z-index: 60; min-width: 220px; }
