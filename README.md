@@ -146,16 +146,25 @@ The legacy global file list has been removed from the primary navigation. To exp
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
 
-### Technical Overview
+## Folder Structure
 
-This monorepo consists of six main sections:
-
-- `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
-- `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
-- `collector`: NodeJS express server that processes and parses documents from the UI.
-- `docker`: Docker instructions and build process + information for building from source.
-- `embed`: Submodule for generation & creation of the [web embed widget](https://github.com/Mintplex-Labs/anythingllm-embed).
-- `browser-extension`: Submodule for the [chrome browser extension](https://github.com/Mintplex-Labs/anythingllm-extension).
+- `/frontend/`: React + Vite client
+  - `/frontend/src/components/`: Reusable UI components
+  - `/frontend/src/layouts/`: Page layout components
+  - `/frontend/src/pages/`: App pages
+  - `/frontend/src/styles/`: Global CSS/Tailwind overrides
+- `/server/`: Express API and vector/LLM management
+  - `/server/endpoints/`: REST API routes
+  - `/server/models/`: Data models and Prisma schema
+  - `/server/storage/`: Document and vector storage
+- `/collector/`: Document processing service
+  - `/collector/extensions/`: File-type handlers
+  - `/collector/storage/`: Temporary storage
+- `/docker/`: Docker build files and compose configurations
+- `/embed/`: Web embed widget (submodule)
+- `/browser-extension/`: Chrome extension (submodule)
+- `/scripts/`: Repository utility scripts
+- `/tests/`: Test suites
 
 ## 🛳 Self-Hosting
 
