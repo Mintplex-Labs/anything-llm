@@ -65,15 +65,15 @@
   }
 
   .swagger-ui .debug * {
-    outline: #e6da99 solid 1px;
+    box-shadow: 0 0 0 1px #e6da99;
   }
 
   .swagger-ui .debug-white * {
-    outline: #fff solid 1px;
+    box-shadow: 0 0 0 1px #fff;
   }
 
   .swagger-ui .debug-black * {
-    outline: #bfbfbf solid 1px;
+    box-shadow: 0 0 0 1px #bfbfbf;
   }
 
   .swagger-ui .debug-grid {

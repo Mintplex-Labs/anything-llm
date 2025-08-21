@@ -21,7 +21,6 @@
 
 /* Strong focus ring everywhere */
 :focus-visible {
-  outline: none !important;
   box-shadow: 0 0 0 var(--space-1) var(--brand) !important;
 }
 
@@ -73,7 +72,6 @@
   color: color-mix(in srgb, var(--text), transparent 55%);
 }
 .onenew-input:focus {
-  outline: none;
   box-shadow: 0 0 0 4px var(--ring);
 }
 select.onenew-input,

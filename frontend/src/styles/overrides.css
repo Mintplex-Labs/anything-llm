@@ -37,7 +37,7 @@
   --primary-600: #3f8ff0;
   --danger: #ff6b6b;
   --accent: #7ee787;
-  --focus: 0 0 0 2px rgba(90,167,255,.35);
+  --focus: 0 0 0 3px rgba(139,92,246,0.45);
 }
 
 @media (prefers-color-scheme: light) {
@@ -54,6 +54,7 @@
     --primary-600: #1d4ed8;
     --danger: #dc2626;
     --accent: #16a34a;
+    --focus: 0 0 0 3px rgba(124,58,237,0.28);
   }
 }
 
@@ -94,7 +95,7 @@ a:hover { text-decoration: underline; }
 .card, .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); }
 
 /* Focus visibility */
-:focus-visible { outline: none; box-shadow: var(--focus); border-radius: .25rem; }
+:focus-visible { box-shadow: var(--focus); border-radius: .25rem; }
 
 /* Hide questionable placeholder "AD" badge if it exists */
 .badge--ad, .ad-placeholder { display: none !important; }
