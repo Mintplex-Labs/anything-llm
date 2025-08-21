@@ -56,44 +56,42 @@ export default function UserButton() {
 
   if (mode === null) return null;
   return (
-    <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
-      <div className="menu">
-        <button
-          ref={buttonRef}
-          onClick={() => setShowMenu(!showMenu)}
-          type="button"
-          className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-[var(--text)] p-2 border border-transparent hover:border-[var(--border)]"
-        >
-          {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
-        </button>
+    <div className="menu absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
+      <button
+        ref={buttonRef}
+        onClick={() => setShowMenu(!showMenu)}
+        type="button"
+        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-[var(--text)] p-2 border border-transparent hover:border-[var(--border)]"
+      >
+        {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
+      </button>
 
-        {showMenu && (
-          <div ref={menuRef} className="menu__popover">
-            <div className="flex flex-col gap-y-2">
-              {mode === "multi" && !!user && (
-                <button onClick={handleOpenAccountModal} className="menu__item">
-                  {t("profile_settings.account")}
-                </button>
-              )}
-              <a href={supportEmail} className="menu__item">
-                {t("profile_settings.support")}
-              </a>
-              <button
-                onClick={() => {
-                  window.localStorage.removeItem(AUTH_USER);
-                  window.localStorage.removeItem(AUTH_TOKEN);
-                  window.localStorage.removeItem(AUTH_TIMESTAMP);
-                  window.location.replace(paths.home());
-                }}
-                type="button"
-                className="menu__item"
-              >
-                {t("profile_settings.signout")}
+      {showMenu && (
+        <div ref={menuRef} className="menu__popover">
+          <div className="flex flex-col gap-y-2">
+            {mode === "multi" && !!user && (
+              <button onClick={handleOpenAccountModal} className="menu__item">
+                {t("profile_settings.account")}
               </button>
-            </div>
+            )}
+            <a href={supportEmail} className="menu__item">
+              {t("profile_settings.support")}
+            </a>
+            <button
+              onClick={() => {
+                window.localStorage.removeItem(AUTH_USER);
+                window.localStorage.removeItem(AUTH_TOKEN);
+                window.localStorage.removeItem(AUTH_TIMESTAMP);
+                window.location.replace(paths.home());
+              }}
+              type="button"
+              className="menu__item"
+            >
+              {t("profile_settings.signout")}
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {user && showAccountSettings && (
         <AccountModal
           user={user}
