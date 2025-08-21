@@ -84,7 +84,6 @@ export default function PromptInput({
     return () => observer.disconnect();
   }, []);
 
-
   /**
    * Save the current state before changes
    * @param {number} adjustment
@@ -262,7 +261,7 @@ export default function PromptInput({
   }
 
   return (
-    <div className="chat__composer" ref={composerRef}>
+    <div className="chat__composer w-full" ref={composerRef}>
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -275,7 +274,7 @@ export default function PromptInput({
         sendCommand={sendCommand}
         promptRef={textareaRef}
       />
-      <form onSubmit={handleSubmit} className="md:w-3/4 w-full mx-auto max-w-xl">
+      <form onSubmit={handleSubmit} className="w-full">
         <AttachmentManager attachments={attachments} />
         <div className="flex items-center gap-2">
           <textarea
@@ -294,7 +293,7 @@ export default function PromptInput({
             }}
             value={promptInput}
             spellCheck={Appearance.get("enableSpellCheck")}
-            className={`chat__input onenew-input resize-none ${textSizeClass}`}
+            className={`chat__input onenew-input resize-none flex-1 w-full ${textSizeClass}`}
             placeholder={t("chat_window.send_message")}
           />
           {isStreaming ? (
