@@ -115,13 +115,13 @@ export default function TextToSpeechProvider({ settings }) {
   return (
     <form onSubmit={handleSubmit} className="flex w-full">
       <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
           <div className="flex gap-x-4 items-center">
-            <p className="text-lg leading-6 font-bold text-foreground">
+            <p className="text-lg leading-6 font-bold text-white">
               Text-to-speech Preference
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Here you can specify what kind of text-to-speech providers you would
             want to use in your OneNew experience. By default, we use the
             browser's built in support for these services, but you may want to
@@ -135,7 +135,7 @@ export default function TextToSpeechProvider({ settings }) {
             </CTAButton>
           )}
         </div>
-        <div className="text-base font-bold text-foreground mt-6 mb-4">Provider</div>
+        <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
         <div className="relative">
           {searchMenuOpen && (
             <div
@@ -167,7 +167,7 @@ export default function TextToSpeechProvider({ settings }) {
                   <X
                     size={20}
                     weight="bold"
-                    className="cursor-pointer text-foreground hover:text-x-button"
+                    className="cursor-pointer text-white hover:text-x-button"
                     onClick={handleXButton}
                   />
                 </div>
@@ -188,7 +188,7 @@ export default function TextToSpeechProvider({ settings }) {
             </div>
           ) : (
             <button
-              className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-sm flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+              className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
               type="button"
               onClick={() => setSearchMenuOpen(true)}
             >
@@ -199,7 +199,7 @@ export default function TextToSpeechProvider({ settings }) {
                   className="w-10 h-10 rounded-md"
                 />
                 <div className="flex flex-col text-left">
-                  <div className="text-sm font-semibold text-foreground">
+                  <div className="text-sm font-semibold text-white">
                     {selectedProviderObject.name}
                   </div>
                   <div className="mt-1 text-xs text-description">
@@ -207,7 +207,7 @@ export default function TextToSpeechProvider({ settings }) {
                   </div>
                 </div>
               </div>
-              <CaretUpDown size={24} weight="bold" className="text-foreground" />
+              <CaretUpDown size={24} weight="bold" className="text-white" />
             </button>
           )}
         </div>

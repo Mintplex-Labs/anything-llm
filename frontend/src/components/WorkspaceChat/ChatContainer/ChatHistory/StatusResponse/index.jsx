@@ -25,8 +25,7 @@ export default function StatusResponse({
           <div
             onClick={handleExpandClick}
             style={{ borderRadius: "6px" }}
-            className={`${!previousThoughts?.length ? "" : `${previousThoughts?.length ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start assistant-typing py-2 px-4 flex gap-x-2`}
-            data-chat="thinking"
+            className={`${!previousThoughts?.length ? "" : `${previousThoughts?.length ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
           >
             <div className="w-7 h-7 flex justify-center flex-shrink-0 items-center">
               {isThinking ? (

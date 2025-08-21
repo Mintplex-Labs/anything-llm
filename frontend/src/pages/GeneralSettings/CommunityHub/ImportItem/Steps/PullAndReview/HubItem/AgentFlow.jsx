@@ -38,7 +38,7 @@ export default function AgentFlow({ item, setStep }) {
           Import Agent Flow &quot;{item.name}&quot;
         </h2>
         {item.creatorUsername && (
-          <p className="text-foreground/60 light:text-theme-text-secondary text-xs font-mono">
+          <p className="text-white/60 light:text-theme-text-secondary text-xs font-mono">
             Created by{" "}
             <a
               href={paths.communityHub.profile(item.creatorUsername)}
@@ -51,7 +51,7 @@ export default function AgentFlow({ item, setStep }) {
           </p>
         )}
       </div>
-      <div className="flex flex-col gap-y-[25px] text-foreground/80 light:text-theme-text-secondary text-sm">
+      <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm">
         <p>
           Agent flows allow you to create reusable sequences of actions that can
           be triggered by your agent.

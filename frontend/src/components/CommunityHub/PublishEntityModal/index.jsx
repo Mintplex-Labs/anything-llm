@@ -37,9 +37,9 @@ export default function PublishEntityModal({
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={18} weight="bold" className="text-foreground" />
+            <X size={18} weight="bold" className="text-white" />
           </button>
         </div>
         {renderEntityForm()}

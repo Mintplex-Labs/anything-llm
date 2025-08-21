@@ -348,7 +348,10 @@ const System = {
   },
   fetchLogo: async function () {
     const url = new URL(`${fullApiUrl()}/system/logo`);
-    url.searchParams.append("theme", localStorage.getItem("theme") || "light");
+    url.searchParams.append(
+      "theme",
+      localStorage.getItem("theme") || "default"
+    );
 
     return await fetch(url, {
       method: "GET",

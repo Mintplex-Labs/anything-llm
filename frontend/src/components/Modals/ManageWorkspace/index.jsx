@@ -43,16 +43,16 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
         <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
-              <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {t("connectors.manage.editing")} "{workspace.name}"
               </h3>
             </div>
             <button
               onClick={hideModal}
               type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={24} weight="bold" className="text-foreground" />
+              <X size={24} weight="bold" className="text-white" />
             </button>
           </div>
           <div
@@ -60,7 +60,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             style={{ maxHeight: "calc(100vh - 200px)" }}
           >
             <div className="py-7 px-9 space-y-2 flex-col">
-              <p className="text-foreground">
+              <p className="text-white">
                 {t("connectors.manage.desktop-only")}
               </p>
             </div>
@@ -69,7 +69,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
+              className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
             >
               {t("connectors.manage.dismiss")}
             </button>
@@ -83,14 +83,14 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
       <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
-        <div className="relative bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border">
           <div className="flex items-start justify-between p-2 rounded-t border-theme-modal-border relative">
             <button
               onClick={hideModal}
               type="button"
-              className="z-29 text-foreground bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={20} weight="bold" className="text-foreground" />
+              <X size={20} weight="bold" className="text-white" />
             </button>
           </div>
 
@@ -121,20 +121,20 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
       <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-theme-bg-secondary p-1 rounded-xl shadow border-2 border-theme-modal-border w-fit">
         <button
           onClick={() => setSelectedTab("documents")}
-          className={`border-none px-4 py-2 rounded-sm font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
             selectedTab === "documents"
-              ? "bg-theme-modal-border font-bold text-foreground light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-foreground/20 font-medium hover:text-foreground light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
+              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
           {t("connectors.manage.documents")}
         </button>
         <button
           onClick={() => setSelectedTab("dataConnectors")}
-          className={`border-none px-4 py-2 rounded-sm font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
             selectedTab === "dataConnectors"
-              ? "bg-theme-modal-border font-bold text-foreground light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-foreground/20 font-medium hover:text-foreground light:bg-card light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
+              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
           {t("connectors.manage.data-connectors")}

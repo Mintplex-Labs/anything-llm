@@ -91,12 +91,12 @@ function WorkspaceDirectory({
     return (
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
-          <h3 className="text-foreground text-base font-bold ml-5">
+          <h3 className="text-white text-base font-bold ml-5">
             {workspace.name}
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
-          <div className="text-foreground/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-border/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
             <div className="col-span-10 flex items-center gap-x-[4px]">
               <div className="shrink-0 w-3 h-3" />
               <p className="ml-[7px] text-theme-text-primary">Name</p>
@@ -118,7 +118,7 @@ function WorkspaceDirectory({
     <>
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
-          <h3 className="text-foreground text-base font-bold ml-5">
+          <h3 className="text-white text-base font-bold ml-5">
             {workspace.name}
           </h3>
         </div>
@@ -129,12 +129,12 @@ function WorkspaceDirectory({
             }`}
           />
           <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="text-foreground/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-border/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
                   <div
-                    className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-border text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
+                    className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
                     role="checkbox"
                     aria-checked={
                       Object.keys(selectedItems).length ===
@@ -150,7 +150,7 @@ function WorkspaceDirectory({
                       files.items.reduce(
                         (sum, folder) => sum + folder.items.length,
                         0
-                      ) && <div className="w-2 h-2 bg-card rounded-sm" />}
+                      ) && <div className="w-2 h-2 bg-white rounded-[2px]" />}
                   </div>
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
@@ -187,7 +187,7 @@ function WorkspaceDirectory({
                 </RenderFileRows>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-foreground text-opacity-40 text-sm font-medium">
+                  <p className="text-white text-opacity-40 text-sm font-medium">
                     {t("connectors.directory.no_docs")}
                   </p>
                 </div>
@@ -196,11 +196,11 @@ function WorkspaceDirectory({
 
             {Object.keys(selectedItems).length > 0 && !hasChanges && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-                <div className="mx-auto bg-card light:bg-card rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
+                <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-sm hover:bg-neutral-800/80 hover:text-foreground light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-foreground"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {Object.keys(selectedItems).length ===
                       files.items.reduce(
@@ -212,7 +212,7 @@ function WorkspaceDirectory({
                     </button>
                     <button
                       onClick={removeSelectedItems}
-                      className="border-none text-sm font-semibold bg-card light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-sm hover:bg-neutral-800/80 hover:text-foreground light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-foreground"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {t("connectors.directory.remove_selected")}
                     </button>
@@ -224,7 +224,7 @@ function WorkspaceDirectory({
         </div>
         {hasChanges && (
           <div className="flex items-center justify-between py-6">
-            <div className="text-foreground/80">
+            <div className="text-white/80">
               <p className="text-sm font-semibold">
                 {embeddingCosts === 0
                   ? ""
@@ -241,7 +241,7 @@ function WorkspaceDirectory({
 
             <button
               onClick={(e) => handleSaveChanges(e)}
-              className="border border-slate-200 px-5 py-2.5 rounded-lg text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               {t("connectors.directory.save_embed")}
             </button>
@@ -283,13 +283,13 @@ const PinAlert = memo(() => {
               className="text-theme-text-primary text-lg w-6 h-6"
               weight="regular"
             />
-            <h3 className="text-xl font-semibold text-foreground">
+            <h3 className="text-xl font-semibold text-white">
               {t("connectors.pinning.what_pinning")}
             </h3>
           </div>
         </div>
         <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-foreground text-md flex flex-col gap-y-2">
+          <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
               <span
                 dangerouslySetInnerHTML={{
@@ -310,7 +310,7 @@ const PinAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
+            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             {t("connectors.pinning.accept")}
           </button>
@@ -348,13 +348,13 @@ const DocumentWatchAlert = memo(() => {
               className="text-theme-text-primary text-lg w-6 h-6"
               weight="regular"
             />
-            <h3 className="text-xl font-semibold text-foreground">
+            <h3 className="text-xl font-semibold text-white">
               {t("connectors.watching.what_watching")}
             </h3>
           </div>
         </div>
         <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-foreground text-md flex flex-col gap-y-2">
+          <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
               <span
                 dangerouslySetInnerHTML={{
@@ -378,7 +378,7 @@ const DocumentWatchAlert = memo(() => {
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
           <button
             onClick={dismissAlert}
-            className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm"
+            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             {t("connectors.watching.accept")}
           </button>
@@ -430,7 +430,7 @@ function WorkspaceDocumentTooltips() {
           if (!data) return null;
           return (
             <div className="text-xs">
-              <p className="text-foreground light:invert font-medium break-all">
+              <p className="text-white light:invert font-medium break-all">
                 {data.title}
               </p>
               <div className="flex mt-1 gap-x-2">

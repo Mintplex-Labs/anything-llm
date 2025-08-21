@@ -60,13 +60,22 @@ export default function MenuOption({
   return (
     <div>
       <div
-        className={`nav-item flex items-center justify-between w-full transition-all duration-300 rounded-sm ${
-          isActive ? "active font-medium" : ""
-        }`}
+        className={`
+          flex items-center justify-between w-full
+          transition-all duration-300
+          rounded-[6px]
+          ${
+            isActive
+              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
+              : "hover:bg-theme-sidebar-subitem-hover"
+          }
+        `}
       >
         <Link
           to={href}
-          className="flex flex-grow items-center px-[12px] h-[32px] font-medium"
+          className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
+            isChild ? "hover:text-white" : "text-white light:text-black"
+          }`}
           onClick={hasChildren ? handleClick : undefined}
         >
           {icon}
@@ -74,18 +83,23 @@ export default function MenuOption({
             className={`${
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
-              isActive ? "font-semibold" : ""
+              isActive
+                ? "text-white font-semibold"
+                : "text-white light:text-black"
             } ${!icon && "pl-5"}`}
           >
             {btnText}
           </p>
         </Link>
         {hasChildren && (
-          <button onClick={handleClick} className="p-2">
+          <button onClick={handleClick} className="p-2 text-white">
             <CaretRight
               size={16}
               weight="bold"
-              className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              // color={isExpanded ? "#000000" : "var(--theme-sidebar-subitem-icon)"}
+              className={`transition-transform text-white light:text-black ${
+                isExpanded ? "rotate-90" : ""
+              }`}
             />
           </button>
         )}

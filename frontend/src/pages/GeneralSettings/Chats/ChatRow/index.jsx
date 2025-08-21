@@ -32,8 +32,6 @@ export default function ChatRow({ chat, onDelete }) {
     closeModal: closeResponseModal,
   } = useModal();
 
-  const responseText = parseText(chat.response);
-
   const handleDelete = async () => {
     if (
       !window.confirm(
@@ -47,11 +45,11 @@ export default function ChatRow({ chat, onDelete }) {
 
   return (
     <>
-      <tr className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10">
-        <td className="px-6 font-medium whitespace-nowrap text-foreground">
+      <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
+        <td className="px-6 font-medium whitespace-nowrap text-white">
           {chat.id}
         </td>
-        <td className="px-6 font-medium whitespace-nowrap text-foreground">
+        <td className="px-6 font-medium whitespace-nowrap text-white">
           {chat.user?.username}
         </td>
         <td className="px-6">{chat.workspace?.name}</td>
@@ -63,16 +61,15 @@ export default function ChatRow({ chat, onDelete }) {
         </td>
         <td
           onClick={openResponseModal}
-          className="px-6 trunc cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
-          title={responseText}
+          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
-          {responseText}
+          {truncate(parseText(chat.response), 40)}
         </td>
         <td className="px-6">{chat.createdAt}</td>
-        <td className="px-6 cell-actions">
+        <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="icon-btn text-foreground/80 light:text-foreground hover:text-red-300 light:hover:text-red-500"
+            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
           >
             <Trash className="h-5 w-5" />
           </button>
@@ -95,17 +92,17 @@ const TextPreview = ({ text, closeModal }) => {
     <div className="relative w-full md:max-w-2xl max-h-full">
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
-          <h3 className="text-xl font-semibold text-foreground">Viewing Text</h3>
+          <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
           <button
             onClick={closeModal}
             type="button"
-            className="bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-foreground text-lg" />
+            <X className="text-white text-lg" />
           </button>
         </div>
         <div className="w-full p-6">
-          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-border text-foreground text-sm">
+          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
             {text}
           </pre>
         </div>

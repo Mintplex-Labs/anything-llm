@@ -56,7 +56,11 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
-        <Pencil size={21} className="mb-1" />
+        <Pencil
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={21}
+          className="mb-1"
+        />
       </button>
     </div>
   );
@@ -101,20 +105,20 @@ export function EditMessageForm({
         ref={formRef}
         name="editedMessage"
         spellCheck={Appearance.get("enableSpellCheck")}
-        className="text-foreground w-full rounded bg-theme-bg-secondary border border-border/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
+        className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
         defaultValue={message}
         onChange={adjustTextArea}
       />
       <div className="mt-3 flex justify-center">
         <button
           type="submit"
-          className="border-none px-2 py-1 bg-background text-foreground font-medium rounded-md mr-2 hover:bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="border-none px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           {t("chat_window.save_submit")}
         </button>
         <button
           type="button"
-          className="border-none px-2 py-1 bg-historical-msg-system text-foreground font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-foreground focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
           {t("chat_window.cancel")}

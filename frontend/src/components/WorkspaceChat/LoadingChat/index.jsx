@@ -7,7 +7,7 @@ export default function LoadingChat() {
   const baseColor = "var(--theme-bg-secondary)";
   return (
     <div
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll p-4"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll p-4"
       style={{ height: "calc(100% - 32px)" }}
     >
       <Skeleton.default

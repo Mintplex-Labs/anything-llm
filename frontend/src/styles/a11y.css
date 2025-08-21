@@ -1,9 +1,0 @@
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.28);
-}
-
-[data-theme="dark"] :focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(139,92,246,0.45);
-}

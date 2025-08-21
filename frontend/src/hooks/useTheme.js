@@ -2,22 +2,25 @@ import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 import { useState, useEffect } from "react";
 
 const availableThemes = {
-  dark: "Dark",
+  default: "Default",
   light: "Light",
 };
 
 /**
  * Determines the current theme of the application
- * @returns {{theme: ('dark' | 'light'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
+ * @returns {{theme: ('default' | 'light'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
  */
 export function useTheme() {
   const [theme, _setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
+    return localStorage.getItem("theme") || "default";
   });
 
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) return;
-    _setTheme("light");
+    if (!window.matchMedia) return;
+    if (window.matchMedia("(prefers-color-scheme: light)").matches)
+      return _setTheme("light");
+    _setTheme("default");
   }, []);
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export function useTheme() {
     function toggleOnKeybind(e) {
       if (e.metaKey && e.key === ".") {
         e.preventDefault();
-        setTheme((prev) => (prev === "light" ? "dark" : "light"));
+        setTheme((prev) => (prev === "light" ? "default" : "light"));
       }
     }
     document.addEventListener("keydown", toggleOnKeybind);

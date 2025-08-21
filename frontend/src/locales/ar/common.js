@@ -645,7 +645,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        add_to_library: null,
+        "add_to_library": null,
       },
     },
     pinning: {

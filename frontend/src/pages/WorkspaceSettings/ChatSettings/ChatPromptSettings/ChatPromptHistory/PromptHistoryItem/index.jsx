@@ -50,16 +50,16 @@ export default function PromptHistoryItem({
   }, [showMenu]);
 
   return (
-    <div className="text-foreground">
+    <div className="text-white">
       <div className="flex items-center justify-between">
         <div className="text-xs">
           {user && (
             <>
               <span className="text-primary-button">{user.username}</span>{" "}
-              <span className="mx-1 text-foreground">•</span>
+              <span className="mx-1 text-white">•</span>
             </>
           )}
-          <span className="text-foreground opacity-50 light:opacity-100">
+          <span className="text-white opacity-50 light:opacity-100">
             {moment(modifiedAt).fromNow()}
           </span>
         </div>
@@ -87,7 +87,7 @@ export default function PromptHistoryItem({
               >
                 <button
                   type="button"
-                  className="px-[10px] py-[6px] text-sm text-foreground hover:bg-theme-sidebar-item-hover rounded-t-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
+                  className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-sidebar-item-hover rounded-t-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
                   onClick={() => {
                     setShowMenu(false);
                     onPublishClick(prompt);
@@ -97,7 +97,7 @@ export default function PromptHistoryItem({
                 </button>
                 <button
                   type="button"
-                  className="px-[10px] py-[6px] text-sm text-foreground hover:bg-red-500/60 light:hover:bg-red-300/80 rounded-b-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
+                  className="px-[10px] py-[6px] text-sm text-white hover:bg-red-500/60 light:hover:bg-red-300/80 rounded-b-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
                   onClick={() => {
                     setShowMenu(false);
                     deleteHistory(id);

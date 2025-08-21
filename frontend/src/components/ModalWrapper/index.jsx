@@ -1,6 +1,4 @@
 import { createPortal } from "react-dom";
-import { useEffect } from "react";
-import FocusTrap from "focus-trap-react";
 /**
  * @typedef {Object} ModalWrapperProps
  * @property {import("react").ReactComponentElement} children - The DOM/JSX to render
@@ -15,34 +13,23 @@ import FocusTrap from "focus-trap-react";
  * @param {ModalWrapperProps} props - ModalWrapperProps to pass
  * @returns {import("react").ReactNode}
  *
- * Modal wrapper that provides a consistent overlay with focus trapping and ESC/overlay dismissal.
+ * @todo Add a closeModal prop to the ModalWrapper component so we can escape dismiss anywhere this is used
  */
-export default function ModalWrapper({
-  children,
-  isOpen,
-  noPortal = false,
-  onClose,
-}) {
-  useEffect(() => {
-    if (!onClose) return;
-    function handleKeydown(e) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", handleKeydown);
-    return () => document.removeEventListener("keydown", handleKeydown);
-  }, [onClose]);
-
+export default function ModalWrapper({ children, isOpen, noPortal = false }) {
   if (!isOpen) return null;
 
-  const overlay = (
-    <>
-      <div className="modal__backdrop" onMouseDown={onClose}></div>
-      <div className="modal">
-        <FocusTrap>{children}</FocusTrap>
+  if (noPortal) {
+    return (
+      <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-99">
+        {children}
       </div>
-    </>
-  );
+    );
+  }
 
-  if (noPortal) return overlay;
-  return createPortal(overlay, document.getElementById("root"));
+  return createPortal(
+    <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-99">
+      {children}
+    </div>,
+    document.getElementById("root")
+  );
 }

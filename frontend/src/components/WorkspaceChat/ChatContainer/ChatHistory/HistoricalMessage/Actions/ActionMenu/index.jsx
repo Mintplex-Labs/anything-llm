@@ -48,17 +48,17 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         <DotsThreeVertical size={24} weight="bold" />
       </button>
       {open && (
-        <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-border/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-foreground z-99 md:z-10">
+        <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
           <button
             onClick={handleFork}
-            className="border-none rounded-t-lg flex items-center text-foreground gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none rounded-t-lg flex items-center text-white gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <TreeView size={18} />
             <span className="text-sm">{t("chat_window.fork")}</span>
           </button>
           <button
             onClick={handleDelete}
-            className="border-none flex rounded-b-lg items-center text-foreground gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex rounded-b-lg items-center text-white gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <Trash size={18} />
             <span className="text-sm">{t("chat_window.delete")}</span>

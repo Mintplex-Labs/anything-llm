@@ -1,7 +1,0 @@
-.pref-grid{ display:grid; gap:var(--gap-lg); grid-template-columns: repeat(12,1fr); }
-.pref-card{ grid-column: span 12; }
-.alignment-tiles{ grid-column: span 12; display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:var(--gap); }
-.tile{ border-radius:14px; padding:18px; background:var(--card-bg); box-shadow:var(--elev); min-height:100px; }
-@media (min-width: 960px){
-  .pref-card{ grid-column: span 8; }
-}

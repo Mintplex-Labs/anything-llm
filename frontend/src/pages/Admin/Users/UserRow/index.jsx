@@ -57,7 +57,7 @@ export default function UserRow({ currUser, user }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10"
+        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
       >
         <th scope="row" className="px-6 whitespace-nowrap">
           {user.username}
@@ -68,7 +68,7 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="text-xs font-medium text-foreground/80 light:text-foreground rounded-sm hover:text-foreground hover:light:text-foreground px-2 py-1 hover:bg-card hover:bg-opacity-10"
+              className="text-xs font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
               Edit
             </button>
@@ -77,13 +77,13 @@ export default function UserRow({ currUser, user }) {
             <>
               <button
                 onClick={handleSuspend}
-                className="text-xs font-medium text-foreground/80 light:text-foreground hover:light:text-orange-500 hover:text-orange-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-orange-50 hover:bg-opacity-10"
+                className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-orange-500 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-orange-50 hover:bg-opacity-10"
               >
                 {suspended ? "Unsuspend" : "Suspend"}
               </button>
               <button
                 onClick={handleDelete}
-                className="text-xs font-medium text-foreground/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+                className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
               >
                 Delete
               </button>

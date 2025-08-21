@@ -20,7 +20,7 @@ export default function WorkspaceRow({ workspace, users }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10"
+        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
       >
         <th scope="row" className="px-6 whitespace-nowrap">
           {workspace.name}
@@ -30,7 +30,7 @@ export default function WorkspaceRow({ workspace, users }) {
             href={paths.workspace.chat(workspace.slug)}
             target="_blank"
             rel="noreferrer"
-            className="text-foreground flex items-center hover:underline"
+            className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-4 h-4" /> {workspace.slug}
           </a>
@@ -38,7 +38,7 @@ export default function WorkspaceRow({ workspace, users }) {
         <td className="px-6">
           <a
             href={paths.workspace.settings.members(workspace.slug)}
-            className="text-foreground flex items-center underline"
+            className="text-white flex items-center underline"
           >
             {workspace.userIds?.length}
           </a>
@@ -47,7 +47,7 @@ export default function WorkspaceRow({ workspace, users }) {
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-foreground/80 light:text-foreground hover:light:text-red-500 hover:text-red-300 rounded-sm px-2 py-1 hover:bg-card hover:light:bg-red-50 hover:bg-opacity-10"
+            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
           >
             <Trash className="h-5 w-5" />
           </button>

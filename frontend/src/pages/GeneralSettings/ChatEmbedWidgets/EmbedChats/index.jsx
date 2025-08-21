@@ -137,7 +137,7 @@ export default function EmbedChatsView() {
             <button
               ref={openMenuButton}
               onClick={toggleMenu}
-              className="flex items-center gap-x-2 px-4 py-1 rounded-sm text-theme-bg-chat bg-primary-button hover:bg-secondary hover:text-foreground text-xs font-semibold h-[34px] w-fit"
+              className="flex items-center gap-x-2 px-4 py-1 rounded-lg text-theme-bg-chat bg-primary-button hover:bg-secondary hover:text-white text-xs font-semibold h-[34px] w-fit"
             >
               <Download size={18} weight="bold" />
               {t("embed-chats.export")}
@@ -157,7 +157,7 @@ export default function EmbedChatsView() {
                       handleDumpChats(key);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-foreground text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                    className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                   >
                     {data.name}
                   </button>
@@ -172,7 +172,7 @@ export default function EmbedChatsView() {
       </div>
       <div className="overflow-x-auto mt-6">
         <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
-          <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-border/10 border-b">
+          <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
             <tr>
               <th scope="col" className="px-6 py-3 rounded-tl-lg">
                 {t("embed-chats.table.embed")}

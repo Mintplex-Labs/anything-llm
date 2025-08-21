@@ -1,7 +1,0 @@
-.table{ width:100%; border-collapse:separate; border-spacing:0 8px; }
-.table th{ font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
-.table td,.table th{ padding:12px 14px; vertical-align:middle; }
-.table .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-.trunc{ max-width: 520px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.cell-actions{ display:flex; gap:10px; justify-content:flex-end; align-items:center; }
-.row{ background:var(--card-bg); border-radius:12px; }

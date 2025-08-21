@@ -112,7 +112,7 @@ export default function ThreadContainer({ workspace }) {
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
-        <p className="text-xs text-foreground animate-pulse">loading threads....</p>
+        <p className="text-xs text-white animate-pulse">loading threads....</p>
       </div>
     );
   }
@@ -174,31 +174,31 @@ function NewThreadButton({ workspace }) {
   return (
     <button
       onClick={onClick}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-sm"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-card p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-white/20 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           {loading ? (
             <CircleNotch
               weight="bold"
               size={14}
-              className="shrink-0 animate-spin text-foreground light:text-theme-text-primary"
+              className="shrink-0 animate-spin text-white light:text-theme-text-primary"
             />
           ) : (
             <Plus
               weight="bold"
               size={14}
-              className="shrink-0 text-foreground light:text-theme-text-primary"
+              className="shrink-0 text-white light:text-theme-text-primary"
             />
           )}
         </div>
 
         {loading ? (
-          <p className="text-left text-foreground light:text-theme-text-primary text-sm">
+          <p className="text-left text-white light:text-theme-text-primary text-sm">
             Starting Thread...
           </p>
         ) : (
-          <p className="text-left text-foreground light:text-theme-text-primary text-sm">
+          <p className="text-left text-white light:text-theme-text-primary text-sm">
             New Thread
           </p>
         )}
@@ -214,17 +214,17 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
     <button
       type="button"
       onClick={onDelete}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-sm group"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-lg group"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
         <div className="bg-transparent p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           <Trash
             weight="bold"
             size={14}
-            className="shrink-0 text-foreground light:text-red-500/50 group-hover:text-red-400"
+            className="shrink-0 text-white light:text-red-500/50 group-hover:text-red-400"
           />
         </div>
-        <p className="text-foreground light:text-theme-text-secondary text-left text-sm group-hover:text-red-400">
+        <p className="text-white light:text-theme-text-secondary text-left text-sm group-hover:text-red-400">
           Delete Selected
         </p>
       </div>

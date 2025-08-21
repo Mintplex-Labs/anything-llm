@@ -199,7 +199,7 @@ function Directory({
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
         <div className="flex flex-col gap-y-6">
           <div className="flex items-center justify-between w-[560px] px-5 relative">
-            <h3 className="text-foreground text-base font-bold">
+            <h3 className="text-white text-base font-bold">
               {t("connectors.directory.my-documents")}
             </h3>
             <div className="relative">
@@ -207,16 +207,16 @@ function Directory({
                 type="search"
                 placeholder={t("connectors.directory.search-document")}
                 onChange={handleSearch}
-                className="onenew-input pl-9 w-[250px] h-[32px]"
+                className="border-none search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
               />
               <MagnifyingGlass
                 size={14}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
                 weight="bold"
               />
             </div>
             <button
-              className="onenew-btn onenew-btn-secondary flex items-center gap-x-2 px-[14px] py-[7px] -mr-[14px] z-20 relative"
+              className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-theme-sidebar-subitem-hover z-20 relative"
               onClick={openFolderModal}
             >
               <Plus
@@ -231,7 +231,7 @@ function Directory({
           </div>
 
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-border/20 light:border-theme-modal-border bg-theme-settings-input-bg">
+            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
             </div>
 
@@ -239,7 +239,7 @@ function Directory({
               {loading ? (
                 <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                   <PreLoader />
-                  <p className="text-foreground text-sm font-semibold animate-pulse text-center w-1/3">
+                  <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3">
                     {loadingMessage}
                   </p>
                 </div>
@@ -263,7 +263,7 @@ function Directory({
                 )
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-foreground text-opacity-40 text-sm font-medium">
+                  <p className="text-white text-opacity-40 text-sm font-medium">
                     {t("connectors.directory.no-documents")}
                   </p>
                 </div>
@@ -271,13 +271,13 @@ function Directory({
             </div>
             {amountSelected !== 0 && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-                <div className="mx-auto bg-card light:bg-card rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
+                <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={moveToWorkspace}
                       onMouseEnter={() => setHighlightWorkspace(true)}
                       onMouseLeave={() => setHighlightWorkspace(false)}
-                      className="onenew-btn onenew-btn-secondary h-[30px] px-2.5"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {t("connectors.directory.move-workspace")}
                     </button>
@@ -286,9 +286,9 @@ function Directory({
                         onClick={() =>
                           setShowFolderSelection(!showFolderSelection)
                         }
-                        className="onenew-btn onenew-btn-secondary h-[32px] w-[32px] flex justify-center items-center group"
+                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group"
                       >
-                        <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-foreground" />
+                        <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
                       </button>
                       {showFolderSelection && (
                         <FolderSelectionPopup
@@ -302,7 +302,7 @@ function Directory({
                     </div>
                     <button
                       onClick={deleteFiles}
-                      className="onenew-btn onenew-btn-secondary h-[32px] w-[32px] flex justify-center items-center"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center"
                     >
                       <Trash size={18} weight="bold" />
                     </button>
@@ -358,7 +358,7 @@ function DirectoryTooltips() {
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-foreground light:invert font-medium break-all">
+            <p className="text-white light:invert font-medium break-all">
               {data.title}
             </p>
             <div className="flex mt-1 gap-x-2">

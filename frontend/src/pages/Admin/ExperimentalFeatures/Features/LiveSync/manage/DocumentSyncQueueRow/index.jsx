@@ -19,7 +19,7 @@ export default function DocumentSyncQueueRow({ queue }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-foreground text-opacity-80 text-sm font-medium"
+        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
       >
         <td scope="row" className="px-6 py-4 whitespace-nowrap">
           {stripUuidAndJsonFromString(queue.workspaceDoc.filename)}
@@ -33,7 +33,7 @@ export default function DocumentSyncQueueRow({ queue }) {
         <td className="px-6 py-4 flex items-center gap-x-6">
           <button
             onClick={handleDelete}
-            className="onenew-btn onenew-btn-secondary px-2 py-1"
+            className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
           >
             <Trash className="h-5 w-5" />
           </button>

@@ -48,7 +48,7 @@ export default function Members({ workspace }) {
   return (
     <div className="flex justify-between -mt-3">
       <table className="w-full max-w-[700px] text-sm text-left rounded-lg">
-        <thead className="text-foreground text-opacity-80 text-xs leading-[18px] font-bold uppercase border-border/10 border-b border-opacity-60">
+        <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white/10 border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               Username
@@ -71,7 +71,7 @@ export default function Members({ workspace }) {
             ))
           ) : (
             <tr>
-              <td className="text-center py-4 text-foreground/80" colSpan="4">
+              <td className="text-center py-4 text-white/80" colSpan="4">
                 No workspace members
               </td>
             </tr>

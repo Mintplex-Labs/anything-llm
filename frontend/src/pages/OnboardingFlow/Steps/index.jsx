@@ -1,7 +1,6 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
 import { isMobile } from "react-device-detect";
-import { useThemeContext } from "@/ThemeProvider";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
 import UserSetup from "./UserSetup";
@@ -36,13 +35,10 @@ export function OnboardingLayout({ children }) {
     onClick: () => null,
   });
 
-  const { theme } = useThemeContext();
-
   if (isMobile) {
     return (
       <div
         data-layout="onboarding"
-        data-theme={theme}
         className="w-screen h-screen overflow-y-auto bg-theme-bg-primary overflow-hidden"
       >
         <div className="flex flex-col">
@@ -63,10 +59,10 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={backBtn.disabled}
                   onClick={backBtn.onClick}
-                  className="group p-2 rounded-sm border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
                 >
                   <ArrowLeft
-                    className="text-foreground group-hover:text-foreground group-disabled:text-foreground"
+                    className="text-white group-hover:text-black group-disabled:text-gray-500"
                     size={30}
                   />
                 </button>
@@ -78,10 +74,10 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={forwardBtn.disabled}
                   onClick={forwardBtn.onClick}
-                  className="group p-2 rounded-sm border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-card disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-teal disabled:hover:bg-transparent"
                 >
                   <ArrowRight
-                    className="text-foreground group-hover:text-primary group-disabled:text-foreground"
+                    className="text-white group-hover:text-teal group-disabled:text-gray-500"
                     size={30}
                   />
                 </button>
@@ -96,7 +92,6 @@ export function OnboardingLayout({ children }) {
   return (
     <div
       data-layout="onboarding"
-      data-theme={theme}
       className="w-screen overflow-y-auto bg-theme-bg-primary flex justify-center overflow-hidden"
     >
       <div className="flex w-1/5 h-screen justify-center items-center">
@@ -104,11 +99,11 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
-            className="group p-2 rounded-sm border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
             aria-label="Back"
           >
             <ArrowLeft
-              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-foreground"
+              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
               size={30}
             />
           </button>
@@ -132,11 +127,11 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-sm border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-card disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-teal disabled:hover:bg-transparent"
             aria-label="Continue"
           >
             <ArrowRight
-              className="text-theme-text-secondary group-hover:text-foreground group-disabled:text-foreground"
+              className="text-theme-text-secondary group-hover:text-white group-disabled:text-gray-500"
               size={30}
             />
           </button>

@@ -35,13 +35,13 @@ export default function ChatRow({ chat, onDelete }) {
 
   return (
     <>
-      <tr className="bg-transparent text-foreground text-opacity-80 text-xs font-medium border-b border-border/10 h-10">
-        <td className="px-6 font-medium whitespace-nowrap text-foreground">
+      <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
+        <td className="px-6 font-medium whitespace-nowrap text-white">
           <a
             href={paths.settings.embedChatWidgets()}
             target="_blank"
             rel="noreferrer"
-            className="text-foreground flex items-center hover:underline"
+            className="text-white flex items-center hover:underline"
           >
             {chat.embed_config.workspace.name}
           </a>
@@ -70,7 +70,7 @@ export default function ChatRow({ chat, onDelete }) {
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-sm hover:bg-theme-button-delete-hover-bg"
+            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
             <span className="group-hover:text-theme-button-delete-hover-text">
               Delete
@@ -108,17 +108,17 @@ const TextPreview = ({ text, closeModal }) => {
     <div className="relative w-full md:max-w-2xl max-h-full">
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
-          <h3 className="text-xl font-semibold text-foreground">Viewing Text</h3>
+          <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
           <button
             onClick={closeModal}
             type="button"
-            className="bg-transparent rounded-sm text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-foreground text-lg" />
+            <X className="text-white text-lg" />
           </button>
         </div>
         <div className="w-full p-6">
-          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-border text-foreground text-sm">
+          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
             {text}
           </pre>
         </div>

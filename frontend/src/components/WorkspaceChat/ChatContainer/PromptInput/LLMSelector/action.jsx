@@ -94,12 +94,12 @@ export default function LLMSelectorAction() {
         id="llm-selector-btn"
         data-tooltip-id="tooltip-llm-selector-btn"
         aria-label="LLM Selector"
-        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer text-[var(--theme-sidebar-footer-icon-fill)]`}
+        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
         {saved ? (
           <CheckCircle className="w-[22px] h-[22px] pointer-events-none text-green-400" />
         ) : (
-          <Brain className="w-[22px] h-[22px] pointer-events-none" />
+          <Brain className="w-[22px] h-[22px] pointer-events-none text-[var(--theme-sidebar-footer-icon-fill)]" />
         )}
       </div>
       <Tooltip

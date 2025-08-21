@@ -1,5 +1,4 @@
 import React from "react";
-import "@/index.css";
 import OnboardingSteps, { OnboardingLayout } from "./Steps";
 import { useParams } from "react-router-dom";
 

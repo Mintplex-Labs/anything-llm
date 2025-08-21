@@ -43,13 +43,14 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
               checked={status}
               className="peer sr-only pointer-events-none"
             />
-            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
           </label>
         </div>
         <div className="flex flex-col space-y-4">
           <p className="text-theme-text-secondary text-sm">
             Enable the ability to specify a document to be "watched". Watched
-            document's content will be regularly fetched and updated in OneNew.
+            document's content will be regularly fetched and updated in
+            OneNew.
           </p>
           <p className="text-theme-text-secondary text-sm">
             Watched documents will automatically update in all workspaces they

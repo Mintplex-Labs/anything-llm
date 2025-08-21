@@ -172,7 +172,7 @@ export default function AgentWebSearchSelection({
               checked={enabled}
               onChange={() => toggleSkill(skill)}
             />
-            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
             <span className="ml-3 text-sm font-medium"></span>
           </label>
         </div>
@@ -223,7 +223,7 @@ export default function AgentWebSearchSelection({
                     <X
                       size={20}
                       weight="bold"
-                      className="cursor-pointer text-foreground hover:text-x-button"
+                      className="cursor-pointer text-white hover:text-x-button"
                       onClick={handleXButton}
                     />
                   </div>
@@ -243,7 +243,7 @@ export default function AgentWebSearchSelection({
               </div>
             ) : (
               <button
-                className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-sm flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
                 type="button"
                 onClick={() => setSearchMenuOpen(true)}
               >
@@ -254,7 +254,7 @@ export default function AgentWebSearchSelection({
                     className="w-10 h-10 rounded-md"
                   />
                   <div className="flex flex-col text-left">
-                    <div className="text-sm font-semibold text-foreground">
+                    <div className="text-sm font-semibold text-white">
                       {selectedSearchProviderObject.name}
                     </div>
                     <div className="mt-1 text-xs text-description">
@@ -262,7 +262,7 @@ export default function AgentWebSearchSelection({
                     </div>
                   </div>
                 </div>
-                <CaretUpDown size={24} weight="bold" className="text-foreground" />
+                <CaretUpDown size={24} weight="bold" className="text-white" />
               </button>
             )}
           </div>

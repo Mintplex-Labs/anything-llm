@@ -1,8 +1,5 @@
 import { CircleNotch } from "@phosphor-icons/react";
-import {
-  DOCUMENT_STATUS_LABELS,
-  isProcessingStatus,
-} from "@/utils/documentStatus";
+import { DOCUMENT_STATUS_LABELS, isProcessingStatus } from "@/utils/documentStatus";
 
 export default function StatusBadge({ status }) {
   if (!status) return null;
@@ -11,14 +8,14 @@ export default function StatusBadge({ status }) {
 
   if (upper === "READY") {
     return (
-      <span className="onenew-chip bg-green-600 text-foreground text-[10px] px-2 py-0.5">
+      <span className="bg-green-600 text-white text-[10px] px-2 py-0.5 rounded-3xl">
         {label}
       </span>
     );
   }
   if (upper === "FAILED") {
     return (
-      <span className="onenew-chip bg-red-600 text-foreground text-[10px] px-2 py-0.5">
+      <span className="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-3xl">
         {label}
       </span>
     );
@@ -26,7 +23,7 @@ export default function StatusBadge({ status }) {
 
   if (isProcessingStatus(upper)) {
     return (
-      <span className="onenew-chip flex items-center gap-1 text-[10px] text-foreground">
+      <span className="flex items-center gap-1 text-[10px] text-white">
         <CircleNotch size={10} className="animate-spin" />
         {label}
       </span>
