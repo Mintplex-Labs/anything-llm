@@ -10,7 +10,7 @@
       color-mix(in srgb, var(--brand), transparent 92%),
       transparent 55%
     );
-  color: var(--fg-1);
+  color: var(--text);
 }
 
 /* Ensure SVGs inherit text color */
@@ -21,6 +21,7 @@
 
 /* Strong focus ring everywhere */
 :focus-visible {
+  outline: none;
   box-shadow: 0 0 0 var(--space-1) var(--brand) !important;
 }
 
@@ -118,16 +119,16 @@ textarea.onenew-input {
 
 .bubble-assistant {
   background: color-mix(in srgb, var(--surface), var(--bg) 6%);
-  color: var(--fg-1);
+  color: var(--text);
 }
 
 .bubble-user {
   background: color-mix(in srgb, var(--brand), transparent 92%);
-  color: var(--fg-1);
+  color: var(--text);
 }
 
 .bubble-meta {
-  color: var(--text-2);
+  color: var(--text-subtle);
   margin-top: 8px;
   font-size: 12px;
 }
@@ -138,12 +139,12 @@ textarea.onenew-input {
 }
 
 .nav .item:hover {
-  color: var(--fg-1);
+  color: var(--text);
   background: color-mix(in srgb, var(--surface), var(--bg) 8%);
 }
 
 .nav .item.active {
-  color: var(--fg-1);
+  color: var(--text);
   background: rgba(106, 163, 255, 0.12);
   border-left: 3px solid var(--brand);
 }
@@ -185,12 +186,14 @@ textarea.onenew-input {
   width: 100%;
   border-collapse: collapse;
 }
+
 .onenew-table th {
   text-align: left;
   padding: var(--space-3) var(--space-3);
-  color: var(--fg-2);
+  color: var(--text-subtle);
   border-bottom: 1px solid var(--border);
 }
+
 .onenew-table td {
   padding: var(--space-3) var(--space-3);
   border-bottom: 1px solid var(--border);
@@ -200,7 +203,7 @@ textarea.onenew-input {
 .tooltip,
 .popover {
   background: var(--surface);
-  color: var(--fg-1);
+  color: var(--text);
   border: 1px solid var(--border);
 }
 

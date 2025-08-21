@@ -95,7 +95,7 @@ a:hover { text-decoration: underline; }
 .card, .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); }
 
 /* Focus visibility */
-:focus-visible { box-shadow: var(--focus); border-radius: .25rem; }
+:focus-visible { outline: none; box-shadow: var(--focus); border-radius: .25rem; }
 
 /* Hide questionable placeholder "AD" badge if it exists */
 .badge--ad, .ad-placeholder { display: none !important; }

@@ -7,7 +7,7 @@
 
 body {
   background: var(--bg);
-  color: var(--fg-1);
+  color: var(--text);
 }
 
 @import "./styles/overrides.css";
