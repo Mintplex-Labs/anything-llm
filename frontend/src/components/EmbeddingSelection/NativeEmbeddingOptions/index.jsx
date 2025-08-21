@@ -38,14 +38,14 @@ export default function NativeEmbeddingOptions({ settings }) {
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex flex-col mt-1.5">
         <div className="flex flex-col w-96">
-          <label className="text-foreground text-sm font-semibold block mb-3">
+          <label className="text-white text-sm font-semibold block mb-3">
             Model Preference
           </label>
           <select
             name="EmbeddingModelPref"
             required={true}
             defaultValue={selectedModel}
-            className="border-none bg-theme-settings-input-bg border-border text-theme-text-primary text-sm rounded-sm block w-60 p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-theme-text-primary text-sm rounded-lg block w-60 p-2.5"
             onChange={(e) => setSelectedModel(e.target.value)}
           >
             {loading ? (

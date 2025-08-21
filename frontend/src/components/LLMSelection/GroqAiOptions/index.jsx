@@ -8,13 +8,13 @@ export default function GroqAiOptions({ settings }) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-foreground text-sm font-semibold block mb-3">
+        <label className="text-white text-sm font-semibold block mb-3">
           Groq API Key
         </label>
         <input
           type="password"
           name="GroqApiKey"
-          className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Groq API Key"
           defaultValue={settings?.GroqApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -61,19 +61,19 @@ function GroqAIModelSelection({ apiKey, settings }) {
   if (loading) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-foreground text-sm font-semibold block mb-3">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="GroqModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             --loading available models--
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
           Enter a valid API key to view all available models for your account.
         </p>
       </div>
@@ -82,13 +82,13 @@ function GroqAIModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-foreground text-sm font-semibold block mb-3">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="GroqModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Available models">
@@ -106,7 +106,7 @@ function GroqAIModelSelection({ apiKey, settings }) {
           </optgroup>
         )}
       </select>
-      <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
         Select the GroqAI model you want to use for your conversations.
       </p>
     </div>

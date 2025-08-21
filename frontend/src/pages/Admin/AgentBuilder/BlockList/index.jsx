@@ -172,7 +172,7 @@ export default function BlockList({
       return (
         <div className="space-y-4">
           {renderBlockConfigContent(block, props)}
-          <div className="flex justify-between items-center pt-4 border-t border-border/10">
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
             <div>
               <label className="block text-sm font-medium text-theme-text-primary">
                 Direct Output
@@ -196,7 +196,7 @@ export default function BlockList({
                 className="peer sr-only"
                 aria-label="Toggle direct output"
               />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
             </label>
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function BlockList({
       {blocks.map((block, index) => (
         <div key={block.id} className="flex flex-col">
           <div
-            className={`bg-theme-action-menu-bg border border-border/10 rounded-lg overflow-hidden transition-all duration-300 ${
+            className={`bg-theme-action-menu-bg border border-white/10 rounded-lg overflow-hidden transition-all duration-300 ${
               block.isExpanded ? "w-full" : "w-[280px] mx-auto"
             }`}
           >
@@ -245,17 +245,17 @@ export default function BlockList({
               className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-lg bg-card light:bg-card flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-white/10 light:bg-white flex items-center justify-center">
                   {React.cloneElement(BLOCK_INFO[block.type].icon, {
-                    className: "w-4 h-4 text-foreground",
+                    className: "w-4 h-4 text-white",
                   })}
                 </div>
                 <div className="flex-1 text-left min-w-0 max-w-[115px]">
-                  <span className="text-sm font-medium text-foreground block">
+                  <span className="text-sm font-medium text-white block">
                     {BLOCK_INFO[block.type].label}
                   </span>
                   {!block.isExpanded && (
-                    <p className="text-xs text-foreground/60 truncate">
+                    <p className="text-xs text-white/60 truncate">
                       {BLOCK_INFO[block.type].getSummary(block.config)}
                     </p>
                   )}
@@ -272,7 +272,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index - 1);
                           }}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-border/5 text-foreground hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block up"
                         >
@@ -285,7 +285,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index + 1);
                           }}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-border/5 text-foreground hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block down"
                         >
@@ -297,7 +297,7 @@ export default function BlockList({
                           e.stopPropagation();
                           removeBlock(block.id);
                         }}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-border/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
                         data-tooltip-id="block-action"
                         data-tooltip-content="Delete block"
                       >
@@ -314,7 +314,7 @@ export default function BlockList({
                   : "max-h-0 opacity-0"
               }`}
             >
-              <div className="border-t border-border/10 p-4 bg-theme-bg-secondary rounded-b-lg">
+              <div className="border-t border-white/10 p-4 bg-theme-bg-secondary rounded-b-lg">
                 {renderBlockConfig(block)}
               </div>
             </div>
@@ -327,7 +327,7 @@ export default function BlockList({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-foreground/40 light:invert"
+                className="text-white/40 light:invert"
               >
                 <path
                   d="M12 4L12 20M12 20L6 14M12 20L18 14"

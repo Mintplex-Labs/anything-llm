@@ -60,22 +60,22 @@ export default function CustomAppName() {
 
   return (
     <form
-      className="onenew-card p-5 mb-4 flex flex-col gap-y-0.5"
+      className="flex flex-col gap-y-0.5 mt-4"
       onSubmit={updateCustomAppName}
     >
-      <p className="text-[var(--text)] font-medium">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.app-name.title")}
       </p>
-      <p className="text-sm text-[var(--text-muted)]">
+      <p className="text-xs text-white/60">
         {t("customization.items.app-name.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <input
           name="customAppName"
           type="text"
-          className="onenew-input mt-2 w-fit"
+          className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
           placeholder="OneNew"
-          required
+          required={true}
           autoComplete="off"
           onChange={handleChange}
           value={customAppName}
@@ -84,7 +84,7 @@ export default function CustomAppName() {
           <button
             type="button"
             onClick={(e) => updateCustomAppName(e, "")}
-            className="onenew-btn onenew-btn--secondary"
+            className="text-white text-base font-medium hover:text-opacity-60"
           >
             Clear
           </button>
@@ -93,7 +93,7 @@ export default function CustomAppName() {
       {hasChanges && (
         <button
           type="submit"
-          className="onenew-btn onenew-btn--primary mt-2 w-fit"
+          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
         >
           Save
         </button>

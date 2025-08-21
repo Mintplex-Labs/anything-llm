@@ -17,9 +17,9 @@ export default function ChangeWarningModal({
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
         >
-          <X size={24} weight="bold" className="text-foreground" />
+          <X size={24} weight="bold" className="text-white" />
         </button>
       </div>
       <div
@@ -27,7 +27,7 @@ export default function ChangeWarningModal({
         style={{ maxHeight: "calc(100vh - 200px)" }}
       >
         <div className="py-7 px-9 space-y-2 flex-col">
-          <p className="text-foreground">
+          <p className="text-white">
             {warningText.split("\\n").map((line, index) => (
               <span key={index}>
                 {line}
@@ -44,14 +44,14 @@ export default function ChangeWarningModal({
         <button
           onClick={onClose}
           type="button"
-          className="transition-all duration-300 bg-transparent text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm border-none"
+          className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm border-none"
         >
           Cancel
         </button>
         <button
           onClick={onConfirm}
           type="submit"
-          className="transition-all duration-300 bg-red-500 light:text-foreground text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm border-none"
+          className="transition-all duration-300 bg-red-500 light:text-white text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm border-none"
         >
           Confirm
         </button>

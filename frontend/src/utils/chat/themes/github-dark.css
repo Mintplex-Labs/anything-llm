@@ -10,8 +10,8 @@
 */
 
 .github-dark.hljs {
-  color: rgb(201, 209, 217);
-  background: rgb(13, 17, 23);
+  color: #c9d1d9;
+  background: #0d1117;
 }
 
 .github-dark .hljs-doctag,
@@ -22,7 +22,7 @@
 .github-dark .hljs-type,
 .github-dark .hljs-variable.language_ {
   /* prettylights-syntax-keyword */
-  color: rgb(255, 123, 114);
+  color: #ff7b72;
 }
 
 .github-dark .hljs-title,
@@ -30,7 +30,7 @@
 .github-dark .hljs-title.class_.inherited__,
 .github-dark .hljs-title.function_ {
   /* prettylights-syntax-entity */
-  color: rgb(210, 168, 255);
+  color: #d2a8ff;
 }
 
 .github-dark .hljs-attr,
@@ -44,27 +44,27 @@
 .github-dark .hljs-selector-class,
 .github-dark .hljs-selector-id {
   /* prettylights-syntax-constant */
-  color: rgb(121, 192, 255);
+  color: #79c0ff;
 }
 
 .github-dark .hljs-regexp,
 .github-dark .hljs-string,
 .github-dark .hljs-meta .hljs-string {
   /* prettylights-syntax-string */
-  color: rgb(165, 214, 255);
+  color: #a5d6ff;
 }
 
 .github-dark .hljs-built_in,
 .github-dark .hljs-symbol {
   /* prettylights-syntax-variable */
-  color: rgb(255, 166, 87);
+  color: #ffa657;
 }
 
 .github-dark .hljs-comment,
 .github-dark .hljs-code,
 .github-dark .hljs-formula {
   /* prettylights-syntax-comment */
-  color: rgb(139, 148, 158);
+  color: #8b949e;
 }
 
 .github-dark .hljs-name,
@@ -72,47 +72,47 @@
 .github-dark .hljs-selector-tag,
 .github-dark .hljs-selector-pseudo {
   /* prettylights-syntax-entity-tag */
-  color: rgb(126, 231, 135);
+  color: #7ee787;
 }
 
 .github-dark .hljs-subst {
   /* prettylights-syntax-storage-modifier-import */
-  color: rgb(201, 209, 217);
+  color: #c9d1d9;
 }
 
 .github-dark .hljs-section {
   /* prettylights-syntax-markup-heading */
-  color: rgb(31, 111, 235);
+  color: #1f6feb;
   font-weight: bold;
 }
 
 .github-dark .hljs-bullet {
   /* prettylights-syntax-markup-list */
-  color: rgb(242, 204, 96);
+  color: #f2cc60;
 }
 
 .github-dark .hljs-emphasis {
   /* prettylights-syntax-markup-italic */
-  color: rgb(201, 209, 217);
+  color: #c9d1d9;
   font-style: italic;
 }
 
 .github-dark .hljs-strong {
   /* prettylights-syntax-markup-bold */
-  color: rgb(201, 209, 217);
+  color: #c9d1d9;
   font-weight: bold;
 }
 
 .github-dark .hljs-addition {
   /* prettylights-syntax-markup-inserted */
-  color: rgb(175, 245, 180);
-  background-color: rgb(3, 58, 22);
+  color: #aff5b4;
+  background-color: #033a16;
 }
 
 .github-dark .hljs-deletion {
   /* prettylights-syntax-markup-deleted */
-  color: rgb(255, 220, 215);
-  background-color: rgb(103, 6, 12);
+  color: #ffdcd7;
+  background-color: #67060c;
 }
 
 .github-dark .hljs-char.escape_,

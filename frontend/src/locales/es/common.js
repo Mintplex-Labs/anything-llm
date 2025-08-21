@@ -644,7 +644,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        add_to_library: null,
+        "add_to_library": null,
       },
     },
     pinning: {
@@ -847,7 +847,8 @@ const TRANSLATIONS = {
     checklist: {
       title: "Comenzando",
       tasksLeft: "tareas restantes",
-      completed: "¡Estás en camino de convertirte en un experto en OneNew!",
+      completed:
+        "¡Estás en camino de convertirte en un experto en OneNew!",
       dismiss: "cerrar",
       tasks: {
         create_workspace: {

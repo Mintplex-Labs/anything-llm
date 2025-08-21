@@ -453,7 +453,8 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Zīmolrade un identitāte",
-      description: "Pielāgojiet savu OneNew instanci ar pielāgotu zīmolradi.",
+      description:
+        "Pielāgojiet savu OneNew instanci ar pielāgotu zīmolradi.",
     },
     chat: {
       title: "Saruna",
@@ -874,7 +875,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        add_to_library: null,
+        "add_to_library": null,
       },
     },
     pinning: {

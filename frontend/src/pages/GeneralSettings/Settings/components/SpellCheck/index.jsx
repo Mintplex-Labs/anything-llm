@@ -23,14 +23,14 @@ export default function SpellCheck() {
   };
 
   return (
-    <div className="onenew-card p-5 mb-4">
-      <p className="text-[var(--text)] font-medium">
+    <div className="flex flex-col gap-y-0.5 my-4">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.chat.spellcheck.title")}
       </p>
-      <p className="text-sm text-[var(--text-muted)]">
+      <p className="text-xs text-white/60">
         {t("customization.chat.spellcheck.description")}
       </p>
-      <div className="flex items-center gap-x-4 mt-2">
+      <div className="flex items-center gap-x-4">
         <label className="relative inline-flex cursor-pointer items-center">
           <input
             id="spellcheck"
@@ -42,7 +42,7 @@ export default function SpellCheck() {
             disabled={saving}
             className="peer sr-only"
           />
-          <div className="h-6 w-11 rounded-full bg-[color-mix(in_srgb,var(--accent),transparent_85%)] peer-checked:bg-[var(--accent)] transition-colors peer-focus-visible:[box-shadow:0_0_0_3px_var(--ring)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-card after:transition-transform peer-checked:after:translate-x-full"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
     </div>

@@ -233,7 +233,7 @@ export default function AdminAgents() {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg w-full h-full flex justify-center items-center"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
       >
         <FullScreenLoader />
       </div>
@@ -343,7 +343,7 @@ export default function AdminAgents() {
                       setShowSkillModal(false);
                       setSelectedSkill("");
                     }}
-                    className="text-foreground/60 hover:text-foreground transition-colors duration-200"
+                    className="text-white/60 hover:text-white transition-colors duration-200"
                   >
                     <div className="flex items-center text-sky-400">
                       <CaretLeft size={24} />
@@ -352,7 +352,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-foreground rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedMcpServer ? (
@@ -543,7 +543,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-foreground rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -621,7 +621,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg w-full h-full flex"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
       >
         {children}
         <ContextualSaveBar
@@ -646,7 +646,7 @@ function SkillList({
   return (
     <>
       <div
-        className={`bg-theme-bg-secondary text-foreground rounded-xl ${
+        className={`bg-theme-bg-secondary text-white rounded-xl ${
           isMobile ? "w-full" : "min-w-[360px] w-fit"
         }`}
       >
@@ -658,9 +658,11 @@ function SkillList({
             } ${
               index === Object.keys(skills).length - 1
                 ? "rounded-b-xl"
-                : "border-b border-border/10"
+                : "border-b border-white/10"
             } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
-              selectedSkill === skill ? "bg-card light:bg-theme-bg-sidebar" : ""
+              selectedSkill === skill
+                ? "bg-white/10 light:bg-theme-bg-sidebar"
+                : ""
             }`}
             onClick={() => handleClick?.(skill)}
           >

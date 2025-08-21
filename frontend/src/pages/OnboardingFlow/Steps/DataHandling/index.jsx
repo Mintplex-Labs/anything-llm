@@ -473,7 +473,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
 
   if (loading)
     return (
-      <div className="onenew-page w-full h-full flex justify-center items-center p-20">
+      <div className="w-full h-full flex justify-center items-center p-20">
         <PreLoader />
       </div>
     );
@@ -486,8 +486,8 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const VectorDb = VECTOR_DB_PRIVACY?.[vectorDb] || FALLBACKS.VECTOR(vectorDb);
 
   return (
-    <div className="onenew-page p-6 w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="onenew-card p-8 flex flex-col gap-8">
+    <div className="w-full flex items-center justify-center flex-col gap-y-6">
+      <div className="p-8 flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
           <div className="text-theme-text-primary text-base font-bold">
             LLM Selection

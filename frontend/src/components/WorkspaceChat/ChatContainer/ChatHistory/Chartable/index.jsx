@@ -75,7 +75,7 @@ export function Chartable({ props, workspace }) {
     switch (chartType) {
       case "area":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -92,7 +92,7 @@ export function Chartable({ props, workspace }) {
         );
       case "bar":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -111,7 +111,7 @@ export function Chartable({ props, workspace }) {
         );
       case "line":
         return (
-          <div className="bg-theme-bg-primary p-8 pb-12 rounded-xl text-foreground h-[500px] w-full light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 pb-12 rounded-xl text-white h-[500px] w-full light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -128,7 +128,7 @@ export function Chartable({ props, workspace }) {
         );
       case "composed":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -186,7 +186,7 @@ export function Chartable({ props, workspace }) {
         );
       case "scatter":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -234,7 +234,7 @@ export function Chartable({ props, workspace }) {
         );
       case "pie":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -260,7 +260,7 @@ export function Chartable({ props, workspace }) {
         );
       case "radar":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -296,7 +296,7 @@ export function Chartable({ props, workspace }) {
         );
       case "radialbar":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -333,7 +333,7 @@ export function Chartable({ props, workspace }) {
         );
       case "treemap":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -351,7 +351,7 @@ export function Chartable({ props, workspace }) {
               height={260}
               data={data}
               dataKey="value"
-              stroke="currentColor"
+              stroke="#fff"
               fill={getTremorColor(color || "blue")}
               content={<CustomCell colors={Object.values(Colors)} />}
             >
@@ -361,7 +361,7 @@ export function Chartable({ props, workspace }) {
         );
       case "funnel":
         return (
-          <div className="bg-theme-bg-primary p-8 rounded-xl text-foreground light:border light:border-theme-border-primary">
+          <div className="bg-theme-bg-primary p-8 rounded-xl text-white light:border light:border-theme-border-primary">
             <h3 className="text-lg text-theme-text-primary font-medium">
               {title}
             </h3>
@@ -433,7 +433,7 @@ const customTooltip = (props) => {
   const categoryPayload = payload?.[0];
   if (!categoryPayload) return null;
   return (
-    <div className="w-56 bg-theme-bg-primary rounded-lg border p-2 text-foreground">
+    <div className="w-56 bg-theme-bg-primary rounded-lg border p-2 text-white">
       <div className="flex flex-1 space-x-2.5">
         <div
           className={`flex w-1.5 flex-col bg-${categoryPayload?.color}-500 rounded`}

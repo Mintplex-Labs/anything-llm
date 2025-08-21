@@ -112,7 +112,7 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.name_placeholder"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-sm p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
@@ -120,7 +120,7 @@ export default function SystemPrompts({ entity }) {
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
               {t("community_hub.publish.system_prompt.description_label")}
             </label>
-            <div className="text-xs text-foreground/60 mb-2">
+            <div className="text-xs text-white/60 mb-2">
               {t("community_hub.publish.system_prompt.description_description")}
             </div>
             <textarea
@@ -131,21 +131,21 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.description_description"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-sm p-2 text-foreground text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1">
+            <label className="block text-sm font-semibold text-white mb-1">
               {t("community_hub.publish.system_prompt.tags_label")}
             </label>
-            <div className="text-xs text-foreground/60 mb-2">
+            <div className="text-xs text-white/60 mb-2">
               {t("community_hub.publish.system_prompt.tags_description")}
             </div>
             <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="flex items-center gap-1 px-2 py-1 text-sm text-theme-text-primary bg-card light:bg-black/10 rounded-md"
+                  className="flex items-center gap-1 px-2 py-1 text-sm text-theme-text-primary bg-white/10 light:bg-black/10 rounded-md"
                 >
                   {tag}
                   <button
@@ -171,10 +171,10 @@ export default function SystemPrompts({ entity }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1">
+            <label className="block text-sm font-semibold text-white mb-1">
               {t("community_hub.publish.system_prompt.visibility_label")}
             </label>
-            <div className="text-xs text-foreground/60 mb-2">
+            <div className="text-xs text-white/60 mb-2">
               {visibility === "public"
                 ? t("community_hub.publish.system_prompt.public_description")
                 : t("community_hub.publish.system_prompt.private_description")}
@@ -217,10 +217,10 @@ export default function SystemPrompts({ entity }) {
 
         <div className="w-1/2 p-6 pt-0 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1">
+            <label className="block text-sm font-semibold text-white mb-1">
               {t("community_hub.publish.system_prompt.prompt_label")}
             </label>
-            <div className="text-xs text-foreground/60 mb-2">
+            <div className="text-xs text-white/60 mb-2">
               {t("community_hub.publish.system_prompt.prompt_description")}
             </div>
             <textarea
@@ -231,14 +231,14 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.prompt_placeholder"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-sm p-2 text-foreground text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="border-none w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-none w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? t("community_hub.publish.system_prompt.submitting")

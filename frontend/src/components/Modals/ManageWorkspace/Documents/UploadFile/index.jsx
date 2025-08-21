@@ -104,15 +104,7 @@ export default function UploadFile({
   });
 
   const Row = ({ index, style, data }) => {
-    const {
-      files,
-      slug,
-      setFiles,
-      handleUploadSuccess,
-      handleUploadError,
-      setLoading,
-      setLoadingMessage,
-    } = data;
+    const { files, slug, setFiles, handleUploadSuccess, handleUploadError, setLoading, setLoadingMessage } = data;
     const left = files[index * 2];
     const right = files[index * 2 + 1];
     return (
@@ -168,21 +160,21 @@ export default function UploadFile({
         <input {...getInputProps({ webkitdirectory: true })} />
         {ready === false ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <CloudArrowUp className="w-8 h-8 text-foreground/80 light:invert" />
-            <div className="text-foreground text-opacity-80 text-sm font-semibold py-1">
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
               {t("connectors.upload.processor-offline")}
             </div>
-            <div className="text-foreground text-opacity-60 text-xs font-medium py-1 px-20 text-center">
+            <div className="text-white text-opacity-60 text-xs font-medium py-1 px-20 text-center">
               {t("connectors.upload.processor-offline-desc")}
             </div>
           </div>
         ) : files.length === 0 ? (
           <div className="flex flex-col items-center justify-center">
-            <CloudArrowUp className="w-8 h-8 text-foreground/80 light:invert" />
-            <div className="text-foreground text-opacity-80 text-sm font-semibold py-1">
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
               {t("connectors.upload.click-upload")}
             </div>
-            <div className="text-foreground text-opacity-60 text-xs font-medium py-1">
+            <div className="text-white text-opacity-60 text-xs font-medium py-1">
               {t("connectors.upload.file-types")}
             </div>
           </div>
@@ -211,11 +203,11 @@ export default function UploadFile({
         type="button"
         onClick={open}
         disabled={!ready}
-        className="mt-3 w-[560px] bg-primary-button text-foreground rounded-sm py-2 disabled:opacity-50"
+        className="mt-3 w-[560px] bg-primary-button text-white rounded-lg py-2 disabled:opacity-50"
       >
         {t("connectors.upload.upload-button", "Upload")}
       </button>
-      <div className="text-center text-foreground text-opacity-50 text-xs font-medium w-[560px] py-2">
+      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         {t("connectors.upload.or-submit-link")}
       </div>
       <form onSubmit={handleSendLink} className="flex gap-x-2">
@@ -223,21 +215,21 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
+          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
           placeholder={t("connectors.upload.placeholder-link")}
           autoComplete="off"
         />
         <button
           disabled={fetchingUrl}
           type="submit"
-          className="disabled:bg-card disabled:text-foreground disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-card hover:text-foreground w-auto border border-border light:border-theme-modal-border text-sm text-foreground p-2.5 rounded-sm"
+          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
         >
           {fetchingUrl
             ? t("connectors.upload.fetching")
             : t("connectors.upload.fetch-website")}
         </button>
       </form>
-      <div className="mt-6 text-center text-foreground text-opacity-80 text-xs font-medium w-[560px]">
+      <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         {t("connectors.upload.privacy-notice")}
       </div>
       {showPreflight && (

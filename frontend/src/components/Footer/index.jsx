@@ -54,12 +54,16 @@ export default function Footer() {
               to={paths.github()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover text-[var(--theme-sidebar-footer-icon-fill)]"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Find us on GitHub"
               data-tooltip-id="footer-item"
               data-tooltip-content="View source code on GitHub"
             >
-              <GithubLogo weight="fill" className="h-5 w-5" />
+              <GithubLogo
+                weight="fill"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
+              />
             </Link>
           </div>
           <div className="flex w-fit">
@@ -67,12 +71,16 @@ export default function Footer() {
               to={paths.docs()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover text-[var(--theme-sidebar-footer-icon-fill)]"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
               data-tooltip-id="footer-item"
               data-tooltip-content="Open OneNew help docs"
             >
-              <BookOpen weight="fill" className="h-5 w-5" />
+              <BookOpen
+                weight="fill"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
+              />
             </Link>
           </div>
           <div className="flex w-fit">
@@ -80,12 +88,16 @@ export default function Footer() {
               to={paths.discord()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover text-[var(--theme-sidebar-footer-icon-fill)]"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
               data-tooltip-id="footer-item"
               data-tooltip-content="Join the OneNew Discord"
             >
-              <DiscordLogo weight="fill" className="h-5 w-5" />
+              <DiscordLogo
+                weight="fill"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
+              />
             </Link>
           </div>
           {!isMobile && <SettingsButton />}
@@ -109,13 +121,14 @@ export default function Footer() {
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            className="transition-all duration-300 flex w-fit h-fit p-2 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100 text-[var(--theme-sidebar-footer-icon-fill)]"
+            className="transition-all duration-300 flex w-fit h-fit p-2 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100"
           >
             {React.createElement(
               ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,
               {
                 weight: "fill",
                 className: "h-5 w-5",
+                color: "var(--theme-sidebar-footer-icon-fill)",
               }
             )}
           </a>

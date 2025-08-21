@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OneNew — Dashboard</title>
+    <title>OneNew | Your personal LLM trained on anything</title>
 
     <meta name="title" content="OneNew | Your personal LLM trained on anything">
     <meta name="description" content="OneNew | Your personal LLM trained on anything">
@@ -31,12 +31,7 @@
   </head>
 
   <body>
-    <script>
-      const theme = localStorage.getItem("theme") || "light";
-      document.documentElement.setAttribute("data-theme", theme);
-      document.body.classList.toggle("light", theme === "light");
-    </script>
-    <div id="root" class="h-screen theme-onenew dark"></div>
+    <div id="root" class="h-screen"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 

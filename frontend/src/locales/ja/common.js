@@ -52,7 +52,8 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "最初のワークスペースを作成する",
-      description: "最初のワークスペースを作成して、OneNewを始めましょう。",
+      description:
+        "最初のワークスペースを作成して、OneNewを始めましょう。",
       adminWarning: null,
     },
   },
@@ -669,7 +670,7 @@ const TRANSLATIONS = {
         replace: null,
         keep_both: null,
         skip: null,
-        add_to_library: null,
+        "add_to_library": null,
       },
     },
     pinning: {

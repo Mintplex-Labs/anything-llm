@@ -13,7 +13,6 @@ import ThreadContainer from "./ThreadContainer";
 import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
-import { cn } from "@/lib/utils";
 
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
@@ -76,45 +75,32 @@ export default function ActiveWorkspaces() {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="workspaces">
         {(provided) => (
-          <ul
+          <div
             role="list"
             aria-label="Workspaces"
-            className="nav flex flex-col gap-y-2"
+            className="flex flex-col gap-y-2"
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
             {workspaces.map((workspace, index) => {
               const isActive = workspace.slug === slug;
               return (
-                <React.Fragment key={workspace.id}>
-                  <Draggable
-                    draggableId={workspace.id.toString()}
-                    index={index}
-                    isDragDisabled={user?.role === "default"}
-                  >
-                    {(provided, snapshot) => (
-                      <li
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        className={cn(
-                          "group nav-item item flex items-center gap-2 px-3 py-2 rounded-lg",
-                          isActive && "active font-semibold",
-                          snapshot.isDragging && "opacity-50"
-                        )}
-                        role="listitem"
-                      >
-                        {user?.role !== "default" && (
-                          <div
-                            {...provided.dragHandleProps}
-                            className="cursor-grab"
-                          >
-                            <DotsSixVertical
-                              size={20}
-                              weight="bold"
-                              className="text-[var(--theme-sidebar-item-workspace-active)]"
-                            />
-                          </div>
-                        )}
+                <Draggable
+                  key={workspace.id}
+                  draggableId={workspace.id.toString()}
+                  index={index}
+                  isDragDisabled={user?.role === "default"}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className={`flex flex-col w-full group ${
+                        snapshot.isDragging ? "opacity-50" : ""
+                      }`}
+                      role="listitem"
+                    >
+                      <div className="flex gap-x-2 items-center justify-between">
                         <a
                           href={
                             isActive
@@ -122,68 +108,94 @@ export default function ActiveWorkspaces() {
                               : paths.workspace.chat(workspace.slug)
                           }
                           aria-current={isActive ? "page" : ""}
-                          className="flex flex-grow overflow-hidden"
+                          className={`
+                            transition-all duration-[200ms]
+                            flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
+                            bg-theme-sidebar-item-default
+                            hover:bg-theme-sidebar-subitem-hover hover:font-bold
+                            ${isActive ? "bg-theme-sidebar-item-selected font-bold light:outline-2 light:outline light:outline-blue-400 light:outline-offset-[-2px]" : ""}
+                          `}
                         >
-                          <span className="truncate w-[130px]">
-                            {workspace.name}
-                          </span>
-                        </a>
-                        {user?.role !== "default" && (
-                          <div
-                            className={cn(
-                              "flex items-center gap-x-[2px] transition-opacity duration-200",
-                              isActive
-                                ? "opacity-100"
-                                : "opacity-0 group-hover:opacity-100"
+                          <div className="flex flex-row justify-between w-full items-center">
+                            {user?.role !== "default" && (
+                              <div
+                                {...provided.dragHandleProps}
+                                className="cursor-grab mr-[3px]"
+                              >
+                                <DotsSixVertical
+                                  size={20}
+                                  color="var(--theme-sidebar-item-workspace-active)"
+                                  weight="bold"
+                                />
+                              </div>
                             )}
-                          >
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setSelectedWs(workspace);
-                                showModal();
-                              }}
-                              className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-foreground"
-                            >
-                              <UploadSimple className="h-[20px] w-[20px]" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                navigate(
-                                  isInWorkspaceSettings
-                                    ? paths.workspace.chat(workspace.slug)
-                                    : paths.workspace.settings.generalAppearance(
-                                        workspace.slug
-                                      )
-                                );
-                              }}
-                              className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-foreground ml-auto p-[2px] hover:bg-[#646768]"
-                              aria-label="General appearance settings"
-                            >
-                              <GearSix
-                                className={cn(
-                                  "h-[20px] w-[20px]",
-                                  isInWorkspaceSettings &&
-                                    workspace.slug === slug &&
-                                    "text-[#46C8FF]"
-                                )}
-                              />
-                            </button>
+                            <div className="flex items-center space-x-2 overflow-hidden flex-grow">
+                              <div className="w-[130px] overflow-hidden">
+                                <p
+                                  className={`
+                                  text-[14px] leading-loose whitespace-nowrap overflow-hidden text-white
+                                  ${isActive ? "font-bold" : "font-medium"} truncate
+                                  w-full group-hover:w-[130px] group-hover:font-bold group-hover:duration-200
+                                `}
+                                >
+                                  {workspace.name}
+                                </p>
+                              </div>
+                            </div>
+                            {user?.role !== "default" && (
+                              <div
+                                className={`flex items-center gap-x-[2px] transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setSelectedWs(workspace);
+                                    showModal();
+                                  }}
+                                  className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
+                                >
+                                  <UploadSimple className="h-[20px] w-[20px]" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigate(
+                                      isInWorkspaceSettings
+                                        ? paths.workspace.chat(workspace.slug)
+                                        : paths.workspace.settings.generalAppearance(
+                                            workspace.slug
+                                          )
+                                    );
+                                  }}
+                                  className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
+                                  aria-label="General appearance settings"
+                                >
+                                  <GearSix
+                                    color={
+                                      isInWorkspaceSettings &&
+                                      workspace.slug === slug
+                                        ? "#46C8FF"
+                                        : undefined
+                                    }
+                                    className="h-[20px] w-[20px]"
+                                  />
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </li>
-                    )}
-                  </Draggable>
-                  {isActive && (
-                    <ThreadContainer
-                      workspace={workspace}
-                      isActive={isActive}
-                    />
+                        </a>
+                      </div>
+                      {isActive && (
+                        <ThreadContainer
+                          workspace={workspace}
+                          isActive={isActive}
+                        />
+                      )}
+                    </div>
                   )}
-                </React.Fragment>
+                </Draggable>
               );
             })}
             {provided.placeholder}
@@ -193,7 +205,7 @@ export default function ActiveWorkspaces() {
                 providedSlug={selectedWs ? selectedWs.slug : null}
               />
             )}
-          </ul>
+          </div>
         )}
       </Droppable>
     </DragDropContext>

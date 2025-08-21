@@ -8,7 +8,7 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
         <label htmlFor="name" className="block input-label">
           {t("vector-workspace.snippets.title")}
         </label>
-        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("vector-workspace.snippets.description")}
           <br />
           <i>{t("vector-workspace.snippets.recommend")}</i>
@@ -22,7 +22,7 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
         step={1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.topN ?? 4}
-        className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
         placeholder="4"
         required={true}
         autoComplete="off"

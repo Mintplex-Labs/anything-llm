@@ -55,9 +55,9 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   }, []);
 
   return (
-    <div className="onenew-page p-6 w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-foreground text-sm font-semibold md:-ml-44">
+    <div className="w-full flex items-center justify-center flex-col gap-y-6">
+      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
+        <div className=" text-white text-sm font-semibold md:-ml-44">
           {t("onboarding.userSetup.howManyUsers")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
@@ -67,7 +67,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
               selectedOption === "just_me"
                 ? "text-sky-400 border-sky-400/70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-sm border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("onboarding.userSetup.justMe")}
@@ -79,7 +79,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
               selectedOption === "my_team"
                 ? "text-sky-400 border-sky-400/70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-sm border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("onboarding.userSetup.myTeam")}
@@ -167,8 +167,8 @@ const JustMe = ({
   });
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="onenew-card flex flex-col p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-foreground text-sm font-semibold md:-ml-56">
+      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
+        <div className=" text-white text-sm font-semibold md:-ml-56">
           {t("onboarding.userSetup.setPassword")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
@@ -178,7 +178,7 @@ const JustMe = ({
               enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-sm border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("common.yes")}
@@ -190,7 +190,7 @@ const JustMe = ({
               !enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-sm border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("common.no")}
@@ -199,20 +199,23 @@ const JustMe = ({
         </div>
         {enablePassword && (
           <form className="w-full mt-4" onSubmit={handleSubmit}>
-            <label htmlFor="name" className="block mb-3 text-sm font-medium">
+            <label
+              htmlFor="name"
+              className="block mb-3 text-sm font-medium text-white"
+            >
               {t("onboarding.userSetup.instancePassword")}
             </label>
             <input
               name="password"
               type="password"
-              className="onenew-input w-full"
+              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
               placeholder="Your admin password"
               minLength={6}
               required={true}
               autoComplete="off"
               onChange={handlePasswordChange}
             />
-            <div className="mt-4 text-foreground text-opacity-80 text-xs font-base -mb-2">
+            <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
               {t("onboarding.userSetup.passwordReq")}
               <br />
               <i>{t("onboarding.userSetup.passwordWarn")}</i>{" "}
@@ -271,7 +274,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     }
   }, [username, password]);
   return (
-    <div className="onenew-card w-full max-w-[600px]">
+    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20 light:border-theme-sidebar-border">
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col w-full md:px-8 px-2 py-4">
           <div className="space-y-6 flex h-full w-full">
@@ -279,14 +282,14 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block mb-3 text-sm font-medium"
+                  className="block mb-3 text-sm font-medium text-white"
                 >
                   {t("onboarding.userSetup.adminUsername")}
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="onenew-input w-full"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -294,20 +297,20 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handleUsernameChange}
                 />
               </div>
-              <p className=" text-foreground text-opacity-80 text-xs font-base">
+              <p className=" text-white text-opacity-80 text-xs font-base">
                 {t("onboarding.userSetup.adminUsernameReq")}
               </p>
               <div className="mt-4">
                 <label
                   htmlFor="name"
-                  className="block mb-3 text-sm font-medium"
+                  className="block mb-3 text-sm font-medium text-white"
                 >
                   {t("onboarding.userSetup.adminPassword")}
                 </label>
                 <input
                   name="password"
                   type="password"
-                  className="onenew-input w-full"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
@@ -315,13 +318,13 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handlePasswordChange}
                 />
               </div>
-              <p className=" text-foreground text-opacity-80 text-xs font-base">
+              <p className=" text-white text-opacity-80 text-xs font-base">
                 {t("onboarding.userSetup.adminPasswordReq")}
               </p>
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-theme-sidebar-border">
           <div className="text-theme-text-secondary text-opacity-80 text-xs font-base">
             {t("onboarding.userSetup.teamHint")}
           </div>

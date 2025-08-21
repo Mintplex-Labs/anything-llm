@@ -121,10 +121,10 @@ export default function WorkspaceChats() {
         <Sidebar />
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-            <div className="w-full flex flex-col gap-y-1 pb-6 border-border/10 border-b-2">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
               <div className="flex flex-wrap gap-4 items-center">
                 <p className="text-lg leading-6 font-bold text-theme-text-primary">
                   {t("recorded.title")}
@@ -133,7 +133,7 @@ export default function WorkspaceChats() {
                   <button
                     ref={openMenuButton}
                     onClick={toggleMenu}
-                    className="flex items-center gap-x-2 px-4 py-1 rounded-sm bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Download size={18} weight="bold" />
                     {t("recorded.export")}
@@ -153,7 +153,7 @@ export default function WorkspaceChats() {
                             handleDumpChats(key);
                             setShowMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-foreground text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                         >
                           {data.name}
                         </button>
@@ -164,7 +164,7 @@ export default function WorkspaceChats() {
                 {chats.length > 0 && (
                   <button
                     onClick={handleClearAllChats}
-                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-border/40 text-foreground/40 light:text-theme-text-secondary rounded-sm bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Trash size={18} weight="bold" />
                     Clear Chats
@@ -231,7 +231,7 @@ function ChatsContainer({
   return (
     <>
       <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
-        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-border/10 border-b">
+        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}
@@ -266,7 +266,7 @@ function ChatsContainer({
       <div className="flex w-full justify-between items-center mt-6">
         <button
           onClick={handlePrevious}
-          className="px-4 py-2 rounded-sm border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 hover:bg-theme-text-secondary hover:text-theme-bg-secondary disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 hover:bg-theme-text-secondary hover:text-theme-bg-secondary disabled:invisible"
           disabled={offset === 0}
         >
           {" "}
@@ -274,7 +274,7 @@ function ChatsContainer({
         </button>
         <button
           onClick={handleNext}
-          className="px-4 py-2 rounded-sm border border-slate-200 text-foreground light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
           Next Page

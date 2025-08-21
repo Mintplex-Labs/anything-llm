@@ -37,13 +37,13 @@ export default function OllamaLLMOptions({ settings }) {
           authToken={authToken.value}
         />
         <div className="flex flex-col w-60">
-          <label className="text-foreground text-sm font-semibold block mb-2">
+          <label className="text-white text-sm font-semibold block mb-2">
             Max Tokens
           </label>
           <input
             type="number"
             name="OllamaLLMTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -53,7 +53,7 @@ export default function OllamaLLMOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
             Maximum number of tokens for context and response.
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function OllamaLLMOptions({ settings }) {
           <div className="w-full flex items-start gap-4">
             <div className="flex flex-col w-60">
               <div className="flex justify-between items-center mb-2">
-                <label className="text-foreground text-sm font-semibold">
+                <label className="text-white text-sm font-semibold">
                   Ollama Base URL
                 </label>
                 {loading ? (
@@ -90,7 +90,7 @@ export default function OllamaLLMOptions({ settings }) {
                     {!basePathValue.value && (
                       <button
                         onClick={handleAutoDetectClick}
-                        className="bg-primary-button text-xs font-medium px-2 py-1 rounded-sm hover:bg-secondary hover:text-foreground shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                        className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                       >
                         Auto-Detect
                       </button>
@@ -101,7 +101,7 @@ export default function OllamaLLMOptions({ settings }) {
               <input
                 type="url"
                 name="OllamaLLMBasePath"
-                className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="http://127.0.0.1:11434"
                 value={basePathValue.value}
                 required={true}
@@ -110,30 +110,30 @@ export default function OllamaLLMOptions({ settings }) {
                 onChange={basePath.onChange}
                 onBlur={basePath.onBlur}
               />
-              <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
                 Enter the URL where Ollama is running.
               </p>
             </div>
             <div className="flex flex-col w-60">
-              <label className="text-foreground text-sm font-semibold mb-2 flex items-center">
+              <label className="text-white text-sm font-semibold mb-2 flex items-center">
                 Performance Mode
                 <Info
                   size={16}
-                  className="ml-2 text-foreground"
+                  className="ml-2 text-white"
                   data-tooltip-id="performance-mode-tooltip"
                 />
               </label>
               <select
                 name="OllamaLLMPerformanceMode"
                 required={true}
-                className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
                 value={performanceMode}
                 onChange={(e) => setPerformanceMode(e.target.value)}
               >
                 <option value="base">Base (Default)</option>
                 <option value="maximum">Maximum</option>
               </select>
-              <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
                 Choose the performance mode for the Ollama model.
               </p>
               <Tooltip
@@ -162,13 +162,13 @@ export default function OllamaLLMOptions({ settings }) {
               </Tooltip>
             </div>
             <div className="flex flex-col w-60">
-              <label className="text-foreground text-sm font-semibold block mb-2">
+              <label className="text-white text-sm font-semibold block mb-2">
                 Ollama Keep Alive
               </label>
               <select
                 name="OllamaLLMKeepAliveSeconds"
                 required={true}
-                className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
                 defaultValue={settings?.OllamaLLMKeepAliveSeconds ?? "300"}
               >
                 <option value="0">No cache</option>
@@ -176,7 +176,7 @@ export default function OllamaLLMOptions({ settings }) {
                 <option value="3600">1 hour</option>
                 <option value="-1">Forever</option>
               </select>
-              <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
                 Choose how long Ollama should keep your model in memory before
                 unloading.
                 <a
@@ -193,10 +193,10 @@ export default function OllamaLLMOptions({ settings }) {
           </div>
           <div className="w-full flex items-start gap-4">
             <div className="flex flex-col w-100">
-              <label className="text-foreground text-sm font-semibold">
+              <label className="text-white text-sm font-semibold">
                 Auth Token
               </label>
-              <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
                 Enter a <code>Bearer</code> Auth Token for interacting with your
                 Ollama server.
                 <br />
@@ -206,7 +206,7 @@ export default function OllamaLLMOptions({ settings }) {
               <input
                 type="password"
                 name="OllamaLLMAuthToken"
-                className="border-none bg-theme-settings-input-bg mt-2 text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
                 placeholder="Ollama Auth Token"
                 defaultValue={
                   settings?.OllamaLLMAuthToken ? "*".repeat(20) : ""
@@ -261,13 +261,13 @@ function OllamaLLMModelSelection({
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-foreground text-sm font-semibold block mb-2">
+        <label className="text-white text-sm font-semibold block mb-2">
           Ollama Model
         </label>
         <select
           name="OllamaLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!basePath
@@ -275,7 +275,7 @@ function OllamaLLMModelSelection({
               : "Enter Ollama URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
           Select the Ollama model you want to use. Models will load after
           entering a valid Ollama URL.
         </p>
@@ -285,13 +285,13 @@ function OllamaLLMModelSelection({
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-foreground text-sm font-semibold block mb-2">
+      <label className="text-white text-sm font-semibold block mb-2">
         Ollama Model
       </label>
       <select
         name="OllamaLLMModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-border text-foreground text-sm rounded-sm block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">
@@ -309,7 +309,7 @@ function OllamaLLMModelSelection({
           </optgroup>
         )}
       </select>
-      <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60 mt-2">
+      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
         Choose the Ollama model you want to use for your conversations.
       </p>
     </div>

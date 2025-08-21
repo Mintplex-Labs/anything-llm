@@ -95,10 +95,10 @@ export default function SuggestedChatMessages({ slug }) {
         <label className="block input-label">
           {t("general.message.title")}
         </label>
-        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
-        <div className="text-foreground text-opacity-60 text-sm font-medium mt-6">
+        <div className="text-white text-opacity-60 text-sm font-medium mt-6">
           <PreLoader size="4" />
         </div>
       </div>
@@ -109,16 +109,16 @@ export default function SuggestedChatMessages({ slug }) {
         <label className="block input-label">
           {t("general.message.title")}
         </label>
-        <p className="text-foreground text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-foreground/60 text-xs mt-2 w-full justify-center max-w-[600px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white/60 text-xs mt-2 w-full justify-center max-w-[600px]">
         {suggestedMessages.map((suggestion, index) => (
           <div key={index} className="relative w-full">
             <button
-              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-card rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-foreground border-transparent border shadow-lg ml-2"
+              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
               style={{
                 top: -8,
                 left: 265,
@@ -130,7 +130,7 @@ export default function SuggestedChatMessages({ slug }) {
             <button
               key={index}
               onClick={(e) => startEditing(e, index)}
-              className={`text-left p-2.5 border rounded-xl w-full border-border/20 bg-theme-settings-input-bg hover:bg-theme-sidebar-item-selected-gradient ${
+              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-theme-settings-input-bg hover:bg-theme-sidebar-item-selected-gradient ${
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >
@@ -143,24 +143,24 @@ export default function SuggestedChatMessages({ slug }) {
       {editingIndex >= 0 && (
         <div className="flex flex-col gap-y-4 mr-2 mt-8">
           <div className="w-1/2">
-            <label className="text-foreground text-sm font-semibold block mb-2">
+            <label className="text-white text-sm font-semibold block mb-2">
               Heading
             </label>
             <input
               placeholder="Message heading"
-              className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-foreground/20 text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
             />
           </div>
           <div className="w-1/2">
-            <label className="text-foreground text-sm font-semibold block mb-2">
+            <label className="text-white text-sm font-semibold block mb-2">
               Message
             </label>
             <input
               placeholder="Message"
-              className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-foreground/20 text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}
@@ -172,7 +172,7 @@ export default function SuggestedChatMessages({ slug }) {
         <button
           type="button"
           onClick={addMessage}
-          className="flex gap-x-2 items-center justify-center mt-6 text-foreground text-sm hover:text-sky-400 transition-all duration-300"
+          className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
         >
           {t("general.message.add")}{" "}
           <Plus className="" size={24} weight="fill" />
@@ -183,7 +183,7 @@ export default function SuggestedChatMessages({ slug }) {
         <div className="flex justify-start py-6">
           <button
             type="button"
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-sm text-foreground text-sm items-center flex gap-x-2 hover:bg-card hover:text-foreground focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             onClick={handleSaveSuggestedMessages}
           >
             {t("general.message.save")}

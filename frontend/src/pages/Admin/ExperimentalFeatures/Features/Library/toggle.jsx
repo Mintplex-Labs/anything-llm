@@ -10,9 +10,7 @@ export default function LibraryToggle({ enabled = false, onToggle }) {
       library: status ? "disabled" : "enabled",
     });
     if (!updated?.success) {
-      showToast("Failed to update status of feature.", "error", {
-        clear: true,
-      });
+      showToast("Failed to update status of feature.", "error", { clear: true });
       return;
     }
     setStatus(!status);
@@ -37,12 +35,11 @@ export default function LibraryToggle({ enabled = false, onToggle }) {
             checked={status}
             className="peer sr-only pointer-events-none"
           />
-          <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-card after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
       <p className="mt-6 text-theme-text-secondary text-sm max-w-[500px]">
-        Enable an organization-wide Library to store documents outside
-        individual workspaces.
+        Enable an organization-wide Library to store documents outside individual workspaces.
       </p>
     </div>
   );

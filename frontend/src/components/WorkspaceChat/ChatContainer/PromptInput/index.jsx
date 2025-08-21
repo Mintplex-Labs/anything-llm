@@ -42,7 +42,6 @@ export default function PromptInput({
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
-  const composerRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
@@ -70,20 +69,6 @@ export default function PromptInput({
     resetTextAreaHeight();
   }, [isStreaming]);
 
-  useEffect(() => {
-    if (!composerRef.current) return;
-    const el = composerRef.current;
-    const update = () =>
-      document.documentElement.style.setProperty(
-        "--composer-h",
-        `${el.offsetHeight}px`
-      );
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   /**
    * Save the current state before changes
    * @param {number} adjustment
@@ -106,11 +91,7 @@ export default function PromptInput({
 
   function resetTextAreaHeight() {
     if (!textareaRef.current) return;
-    const element = textareaRef.current;
-    element.style.height = "auto";
-    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-    const maxHeight = lineHeight * 6;
-    element.style.height = `${Math.min(element.scrollHeight, maxHeight)}px`;
+    textareaRef.current.style.height = "auto";
   }
 
   function checkForSlash(e) {
@@ -195,10 +176,7 @@ export default function PromptInput({
   function adjustTextArea(event) {
     const element = event.target;
     element.style.height = "auto";
-    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-    const maxHeight = lineHeight * 6;
-    const newHeight = Math.min(element.scrollHeight, maxHeight);
-    element.style.height = `${newHeight}px`;
+    element.style.height = `${element.scrollHeight}px`;
   }
 
   function handlePasteEvent(e) {
@@ -261,10 +239,7 @@ export default function PromptInput({
   }
 
   return (
-    <div
-      className="chat__composer w-full border-t border-border/10"
-      ref={composerRef}
-    >
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -277,76 +252,84 @@ export default function PromptInput({
         sendCommand={sendCommand}
         promptRef={textareaRef}
       />
-      <form onSubmit={handleSubmit} className="w-full">
-        <AttachmentManager attachments={attachments} />
-        <div className="flex items-center gap-2">
-          <textarea
-            ref={textareaRef}
-            onChange={handleChange}
-            onKeyDown={captureEnterOrUndo}
-            onPaste={(e) => {
-              saveCurrentState();
-              handlePasteEvent(e);
-            }}
-            required={true}
-            onFocus={() => setFocused(true)}
-            onBlur={(e) => {
-              setFocused(false);
-              adjustTextArea(e);
-            }}
-            value={promptInput}
-            spellCheck={Appearance.get("enableSpellCheck")}
-            className={`chat__input onenew-input resize-none flex-1 w-full ${textSizeClass}`}
-            placeholder={t("chat_window.send_message")}
-          />
-          {isStreaming ? (
-            <StopGenerationButton />
-          ) : (
-            <>
-              <button
-                ref={formRef}
-                type="submit"
-                disabled={isDisabled}
-                className="chat__send btn btn--primary disabled:cursor-not-allowed group"
-                data-tooltip-id="send-prompt"
-                data-tooltip-content={
-                  isDisabled
-                    ? t("chat_window.attachments_processing")
-                    : t("chat_window.send")
-                }
-                aria-label={t("chat_window.send")}
-              >
-                <PaperPlaneRight
-                  className="w-[22px] h-[22px] pointer-events-none group-disabled:opacity-[25%]"
-                  weight="fill"
-                />
-                <span className="sr-only">Send message</span>
-              </button>
-              <Tooltip
-                id="send-prompt"
-                place="bottom"
-                delayShow={300}
-                className="tooltip !text-xs z-99"
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
+      >
+        <div className="flex items-center rounded-lg md:mb-4 md:w-full">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-2 overflow-hidden">
+            <AttachmentManager attachments={attachments} />
+            <div className="flex items-center border-b border-theme-chat-input-border mx-3">
+              <textarea
+                ref={textareaRef}
+                onChange={handleChange}
+                onKeyDown={captureEnterOrUndo}
+                onPaste={(e) => {
+                  saveCurrentState();
+                  handlePasteEvent(e);
+                }}
+                required={true}
+                onFocus={() => setFocused(true)}
+                onBlur={(e) => {
+                  setFocused(false);
+                  adjustTextArea(e);
+                }}
+                value={promptInput}
+                spellCheck={Appearance.get("enableSpellCheck")}
+                className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
+                placeholder={t("chat_window.send_message")}
               />
-            </>
-          )}
-        </div>
-        <div className="chat__toolbar flex justify-between">
-          <div className="flex gap-x-2">
-            <AttachItem />
-            <SlashCommandsButton
-              showing={showSlashCommand}
-              setShowSlashCommand={setShowSlashCommand}
-            />
-            <AvailableAgentsButton
-              showing={showAgents}
-              setShowAgents={setShowAgents}
-            />
-            <TextSizeButton />
-            <LLMSelectorAction />
-          </div>
-          <div className="flex gap-x-2">
-            <SpeechToText sendCommand={sendCommand} />
+              {isStreaming ? (
+                <StopGenerationButton />
+              ) : (
+                <>
+                  <button
+                    ref={formRef}
+                    type="submit"
+                    disabled={isDisabled}
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4 disabled:cursor-not-allowed group"
+                    data-tooltip-id="send-prompt"
+                    data-tooltip-content={
+                      isDisabled
+                        ? t("chat_window.attachments_processing")
+                        : t("chat_window.send")
+                    }
+                    aria-label={t("chat_window.send")}
+                  >
+                    <PaperPlaneRight
+                      color="var(--theme-sidebar-footer-icon-fill)"
+                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
+                      weight="fill"
+                    />
+                    <span className="sr-only">Send message</span>
+                  </button>
+                  <Tooltip
+                    id="send-prompt"
+                    place="bottom"
+                    delayShow={300}
+                    className="tooltip !text-xs z-99"
+                  />
+                </>
+              )}
+            </div>
+            <div className="flex justify-between py-3.5 mx-3 mb-1">
+              <div className="flex gap-x-2">
+                <AttachItem />
+                <SlashCommandsButton
+                  showing={showSlashCommand}
+                  setShowSlashCommand={setShowSlashCommand}
+                />
+                <AvailableAgentsButton
+                  showing={showAgents}
+                  setShowAgents={setShowAgents}
+                />
+                <TextSizeButton />
+                <LLMSelectorAction />
+              </div>
+              <div className="flex gap-x-2">
+                <SpeechToText sendCommand={sendCommand} />
+              </div>
+            </div>
           </div>
         </div>
       </form>

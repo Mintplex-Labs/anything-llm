@@ -173,6 +173,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
     const promises = [];
 
     for (const attachment of newAttachments) {
+
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
       promises.push(
@@ -231,20 +232,20 @@ export default function DnDFileUploaderWrapper({ children }) {
 
   return (
     <div
-      className="relative h-full min-h-0 w-full md:mt-0 mt-[40px] p-[1px]"
+      className={`relative flex flex-col h-full w-full md:mt-0 mt-[40px] p-[1px]`}
       {...getRootProps()}
     >
       <div
         hidden={!dragging}
-        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-border z-[9999]"
+        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-white z-[9999]"
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
             <img src={DndIcon} width={69} height={69} />
-            <p className="text-foreground text-[24px] font-semibold">
+            <p className="text-white text-[24px] font-semibold">
               Add {canUploadAll ? "anything" : "an image"}
             </p>
-            <p className="text-foreground text-[16px] text-center">
+            <p className="text-white text-[16px] text-center">
               {canUploadAll ? (
                 <>
                   Drop your file here to embed it into your <br />

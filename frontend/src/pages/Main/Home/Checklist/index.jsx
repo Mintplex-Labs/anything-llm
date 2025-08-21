@@ -181,7 +181,7 @@ export default function Checklist() {
           <div className="flex items-center gap-x-2">
             <button
               onClick={handleClose}
-              className="text-theme-home-text-secondary bg-theme-home-bg-button px-3 py-1 rounded-xl hover:bg-card transition-colors text-xs light:bg-black-100"
+              className="text-theme-home-text-secondary bg-theme-home-bg-button px-3 py-1 rounded-xl hover:bg-white/10 transition-colors text-xs light:bg-black-100"
             >
               {t("main-page.checklist.dismiss")}
             </button>

@@ -72,7 +72,7 @@ export function ChecklistItem({ id, title, action, onAction, icon: Icon }) {
           />
         </div>
       ) : (
-        <button className="w-[64px] h-[24px] rounded-md bg-card light:bg-card text-theme-checklist-item-text font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-card light:hover:bg-card">
+        <button className="w-[64px] h-[24px] rounded-md bg-white/10 light:bg-white/70 text-theme-checklist-item-text font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-white/20 light:hover:bg-white/60">
           {action}
         </button>
       )}

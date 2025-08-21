@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 // You can also pass valid ReactToast params to override the defaults.
 // clear: false, // Will dismiss all visible toasts before rendering next toast
 const showToast = (message, type = "default", opts = {}) => {
-  const theme = localStorage?.getItem("theme") || "light";
+  const theme = localStorage?.getItem("theme") || "default";
   const options = {
     position: "bottom-center",
     autoClose: 5000,
@@ -12,7 +12,7 @@ const showToast = (message, type = "default", opts = {}) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    theme: theme === "light" ? "light" : "dark",
+    theme: theme === "default" ? "dark" : "light",
     ...opts,
   };
 

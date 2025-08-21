@@ -3,7 +3,6 @@ import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
-import moment from "moment";
 import {
   THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
@@ -19,7 +18,6 @@ const PromptReply = ({
   workspace,
   sources = [],
   closed = true,
-  sentAt,
 }) => {
   const assistantBackgroundColor = "bg-theme-bg-chat";
 
@@ -69,19 +67,10 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <div className="flex flex-col">
-            <div className="onenew-card p-3 md:p-4">
-              <RenderAssistantChatContent
-                key={`${uuid}-prompt-reply-content`}
-                message={reply}
-              />
-            </div>
-            {sentAt && (
-              <div className="bubble-meta">
-                {moment.unix(sentAt).format("h:mm A")}
-              </div>
-            )}
-          </div>
+          <RenderAssistantChatContent
+            key={`${uuid}-prompt-reply-content`}
+            message={reply}
+          />
         </div>
         <Citations sources={sources} />
       </div>
@@ -96,7 +85,7 @@ export function WorkspaceProfileImage({ workspace }) {
         <img
           src={workspace.pfpUrl}
           alt="Workspace profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-card"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
         />
       </div>
     );

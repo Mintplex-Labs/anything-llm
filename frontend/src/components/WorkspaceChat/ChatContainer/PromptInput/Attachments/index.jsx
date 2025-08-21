@@ -54,7 +54,7 @@ function AttachmentItem({ attachment }) {
   if (isProcessingStatus(status)) {
     const label = STATUS_TEXT[status.toUpperCase()] || "Processing...";
     return (
-      <div className="relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-bg w-[180px] group">
+      <div className="relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group">
         <div
           className={`bg-theme-attachment-icon-spinner-bg rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
@@ -82,13 +82,13 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-error`}
           data-tooltip-content={error}
-          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-error-bg w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-none w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -137,13 +137,13 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-success-bg w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border-none w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -186,13 +186,13 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
-          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-bg w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-card hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -207,7 +207,7 @@ function AttachmentItem({ attachment }) {
             />
           </div>
           <div className="flex flex-col w-[125px]">
-            <p className="text-foreground text-xs font-semibold truncate">
+            <p className="text-white text-xs font-semibold truncate">
               {file.name}
             </p>
             <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">

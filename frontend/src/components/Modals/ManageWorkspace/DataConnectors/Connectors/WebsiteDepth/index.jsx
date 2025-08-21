@@ -56,7 +56,7 @@ export default function WebsiteDepthOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-foreground text-sm font-bold">
+                  <label className="text-white text-sm font-bold">
                     {t("connectors.website-depth.URL")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -66,7 +66,7 @@ export default function WebsiteDepthOptions() {
                 <input
                   type="url"
                   name="url"
-                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"
@@ -75,7 +75,7 @@ export default function WebsiteDepthOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-foreground text-sm font-bold">
+                  <label className="text-white text-sm font-bold">
                     {" "}
                     {t("connectors.website-depth.depth")}
                   </label>
@@ -88,14 +88,14 @@ export default function WebsiteDepthOptions() {
                   name="depth"
                   min="1"
                   max="5"
-                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   defaultValue="1"
                 />
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-foreground text-sm font-bold">
+                  <label className="text-white text-sm font-bold">
                     {t("connectors.website-depth.max_pages")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -106,7 +106,7 @@ export default function WebsiteDepthOptions() {
                   type="number"
                   name="maxLinks"
                   min="1"
-                  className="border-none bg-theme-settings-input-bg text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   defaultValue="20"
                 />
@@ -118,7 +118,7 @@ export default function WebsiteDepthOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-sm text-dark-text light:text-foreground text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-lg text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading ? "Scraping website..." : "Submit"}
             </button>

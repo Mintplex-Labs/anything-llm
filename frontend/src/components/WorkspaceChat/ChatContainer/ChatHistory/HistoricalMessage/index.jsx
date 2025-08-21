@@ -10,9 +10,8 @@ import DOMPurify from "@/utils/chat/purify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
-import moment from "moment";
 import {
-    THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
@@ -38,25 +37,21 @@ const HistoricalMessage = ({
   forkThread,
   metrics = {},
   alignmentCls = "",
-    sentAt,
-  }) => {
-    const { t } = useTranslation();
-    const { isEditing } = useEditMessage({ chatId, role });
-    const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
-      chatId,
-      role,
-    });
+}) => {
+  const { t } = useTranslation();
+  const { isEditing } = useEditMessage({ chatId, role });
+  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+    chatId,
+    role,
+  });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
   };
 
-    const isRefusalMessage =
-      role === "assistant" && message === chatQueryRefusalResponse(workspace);
-    const timestamp = sentAt
-      ? moment.unix(sentAt).format("h:mm A")
-      : null;
+  const isRefusalMessage =
+    role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
   if (!!error) {
     return (
@@ -116,17 +111,7 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div
-              className="break-words onenew-card p-3 md:p-4"
-              style={
-                role === "user"
-                  ? {
-                      background:
-                        "color-mix(in srgb, var(--accent), var(--surface) 94%)",
-                    }
-                  : undefined
-              }
-            >
+            <div className="break-words">
               <RenderChatContent
                 role={role}
                 message={message}
@@ -152,15 +137,6 @@ const HistoricalMessage = ({
             </div>
           )}
         </div>
-        {timestamp && (
-          <div
-            className={`bubble-meta ml-14 ${
-              alignmentCls.includes("flex-row-reverse") ? "text-right" : ""
-            }`}
-          >
-            {timestamp}
-          </div>
-        )}
         <div className="flex gap-x-5 ml-14">
           <Actions
             message={message}
@@ -189,7 +165,7 @@ function ProfileImage({ role, workspace }) {
         <img
           src={workspace.pfpUrl}
           alt="Workspace profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-card"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
         />
       </div>
     );

@@ -400,7 +400,7 @@ export default function GeneralLLMPreference() {
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -409,17 +409,17 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-border light:border-theme-sidebar-border border-b-2 border-opacity-10">
+              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-foreground">
+                  <p className="text-lg leading-6 font-bold text-white">
                     {t("llm.title")}
                   </p>
                 </div>
-                <p className="text-xs leading-[18px] font-base text-foreground text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   {t("llm.description")}
                 </p>
               </div>
@@ -433,7 +433,7 @@ export default function GeneralLLMPreference() {
                   </CTAButton>
                 )}
               </div>
-              <div className="text-base font-bold text-foreground mt-6 mb-4">
+              <div className="text-base font-bold text-white mt-6 mb-4">
                 {t("llm.provider")}
               </div>
               <div className="relative">
@@ -467,7 +467,7 @@ export default function GeneralLLMPreference() {
                         <X
                           size={20}
                           weight="bold"
-                          className="cursor-pointer text-foreground hover:text-x-button"
+                          className="cursor-pointer text-white hover:text-x-button"
                           onClick={handleXButton}
                         />
                       </div>
@@ -490,7 +490,7 @@ export default function GeneralLLMPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-sm flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
@@ -501,7 +501,7 @@ export default function GeneralLLMPreference() {
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-foreground">
+                        <div className="text-sm font-semibold text-white">
                           {selectedLLMObject?.name || "None selected"}
                         </div>
                         <div className="mt-1 text-xs text-description">
@@ -513,7 +513,7 @@ export default function GeneralLLMPreference() {
                     <CaretUpDown
                       size={24}
                       weight="bold"
-                      className="text-foreground"
+                      className="text-white"
                     />
                   </button>
                 )}

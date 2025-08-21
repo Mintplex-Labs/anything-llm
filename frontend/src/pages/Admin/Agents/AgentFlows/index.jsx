@@ -22,7 +22,7 @@ export default function AgentFlowsList({
   }
 
   return (
-    <div className="bg-theme-bg-secondary text-foreground rounded-xl w-full md:min-w-[360px]">
+    <div className="bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px]">
       {flows.map((flow, index) => (
         <div
           key={flow.uuid}
@@ -31,10 +31,10 @@ export default function AgentFlowsList({
           } ${
             index === flows.length - 1
               ? "rounded-b-xl"
-              : "border-b border-border/10"
+              : "border-b border-white/10"
           } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
             selectedFlow?.uuid === flow.uuid
-              ? "bg-card light:bg-theme-bg-sidebar"
+              ? "bg-white/10 light:bg-theme-bg-sidebar"
               : ""
           }`}
           onClick={() => handleClick?.(flow)}

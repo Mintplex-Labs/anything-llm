@@ -116,7 +116,7 @@ export default function CommunityHubAuthentication() {
       />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
@@ -126,9 +126,9 @@ export default function CommunityHubAuthentication() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              Connecting your OneNew Community Hub account allows you to access
-              your <b>private</b> OneNew Community Hub items as well as upload
-              your own items to the OneNew Community Hub.
+              Connecting your OneNew Community Hub account allows you to
+              access your <b>private</b> OneNew Community Hub items as well
+              as upload your own items to the OneNew Community Hub.
             </p>
           </div>
 
@@ -142,15 +142,16 @@ export default function CommunityHubAuthentication() {
                   </h1>
                 </div>
                 <p className="text-sm text-theme-text-secondary">
-                  Connecting your OneNew Community Hub account allows you to
-                  pull in your <b>private</b> items from the OneNew Community
-                  Hub as well as upload your own items to the OneNew Community
-                  Hub.
+                  Connecting your OneNew Community Hub account allows you
+                  to pull in your <b>private</b> items from the OneNew
+                  Community Hub as well as upload your own items to the
+                  OneNew Community Hub.
                   <br />
                   <br />
                   <i>
-                    You do not need to connect your OneNew Community Hub account
-                    to pull in public items from the OneNew Community Hub.
+                    You do not need to connect your OneNew Community Hub
+                    account to pull in public items from the OneNew
+                    Community Hub.
                   </i>
                 </p>
               </div>
@@ -167,7 +168,7 @@ export default function CommunityHubAuthentication() {
                 type="password"
                 value={connectionKey || ""}
                 onChange={onConnectionKeyChange}
-                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Enter your OneNew Hub API key"
               />
               <div className="flex items-center justify-between mt-2">

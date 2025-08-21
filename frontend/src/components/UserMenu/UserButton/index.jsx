@@ -56,25 +56,34 @@ export default function UserButton() {
 
   if (mode === null) return null;
   return (
-    <div className="menu absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
+    <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
       <button
         ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
         type="button"
-        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-[var(--text)] p-2 border border-transparent hover:border-[var(--border)]"
+        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
         {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
       </button>
 
       {showMenu && (
-        <div ref={menuRef} className="menu__popover">
+        <div
+          ref={menuRef}
+          className="w-fit rounded-lg absolute top-12 right-0 bg-theme-action-menu-bg p-2 flex items-center-justify-center"
+        >
           <div className="flex flex-col gap-y-2">
             {mode === "multi" && !!user && (
-              <button onClick={handleOpenAccountModal} className="menu__item">
+              <button
+                onClick={handleOpenAccountModal}
+                className="border-none text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
+              >
                 {t("profile_settings.account")}
               </button>
             )}
-            <a href={supportEmail} className="menu__item">
+            <a
+              href={supportEmail}
+              className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
+            >
               {t("profile_settings.support")}
             </a>
             <button
@@ -85,7 +94,7 @@ export default function UserButton() {
                 window.location.replace(paths.home());
               }}
               type="button"
-              className="menu__item"
+              className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
               {t("profile_settings.signout")}
             </button>
@@ -108,7 +117,7 @@ function UserDisplay() {
 
   if (pfp) {
     return (
-      <div className="w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-[var(--card)] border border-transparent hover:border-[var(--border)] hover:border-opacity-50 hover:opacity-60">
+      <div className="w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-gray-100 hover:border-slate-100 hover:border-opacity-50 border-transparent border hover:opacity-60">
         <img
           src={pfp}
           alt="User profile picture"

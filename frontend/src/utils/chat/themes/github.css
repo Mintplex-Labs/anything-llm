@@ -10,8 +10,8 @@
 */
 
 .github.hljs {
-  color: rgb(36, 41, 46);
-  background: rgb(255, 255, 255);
+  color: #24292e;
+  background: #ffffff;
 }
 
 .github .hljs-doctag,
@@ -22,7 +22,7 @@
 .github .hljs-type,
 .github .hljs-variable.language_ {
   /* prettylights-syntax-keyword */
-  color: rgb(215, 58, 73);
+  color: #d73a49;
 }
 
 .github .hljs-title,
@@ -30,7 +30,7 @@
 .github .hljs-title.class_.inherited__,
 .github .hljs-title.function_ {
   /* prettylights-syntax-entity */
-  color: rgb(111, 66, 193);
+  color: #6f42c1;
 }
 
 .github .hljs-attr,
@@ -44,27 +44,27 @@
 .github .hljs-selector-class,
 .github .hljs-selector-id {
   /* prettylights-syntax-constant */
-  color: rgb(0, 92, 197);
+  color: #005cc5;
 }
 
 .github .hljs-regexp,
 .github .hljs-string,
 .github .hljs-meta .hljs-string {
   /* prettylights-syntax-string */
-  color: rgb(3, 47, 98);
+  color: #032f62;
 }
 
 .github .hljs-built_in,
 .github .hljs-symbol {
   /* prettylights-syntax-variable */
-  color: rgb(227, 98, 9);
+  color: #e36209;
 }
 
 .github .hljs-comment,
 .github .hljs-code,
 .github .hljs-formula {
   /* prettylights-syntax-comment */
-  color: rgb(106, 115, 125);
+  color: #6a737d;
 }
 
 .github .hljs-name,
@@ -72,47 +72,47 @@
 .github .hljs-selector-tag,
 .github .hljs-selector-pseudo {
   /* prettylights-syntax-entity-tag */
-  color: rgb(34, 134, 58);
+  color: #22863a;
 }
 
 .github .hljs-subst {
   /* prettylights-syntax-storage-modifier-import */
-  color: rgb(36, 41, 46);
+  color: #24292e;
 }
 
 .github .hljs-section {
   /* prettylights-syntax-markup-heading */
-  color: rgb(0, 92, 197);
+  color: #005cc5;
   font-weight: bold;
 }
 
 .github .hljs-bullet {
   /* prettylights-syntax-markup-list */
-  color: rgb(115, 92, 15);
+  color: #735c0f;
 }
 
 .github .hljs-emphasis {
   /* prettylights-syntax-markup-italic */
-  color: rgb(36, 41, 46);
+  color: #24292e;
   font-style: italic;
 }
 
 .github .hljs-strong {
   /* prettylights-syntax-markup-bold */
-  color: rgb(36, 41, 46);
+  color: #24292e;
   font-weight: bold;
 }
 
 .github .hljs-addition {
   /* prettylights-syntax-markup-inserted */
-  color: rgb(34, 134, 58);
-  background-color: rgb(240, 255, 244);
+  color: #22863a;
+  background-color: #f0fff4;
 }
 
 .github .hljs-deletion {
   /* prettylights-syntax-markup-deleted */
-  color: rgb(179, 29, 40);
-  background-color: rgb(255, 238, 240);
+  color: #b31d28;
+  background-color: #ffeef0;
 }
 
 .github .hljs-char.escape_,

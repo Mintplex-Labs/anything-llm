@@ -121,16 +121,16 @@ export default function NewSQLConnection({
         <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
-              <h3 className="text-xl font-semibold text-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
                 New SQL Connection
               </h3>
             </div>
             <button
               onClick={handleClose}
               type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-sm text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={24} weight="bold" className="text-foreground" />
+              <X size={24} weight="bold" className="text-white" />
             </button>
           </div>
           <form
@@ -140,7 +140,7 @@ export default function NewSQLConnection({
           >
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-                <p className="text-sm text-foreground/60">
+                <p className="text-sm text-white/60">
                   Add the connection information for your database below and it
                   will be available for future SQL agent calls.
                 </p>
@@ -156,7 +156,7 @@ export default function NewSQLConnection({
                     </p>
                   </div>
 
-                  <label className="block mb-2 text-sm font-medium text-foreground mt-4">
+                  <label className="block mb-2 text-sm font-medium text-white mt-4">
                     Select your SQL engine
                   </label>
                   <div className="grid md:grid-cols-4 gap-4 grid-cols-2">
@@ -179,13 +179,13 @@ export default function NewSQLConnection({
                 </div>
 
                 <div className="flex flex-col w-full">
-                  <label className="block mb-2 text-sm font-medium text-foreground">
+                  <label className="block mb-2 text-sm font-medium text-white">
                     Connection name
                   </label>
                   <input
                     type="text"
                     name="name"
-                    className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="a unique name to identify this SQL connection"
                     required={true}
                     autoComplete="off"
@@ -195,13 +195,13 @@ export default function NewSQLConnection({
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="flex flex-col">
-                    <label className="block mb-2 text-sm font-medium text-foreground">
+                    <label className="block mb-2 text-sm font-medium text-white">
                       Database user
                     </label>
                     <input
                       type="text"
                       name="username"
-                      className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="root"
                       required={true}
                       autoComplete="off"
@@ -209,13 +209,13 @@ export default function NewSQLConnection({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="block mb-2 text-sm font-medium text-foreground">
+                    <label className="block mb-2 text-sm font-medium text-white">
                       Database user password
                     </label>
                     <input
                       type="text"
                       name="password"
-                      className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="password123"
                       required={true}
                       autoComplete="off"
@@ -226,13 +226,13 @@ export default function NewSQLConnection({
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="sm:col-span-2">
-                    <label className="block mb-2 text-sm font-medium text-foreground">
+                    <label className="block mb-2 text-sm font-medium text-white">
                       Server endpoint
                     </label>
                     <input
                       type="text"
                       name="host"
-                      className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="the hostname or endpoint for your database"
                       required={true}
                       autoComplete="off"
@@ -240,13 +240,13 @@ export default function NewSQLConnection({
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-foreground">
+                    <label className="block mb-2 text-sm font-medium text-white">
                       Port
                     </label>
                     <input
                       type="text"
                       name="port"
-                      className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="3306"
                       required={false}
                       autoComplete="off"
@@ -256,13 +256,13 @@ export default function NewSQLConnection({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="block mb-2 text-sm font-medium text-foreground">
+                  <label className="block mb-2 text-sm font-medium text-white">
                     Database
                   </label>
                   <input
                     type="text"
                     name="database"
-                    className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="the database the agent will interact with"
                     required={true}
                     autoComplete="off"
@@ -272,13 +272,13 @@ export default function NewSQLConnection({
 
                 {engine === "postgresql" && (
                   <div className="flex flex-col">
-                    <label className="block mb-2 text-sm font-medium text-foreground">
+                    <label className="block mb-2 text-sm font-medium text-white">
                       Schema (optional)
                     </label>
                     <input
                       type="text"
                       name="schema"
-                      className="border-none bg-theme-settings-input-bg w-full text-foreground placeholder:text-theme-settings-input-placeholder text-sm rounded-sm focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="public (default schema if not specified)"
                       required={false}
                       autoComplete="off"
@@ -297,8 +297,8 @@ export default function NewSQLConnection({
                         className="sr-only peer"
                         checked={config.encrypt}
                       />
-                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-border after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      <span className="ml-3 text-sm font-medium text-foreground">
+                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <span className="ml-3 text-sm font-medium text-white">
                         Enable Encryption
                       </span>
                     </label>
@@ -314,7 +314,7 @@ export default function NewSQLConnection({
               <button
                 type="button"
                 onClick={handleClose}
-                className="transition-all duration-300 text-foreground hover:bg-zinc-700 light:hover:bg-theme-bg-primary px-4 py-2 rounded-sm text-sm"
+                className="transition-all duration-300 text-white hover:bg-zinc-700 light:hover:bg-theme-bg-primary px-4 py-2 rounded-lg text-sm"
               >
                 Cancel
               </button>
@@ -322,7 +322,7 @@ export default function NewSQLConnection({
                 type="submit"
                 form="sql-connection-form"
                 disabled={isValidating}
-                className="transition-all duration-300 bg-card text-foreground hover:opacity-60 px-4 py-2 rounded-sm text-sm disabled:opacity-50"
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
               >
                 {isValidating ? "Validating..." : "Save connection"}
               </button>
@@ -340,7 +340,7 @@ function DBEngine({ provider, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col p-4 border border-border/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${
+      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${
         active ? "!bg-blue-500/50" : ""
       }`}
     >

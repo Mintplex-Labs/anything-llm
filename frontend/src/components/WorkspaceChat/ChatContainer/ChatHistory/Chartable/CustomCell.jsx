@@ -34,20 +34,14 @@ export default function CustomCell({ ...props }) {
           x={x + width / 2}
           y={y + height / 2 + 7}
           textAnchor="middle"
-          fill="currentColor"
+          fill="#fff"
           fontSize={14}
         >
           {name}
         </text>
       ) : null}
       {depth === 1 ? (
-        <text
-          x={x + 4}
-          y={y + 18}
-          fill="currentColor"
-          fontSize={16}
-          fillOpacity={0.9}
-        >
+        <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
           {index + 1}
         </text>
       ) : null}

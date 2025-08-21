@@ -48,7 +48,7 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-card text-theme-text-secondary shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-theme-text-secondary shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
             className="rounded-md p-2 flex items-center justify-center text-theme-text-secondary"
@@ -94,10 +94,10 @@ export default function SettingsSidebar() {
                     style={{ objectFit: "contain" }}
                   />
                 </div>
-                <div className="flex gap-x-2 items-center text-foreground shrink-0">
+                <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                   <a
                     href={paths.home()}
-                    className="transition-all duration-300 p-2 rounded-full text-foreground bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
                     <House className="h-4 w-4" />
                   </a>
@@ -116,7 +116,7 @@ export default function SettingsSidebar() {
                         user?.hasOwnProperty("role") && user.role !== "admin"
                       }
                       to={paths.settings.privacy()}
-                      className="text-theme-text-secondary hover:text-foreground text-xs leading-[18px] mx-3"
+                      className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3"
                     >
                       {t("settings.privacy")}
                     </Link>
@@ -124,7 +124,7 @@ export default function SettingsSidebar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80">
+              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function SettingsSidebar() {
         </Link>
         <div
           ref={sidebarRef}
-          className="transition-all duration-500 relative m-[16px] rounded-lg bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
@@ -167,7 +167,7 @@ export default function SettingsSidebar() {
                       user?.hasOwnProperty("role") && user.role !== "admin"
                     }
                     to={paths.settings.privacy()}
-                    className="text-theme-text-secondary hover:text-foreground hover:light:text-theme-text-primary text-xs leading-[18px] mx-3"
+                    className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3"
                   >
                     {t("settings.privacy")}
                   </Link>
@@ -175,7 +175,7 @@ export default function SettingsSidebar() {
                 </div>
               </div>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 z-10">
+            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
               <Footer />
             </div>
           </div>
@@ -204,7 +204,7 @@ function SupportEmail() {
   return (
     <Link
       to={supportEmail}
-      className="text-theme-text-secondary hover:text-foreground hover:light:text-theme-text-primary text-xs leading-[18px] mx-3 mt-1"
+      className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3 mt-1"
     >
       {t("settings.contact")}
     </Link>

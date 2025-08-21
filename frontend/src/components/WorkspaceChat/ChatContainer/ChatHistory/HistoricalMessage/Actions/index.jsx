@@ -84,6 +84,7 @@ function FeedbackButton({
         aria-label={tooltipContent}
       >
         <IconComponent
+          color="var(--theme-sidebar-footer-icon-fill)"
           size={20}
           className="mb-1"
           weight={isSelected ? "fill" : "regular"}
@@ -108,9 +109,17 @@ function CopyMessage({ message }) {
           aria-label={t("chat_window.copy")}
         >
           {copied ? (
-            <Check size={20} className="mb-1" />
+            <Check
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           ) : (
-            <Copy size={20} className="mb-1" />
+            <Copy
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           )}
         </button>
       </div>
@@ -130,7 +139,12 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         className="border-none text-zinc-300"
         aria-label={t("chat_window.regenerate")}
       >
-        <ArrowsClockwise size={20} className="mb-1" weight="fill" />
+        <ArrowsClockwise
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={20}
+          className="mb-1"
+          weight="fill"
+        />
       </button>
     </div>
   );

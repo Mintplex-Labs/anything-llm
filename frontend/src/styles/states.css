@@ -1,5 +1,0 @@
-.info-banner{ background: color-mix(in hsl, AccentColor 14%, Canvas); padding:16px; border-radius:12px; line-height:1.4; }
-.empty{
-  display:grid; place-items:center; min-height:240px; border-radius:12px; border:1px dashed color-mix(in hsl, currentColor 20%, transparent);
-  color: color-mix(in hsl, CanvasText 60%, transparent);
-}
