@@ -8,6 +8,7 @@ import "./styles/forms.css";
 import "./styles/a11y.css";
 import "./styles/utilities.css";
 import "./styles/onenew-theme.css";
+import "./styles/onenew-hotfix.css";
 const isDev = process.env.NODE_ENV !== "production";
 const REACTWRAP = isDev ? React.Fragment : React.StrictMode;
 
