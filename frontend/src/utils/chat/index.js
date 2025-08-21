@@ -22,10 +22,12 @@ export default function handleChat(
     chatId = null,
     action = null,
     metrics = {},
+    sentAt,
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
+    const timestamp = sentAt ?? Math.floor(Date.now() / 1000);
     setChatHistory([
       ...remHistory,
       {
@@ -39,6 +41,7 @@ export default function handleChat(
         animate,
         pending: false,
         metrics,
+        sentAt: timestamp,
       },
     ]);
     _chatHistory.push({
@@ -52,9 +55,11 @@ export default function handleChat(
       animate,
       pending: false,
       metrics,
+      sentAt: timestamp,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
+    const timestamp = sentAt ?? Math.floor(Date.now() / 1000);
     setChatHistory([
       ...remHistory,
       {
@@ -68,6 +73,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        sentAt: timestamp,
       },
     ]);
     _chatHistory.push({
@@ -81,6 +87,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      sentAt: timestamp,
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (
@@ -91,6 +98,7 @@ export default function handleChat(
     if (chatIdx !== -1) {
       const existingHistory = { ..._chatHistory[chatIdx] };
       let updatedHistory;
+      const timestamp = existingHistory.sentAt ?? sentAt ?? Math.floor(Date.now() / 1000);
 
       // If the response is finalized, we can set the loading state to false.
       // and append the metrics to the history.
@@ -102,6 +110,7 @@ export default function handleChat(
           pending: false,
           chatId,
           metrics,
+          sentAt: timestamp,
         };
         setLoadingResponse(false);
         emitAssistantMessageCompleteEvent(chatId);
@@ -116,6 +125,7 @@ export default function handleChat(
           pending: false,
           chatId,
           metrics,
+          sentAt: timestamp,
         };
       }
       _chatHistory[chatIdx] = updatedHistory;
@@ -131,6 +141,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        sentAt: sentAt ?? Math.floor(Date.now() / 1000),
       });
     }
     setChatHistory([..._chatHistory]);
@@ -156,6 +167,7 @@ export default function handleChat(
       animate: false,
       pending: false,
       metrics,
+      sentAt: existingHistory.sentAt ?? Math.floor(Date.now() / 1000),
     };
     _chatHistory[chatIdx] = updatedHistory;
 

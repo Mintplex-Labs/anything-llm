@@ -10,8 +10,9 @@ import DOMPurify from "@/utils/chat/purify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
+import moment from "moment";
 import {
-  THOUGHT_REGEX_CLOSE,
+    THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
@@ -37,21 +38,25 @@ const HistoricalMessage = ({
   forkThread,
   metrics = {},
   alignmentCls = "",
-}) => {
-  const { t } = useTranslation();
-  const { isEditing } = useEditMessage({ chatId, role });
-  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
-    chatId,
-    role,
-  });
+    sentAt,
+  }) => {
+    const { t } = useTranslation();
+    const { isEditing } = useEditMessage({ chatId, role });
+    const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+      chatId,
+      role,
+    });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
   };
 
-  const isRefusalMessage =
-    role === "assistant" && message === chatQueryRefusalResponse(workspace);
+    const isRefusalMessage =
+      role === "assistant" && message === chatQueryRefusalResponse(workspace);
+    const timestamp = sentAt
+      ? moment.unix(sentAt).format("h:mm A")
+      : null;
 
   if (!!error) {
     return (
@@ -147,6 +152,15 @@ const HistoricalMessage = ({
             </div>
           )}
         </div>
+        {timestamp && (
+          <div
+            className={`bubble-meta ml-14 ${
+              alignmentCls.includes("flex-row-reverse") ? "text-right" : ""
+            }`}
+          >
+            {timestamp}
+          </div>
+        )}
         <div className="flex gap-x-5 ml-14">
           <Actions
             message={message}
