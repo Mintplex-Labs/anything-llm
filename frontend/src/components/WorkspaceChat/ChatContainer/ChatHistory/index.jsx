@@ -182,8 +182,9 @@ export default function ChatHistory({
   if (history.length === 0 && !hasAttachments) {
     return (
       <div
-        className="chat__messages chat-messages overflow-y-auto min-h-0 flex flex-col md:mt-0 pb-44 md:pb-40 w-full justify-end items-center"
+        className="chat__messages chat-messages overflow-y-auto min-h-0 flex flex-col md:mt-0 w-full justify-end items-center"
         data-chat="messages"
+        style={{ paddingBottom: "calc(var(--composer-h) + 16px)" }}
       >
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-foreground/60 text-lg font-base py-4">
@@ -229,6 +230,7 @@ export default function ChatHistory({
       ref={chatHistoryRef}
       onScroll={handleScroll}
       data-chat="messages"
+      style={{ paddingBottom: "calc(var(--composer-h) + 16px)" }}
     >
       {compiledHistory.map((item, index) =>
         Array.isArray(item) ? renderStatusResponse(item, index) : item
