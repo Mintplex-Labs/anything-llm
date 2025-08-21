@@ -42,6 +42,7 @@ export default function PromptInput({
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
+  const composerRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
@@ -69,6 +70,20 @@ export default function PromptInput({
     resetTextAreaHeight();
   }, [isStreaming]);
 
+  useEffect(() => {
+    if (!composerRef.current) return;
+    const el = composerRef.current;
+    const update = () =>
+      document.documentElement.style.setProperty(
+        "--composer-h",
+        `${el.offsetHeight}px`
+      );
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
 
   /**
    * Save the current state before changes
@@ -92,7 +107,11 @@ export default function PromptInput({
 
   function resetTextAreaHeight() {
     if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
+    const element = textareaRef.current;
+    element.style.height = "auto";
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    const maxHeight = lineHeight * 6;
+    element.style.height = `${Math.min(element.scrollHeight, maxHeight)}px`;
   }
 
   function checkForSlash(e) {
@@ -177,7 +196,10 @@ export default function PromptInput({
   function adjustTextArea(event) {
     const element = event.target;
     element.style.height = "auto";
-    element.style.height = `${element.scrollHeight}px`;
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    const maxHeight = lineHeight * 6;
+    const newHeight = Math.min(element.scrollHeight, maxHeight);
+    element.style.height = `${newHeight}px`;
   }
 
   function handlePasteEvent(e) {
@@ -240,7 +262,7 @@ export default function PromptInput({
   }
 
   return (
-    <div className="chat__composer">
+    <div className="chat__composer" ref={composerRef}>
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -272,7 +294,7 @@ export default function PromptInput({
             }}
             value={promptInput}
             spellCheck={Appearance.get("enableSpellCheck")}
-            className={`chat__input onenew-input resize-none max-h-[40vh] ${textSizeClass}`}
+            className={`chat__input onenew-input resize-none ${textSizeClass}`}
             placeholder={t("chat_window.send_message")}
           />
           {isStreaming ? (
