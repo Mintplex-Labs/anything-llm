@@ -1,3 +1,8 @@
+/**
+ * Tailwind configuration for the custom "onenew" theme.
+ * Components should use these semantic color and spacing tokens instead of hard-coded values.
+ * Dark mode is controlled by the `dark:` class.
+ */
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],

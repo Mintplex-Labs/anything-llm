@@ -166,6 +166,10 @@ The legacy global file list has been removed from the primary navigation. To exp
 - `/scripts/`: Repository utility scripts
 - `/tests/`: Test suites
 
+### Theming and styling
+
+The UI uses Tailwind CSS with a custom `onenew` theme. Components should rely on semantic tokens like `bg-bg-0`, `text-text-0`, and spacing values defined in [`frontend/tailwind.config.js`](frontend/tailwind.config.js) rather than hard-coded colors. Dark mode is enabled via the `dark:` class so each component should provide token-based variants for both light and dark themes. See [STYLEGUIDE.md](./STYLEGUIDE.md) for the complete palette and utility classes.
+
 ## 🛳 Self-Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run OneNew locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
