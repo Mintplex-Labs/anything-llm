@@ -261,7 +261,10 @@ export default function PromptInput({
   }
 
   return (
-    <div className="chat__composer w-full" ref={composerRef}>
+    <div
+      className="chat__composer w-full border-t border-border/10"
+      ref={composerRef}
+    >
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}

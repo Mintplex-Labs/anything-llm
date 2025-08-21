@@ -279,18 +279,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           className="chat onenew-page transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-lg w-full h-full grid grid-rows-[auto_1fr_auto] min-h-0 z-[2]"
         >
           {isMobile && <SidebarMobileHeader />}
-          <div className="chat__messages">
-            <MetricsProvider>
-              <ChatHistory
-                history={chatHistory}
-                workspace={workspace}
-                sendCommand={sendCommand}
-                updateHistory={setChatHistory}
-                regenerateAssistantMessage={regenerateAssistantMessage}
-                hasAttachments={files.length > 0}
-              />
-            </MetricsProvider>
-          </div>
+          <MetricsProvider>
+            <ChatHistory
+              history={chatHistory}
+              workspace={workspace}
+              sendCommand={sendCommand}
+              updateHistory={setChatHistory}
+              regenerateAssistantMessage={regenerateAssistantMessage}
+              hasAttachments={files.length > 0}
+            />
+          </MetricsProvider>
           <PromptInput
             submit={handleSubmit}
             onChange={handleMessageChange}
