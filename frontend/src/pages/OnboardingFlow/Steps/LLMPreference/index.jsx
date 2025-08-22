@@ -27,6 +27,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import AimlApiLogo from "@/media/llmprovider/aimlapi.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -56,6 +57,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import AimlApiOptions from "@/components/LLMSelection/AimlApiOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -227,6 +229,13 @@ const LLMS = [
     logo: DeepSeekLogo,
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
+  },
+  {
+    name: "AI/ML API",
+    value: "aimlapi",
+    logo: AimlApiLogo,
+    options: (settings) => <AimlApiOptions settings={settings} />,
+    description: "Access 300+ AI models with enterprise uptime.",
   },
   {
     name: "PPIO",
