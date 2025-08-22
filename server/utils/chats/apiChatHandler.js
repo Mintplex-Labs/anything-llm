@@ -49,6 +49,7 @@ async function chatSync({
   sessionId = null,
   attachments = [],
   reset = false,
+  includeSources = true,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -343,7 +344,7 @@ async function chatSync({
     error: null,
     chatId: chat.id,
     textResponse,
-    sources,
+    sources: includeSources ? sources : [],
     metrics: performanceMetrics,
   };
 }
@@ -373,6 +374,7 @@ async function streamChat({
   sessionId = null,
   attachments = [],
   reset = false,
+  includeSources = true,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -654,7 +656,7 @@ async function streamChat({
     metrics = performanceMetrics;
     writeResponseChunk(response, {
       uuid,
-      sources,
+      sources: includeSources ? sources : [],
       type: "textResponseChunk",
       textResponse: completeText,
       close: true,
@@ -667,7 +669,7 @@ async function streamChat({
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
-      sources,
+      sources: includeSources ? sources : [],
     });
     metrics = stream.metrics;
   }
