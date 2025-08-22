@@ -12,6 +12,9 @@ export function castToType(key, value) {
     topN: {
       cast: (value) => Number(value),
     },
+    useWorkspacePromptForAgents: {
+      cast: (value) => value === "on" || value === "true" || value === true,
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;
