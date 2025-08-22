@@ -1008,23 +1008,48 @@ function apiWorkspaceThreadEndpoints(app) {
         // get chunks from doc-rag service
         const data = {
           query: message,
-          limit: 25
+          limit: 20
         };
         const documents = await fetchAndProcessRAGData(data);
+
+
 
         // build document data for LLM (without summaries ect)
         let ragData = {};
 
+
         // build best references
-        let bestReferences = [];
+        let bestReferences = {};
 
         // build citations mapping - a dict with id->real_doc_url, title, summary
         let citationsMapping = {};
 
+        let idx = 0;
+        for (const key of Object.keys(documents)) {
+          if (idx < 3){
+            bestReferences[documents[key].title] = {
+              url: documents[key].url,
+              summary: documents[key].summary
+            }
+          }
+          citationsMapping[key] = {
+            url: documents[key].url,
+            title: documents[key].title,
+            summary: documents[key].summary
+          };
+          ragData[`document_${idx}`] = documents[key].chunks;
+          idx++;
+        }
+        console.log("Best References:", bestReferences);
+        console.log("Citations Mapping:", citationsMapping);
+        console.log("RAG Data:", ragData);
 
-        answers["grounding_data"] = ragData;
-        answers["user_query"] = message;
+        answers = {
+          "grounding_data": ragData,
+          "user_query": message
+        };
         const main_llm_query = JSON.stringify(answers);
+        console.log("Main LLM Query:", main_llm_query);
 
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Type", "text/event-stream");
@@ -1043,7 +1068,7 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           attachments,
           reset,
-          related_questions: related_questions,
+          related_questions: [],
           engine_sources: citationsMapping,
           bestReferences: bestReferences,
         });

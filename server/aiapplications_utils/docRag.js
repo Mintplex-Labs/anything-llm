@@ -29,7 +29,8 @@ async function fetchAndProcessRAGData(dataToSend) {
             title: chunk.title,
             summary: chunk.summary,
             url: "https://asdasadd",
-            chunks: [newChunk]
+            chunks: [newChunk],
+            mediaType: chunk.mediaType
         }
         documents[chunk.documentId] = newDocument;
     }
