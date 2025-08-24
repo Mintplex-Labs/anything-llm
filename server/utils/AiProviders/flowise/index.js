@@ -113,10 +113,10 @@ class FlowiseLLM {
     };
   }
 
-  async getChatCompletion(messages = null) {
+  async getChatCompletion({ history }) {
     try {
-      const lastMessage = messages[messages.length - 1];
-      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      const lastMessage = history[history.length - 1];
+      const result = await
         fetch(
           `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
           {
@@ -130,7 +130,7 @@ class FlowiseLLM {
             }),
           }
         )
-      );
+        ;
 
       const response = result.output;
       if (!response || !response.content || !response.content[0]) {
@@ -182,7 +182,7 @@ class FlowiseLLM {
       }
 
       const stream = new Readable({
-        read() {},
+        read() { },
       });
 
       const reader = response.body.getReader();
