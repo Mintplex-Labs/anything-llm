@@ -44,6 +44,7 @@ import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 export const LLM_SELECTION_PRIVACY = {
   openai: {
@@ -251,6 +252,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Moonshot AI",
     ],
     logo: MoonshotAiLogo,
+  },
+  flowiseai: {
+    name: "Flowise AI",
+    description: [
+      "Your model and chats are only accessible on the server running FlowiseAI",
+    ],
+    logo: FlowiseAiLogo,
   },
 };
 
