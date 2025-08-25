@@ -15,11 +15,14 @@ const { User } = require("../../../models/user");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
 const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
-const { getEngineResponse, pareseRelatedQuestions, generateRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
+const { getEngineResponse, pareseRelatedQuestions, generateRelatedQuestions, generateAllRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 const { performance } = require('perf_hooks');
 const { serve } = require("swagger-ui-express");
 const { fetchAndProcessRAGData } = require("../../../aiapplications_utils/docRag");
+const { recentChatHistory, chatPrompt } = require("../../../utils/chats/index");
+const { getLLMProvider } = require("../../../utils/helpers");
+const { getVectorDbClass } = require("../../../utils/helpers");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -1012,11 +1015,8 @@ function apiWorkspaceThreadEndpoints(app) {
         };
         const documents = await fetchAndProcessRAGData(data);
 
-
-
         // build document data for LLM (without summaries ect)
         let ragData = {};
-
 
         // build best references
         let bestReferences = {};
@@ -1044,7 +1044,7 @@ function apiWorkspaceThreadEndpoints(app) {
         console.log("Citations Mapping:", citationsMapping);
         console.log("RAG Data:", ragData);
 
-        answers = {
+        const answers = {
           "grounding_data": ragData,
           "user_query": message
         };
@@ -1057,7 +1057,8 @@ function apiWorkspaceThreadEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        await ApiChatHandler.streamChat({
+        // Custom stream chat for docs-rag that generates related questions after completion
+        await streamChatWithRelatedQuestions({
           response,
           workspace,
           message: main_llm_query,
@@ -1068,10 +1069,10 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           attachments,
           reset,
-          related_questions: [],
           engine_sources: citationsMapping,
           bestReferences: bestReferences,
         });
+        
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -1100,6 +1101,281 @@ function apiWorkspaceThreadEndpoints(app) {
       }
     }
   );
+}
+
+// Custom stream chat function for docs-rag that generates related questions after streaming completion
+async function streamChatWithRelatedQuestions({
+  response,
+  workspace,
+  message = null,
+  message_db_save = null,
+  mode = "chat",
+  user = null,
+  user_pseudo_id = null,
+  thread = null,
+  attachments = [],
+  reset = false,
+  engine_sources = {},
+  bestReferences = {},
+}) {
+  const uuid = uuidv4();
+  const chatMode = mode ?? "chat";
+
+  // If the user wants to reset the chat history we do so pre-flight
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: null,
+    });
+    if (!message?.length) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        attachments: [],
+        close: true,
+        error: null,
+        metrics: {},
+      });
+      return;
+    }
+  }
+
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
+
+  const VectorDb = getVectorDbClass();
+  const messageLimit = workspace?.openAiHistory || 20;
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+
+  // For docs-rag we skip vectorized search and use the provided RAG data
+  const { rawHistory, chatHistory } = await recentChatHistory({
+    user,
+    workspace,
+    thread,
+    messageLimit,
+    apiSessionId: null,
+  });
+
+  // Since we're using RAG data, we'll use empty contextTexts and sources
+  const contextTexts = [];
+  const sources = [];
+
+  // Compress & Assemble message to ensure prompt passes token limit with room for response
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: await chatPrompt(workspace, user),
+      userPrompt: message,
+      contextTexts,
+      chatHistory,
+      attachments,
+    },
+    rawHistory
+  );
+
+  let completeText;
+  let metrics = {};
+
+  // Stream the response with empty related_questions initially
+  if (LLMConnector.streamingEnabled() !== true) {
+    console.log(
+      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+    );
+    const { textResponse, metrics: performanceMetrics } =
+      await LLMConnector.getChatCompletion(messages, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+    completeText = textResponse;
+    metrics = performanceMetrics;
+    writeResponseChunk(response, {
+      uuid,
+      sources,
+      type: "textResponseChunk",
+      textResponse: completeText,
+      close: true,
+      error: false,
+      metrics,
+      related_questions: [],
+      engine_sources,
+      bestReferences,
+    });
+  } else {
+    const stream = await LLMConnector.streamGetChatCompletion(messages, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
+    
+    // Use custom handleStream that doesn't include related_questions during streaming
+    completeText = await handleStreamWithoutRelatedQuestions(response, stream, {
+      uuid,
+      sources,
+      engine_sources,
+      bestReferences,
+    });
+    metrics = stream.metrics;
+  }
+
+  if (completeText?.length > 0) {
+    // Save the chat to database
+    const { chat } = await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message_db_save,
+      response: {
+        text: completeText,
+        sources,
+        type: chatMode,
+        metrics,
+        attachments,
+      },
+      threadId: thread?.id || null,
+      apiSessionId: null,
+      user,
+    });
+
+    try {
+      // Generate related questions after completion
+      console.log("Generating related questions...");
+      const relatedQuestions = await generateAllRelatedQuestions(message_db_save, completeText);
+      
+      // Send related questions in a separate chunk
+      writeResponseChunk(response, {
+        uuid,
+        type: "relatedQuestions",
+        textResponse: "",
+        sources: [],
+        close: false,
+        error: false,
+        related_questions: relatedQuestions,
+        engine_sources,
+        bestReferences,
+      });
+    } catch (e) {
+      console.error("Error generating related questions:", e);
+      // If related questions generation fails, send empty array
+      writeResponseChunk(response, {
+        uuid,
+        type: "relatedQuestions",
+        textResponse: "",
+        sources: [],
+        close: false,
+        error: false,
+        related_questions: [],
+        engine_sources,
+        bestReferences,
+      });
+    }
+
+    // Final chunk to close the stream
+    writeResponseChunk(response, {
+      uuid,
+      type: "finalizeResponseStream",
+      close: true,
+      error: false,
+      chatId: chat.id,
+      metrics,
+    });
+    return;
+  }
+
+  writeResponseChunk(response, {
+    uuid,
+    type: "finalizeResponseStream",
+    close: true,
+    error: false,
+  });
+  return;
+}
+
+// Custom handleStream function that doesn't include related_questions during streaming
+async function handleStreamWithoutRelatedQuestions(response, stream, responseProps) {
+  const {
+    uuid = uuidv4(),
+    sources = [],
+    engine_sources = {},
+    bestReferences = {},
+  } = responseProps;
+
+  let hasUsageMetrics = false;
+  let usage = {
+    completion_tokens: 0,
+  };
+
+  return new Promise(async (resolve) => {
+    let fullText = "";
+
+    const handleAbort = () => {
+      stream?.endMeasurement(usage);
+      resolve(fullText);
+    };
+    response.on("close", handleAbort);
+
+    try {
+      for await (const chunk of stream) {
+        const message = chunk?.choices?.[0];
+        const token = message?.delta?.content;
+
+        if (
+          chunk.hasOwnProperty("usage") &&
+          !!chunk.usage &&
+          Object.values(chunk.usage).length > 0
+        ) {
+          if (chunk.usage.hasOwnProperty("prompt_tokens")) {
+            usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
+          }
+
+          if (chunk.usage.hasOwnProperty("completion_tokens")) {
+            hasUsageMetrics = true;
+            usage.completion_tokens = Number(chunk.usage.completion_tokens);
+          }
+        }
+
+        if (token) {
+          fullText += token;
+          if (!hasUsageMetrics) usage.completion_tokens++;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: token,
+            close: false,
+            error: false,
+            related_questions: [], // Empty during streaming
+            engine_sources,
+            bestReferences,
+          });
+        }
+
+        if (
+          message?.hasOwnProperty("finish_reason") &&
+          message.finish_reason !== "" &&
+          message.finish_reason !== null
+        ) {
+          // Don't send final chunk here - we'll handle it after generating related questions
+          response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
+          resolve(fullText);
+          break;
+        }
+      }
+    } catch (e) {
+      console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
+      writeResponseChunk(response, {
+        uuid,
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: e.message,
+      });
+      stream?.endMeasurement(usage);
+      resolve(fullText);
+    }
+  });
 }
 
 module.exports = { apiWorkspaceThreadEndpoints };
