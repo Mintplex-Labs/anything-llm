@@ -3,6 +3,7 @@ import { castToType } from "@/utils/types";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
 import WorkspaceName from "./WorkspaceName";
+import WorkspaceIsAgentic from "./WorkspaceIsAgentic";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
@@ -59,6 +60,11 @@ export default function GeneralInfo({ slug }) {
           </div>
         )}
         <WorkspaceName
+          key={workspace.slug}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <WorkspaceIsAgentic
           key={workspace.slug}
           workspace={workspace}
           setHasChanges={setHasChanges}

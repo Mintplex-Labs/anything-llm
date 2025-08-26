@@ -55,6 +55,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "agentic",
   ],
 
   validations: {
@@ -128,6 +129,16 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    agentic: (value) => {
+      if (value === null || value === undefined) return false;
+      if (typeof value === "boolean") return value;
+      if (typeof value === "string") {
+        const lowerValue = value.toLowerCase();
+        return lowerValue === "true" || lowerValue === "yes" || lowerValue === "1";
+      }
+      if (typeof value === "number") return Boolean(value);
+      return Boolean(value);
     },
   },
 

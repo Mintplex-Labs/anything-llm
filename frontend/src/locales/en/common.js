@@ -59,6 +59,8 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Workspaces Name",
+    workspaces_is_agentic: "Is agentic",
+    workspaces_is_agentic_is_agentic_description: "Use all chats as agents",
     error: "error",
     success: "success",
     user: "User",

@@ -12,7 +12,11 @@ async function grepAgents({
   user = null,
   thread = null,
 }) {
-  const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+  let agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+  if (agentHandles.length === 0) {
+    agentHandles = ["@agent"];
+  }
+
   if (agentHandles.length > 0) {
     const { invocation: newInvocation } = await WorkspaceAgentInvocation.new({
       prompt: message,

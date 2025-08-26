@@ -81,7 +81,10 @@ async function chatSync({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    workspace.agentic ||
+    EphemeralAgentHandler.isAgentInvocation({ message })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -407,7 +410,10 @@ async function streamChat({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    workspace.agentic ||
+    EphemeralAgentHandler.isAgentInvocation({ message })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
