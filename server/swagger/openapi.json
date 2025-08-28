@@ -3479,6 +3479,84 @@
         }
       }
     },
+    "/v1/workspace/{slug}/thread/docs-rag/new": {
+      "post": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Create a new workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "thread": {
+                      "id": 1,
+                      "name": "Thread",
+                      "slug": "thread-uuid",
+                      "user_id": 1,
+                      "workspace_id": 1
+                    },
+                    "message": null
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Optional userId associated with the thread, thread slug and thread name",
+          "required": false,
+          "content": {
+            "application/json": {
+              "example": {
+                "userId": 1,
+                "name": "Name",
+                "slug": "thread-slug"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/workspace/{slug}/thread/{threadSlug}/docs-rag/stream-chat": {
       "post": {
         "tags": [

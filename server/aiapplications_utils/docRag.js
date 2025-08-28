@@ -16,35 +16,8 @@ async function fetchAndProcessRAGData(dataToSend) {
     }
 
     serverResponseData = await response.json();
-    let documents = {}
-    console.log(serverResponseData.length)
-    for (const chunk of serverResponseData) {
-        const newChunk = {
-            score: chunk.overallScore,
-            text: chunk.chunkText
-        }
-        console.log(chunk.overallScore)
-      if (!(chunk.documentId in documents)) {
-        let newDocument = {
-            title: chunk.title,
-            summary: chunk.summary,
-            url: "https://asdasadd",
-            chunks: [newChunk],
-            mediaType: chunk.mediaType
-        }
-        documents[chunk.documentId] = newDocument;
-    }
-    else  {
-        documents[chunk.documentId].chunks.push(newChunk);
-      }
-    }
-    let finalDocuments = {};
-    let idx = 0;
-    for (const value of Object.values(documents)) {
-        finalDocuments[idx] = value;
-        idx++;
-    }
-    return finalDocuments;
+
+    return serverResponseData;
 
   } catch (error) {
     console.error('Error fetching RAG data:', error);

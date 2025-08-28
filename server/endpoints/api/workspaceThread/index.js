@@ -875,6 +875,104 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
 
+
+  // +++++++++++++++++++++++++++++++++++++++++++++
+  // for RAG service front
+  // +++++++++++++++++++++++++++++++++++++++++++++
+  
+  app.post(
+    "/v1/workspace/:slug/thread/docs-rag/new",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Create a new workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Optional userId associated with the thread, thread slug and thread name',
+        required: false,
+        content: {
+          "application/json": {
+            example: {
+              userId: 1,
+              name: 'Name',
+              slug: 'thread-slug'
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                thread: {
+                  "id": 1,
+                  "name": "Thread",
+                  "slug": "thread-uuid",
+                  "user_id": 1,
+                  "workspace_id": 1
+                },
+                message: null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const wslug = request.params.slug;
+        let { userId = null, name = null, slug = null, user_pseudo_id = null } = reqBody(request);
+        const workspace = await Workspace.get({ slug: wslug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        // If the system is not multi-user and you pass in a userId
+        // it needs to be nullified as no users exist. This can still fail validation
+        // as we don't check if the userID is valid.
+        if (!response.locals.multiUserMode && !!userId) userId = null;
+
+        const { thread, message } = await WorkspaceThread.new(
+          workspace,
+          userId ? Number(userId) : null,
+          { name, slug },
+          user_pseudo_id
+        );
+
+        await Telemetry.sendTelemetry("workspace_thread_created", {
+          multiUserMode: multiUserMode(response),
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
+        });
+        await EventLogs.logEvent("api_workspace_thread_created", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
+        
+        response.status(201).json({ thread, message });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+
   app.post(
     "/v1/workspace/:slug/thread/:threadSlug/docs-rag/stream-chat",
     [validApiKey],
@@ -1011,7 +1109,7 @@ function apiWorkspaceThreadEndpoints(app) {
         // get chunks from doc-rag service
         const data = {
           query: message,
-          limit: 20
+          limit: 10
         };
         const documents = await fetchAndProcessRAGData(data);
 
@@ -1020,36 +1118,49 @@ function apiWorkspaceThreadEndpoints(app) {
 
         // build best references
         let bestReferences = {};
+        for (const key in documents) {
+          if (Object.prototype.hasOwnProperty.call(documents, key)) {
+            const list = documents[key];
+
+            if (Array.isArray(list) && list.length > 0) {
+              const element = list[0];
+              const source = element.hasOwnProperty("doi") ? `https://dx.doi.org/${element.doi}` : element.sourceUrl;
+              bestReferences[key] = {
+                title: element.title,
+                url: source,
+                summary: element.summary
+              };
+            } else {
+              bestReferences[key] = undefined;
+            }
+          }
+        }
 
         // build citations mapping - a dict with id->real_doc_url, title, summary
         let citationsMapping = {};
 
         let idx = 0;
         for (const key of Object.keys(documents)) {
-          if (idx < 3){
-            bestReferences[documents[key].title] = {
-              url: documents[key].url,
-              summary: documents[key].summary
+          const docsList = documents[key];
+          for (const source of docsList) {
+            ragData[`documentId_${idx}_chunks`] = {};
+            citationsMapping[idx] = {
+              title: source.title,
+              summary: source.summary,
+              url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl
             }
+            for (const chunk of source.chunks) {
+              ragData[`documentId_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
+            }
+            idx++;
           }
-          citationsMapping[key] = {
-            url: documents[key].url,
-            title: documents[key].title,
-            summary: documents[key].summary
-          };
-          ragData[`document_${idx}`] = documents[key].chunks;
-          idx++;
         }
-        console.log("Best References:", bestReferences);
-        console.log("Citations Mapping:", citationsMapping);
-        console.log("RAG Data:", ragData);
 
         const answers = {
           "grounding_data": ragData,
           "user_query": message
         };
         const main_llm_query = JSON.stringify(answers);
-        console.log("Main LLM Query:", main_llm_query);
 
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Type", "text/event-stream");
