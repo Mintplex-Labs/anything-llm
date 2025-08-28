@@ -879,7 +879,7 @@ function apiWorkspaceThreadEndpoints(app) {
   // +++++++++++++++++++++++++++++++++++++++++++++
   // for RAG service front
   // +++++++++++++++++++++++++++++++++++++++++++++
-  
+
   app.post(
     "/v1/workspace/:slug/thread/docs-rag/new",
     [validApiKey],
@@ -1143,7 +1143,7 @@ function apiWorkspaceThreadEndpoints(app) {
         for (const key of Object.keys(documents)) {
           const docsList = documents[key];
           for (const source of docsList) {
-            ragData[`documentId_${idx}_chunks`] = {};
+            ragData[`source_${idx}_chunks`] = {};
             citationsMapping[idx] = {
               title: source.title,
               summary: source.summary,
