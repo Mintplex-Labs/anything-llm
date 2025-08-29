@@ -1143,14 +1143,14 @@ function apiWorkspaceThreadEndpoints(app) {
         for (const key of Object.keys(documents)) {
           const docsList = documents[key];
           for (const source of docsList) {
-            ragData[`sourceId_${idx}_chunks`] = {};
+            ragData[`source_${idx}_chunks`] = {};
             citationsMapping[idx] = {
               title: source.title,
               summary: source.summary,
               url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl
             }
             for (const chunk of source.chunks) {
-              ragData[`sourceId_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
+              ragData[`source_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
             }
             idx++;
           }
