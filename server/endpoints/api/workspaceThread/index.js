@@ -1150,7 +1150,7 @@ function apiWorkspaceThreadEndpoints(app) {
               url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl
             }
             for (const chunk of source.chunks) {
-              ragData[`documentId_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
+              ragData[`source_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
             }
             idx++;
           }
