@@ -984,6 +984,9 @@
               }
             }
           },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
           "500": {
             "description": "Internal Server Error",
             "content": {
@@ -1000,7 +1003,7 @@
           }
         },
         "requestBody": {
-          "description": "File to be uploaded.",
+          "description": "File to be uploaded, with optional metadata.",
           "required": true,
           "content": {
             "multipart/form-data": {
@@ -1018,6 +1021,11 @@
                   "addToWorkspaces": {
                     "type": "string",
                     "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. ",
+                    "example": { "title": "Custom Title", "docAuthor": "Author Name", "description": "A brief description", "docSource": "Source of the document" }
                   }
                 }
               }

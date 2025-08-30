@@ -151,7 +151,7 @@ function apiDocumentEndpoints(app) {
         example: 'my-folder'
       }
       #swagger.requestBody = {
-        description: 'File to be uploaded.',
+        description: 'File to be uploaded, with optional metadata.',
         required: true,
         content: {
           "multipart/form-data": {
@@ -167,6 +167,11 @@ function apiDocumentEndpoints(app) {
                 addToWorkspaces: {
                   type: 'string',
                   description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
+                },
+                "metadata": {
+                  type: 'object',
+                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. '
+                  example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
                 }
               }
             }
@@ -221,7 +226,8 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
+  
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
@@ -232,6 +238,30 @@ function apiDocumentEndpoints(app) {
           throw new Error("Invalid folder name");
         if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
+
+        // Validate required metadata keys if present
+        // Parse JSON string into an object
+        let metadataObj = {};
+        if (metadata && typeof metadata === "string") {
+          try {
+            metadataObj = JSON.parse(metadata);
+          }
+          catch {
+            response.status(422).json({ success: false, error: 'Invalid metadata' }).end();
+            return;
+          }
+        }
+
+        const requiredMetadata = ["title"];
+        if (
+          metadataObj && Object.keys(metadataObj).length > 0 &&
+          !requiredMetadata.every(
+            (reqKey) => Object.keys(metadataObj).includes(reqKey) && !!metadataObj[reqKey]
+          )
+        ) {
+          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
+          return;
+        }
 
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
@@ -246,9 +276,9 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        // Process the uploaded document
+        // Process the uploaded document with metadata
         const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(originalname, metadataObj);
         if (!success) {
           response
             .status(500)

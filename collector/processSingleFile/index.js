@@ -12,7 +12,7 @@ const {
 } = require("../utils/files");
 const RESERVED_FILES = ["__HOTDIR__.md"];
 
-async function processSingleFile(targetFilename, options = {}) {
+async function processSingleFile(targetFilename, options = {}, metadata = {}) {
   const fullFilePath = path.resolve(
     WATCH_DIRECTORY,
     normalizePath(targetFilename)
@@ -70,6 +70,7 @@ async function processSingleFile(targetFilename, options = {}) {
     fullFilePath,
     filename: targetFilename,
     options,
+    metadata,
   });
 }
 

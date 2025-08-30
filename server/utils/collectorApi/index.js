@@ -63,15 +63,17 @@ class CollectorApi {
 
   /**
    * Process a document
-   * - Will append the options to the request body
+   * - Will append the options and optional metadata to the request body
    * @param {string} filename - The filename of the document to process
+   * @param {Object} metadata - Optional metadata key:value pairs
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processDocument(filename = "") {
+  async processDocument(filename = "", metadata = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
+      metadata,
       options: this.#attachOptions(),
     });
 
