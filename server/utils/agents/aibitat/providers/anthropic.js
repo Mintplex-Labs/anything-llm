@@ -42,10 +42,39 @@ class AnthropicProvider extends Provider {
     while (sanitized.length > 0 && sanitized[0].role !== "user")
       sanitized.shift();
 
-    return sanitized.map((msg) => {
-      const { role, content } = msg;
-      return { role, content };
-    });
+    return sanitized
+      .filter((msg) => {
+        // Filter out messages with empty content
+        if (!msg || !msg.content) return false;
+
+        if (typeof msg.content === "string") {
+          return msg.content.trim().length > 0;
+        }
+
+        if (Array.isArray(msg.content)) {
+          // For array content, we need special handling for tool use sequences
+          if (msg.content.some((item) => item.type === "tool_use")) {
+            // If this is a tool_use message, we only need the tool_use part to be valid
+            return msg.content.some(
+              (item) => item.type === "tool_use" && item.name && item.id
+            );
+          }
+
+          // For other array content, ensure each item has required fields
+          return msg.content.every((item) => {
+            if (item.type === "text")
+              return item.text && item.text.trim().length > 0;
+            if (item.type === "tool_result")
+              return item.tool_use_id && item.content;
+            return false;
+          });
+        }
+        return false;
+      })
+      .map((msg) => {
+        const { role, content } = msg;
+        return { role, content };
+      });
   }
 
   #normalizeChats(messages = []) {
