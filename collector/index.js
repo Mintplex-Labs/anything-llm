@@ -95,13 +95,13 @@ app.post(
   "/process-link",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { link, scraperHeaders = {} } = reqBody(request);
+    const { link, scraperHeaders = {}, metadata = {} } = reqBody(request);
     try {
       const {
         success,
         reason,
         documents = [],
-      } = await processLink(link, scraperHeaders);
+      } = await processLink(link, scraperHeaders, metadata);
       response.status(200).json({ url: link, success, reason, documents });
     } catch (e) {
       console.error(e);

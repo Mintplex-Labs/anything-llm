@@ -344,7 +344,7 @@ function apiDocumentEndpoints(app) {
     #swagger.tags = ['Documents']
     #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.',
       required: true,
       content: {
           "application/json": {
@@ -356,6 +356,12 @@ function apiDocumentEndpoints(app) {
                 "scraperHeaders": {
                   "Authorization": "Bearer token123",
                   "My-Custom-Header": "value"
+                },
+                "metadata": {
+                  "title": "Custom Title",
+                  "docAuthor": "Author Name",
+                  "description": "A brief description",
+                  "docSource": "Source of the document"
                 }
               }
             }
@@ -399,12 +405,25 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
+        const requiredMetadata = ["title"];
         const {
           link,
           addToWorkspaces = "",
           scraperHeaders = {},
+          metadata = {}
         } = reqBody(request);
         const processingOnline = await Collector.online();
+
+        // Validate required metadata keys if present
+        if (
+          metadata && Object.keys(metadata).length > 0 &&
+          !requiredMetadata.every(
+            (reqKey) => Object.keys(metadata).includes(reqKey) && !!metadata[reqKey]
+          )
+        ) {
+          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
+          return;
+        }
 
         if (!processingOnline) {
           response
@@ -419,7 +438,8 @@ function apiDocumentEndpoints(app) {
 
         const { success, reason, documents } = await Collector.processLink(
           link,
-          scraperHeaders
+          scraperHeaders,
+          metadata
         );
         if (!success) {
           response

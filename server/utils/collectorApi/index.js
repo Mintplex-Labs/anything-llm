@@ -106,13 +106,14 @@ class CollectorApi {
    * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply to the web-scraping request URL
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processLink(link = "", scraperHeaders = {}) {
+  async processLink(link = "", scraperHeaders = {}, metadata = {}) {
     if (!link) return false;
 
     const data = JSON.stringify({
       link,
       scraperHeaders,
       options: this.#attachOptions(),
+      metadata: metadata
     });
 
     return await fetch(`${this.endpoint}/process-link`, {

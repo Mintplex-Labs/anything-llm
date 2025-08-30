@@ -20,6 +20,7 @@ async function scrapeGenericUrl({
   captureAs = "text",
   processAsDocument = true,
   scraperHeaders = {},
+  metadata = {},
 }) {
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
   const content = await getPageContent({
@@ -51,10 +52,10 @@ async function scrapeGenericUrl({
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
-    title: slugify(filename) + ".html",
-    docAuthor: "no author found",
-    description: "No description found.",
-    docSource: "URL link uploaded by the user.",
+    title: metadata.title || slugify(filename) + ".html",
+    docAuthor: metadata.docAuthor || "no author found",
+    description: metadata.description || "No description found.",
+    docSource: metadata.docSource || "URL link uploaded by the user.",
     chunkSource: `link://${link}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
