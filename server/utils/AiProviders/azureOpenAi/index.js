@@ -15,7 +15,7 @@ class AzureOpenAiLLM {
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
-    this.apiVersion = "2024-12-01-preview";
+    this.apiVersion = process.env.AZURE_OPENAI_API_VERSION ? process.env.AZURE_OPENAI_API_VERSION : "2024-12-01-preview"; // A temporary fix to https://github.com/Mintplex-Labs/anything-llm/issues/3753
     this.openai = new AzureOpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       apiVersion: this.apiVersion,
