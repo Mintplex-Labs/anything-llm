@@ -843,7 +843,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
+        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding, with optional metadata.",
         "parameters": [],
         "responses": {
           "200": {
@@ -890,6 +890,9 @@
               }
             }
           },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -913,6 +916,16 @@
                   "addToWorkspaces": {
                     "type": "string",
                     "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format.",
+                    "example": {
+                      "title": "Custom Title",
+                      "docAuthor": "Author Name",
+                      "description": "A brief description",
+                      "docSource": "Source of the document"
+                    }
                   }
                 }
               }
@@ -1002,7 +1015,41 @@
             }
           }
         },
-        "requestBody": {}
+        "requestBody": {
+          "description": "File to be uploaded, with optional metadata.",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to upload"
+                  },
+                  "addToWorkspaces": {
+                    "type": "string",
+                    "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. ",
+                    "example": {
+                      "title": "Custom Title",
+                      "docAuthor": "Author Name",
+                      "description": "A brief description",
+                      "docSource": "Source of the document"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/document/upload-link": {

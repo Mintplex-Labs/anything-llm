@@ -29,7 +29,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
+    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding, with optional metadata.'
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
@@ -47,6 +47,11 @@ function apiDocumentEndpoints(app) {
               addToWorkspaces: {
                 type: 'string',
                 description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
+              },
+              metadata: {
+                type: 'object',
+                description: 'Key:Value pairs of metadata to attach to the document in JSON Object format.',
+                example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
               }
             },
             required: ['file']
@@ -91,7 +96,32 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
+
+        // Validate required metadata keys if present
+        // Parse JSON string into an object
+        let metadataObj = {};
+        if (metadata && typeof metadata === "string") {
+          try {
+            metadataObj = JSON.parse(metadata);
+          }
+          catch {
+            response.status(422).json({ success: false, error: 'Invalid metadata' }).end();
+            return;
+          }
+        }
+
+        const requiredMetadata = ["title"];
+        if (
+          metadataObj && Object.keys(metadataObj).length > 0 &&
+          !requiredMetadata.every(
+            (reqKey) => Object.keys(metadataObj).includes(reqKey) && !!metadataObj[reqKey]
+          )
+        ) {
+          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
+          return;
+        }
+
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -106,7 +136,7 @@ function apiDocumentEndpoints(app) {
         }
 
         const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(originalname, metadataObj);
         if (!success) {
           response
             .status(500)
@@ -168,9 +198,9 @@ function apiDocumentEndpoints(app) {
                   type: 'string',
                   description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
                 },
-                "metadata": {
+                metadata: {
                   type: 'object',
-                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. '
+                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. ',
                   example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
                 }
               }
