@@ -8,7 +8,8 @@ export default function SettingsButton() {
   const isInSettings = !!useMatch("/settings/*");
   const { user } = useUser();
 
-  if (user && user?.role === "default") return null;
+  // Only show settings button for admin users
+  if (!user || user?.role !== "admin") return null;
 
   if (isInSettings)
     return (
