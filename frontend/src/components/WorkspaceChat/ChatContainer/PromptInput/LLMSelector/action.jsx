@@ -84,9 +84,8 @@ export default function LLMSelectorAction() {
       );
   }, []);
 
-  // This feature is disabled for multi-user instances where the user is not an admin
-  // This is because of the limitations of model selection currently and other nuances in controls.
-  if (!!user && user.role !== "admin") return null;
+  // Enable LLM selector for all user roles
+  // Users can change the model for workspaces they have access to
 
   return (
     <>
