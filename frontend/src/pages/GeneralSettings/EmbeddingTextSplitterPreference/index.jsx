@@ -5,8 +5,11 @@ import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
-import { nFormatter, numberWithCommas } from "@/utils/numbers";
+import { numberWithCommas } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import ChangeWarningModal from "@/components/ChangeWarning";
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -18,6 +21,7 @@ export default function EmbeddingTextSplitterPreference() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -35,22 +39,35 @@ export default function EmbeddingTextSplitterPreference() {
       return;
     }
 
+    openModal();
+  };
+
+  const handleSaveSettings = async () => {
     setSaving(true);
-    await Admin.updateSystemPreferences({
-      text_splitter_chunk_size: isNullOrNaN(
-        form.get("text_splitter_chunk_size")
-      )
-        ? 1000
-        : Number(form.get("text_splitter_chunk_size")),
-      text_splitter_chunk_overlap: isNullOrNaN(
-        form.get("text_splitter_chunk_overlap")
-      )
-        ? 1000
-        : Number(form.get("text_splitter_chunk_overlap")),
-    });
-    setSaving(false);
-    setHasChanges(false);
-    showToast("Text chunking strategy settings saved.", "success");
+    try {
+      const form = new FormData(
+        document.getElementById("text-splitter-chunking-form")
+      );
+      await Admin.updateSystemPreferences({
+        text_splitter_chunk_size: isNullOrNaN(
+          form.get("text_splitter_chunk_size")
+        )
+          ? 1000
+          : Number(form.get("text_splitter_chunk_size")),
+        text_splitter_chunk_overlap: isNullOrNaN(
+          form.get("text_splitter_chunk_overlap")
+        )
+          ? 1000
+          : Number(form.get("text_splitter_chunk_overlap")),
+      });
+      setHasChanges(false);
+      closeModal();
+      showToast("Text chunking strategy settings saved.", "success");
+    } catch (error) {
+      showToast("Failed to save text chunking strategy settings.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -83,6 +100,7 @@ export default function EmbeddingTextSplitterPreference() {
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
             className="flex w-full"
+            id="text-splitter-chunking-form"
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-4 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
@@ -94,10 +112,6 @@ export default function EmbeddingTextSplitterPreference() {
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   {t("text.desc-start")} <br />
                   {t("text.desc-end")}
-                </p>
-                <p className="text-xs leading-[18px] font-semibold text-white/80">
-                  {t("text.warn-start")} <i>{t("text.warn-center")}</i>
-                  {t("text.warn-end")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -172,6 +186,14 @@ export default function EmbeddingTextSplitterPreference() {
           </form>
         </div>
       )}
+
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Changing text splitter settings will clear any previously cached documents.\n\nThese new settings will be applied to all documents when embedding them into a workspace."
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
     </div>
   );
 }

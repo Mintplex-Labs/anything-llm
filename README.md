@@ -101,6 +101,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [xAI](https://x.ai/)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [Moonshot AI](https://www.moonshot.ai/)
 
 **Embedder models:**
 
@@ -135,7 +136,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
-- [Chroma](https://trychroma.com)
+- [Chroma & ChromaCloud](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
@@ -222,12 +223,9 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 </details>
 
-
 ## 👋 Contributing
 
-- create issue
-- create PR with branch name format of `<issue number>-<short name>`
-- LGTM from core-team
+- [Contributing to AnythingLLM](./CONTRIBUTING.md) - How to contribute to AnythingLLM.
 
 ## 💖 Sponsors
 

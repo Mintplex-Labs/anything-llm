@@ -77,7 +77,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
@@ -89,6 +89,9 @@ function getVectorDbClass(getExactly = null) {
     case "chroma":
       const { Chroma } = require("../vectorDbProviders/chroma");
       return Chroma;
+    case "chromacloud":
+      const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
+      return ChromaCloud;
     case "lancedb":
       const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
@@ -206,6 +209,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "moonshotai":
+      const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
+      return new MoonshotAiLLM(embedder, model);
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
@@ -359,6 +365,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return DellProAiStudioLLM;
+    case "moonshotai":
+      const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
+      return MoonshotAiLLM;
     default:
       return null;
   }
@@ -402,19 +411,19 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "koboldcpp":
       return process.env.KOBOLD_CPP_MODEL_PREF;
     case "textgenwebui":
-      return process.env.TEXT_GEN_WEB_UI_API_KEY;
+      return null;
     case "cohere":
       return process.env.COHERE_MODEL_PREF;
     case "litellm":
       return process.env.LITE_LLM_MODEL_PREF;
     case "generic-openai":
-      return process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY;
+      return process.env.GENERIC_OPEN_AI_MODEL_PREF;
     case "bedrock":
       return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
     case "deepseek":
       return process.env.DEEPSEEK_MODEL_PREF;
     case "apipie":
-      return process.env.APIPIE_LLM_API_KEY;
+      return process.env.APIPIE_LLM_MODEL_PREF;
     case "novita":
       return process.env.NOVITA_LLM_MODEL_PREF;
     case "xai":
@@ -422,9 +431,11 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "nvidia-nim":
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
-      return process.env.PPIO_API_KEY;
+      return process.env.PPIO_MODEL_PREF;
     case "dpais":
       return process.env.DPAIS_LLM_MODEL_PREF;
+    case "moonshotai":
+      return process.env.MOONSHOT_AI_MODEL_PREF;
     default:
       return null;
   }

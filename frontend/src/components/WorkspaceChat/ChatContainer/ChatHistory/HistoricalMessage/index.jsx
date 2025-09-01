@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Warning } from "@phosphor-icons/react";
+import { Info, Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -16,6 +16,10 @@ import {
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
 } from "../ThoughtContainer";
+import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { chatQueryRefusalResponse } from "@/utils/chat";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -34,6 +38,7 @@ const HistoricalMessage = ({
   metrics = {},
   alignmentCls = "",
 }) => {
+  const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
     chatId,
@@ -44,6 +49,9 @@ const HistoricalMessage = ({
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
   };
+
+  const isRefusalMessage =
+    role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
   if (!!error) {
     return (
@@ -109,6 +117,22 @@ const HistoricalMessage = ({
                 message={message}
                 expanded={isLastMessage}
               />
+              {isRefusalMessage && (
+                <Link
+                  data-tooltip-id="query-refusal-info"
+                  data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
+                  className="!no-underline group !flex w-fit"
+                  to={paths.chatModes()}
+                  target="_blank"
+                >
+                  <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
+                    <Info className="text-theme-text-secondary" />
+                    <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
+                      {t("chat.refusal.tooltip-title")}
+                    </p>
+                  </div>
+                </Link>
+              )}
               <ChatAttachments attachments={attachments} />
             </div>
           )}

@@ -5,9 +5,11 @@ class PostgresSQLConnector {
   constructor(
     config = {
       connectionString: null,
+      schema: null,
     }
   ) {
     this.connectionString = config.connectionString;
+    this.schema = config.schema || "public";
     this._client = new pgSql.Client({
       connectionString: this.connectionString,
     });
@@ -22,7 +24,7 @@ class PostgresSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
-   * @returns {import(".").QueryResult}
+   * @returns {Promise<import(".").QueryResult>}
    */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
@@ -35,17 +37,29 @@ class PostgresSQLConnector {
       console.log(this.constructor.name, err);
       result.error = err.message;
     } finally {
-      await this._client.end();
-      this.#connected = false;
+      // Check client is connected before closing since we use this for validation
+      if (this._client) {
+        await this._client.end();
+        this.#connected = false;
+      }
     }
     return result;
   }
 
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   getTablesSql() {
-    return `SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'`;
+    return `SELECT * FROM pg_catalog.pg_tables WHERE schemaname = '${this.schema}'`;
   }
   getTableSchemaSql(table_name) {
-    return ` select column_name, data_type, character_maximum_length, column_default, is_nullable from INFORMATION_SCHEMA.COLUMNS where table_name = '${table_name}'`;
+    return ` select column_name, data_type, character_maximum_length, column_default, is_nullable from INFORMATION_SCHEMA.COLUMNS where table_name = '${table_name}' AND table_schema = '${this.schema}'`;
   }
 }
 

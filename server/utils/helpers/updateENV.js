@@ -302,7 +302,7 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
-    postUpdate: [handleVectorStoreReset],
+    postUpdate: [handleVectorStoreReset, downloadEmbeddingModelIfRequired],
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
@@ -344,6 +344,20 @@ const KEY_MAPPING = {
   ChromaApiKey: {
     envKey: "CHROMA_API_KEY",
     checks: [],
+  },
+
+  // ChromaCloud Options
+  ChromaCloudApiKey: {
+    envKey: "CHROMACLOUD_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ChromaCloudTenant: {
+    envKey: "CHROMACLOUD_TENANT",
+    checks: [isNotEmpty],
+  },
+  ChromaCloudDatabase: {
+    envKey: "CHROMACLOUD_DATABASE",
+    checks: [isNotEmpty],
   },
 
   // Weaviate Options
@@ -577,6 +591,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_TAVILY_API_KEY",
     checks: [],
   },
+  AgentExaApiKey: {
+    envKey: "AGENT_EXA_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -613,6 +631,10 @@ const KEY_MAPPING = {
   // OpenAI Generic TTS
   TTSOpenAICompatibleKey: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_MODEL",
     checks: [],
   },
   TTSOpenAICompatibleVoiceModel: {
@@ -684,6 +706,16 @@ const KEY_MAPPING = {
   },
   PPIOModelPref: {
     envKey: "PPIO_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Moonshot AI Options
+  MoonshotAiApiKey: {
+    envKey: "MOONSHOT_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MoonshotAiModelPref: {
+    envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
 };
@@ -795,6 +827,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "moonshotai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -841,6 +874,7 @@ function supportedEmbeddingModel(input = "") {
 function supportedVectorDB(input = "") {
   const supported = [
     "chroma",
+    "chromacloud",
     "pinecone",
     "lancedb",
     "weaviate",
@@ -924,6 +958,22 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
     );
     return await resetAllVectorStores({ vectorDbKey: process.env.VECTOR_DB });
   }
+  return false;
+}
+
+/**
+ * Downloads the embedding model in background if the user has selected a different model
+ * - Only supported for the native embedder
+ * - Must have the native embedder selected prior (otherwise will download on embed)
+ */
+async function downloadEmbeddingModelIfRequired(key, prevValue, nextValue) {
+  if (prevValue === nextValue) return;
+  if (key !== "EmbeddingModelPref" || process.env.EMBEDDING_ENGINE !== "native")
+    return;
+
+  const { NativeEmbedder } = require("../EmbeddingEngines/native");
+  if (!NativeEmbedder.supportedModels[nextValue]) return; // if the model is not supported, don't download it
+  new NativeEmbedder().embedderClient();
   return false;
 }
 
@@ -1078,6 +1128,8 @@ function dumpENV() {
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
     // Manually Add Keys here which are not already defined in KEY_MAPPING
     // and are either managed or manually set ENV key:values.
+    "JWT_EXPIRY",
+
     "STORAGE_DIR",
     "SERVER_PORT",
     // For persistent data encryption
@@ -1111,6 +1163,9 @@ function dumpENV() {
 
     // Collector API common ENV - allows bypassing URL validation checks
     "COLLECTOR_ALLOW_ANY_IP",
+
+    // Allow disabling of streaming for generic openai
+    "GENERIC_OPENAI_STREAMING_DISABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

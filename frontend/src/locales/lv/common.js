@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "Neobligāti",
     yes: "Jā",
     no: "Nē",
+    search: null,
   },
   settings: {
     title: "Instances iestatījumi",
@@ -334,6 +335,8 @@ const TRANSLATIONS = {
       query: "vaicājuma",
       "desc-end":
         "režīmā, jūs varētu vēlēties atgriezt pielāgotu atteikuma atbildi, kad konteksts nav atrasts.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Temperatūra",
@@ -589,8 +592,6 @@ const TRANSLATIONS = {
       "Iegulšana ir process, ar kuru teksts tiek pārveidots vektoros. Šie akreditācijas dati ir nepieciešami, lai pārveidotu jūsu failus un vaicājumus formātā, kuru AnythingLLM var izmantot apstrādei.",
     provider: {
       title: "Iegulšanas pakalpojuma sniedzējs",
-      description:
-        "Nav nepieciešama iestatīšana, izmantojot AnythingLLM iebūvēto iegulšanas dzinēju.",
     },
   },
   text: {
@@ -599,9 +600,6 @@ const TRANSLATIONS = {
       "Dažreiz jūs, iespējams, vēlēsieties mainīt noklusējuma veidu, kā jauni dokumenti tiek sadalīti un sagatavoti pirms ievietošanas vektoru datubāzē.",
     "desc-end":
       "Jums vajadzētu mainīt šo iestatījumu tikai tad, ja saprotat, kā darbojas teksta sadalīšana un tās blakusefekti.",
-    "warn-start": "Šeit veiktās izmaiņas attieksies tikai uz",
-    "warn-center": "jauniem iegultajiem dokumentiem",
-    "warn-end": ", nevis esošajiem dokumentiem.",
     size: {
       title: "Teksta gabala izmērs",
       description:
@@ -646,30 +644,6 @@ const TRANSLATIONS = {
       message: "Ziņojums",
       response: "Atbilde",
       at: "Nosūtīts",
-    },
-  },
-  multi: {
-    title: "Vairāklietotāju režīms",
-    description:
-      "Iestatiet savu instanci, lai atbalstītu jūsu komandu, aktivizējot vairāklietotāju režīmu.",
-    enable: {
-      "is-enable": "Vairāklietotāju režīms ir iespējots",
-      enable: "Iespējot vairāklietotāju režīmu",
-      description:
-        "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
-      username: "Administratora konta lietotājvārds",
-      password: "Administratora konta parole",
-    },
-    password: {
-      title: "Aizsardzība ar paroli",
-      description:
-        "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
-    },
-    instance: {
-      title: "Aizsargāt instanci ar paroli",
-      description:
-        "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
-      password: "Instances parole",
     },
   },
   event: {
@@ -955,7 +929,7 @@ const TRANSLATIONS = {
     username_description:
       "Lietotājvārdam jāsatur tikai mazie burti, cipari, pasvītrojumi un defises bez atstarpēm",
     new_password: "Jauna parole",
-    passwort_description: "Parolei jābūt vismaz 8 rakstzīmes garai",
+    password_description: "Parolei jābūt vismaz 8 rakstzīmes garai",
     cancel: "Atcelt",
     update_account: "Atjaunināt kontu",
     theme: "Tēmas preference",
@@ -1064,6 +1038,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Drošība",
+    multiuser: {
+      title: "Vairāklietotāju režīms",
+      description:
+        "Iestatiet savu instanci, lai atbalstītu jūsu komandu, aktivizējot vairāklietotāju režīmu.",
+      enable: {
+        "is-enable": "Vairāklietotāju režīms ir iespējots",
+        enable: "Iespējot vairāklietotāju režīmu",
+        description:
+          "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
+        username: "Administratora konta lietotājvārds",
+        password: "Administratora konta parole",
+      },
+    },
+    password: {
+      title: "Aizsardzība ar paroli",
+      description:
+        "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
+      "password-label": "Instances paroles",
     },
   },
 };

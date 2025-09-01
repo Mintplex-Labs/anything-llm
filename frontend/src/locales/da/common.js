@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Valgfrit",
     yes: "Ja",
     no: "Nej",
+    search: null,
   },
   settings: {
     title: "Instansindstillinger",
@@ -250,6 +251,8 @@ const TRANSLATIONS = {
       query: "forespørgsels-tilstand",
       "desc-end":
         "tilstand, kan du vælge at returnere et brugerdefineret afvisningssvar, når der ikke findes nogen kontekst.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM-temperatur",
@@ -405,8 +408,6 @@ const TRANSLATIONS = {
       "Indlejring er processen med at omdanne tekst til vektorer. Disse legitimationsoplysninger er nødvendige for at omdanne dine filer og prompts til et format, som AnythingLLM kan bruge til behandling.",
     provider: {
       title: "Indlejringsudbyder",
-      description:
-        "Ingen opsætning er nødvendig, når du bruger AnythingLLM's indbyggede indlejringsmotor.",
     },
   },
   text: {
@@ -415,9 +416,6 @@ const TRANSLATIONS = {
       "Nogle gange vil du måske ændre den standardmåde, som nye dokumenter deles og opdeles i bidder, inden de indsættes i din vektordatabase.",
     "desc-end":
       "Du bør kun ændre denne indstilling, hvis du forstår, hvordan tekstopdeling fungerer og dens bivirkninger.",
-    "warn-start": "Ændringer her vil kun gælde for",
-    "warn-center": "nyligt indlejrede dokumenter",
-    "warn-end": ", ikke eksisterende dokumenter.",
     size: {
       title: "Størrelse på tekstbidder",
       description:
@@ -462,30 +460,6 @@ const TRANSLATIONS = {
       message: "Besked",
       response: "Svar",
       at: "Sendt kl.",
-    },
-  },
-  multi: {
-    title: "Multi-brugertilstand",
-    description:
-      "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
-    enable: {
-      "is-enable": "Multi-brugertilstand er aktiveret",
-      enable: "Aktivér multi-brugertilstand",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      username: "Brugernavn til admin-konto",
-      password: "Adgangskode til admin-konto",
-    },
-    password: {
-      title: "Adgangskodebeskyttelse",
-      description:
-        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
-    },
-    instance: {
-      title: "Adgangskodebeskyt instansen",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      password: "Instansens adgangskode",
     },
   },
   event: {
@@ -768,7 +742,7 @@ const TRANSLATIONS = {
     username_description:
       "Brugernavnet må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum",
     new_password: "Ny adgangskode",
-    passwort_description: "Adgangskoden skal være mindst 8 tegn lang",
+    password_description: "Adgangskoden skal være mindst 8 tegn lang",
     cancel: "Annuller",
     update_account: "Opdater konto",
     theme: "Tema-præference",
@@ -1047,6 +1021,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Sikkerhed",
+    multiuser: {
+      title: "Multi-brugertilstand",
+      description:
+        "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
+      enable: {
+        "is-enable": "Multi-brugertilstand er aktiveret",
+        enable: "Aktivér multi-brugertilstand",
+        description:
+          "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
+        username: "Brugernavn til admin-konto",
+        password: "Adgangskode til admin-konto",
+      },
+    },
+    password: {
+      title: "Adgangskodebeskyttelse",
+      description:
+        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
+      "password-label": "Instansadgangskode",
     },
   },
 };

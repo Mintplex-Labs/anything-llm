@@ -24,6 +24,7 @@ import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
+import ChromaCloudOptions from "@/components/VectorDBSelection/ChromaCloudOptions";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
 import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
@@ -132,6 +133,14 @@ export default function GeneralVectorDatabase() {
       options: <ChromaDBOptions settings={settings} />,
       description:
         "Open source vector database you can host yourself or on the cloud.",
+    },
+    {
+      name: "Chroma Cloud",
+      value: "chromacloud",
+      logo: ChromaLogo,
+      options: <ChromaCloudOptions settings={settings} />,
+      description:
+        "Fully managed Chroma cloud service with enterprise features and support.",
     },
     {
       name: "Pinecone",

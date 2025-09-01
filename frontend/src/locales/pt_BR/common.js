@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "Opcional",
     yes: "Sim",
     no: "Não",
+    search: null,
   },
   settings: {
     title: "Configurações da Instância",
@@ -331,6 +332,8 @@ const TRANSLATIONS = {
       query: "consulta",
       "desc-end":
         "modo, você pode definir uma resposta personalizada quando nenhum contexto for encontrado.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Temperatura do LLM",
@@ -576,8 +579,6 @@ const TRANSLATIONS = {
       "Vínculo é o processo de transformar texto em vetores. Essas credenciais são necessárias para processar arquivos e prompts.",
     provider: {
       title: "Provedor de Vínculo",
-      description:
-        "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
   text: {
@@ -585,9 +586,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
     "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
-    "warn-start": "Alterações afetarão apenas",
-    "warn-center": "documentos novos",
-    "warn-end": ", não os existentes.",
     size: {
       title: "Tamanho dos Trechos",
       description: "Comprimento máximo de caracteres em um único vetor.",
@@ -630,30 +628,6 @@ const TRANSLATIONS = {
       message: "Mensagem",
       response: "Resposta",
       at: "Enviado Em",
-    },
-  },
-  multi: {
-    title: "Modo Multi-Usuário",
-    description:
-      "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
-    enable: {
-      "is-enable": "Modo Multi-Usuário Ativo",
-      enable: "Ativar Modo Multi-Usuário",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      username: "Nome de usuário admin",
-      password: "Senha de admin",
-    },
-    password: {
-      title: "Proteção por Senha",
-      description:
-        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
-    },
-    instance: {
-      title: "Proteger Instância",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      password: "Senha da instância",
     },
   },
   event: {
@@ -936,7 +910,7 @@ const TRANSLATIONS = {
     username_description:
       "Somente letras minúsculas, números, sublinhados e hífens. Sem espaços.",
     new_password: "Nova senha",
-    passwort_description: "A senha deve ter no mínimo 8 caracteres",
+    password_description: "A senha deve ter no mínimo 8 caracteres",
     cancel: "Cancelar",
     update_account: "Atualizar conta",
     theme: "Preferência de tema",
@@ -1045,6 +1019,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Segurança",
+    multiuser: {
+      title: "Modo Multi-Usuário",
+      description:
+        "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
+      enable: {
+        "is-enable": "Modo Multi-Usuário Ativo",
+        enable: "Ativar Modo Multi-Usuário",
+        description:
+          "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
+        username: "Nome de usuário admin",
+        password: "Senha de admin",
+      },
+    },
+    password: {
+      title: "Proteção por Senha",
+      description:
+        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
+      "password-label": "Senha da instância",
     },
   },
 };

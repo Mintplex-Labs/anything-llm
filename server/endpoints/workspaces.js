@@ -32,13 +32,15 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
+const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
+const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 
 function workspaceEndpoints(app) {
   if (!app) return;
-
   const responseCache = new Map();
 
   app.post(
@@ -1037,6 +1039,31 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  /**
+   * Searches for workspaces and threads by thread name or workspace name.
+   * Only returns assets owned by the user (if multi-user mode is enabled).
+   */
+  app.post(
+    "/workspace/search",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { searchTerm } = reqBody(request);
+        const searchResults = await searchWorkspaceAndThreads(
+          searchTerm,
+          response.locals?.user
+        );
+        response.status(200).json(searchResults);
+      } catch (error) {
+        console.error("Error searching for workspaces:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Parsed Files in separate endpoint just to keep the workspace endpoints clean
+  workspaceParsedFilesEndpoints(app);
 }
 
 module.exports = { workspaceEndpoints };

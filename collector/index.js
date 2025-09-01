@@ -59,6 +59,39 @@ app.post(
 );
 
 app.post(
+  "/parse",
+  [verifyPayloadIntegrity],
+  async function (request, response) {
+    const { filename, options = {} } = reqBody(request);
+    try {
+      const targetFilename = path
+        .normalize(filename)
+        .replace(/^(\.\.(\/|\\|$))+/, "");
+      const {
+        success,
+        reason,
+        documents = [],
+      } = await processSingleFile(targetFilename, {
+        ...options,
+        parseOnly: true,
+      });
+      response
+        .status(200)
+        .json({ filename: targetFilename, success, reason, documents });
+    } catch (e) {
+      console.error(e);
+      response.status(200).json({
+        filename: filename,
+        success: false,
+        reason: "A processing error occurred.",
+        documents: [],
+      });
+    }
+    return;
+  }
+);
+
+app.post(
   "/process-link",
   [verifyPayloadIntegrity],
   async function (request, response) {

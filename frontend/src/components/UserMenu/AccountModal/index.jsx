@@ -166,7 +166,7 @@ export default function AccountModal({ user, hideModal }) {
                   minLength={8}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {t("profile_settings.passwort_description")}
+                  {t("profile_settings.password_description")}
                 </p>
               </div>
               <div>
