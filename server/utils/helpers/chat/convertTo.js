@@ -72,6 +72,13 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
         sent_at: chat.createdAt,
       };
 
+      // Only add images for JSON format since we cannot
+      // make an array of images in csv
+      if (format === "json") {
+        const attachments = responseJson.attachments || [];
+        baseData.images = attachments.map(attachmentToDataUrl);
+      }
+
       if (chatType === "embed") {
         return {
           ...baseData,
@@ -120,28 +127,55 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
     const responseJson = JSON.parse(response);
+    const attachments = responseJson.attachments || [];
 
     if (!acc[workspaceId]) {
       acc[workspaceId] = {
         messages: [
           {
             role: "system",
-            content:
-              chat.workspace?.openAiPrompt ||
-              "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+            content: [
+              {
+                type: "text",
+                text:
+                  chat.workspace?.openAiPrompt ||
+                  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+              },
+            ],
           },
         ],
       };
     }
 
+    const userContent = [
+      {
+        type: "text",
+        text: prompt,
+      },
+    ];
+
+    if (attachments.length > 0) {
+      attachments.forEach((attachment) => {
+        userContent.push({
+          type: "image",
+          image: attachmentToDataUrl(attachment),
+        });
+      });
+    }
+
     acc[workspaceId].messages.push(
       {
         role: "user",
-        content: prompt,
+        content: userContent,
       },
       {
         role: "assistant",
-        content: responseJson.text,
+        content: [
+          {
+            type: "text",
+            text: responseJson.text,
+          },
+        ],
       }
     );
 
@@ -201,6 +235,17 @@ function buildSystemPrompt(chat, prompt = null) {
           .join("")
       : "";
   return `${prompt ?? STANDARD_PROMPT}${context}`;
+}
+
+/**
+ * Converts an attachment's content string to a proper data URL format if needed
+ * @param {Object} attachment - The attachment object containing contentString and mime type
+ * @returns {string} The properly formatted data URL
+ */
+function attachmentToDataUrl(attachment) {
+  return attachment.contentString.startsWith("data:")
+    ? attachment.contentString
+    : `data:${attachment.mime};base64,${attachment.contentString}`;
 }
 
 module.exports = {
