@@ -607,7 +607,6 @@ function apiWorkspaceThreadEndpoints(app) {
           null,
           { id: "asc" }
         );
-        console.log('history', history);
 
         response.status(200).json({ history: convertToChatHistory(history) });
 
@@ -1175,7 +1174,6 @@ function apiWorkspaceThreadEndpoints(app) {
           "answer_specification": answerModePrompt,
           "user_query": message
         };
-        console.log("Main LLM Query:", answers);
         const main_llm_query = JSON.stringify(answers);
 
         response.setHeader("Cache-Control", "no-cache");
