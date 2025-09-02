@@ -572,15 +572,11 @@ function apiWorkspaceThreadEndpoints(app) {
         // as we don't check if the userID is valid.
         if (!response.locals.multiUserMode && !!userId) userId = null;
 
-        // create new thread
-        const engines_session_ids = await createSessionForEngines(user_pseudo_id);
-
         const { thread, message } = await WorkspaceThread.new(
           workspace,
           userId ? Number(userId) : null,
           { name, slug },
-          user_pseudo_id,
-          engines_session_ids
+          user_pseudo_id
         );
 
         await Telemetry.sendTelemetry("workspace_thread_created", {
@@ -597,22 +593,23 @@ function apiWorkspaceThreadEndpoints(app) {
         // add user's and model's messages to the thread
         await WorkspaceChats.new({
           workspaceId: workspace.id,
-          thread_id: thread.id,
+          threadId: thread.id,
           prompt: chat.prompt,
           response: JSON.parse(chat.response)
         });
+        const history = await WorkspaceChats.where(
+          {
+            workspaceId: workspace.id,
+            thread_id: thread.id,
+            api_session_id: null,
+            include: true,
+          },
+          null,
+          { id: "asc" }
+        );
 
-        // send the user message to engines
-        const user_message = chat.prompt;
-        const model_message = JSON.parse(chat.response).text;
-        const engine_ids = Object.keys(engines_session_ids);
-        const promises = engine_ids.map(engine_id => {
-          const session_id = engines_session_ids[engine_id];
-          return getEngineResponse(engine_id, user_message, session_id);
-        });
-        const responses = await Promise.all(promises);
-        
-        response.status(201).json({ thread, user_message, model_message });
+        response.status(200).json({ history: convertToChatHistory(history) });
+
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -627,6 +624,17 @@ function apiWorkspaceThreadEndpoints(app) {
     async (request, response) => {
       const { slug, threadSlug, chatId } = request.params;
       const { user_pseudo_id } = reqBody(request);
+      if (!user_pseudo_id) {
+        response.status(403).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `No user pseudo ID provided.`,
+        });
+        return;
+      }
       const thread = await WorkspaceThread.get({ slug: threadSlug, user_pseudo_id: user_pseudo_id });
       if (!thread) {
         response.status(400).json({
@@ -1066,6 +1074,7 @@ function apiWorkspaceThreadEndpoints(app) {
           user_pseudo_id,
           attachments = [],
           reset = false,
+          answerMode = "basic"
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
@@ -1105,6 +1114,10 @@ function apiWorkspaceThreadEndpoints(app) {
         // followup questions
         // real links to documents
         // best references (documents)
+        let answerModePrompt = "The user is a member of the general public who doesn't have in-depth knowledge of the subject matter. You should avoid using specialized knowledge, and instead answer in a non-technical manner that anyone can understand.";
+        if (answerMode === "expert") {
+          answerModePrompt = "The user is a healthcare professional, a medical student, or someone with a strong background in medical sciences. They expect detailed, in-depth, and precise information. You may use specialized terminology, medical jargon, and refer to specific biological processes, diseases, or treatments. Assume the user has a foundational understanding of the subject matter and is looking for comprehensive, scientifically accurate, and potentially nuanced answers.";
+        }
 
         // get chunks from doc-rag service
         const data = {
@@ -1158,6 +1171,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const answers = {
           "grounding_data": ragData,
+          "answer_specification": answerModePrompt,
           "user_query": message
         };
         const main_llm_query = JSON.stringify(answers);
@@ -1342,6 +1356,8 @@ async function streamChatWithRelatedQuestions({
         type: chatMode,
         metrics,
         attachments,
+        bestReferences,
+        engine_sources: engine_sources,
       },
       threadId: thread?.id || null,
       apiSessionId: null,
