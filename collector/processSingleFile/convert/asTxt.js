@@ -8,7 +8,12 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-async function asTxt({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asTxt({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");

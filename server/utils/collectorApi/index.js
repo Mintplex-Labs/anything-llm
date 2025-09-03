@@ -113,7 +113,7 @@ class CollectorApi {
       link,
       scraperHeaders,
       options: this.#attachOptions(),
-      metadata: metadata
+      metadata: metadata,
     });
 
     return await fetch(`${this.endpoint}/process-link`, {

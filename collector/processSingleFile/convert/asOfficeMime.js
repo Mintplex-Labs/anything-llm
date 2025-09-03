@@ -12,7 +12,7 @@ async function asOfficeMime({
   fullFilePath = "",
   filename = "",
   options = {},
-  metadata = {}
+  metadata = {},
 }) {
   console.log(`-- Working ${filename} --`);
   let content = "";

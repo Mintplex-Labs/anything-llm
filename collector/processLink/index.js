@@ -33,7 +33,7 @@ async function getLinkText(link, captureAs = "text") {
     link,
     captureAs,
     processAsDocument: false,
-    metadata: {}
+    metadata: {},
   });
 }
 

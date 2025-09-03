@@ -14,7 +14,12 @@ const WHISPER_PROVIDERS = {
   local: LocalWhisper,
 };
 
-async function asAudio({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asAudio({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const WhisperProvider = WHISPER_PROVIDERS.hasOwnProperty(
     options?.whisperProvider
   )

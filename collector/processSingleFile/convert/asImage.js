@@ -8,7 +8,12 @@ const {
 const OCRLoader = require("../../utils/OCRLoader");
 const { default: slugify } = require("slugify");
 
-async function asImage({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asImage({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   let content = await new OCRLoader({
     targetLanguages: options?.ocr?.langList,
   }).ocrImage(fullFilePath);

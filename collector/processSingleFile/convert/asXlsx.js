@@ -27,7 +27,12 @@ function convertToCSV(data) {
     .join("\n");
 }
 
-async function asXlsx({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asXlsx({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const documents = [];
   const folderName = slugify(`${path.basename(filename)}-${v4().slice(0, 4)}`, {
     lower: true,
@@ -58,7 +63,8 @@ async function asXlsx({ fullFilePath = "", filename = "", options = {}, metadata
           url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
           title: metadata.title || `${filename} - Sheet:${name}`,
           docAuthor: metadata.docAuthor || "Unknown",
-          description: metadata.description || `Spreadsheet data from sheet: ${name}`,
+          description:
+            metadata.description || `Spreadsheet data from sheet: ${name}`,
           docSource: metadata.docSource || "an xlsx file uploaded by the user.",
           chunkSource: metadata.chunkSource || "",
           published: createdDate(fullFilePath),

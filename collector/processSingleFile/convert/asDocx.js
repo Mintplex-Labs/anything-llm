@@ -8,7 +8,12 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asDocX({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asDocX({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const loader = new DocxLoader(fullFilePath);
 
   console.log(`-- Working ${filename} --`);

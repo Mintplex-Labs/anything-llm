@@ -8,7 +8,12 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-async function asEPub({ fullFilePath = "", filename = "", options = {}, metadata = {} }) {
+async function asEPub({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   let content = "";
   try {
     const loader = new EPubLoader(fullFilePath, { splitChapters: false });
