@@ -1074,7 +1074,7 @@ function apiWorkspaceThreadEndpoints(app) {
           user_pseudo_id,
           attachments = [],
           reset = false,
-          answerMode = "basic"
+          answer_mode = "basic"
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
@@ -1115,7 +1115,7 @@ function apiWorkspaceThreadEndpoints(app) {
         // real links to documents
         // best references (documents)
         let answerModePrompt = "The user is a member of the general public who doesn't have in-depth knowledge of the subject matter. You should avoid using specialized knowledge, and instead answer in a non-technical manner that anyone can understand.";
-        if (answerMode === "expert") {
+        if (answer_mode === "expert") {
           answerModePrompt = "The user is a healthcare professional, a medical student, or someone with a strong background in medical sciences. They expect detailed, in-depth, and precise information. You may use specialized terminology, medical jargon, and refer to specific biological processes, diseases, or treatments. Assume the user has a foundational understanding of the subject matter and is looking for comprehensive, scientifically accurate, and potentially nuanced answers.";
         }
 
