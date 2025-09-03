@@ -1034,22 +1034,25 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Segurança",
     multiuser: {
-      title: null,
-      description: null,
+      title: "Modo Multi-Usuário",
+      description:
+        "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Modo Multi-Usuário Ativo",
+        enable: "Ativar Modo Multi-Usuário",
+        description:
+          "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
+        username: "Nome de usuário admin",
+        password: "Senha de admin",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Proteção por Senha",
+      description:
+        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
+      "password-label": "Senha da instância",
     },
   },
 };
