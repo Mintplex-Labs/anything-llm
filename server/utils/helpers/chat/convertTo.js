@@ -34,6 +34,7 @@ async function convertToJSONAlpaca(preparedData) {
   return JSON.stringify(preparedData, null, 4);
 }
 
+// You can validate JSONL outputs on https://jsonlines.org/validator/
 async function convertToJSONL(workspaceChatsMap) {
   return Object.values(workspaceChatsMap)
     .map((workspaceChats) => JSON.stringify(workspaceChats))
@@ -130,6 +131,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  // Export to JSONL format (recommended for fine-tuning)
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
     const responseJson = safeJsonParse(response, { attachments: [] });
@@ -153,24 +155,21 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
       };
     }
 
-    // Build the user content array with the prompt and attachments (if any)
-    const userContent = [
-      {
-        type: "text",
-        text: prompt,
-      },
-      ...(attachments?.length > 0
-        ? attachments.map((attachment) => ({
-            type: "image",
-            image: attachmentToDataUrl(attachment),
-          }))
-        : []),
-    ];
-
     acc[workspaceId].messages.push(
       {
         role: "user",
-        content: userContent,
+        content: [
+          {
+            type: "text",
+            text: prompt,
+          },
+          ...(attachments?.length > 0
+            ? attachments.map((attachment) => ({
+                type: "image",
+                image: attachmentToDataUrl(attachment),
+              }))
+            : []),
+        ],
       },
       {
         role: "assistant",
