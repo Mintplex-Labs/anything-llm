@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -579,8 +580,6 @@ const TRANSLATIONS = {
       "Vínculo é o processo de transformar texto em vetores. Essas credenciais são necessárias para processar arquivos e prompts.",
     provider: {
       title: "Provedor de Vínculo",
-      description:
-        "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
   text: {
@@ -588,9 +587,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
     "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
-    "warn-start": "Alterações afetarão apenas",
-    "warn-center": "documentos novos",
-    "warn-end": ", não os existentes.",
     size: {
       title: "Tamanho dos Trechos",
       description: "Comprimento máximo de caracteres em um único vetor.",
@@ -633,30 +629,6 @@ const TRANSLATIONS = {
       message: "Mensagem",
       response: "Resposta",
       at: "Enviado Em",
-    },
-  },
-  multi: {
-    title: "Modo Multi-Usuário",
-    description:
-      "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
-    enable: {
-      "is-enable": "Modo Multi-Usuário Ativo",
-      enable: "Ativar Modo Multi-Usuário",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      username: "Nome de usuário admin",
-      password: "Senha de admin",
-    },
-    password: {
-      title: "Proteção por Senha",
-      description:
-        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
-    },
-    instance: {
-      title: "Proteger Instância",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      password: "Senha da instância",
     },
   },
   event: {
@@ -928,7 +900,8 @@ const TRANSLATIONS = {
       save: "Salvar modelo do workspace",
       saving: "Salvando...",
       missing_credentials: "Credenciais em falta",
-      missing_credentials_description: "Configure as credenciais do LLM primeiro",
+      missing_credentials_description:
+        "Configure as credenciais do LLM primeiro",
     },
   },
   profile_settings: {
@@ -971,7 +944,8 @@ const TRANSLATIONS = {
     publish: {
       system_prompt: {
         success_title: "Prompt de sistema publicado!",
-        success_description: "Seu prompt de sistema foi publicado com sucesso no Hub da Comunidade.",
+        success_description:
+          "Seu prompt de sistema foi publicado com sucesso no Hub da Comunidade.",
         success_thank_you: "Obrigado por contribuir!",
         view_on_hub: "Ver no Hub",
         modal_title: "Publicar prompt de sistema",
@@ -981,7 +955,8 @@ const TRANSLATIONS = {
         description_label: "Descrição",
         description_description: "Descreva o que seu prompt de sistema faz",
         tags_label: "Tags",
-        tags_description: "Adicione tags para ajudar outros a encontrar seu prompt",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu prompt",
         tags_placeholder: "prompt, assistente, produtividade",
         visibility_label: "Visibilidade",
         public_description: "Qualquer pessoa pode ver e usar este prompt",
@@ -994,10 +969,12 @@ const TRANSLATIONS = {
         prompt_placeholder: "Você é um assistente útil que...",
       },
       agent_flow: {
-        public_description: "Qualquer pessoa pode ver e usar este fluxo de agente",
+        public_description:
+          "Qualquer pessoa pode ver e usar este fluxo de agente",
         private_description: "Apenas você pode ver e usar este fluxo de agente",
         success_title: "Fluxo de agente publicado!",
-        success_description: "Seu fluxo de agente foi publicado com sucesso no Hub da Comunidade.",
+        success_description:
+          "Seu fluxo de agente foi publicado com sucesso no Hub da Comunidade.",
         success_thank_you: "Obrigado por contribuir!",
         view_on_hub: "Ver no Hub",
         modal_title: "Publicar fluxo de agente",
@@ -1007,24 +984,28 @@ const TRANSLATIONS = {
         description_label: "Descrição",
         description_description: "Descreva o que seu fluxo de agente faz",
         tags_label: "Tags",
-        tags_description: "Adicione tags para ajudar outros a encontrar seu fluxo",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu fluxo",
         tags_placeholder: "agente, automação, fluxo de trabalho",
         visibility_label: "Visibilidade",
         publish_button: "Publicar fluxo de agente",
         submitting: "Publicando...",
         submit: "Publicar",
-        privacy_note: "Nota: dados sensíveis serão removidos antes da publicação",
+        privacy_note:
+          "Nota: dados sensíveis serão removidos antes da publicação",
       },
       generic: {
         unauthenticated: {
           title: "Faça login para publicar",
-          description: "Você precisa estar logado para publicar no Hub da Comunidade",
+          description:
+            "Você precisa estar logado para publicar no Hub da Comunidade",
           button: "Fazer login",
         },
       },
       slash_command: {
         success_title: "Comando de barra publicado!",
-        success_description: "Seu comando de barra foi publicado com sucesso no Hub da Comunidade.",
+        success_description:
+          "Seu comando de barra foi publicado com sucesso no Hub da Comunidade.",
         success_thank_you: "Obrigado por contribuir!",
         view_on_hub: "Ver no Hub",
         modal_title: "Publicar comando de barra",
@@ -1037,7 +1018,8 @@ const TRANSLATIONS = {
         command_description: "O comando que os usuários digitarão",
         command_placeholder: "/meu-comando",
         tags_label: "Tags",
-        tags_description: "Adicione tags para ajudar outros a encontrar seu comando",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu comando",
         tags_placeholder: "comando, produtividade, útil",
         visibility_label: "Visibilidade",
         public_description: "Qualquer pessoa pode ver e usar este comando",
@@ -1045,9 +1027,29 @@ const TRANSLATIONS = {
         publish_button: "Publicar comando de barra",
         submitting: "Publicando...",
         prompt_label: "Prompt",
-        prompt_description: "O prompt que será executado quando o comando for usado",
+        prompt_description:
+          "O prompt que será executado quando o comando for usado",
         prompt_placeholder: "Responda como um especialista em...",
       },
+    },
+  },
+  security: {
+    title: null,
+    multiuser: {
+      title: null,
+      description: null,
+      enable: {
+        "is-enable": null,
+        enable: null,
+        description: null,
+        username: null,
+        password: null,
+      },
+    },
+    password: {
+      title: null,
+      description: null,
+      "password-label": null,
     },
   },
 };
