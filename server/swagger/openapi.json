@@ -890,9 +890,6 @@
               }
             }
           },
-          "422": {
-            "description": "Unprocessable Entity"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -996,9 +993,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Unprocessable Entity"
           },
           "500": {
             "description": "Internal Server Error",
@@ -1104,9 +1098,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Unprocessable Entity"
           },
           "500": {
             "description": "Internal Server Error"

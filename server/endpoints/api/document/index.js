@@ -8,7 +8,7 @@ const {
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
-const { reqBody } = require("../../../utils/http");
+const { reqBody, safeJsonParse } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
@@ -98,29 +98,7 @@ function apiDocumentEndpoints(app) {
         const { originalname } = request.file;
         const { addToWorkspaces = "", metadata = {} } = reqBody(request);
 
-        // Validate required metadata keys if present
-        // Parse JSON string into an object
-        let metadataObj = {};
-        if (metadata && typeof metadata === "string") {
-          try {
-            metadataObj = JSON.parse(metadata);
-          }
-          catch {
-            response.status(422).json({ success: false, error: 'Invalid metadata' }).end();
-            return;
-          }
-        }
-
-        const requiredMetadata = ["title"];
-        if (
-          metadataObj && Object.keys(metadataObj).length > 0 &&
-          !requiredMetadata.every(
-            (reqKey) => Object.keys(metadataObj).includes(reqKey) && !!metadataObj[reqKey]
-          )
-        ) {
-          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
-          return;
-        }
+        const metadataObj = safeJsonParse(metadata, {});
 
         const processingOnline = await Collector.online();
 
@@ -135,8 +113,10 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname, metadataObj);
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          metadataObj
+        );
         if (!success) {
           response
             .status(500)
@@ -257,7 +237,7 @@ function apiDocumentEndpoints(app) {
       try {
         const { originalname } = request.file;
         const { addToWorkspaces = "", metadata = {} } = reqBody(request);
-  
+
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
@@ -269,29 +249,7 @@ function apiDocumentEndpoints(app) {
         if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
 
-        // Validate required metadata keys if present
-        // Parse JSON string into an object
-        let metadataObj = {};
-        if (metadata && typeof metadata === "string") {
-          try {
-            metadataObj = JSON.parse(metadata);
-          }
-          catch {
-            response.status(422).json({ success: false, error: 'Invalid metadata' }).end();
-            return;
-          }
-        }
-
-        const requiredMetadata = ["title"];
-        if (
-          metadataObj && Object.keys(metadataObj).length > 0 &&
-          !requiredMetadata.every(
-            (reqKey) => Object.keys(metadataObj).includes(reqKey) && !!metadataObj[reqKey]
-          )
-        ) {
-          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
-          return;
-        }
+        const metadataObj = safeJsonParse(metadata, {});
 
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
@@ -307,8 +265,10 @@ function apiDocumentEndpoints(app) {
         }
 
         // Process the uploaded document with metadata
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname, metadataObj);
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          metadataObj
+        );
         if (!success) {
           response
             .status(500)
@@ -435,25 +395,14 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const requiredMetadata = ["title"];
         const {
           link,
           addToWorkspaces = "",
           scraperHeaders = {},
-          metadata = {}
+          metadata = {},
         } = reqBody(request);
+        const metadataObj = safeJsonParse(metadata, {});
         const processingOnline = await Collector.online();
-
-        // Validate required metadata keys if present
-        if (
-          metadata && Object.keys(metadata).length > 0 &&
-          !requiredMetadata.every(
-            (reqKey) => Object.keys(metadata).includes(reqKey) && !!metadata[reqKey]
-          )
-        ) {
-          response.status(422).json({ success: false, error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata.map((v) => `'${v}'`).join(", ")}` }).end();
-          return;
-        }
 
         if (!processingOnline) {
           response
@@ -469,7 +418,7 @@ function apiDocumentEndpoints(app) {
         const { success, reason, documents } = await Collector.processLink(
           link,
           scraperHeaders,
-          metadata
+          metadataObj
         );
         if (!success) {
           response
