@@ -64,20 +64,25 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
 
   if (format === "csv" || format === "json") {
     const preparedData = chats.map((chat) => {
-      const responseJson = JSON.parse(chat.response);
+      const responseJson = safeJsonParse(chat.response, {});
       const baseData = {
         id: chat.id,
         prompt: chat.prompt,
         response: responseJson.text,
         sent_at: chat.createdAt,
+        // Only add attachments to the json format since we cannot arrange attachments in csv format
+        ...(format === "json"
+          ? {
+              attachments:
+                responseJson.attachments?.length > 0
+                  ? responseJson.attachments.map((attachment) => ({
+                      type: "image",
+                      image: attachmentToDataUrl(attachment),
+                    }))
+                  : [],
+            }
+          : {}),
       };
-
-      // Only add images for JSON format since we cannot
-      // make an array of images in csv
-      if (format === "json") {
-        const attachments = responseJson.attachments || [];
-        baseData.images = attachments.map(attachmentToDataUrl);
-      }
 
       if (chatType === "embed") {
         return {
@@ -108,9 +113,10 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  // jsonAlpaca format does not support array outputs
   if (format === "jsonAlpaca") {
     const preparedData = chats.map((chat) => {
-      const responseJson = JSON.parse(chat.response);
+      const responseJson = safeJsonParse(chat.response, {});
       return {
         instruction: buildSystemPrompt(
           chat,
@@ -126,8 +132,8 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
 
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
-    const responseJson = JSON.parse(response);
-    const attachments = responseJson.attachments || [];
+    const responseJson = safeJsonParse(response, { attachments: [] });
+    const attachments = responseJson.attachments;
 
     if (!acc[workspaceId]) {
       acc[workspaceId] = {
@@ -147,21 +153,19 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
       };
     }
 
+    // Build the user content array with the prompt and attachments (if any)
     const userContent = [
       {
         type: "text",
         text: prompt,
       },
+      ...(attachments?.length > 0
+        ? attachments.map((attachment) => ({
+            type: "image",
+            image: attachmentToDataUrl(attachment),
+          }))
+        : []),
     ];
-
-    if (attachments.length > 0) {
-      attachments.forEach((attachment) => {
-        userContent.push({
-          type: "image",
-          image: attachmentToDataUrl(attachment),
-        });
-      });
-    }
 
     acc[workspaceId].messages.push(
       {
