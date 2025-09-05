@@ -55,17 +55,33 @@ class AnthropicProvider extends Provider {
           // For array content, we need special handling for tool use sequences
           if (msg.content.some((item) => item.type === "tool_use")) {
             // If this is a tool_use message, we only need the tool_use part to be valid
-            return msg.content.some(
+            const hasValidToolUse = msg.content.some(
               (item) => item.type === "tool_use" && item.name && item.id
             );
+
+            // Ensure there's at least one valid text content if tool_use exists
+            const hasValidText = msg.content.some(
+              (item) =>
+                item.type === "text" && item.text && item.text.trim().length > 0
+            );
+
+            return hasValidToolUse && hasValidText;
           }
 
-          // For other array content, ensure each item has required fields
+          // For other array content, ensure each item has required fields and is non-empty
           return msg.content.every((item) => {
-            if (item.type === "text")
+            if (item.type === "text") {
               return item.text && item.text.trim().length > 0;
-            if (item.type === "tool_result")
-              return item.tool_use_id && item.content;
+            }
+            if (item.type === "tool_result") {
+              return (
+                item.tool_use_id &&
+                item.content &&
+                (typeof item.content === "string"
+                  ? item.content.trim().length > 0
+                  : JSON.stringify(item.content).length > 2)
+              );
+            }
             return false;
           });
         }
@@ -73,6 +89,23 @@ class AnthropicProvider extends Provider {
       })
       .map((msg) => {
         const { role, content } = msg;
+        // For array content, ensure we have a valid text message
+        if (
+          Array.isArray(content) &&
+          content.some((item) => item.type === "tool_use")
+        ) {
+          const textContent = content.find((item) => item.type === "text");
+          if (
+            !textContent ||
+            !textContent.text ||
+            !textContent.text.trim().length
+          ) {
+            content.unshift({
+              type: "text",
+              text: "I'll use a tool to help answer this question.",
+            });
+          }
+        }
         return { role, content };
       });
   }
@@ -84,27 +117,27 @@ class AnthropicProvider extends Provider {
     [...messages].forEach((msg, i) => {
       if (msg.role !== "function") return normalized.push(msg);
 
-      // If the last message is a role "function" this is our special aibitat message node.
-      // and we need to remove it from the array of messages.
-      // Since Anthropic needs to have the tool call resolved, we look at the previous chat to "function"
-      // and go through its content "thought" from ~ln:143 and get the tool_call id so we can resolve
-      // this tool call properly.
       const functionCompletion = msg;
       const toolCallId = messages[i - 1]?.content?.find(
         (msg) => msg.type === "tool_use"
       )?.id;
 
-      // Append the Anthropic acceptable node to the message chain so function can resolve.
-      normalized.push({
-        role: "user",
-        content: [
-          {
-            type: "tool_result",
-            tool_use_id: toolCallId,
-            content: functionCompletion.content,
-          },
-        ],
-      });
+      // Skip if we can't find a matching tool_use
+      if (!toolCallId) return;
+
+      // Only add if we have actual content
+      if (functionCompletion.content) {
+        normalized.push({
+          role: "user",
+          content: [
+            {
+              type: "tool_result",
+              tool_use_id: toolCallId,
+              content: functionCompletion.content,
+            },
+          ],
+        });
+      }
     });
     return normalized;
   }
@@ -225,7 +258,7 @@ class AnthropicProvider extends Provider {
         }
       }
 
-      if (!!result.functionCall) {
+      if (result.functionCall) {
         result.functionCall.arguments = safeJsonParse(
           result.functionCall.arguments,
           {}
