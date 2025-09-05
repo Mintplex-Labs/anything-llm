@@ -1171,7 +1171,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const answers = {
           "grounding_data": ragData,
-          "answer_specification": answerModePrompt,
+          "answer_specification": answer_mode,
           "user_query": message
         };
         const main_llm_query = JSON.stringify(answers);
@@ -1347,27 +1347,11 @@ async function streamChatWithRelatedQuestions({
 
   if (completeText?.length > 0) {
     // Save the chat to database
-    const { chat } = await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message_db_save,
-      response: {
-        text: completeText,
-        sources,
-        type: chatMode,
-        metrics,
-        attachments,
-        bestReferences,
-        engine_sources: engine_sources,
-      },
-      threadId: thread?.id || null,
-      apiSessionId: null,
-      user,
-    });
-
+    let relatedQuestions = [];
     try {
       // Generate related questions after completion
       console.log("Generating related questions...");
-      const relatedQuestions = await generateAllRelatedQuestions(message_db_save, completeText);
+      relatedQuestions = await generateAllRelatedQuestions(message_db_save, completeText);
       
       // Send related questions in a separate chunk
       writeResponseChunk(response, {
@@ -1396,6 +1380,23 @@ async function streamChatWithRelatedQuestions({
         bestReferences,
       });
     }
+    const { chat } = await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message_db_save,
+      response: {
+        text: completeText,
+        sources,
+        type: chatMode,
+        metrics,
+        attachments,
+        bestReferences,
+        engine_sources: engine_sources,
+        related_questions: relatedQuestions,
+      },
+      threadId: thread?.id || null,
+      apiSessionId: null,
+      user,
+    });
 
     // Final chunk to close the stream
     writeResponseChunk(response, {

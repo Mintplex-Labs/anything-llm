@@ -159,6 +159,7 @@ function convertToChatHistory(history = []) {
         metrics: data?.metrics || {},
         bestReferences: data?.bestReferences || {},
         engine_sources: data?.engine_sources || {},
+        related_questions: data?.related_questions || [],
       },
     ]);
   }
