@@ -137,6 +137,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
       return new AnthropicLLM(embedder, model);
+    case "burncloud":
+      const { BurnCloudLLM } = require("../AiProviders/burncloud");
+      return new BurnCloudLLM(embedder, model);
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
       return new GeminiLLM(embedder, model);
@@ -287,6 +290,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
       return AnthropicLLM;
+    case "burncloud":
+      const { BurnCloudLLM } = require("../AiProviders/burncloud");
+      return BurnCloudLLM;
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
       return GeminiLLM;
