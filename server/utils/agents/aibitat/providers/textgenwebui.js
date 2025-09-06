@@ -18,7 +18,7 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     this._client = client;
-    this.model = null; // text-web-gen-ui does not have a model pref.
+    this.model = "text-generation-webui"; // text-web-gen-ui does not have a model pref, but we need a placeholder
     this.verbose = true;
   }
 

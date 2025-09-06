@@ -34,7 +34,7 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return true;
+    return false;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

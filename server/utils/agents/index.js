@@ -249,7 +249,7 @@ class AgentHandler {
       case "perplexity":
         return process.env.PERPLEXITY_MODEL_PREF ?? "sonar-small-online";
       case "textgenwebui":
-        return null;
+        return "text-generation-webui";
       case "bedrock":
         return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
       case "fireworksai":

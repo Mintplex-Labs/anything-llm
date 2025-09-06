@@ -20,7 +20,7 @@ class AzureOpenAiProvider extends Provider {
   }
 
   get supportsAgentStreaming() {
-    return true;
+    return false;
   }
 
   /**

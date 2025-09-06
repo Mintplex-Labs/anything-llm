@@ -102,7 +102,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost: 0,
       };
     } catch (error) {
