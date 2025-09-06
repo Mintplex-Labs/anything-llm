@@ -18,6 +18,11 @@ class AzureOpenAiProvider extends Provider {
     this.model = config.model ?? process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
+
+  get supportsAgentStreaming() {
+    return false;
+  }
+
   /**
    * Create a completion based on the received messages.
    *
@@ -63,7 +68,7 @@ class AzureOpenAiProvider extends Provider {
 
         // console.log(completion, { functionArgs })
         return {
-          result: null,
+          textResponse: null,
           functionCall: {
             name: completion.function_call.name,
             arguments: functionArgs,
@@ -73,7 +78,7 @@ class AzureOpenAiProvider extends Provider {
       }
 
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost,
       };
     } catch (error) {
