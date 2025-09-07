@@ -185,6 +185,10 @@ class AgentHandler {
         if (!process.env.PPIO_API_KEY)
           throw new Error("PPIO API Key must be provided to use agents.");
         break;
+      case "aimlapi":
+        if (!process.env.AIML_LLM_API_KEY)
+          throw new Error("AI/ML API key must be provided to use agents.");
+        break;
       case "gemini":
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
@@ -272,6 +276,8 @@ class AgentHandler {
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+      case "aimlapi":
+        return process.env.AIML_MODEL_PREF ?? "gpt-3.5-turbo";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
       default:

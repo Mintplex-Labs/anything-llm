@@ -32,6 +32,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import AimlApiLogo from "@/media/llmprovider/aimlapi.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 
 import PreLoader from "@/components/Preloader";
@@ -62,6 +63,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import AimlApiOptions from "@/components/LLMSelection/AimlApiOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -264,6 +266,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
+  },
+  {
+    name: "AI/ML API",
+    value: "aimlapi",
+    logo: AimlApiLogo,
+    options: (settings) => <AimlApiOptions settings={settings} />,
+    description: "Access 300+ AI models with enterprise uptime.",
+    requiredConfig: ["AimlLlmApiKey"],
   },
   {
     name: "PPIO",
