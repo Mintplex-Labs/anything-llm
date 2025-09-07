@@ -704,6 +704,15 @@ const KEY_MAPPING = {
     envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  // SubModel Options
+  SubModelKey: {
+    envKey: "SUBMODEL_INSTAGEN_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  SubModelModelPref: {
+    envKey: "SUBMODEL_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -813,6 +822,7 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "submodel",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

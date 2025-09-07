@@ -57,6 +57,7 @@
     "Weaviate",
     "XAILLM",
     "Zilliz"
+    "SubModel",
   ],
   "eslint.experimental.useFlatConfig": true,
   "docker.languageserver.formatter.ignoreMultilineInstructions": true

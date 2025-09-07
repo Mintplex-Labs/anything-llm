@@ -100,6 +100,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [xAI](https://x.ai/)
 - [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
+- [SubModel](https://submodel.ai)
 
 **支持的嵌入模型：**
 

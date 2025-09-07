@@ -26,6 +26,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import SubModelLogo from "@/media/llmprovider/submodel.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 
@@ -55,6 +56,7 @@ import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import SubModelLLMOptions from "@/components/LLMSelection/SubModelLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 
@@ -271,6 +273,13 @@ const LLMS = [
     logo: MoonshotAiLogo,
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
+  },
+  {
+    name: "SubModel",
+    value: "submodel",
+    logo: SubModelLogo,
+    options: (settings) => <SubModelLLMOptions settings={settings} />,
+    description: "Powerful AI Cloud for Startups.",
   },
 ];
 
