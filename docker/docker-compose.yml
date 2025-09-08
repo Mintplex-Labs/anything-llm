@@ -15,7 +15,7 @@ services:
         ARG_GID: ${GID:-1000}
     # cap_add: [SYS_ADMIN]  # GEREKSİZ, kaldırman iyi olur
     volumes:
-      - "./.env:/app/server/.env:ro"
+      # - "./.env:/app/server/.env:ro"
       - "storage:/app/server/storage"
       - "collector_hot:/app/collector/hotdir"
       - "collector_out:/app/collector/outputs"
