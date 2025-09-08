@@ -212,6 +212,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
+    case "flowiseai":
+      const { FlowiseLLM } = require("../AiProviders/flowise");
+      return new FlowiseLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
