@@ -193,6 +193,11 @@ export default {
           '"Segoe UI Emoji"',
           '"Segoe UI Symbol"',
           '"Noto Color Emoji"'
+        ],
+        manrope: [
+          "Manrope",
+          '"Noto Sans"',
+          "sans-serif"
         ]
       },
       animation: {
@@ -200,7 +205,10 @@ export default {
         "pulse-glow": "pulse-glow 1.5s infinite",
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-up': 'slide-up 0.4s ease-out forwards',
-        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
+        'float-purple': 'float-purple 8s ease-in-out infinite',
+        'float-pink': 'float-pink 6s ease-in-out infinite reverse',
+        'float-blue': 'float-blue 10s ease-in-out infinite'
       },
       keyframes: {
         sweep: {
@@ -246,6 +254,22 @@ export default {
         'bounce-subtle': {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-2px)' }
+        },
+        'float-purple': {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(-30px, -30px) scale(1.1)' },
+          '66%': { transform: 'translate(30px, -15px) scale(0.9)' }
+        },
+        'float-pink': {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(20px, 20px) scale(0.95)' },
+          '66%': { transform: 'translate(-25px, 35px) scale(1.05)' }
+        },
+        'float-blue': {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '25%': { transform: 'translate(-20px, -20px) scale(1.1)' },
+          '50%': { transform: 'translate(25px, -10px) scale(0.9)' },
+          '75%': { transform: 'translate(-15px, 25px) scale(1.05)' }
         }
       }
     }
