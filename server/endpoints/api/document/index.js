@@ -98,7 +98,8 @@ function apiDocumentEndpoints(app) {
         const { originalname } = request.file;
         const { addToWorkspaces = "", metadata = {} } = reqBody(request);
 
-        const metadataObj = safeJsonParse(metadata, {});
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
 
         const processingOnline = await Collector.online();
 
@@ -249,7 +250,8 @@ function apiDocumentEndpoints(app) {
         if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
 
-        const metadataObj = safeJsonParse(metadata, {});
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
 
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
@@ -401,7 +403,8 @@ function apiDocumentEndpoints(app) {
           scraperHeaders = {},
           metadata = {},
         } = reqBody(request);
-        const metadataObj = safeJsonParse(metadata, {});
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
