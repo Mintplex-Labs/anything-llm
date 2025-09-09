@@ -31,132 +31,87 @@ class AnthropicProvider extends Provider {
     return true;
   }
 
-  // For Anthropic we will always need to ensure the message sequence is role,content
-  // as we can attach any data to message nodes and this keeps the message property
-  // sent to the API always in spec.
-  #sanitize(chats) {
-    const sanitized = [...chats];
-
-    // If the first message is not a USER, Anthropic will abort so keep shifting the
-    // message array until that is the case.
-    while (sanitized.length > 0 && sanitized[0].role !== "user")
-      sanitized.shift();
-
-    return sanitized
-      .filter((msg) => {
-        // Filter out messages with empty content
-        if (!msg || !msg.content) return false;
-
-        if (typeof msg.content === "string") {
-          return msg.content.trim().length > 0;
-        }
-
-        if (Array.isArray(msg.content)) {
-          // For array content, we need special handling for tool use sequences
-          if (msg.content.some((item) => item.type === "tool_use")) {
-            // If this is a tool_use message, we only need the tool_use part to be valid
-            const hasValidToolUse = msg.content.some(
-              (item) => item.type === "tool_use" && item.name && item.id
-            );
-
-            // Ensure there's at least one valid text content if tool_use exists
-            const hasValidText = msg.content.some(
-              (item) =>
-                item.type === "text" && item.text && item.text.trim().length > 0
-            );
-
-            return hasValidToolUse && hasValidText;
-          }
-
-          // For other array content, ensure each item has required fields and is non-empty
-          return msg.content.every((item) => {
-            if (item.type === "text") {
-              return item.text && item.text.trim().length > 0;
-            }
-            if (item.type === "tool_result") {
-              return (
-                item.tool_use_id &&
-                item.content &&
-                (typeof item.content === "string"
-                  ? item.content.trim().length > 0
-                  : JSON.stringify(item.content).length > 2)
-              );
-            }
-            return false;
-          });
-        }
-        return false;
-      })
-      .map((msg) => {
-        const { role, content } = msg;
-        // For array content, ensure we have a valid text message
-        if (
-          Array.isArray(content) &&
-          content.some((item) => item.type === "tool_use")
-        ) {
-          const textContent = content.find((item) => item.type === "text");
-          if (
-            !textContent ||
-            !textContent.text ||
-            !textContent.text.trim().length
-          ) {
-            content.unshift({
-              type: "text",
-              text: "I'll use a tool to help answer this question.",
-            });
-          }
-        }
-        return { role, content };
-      });
-  }
-
-  #normalizeChats(messages = []) {
-    if (!messages.length) return messages;
-    const normalized = [];
-
-    [...messages].forEach((msg, i) => {
-      if (msg.role !== "function") return normalized.push(msg);
-
-      const functionCompletion = msg;
-      const toolCallId = messages[i - 1]?.content?.find(
-        (msg) => msg.type === "tool_use"
-      )?.id;
-
-      // Skip if we can't find a matching tool_use
-      if (!toolCallId) return;
-
-      // Only add if we have actual content
-      if (functionCompletion.content) {
-        normalized.push({
-          role: "user",
-          content: [
-            {
-              type: "tool_result",
-              tool_use_id: toolCallId,
-              content: functionCompletion.content,
-            },
-          ],
-        });
-      }
-    });
-    return normalized;
-  }
-
-  // Anthropic handles system message as a property, so here we split the system message prompt
-  // from all the chats and then normalize them so they will be useable in case of tool_calls or general chat.
-  #parseSystemPrompt(messages = []) {
-    const chats = [];
+  #prepareMessages(messages = []) {
+    // Extract system prompt and filter out any system messages from the main chat.
     let systemPrompt =
       "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
-    for (const msg of messages) {
+    const chatMessages = messages.filter((msg) => {
       if (msg.role === "system") {
         systemPrompt = msg.content;
-        continue;
+        return false;
       }
-      chats.push(msg);
+      return true;
+    });
+
+    const processedMessages = chatMessages.reduce(
+      (processedMessages, message, index) => {
+        // Normalize `function` role to Anthropic's `tool_result` format.
+        if (message.role === "function") {
+          const prevMessage = chatMessages[index - 1];
+          if (prevMessage?.role === "assistant") {
+            const toolUse = prevMessage.content.find(
+              (item) => item.type === "tool_use"
+            );
+            if (toolUse) {
+              processedMessages.push({
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: toolUse.id,
+                    content: message.content
+                      ? String(message.content)
+                      : "Tool executed successfully.",
+                  },
+                ],
+              });
+            }
+          }
+          return processedMessages;
+        }
+
+        // Ensure message content is in array format and filter out empty text blocks.
+        let content = Array.isArray(message.content)
+          ? message.content
+          : [{ type: "text", text: message.content }];
+        content = content.filter(
+          (item) =>
+            item.type !== "text" || (item.text && item.text.trim().length > 0)
+        );
+
+        if (content.length === 0) return processedMessages;
+
+        // Add a text block to assistant messages with tool use if one doesn't exist.
+        if (
+          message.role === "assistant" &&
+          content.some((item) => item.type === "tool_use") &&
+          !content.some((item) => item.type === "text")
+        ) {
+          content.unshift({
+            type: "text",
+            text: "I'll use a tool to help answer this question.",
+          });
+        }
+
+        const lastMessage = processedMessages[processedMessages.length - 1];
+        if (lastMessage && lastMessage.role === message.role) {
+          // Merge consecutive messages from the same role.
+          lastMessage.content.push(...content);
+        } else {
+          processedMessages.push({ ...message, content });
+        }
+
+        return processedMessages;
+      },
+      []
+    );
+
+    // The first message must be from the user.
+    if (processedMessages.length > 0 && processedMessages[0].role !== "user") {
+      processedMessages.shift();
     }
 
-    return [systemPrompt, this.#normalizeChats(chats)];
+    return [systemPrompt, processedMessages];
   }
 
   // Anthropic does not use the regular schema for functions so here we need to ensure it is in there specific format
@@ -189,13 +144,13 @@ class AnthropicProvider extends Provider {
   async stream(messages, functions = [], eventHandler = null) {
     try {
       const msgUUID = v4();
-      const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
+      const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
         {
           model: this.model,
           max_tokens: 4096,
           system: systemPrompt,
-          messages: this.#sanitize(chats),
+          messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
@@ -316,13 +271,13 @@ class AnthropicProvider extends Provider {
    */
   async complete(messages, functions = []) {
     try {
-      const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
+      const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
         {
           model: this.model,
           max_tokens: 4096,
           system: systemPrompt,
-          messages: this.#sanitize(chats),
+          messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
