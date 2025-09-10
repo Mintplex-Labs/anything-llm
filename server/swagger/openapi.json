@@ -3364,7 +3364,7 @@
       }
     },
     "/v1/workspace/{slug}/thread/{threadSlug}/chat/{chatId}/comment/{userPseudoId}": {
-      "put": {
+      "patch": {
         "description": "",
         "parameters": [
           {
