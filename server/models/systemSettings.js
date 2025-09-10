@@ -427,6 +427,8 @@ const SystemSettings = {
       ChromaEndpoint: process.env.CHROMA_ENDPOINT,
       ChromaApiHeader: process.env.CHROMA_API_HEADER,
       ChromaApiKey: !!process.env.CHROMA_API_KEY,
+      ChromaTenant: process.env.CHROMA_TENANT,
+      ChromaDatabaseName: process.env.CHROMA_DATABASE_NAME,
 
       // ChromaCloud DB Keys
       ChromaCloudApiKey: !!process.env.CHROMACLOUD_API_KEY,
@@ -465,6 +467,7 @@ const SystemSettings = {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
       OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
+      OpenAiMaxTokens: process.env.OPEN_AI_MAX_TOKENS,
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
