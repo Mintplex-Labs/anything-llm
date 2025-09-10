@@ -672,7 +672,7 @@ function apiWorkspaceThreadEndpoints(app) {
   )
 
   // add chat comment
-  app.put(
+  app.patch(
     "/v1/workspace/:slug/thread/:threadSlug/chat/:chatId/comment/:userPseudoId",
     [validApiKey],
     async (request, response) => {
