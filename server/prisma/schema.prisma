@@ -194,6 +194,7 @@ model workspace_chats {
   feedbackScore  Boolean?
   users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   share_uuid    String?
+  comment        String?
 }
 
 model workspace_agent_invocations {
