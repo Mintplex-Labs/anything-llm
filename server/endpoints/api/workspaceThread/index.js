@@ -660,9 +660,77 @@ function apiWorkspaceThreadEndpoints(app) {
         });
         return;
       }
-      const share_uuid = uuidv4();
-      await WorkspaceChats._update(chatIdNumber, { share_uuid: share_uuid });
-      response.status(200).json({ share_uuid: share_uuid });
+      if (!chat.share_uuid) {
+        const share_uuid = uuidv4();
+        await WorkspaceChats._update(chatIdNumber, { share_uuid: share_uuid });
+        response.status(200).json({ share_uuid: share_uuid });
+      }
+      else {
+        response.status(200).json({ share_uuid: chat.share_uuid });
+      }
+    }
+  )
+
+  // add chat comment
+  app.put(
+    "/v1/workspace/:slug/thread/:threadSlug/chat/:chatId/comment/:userPseudoId",
+    [validApiKey],
+    async (request, response) => {
+      const { slug, threadSlug, chatId, userPseudoId } = request.params;
+      const { comment } = reqBody(request);
+      if (!userPseudoId) {
+        response.status(403).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `No user pseudo ID provided.`,
+        });
+        return;
+      }
+      const thread = await WorkspaceThread.get({ slug: threadSlug, user_pseudo_id: userPseudoId });
+      if (!thread) {
+        response.status(400).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `Thread ${threadSlug} is not valid.`,
+        });
+        return;
+      }
+      const chatIdNumber = Number(chatId);
+      const chat = await WorkspaceChats.get({ id: chatIdNumber });
+      if (!chat) {
+        response.status(400).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `Chat ${chatId} is not valid.`,
+        });
+        return;
+      }
+      try{
+        await WorkspaceChats._update(chatIdNumber, { comment: comment });
+        const chatUpdated = await WorkspaceChats.get({ id: chatIdNumber });
+        response.status(200).json({ chat: chatUpdated });
+      }
+      catch (error) {
+        console.error(error);
+        response.status(500).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `Failed to update chat ${chatId}: ${error.message}`,
+        });
+      }
+
     }
   )
 
