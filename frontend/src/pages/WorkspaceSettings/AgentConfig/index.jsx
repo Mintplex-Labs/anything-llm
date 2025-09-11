@@ -2,13 +2,14 @@ import System from "@/models/system";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import paths from "@/utils/paths";
 import useUser from "@/hooks/useUser";
+import { BooleanInput } from "@/pages/GeneralSettings/ChatEmbedWidgets/EmbedConfigs/NewEmbedModal/index.jsx";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const { user } = useUser();
@@ -54,6 +55,14 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
       data.workspace[key] = castToType(key, value);
     }
 
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        data.workspace,
+        "useWorkspacePromptForAgents"
+      )
+    ) {
+      data.workspace.useWorkspacePromptForAgents = false; // If not present in the form data (checkbox toggled off) - set false
+    }
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data.workspace
@@ -85,6 +94,12 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           settings={settings}
           workspace={workspace}
           setHasChanges={setHasChanges}
+        />
+        <BooleanInput
+          name="useWorkspacePromptForAgents"
+          title="Use Workspace System Prompt"
+          hint="Use System Prompt set in this workspace Chat Settings for @agent requests as well."
+          defaultValue={workspace.useWorkspacePromptForAgents}
         />
         {(!user || user?.role === "admin") && (
           <>
