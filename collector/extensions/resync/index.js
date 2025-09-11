@@ -144,10 +144,43 @@ async function resyncDrupalWiki({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific Azure DevOps file via its chunkSource.
+ * Returns the content as a text string of the page in question and only that page.
+ * @param {object} data - metadata from document (eg: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncAzureDevOps({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    // Azure DevOps file data is `payload` encrypted (might contain PAT). So we need to expand its
+    // encrypted payload back into query params so we can reFetch the page with same access token/params.
+    const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const { fetchAzureDevOpsFile } = require("../../utils/extensions/RepoLoader/AzureDevOpsRepo");
+    const { success, reason, content } = await fetchAzureDevOpsFile({
+      repoUrl: `https:${source.pathname}`, // need to add back the real protocol
+      branch: source.searchParams.get('branch'),
+      accessToken: source.searchParams.get('pat'),
+      sourceFilePath: source.searchParams.get('path'),
+    });
+
+    if (!success) throw new Error(`Failed to sync Azure DevOps file content. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
   github: resyncGithub,
+  azuredevops: resyncAzureDevOps,
   drupalwiki: resyncDrupalWiki,
 }

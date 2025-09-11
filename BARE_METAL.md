@@ -25,12 +25,19 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 3. `cp server/.env.example server/.env` to create the basic ENV file for where instance settings will be read from on service start.
 
-4. Ensure that the `server/.env` file has _at least_ these keys to start. These values will persist and this file will be automatically written and managed after your first successful boot.
+4. `cp collector/.env.example collector/.env` to create the basic ENV file for the collector service.
+
+5. Ensure that the `server/.env` file has _at least_ these keys to start. These values will persist and this file will be automatically written and managed after your first successful boot.
 ```
 STORAGE_DIR="/your/absolute/path/to/server/storage"
 ```
 
-5. Edit the `frontend/.env` file for the `VITE_BASE_API` to now be set to `/api`. This is documented in the .env for which one you should use.
+6. Ensure that the `collector/.env` file has the same `STORAGE_DIR` value as the server:
+```
+STORAGE_DIR="/your/absolute/path/to/server/storage"
+```
+
+7. Edit the `frontend/.env` file for the `VITE_BASE_API` to now be set to `/api`. This is documented in the .env for which one you should use.
 ```
 # VITE_API_BASE='http://localhost:3001/api' # Use this URL when developing locally
 # VITE_API_BASE="https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api" # for GitHub Codespaces
@@ -54,10 +61,10 @@ cd server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 ```
 
 4. Boot the server in production
-`cd server && NODE_ENV=production node index.js &`
+`cd server && SET NODE_ENV=production&& node index.js &`
 
 5. Boot the collection in another process
-`cd collector && NODE_ENV=production node index.js &`
+`cd collector && SET NODE_ENV=production&& node index.js &`
 
 AnythingLLM should now be running on `http://localhost:3001`!
 

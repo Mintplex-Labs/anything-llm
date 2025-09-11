@@ -1,8 +1,8 @@
 /**
  * Dynamically load the correct repository loader from a specific platform
  * by default will return GitHub.
- * @param {('github'|'gitlab')} platform
- * @returns {import("./GithubRepo/RepoLoader")|import("./GitlabRepo/RepoLoader")} the repo loader class for provider
+ * @param {('github'|'gitlab'|'azuredevops')} platform
+ * @returns {import("./GithubRepo/RepoLoader")|import("./GitlabRepo/RepoLoader")|import("./AzureDevOpsRepo/RepoLoader")} the repo loader class for provider
  */
 function resolveRepoLoader(platform = "github") {
   switch (platform) {
@@ -12,6 +12,9 @@ function resolveRepoLoader(platform = "github") {
     case "gitlab":
       console.log(`Loading GitLab RepoLoader...`);
       return require("./GitlabRepo/RepoLoader");
+    case "azuredevops":
+      console.log(`Loading Azure DevOps RepoLoader...`);
+      return require("./AzureDevOpsRepo/RepoLoader");
     default:
       console.log(`Loading GitHub RepoLoader...`);
       return require("./GithubRepo/RepoLoader");
@@ -19,10 +22,25 @@ function resolveRepoLoader(platform = "github") {
 }
 
 /**
+ * Dynamically load the correct organization loader from a specific platform
+ * @param {('azuredevops')} platform
+ * @returns {import("./AzureDevOpsRepo/OrgLoader")} the org loader class for provider
+ */
+function resolveOrgLoader(platform = "azuredevops") {
+  switch (platform) {
+    case "azuredevops":
+      console.log(`Loading Azure DevOps OrgLoader...`);
+      return require("./AzureDevOpsRepo/OrgLoader");
+    default:
+      throw new Error(`Organization loading not supported for platform: ${platform}`);
+  }
+}
+
+/**
  * Dynamically load the correct repository loader function from a specific platform
  * by default will return Github.
- * @param {('github'|'gitlab')} platform
- * @returns {import("./GithubRepo")['fetchGithubFile'] | import("./GitlabRepo")['fetchGitlabFile']} the repo loader class for provider
+ * @param {('github'|'gitlab'|'azuredevops')} platform
+ * @returns {import("./GithubRepo")['fetchGithubFile'] | import("./GitlabRepo")['fetchGitlabFile'] | import("./AzureDevOpsRepo")['fetchAzureDevOpsFile']} the repo loader class for provider
  */
 function resolveRepoLoaderFunction(platform = "github") {
   switch (platform) {
@@ -32,10 +50,33 @@ function resolveRepoLoaderFunction(platform = "github") {
     case "gitlab":
       console.log(`Loading GitLab loader function...`);
       return require("./GitlabRepo").loadGitlabRepo;
+    case "azuredevops":
+      console.log(`Loading Azure DevOps loader function...`);
+      return require("./AzureDevOpsRepo").loadAzureDevOpsRepo;
     default:
       console.log(`Loading GitHub loader function...`);
       return require("./GithubRepo").loadGithubRepo;
   }
 }
 
-module.exports = { resolveRepoLoader, resolveRepoLoaderFunction };
+/**
+ * Dynamically load the correct organization loader function from a specific platform
+ * @param {('azuredevops')} platform
+ * @returns {import("./AzureDevOpsRepo")['loadAzureDevOpsOrganization']} the org loader function for provider
+ */
+function resolveOrgLoaderFunction(platform = "azuredevops") {
+  switch (platform) {
+    case "azuredevops":
+      console.log(`Loading Azure DevOps organization loader function...`);
+      return require("./AzureDevOpsRepo").loadAzureDevOpsOrganization;
+    default:
+      throw new Error(`Organization loading not supported for platform: ${platform}`);
+  }
+}
+
+module.exports = { 
+  resolveRepoLoader, 
+  resolveRepoLoaderFunction, 
+  resolveOrgLoader,
+  resolveOrgLoaderFunction,
+};

@@ -1,6 +1,6 @@
 const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
-const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
+const { resolveRepoLoader, resolveRepoLoaderFunction, resolveOrgLoaderFunction } = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
@@ -36,6 +36,34 @@ function extensions(app) {
       try {
         const loadRepo = resolveRepoLoaderFunction(request.params.repo_platform);
         const { success, reason, data } = await loadRepo(
+          reqBody(request),
+          response,
+        );
+        response.status(200).json({
+          success,
+          reason,
+          data,
+        });
+      } catch (e) {
+        console.error(e);
+        response.status(200).json({
+          success: false,
+          reason: e.message || "A processing error occurred.",
+          data: {},
+        });
+      }
+      return;
+    }
+  );
+
+  // Load entire organization with all projects and repositories
+  app.post(
+    "/ext/:repo_platform-organization",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const loadOrg = resolveOrgLoaderFunction(request.params.repo_platform);
+        const { success, reason, data } = await loadOrg(
           reqBody(request),
           response,
         );

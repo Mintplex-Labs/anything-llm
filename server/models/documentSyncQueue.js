@@ -4,7 +4,7 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab'|'azuredevops')} validFileType
  */
 
 const DocumentSyncQueue = {
@@ -16,6 +16,7 @@ const DocumentSyncQueue = {
     "confluence",
     "github",
     "gitlab",
+    "azuredevops",
     "drupalwiki",
   ],
   defaultStaleAfter: 604800000,
@@ -61,6 +62,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
     if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
+    if (chunkSource.startsWith("azuredevops://")) return true; // If is an Azure DevOps file reference
     if (chunkSource.startsWith("drupalwiki://")) return true; // If is a DrupalWiki document link
     return false;
   },

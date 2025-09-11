@@ -30,7 +30,6 @@
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs",
     "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && yarn lint && yarn verify:translations"
   },
-  "private": false,
   "devDependencies": {
     "concurrently": "^9.1.2",
     "jest": "^29.7.0"

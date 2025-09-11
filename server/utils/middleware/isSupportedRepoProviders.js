@@ -1,5 +1,5 @@
 // Middleware to validate that a repo provider URL is supported.
-const REPO_PLATFORMS = ["github", "gitlab"];
+const REPO_PLATFORMS = ["github", "gitlab", "azuredevops"];
 
 function isSupportedRepoProvider(request, response, next) {
   const { repo_platform = null } = request.params;
