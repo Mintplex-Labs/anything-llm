@@ -360,3 +360,12 @@ model prompt_history {
 
   @@index([workspaceId])
 }
+
+
+model rag_documents {
+  id                Int      @id @default(autoincrement())
+  firestoreDocId    String   @unique
+  timesRetrieved    Int      @default(0)
+  timesLmmUsed      Int      @default(0)
+  createdAt         DateTime @default(now())
+}

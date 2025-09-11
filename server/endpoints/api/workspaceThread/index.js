@@ -19,7 +19,7 @@ const { getEngineResponse, pareseRelatedQuestions, generateRelatedQuestions, gen
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 const { performance } = require('perf_hooks');
 const { serve } = require("swagger-ui-express");
-const { fetchAndProcessRAGData } = require("../../../aiapplications_utils/docRag");
+const { fetchAndProcessRAGData, countDocUsageInModelResponse, updateRagDocumentsDb } = require("../../../aiapplications_utils/docRag");
 const { recentChatHistory, chatPrompt } = require("../../../utils/chats/index");
 const { getLLMProvider } = require("../../../utils/helpers");
 const { getVectorDbClass } = require("../../../utils/helpers");
@@ -1228,7 +1228,8 @@ function apiWorkspaceThreadEndpoints(app) {
             citationsMapping[idx] = {
               title: source.title,
               summary: source.summary,
-              url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl
+              url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl,
+              firestore_doc_id: source.id
             }
             for (const chunk of source.chunks) {
               ragData[`source_${idx}_chunks`][`chunkId_${chunk.id}`] = chunk.chunkText;
@@ -1448,6 +1449,8 @@ async function streamChatWithRelatedQuestions({
         bestReferences,
       });
     }
+    engine_sources = countDocUsageInModelResponse(completeText, engine_sources);
+    await updateRagDocumentsDb(engine_sources);
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message_db_save,
