@@ -203,6 +203,12 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
+      case "submodel":
+        if (!process.env.SUBMODEL_INSTAGEN_ACCESS_KEY)
+          throw new Error(
+            "SubModel InstaGen Access Key must be provided to use agents."
+          );
+        break;
 
       default:
         throw new Error(
@@ -274,6 +280,10 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
+      case "submodel":
+        return (
+          process.env.SUBMODEL_MODEL_PREF ?? "deepseek-ai/DeepSeek-V3-0324"
+        );
       default:
         return null;
     }

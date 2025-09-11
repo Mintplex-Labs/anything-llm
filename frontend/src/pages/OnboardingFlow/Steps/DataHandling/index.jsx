@@ -36,6 +36,7 @@ import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import SubModelLogo from "@/media/llmprovider/submodel.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
@@ -251,6 +252,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Moonshot AI",
     ],
     logo: MoonshotAiLogo,
+  },
+  submodel: {
+    name: "SubModel",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to SubModel",
+    ],
+    logo: SubModelLogo,
   },
 };
 

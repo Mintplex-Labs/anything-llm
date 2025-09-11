@@ -192,6 +192,14 @@ class Provider {
           apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
           ...config,
         });
+      case "submodel":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://llm.submodela.ai/v1",
+          },
+          apiKey: process.env.SUBMODEL_INSTAGEN_ACCESS_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
