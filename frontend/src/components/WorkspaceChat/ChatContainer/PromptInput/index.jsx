@@ -227,6 +227,7 @@ export default function PromptInput({
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd =
           start + pasteText.length;
+        adjustTextArea({ target: textarea });
       }, 0);
     }
     return;
@@ -280,7 +281,7 @@ export default function PromptInput({
                 }}
                 value={promptInput}
                 spellCheck={Appearance.get("enableSpellCheck")}
-                className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
+                className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow mb-1 ${textSizeClass}`}
                 placeholder={t("chat_window.send_message")}
               />
               {isStreaming ? (
