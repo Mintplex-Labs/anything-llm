@@ -265,7 +265,7 @@ class AgentHandler {
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
-        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.5-flash";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
       default:
