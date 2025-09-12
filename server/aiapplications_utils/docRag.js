@@ -50,11 +50,10 @@ async function updateRagDocumentsDb(engine_sources) {
   for (const key of Object.keys(engine_sources)) {
     const value = engine_sources[key];
     if (await RagDocuments.exists(value["firestore_doc_id"])){
-      await RagDocuments.incrementTimesRetrieved(value["firestore_doc_id"], 1);
-      await RagDocuments.incrementTimesLmmUsed(value["firestore_doc_id"], value["count"]);
+      await RagDocuments.incrementCounters(value["firestore_doc_id"], { timesRetrieved: 1, timesLmmUsed: value["count"], usedIfRetrieved: value["count"] > 0 ? 1 : 0 });
     }
     else{
-      await RagDocuments.create(value["firestore_doc_id"], 1, value["count"]);
+      await RagDocuments.create(value["firestore_doc_id"], 1, value["count"], value["count"] > 0 ? 1 : 0);
     }
   }
 }

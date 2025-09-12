@@ -367,5 +367,6 @@ model rag_documents {
   firestoreDocId    String   @unique
   timesRetrieved    Int      @default(0)
   timesLmmUsed      Int      @default(0)
+  usedIfRetrieved   Int      @default(0)
   createdAt         DateTime @default(now())
 }
