@@ -6,15 +6,17 @@ const RagDocuments = {
    * @param {string} firestoreDocId - The Firestore document ID
    * @param {number} timesRetrieved - Initial times retrieved count (default: 0)
    * @param {number} timesLmmUsed - Initial times LMM used count (default: 0)
+   * @param {number} usedIfRetrieved - Initial used if retrieved count (default: 0)
    * @returns {Promise<object|null>} Created document or null if failed
    */
-  create: async function (firestoreDocId, timesRetrieved = 0, timesLmmUsed = 0) {
+  create: async function (firestoreDocId, timesRetrieved = 0, timesLmmUsed = 0, usedIfRetrieved = 0) {
     try {
       const document = await prisma.rag_documents.create({
         data: {
           firestoreDocId,
           timesRetrieved,
           timesLmmUsed,
+          usedIfRetrieved,
         },
       });
       return document;
@@ -106,36 +108,98 @@ const RagDocuments = {
   },
 
   /**
+   * Increment the usedIfRetrieved counter for a document
+   * @param {string} firestoreDocId - The Firestore document ID
+   * @param {number} incrementBy - Amount to increment by (default: 1)
+   * @returns {Promise<object|null>} Updated document or null if failed
+   */
+  incrementUsedIfRetrieved: async function (firestoreDocId, incrementBy = 1) {
+    try {
+      const document = await prisma.rag_documents.update({
+        where: { firestoreDocId },
+        data: {
+          usedIfRetrieved: {
+            increment: incrementBy,
+          },
+        },
+      });
+      return document;
+    } catch (error) {
+      console.error("RagDocuments.incrementUsedIfRetrieved error:", error.message);
+      return null;
+    }
+  },
+
+  /**
+   * Increment all counters for a document in a single operation
+   * @param {string} firestoreDocId - The Firestore document ID
+   * @param {object} options - Options object for increments
+   * @param {number} options.timesRetrieved - Amount to increment timesRetrieved (default: 0)
+   * @param {number} options.timesLmmUsed - Amount to increment timesLmmUsed (default: 0)
+   * @param {number} options.usedIfRetrieved - Amount to increment usedIfRetrieved (default: 0)
+   * @returns {Promise<object|null>} Updated document or null if failed
+   */
+  incrementCounters: async function (firestoreDocId, { timesRetrieved = 0, timesLmmUsed = 0, usedIfRetrieved = 0 } = {}) {
+    try {
+      const updateData = {};
+      
+      if (timesRetrieved > 0) {
+        updateData.timesRetrieved = { increment: timesRetrieved };
+      }
+      
+      if (timesLmmUsed > 0) {
+        updateData.timesLmmUsed = { increment: timesLmmUsed };
+      }
+      
+      if (usedIfRetrieved > 0) {
+        updateData.usedIfRetrieved = { increment: usedIfRetrieved };
+      }
+
+      // If no increments specified, return the document without updating
+      if (Object.keys(updateData).length === 0) {
+        return await this.get(firestoreDocId);
+      }
+
+      const document = await prisma.rag_documents.update({
+        where: { firestoreDocId },
+        data: updateData,
+      });
+      return document;
+    } catch (error) {
+      console.error("RagDocuments.incrementCounters error:", error.message);
+      return null;
+    }
+  },
+
+  /**
    * Create a document if it doesn't exist, or increment counters if it does
    * @param {string} firestoreDocId - The Firestore document ID
    * @param {object} options - Options object
    * @param {boolean} options.incrementRetrieved - Whether to increment timesRetrieved (default: false)
    * @param {boolean} options.incrementLmmUsed - Whether to increment timesLmmUsed (default: false)
+   * @param {boolean} options.incrementUsedIfRetrieved - Whether to increment usedIfRetrieved (default: false)
    * @returns {Promise<object|null>} Document record or null if failed
    */
-  upsert: async function (firestoreDocId, { incrementRetrieved = false, incrementLmmUsed = false } = {}) {
+  upsert: async function (firestoreDocId, { incrementRetrieved = false, incrementLmmUsed = false, incrementUsedIfRetrieved = false } = {}) {
     try {
       const existingDoc = await this.get(firestoreDocId);
       
       if (existingDoc) {
         // Document exists, increment counters if requested
-        let updatedDoc = existingDoc;
+        const incrementOptions = {
+          timesRetrieved: incrementRetrieved ? 1 : 0,
+          timesLmmUsed: incrementLmmUsed ? 1 : 0,
+          usedIfRetrieved: incrementUsedIfRetrieved ? 1 : 0,
+        };
         
-        if (incrementRetrieved) {
-          updatedDoc = await this.incrementTimesRetrieved(firestoreDocId);
-        }
-        
-        if (incrementLmmUsed) {
-          updatedDoc = await this.incrementTimesLmmUsed(firestoreDocId);
-        }
-        
-        return updatedDoc;
+        return await this.incrementCounters(firestoreDocId, incrementOptions);
       } else {
         // Document doesn't exist, create new one
         const initialRetrieved = incrementRetrieved ? 1 : 0;
         const initialLmmUsed = incrementLmmUsed ? 1 : 0;
+        const initialUsedIfRetrieved = incrementUsedIfRetrieved ? 1 : 0;
         
-        return await this.create(firestoreDocId, initialRetrieved, initialLmmUsed);
+        return await this.create(firestoreDocId, initialRetrieved, initialLmmUsed, initialUsedIfRetrieved);
       }
     } catch (error) {
       console.error("RagDocuments.upsert error:", error.message);
