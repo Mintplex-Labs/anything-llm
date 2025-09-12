@@ -8,7 +8,12 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-async function asTxt({ fullFilePath = "", filename = "", options = {} }) {
+async function asTxt({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");
@@ -30,11 +35,11 @@ async function asTxt({ fullFilePath = "", filename = "", options = {} }) {
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: filename,
-    docAuthor: "Unknown", // TODO: Find a better author
-    description: "Unknown", // TODO: Find a better description
-    docSource: "a text file uploaded by the user.",
-    chunkSource: "",
+    title: metadata.title || filename,
+    docAuthor: metadata.docAuthor || "Unknown",
+    description: metadata.description || "Unknown",
+    docSource: metadata.docSource || "a text file uploaded by the user.",
+    chunkSource: metadata.chunkSource || "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

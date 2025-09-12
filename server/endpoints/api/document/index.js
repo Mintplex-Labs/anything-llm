@@ -8,7 +8,7 @@ const {
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
-const { reqBody } = require("../../../utils/http");
+const { reqBody, safeJsonParse } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
@@ -29,7 +29,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
+    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding, with optional metadata.'
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
@@ -47,6 +47,11 @@ function apiDocumentEndpoints(app) {
               addToWorkspaces: {
                 type: 'string',
                 description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
+              },
+              metadata: {
+                type: 'object',
+                description: 'Key:Value pairs of metadata to attach to the document in JSON Object format.',
+                example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
               }
             },
             required: ['file']
@@ -91,7 +96,11 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
+
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
+
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -105,8 +114,10 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          metadataObj
+        );
         if (!success) {
           response
             .status(500)
@@ -151,7 +162,7 @@ function apiDocumentEndpoints(app) {
         example: 'my-folder'
       }
       #swagger.requestBody = {
-        description: 'File to be uploaded.',
+        description: 'File to be uploaded, with optional metadata.',
         required: true,
         content: {
           "multipart/form-data": {
@@ -167,6 +178,11 @@ function apiDocumentEndpoints(app) {
                 addToWorkspaces: {
                   type: 'string',
                   description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
+                },
+                metadata: {
+                  type: 'object',
+                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. ',
+                  example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
                 }
               }
             }
@@ -221,7 +237,8 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
+
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
@@ -232,6 +249,9 @@ function apiDocumentEndpoints(app) {
           throw new Error("Invalid folder name");
         if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
+
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
 
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
@@ -246,9 +266,11 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        // Process the uploaded document
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+        // Process the uploaded document with metadata
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          metadataObj
+        );
         if (!success) {
           response
             .status(500)
@@ -314,7 +336,7 @@ function apiDocumentEndpoints(app) {
     #swagger.tags = ['Documents']
     #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.',
       required: true,
       content: {
           "application/json": {
@@ -326,6 +348,12 @@ function apiDocumentEndpoints(app) {
                 "scraperHeaders": {
                   "Authorization": "Bearer token123",
                   "My-Custom-Header": "value"
+                },
+                "metadata": {
+                  "title": "Custom Title",
+                  "docAuthor": "Author Name",
+                  "description": "A brief description",
+                  "docSource": "Source of the document"
                 }
               }
             }
@@ -373,7 +401,10 @@ function apiDocumentEndpoints(app) {
           link,
           addToWorkspaces = "",
           scraperHeaders = {},
+          metadata = {},
         } = reqBody(request);
+        const metadataObj =
+          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -389,7 +420,8 @@ function apiDocumentEndpoints(app) {
 
         const { success, reason, documents } = await Collector.processLink(
           link,
-          scraperHeaders
+          scraperHeaders,
+          metadataObj
         );
         if (!success) {
           response

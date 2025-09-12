@@ -32,7 +32,7 @@ app.post(
   "/process",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { filename, options = {} } = reqBody(request);
+    const { filename, options = {}, metadata = {} } = reqBody(request);
     try {
       const targetFilename = path
         .normalize(filename)
@@ -41,7 +41,7 @@ app.post(
         success,
         reason,
         documents = [],
-      } = await processSingleFile(targetFilename, options);
+      } = await processSingleFile(targetFilename, options, metadata);
       response
         .status(200)
         .json({ filename: targetFilename, success, reason, documents });
@@ -95,13 +95,13 @@ app.post(
   "/process-link",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { link, scraperHeaders = {} } = reqBody(request);
+    const { link, scraperHeaders = {}, metadata = {} } = reqBody(request);
     try {
       const {
         success,
         reason,
         documents = [],
-      } = await processLink(link, scraperHeaders);
+      } = await processLink(link, scraperHeaders, metadata);
       response.status(200).json({ url: link, success, reason, documents });
     } catch (e) {
       console.error(e);
