@@ -33,6 +33,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import CometApiLogo from "@/media/llmprovider/cometapi.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -44,6 +45,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -169,6 +171,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
     requiredConfig: ["NovitaLLMApiKey"],
+  },
+  {
+    name: "CometAPI",
+    value: "cometapi",
+    logo: CometApiLogo,
+    options: (settings) => <CometApiLLMOptions settings={settings} />,
+    description: "500+ AI Model API, All In One API. Just In CometAPI",
+    requiredConfig: ["CometApiLLMApiKey"],
   },
   {
     name: "Together AI",
