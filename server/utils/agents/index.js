@@ -199,6 +199,10 @@ class AgentHandler {
             "Dell Pro AI Studio model must be set to use agents."
           );
         break;
+      case "janai":
+        if (!process.env.JAN_AI_MODEL_PREF)
+          throw new Error("Jan AI model must be set to use agents.");
+        break;
       case "moonshotai":
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
@@ -274,6 +278,8 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
+      case "janai":
+        return process.env.JAN_AI_MODEL_PREF;
       default:
         return null;
     }

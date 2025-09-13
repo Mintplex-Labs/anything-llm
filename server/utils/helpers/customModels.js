@@ -32,6 +32,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "gemini",
   "ppio",
   "dpais",
+  "janai",
   "moonshotai",
   // Embedding Engines
   "native-embedder",
@@ -86,6 +87,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPPIOModels(apiKey);
     case "dpais":
       return await getDellProAiStudioModels(basePath);
+    case "janai":
+      return await getJanAiModels(apiKey, basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
     case "native-embedder":
@@ -679,6 +682,33 @@ async function getDellProAiStudioModels(basePath = null) {
       error: "Could not reach Dell Pro Ai Studio from the provided base path",
     };
   }
+}
+
+async function getJanAiModels(_apiKey = null, basePath = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.JAN_AI_API_KEY
+      : _apiKey || process.env.JAN_AI_API_KEY || null;
+
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.JAN_AI_BASE_PATH,
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`JanAi:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) {
+    process.env.JAN_AI_API_KEY = apiKey;
+    if (basePath) process.env.JAN_AI_BASE_PATH = basePath;
+  }
+  return { models, error: null };
 }
 
 function getNativeEmbedderModels() {
