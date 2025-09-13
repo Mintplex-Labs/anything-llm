@@ -91,6 +91,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [CometAPI (チャットモデル)](https://api.cometapi.com/)
 
 **埋め込みモデル：**
 
