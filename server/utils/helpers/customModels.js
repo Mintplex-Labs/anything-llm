@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "foundry",
   // Embedding Engines
   "native-embedder",
 ];
@@ -88,6 +89,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "foundry":
+      return await foundryModels(basePath);
     case "native-embedder":
       return await getNativeEmbedderModels();
     default:
@@ -708,6 +711,37 @@ async function getMoonshotAiModels(_apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
   return { models, error: null };
+}
+
+async function foundryModels(basePath = null) {
+  try {
+    const base = basePath || process.env.FOUNDRY_BASE_PATH;
+    if (!base)
+      return {
+        models: [],
+        error: "Foundry base path not set.",
+      };
+
+    const fullURL = new URL(base);
+    fullURL.pathname = "/foundry/list";
+    const models = await fetch(fullURL.toString()).then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not fetch models from Foundry: ${res.statusText}`);
+      return res.json();
+    });
+
+    const formattedModels = models.map((model) => {
+      return {
+        ...model,
+        id: model.name,
+        name: `${model.displayName} (${model.runtime.executionProvider})`,
+      };
+    });
+    return { models: formattedModels, error: null };
+  } catch (e) {
+    console.error(`Foundry:listModels`, e.message);
+    return { models: [], error: e.message };
+  }
 }
 
 module.exports = {

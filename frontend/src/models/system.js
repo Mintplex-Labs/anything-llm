@@ -540,6 +540,23 @@ const System = {
         return { models: [], error: e.message };
       });
   },
+  downloadFoundryModel: async function (modelId) {
+    return fetch(`${API_BASE}/system/foundry-download-model`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ modelId }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error downloading model.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   chats: async (offset = 0) => {
     return await fetch(`${API_BASE}/system/workspace-chats`, {
       method: "POST",

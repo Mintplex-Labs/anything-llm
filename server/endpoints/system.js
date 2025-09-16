@@ -61,6 +61,7 @@ const {
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { FoundryLLM } = require("../utils/AiProviders/foundry");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -366,7 +367,7 @@ function systemEndpoints(app) {
       try {
         const query = queryParams(request);
         const VectorDb = getVectorDbClass();
-        const vectorCount = !!query.slug
+        const vectorCount = query.slug
           ? await VectorDb.namespaceCount(query.slug)
           : await VectorDb.totalVectors();
         response.status(200).json({ vectorCount });
@@ -982,6 +983,35 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error(error);
         response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/foundry-download-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { modelId } = reqBody(request);
+        const basePath = process.env.FOUNDRY_BASE_PATH;
+        if (!basePath || !modelId) {
+          return response.status(400).json({
+            success: false,
+            error: "Foundry base path or model ID not provided.",
+          });
+        }
+
+        await FoundryLLM.downloadModel(basePath, modelId);
+        return response.status(200).json({
+          success: true,
+          error: null,
+        });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({
+          success: false,
+          error: error.message,
+        });
       }
     }
   );
