@@ -164,23 +164,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
   },
   {
-    name: "Novita AI",
-    value: "novita",
-    logo: NovitaLogo,
-    options: (settings) => <NovitaLLMOptions settings={settings} />,
-    description:
-      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
-    requiredConfig: ["NovitaLLMApiKey"],
-  },
-  {
-    name: "CometAPI",
-    value: "cometapi",
-    logo: CometApiLogo,
-    options: (settings) => <CometApiLLMOptions settings={settings} />,
-    description: "500+ AI Model API, All In One API. Just In CometAPI",
-    requiredConfig: ["CometApiLLMApiKey"],
-  },
-  {
     name: "Together AI",
     value: "togetherai",
     logo: TogetherAILogo,
@@ -314,6 +297,31 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["MoonshotAiApiKey"],
   },
   {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    requiredConfig: ["NovitaLLMApiKey"],
+  },
+  {
+    name: "CometAPI",
+    value: "cometapi",
+    logo: CometApiLogo,
+    options: (settings) => <CometApiLLMOptions settings={settings} />,
+    description: "500+ AI Models all in one API.",
+    requiredConfig: ["CometApiLLMApiKey"],
+  },
+  {
+    name: "xAI",
+    value: "xai",
+    logo: XAILogo,
+    options: (settings) => <XAILLMOptions settings={settings} />,
+    description: "Run xAI's powerful LLMs like Grok-2 and more.",
+    requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -326,14 +334,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
-  },
-  {
-    name: "xAI",
-    value: "xai",
-    logo: XAILogo,
-    options: (settings) => <XAILLMOptions settings={settings} />,
-    description: "Run xAI's powerful LLMs like Grok-2 and more.",
-    requiredConfig: ["XAIApiKey", "XAIModelPref"],
   },
 ];
 

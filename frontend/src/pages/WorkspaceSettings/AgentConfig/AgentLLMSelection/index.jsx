@@ -39,15 +39,9 @@ const ENABLED_PROVIDERS = [
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
-  "groq",
-  "azure",
   "koboldcpp",
   "ollama",
   "localai",
-  "openrouter",
-  "novita",
-  "cometapi",
-  "generic-openai",
   "textgenwebui",
 ];
 

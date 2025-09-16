@@ -279,7 +279,7 @@ const LLMS = [
     value: "cometapi",
     logo: CometApiLogo,
     options: (settings) => <CometApiLLMOptions settings={settings} />,
-    description: "OpenAI-compatible chat models from CometAPI.",
+    description: "500+ AI Models all in one API.",
   },
 ];
 
