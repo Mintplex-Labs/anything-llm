@@ -262,6 +262,14 @@ class Provider {
           ...config,
         });
       }
+      case "cometapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cometapi.com/v1",
+          },
+          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);

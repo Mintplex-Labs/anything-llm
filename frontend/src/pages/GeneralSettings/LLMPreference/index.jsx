@@ -34,6 +34,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import CometApiLogo from "@/media/llmprovider/cometapi.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -45,6 +46,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -162,15 +164,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
-  },
-  {
-    name: "Novita AI",
-    value: "novita",
-    logo: NovitaLogo,
-    options: (settings) => <NovitaLLMOptions settings={settings} />,
-    description:
-      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
-    requiredConfig: ["NovitaLLMApiKey"],
   },
   {
     name: "Together AI",
@@ -306,6 +299,31 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["MoonshotAiApiKey"],
   },
   {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    requiredConfig: ["NovitaLLMApiKey"],
+  },
+  {
+    name: "CometAPI",
+    value: "cometapi",
+    logo: CometApiLogo,
+    options: (settings) => <CometApiLLMOptions settings={settings} />,
+    description: "500+ AI Models all in one API.",
+    requiredConfig: ["CometApiLLMApiKey"],
+  },
+  {
+    name: "xAI",
+    value: "xai",
+    logo: XAILogo,
+    options: (settings) => <XAILLMOptions settings={settings} />,
+    description: "Run xAI's powerful LLMs like Grok-2 and more.",
+    requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -326,14 +344,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <FoundryOptions settings={settings} />,
     description: "Run Microsoft's Foundry models locally.",
     requiredConfig: ["FoundryBasePath", "FoundryModelPref"],
-  },
-  {
-    name: "xAI",
-    value: "xai",
-    logo: XAILogo,
-    options: (settings) => <XAILLMOptions settings={settings} />,
-    description: "Run xAI's powerful LLMs like Grok-2 and more.",
-    requiredConfig: ["XAIApiKey", "XAIModelPref"],
   },
 ];
 

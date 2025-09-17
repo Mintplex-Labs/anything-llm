@@ -9,7 +9,12 @@ const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
 const OCRLoader = require("../../../utils/OCRLoader");
 
-async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
+async function asPdf({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -51,11 +56,17 @@ async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: filename,
-    docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
-    description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
-    docSource: "pdf file uploaded by the user.",
-    chunkSource: "",
+    title: metadata.title || filename,
+    docAuthor:
+      metadata.docAuthor ||
+      docs[0]?.metadata?.pdf?.info?.Creator ||
+      "no author found",
+    description:
+      metadata.description ||
+      docs[0]?.metadata?.pdf?.info?.Title ||
+      "No description found.",
+    docSource: metadata.docSource || "pdf file uploaded by the user.",
+    chunkSource: metadata.chunkSource || "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

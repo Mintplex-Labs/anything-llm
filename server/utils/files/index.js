@@ -95,15 +95,34 @@ async function viewLocalFiles() {
   return directory;
 }
 
+/**
+ * Gets the documents by folder name.
+ * @param {string} folderName - The name of the folder to get the documents from.
+ * @returns {Promise<{folder: string, documents: any[], code: number, error: string}>} - The documents by folder name.
+ */
 async function getDocumentsByFolder(folderName = "") {
-  if (!folderName) throw new Error("Folder name must be provided.");
+  if (!folderName) {
+    return {
+      folder: folderName,
+      documents: [],
+      code: 400,
+      error: "Folder name must be provided.",
+    };
+  }
+
   const folderPath = path.resolve(documentsPath, normalizePath(folderName));
   if (
     !isWithin(documentsPath, folderPath) ||
     !fs.existsSync(folderPath) ||
     !fs.lstatSync(folderPath).isDirectory()
-  )
-    throw new Error(`Folder "${folderName}" does not exist.`);
+  ) {
+    return {
+      folder: folderName,
+      documents: [],
+      code: 404,
+      error: `Folder "${folderName}" does not exist.`,
+    };
+  }
 
   const documents = [];
   const filenames = {};
@@ -136,7 +155,7 @@ async function getDocumentsByFolder(folderName = "") {
     );
   }
 
-  return { folder: folderName, documents };
+  return { folder: folderName, documents, code: 200, error: null };
 }
 
 /**
