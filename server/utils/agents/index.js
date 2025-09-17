@@ -203,6 +203,10 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
+      case "foundry":
+        if (!process.env.FOUNDRY_BASE_PATH)
+          throw new Error("Foundry base path must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -274,6 +278,8 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
+      case "foundry":
+        return process.env.FOUNDRY_MODEL_PREF ?? "phi-3.5-mini";
       default:
         return null;
     }
