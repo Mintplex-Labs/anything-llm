@@ -78,12 +78,24 @@ export default function FoundryOptions({ settings }) {
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             >
               {models.length > 0 ? (
-                models.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                    {model.downloaded === false ? " (not downloaded)" : ""}
-                  </option>
-                ))
+                <>
+                  <option disabled>Downloaded Models</option>
+                  {models
+                    .filter((m) => m.downloaded)
+                    .map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  <option disabled>Available Models</option>
+                  {models
+                    .filter((m) => !m.downloaded)
+                    .map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                </>
               ) : (
                 <option disabled value="">
                   No models found
@@ -92,8 +104,8 @@ export default function FoundryOptions({ settings }) {
             </select>
           )}
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Models that are not downloaded will begin downloading when you
-            select them.
+            Models that are not downloaded will download when you begin
+            chatting.
           </p>
         </div>
       </div>

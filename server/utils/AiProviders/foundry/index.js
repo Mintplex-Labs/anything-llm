@@ -33,7 +33,32 @@ class FoundryLLM {
 
     this.log(`Initializing model ${this.model}...`);
 
-    const sdkModelInfo = await manager.init(this.model);
+    await manager.init();
+    try {
+      const cachedModels = await manager.listCachedModels();
+      const isDownloaded = cachedModels.some(
+        (model) => model.alias === this.model || model.id.includes(this.model)
+      );
+
+      if (!isDownloaded) {
+        this.log(`Model ${this.model} not found in cache, downloading...`);
+        await manager.downloadModel(this.model, null, false, (progress) => {
+          if (progress) {
+            this.log(
+              `${this.model} Download progress: ${progress.toFixed(1)}%`
+            );
+          }
+        });
+        this.log(`Model ${this.model} download completed`);
+      }
+    } catch (error) {
+      this.log(`Download check failed: ${error.message}`);
+    }
+
+    // The foundry sdk provides us access to listCachedModels and listCatalogModels
+    // but does not include the token limits for the model.
+    // The OpenAI compat endpoint shows all models downloaded and their token limits.
+    const sdkModelInfo = await manager.loadModel(this.model);
     const models = await this.openai.models.list();
     const modelData = models.data.find((model) => model.id === sdkModelInfo.id);
 
