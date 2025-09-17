@@ -5,6 +5,11 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { getContentType } = require("../helpers/getContentType");
+const { downloadFileToHotDir } = require("../helpers/downloadFileToHotDir");
+const { processSingleFile } = require("../../processSingleFile");
+const path = require("path");
+const { ACCEPTED_FILE_CONTENT_TYPES } = require("../../utils/constants");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -18,15 +23,57 @@ const { default: slugify } = require("slugify");
  */
 async function scrapeGenericUrl({
   link,
-  captureAs = "text",
   processAsDocument = true,
   scraperHeaders = {},
   metadata = {},
 }) {
-  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+  // Get the content type of the link
+  const contentTypeResult = await getContentType(link);
+  // If the retrieving the content type failed, return an error
+  if (!contentTypeResult.success || !contentTypeResult.contentType) {
+    return {
+      success: false,
+      reason: contentTypeResult.reason,
+      documents: [],
+    };
+  }
+  const contentType = contentTypeResult.contentType;
+
+  const isAcceptedFile = ACCEPTED_FILE_CONTENT_TYPES.has(contentType);
+  const isHTMLOrText = contentType === "text/html" || contentType === "text/plain";
+
+  // If the content type is an accepted file, download the file to the hotdir and process it
+  if (isAcceptedFile) {
+    console.log(`-- Downloading file ${link} -- ${contentType}`);
+    const fileContentResult = await downloadFileToHotDir(link);
+    if (!fileContentResult.success || !fileContentResult.data) {
+      return {
+        success: false,
+        reason: fileContentResult.reason,
+        documents: [],
+      };
+    }
+
+    const fileFilePath = fileContentResult.data;
+    const targetFilename = path.basename(fileFilePath);
+
+    const processSingleFileResult = await processSingleFile(targetFilename);
+
+    if (!processSingleFileResult.success) {
+      return {
+        success: false,
+        reason: processSingleFileResult.reason,
+        documents: [],
+      };
+    }
+    return processSingleFileResult;
+  } 
+
+  // If the content type is HTML or text, get the content of the web page with puppeteer
+  if (isHTMLOrText) {
   const content = await getPageContent({
     link,
-    captureAs,
+    captureAs: "text",
     headers: scraperHeaders,
   });
 
@@ -70,6 +117,20 @@ async function scrapeGenericUrl({
   });
   console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
+
+  }
+
+  // If the content type is not supported, return an error
+  return {
+    success: false,
+    reason: `Unsupported content type: ${contentType}`,
+    documents: [],
+  }
+
+
+
+
+  // If the content type is not a PDF, get the content of the web page
 }
 
 /**

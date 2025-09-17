@@ -13,7 +13,6 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
   if (!validURL(link)) return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
     link,
-    captureAs: "text",
     processAsDocument: true,
     scraperHeaders,
     metadata,

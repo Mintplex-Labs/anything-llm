@@ -32,6 +32,8 @@ const ACCEPTED_MIMES = {
   "image/jpg": [".jpg"],
 };
 
+const ACCEPTED_FILE_CONTENT_TYPES = new Set(["application/pdf", "text/csv", "application/json"]);
+
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": "./convert/asTxt.js",
   ".md": "./convert/asTxt.js",
@@ -66,6 +68,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
 
 module.exports = {
   SUPPORTED_FILETYPE_CONVERTERS,
+  ACCEPTED_FILE_CONTENT_TYPES,
   WATCH_DIRECTORY,
   ACCEPTED_MIMES,
 };
