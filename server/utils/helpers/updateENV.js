@@ -704,6 +704,21 @@ const KEY_MAPPING = {
     envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  
+  // CometAPI Options
+  CometApiLLMApiKey: {
+    envKey: "COMETAPI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMModelPref: {
+    envKey: "COMETAPI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMTimeout: {
+    envKey: "COMETAPI_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+  
   // SubModel Options
   SubModelKey: {
     envKey: "SUBMODEL_INSTAGEN_ACCESS_KEY",
@@ -822,6 +837,7 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "cometapi",
     "submodel",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

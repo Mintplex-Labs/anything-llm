@@ -210,6 +210,11 @@ class AgentHandler {
           );
         break;
 
+      case "cometapi":
+        if (!process.env.COMETAPI_LLM_API_KEY)
+          throw new Error("CometAPI API Key must be provided to use agents.");
+        break;
+
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -280,10 +285,10 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
+      case "cometapi":
+        return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "submodel":
-        return (
-          process.env.SUBMODEL_MODEL_PREF ?? "deepseek-ai/DeepSeek-V3-0324"
-        );
+        return process.env.SUBMODEL_MODEL_PREF ?? "deepseek-ai/DeepSeek-V3-0324";
       default:
         return null;
     }
