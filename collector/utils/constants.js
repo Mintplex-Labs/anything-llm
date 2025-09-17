@@ -32,7 +32,11 @@ const ACCEPTED_MIMES = {
   "image/jpg": [".jpg"],
 };
 
-const ACCEPTED_FILE_CONTENT_TYPES = new Set(["application/pdf", "text/csv", "application/json"]);
+const ACCEPTED_FILE_CONTENT_TYPES = new Set([
+  "application/pdf",
+  "text/csv",
+  "application/json",
+]);
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": "./convert/asTxt.js",

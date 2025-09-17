@@ -12,7 +12,6 @@ async function getContentType(url) {
   // Remove the charset from the content type (example: application/json; charset=utf-8)
   const contentTypeWithoutCharset = contentType?.split(";")[0].trim();
 
-
   if (!contentTypeWithoutCharset) {
     console.log("No Content-Type found.", res.status);
     return { success: false, reason: "No Content-Type found." };
