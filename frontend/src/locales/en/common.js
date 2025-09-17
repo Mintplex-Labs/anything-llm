@@ -437,9 +437,9 @@ const TRANSLATIONS = {
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
       save: {
-        title: "Generate & save files to browser",
+        title: "Generate & save files",
         description:
-          "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
+          "Enable the default agent to generate and write to files that can be saved to your computer.",
       },
       web: {
         title: "Live web search and browsing",

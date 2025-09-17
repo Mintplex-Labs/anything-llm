@@ -3,13 +3,14 @@ import System from "@/models/system";
 
 /**
  * Checks if Simple SSO is enabled and if the user should be redirected to the SSO login page.
- * @returns {{loading: boolean, ssoConfig: {enabled: boolean, noLogin: boolean}}}
+ * @returns {{loading: boolean, ssoConfig: {enabled: boolean, noLogin: boolean, noLoginRedirect: string | null}}}
  */
 export default function useSimpleSSO() {
   const [loading, setLoading] = useState(true);
   const [ssoConfig, setSsoConfig] = useState({
     enabled: false,
     noLogin: false,
+    noLoginRedirect: null,
   });
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function useSimpleSSO() {
         setSsoConfig({
           enabled: settings?.SimpleSSOEnabled,
           noLogin: settings?.SimpleSSONoLogin,
+          noLoginRedirect: settings?.SimpleSSONoLoginRedirect,
         });
       } catch (e) {
         console.error(e);

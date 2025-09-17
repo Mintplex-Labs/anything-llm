@@ -843,7 +843,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
+        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding, with optional metadata.",
         "parameters": [],
         "responses": {
           "200": {
@@ -913,6 +913,16 @@
                   "addToWorkspaces": {
                     "type": "string",
                     "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.",
+                    "example": {
+                      "title": "Custom Title",
+                      "docAuthor": "Author Name",
+                      "description": "A brief description",
+                      "docSource": "Source of the document"
+                    }
                   }
                 }
               }
@@ -1000,7 +1010,7 @@
           }
         },
         "requestBody": {
-          "description": "File to be uploaded.",
+          "description": "File to be uploaded, with optional metadata.",
           "required": true,
           "content": {
             "multipart/form-data": {
@@ -1018,6 +1028,16 @@
                   "addToWorkspaces": {
                     "type": "string",
                     "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.",
+                    "example": {
+                      "title": "Custom Title",
+                      "docAuthor": "Author Name",
+                      "description": "A brief description",
+                      "docSource": "Source of the document"
+                    }
                   }
                 }
               }
@@ -1084,7 +1104,7 @@
           }
         },
         "requestBody": {
-          "description": "Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload.",
+          "description": "Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.",
           "required": true,
           "content": {
             "application/json": {
@@ -1096,6 +1116,12 @@
                   "scraperHeaders": {
                     "Authorization": "Bearer token123",
                     "My-Custom-Header": "value"
+                  },
+                  "metadata": {
+                    "title": "Custom Title",
+                    "docAuthor": "Author Name",
+                    "description": "A brief description",
+                    "docSource": "Source of the document"
                   }
                 }
               }
@@ -1261,7 +1287,6 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1289,7 +1314,8 @@
                   }
                 }
               }
-            }
+            },
+            "description": "OK"
           },
           "403": {
             "description": "Forbidden",
@@ -3410,22 +3436,19 @@
                 "schema": {
                   "type": "object",
                   "example": {
-                    "models": [
+                    "object": "list",
+                    "data": [
                       {
-                        "name": "Sample workspace",
-                        "model": "sample-workspace",
-                        "llm": {
-                          "provider": "ollama",
-                          "model": "llama3:8b"
-                        }
+                        "id": "model-id-0",
+                        "object": "model",
+                        "created": 1686935002,
+                        "owned_by": "organization-owner"
                       },
                       {
-                        "name": "Second workspace",
-                        "model": "workspace-2",
-                        "llm": {
-                          "provider": "openai",
-                          "model": "gpt-3.5-turbo"
-                        }
+                        "id": "model-id-1",
+                        "object": "model",
+                        "created": 1686935002,
+                        "owned_by": "organization-owner"
                       }
                     ]
                   }
