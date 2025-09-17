@@ -610,6 +610,11 @@ const SystemSettings = {
       DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
       DellProAiStudioTokenLimit:
         process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
+
+      // CometAPI LLM Keys
+      CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
+      CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
+      CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
     };
   },
 
