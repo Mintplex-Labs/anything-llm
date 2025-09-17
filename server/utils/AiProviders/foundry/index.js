@@ -6,36 +6,46 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
-const { toValidNumber } = require("../../http");
-const axios = require("axios");
+
+let manager;
+const modelInfoCache = {};
 
 class FoundryLLM {
+  #modelInfo = null;
   constructor(embedder = null, modelPreference = null) {
-    const { OpenAI: OpenAIApi } = require("openai");
-    if (!process.env.FOUNDRY_BASE_PATH)
-      throw new Error(
-        "Foundry must have a valid base path to use for the api."
-      );
-
-    this.basePath = process.env.FOUNDRY_BASE_PATH;
-    this.openai = new OpenAIApi({
-      baseURL: this.basePath,
-      apiKey: process.env.FOUNDRY_API_KEY ?? null,
-    });
+    if (!manager) {
+      const { FoundryLocalManager } = require("foundry-local-sdk");
+      manager = new FoundryLocalManager();
+    }
     this.model = modelPreference ?? process.env.FOUNDRY_MODEL_PREF ?? null;
-    this.maxTokens = process.env.FOUNDRY_MAX_TOKENS
-      ? toValidNumber(process.env.FOUNDRY_MAX_TOKENS, 1024)
-      : 1024;
     if (!this.model) throw new Error("Foundry must have a valid model set.");
-    this.limits = {
-      history: this.promptWindowLimit() * 0.15,
-      system: this.promptWindowLimit() * 0.15,
-      user: this.promptWindowLimit() * 0.7,
-    };
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
+    this.log(`Model preference set to: ${this.model}`);
+  }
+
+  async #initialize() {
+    if (modelInfoCache.hasOwnProperty(this.model)) {
+      this.#modelInfo = modelInfoCache[this.model];
+      return;
+    }
+
+    this.log(`Initializing model ${this.model}...`);
+    const modelInfo = await manager.init(this.model);
+
+    console.log(modelInfo);
+    this.#modelInfo = modelInfo;
+    modelInfoCache[this.model] = modelInfo;
+    this.log(`Model ${this.model} initialized successfully.`);
+  }
+
+  get openai() {
+    const { OpenAI: OpenAIApi } = require("openai");
+    return new OpenAIApi({
+      baseURL: manager.endpoint,
+      apiKey: manager.apiKey,
+    });
   }
 
   log(text, ...args) {
@@ -55,23 +65,19 @@ class FoundryLLM {
   }
 
   streamingEnabled() {
-    if (process.env.FOUNDRY_STREAMING_DISABLED === "true") return false;
-    return "streamGetChatCompletion" in this;
+    return true;
   }
 
-  static promptWindowLimit() {
-    const limit = process.env.FOUNDRY_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No token context limit was set.");
-    return Number(limit);
-  }
-
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.FOUNDRY_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No token context limit was set.");
+    if (!this.#modelInfo) {
+      this.log(
+        "promptWindowLimit: #modelInfo not initialized, returning default 4096"
+      );
+      return 4096;
+    }
+
+    const limit = this.#modelInfo.maxInputTokens || 4096;
+    this.log(`Context window size is ${limit} tokens.`);
     return Number(limit);
   }
 
@@ -83,19 +89,7 @@ class FoundryLLM {
 
   /**
    * Generates appropriate content array for a message + attachments.
-   *
-   * ## Developer Note
-   * This function assumes the Foundry provider is _actually_ OpenAI compatible.
-   * For example, Ollama is "OpenAI compatible" but does not support images as a content array.
-   * The contentString also is the base64 string WITH `data:image/xxx;base64,` prefix, which may not be the case for all providers.
-   * If your provider does not work exactly this way, then attachments will not function or potentially break vision requests.
-   * If you encounter this issue, you are welcome to open an issue asking for your specific provider to be supported.
-   *
-   * This function will **not** be updated for providers that **do not** support images as a content array like OpenAI does.
-   * Do not open issues to update this function due to your specific provider not being compatible. Open an issue to request support for your specific provider.
-   * @param {Object} props
-   * @param {string} props.userPrompt - the user prompt to be sent to the model
-   * @param {import("../../helpers").Attachment[]} props.attachments - the array of attachments to be sent to the model
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
    * @returns {string|object[]}
    */
   #generateContent({ userPrompt, attachments = [] }) {
@@ -143,13 +137,14 @@ class FoundryLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
+    await this.#initialize();
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
-          model: this.model,
+          model: this.#modelInfo.id,
           messages,
           temperature,
-          max_tokens: this.maxTokens,
+          max_tokens: this.#modelInfo.maxOutputTokens,
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -176,13 +171,14 @@ class FoundryLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    await this.#initialize();
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.openai.chat.completions.create({
-        model: this.model,
+        model: this.#modelInfo.id,
         stream: true,
         messages,
         temperature,
-        max_tokens: this.maxTokens,
+        max_tokens: this.#modelInfo.maxOutputTokens,
       }),
       messages
       // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
@@ -204,6 +200,7 @@ class FoundryLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.#initialize();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

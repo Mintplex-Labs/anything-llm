@@ -561,6 +561,11 @@ const SystemSettings = {
       MoonshotAiModelPref:
         process.env.MOONSHOT_AI_MODEL_PREF || "moonshot-v1-32k",
 
+      // Foundry Keys
+      FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
+      FoundryApiKey: !!process.env.FOUNDRY_API_KEY,
+      FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,

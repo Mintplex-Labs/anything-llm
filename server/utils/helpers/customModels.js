@@ -724,17 +724,19 @@ async function foundryModels(basePath = null) {
 
     const fullURL = new URL(base);
     fullURL.pathname = "/foundry/list";
-    const models = await fetch(fullURL.toString()).then((res) => {
+    const allModels = await fetch(fullURL.toString()).then((res) => {
       if (!res.ok)
-        throw new Error(`Could not fetch models from Foundry: ${res.statusText}`);
+        throw new Error(
+          `Could not fetch all models from Foundry: ${res.statusText}`
+        );
       return res.json();
     });
 
-    const formattedModels = models.map((model) => {
+    const aliases = [...new Set(allModels.map((model) => model.alias))];
+    const formattedModels = aliases.map((alias) => {
       return {
-        ...model,
-        id: model.name,
-        name: `${model.displayName} (${model.runtime.executionProvider})`,
+        id: alias,
+        name: alias,
       };
     });
     return { models: formattedModels, error: null };

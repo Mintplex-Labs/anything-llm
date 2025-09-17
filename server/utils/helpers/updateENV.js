@@ -704,6 +704,20 @@ const KEY_MAPPING = {
     envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Foundry Options
+  FoundryBasePath: {
+    envKey: "FOUNDRY_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  FoundryApiKey: {
+    envKey: "FOUNDRY_API_KEY",
+    checks: [],
+  },
+  FoundryModelPref: {
+    envKey: "FOUNDRY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -813,6 +827,7 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "foundry",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
