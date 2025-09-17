@@ -103,7 +103,7 @@ async function viewLocalFiles() {
 async function getDocumentsByFolder(folderName = "") {
   if (!folderName) {
     return {
-      folder: "custom-documents",
+      folder: folderName,
       documents: [],
       code: 400,
       error: "Folder name must be provided.",
@@ -117,7 +117,7 @@ async function getDocumentsByFolder(folderName = "") {
     !fs.lstatSync(folderPath).isDirectory()
   ) {
     return {
-      folder: "custom-documents",
+      folder: folderName,
       documents: [],
       code: 404,
       error: `Folder "${folderName}" does not exist.`,
