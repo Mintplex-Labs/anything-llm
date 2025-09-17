@@ -693,7 +693,11 @@ function apiDocumentEndpoints(app) {
       try {
         const { folderName } = request.params;
         const result = await getDocumentsByFolder(folderName);
-        response.status(200).json(result);
+        response.status(result.code).json({
+          folder: result.folder,
+          documents: result.documents,
+          error: result.error,
+        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
