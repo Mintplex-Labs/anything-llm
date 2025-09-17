@@ -916,7 +916,7 @@
                   },
                   "metadata": {
                     "type": "object",
-                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format.",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.",
                     "example": {
                       "title": "Custom Title",
                       "docAuthor": "Author Name",
@@ -1031,7 +1031,7 @@
                   },
                   "metadata": {
                     "type": "object",
-                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. ",
+                    "description": "Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.",
                     "example": {
                       "title": "Custom Title",
                       "docAuthor": "Author Name",

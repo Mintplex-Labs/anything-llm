@@ -50,7 +50,7 @@ function apiDocumentEndpoints(app) {
               },
               metadata: {
                 type: 'object',
-                description: 'Key:Value pairs of metadata to attach to the document in JSON Object format.',
+                description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.',
                 example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
               }
             },
@@ -96,11 +96,12 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
-
-        const metadataObj =
-          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
-
+        const { addToWorkspaces = "", metadata: _metadata = {} } =
+          reqBody(request);
+        const metadata =
+          typeof _metadata === "string"
+            ? safeJsonParse(_metadata, {})
+            : _metadata;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -116,14 +117,14 @@ function apiDocumentEndpoints(app) {
 
         const { success, reason, documents } = await Collector.processDocument(
           originalname,
-          metadataObj
+          metadata
         );
+
         if (!success) {
-          response
+          return response
             .status(500)
             .json({ success: false, error: reason, documents })
             .end();
-          return;
         }
 
         Collector.log(
@@ -181,7 +182,7 @@ function apiDocumentEndpoints(app) {
                 },
                 metadata: {
                   type: 'object',
-                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. ',
+                  description: 'Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example.',
                   example: { 'title': 'Custom Title', 'docAuthor': 'Author Name', 'description': 'A brief description', 'docSource': 'Source of the document' }
                 }
               }
@@ -237,7 +238,12 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { originalname } = request.file;
-        const { addToWorkspaces = "", metadata = {} } = reqBody(request);
+        const { addToWorkspaces = "", metadata: _metadata = {} } =
+          reqBody(request);
+        const metadata =
+          typeof _metadata === "string"
+            ? safeJsonParse(_metadata, {})
+            : _metadata;
 
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
@@ -250,33 +256,28 @@ function apiDocumentEndpoints(app) {
         if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
 
-        const metadataObj =
-          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
-
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
         if (!processingOnline) {
-          response
+          return response
             .status(500)
             .json({
               success: false,
               error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
             })
             .end();
-          return;
         }
 
         // Process the uploaded document with metadata
         const { success, reason, documents } = await Collector.processDocument(
           originalname,
-          metadataObj
+          metadata
         );
         if (!success) {
-          response
+          return response
             .status(500)
             .json({ success: false, error: reason, documents })
             .end();
-          return;
         }
 
         // For each processed document, check if it is already in the desired folder.
@@ -401,34 +402,34 @@ function apiDocumentEndpoints(app) {
           link,
           addToWorkspaces = "",
           scraperHeaders = {},
-          metadata = {},
+          metadata: _metadata = {},
         } = reqBody(request);
-        const metadataObj =
-          typeof metadata === "string" ? safeJsonParse(metadata, {}) : metadata;
+        const metadata =
+          typeof _metadata === "string"
+            ? safeJsonParse(_metadata, {})
+            : _metadata;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
-          response
+          return response
             .status(500)
             .json({
               success: false,
               error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
             })
             .end();
-          return;
         }
 
         const { success, reason, documents } = await Collector.processLink(
           link,
           scraperHeaders,
-          metadataObj
+          metadata
         );
         if (!success) {
-          response
+          return response
             .status(500)
             .json({ success: false, error: reason, documents })
             .end();
-          return;
         }
 
         Collector.log(
@@ -520,20 +521,23 @@ function apiDocumentEndpoints(app) {
         const requiredMetadata = ["title"];
         const {
           textContent,
-          metadata = {},
+          metadata: _metadata = {},
           addToWorkspaces = "",
         } = reqBody(request);
+        const metadata =
+          typeof _metadata === "string"
+            ? safeJsonParse(_metadata, {})
+            : _metadata;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
-          response
+          return response
             .status(500)
             .json({
               success: false,
               error: `Document processing API is not online. Request will not be processed.`,
             })
             .end();
-          return;
         }
 
         if (
@@ -542,7 +546,7 @@ function apiDocumentEndpoints(app) {
               Object.keys(metadata).includes(reqKey) && !!metadata[reqKey]
           )
         ) {
-          response
+          return response
             .status(422)
             .json({
               success: false,
@@ -551,18 +555,16 @@ function apiDocumentEndpoints(app) {
                 .join(", ")}`,
             })
             .end();
-          return;
         }
 
         if (!textContent || textContent?.length === 0) {
-          response
+          return response
             .status(422)
             .json({
               success: false,
               error: `The 'textContent' key cannot have an empty value.`,
             })
             .end();
-          return;
         }
 
         const { success, reason, documents } = await Collector.processRawText(
@@ -570,11 +572,10 @@ function apiDocumentEndpoints(app) {
           metadata
         );
         if (!success) {
-          response
+          return response
             .status(500)
             .json({ success: false, error: reason, documents })
             .end();
-          return;
         }
 
         Collector.log(

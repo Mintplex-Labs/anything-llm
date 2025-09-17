@@ -104,6 +104,7 @@ class CollectorApi {
    * - Will append the options to the request body
    * @param {string} link - The link to process
    * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply to the web-scraping request URL
+   * @param {[key: string]: string} metadata - Optional metadata to attach to the document
    * @returns {Promise<Object>} - The response from the collector API
    */
   async processLink(link = "", scraperHeaders = {}, metadata = {}) {
@@ -142,7 +143,7 @@ class CollectorApi {
    * Process raw text as a document for the collector
    * - Will append the options to the request body
    * @param {string} textContent - The text to process
-   * @param {Object} metadata - The metadata to process
+   * @param {[key: string]: string} metadata - The metadata to process
    * @returns {Promise<Object>} - The response from the collector API
    */
   async processRawText(textContent = "", metadata = {}) {

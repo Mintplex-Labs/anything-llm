@@ -13,6 +13,7 @@ const { default: slugify } = require("slugify");
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
  * @param {boolean} config.processAsDocument - Whether to process the content as a document or return the content directly. Default is true
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
+ * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
  * @returns {Promise<Object>} - The content of the page
  */
 async function scrapeGenericUrl({
