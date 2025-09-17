@@ -24,10 +24,6 @@ async function scrapeGenericUrl({
   scraperHeaders = {},
   metadata = {},
 }) {
-  const runtimeSettings = new RuntimeSettings();
-  const launchArgs = runtimeSettings.get("browserLaunchArgs");
-  console.log("launchArgs", launchArgs);
-
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
   const content = await getPageContent({
     link,
@@ -110,11 +106,16 @@ function validatedHeaders(headers = {}) {
  */
 async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
+    const runtimeSettings = new RuntimeSettings();
+    const launchArgs = runtimeSettings.get("browserLaunchArgs");
+    console.log("launchArgs", launchArgs);
+
     let pageContents = [];
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
+        args: launchArgs,
       },
       gotoOptions: {
         waitUntil: "networkidle2",
