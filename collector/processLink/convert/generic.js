@@ -106,16 +106,13 @@ function validatedHeaders(headers = {}) {
  */
 async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
-    const runtimeSettings = new RuntimeSettings();
-    const launchArgs = runtimeSettings.get("browserLaunchArgs");
-    console.log("launchArgs", launchArgs);
-
     let pageContents = [];
+    const runtimeSettings = new RuntimeSettings();
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
-        args: launchArgs,
+        args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
         waitUntil: "networkidle2",
