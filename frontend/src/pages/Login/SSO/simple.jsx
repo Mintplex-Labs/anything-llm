@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FullScreenLoader } from "@/components/Preloader";
-import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
@@ -9,28 +8,18 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 export default function SimpleSSOPassthrough() {
   const query = useQuery();
   const redirectPath = query.get("redirectTo") || paths.home();
-  const noLoginRedirect = query.get("nlr") || null;
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     try {
-      if (!query.get("token")) {
-        if (!!noLoginRedirect) {
-          // If a noLoginRedirect is provided, redirect to that webpage when no token is provided.
-          return window.location.replace(noLoginRedirect);
-        } else {
-          // Otherwise, show no token error
-          throw new Error("No token provided.");
-        }
-      }
+      if (!query.get("token")) throw new Error("No token provided.");
 
       // Clear any existing auth data
       window.localStorage.removeItem(AUTH_USER);
       window.localStorage.removeItem(AUTH_TOKEN);
       window.localStorage.removeItem(AUTH_TIMESTAMP);
 
-      // Validate the token since it's provided. If the token is invalid, show an error
       System.simpleSSOLogin(query.get("token"))
         .then((res) => {
           if (!res.valid) throw new Error(res.message);
