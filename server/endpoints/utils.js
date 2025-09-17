@@ -166,9 +166,18 @@ function getDeploymentVersion() {
   return null;
 }
 
+/**
+ * Returns the user agent for the AnythingLLM deployment.
+ * @returns {string} The user agent.
+ */
+function getAnythingLLMUserAgent() {
+  const version = getDeploymentVersion() || "unknown";
+  return `AnythingLLM/${version}`;
+}
+
 module.exports = {
   utilEndpoints,
   getGitVersion,
-  getDeploymentVersion,
   getModelTag,
+  getAnythingLLMUserAgent,
 };

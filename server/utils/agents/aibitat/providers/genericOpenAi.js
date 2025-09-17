@@ -3,7 +3,7 @@ const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { toValidNumber } = require("../../../http/index.js");
-const { getAnythingLLMUserAgent } = require("../../../helpers/getUserAgent");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 
 /**
  * The agent provider for the Generic OpenAI provider.

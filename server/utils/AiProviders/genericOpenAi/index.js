@@ -8,7 +8,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
-const { getAnythingLLMUserAgent } = require("../../helpers/getUserAgent");
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
