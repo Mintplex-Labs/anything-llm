@@ -39,6 +39,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
@@ -251,6 +252,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Moonshot AI",
     ],
     logo: MoonshotAiLogo,
+  },
+  foundry: {
+    name: "Microsoft Foundry Local",
+    description: [
+      "Your model and chats are only accessible on the machine running Foundry Local",
+    ],
+    logo: FoundryLogo,
   },
 };
 

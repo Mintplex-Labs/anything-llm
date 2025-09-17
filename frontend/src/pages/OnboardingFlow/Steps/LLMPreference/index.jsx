@@ -28,6 +28,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -57,6 +58,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
+import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -271,6 +273,13 @@ const LLMS = [
     logo: MoonshotAiLogo,
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
+  },
+  {
+    name: "Microsoft Foundry Local",
+    value: "foundry",
+    logo: FoundryLogo,
+    options: (settings) => <FoundryOptions settings={settings} />,
+    description: "Run Microsoft's Foundry models locally.",
   },
 ];
 

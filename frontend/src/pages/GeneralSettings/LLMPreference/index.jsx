@@ -320,7 +320,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     ],
   },
   {
-    name: "Microsoft Foundry",
+    name: "Microsoft Foundry Local",
     value: "foundry",
     logo: FoundryLogo,
     options: (settings) => <FoundryOptions settings={settings} />,
