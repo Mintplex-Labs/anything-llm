@@ -5,6 +5,7 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -23,6 +24,10 @@ async function scrapeGenericUrl({
   scraperHeaders = {},
   metadata = {},
 }) {
+  const runtimeSettings = new RuntimeSettings();
+  const launchArgs = runtimeSettings.get("browserLaunchArgs");
+  console.log("launchArgs", launchArgs);
+
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
   const content = await getPageContent({
     link,

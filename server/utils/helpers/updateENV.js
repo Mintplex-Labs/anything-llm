@@ -1167,6 +1167,9 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+
+    // Specify Chromium args for collector
+    "ANYTHINGLLM_CHROMIUM_ARGS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
