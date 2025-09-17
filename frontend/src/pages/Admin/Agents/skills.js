@@ -46,7 +46,7 @@ export const defaultSkills = {
 
 export const configurableSkills = {
   "save-file-to-browser": {
-    title: "Generate & save files to browser",
+    title: "Generate & save files",
     description:
       "Enable the default agent to generate and write to files that can be saved to your computer.",
     component: GenericSkillPanel,

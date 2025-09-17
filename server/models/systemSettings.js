@@ -297,6 +297,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
+      SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
     };
   },
 
@@ -610,6 +611,11 @@ const SystemSettings = {
       DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
       DellProAiStudioTokenLimit:
         process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
+
+      // CometAPI LLM Keys
+      CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
+      CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
+      CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
     };
   },
 
@@ -648,6 +654,29 @@ const SystemSettings = {
       console.error(error.message);
       return { connectionKey: null };
     }
+  },
+
+  simpleSSO: {
+    /**
+     * Gets the no login redirect URL. If the conditions below are not met, this will return null.
+     * - If simple SSO is not enabled.
+     * - If simple SSO login page is not disabled.
+     * - If the no login redirect is not a valid URL or is not set.
+     * @returns {string | null}
+     */
+    noLoginRedirect: () => {
+      if (!("SIMPLE_SSO_ENABLED" in process.env)) return null; // if simple SSO is not enabled, return null
+      if (!("SIMPLE_SSO_NO_LOGIN" in process.env)) return null; // if the no login config is not set, return null
+      if (!("SIMPLE_SSO_NO_LOGIN_REDIRECT" in process.env)) return null; // if the no login redirect is not set, return null
+
+      try {
+        let url = new URL(process.env.SIMPLE_SSO_NO_LOGIN_REDIRECT);
+        return url.toString();
+      } catch {}
+
+      // if the no login redirect is not a valid URL or is not set, return null
+      return null;
+    },
   },
 };
 
