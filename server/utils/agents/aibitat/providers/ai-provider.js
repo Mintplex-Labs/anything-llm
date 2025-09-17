@@ -251,9 +251,9 @@ class Provider {
           apiKey: null,
           ...config,
         });
-      case "foundry":
-        const base = process.env.FOUNDRY_BASE_PATH;
-        const normalizedBase = base?.endsWith("/") ? base.slice(0, -1) : base;
+      case "foundry": {
+        const { normalizeBaseUrl } = require("../../helpers/url");
+        const normalizedBase = normalizeBaseUrl(process.env.FOUNDRY_BASE_PATH);
         return new ChatOpenAI({
           configuration: {
             baseURL: `${normalizedBase}/v1`,
@@ -261,6 +261,7 @@ class Provider {
           apiKey: null,
           ...config,
         });
+      }
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);

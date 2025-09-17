@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { normalizeBaseUrl } = require("../../../helpers/url");
 
 /**
  * The agent provider for Foundry Local.
@@ -19,9 +20,8 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
     const model =
       config?.model || process.env.FOUNDRY_MODEL_PREF || "phi-3.5-mini";
 
-    // Normalize base URL and add /v1 for OpenAI compatibility
     const base = process.env.FOUNDRY_BASE_PATH;
-    const normalizedBase = base?.endsWith("/") ? base.slice(0, -1) : base;
+    const normalizedBase = normalizeBaseUrl(base);
     const baseURL = `${normalizedBase}/v1`;
 
     const client = new OpenAI({

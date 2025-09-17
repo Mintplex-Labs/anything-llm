@@ -6,6 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const { normalizeBaseUrl } = require("../../helpers/url");
 
 let manager;
 const modelInfoCache = {};
@@ -76,10 +77,12 @@ class FoundryLLM {
   }
 
   get openai() {
+    const normalizedBase = normalizeBaseUrl(process.env.FOUNDRY_BASE_PATH);
+
     const { OpenAI: OpenAIApi } = require("openai");
     return new OpenAIApi({
-      baseURL: manager.endpoint,
-      apiKey: manager.apiKey,
+      baseURL: `${normalizedBase}/v1`,
+      apiKey: null,
     });
   }
 
