@@ -19,8 +19,10 @@ export default {
     return `/login${noTry ? "?nt=1" : ""}`;
   },
   sso: {
-    login: () => {
-      return "/sso/simple";
+    login: (noLoginRedirect = null) => {
+      return applyOptions(`/sso/simple`, {
+        search: noLoginRedirect ? `nlr=${noLoginRedirect}` : "",
+      });
     },
   },
   onboarding: {

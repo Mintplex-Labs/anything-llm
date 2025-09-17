@@ -21,7 +21,7 @@ export default function Login() {
 
   if (loading || ssoLoading) return <FullScreenLoader />;
   if (ssoConfig.enabled && ssoConfig.noLogin)
-    return <Navigate to={paths.sso.login()} />;
+    return <Navigate to={paths.sso.login(ssoConfig.noLoginRedirect)} />;
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
 
   return <PasswordModal mode={mode} />;
