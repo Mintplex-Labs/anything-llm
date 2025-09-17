@@ -5,6 +5,7 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -106,10 +107,12 @@ function validatedHeaders(headers = {}) {
 async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
     let pageContents = [];
+    const runtimeSettings = new RuntimeSettings();
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
+        args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
         waitUntil: "networkidle2",
