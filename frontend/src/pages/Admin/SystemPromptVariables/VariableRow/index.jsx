@@ -8,6 +8,36 @@ import { titleCase } from "text-case";
 import truncate from "truncate";
 import { Trash } from "@phosphor-icons/react";
 
+function getTypeColorTheme(type) {
+  switch (type) {
+    case "system":
+      return {
+        bg: "bg-blue-600/20",
+        text: "text-blue-400 light:text-blue-800",
+      };
+    case "user":
+      return {
+        bg: "bg-cyan-600/20",
+        text: "text-cyan-400 light:text-cyan-800",
+      };
+    case "workspace":
+      return {
+        bg: "bg-orange-600/20",
+        text: "text-orange-400 light:text-orange-800",
+      };
+    case "dynamic":
+      return {
+        bg: "bg-green-600/20",
+        text: "text-green-400 light:text-green-800",
+      };
+    default:
+      return {
+        bg: "bg-yellow-600/20",
+        text: "text-yellow-400 light:text-yellow-800",
+      };
+  }
+}
+
 /**
  * A row component for displaying a system prompt variable
  * @param {{id: number|null, key: string, value: string, description: string, type: string}} variable - The system prompt variable to display
@@ -16,6 +46,7 @@ import { Trash } from "@phosphor-icons/react";
  */
 export default function VariableRow({ variable, onRefresh }) {
   const rowRef = useRef(null);
+  const colorTheme = getTypeColorTheme(variable.type);
   const { isOpen, openModal, closeModal } = useModal();
 
   const handleDelete = async () => {
@@ -37,28 +68,6 @@ export default function VariableRow({ variable, onRefresh }) {
       showToast("Failed to delete variable", "error", { clear: true });
     }
   };
-
-  const getTypeColorTheme = (type) => {
-    switch (type) {
-      case "system":
-        return {
-          bg: "bg-blue-600/20",
-          text: "text-blue-400 light:text-blue-800",
-        };
-      case "dynamic":
-        return {
-          bg: "bg-green-600/20",
-          text: "text-green-400 light:text-green-800",
-        };
-      default:
-        return {
-          bg: "bg-yellow-600/20",
-          text: "text-yellow-400 light:text-yellow-800",
-        };
-    }
-  };
-
-  const colorTheme = getTypeColorTheme(variable.type);
 
   return (
     <>

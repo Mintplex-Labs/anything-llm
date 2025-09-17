@@ -13,7 +13,7 @@ const moment = require("moment");
  */
 
 const SystemPromptVariables = {
-  VALID_TYPES: ["user", "system", "static"],
+  VALID_TYPES: ["user", "system", "static", "workspace"],
   DEFAULT_VARIABLES: [
     {
       key: "time",
@@ -35,6 +35,16 @@ const SystemPromptVariables = {
       description: "Current date and time",
       type: "system",
       multiUserRequired: false,
+    },
+    {
+      key: "user.id",
+      value: async (userId = null) => {
+        if (!userId) return "[User id]";
+        return Number(userId);
+      },
+      description: "Current user's id",
+      type: "user",
+      multiUserRequired: true,
     },
     {
       key: "user.name",
@@ -72,6 +82,43 @@ const SystemPromptVariables = {
       },
       description: "Current user's bio field from their profile",
       type: "user",
+      multiUserRequired: true,
+    },
+    {
+      key: "workspace.id",
+      value: async (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace id]";
+        try {
+          const workspace = await prisma.workspaces.findUnique({
+            where: { id: Number(workspaceId) },
+          });
+          return workspace?.id || "[Workspace id is empty]";
+        } catch (error) {
+          console.error("Error fetching workspace id:", error);
+          return "[Workspace id is empty]";
+        }
+      },
+      description: "Current workspace's id",
+      type: "workspace",
+      multiUserRequired: true,
+    },
+    {
+      key: "workspace.name",
+      value: async (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace name]";
+        try {
+          const workspace = await prisma.workspaces.findUnique({
+            where: { id: Number(workspaceId) },
+            select: { name: true },
+          });
+          return workspace?.name || "[Workspace name is empty]";
+        } catch (error) {
+          console.error("Error fetching workspace name:", error);
+          return "[Workspace name is empty]";
+        }
+      },
+      description: "Current workspace's name",
+      type: "workspace",
       multiUserRequired: true,
     },
   ],
@@ -186,9 +233,14 @@ const SystemPromptVariables = {
    * Injects variables into a string based on the user ID (if provided) and the variables available
    * @param {string} str - the input string to expand variables into
    * @param {number|null} userId - the user ID to use for dynamic variables
+   * @param {number|null} workspaceId - the workspace ID to use for dynamic variables
    * @returns {Promise<string>}
    */
-  expandSystemPromptVariables: async function (str, userId = null) {
+  expandSystemPromptVariables: async function (
+    str,
+    userId = null,
+    workspaceId = null
+  ) {
     if (!str) return str;
 
     try {
@@ -222,6 +274,32 @@ const SystemPromptVariables = {
             }
           } else {
             result = result.replace(match, `[User ${userProp}]`);
+          }
+          continue;
+        }
+
+        if (key.startsWith("workspace.")) {
+          const workspaceProp = key.split(".")[1];
+          const variable = allVariables.find((v) => v.key === key);
+
+          if (variable && typeof variable.value === "function") {
+            if (variable.value.constructor.name === "AsyncFunction") {
+              try {
+                const value = await variable.value(workspaceId);
+                result = result.replace(match, value);
+              } catch (error) {
+                console.error(
+                  `Error processing workspace variable ${key}:`,
+                  error
+                );
+                result = result.replace(match, `[Workspace ${workspaceProp}]`);
+              }
+            } else {
+              const value = variable.value();
+              result = result.replace(match, value);
+            }
+          } else {
+            result = result.replace(match, `[Workspace ${workspaceProp}]`);
           }
           continue;
         }
