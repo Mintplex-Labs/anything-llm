@@ -169,5 +169,6 @@ function getDeploymentVersion() {
 module.exports = {
   utilEndpoints,
   getGitVersion,
+  getDeploymentVersion,
   getModelTag,
 };
