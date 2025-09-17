@@ -563,7 +563,6 @@ const SystemSettings = {
 
       // Foundry Keys
       FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
-      FoundryApiKey: !!process.env.FOUNDRY_API_KEY,
       FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
 
       // Generic OpenAI Keys

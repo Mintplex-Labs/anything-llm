@@ -710,10 +710,6 @@ const KEY_MAPPING = {
     envKey: "FOUNDRY_BASE_PATH",
     checks: [isNotEmpty],
   },
-  FoundryApiKey: {
-    envKey: "FOUNDRY_API_KEY",
-    checks: [],
-  },
   FoundryModelPref: {
     envKey: "FOUNDRY_MODEL_PREF",
     checks: [isNotEmpty],

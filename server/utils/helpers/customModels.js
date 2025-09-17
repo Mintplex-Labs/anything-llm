@@ -722,9 +722,11 @@ async function foundryModels(basePath = null) {
         error: "Foundry base path not set.",
       };
 
-    const fullURL = new URL(base);
-    fullURL.pathname = "/foundry/list";
-    const allModels = await fetch(fullURL.toString()).then((res) => {
+    const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
+    // foundry/list endpoint shows all models available
+    const foundryListURL = new URL(normalizedBase);
+    foundryListURL.pathname = "/foundry/list";
+    const allModels = await fetch(foundryListURL.toString()).then((res) => {
       if (!res.ok)
         throw new Error(
           `Could not fetch all models from Foundry: ${res.statusText}`
@@ -732,13 +734,43 @@ async function foundryModels(basePath = null) {
       return res.json();
     });
 
+    // OpenAi compat endpoint shows all models downloaded
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: `${normalizedBase}/v1`,
+      apiKey: null,
+    });
+    const downloadedModels = await openai.models
+      .list()
+      .then((results) => results.data || [])
+      .catch((e) => {
+        console.error(`Foundry OpenAI models:listModels`, e.message);
+        return [];
+      });
+
+    // Create a set of downloaded model IDs for quick lookup
+    const downloadedModelIds = new Set(
+      downloadedModels.map((model) => model.id)
+    );
+
+    // Find all available aliases
     const aliases = [...new Set(allModels.map((model) => model.alias))];
+    // Check any model with that alias is downloaded
     const formattedModels = aliases.map((alias) => {
+      const modelsWithAlias = allModels.filter(
+        (model) => model.alias === alias
+      );
+      const isDownloaded = modelsWithAlias.some((model) =>
+        downloadedModelIds.has(model.name)
+      );
+
       return {
         id: alias,
         name: alias,
+        downloaded: isDownloaded,
       };
     });
+
     return { models: formattedModels, error: null };
   } catch (e) {
     console.error(`Foundry:listModels`, e.message);

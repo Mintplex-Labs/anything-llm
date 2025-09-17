@@ -32,12 +32,22 @@ class FoundryLLM {
     }
 
     this.log(`Initializing model ${this.model}...`);
-    const modelInfo = await manager.init(this.model);
 
-    console.log(modelInfo);
-    this.#modelInfo = modelInfo;
-    modelInfoCache[this.model] = modelInfo;
-    this.log(`Model ${this.model} initialized successfully.`);
+    const sdkModelInfo = await manager.init(this.model);
+    const models = await this.openai.models.list();
+    const modelData = models.data.find((model) => model.id === sdkModelInfo.id);
+
+    if (!modelData) {
+      throw new Error(
+        `Could not find OpenAI model info for ${sdkModelInfo.id}`
+      );
+    }
+
+    this.#modelInfo = modelData;
+    modelInfoCache[this.model] = modelData;
+    this.log(
+      `Model ${this.model} initialized with ${modelData.maxInputTokens} input tokens, ${modelData.maxOutputTokens} output tokens`
+    );
   }
 
   get openai() {
@@ -70,9 +80,6 @@ class FoundryLLM {
 
   promptWindowLimit() {
     if (!this.#modelInfo) {
-      this.log(
-        "promptWindowLimit: #modelInfo not initialized, returning default 4096"
-      );
       return 4096;
     }
 
@@ -81,8 +88,6 @@ class FoundryLLM {
     return Number(limit);
   }
 
-  // Short circuit since we have no idea if the model is valid or not
-  // in pre-flight for generic endpoints
   isValidChatCompletionModel() {
     return true;
   }
@@ -144,7 +149,7 @@ class FoundryLLM {
           model: this.#modelInfo.id,
           messages,
           temperature,
-          max_tokens: this.#modelInfo.maxOutputTokens,
+          max_tokens: this.#modelInfo.maxOutputTokens || 1024,
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -178,7 +183,7 @@ class FoundryLLM {
         stream: true,
         messages,
         temperature,
-        max_tokens: this.#modelInfo.maxOutputTokens,
+        max_tokens: this.#modelInfo.maxOutputTokens || 1024,
       }),
       messages
       // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
