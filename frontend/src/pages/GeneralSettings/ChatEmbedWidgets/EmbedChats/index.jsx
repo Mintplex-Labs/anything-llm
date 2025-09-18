@@ -94,10 +94,14 @@ export default function EmbedChatsView() {
   useEffect(() => {
     async function fetchChats() {
       setLoading(true);
-      const { chats: _chats, hasPages = false } = await Embed.chats(offset);
-      setChats(_chats);
-      setCanNext(hasPages);
-      setLoading(false);
+      await Embed.chats(offset)
+        .then(({ chats: _chats, hasPages = false }) => {
+          setChats(_chats);
+          setCanNext(hasPages);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
     fetchChats();
   }, [offset]);
