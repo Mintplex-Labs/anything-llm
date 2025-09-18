@@ -127,7 +127,6 @@ async function scrapeGenericUrl({
     documents: [],
   };
 
-  // If the content type is not a PDF, get the content of the web page
 }
 
 /**
