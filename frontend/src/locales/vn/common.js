@@ -282,58 +282,58 @@ const TRANSLATIONS = {
   },
   agent: {
     "performance-warning":
-      "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
+      "Hiệu suất của các LLM không hỗ trợ rõ ràng việc gọi công cụ phụ thuộc rất nhiều vào khả năng và độ chính xác của mô hình. Một số khả năng có thể bị hạn chế hoặc không hoạt động.",
     provider: {
-      title: "Workspace Agent LLM Provider",
+      title: "Nhà cung cấp LLM cho Agent Workspace",
       description:
-        "The specific LLM provider & model that will be used for this workspace's @agent agent.",
+        "Nhà cung cấp LLM & mô hình cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
     },
     mode: {
       chat: {
-        title: "Workspace Agent Chat model",
+        title: "Mô hình Chat cho Agent Workspace",
         description:
-          "The specific chat model that will be used for this workspace's @agent agent.",
+          "Mô hình chat cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
       },
-      title: "Workspace Agent model",
+      title: "Mô hình Agent Workspace",
       description:
-        "The specific LLM model that will be used for this workspace's @agent agent.",
-      wait: "-- waiting for models --",
+        "Mô hình LLM cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
+      wait: "-- đang chờ mô hình --",
     },
     skill: {
-      title: "Default agent skills",
+      title: "Kỹ năng agent mặc định",
       description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
+        "Cải thiện khả năng tự nhiên của agent mặc định với những kỹ năng được xây dựng sẵn này. Thiết lập này áp dụng cho tất cả workspace.",
       rag: {
-        title: "RAG & long-term memory",
+        title: "RAG & bộ nhớ dài hạn",
         description:
-          'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+          'Cho phép agent sử dụng tài liệu cục bộ của bạn để trả lời truy vấn hoặc yêu cầu agent "ghi nhớ" các phần nội dung để truy xuất bộ nhớ dài hạn.',
       },
       view: {
-        title: "View & summarize documents",
+        title: "Xem & tóm tắt tài liệu",
         description:
-          "Allow the agent to list and summarize the content of workspace files currently embedded.",
+          "Cho phép agent liệt kê và tóm tắt nội dung của các tệp workspace hiện đang được nhúng.",
       },
       scrape: {
-        title: "Scrape websites",
+        title: "Thu thập dữ liệu website",
         description:
-          "Allow the agent to visit and scrape the content of websites.",
+          "Cho phép agent truy cập và thu thập nội dung của các website.",
       },
       generate: {
-        title: "Generate charts",
+        title: "Tạo biểu đồ",
         description:
-          "Enable the default agent to generate various types of charts from data provided or given in chat.",
+          "Cho phép agent mặc định tạo các loại biểu đồ khác nhau từ dữ liệu được cung cấp hoặc đưa ra trong chat.",
       },
       save: {
-        title: "Generate & save files to browser",
+        title: "Tạo & lưu tệp",
         description:
-          "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
+          "Cho phép agent mặc định tạo và ghi vào các tệp có thể lưu vào máy tính của bạn.",
       },
       web: {
-        title: "Live web search and browsing",
+        title: "Tìm kiếm web trực tiếp và duyệt web",
         "desc-start":
-          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
+          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
         "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
+          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
       },
     },
   },

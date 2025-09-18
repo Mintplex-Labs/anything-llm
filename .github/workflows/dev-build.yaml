@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['upload-ui-ux'] # put your current branch to create a build. Core team only.
+    branches: ['3999-chromium-flags'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
