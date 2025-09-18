@@ -287,7 +287,7 @@ export default function PromptInput({
       window.dispatchEvent(event);
     }
 
-    if (e.key === "Escape") {
+    if (e.key === "Escape" && showSlashCommand) {
       e.preventDefault();
       setShowSlashCommand(false);
     }
