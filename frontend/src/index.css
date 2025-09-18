@@ -314,10 +314,6 @@ a {
   }
 }
 
-.markdown-renderer {
-  white-space: normal;
-}
-
 .doc__source {
   opacity: 0;
   animation-delay: 50ms;

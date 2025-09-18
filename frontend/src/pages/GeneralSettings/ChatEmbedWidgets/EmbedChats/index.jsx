@@ -198,30 +198,10 @@ export default function EmbedChatsView() {
           </thead>
           <tbody>
             {chats.map((chat) => (
-              <ChatRow
-                key={chat.id}
-                chat={chat}
-                onDelete={handleDeleteChat}
-                showThinking={showThinking}
-              />
+              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
             ))}
           </tbody>
         </table>
-        <div className="flex items-center gap-x-3 mt-4 pb-6">
-          <span className="text-xs leading-[18px] font-base text-theme-text-secondary">
-            Show "Thinking" Process
-          </span>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              id="show_thinking"
-              type="checkbox"
-              checked={showThinking}
-              onChange={(e) => setShowThinking(e.target.checked)}
-              className="peer sr-only"
-            />
-            <div className="pointer-events-none peer h-5 w-9 rounded-full bg-zinc-400 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border-none after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-button peer-checked:after:translate-x-full peer-focus:outline-none"></div>
-          </label>
-        </div>
         {(offset > 0 || canNext) && (
           <div className="flex items-center justify-end gap-2 mt-4 pb-6">
             <button

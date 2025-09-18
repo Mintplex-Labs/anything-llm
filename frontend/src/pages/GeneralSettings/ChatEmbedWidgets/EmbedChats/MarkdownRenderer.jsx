@@ -2,6 +2,7 @@ import { useState } from "react";
 import MarkdownIt from "markdown-it";
 import { CaretDown } from "@phosphor-icons/react";
 import "highlight.js/styles/github-dark.css";
+import DOMPurify from "@/utils/chat/purify";
 
 const md = new MarkdownIt({
   html: true,
@@ -64,29 +65,22 @@ function parseContent(content) {
   return parts;
 }
 
-export default function MarkdownRenderer({ content, showThinking }) {
+export default function MarkdownRenderer({ content }) {
   if (!content) return null;
-
-  if (!showThinking) {
-    const processedContent = content.replace(/<think>[\s\S]*?<\/think>/g, "");
-    const html = md.render(processedContent);
-    return (
-      <div
-        className="markdown-renderer"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    );
-  }
 
   const parts = parseContent(content);
   return (
-    <div className="markdown-renderer">
+    <div className="whitespace-normal">
       {parts.map((part, index) => {
         const html = md.render(part.text);
-        if (part.type === "think") {
+        if (part.type === "think")
           return <ThoughtBubble key={index} thought={part.text} />;
-        }
-        return <div key={index} dangerouslySetInnerHTML={{ __html: html }} />;
+        return (
+          <div
+            key={index}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
+          />
+        );
       })}
     </div>
   );
