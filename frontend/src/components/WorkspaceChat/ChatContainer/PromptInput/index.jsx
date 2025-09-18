@@ -286,6 +286,11 @@ export default function PromptInput({
       });
       window.dispatchEvent(event);
     }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setShowSlashCommand(false);
+    }
   }
   return (
     <div
