@@ -256,39 +256,40 @@ export default function PromptInput({
     setPromptInput(e.target.value);
   }
 
+  function handleKeyDown(e) {
+    // Only handle arrow keys when slash commands are showing
+    if (!showSlashCommand) return;
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedSlashCommand((prev) => {
+        if (prev <= 0) {
+          return qtyOfSlashCommands - 1;
+        }
+        return prev - 1;
+      });
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedSlashCommand((prev) => {
+        if (prev >= qtyOfSlashCommands - 1) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }
+    if (e.key === "Enter" && showSlashCommand) {
+      e.preventDefault();
+      // Trigger the highlighted command
+      const event = new CustomEvent("selectHighlightedSlashCommand", {
+        detail: { highlightedIndex: highlightedSlashCommand },
+      });
+      window.dispatchEvent(event);
+    }
+  }
   return (
     <div
-      onKeyDown={(e) => {
-        // Only handle arrow keys when slash commands are showing
-        if (!showSlashCommand) return;
-
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          setHighlightedSlashCommand((prev) => {
-            if (prev <= 0) {
-              return qtyOfSlashCommands - 1;
-            }
-            return prev - 1;
-          });
-        }
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          setHighlightedSlashCommand((prev) => {
-            if (prev >= qtyOfSlashCommands - 1) {
-              return 0;
-            }
-            return prev + 1;
-          });
-        }
-        if (e.key === "Enter" && showSlashCommand) {
-          e.preventDefault();
-          // Trigger the highlighted command
-          const event = new CustomEvent("selectHighlightedSlashCommand", {
-            detail: { highlightedIndex: highlightedSlashCommand },
-          });
-          window.dispatchEvent(event);
-        }
-      }}
+      onKeyDown={handleKeyDown}
       className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center"
     >
       <SlashCommands
