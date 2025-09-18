@@ -5,6 +5,7 @@ import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
 import MarkdownRenderer from "../MarkdownRenderer";
+import { safeJsonParse } from "@/utils/request";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -84,7 +85,11 @@ export default function ChatRow({ chat, onDelete }) {
       </ModalWrapper>
       <ModalWrapper isOpen={isResponseOpen}>
         <TextPreview
-          text={<MarkdownRenderer content={JSON.parse(chat.response)?.text} />}
+          text={
+            <MarkdownRenderer
+              content={safeJsonParse(chat.response, {})?.text}
+            />
+          }
           closeModal={closeResponseModal}
         />
       </ModalWrapper>
@@ -133,11 +138,7 @@ const ConnectionDetails = ({
   verbose = false,
   connection_information,
 }) => {
-  let details = {};
-  try {
-    details = JSON.parse(connection_information);
-  } catch {}
-
+  const details = safeJsonParse(connection_information, {});
   if (Object.keys(details).length === 0) return null;
 
   if (verbose) {
