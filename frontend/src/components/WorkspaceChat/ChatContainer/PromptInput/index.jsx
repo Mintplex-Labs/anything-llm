@@ -24,6 +24,7 @@ import {
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
+import System from "@/models/system";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -41,11 +42,12 @@ export default function PromptInput({
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
+  const [highlightedSlashCommand, setHighlightedSlashCommand] = useState(1);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
-  const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
+  const [qtyOfSlashCommands, setQtyOfSlashCommands] = useState(0);
   const { textSizeClass } = useTextSize();
 
   /**
@@ -60,9 +62,17 @@ export default function PromptInput({
     else setPromptInput(messageContent ?? "");
   }
 
+  const fetchPresets = async () => {
+    const presets = await System.getSlashCommandPresets();
+    setQtyOfSlashCommands(presets.length + 1);
+  };
+
   useEffect(() => {
-    if (!!window)
-      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    fetchPresets();
+  }, []);
+
+  useEffect(() => {
+    if (window) window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
     return () =>
       window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
   }, []);
@@ -88,7 +98,6 @@ export default function PromptInput({
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
   function handleSubmit(e) {
-    setFocused(false);
     submit(e);
   }
 
@@ -99,7 +108,10 @@ export default function PromptInput({
 
   function checkForSlash(e) {
     const input = e.target.value;
-    if (input === "/") setShowSlashCommand(true);
+    if (input === "/") {
+      setShowSlashCommand(true);
+      setHighlightedSlashCommand(0); // Start with reset command highlighted
+    }
     if (showSlashCommand) setShowSlashCommand(false);
     return;
   }
@@ -121,6 +133,8 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
+      // Don't submit if slash commands are showing - let the slash command handler take care of it
+      if (showSlashCommand) return;
       if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
       return submit(event);
     }
@@ -243,12 +257,47 @@ export default function PromptInput({
   }
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
+    <div
+      onKeyDown={(e) => {
+        // Only handle arrow keys when slash commands are showing
+        if (!showSlashCommand) return;
+
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setHighlightedSlashCommand((prev) => {
+            if (prev <= 0) {
+              return qtyOfSlashCommands - 1;
+            }
+            return prev - 1;
+          });
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setHighlightedSlashCommand((prev) => {
+            if (prev >= qtyOfSlashCommands - 1) {
+              return 0;
+            }
+            return prev + 1;
+          });
+        }
+        if (e.key === "Enter" && showSlashCommand) {
+          e.preventDefault();
+          // Trigger the highlighted command
+          const event = new CustomEvent("selectHighlightedSlashCommand", {
+            detail: { highlightedIndex: highlightedSlashCommand },
+          });
+          window.dispatchEvent(event);
+        }
+      }}
+      className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center"
+    >
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
         promptRef={textareaRef}
+        highlightedSlashCommand={highlightedSlashCommand}
+        setHighlightedSlashCommand={setHighlightedSlashCommand}
       />
       <AvailableAgents
         showing={showAgents}
@@ -274,9 +323,7 @@ export default function PromptInput({
                   handlePasteEvent(e);
                 }}
                 required={true}
-                onFocus={() => setFocused(true)}
                 onBlur={(e) => {
-                  setFocused(false);
                   adjustTextArea(e);
                 }}
                 value={promptInput}
