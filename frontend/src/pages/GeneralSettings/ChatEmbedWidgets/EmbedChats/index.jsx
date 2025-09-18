@@ -55,7 +55,7 @@ export default function EmbedChatsView() {
   const query = useQuery();
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const [showThinking, setShowThinking] = useState(false);
+  const [showThinking, setShowThinking] = useState(true);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -135,14 +135,6 @@ export default function EmbedChatsView() {
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
             {t("embed-chats.title")}
           </p>
-          <div className="flex items-center">
-            <label className="text-sm mr-2">Show "thinking"</label>
-            <input
-              type="checkbox"
-              checked={showThinking}
-              onChange={(e) => setShowThinking(e.target.checked)}
-            />
-          </div>
           <div className="relative">
             <button
               ref={openMenuButton}
@@ -215,6 +207,21 @@ export default function EmbedChatsView() {
             ))}
           </tbody>
         </table>
+        <div className="flex items-center gap-x-3 mt-4 pb-6">
+          <span className="text-xs leading-[18px] font-base text-theme-text-secondary">
+            Show "Thinking" Process
+          </span>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input
+              id="show_thinking"
+              type="checkbox"
+              checked={showThinking}
+              onChange={(e) => setShowThinking(e.target.checked)}
+              className="peer sr-only"
+            />
+            <div className="pointer-events-none peer h-5 w-9 rounded-full bg-zinc-400 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border-none after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-button peer-checked:after:translate-x-full peer-focus:outline-none"></div>
+          </label>
+        </div>
         {(offset > 0 || canNext) && (
           <div className="flex items-center justify-end gap-2 mt-4 pb-6">
             <button
@@ -226,7 +233,7 @@ export default function EmbedChatsView() {
                   : "bg-theme-bg-secondary text-theme-text-primary hover:bg-theme-hover"
               }`}
             >
-              {t("embed-chats.previous")}
+              {t("common.previous")}
             </button>
             <button
               onClick={handleNext}
@@ -237,7 +244,7 @@ export default function EmbedChatsView() {
                   : "bg-theme-bg-secondary text-theme-text-primary hover:bg-theme-hover"
               }`}
             >
-              {t("embed-chats.next")}
+              {t("common.next")}
             </button>
           </div>
         )}
