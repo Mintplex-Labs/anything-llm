@@ -832,6 +832,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.DellProAiStudioProvider({ model: config.model });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
+      case "submodel":
+        return new Providers.SubModelProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

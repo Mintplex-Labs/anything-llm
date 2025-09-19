@@ -203,6 +203,12 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
+      case "submodel":
+        if (!process.env.SUBMODEL_INSTAGEN_ACCESS_KEY)
+          throw new Error(
+            "SubModel InstaGen Access Key must be provided to use agents."
+          );
+        break;
 
       case "cometapi":
         if (!process.env.COMETAPI_LLM_API_KEY)
@@ -281,6 +287,8 @@ class AgentHandler {
         return process.env.DPAIS_LLM_MODEL_PREF;
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "submodel":
+        return process.env.SUBMODEL_MODEL_PREF ?? "deepseek-ai/DeepSeek-V3-0324";
       default:
         return null;
     }

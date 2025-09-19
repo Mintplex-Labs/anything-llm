@@ -145,6 +145,9 @@ function getModelTag() {
     case "moonshotai":
       model = process.env.MOONSHOT_AI_MODEL_PREF;
       break;
+    case "submodel":
+      model = process.env.SUBMODEL_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
