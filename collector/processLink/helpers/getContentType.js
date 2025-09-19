@@ -1,3 +1,5 @@
+const { validURL } = require("../../utils/url");
+
 /**
  * Get the content type of a resource
  * @param {string} url - The URL to get the content type of
@@ -12,11 +14,8 @@ async function getContentType(url) {
     }
 
     // Basic URL validation
-    try {
-      new URL(url);
-    } catch (urlError) {
-      console.error("Malformed URL:", url);
-      return { success: false, reason: "Malformed URL." };
+    if (!validURL(url)) {
+      return { success: false, reason: "Not a valid URL." };
     }
 
     const res = await fetch(url, {
