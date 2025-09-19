@@ -94,7 +94,8 @@ async function chatPrompt(workspace, user = null) {
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
   return await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
-    user?.id
+    user?.id,
+    workspace?.id
   );
 }
 
