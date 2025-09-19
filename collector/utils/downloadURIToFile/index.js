@@ -1,11 +1,20 @@
-const { WATCH_DIRECTORY } = require("../../utils/constants");
+const { WATCH_DIRECTORY } = require("../constants");
 const fs = require("fs");
 const { pipeline } = require("stream/promises");
+const { validURL } = require("../url");
+
 /**
  * Download a file to the hotdir
  * @param {string} url - The URL of the file to download
+ * @returns {Promise<{success: boolean, data: string} | {success: false, reason: string}>} - The path to the downloaded file
  */
-async function downloadFileToHotDir(url) {
+
+async function downloadURIToFile(url) {
+  // Validate the URL
+  if (!validURL(url)) {
+    return { success: false, reason: "Not a valid URL." };
+  }
+  // Download the file
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -27,5 +36,5 @@ async function downloadFileToHotDir(url) {
 }
 
 module.exports = {
-  downloadFileToHotDir,
+  downloadURIToFile,
 };

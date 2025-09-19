@@ -6,8 +6,8 @@ const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const { getContentType } = require("../helpers/getContentType");
-const { downloadFileToHotDir } = require("../helpers/downloadFileToHotDir");
 const { processSingleFile } = require("../../processSingleFile");
+const { downloadURIToFile } = require("../../utils/downloadURIToFile");
 const path = require("path");
 const { ACCEPTED_MIMES } = require("../../utils/constants");
 
@@ -102,7 +102,7 @@ async function scrapeGenericUrl({
   }
 
   // If the content type is an accepted non HTML or text file, download the file to the hotdir and process it
-  const fileContentResult = await downloadFileToHotDir(link);
+  const fileContentResult = await downloadURIToFile(link);
   if (!fileContentResult.success || !fileContentResult.data) {
     return {
       success: false,
