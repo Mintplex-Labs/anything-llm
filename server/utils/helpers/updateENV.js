@@ -1152,6 +1152,7 @@ function dumpENV() {
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
+    "SIMPLE_SSO_NO_LOGIN_REDIRECT",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
 
@@ -1166,6 +1167,9 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+
+    // Specify Chromium args for collector
+    "ANYTHINGLLM_CHROMIUM_ARGS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
