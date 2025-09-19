@@ -830,6 +830,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.GeminiProvider({ model: config.model });
       case "dpais":
         return new Providers.DellProAiStudioProvider({ model: config.model });
+      case "foundry":
+        return new Providers.FoundryProvider({ model: config.model });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
       default:

@@ -33,6 +33,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 
 import PreLoader from "@/components/Preloader";
@@ -65,6 +66,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
+import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -334,6 +336,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
+  },
+  {
+    name: "Microsoft Foundry Local",
+    value: "foundry",
+    logo: FoundryLogo,
+    options: (settings) => <FoundryOptions settings={settings} />,
+    description: "Run Microsoft's Foundry models locally.",
+    requiredConfig: ["FoundryBasePath", "FoundryModelPref"],
   },
 ];
 

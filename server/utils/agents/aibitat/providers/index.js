@@ -24,6 +24,7 @@ const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
 const MoonshotAiProvider = require("./moonshotAi.js");
+const FoundryProvider = require("./foundry.js");
 const CometApiProvider = require("./cometapi.js");
 
 module.exports = {
@@ -54,4 +55,5 @@ module.exports = {
   GeminiProvider,
   DellProAiStudioProvider,
   MoonshotAiProvider,
+  FoundryProvider,
 };

@@ -251,6 +251,17 @@ class Provider {
           apiKey: null,
           ...config,
         });
+      case "foundry": {
+        const { normalizeBaseUrl } = require("../../helpers/url");
+        const normalizedBase = normalizeBaseUrl(process.env.FOUNDRY_BASE_PATH);
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: `${normalizedBase}/v1`,
+          },
+          apiKey: null,
+          ...config,
+        });
+      }
       case "cometapi":
         return new ChatOpenAI({
           configuration: {

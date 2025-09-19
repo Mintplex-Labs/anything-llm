@@ -705,6 +705,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Foundry Options
+  FoundryBasePath: {
+    envKey: "FOUNDRY_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  FoundryModelPref: {
+    envKey: "FOUNDRY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // CometAPI Options
   CometApiLLMApiKey: {
     envKey: "COMETAPI_LLM_API_KEY",
@@ -827,6 +837,7 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "foundry",
     "cometapi",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

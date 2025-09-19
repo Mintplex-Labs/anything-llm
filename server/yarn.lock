@@ -4672,6 +4672,13 @@ forwarded@0.2.0:
   resolved "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz"
   integrity sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==
 
+foundry-local-sdk@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/foundry-local-sdk/-/foundry-local-sdk-0.4.0.tgz#20486f88b191c0db12ba0c2aa87aa93370a9c2f3"
+  integrity sha512-7a6YPGhMU15l61D2CKEMzcr66u34fLqVmdZKWY0s18+gEOnS8DBPZm2uh0FCGpIYSOLEuWzVy1N2nfKxE9nBjg==
+  dependencies:
+    whatwg-fetch "^3.6.20"
+
 fresh@0.5.2, fresh@^0.5.2:
   version "0.5.2"
   resolved "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz"

@@ -35,6 +35,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "foundry",
   // Embedding Engines
   "native-embedder",
 ];
@@ -92,6 +93,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "foundry":
+      return await foundryModels(basePath);
     case "native-embedder":
       return await getNativeEmbedderModels();
     default:
@@ -726,6 +729,48 @@ async function getMoonshotAiModels(_apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
   return { models, error: null };
+}
+
+async function foundryModels(basePath = null) {
+  try {
+    const base = basePath || process.env.FOUNDRY_BASE_PATH;
+    if (!base)
+      return {
+        models: [],
+        error: "Foundry base path not set.",
+      };
+
+    const { FoundryLocalManager } = require("foundry-local-sdk");
+    const manager = new FoundryLocalManager();
+
+    await manager.init();
+    const catalogModels = await manager.listCatalogModels(); // All available models
+    const cachedModels = await manager.listCachedModels(); // Downloaded models
+
+    const cachedModelIds = new Set(cachedModels.map((model) => model.id));
+
+    // Group by alias
+    const aliases = [...new Set(catalogModels.map((model) => model.alias))];
+    const formattedModels = aliases.map((alias) => {
+      const modelsWithAlias = catalogModels.filter(
+        (model) => model.alias === alias
+      );
+      const isDownloaded = modelsWithAlias.some((model) =>
+        cachedModelIds.has(model.id)
+      );
+
+      return {
+        id: alias,
+        name: alias,
+        downloaded: isDownloaded,
+      };
+    });
+
+    return { models: formattedModels, error: null };
+  } catch (e) {
+    console.error(`Foundry:listModels`, e.message);
+    return { models: [], error: e.message };
+  }
 }
 
 module.exports = {
