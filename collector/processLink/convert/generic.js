@@ -28,6 +28,8 @@ async function scrapeGenericUrl({
   captureAs = "text",
   metadata = {},
 }) {
+  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+
   // Get the content type of the link
   const contentTypeResult = await getContentType(link);
   // If the retrieving the content type failed, return an error
