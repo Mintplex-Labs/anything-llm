@@ -241,52 +241,48 @@ const SystemPromptVariables = {
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
-        // Handle `workspace.X` variables with current workspace's data
-        if (key.startsWith("workspace.")) {
-          const workspaceProp = key.split(".")[1];
+        // Determine if the variable is a workspace or user variable
+        const isWorkspaceOrUserVariable =
+          key.startsWith("workspace.") || key.startsWith("user.");
+
+        // Handle `workspace.X` or `user.X` variables with current workspace's or user's data
+        if (isWorkspaceOrUserVariable) {
+          // Determine the type of variable (Workspace or User)
+          const variableTypeDisplay = key.startsWith("workspace.")
+            ? "Workspace"
+            : "User";
+          // Get the property name after the prefix
+          const prop = key.split(".")[1];
           const variable = allVariables.find((v) => v.key === key);
 
+          // If the variable is a function, call it to get the current value
           if (variable && typeof variable.value === "function") {
+            // If the variable is an async function, call it to get the current value
             if (variable.value.constructor.name === "AsyncFunction") {
+              let value;
               try {
-                const value = await variable.value(workspaceId);
-                result = result.replace(match, value);
+                value = await variable.value(
+                  variableTypeDisplay === "Workspace" ? workspaceId : userId
+                );
               } catch (error) {
                 console.error(
-                  `Error processing workspace variable ${key}:`,
+                  `Error processing ${variableTypeDisplay} variable ${key}:`,
                   error
                 );
-                result = result.replace(match, `[Workspace ${workspaceProp}]`);
+                value = `[${variableTypeDisplay} ${prop}]`;
               }
+              result = result.replace(match, value);
             } else {
-              const value = variable.value(workspaceId);
+              let value;
+              // Call the variable function with the appropriate workspace or user ID
+              value = variable.value(
+                variableTypeDisplay === "Workspace" ? workspaceId : userId
+              );
               result = result.replace(match, value);
             }
           } else {
-            result = result.replace(match, `[Workspace ${workspaceProp}]`);
-          }
-          continue;
-        }
-        // Handle `user.X` variables with current user's data
-        if (key.startsWith("user.")) {
-          const userProp = key.split(".")[1];
-          const variable = allVariables.find((v) => v.key === key);
-
-          if (variable && typeof variable.value === "function") {
-            if (variable.value.constructor.name === "AsyncFunction") {
-              try {
-                const value = await variable.value(userId);
-                result = result.replace(match, value);
-              } catch (error) {
-                console.error(`Error processing user variable ${key}:`, error);
-                result = result.replace(match, `[User ${userProp}]`);
-              }
-            } else {
-              const value = variable.value();
-              result = result.replace(match, value);
-            }
-          } else {
-            result = result.replace(match, `[User ${userProp}]`);
+            // If the variable is not a function, replace the match with the variable value
+            result = result.replace(match, `[${variableTypeDisplay} ${prop}]`);
           }
           continue;
         }
