@@ -88,14 +88,11 @@ class OpenAiLLM {
       return userPrompt;
     }
 
-    const content = [{ type: "text", text: userPrompt }];
+    const content = [{ type: "input_text", text: userPrompt }];
     for (let attachment of attachments) {
       content.push({
-        type: "image_url",
-        image_url: {
-          url: attachment.contentString,
-          detail: "auto",
-        },
+        type: "input_image",
+        image_url: attachment.contentString,
       });
     }
     return content.flat();
