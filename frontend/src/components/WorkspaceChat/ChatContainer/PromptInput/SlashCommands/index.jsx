@@ -32,7 +32,14 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   );
 }
 
-export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
+export function SlashCommands({
+  showing,
+  setShowing,
+  sendCommand,
+  promptRef,
+  highlightedSlashCommand,
+  setHighlightedSlashCommand,
+}) {
   const cmdRef = useRef(null);
   useEffect(() => {
     function listenForOutsideClick() {
@@ -56,12 +63,17 @@ export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
           ref={cmdRef}
           className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
         >
-          <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
+          <ResetCommand
+            highlightedSlashCommand={highlightedSlashCommand}
+            sendCommand={sendCommand}
+            setShowing={setShowing}
+          />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
           <SlashPresets
             sendCommand={sendCommand}
             setShowing={setShowing}
             promptRef={promptRef}
+            highlightedSlashCommand={highlightedSlashCommand}
           />
         </div>
       </div>
