@@ -42,88 +42,88 @@ async function scrapeGenericUrl({
   }
   const contentType = contentTypeResult.contentType;
 
-  if (contentType in ACCEPTED_MIMES) {
-    // If the content type is HTML or text, get the content of the web page with puppeteer
-    if (contentType === "text/html" || contentType === "text/plain") {
-      const content = await getPageContent({
-        link,
-        captureAs,
-        headers: scraperHeaders,
-      });
-
-      if (!content.length) {
-        console.error(`Resulting URL content was empty at ${link}.`);
-        return {
-          success: false,
-          reason: `No URL content found at ${link}.`,
-          documents: [],
-        };
-      }
-
-      if (!processAsDocument) {
-        return {
-          success: true,
-          content,
-        };
-      }
-
-      const url = new URL(link);
-      const decodedPathname = decodeURIComponent(url.pathname);
-      const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
-
-      const data = {
-        id: v4(),
-        url: "file://" + slugify(filename) + ".html",
-        title: metadata.title || slugify(filename) + ".html",
-        docAuthor: metadata.docAuthor || "no author found",
-        description: metadata.description || "No description found.",
-        docSource: metadata.docSource || "URL link uploaded by the user.",
-        chunkSource: `link://${link}`,
-        published: new Date().toLocaleString(),
-        wordCount: content.split(" ").length,
-        pageContent: content,
-        token_count_estimate: tokenizeString(content),
-      };
-
-      const document = writeToServerDocuments({
-        data,
-        filename: `url-${slugify(filename)}-${data.id}`,
-      });
-      console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
-      return { success: true, reason: null, documents: [document] };
-    }
-
-    // If the content type is an accepted non HTML or text file, download the file to the hotdir and process it
-    const fileContentResult = await downloadFileToHotDir(link);
-    if (!fileContentResult.success || !fileContentResult.data) {
-      return {
-        success: false,
-        reason: fileContentResult.reason,
-        documents: [],
-      };
-    }
-
-    const fileFilePath = fileContentResult.data;
-    const targetFilename = path.basename(fileFilePath);
-
-    const processSingleFileResult = await processSingleFile(targetFilename);
-
-    if (!processSingleFileResult.success) {
-      return {
-        success: false,
-        reason: processSingleFileResult.reason,
-        documents: [],
-      };
-    }
-    return processSingleFileResult;
+  // If the content type is not supported, return an error
+  if (!(contentType in ACCEPTED_MIMES)) {
+    return {
+      success: false,
+      reason: `Unsupported content type: ${contentType}`,
+      documents: [],
+    };
   }
 
-  // If the content type is not supported, return an error
-  return {
-    success: false,
-    reason: `Unsupported content type: ${contentType}`,
-    documents: [],
-  };
+  // If the content type is HTML or text, get the content of the web page with puppeteer
+  if (contentType === "text/html" || contentType === "text/plain") {
+    const content = await getPageContent({
+      link,
+      captureAs,
+      headers: scraperHeaders,
+    });
+
+    if (!content.length) {
+      console.error(`Resulting URL content was empty at ${link}.`);
+      return {
+        success: false,
+        reason: `No URL content found at ${link}.`,
+        documents: [],
+      };
+    }
+
+    if (!processAsDocument) {
+      return {
+        success: true,
+        content,
+      };
+    }
+
+    const url = new URL(link);
+    const decodedPathname = decodeURIComponent(url.pathname);
+    const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
+
+    const data = {
+      id: v4(),
+      url: "file://" + slugify(filename) + ".html",
+      title: metadata.title || slugify(filename) + ".html",
+      docAuthor: metadata.docAuthor || "no author found",
+      description: metadata.description || "No description found.",
+      docSource: metadata.docSource || "URL link uploaded by the user.",
+      chunkSource: `link://${link}`,
+      published: new Date().toLocaleString(),
+      wordCount: content.split(" ").length,
+      pageContent: content,
+      token_count_estimate: tokenizeString(content),
+    };
+
+    const document = writeToServerDocuments({
+      data,
+      filename: `url-${slugify(filename)}-${data.id}`,
+    });
+    console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
+    return { success: true, reason: null, documents: [document] };
+  }
+
+  // If the content type is an accepted non HTML or text file, download the file to the hotdir and process it
+  const fileContentResult = await downloadFileToHotDir(link);
+  if (!fileContentResult.success || !fileContentResult.data) {
+    return {
+      success: false,
+      reason: fileContentResult.reason,
+      documents: [],
+    };
+  }
+
+  const fileFilePath = fileContentResult.data;
+  const targetFilename = path.basename(fileFilePath);
+
+  const processSingleFileResult = await processSingleFile(targetFilename);
+
+  if (!processSingleFileResult.success) {
+    return {
+      success: false,
+      reason: processSingleFileResult.reason,
+      documents: [],
+    };
+  }
+  return processSingleFileResult;
 }
 
 /**
