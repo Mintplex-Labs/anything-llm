@@ -7,13 +7,13 @@ const moment = require("moment");
  * @property {string} key
  * @property {string|function} value
  * @property {string} description
- * @property {'system'|'user'|'static'} type
+ * @property {'system'|'user'|'workspace'|'static'} type
  * @property {number} userId
  * @property {boolean} multiUserRequired
  */
 
 const SystemPromptVariables = {
-  VALID_TYPES: ["user", "system", "static"],
+  VALID_TYPES: ["user", "workspace", "system", "static"],
   DEFAULT_VARIABLES: [
     {
       key: "time",
@@ -35,6 +35,16 @@ const SystemPromptVariables = {
       description: "Current date and time",
       type: "system",
       multiUserRequired: false,
+    },
+    {
+      key: "user.id",
+      value: (userId = null) => {
+        if (!userId) return "[User ID]";
+        return userId;
+      },
+      description: "Current user's ID",
+      type: "user",
+      multiUserRequired: true,
     },
     {
       key: "user.name",
@@ -73,6 +83,30 @@ const SystemPromptVariables = {
       description: "Current user's bio field from their profile",
       type: "user",
       multiUserRequired: true,
+    },
+    {
+      key: "workspace.id",
+      value: (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace ID]";
+        return workspaceId;
+      },
+      description: "Current workspace's ID",
+      type: "workspace",
+      multiUserRequired: false,
+    },
+    {
+      key: "workspace.name",
+      value: async (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace name]";
+        const workspace = await prisma.workspaces.findUnique({
+          where: { id: Number(workspaceId) },
+          select: { name: true },
+        });
+        return workspace?.name || "[Workspace name is empty or unknown]";
+      },
+      description: "Current workspace's name",
+      type: "workspace",
+      multiUserRequired: false,
     },
   ],
 
@@ -183,12 +217,17 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Injects variables into a string based on the user ID (if provided) and the variables available
+   * Injects variables into a string based on the user ID and workspace ID (if provided) and the variables available
    * @param {string} str - the input string to expand variables into
    * @param {number|null} userId - the user ID to use for dynamic variables
+   * @param {number|null} workspaceId - the workspace ID to use for workspace variables
    * @returns {Promise<string>}
    */
-  expandSystemPromptVariables: async function (str, userId = null) {
+  expandSystemPromptVariables: async function (
+    str,
+    userId = null,
+    workspaceId = null
+  ) {
     if (!str) return str;
 
     try {
@@ -202,6 +241,32 @@ const SystemPromptVariables = {
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
+        // Handle `workspace.X` variables with current workspace's data
+        if (key.startsWith("workspace.")) {
+          const workspaceProp = key.split(".")[1];
+          const variable = allVariables.find((v) => v.key === key);
+
+          if (variable && typeof variable.value === "function") {
+            if (variable.value.constructor.name === "AsyncFunction") {
+              try {
+                const value = await variable.value(workspaceId);
+                result = result.replace(match, value);
+              } catch (error) {
+                console.error(
+                  `Error processing workspace variable ${key}:`,
+                  error
+                );
+                result = result.replace(match, `[Workspace ${workspaceProp}]`);
+              }
+            } else {
+              const value = variable.value(workspaceId);
+              result = result.replace(match, value);
+            }
+          } else {
+            result = result.replace(match, `[Workspace ${workspaceProp}]`);
+          }
+          continue;
+        }
         // Handle `user.X` variables with current user's data
         if (key.startsWith("user.")) {
           const userProp = key.split(".")[1];
