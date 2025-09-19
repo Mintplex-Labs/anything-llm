@@ -25,6 +25,7 @@ async function scrapeGenericUrl({
   link,
   processAsDocument = true,
   scraperHeaders = {},
+  captureAs = "text",
   metadata = {},
 }) {
   // Get the content type of the link
@@ -44,7 +45,7 @@ async function scrapeGenericUrl({
     if (contentType === "text/html" || contentType === "text/plain") {
       const content = await getPageContent({
         link,
-        captureAs: "text",
+        captureAs,
         headers: scraperHeaders,
       });
 
