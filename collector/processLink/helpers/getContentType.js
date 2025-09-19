@@ -4,7 +4,6 @@
  * @returns {Promise<{success: boolean, contentType: string}>} - The content type of the resource
  */
 async function getContentType(url) {
-  // Determine the content type of the resource by making a HEAD request
   try {
     // Validate URL format before making request
     if (!url || typeof url !== "string") {
@@ -44,7 +43,6 @@ async function getContentType(url) {
 
     return { success: true, contentType: contentTypeWithoutCharset };
   } catch (error) {
-    // Handle network errors, timeouts, and other fetch failures
     console.error("Error fetching content type for URL:", url, error.message);
 
     return { success: false, reason: `Error: ${error.message}` };
