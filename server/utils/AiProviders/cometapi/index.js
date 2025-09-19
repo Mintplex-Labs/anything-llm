@@ -19,6 +19,7 @@ const cacheFolder = path.resolve(
 );
 
 class CometApiLLM {
+  defaultTimeout = 3_000;
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.COMETAPI_LLM_API_KEY)
       throw new Error("No CometAPI API key was set.");
@@ -61,10 +62,14 @@ class CometApiLLM {
    * CometAPI has various models that never return `finish_reasons` and thus leave the stream open
    * which causes issues in subsequent messages. This timeout value forces us to close the stream after
    * x milliseconds. This is a configurable value via the COMETAPI_LLM_TIMEOUT_MS value
-   * @returns {number} The timeout value in milliseconds (default: 500)
+   * @returns {number} The timeout value in milliseconds (default: 3_000)
    */
   #parseTimeout() {
-    if (isNaN(Number(process.env.COMETAPI_LLM_TIMEOUT_MS))) return 500;
+    this.log(
+      `CometAPI timeout is set to ${process.env.COMETAPI_LLM_TIMEOUT_MS ?? this.defaultTimeout}ms`
+    );
+    if (isNaN(Number(process.env.COMETAPI_LLM_TIMEOUT_MS)))
+      return this.defaultTimeout;
     const setValue = Number(process.env.COMETAPI_LLM_TIMEOUT_MS);
     if (setValue < 500) return 500;
     return setValue;
