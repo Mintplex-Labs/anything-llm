@@ -29,10 +29,15 @@ const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
+const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
 
+// Only log HTTP requests in development mode
+if (process.env.NODE_ENV === "development") {
+  app.use(httpLogger({ timeLogs: false }));
+}
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));
