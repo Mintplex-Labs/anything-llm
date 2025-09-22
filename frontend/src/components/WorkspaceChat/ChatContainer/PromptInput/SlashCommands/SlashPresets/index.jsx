@@ -11,7 +11,12 @@ import { useTranslation } from "react-i18next";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
+export default function SlashPresets({
+  setShowing,
+  sendCommand,
+  promptRef,
+  workspace,
+}) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
@@ -34,6 +39,11 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   const [presetToPublish, setPresetToPublish] = useState(null);
   const [searchParams] = useSearchParams();
 
+  const fetchPresets = async () => {
+    const presets = await System.getSlashCommandPresets();
+    setPresets(presets);
+  };
+
   useEffect(() => {
     fetchPresets();
   }, []);
@@ -51,12 +61,8 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
       openAddModal();
   }, []);
 
-  if (isActiveAgentSession) return null;
-
-  const fetchPresets = async () => {
-    const presets = await System.getSlashCommandPresets();
-    setPresets(presets);
-  };
+  // Hide presets if there's an active agent session OR workspace is in agent mode
+  if (isActiveAgentSession || workspace?.chatMode === "agent") return null;
 
   const handleSavePreset = async (preset) => {
     const { error } = await System.createSlashCommandPreset(preset);
