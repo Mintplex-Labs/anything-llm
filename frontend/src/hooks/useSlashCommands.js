@@ -6,7 +6,6 @@ export function useSlashCommands({ sendCommand }) {
   const [showSlashCommand, setShowSlashCommand] = useState(false);
   const [highlightedSlashCommand, setHighlightedSlashCommand] = useState(1);
   const [slashCommands, setSlashCommands] = useState([]);
-  //   const [qtyOfSlashCommands, setQtyOfSlashCommands] = useState(0);
   // Ref to the textarea element, this is needed to apply focus to the textarea when slash commands are triggered by clicking the slash command button
   const textareaRef = useRef(null);
 
@@ -24,7 +23,6 @@ export function useSlashCommands({ sendCommand }) {
   const fetchSlashCommands = async () => {
     const presets = await System.getSlashCommandPresets();
     setSlashCommands(presets);
-    // setQtyOfSlashCommands(presets.length + 1);
   };
 
   useEffect(() => {
@@ -95,8 +93,6 @@ export function useSlashCommands({ sendCommand }) {
     setShowSlashCommand,
     highlightedSlashCommand,
     setHighlightedSlashCommand,
-    // qtyOfSlashCommands,
-    // setQtyOfSlashCommands,
     watchForSlash,
     handleKeyDown,
     textareaRef,
