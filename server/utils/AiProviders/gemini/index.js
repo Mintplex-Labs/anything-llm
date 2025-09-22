@@ -71,7 +71,7 @@ class GeminiLLM {
     return !NO_SYSTEM_PROMPT_MODELS.includes(this.model);
   }
 
-  log(text, ...args) {
+  #log(text, ...args) {
     console.log(`\x1b[32m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
