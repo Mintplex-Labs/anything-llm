@@ -17,6 +17,7 @@ class KoboldCPPLLM {
         "KoboldCPP must have a valid base path to use for the api."
       );
 
+    this.className = "KoboldCPPLLM";
     this.basePath = process.env.KOBOLD_CPP_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
@@ -37,7 +38,7 @@ class KoboldCPPLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

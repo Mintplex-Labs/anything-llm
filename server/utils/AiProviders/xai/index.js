@@ -12,6 +12,7 @@ class XAiLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.XAI_LLM_API_KEY)
       throw new Error("No xAI API key was set.");
+    this.className = "XAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
@@ -34,7 +35,7 @@ class XAiLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
