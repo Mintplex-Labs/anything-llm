@@ -15,9 +15,13 @@ const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
+const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
 
+if (process.env.NODE_ENV === "development") {
+  app.use(httpLogger({ timeLogs: false }));
+}
 app.use(cors({ origin: true }));
 app.use(
   bodyParser.text({ limit: FILE_LIMIT }),
