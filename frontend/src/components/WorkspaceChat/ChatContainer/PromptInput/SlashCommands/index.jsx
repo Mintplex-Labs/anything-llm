@@ -38,7 +38,8 @@ export function SlashCommands({
   sendCommand,
   promptRef,
   highlightedSlashCommand,
-  setHighlightedSlashCommand,
+  slashCommands,
+  setSlashCommands,
 }) {
   const cmdRef = useRef(null);
   useEffect(() => {
@@ -64,7 +65,7 @@ export function SlashCommands({
           className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
         >
           <ResetCommand
-            highlightedSlashCommand={highlightedSlashCommand}
+            isHighlighted={highlightedSlashCommand === 0}
             sendCommand={sendCommand}
             setShowing={setShowing}
           />
@@ -74,14 +75,11 @@ export function SlashCommands({
             setShowing={setShowing}
             promptRef={promptRef}
             highlightedSlashCommand={highlightedSlashCommand}
+            presets={slashCommands}
+            setPresets={setSlashCommands}
           />
         </div>
       </div>
     </div>
   );
-}
-
-export function useSlashCommands() {
-  const [showSlashCommand, setShowSlashCommand] = useState(false);
-  return { showSlashCommand, setShowSlashCommand };
 }

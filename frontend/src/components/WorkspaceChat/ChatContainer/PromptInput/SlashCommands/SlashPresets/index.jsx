@@ -16,6 +16,8 @@ export default function SlashPresets({
   sendCommand,
   promptRef,
   highlightedSlashCommand,
+  presets,
+  setPresets,
 }) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
@@ -34,7 +36,7 @@ export default function SlashPresets({
     openModal: openPublishModal,
     closeModal: closePublishModal,
   } = useModal();
-  const [presets, setPresets] = useState([]);
+  // const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [presetToPublish, setPresetToPublish] = useState(null);
   const [searchParams] = useSearchParams();
@@ -42,37 +44,6 @@ export default function SlashPresets({
   useEffect(() => {
     fetchPresets();
   }, []);
-
-  useEffect(() => {
-    const handleSelectHighlighted = (event) => {
-      const { highlightedIndex } = event.detail;
-      if (highlightedIndex === 0) {
-        // Reset command is selected
-        return;
-      }
-
-      // Check if it's a preset selection (index 1 and above)
-      const presetIndex = highlightedIndex - 1;
-      if (presetIndex >= 0 && presetIndex < presets.length) {
-        const preset = presets[presetIndex];
-        setShowing(false);
-        sendCommand({ text: `${preset.command} ` });
-        promptRef?.current?.focus();
-      }
-    };
-
-    window.addEventListener(
-      "selectHighlightedSlashCommand",
-      handleSelectHighlighted
-    );
-
-    return () => {
-      window.removeEventListener(
-        "selectHighlightedSlashCommand",
-        handleSelectHighlighted
-      );
-    };
-  }, [presets, setShowing, sendCommand, promptRef]);
 
   /*
    * @checklist-item
@@ -153,7 +124,7 @@ export default function SlashPresets({
         <PresetItem
           key={preset.id}
           preset={preset}
-          highlighted={highlightedSlashCommand === index + 1}
+          isHighlighted={highlightedSlashCommand === index + 1}
           onUse={() => {
             setShowing(false);
             sendCommand({ text: `${preset.command} ` });
@@ -198,10 +169,18 @@ export default function SlashPresets({
   );
 }
 
-function PresetItem({ preset, onUse, onEdit, onPublish, highlighted }) {
+function PresetItem({ preset, onUse, onEdit, onPublish, isHighlighted }) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
+  const slashCommandItemRef = useRef(null);
+
+  // Scroll to the highlighted slash command
+  useEffect(() => {
+    if (slashCommandItemRef.current && isHighlighted) {
+      slashCommandItemRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isHighlighted]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -223,8 +202,9 @@ function PresetItem({ preset, onUse, onEdit, onPublish, highlighted }) {
 
   return (
     <button
+      ref={slashCommandItemRef}
       onClick={onUse}
-      className={`border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start items-center relative ${highlighted ? "bg-theme-action-menu-item-hover" : ""}`}
+      className={`border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start items-center relative ${isHighlighted ? "bg-theme-action-menu-item-hover" : ""}`}
     >
       <div className="flex-col text-left flex pointer-events-none flex-1 min-w-0">
         <div className="text-theme-text-primary text-sm font-bold truncate">

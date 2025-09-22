@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import SlashCommandsButton, {
   SlashCommands,
-  useSlashCommands,
+  // useSlashCommands,
 } from "./SlashCommands";
 import debounce from "lodash.debounce";
 import { PaperPlaneRight } from "@phosphor-icons/react";
@@ -24,7 +24,7 @@ import {
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
-import System from "@/models/system";
+import { useSlashCommands } from "@/hooks/useSlashCommands";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -41,13 +41,19 @@ export default function PromptInput({
   const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
-  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
-  const [highlightedSlashCommand, setHighlightedSlashCommand] = useState(1);
+  const {
+    showSlashCommand,
+    setShowSlashCommand,
+    handleKeyDown,
+    highlightedSlashCommand,
+    watchForSlash,
+    textareaRef,
+    slashCommands,
+    setSlashCommands,
+  } = useSlashCommands({ sendCommand });
   const formRef = useRef(null);
-  const textareaRef = useRef(null);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
-  const [qtyOfSlashCommands, setQtyOfSlashCommands] = useState(0);
   const { textSizeClass } = useTextSize();
 
   /**
@@ -61,15 +67,6 @@ export default function PromptInput({
     if (writeMode === "append") setPromptInput((prev) => prev + messageContent);
     else setPromptInput(messageContent ?? "");
   }
-
-  const fetchPresets = async () => {
-    const presets = await System.getSlashCommandPresets();
-    setQtyOfSlashCommands(presets.length + 1);
-  };
-
-  useEffect(() => {
-    fetchPresets();
-  }, []);
 
   useEffect(() => {
     if (window) window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
@@ -105,17 +102,6 @@ export default function PromptInput({
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
   }
-
-  function checkForSlash(e) {
-    const input = e.target.value;
-    if (input === "/") {
-      setShowSlashCommand(true);
-      setHighlightedSlashCommand(0); // Start with reset command highlighted
-    }
-    if (showSlashCommand) setShowSlashCommand(false);
-    return;
-  }
-  const watchForSlash = debounce(checkForSlash, 300);
 
   function checkForAt(e) {
     const input = e.target.value;
@@ -256,42 +242,6 @@ export default function PromptInput({
     setPromptInput(e.target.value);
   }
 
-  function handleKeyDown(e) {
-    // Only handle arrow keys when slash commands are showing
-    if (!showSlashCommand) return;
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedSlashCommand((prev) => {
-        if (prev <= 0) {
-          return qtyOfSlashCommands - 1;
-        }
-        return prev - 1;
-      });
-    }
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedSlashCommand((prev) => {
-        if (prev >= qtyOfSlashCommands - 1) {
-          return 0;
-        }
-        return prev + 1;
-      });
-    }
-    if (e.key === "Enter" && showSlashCommand) {
-      e.preventDefault();
-      // Trigger the highlighted command
-      const event = new CustomEvent("selectHighlightedSlashCommand", {
-        detail: { highlightedIndex: highlightedSlashCommand },
-      });
-      window.dispatchEvent(event);
-    }
-
-    if (e.key === "Escape" && showSlashCommand) {
-      e.preventDefault();
-      setShowSlashCommand(false);
-    }
-  }
   return (
     <div
       onKeyDown={handleKeyDown}
@@ -303,7 +253,8 @@ export default function PromptInput({
         sendCommand={sendCommand}
         promptRef={textareaRef}
         highlightedSlashCommand={highlightedSlashCommand}
-        setHighlightedSlashCommand={setHighlightedSlashCommand}
+        slashCommands={slashCommands}
+        setSlashCommands={setSlashCommands}
       />
       <AvailableAgents
         showing={showAgents}
