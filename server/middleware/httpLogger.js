@@ -1,5 +1,5 @@
 const httpLogger =
-  ({ timeLogs = true }) =>
+  ({ timeLogs = false }) =>
   (req, res, next) => {
     // Capture the original res.end to log response status
     const originalEnd = res.end;
