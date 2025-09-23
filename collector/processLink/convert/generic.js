@@ -5,6 +5,11 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { getContentType } = require("../helpers/getContentType");
+const { processSingleFile } = require("../../processSingleFile");
+const { downloadURIToFile } = require("../../utils/downloadURIToFile");
+const path = require("path");
+const { ACCEPTED_MIMES } = require("../../utils/constants");
 const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
@@ -19,58 +24,107 @@ const RuntimeSettings = require("../../utils/runtimeSettings");
  */
 async function scrapeGenericUrl({
   link,
-  captureAs = "text",
   processAsDocument = true,
   scraperHeaders = {},
+  captureAs = "text",
   metadata = {},
 }) {
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
-  const content = await getPageContent({
-    link,
-    captureAs,
-    headers: scraperHeaders,
-  });
 
-  if (!content.length) {
-    console.error(`Resulting URL content was empty at ${link}.`);
+  // Get the content type of the link
+  const contentTypeResult = await getContentType(link);
+  // If the retrieving the content type failed, return an error
+  if (!contentTypeResult.success || !contentTypeResult.contentType) {
     return {
       success: false,
-      reason: `No URL content found at ${link}.`,
+      reason: contentTypeResult.reason,
+      documents: [],
+    };
+  }
+  const contentType = contentTypeResult.contentType;
+
+  // If the content type is not supported, return an error
+  if (!(contentType in ACCEPTED_MIMES)) {
+    return {
+      success: false,
+      reason: `Unsupported content type: ${contentType}`,
       documents: [],
     };
   }
 
-  if (!processAsDocument) {
+  // If the content type is HTML or text, get the content of the web page with puppeteer
+  if (contentType === "text/html" || contentType === "text/plain") {
+    const content = await getPageContent({
+      link,
+      captureAs,
+      headers: scraperHeaders,
+    });
+
+    if (!content.length) {
+      console.error(`Resulting URL content was empty at ${link}.`);
+      return {
+        success: false,
+        reason: `No URL content found at ${link}.`,
+        documents: [],
+      };
+    }
+
+    if (!processAsDocument) {
+      return {
+        success: true,
+        content,
+      };
+    }
+
+    const url = new URL(link);
+    const decodedPathname = decodeURIComponent(url.pathname);
+    const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
+
+    const data = {
+      id: v4(),
+      url: "file://" + slugify(filename) + ".html",
+      title: metadata.title || slugify(filename) + ".html",
+      docAuthor: metadata.docAuthor || "no author found",
+      description: metadata.description || "No description found.",
+      docSource: metadata.docSource || "URL link uploaded by the user.",
+      chunkSource: `link://${link}`,
+      published: new Date().toLocaleString(),
+      wordCount: content.split(" ").length,
+      pageContent: content,
+      token_count_estimate: tokenizeString(content),
+    };
+
+    const document = writeToServerDocuments({
+      data,
+      filename: `url-${slugify(filename)}-${data.id}`,
+    });
+    console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
+    return { success: true, reason: null, documents: [document] };
+  }
+
+  // If the content type is an accepted non HTML or text file, download the file to the hotdir and process it
+  const fileContentResult = await downloadURIToFile(link);
+  if (!fileContentResult.success || !fileContentResult.data) {
     return {
-      success: true,
-      content,
+      success: false,
+      reason: fileContentResult.reason,
+      documents: [],
     };
   }
 
-  const url = new URL(link);
-  const decodedPathname = decodeURIComponent(url.pathname);
-  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
+  const fileFilePath = fileContentResult.data;
+  const targetFilename = path.basename(fileFilePath);
 
-  const data = {
-    id: v4(),
-    url: "file://" + slugify(filename) + ".html",
-    title: metadata.title || slugify(filename) + ".html",
-    docAuthor: metadata.docAuthor || "no author found",
-    description: metadata.description || "No description found.",
-    docSource: metadata.docSource || "URL link uploaded by the user.",
-    chunkSource: `link://${link}`,
-    published: new Date().toLocaleString(),
-    wordCount: content.split(" ").length,
-    pageContent: content,
-    token_count_estimate: tokenizeString(content),
-  };
+  const processSingleFileResult = await processSingleFile(targetFilename);
 
-  const document = writeToServerDocuments({
-    data,
-    filename: `url-${slugify(filename)}-${data.id}`,
-  });
-  console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
-  return { success: true, reason: null, documents: [document] };
+  if (!processSingleFileResult.success) {
+    return {
+      success: false,
+      reason: processSingleFileResult.reason,
+      documents: [],
+    };
+  }
+  return processSingleFileResult;
 }
 
 /**

@@ -3,6 +3,10 @@ const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],
   "text/html": [".html"],
+  "text/csv": [".csv"],
+  "application/json": [".json"],
+  // TODO: Create asDoc.js that works for standard MS Word files.
+  // "application/msword": [".doc"],
 
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
     ".docx",
@@ -38,11 +42,16 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".org": "./convert/asTxt.js",
   ".adoc": "./convert/asTxt.js",
   ".rst": "./convert/asTxt.js",
+  ".csv": "./convert/asTxt.js",
+  ".json": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
   ".pdf": "./convert/asPDF/index.js",
 
   ".docx": "./convert/asDocx.js",
+  // TODO: Create asDoc.js that works for standard MS Word files.
+  // ".doc": "./convert/asDoc.js",
+
   ".pptx": "./convert/asOfficeMime.js",
 
   ".odt": "./convert/asOfficeMime.js",
