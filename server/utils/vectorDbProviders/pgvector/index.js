@@ -405,6 +405,7 @@ const PGVector = {
    */
   createTableIfNotExists: async function (connection, dimensions = 384) {
     this.log(`Creating embedding table with ${dimensions} dimensions`);
+    await connection.query("CREATE EXTENSION IF NOT EXISTS vector;");
     await connection.query(this.createTableSql(dimensions));
     return true;
   },
