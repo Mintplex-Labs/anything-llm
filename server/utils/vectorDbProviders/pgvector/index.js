@@ -361,9 +361,11 @@ const PGVector = {
 
   /**
    * Update or create a collection in the database
-   * @param {pgsql.Connection} connection
-   * @param {{id: number, vector: number[], metadata: Object}[]} submissions
-   * @param {string} namespace
+   * @param {Object} params
+   * @param {pgsql.Connection} params.connection
+   * @param {{id: number, vector: number[], metadata: Object}[]} params.submissions
+   * @param {string} params.namespace
+   * @param {number} params.dimensions
    * @returns {Promise<boolean>}
    */
   updateOrCreateCollection: async function ({
