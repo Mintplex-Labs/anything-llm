@@ -4,6 +4,9 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { EmbedChats } = require("../../../models/embedChats");
 const { safeJsonParse } = require("../../http");
+const {
+  getGeneralOrDefaultSystemPrompt,
+} = require("../../../models/systemPromptHelper");
 
 async function convertToCSV(preparedData) {
   const headers = new Set(["id", "workspace", "prompt", "response", "sent_at"]);
@@ -131,6 +134,8 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  const generalOrDefaultSystemPrompt = await getGeneralOrDefaultSystemPrompt();
+
   // Export to JSONL format (recommended for fine-tuning)
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
@@ -146,8 +151,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
               {
                 type: "text",
                 text:
-                  chat.workspace?.openAiPrompt ||
-                  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+                  chat.workspace?.openAiPrompt || generalOrDefaultSystemPrompt,
               },
             ],
           },
@@ -223,9 +227,8 @@ async function exportChatsAsType(format = "jsonl", chatType = "workspace") {
   };
 }
 
-const STANDARD_PROMPT =
-  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
-function buildSystemPrompt(chat, prompt = null) {
+async function buildSystemPrompt(chat, prompt = null) {
+  const generalOrDefaultSystemPrompt = await getGeneralOrDefaultSystemPrompt();
   const sources = safeJsonParse(chat.response)?.sources || [];
   const contextTexts = sources.map((source) => source.text);
   const context =
@@ -237,7 +240,7 @@ function buildSystemPrompt(chat, prompt = null) {
           })
           .join("")
       : "";
-  return `${prompt ?? STANDARD_PROMPT}${context}`;
+  return `${prompt ?? generalOrDefaultSystemPrompt}${context}`;
 }
 
 /**

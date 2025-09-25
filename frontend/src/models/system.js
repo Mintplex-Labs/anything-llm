@@ -4,6 +4,7 @@ import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
 import SystemPromptVariable from "./systemPromptVariable";
+import { t } from "i18next";
 
 const System = {
   cacheKeys: {
@@ -345,6 +346,33 @@ const System = {
       JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
     );
     return { appName: customAppName, error: null };
+  },
+  fetchGeneralOrDefaultSystemPrompt: async function () {
+    const { generalSystemPrompt, error } = await fetch(
+      `${API_BASE}/system/general-system-prompt`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return {
+          generalSystemPrompt: t("customization.items.system-prompt.default"),
+          error: e.message,
+        };
+      });
+
+    if (!generalSystemPrompt || !!error) {
+      return {
+        generalSystemPrompt: t("customization.items.system-prompt.default"),
+        error: null,
+      };
+    }
+
+    return { generalSystemPrompt: generalSystemPrompt, error: null };
   },
   fetchLogo: async function () {
     const url = new URL(`${fullApiUrl()}/system/logo`);

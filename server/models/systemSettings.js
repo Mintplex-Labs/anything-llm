@@ -30,6 +30,8 @@ const SystemSettings = {
     "disabled_agent_skills",
     "imported_agent_skills",
     "custom_app_name",
+    "general_system_prompt",
+    "default_system_prompt",
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
@@ -47,6 +49,8 @@ const SystemSettings = {
     "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+    "general_system_prompt",
+    "default_system_prompt",
 
     // Meta page customization
     "meta_page_title",

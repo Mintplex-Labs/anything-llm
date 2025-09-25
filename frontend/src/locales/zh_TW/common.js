@@ -761,6 +761,13 @@ const TRANSLATIONS = {
         title: "應用名稱",
         description: "設定所有使用者在登入頁面上看到的應用名稱。",
       },
+      "system-prompt": {
+        title: "系統提示",
+        description:
+          "在每則使用者訊息之前傳送給 AI 的預定義指令。它能幫助引導助手回應，確保對話中的風格、語氣和行為一致。",
+        default:
+          "在給定以下對話、相關上下文和後續問題的情況下，請回答使用者當前提出的問題。僅返回你的回答，並根據使用者的指示進行。",
+      },
       "chat-message-alignment": {
         title: "聊天訊息對齊方式",
         description: "選擇使用聊天介面時訊息的對齊模式。",

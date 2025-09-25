@@ -757,6 +757,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Prompt di sistema",
+        description:
+          "Istruzione predefinita inviata all'IA prima di ogni messaggio dell'utente. Aiuta a guidare l'assistente su come rispondere, assicurando uno stile, tono e comportamento coerenti nelle conversazioni.",
+        default:
+          "Data la seguente conversazione, il contesto rilevante e una domanda di follow-up, rispondi alla domanda corrente dell'utente. Restituisci solo la tua risposta seguendo le istruzioni dell'utente.",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

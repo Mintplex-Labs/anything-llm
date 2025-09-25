@@ -945,6 +945,13 @@ const TRANSLATIONS = {
         description:
           "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
       },
+      "system-prompt": {
+        title: "Prompt de sistem",
+        description:
+          "O instrucțiune predefinită trimisă către AI înainte de fiecare mesaj al utilizatorului. Ajută la ghidarea asistentului cum să răspundă, asigurând un stil, ton și comportament consecvent în conversații.",
+        default:
+          "Având în vedere următoarea conversație, contextul relevant și o întrebare ulterioară, răspunde la întrebarea curentă a utilizatorului. Returnează doar răspunsul tău conform instrucțiunilor utilizatorului.",
+      },
       "chat-message-alignment": {
         title: "Alinierea mesajelor de chat",
         description:

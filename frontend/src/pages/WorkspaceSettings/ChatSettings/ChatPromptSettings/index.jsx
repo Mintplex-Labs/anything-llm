@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { chatPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
 import Highlighter from "react-highlight-words";
@@ -8,15 +7,17 @@ import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import { useModal } from "@/hooks/useModal";
-
-// TODO: Move to backend and have user-language sensitive default prompt
-const DEFAULT_PROMPT =
-  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+import System from "@/models/system.js";
 
 export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   const [availableVariables, setAvailableVariables] = useState([]);
-  const [prompt, setPrompt] = useState(chatPrompt(workspace));
+  const defaultSystemPrompt = t("customization.items.system-prompt.default");
+  const [generalSystemPrompt, setGeneralSystemPrompt] =
+    useState(defaultSystemPrompt);
+  const [prompt, setPrompt] = useState(
+    workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
   const promptRef = useRef(null);
@@ -28,7 +29,9 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     closeModal: closePublishModal,
     openModal: openPublishModal,
   } = useModal();
-  const [currentPrompt, setCurrentPrompt] = useState(chatPrompt(workspace));
+  const [currentPrompt, setCurrentPrompt] = useState(
+    workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt
+  );
 
   useEffect(() => {
     async function setupVariableHighlighting() {
@@ -36,6 +39,22 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
       setAvailableVariables(variables);
     }
     setupVariableHighlighting();
+  }, []);
+
+  // fetch general sys prompt for all workspaces
+  useEffect(() => {
+    const fetchGeneralSystemPrompt = async () => {
+      const { generalSystemPrompt } =
+        await System.fetchGeneralOrDefaultSystemPrompt();
+      console.log(
+        "todo artur [INFO] generalSysPrompt = " + generalSystemPrompt
+      );
+      setGeneralSystemPrompt(generalSystemPrompt ?? defaultSystemPrompt);
+      setPrompt(
+        workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt
+      );
+    };
+    fetchGeneralSystemPrompt();
   }, []);
 
   useEffect(() => {
@@ -146,7 +165,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             <span
               className={`${!!prompt ? "hidden" : "block"} text-sm pointer-events-none absolute top-2 left-0 p-2.5 w-full h-full !text-theme-settings-input-placeholder opacity-60`}
             >
-              {DEFAULT_PROMPT}
+              {generalSystemPrompt || defaultSystemPrompt}
             </span>
             {isEditing ? (
               <textarea
@@ -199,28 +218,31 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             )}
           </div>
           <div className="w-full flex flex-row items-center justify-between pt-2">
-            {prompt !== DEFAULT_PROMPT && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleRestore(DEFAULT_PROMPT)}
-                  className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
-                >
-                  Clear
-                </button>
-                <PublishPromptCTA
-                  hidden={
-                    isEditing ||
-                    prompt === DEFAULT_PROMPT ||
-                    prompt?.trim().length < 10
-                  }
-                  onClick={() => {
-                    setCurrentPrompt(prompt);
-                    openPublishModal();
-                  }}
-                />
-              </>
-            )}
+            {prompt !== generalSystemPrompt &&
+              prompt !== defaultSystemPrompt &&
+              prompt !== "" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleRestore("")}
+                    className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
+                  >
+                    Clear
+                  </button>
+                  <PublishPromptCTA
+                    hidden={
+                      isEditing ||
+                      prompt === generalSystemPrompt ||
+                      prompt === defaultSystemPrompt ||
+                      prompt?.trim().length < 10
+                    }
+                    onClick={() => {
+                      setCurrentPrompt(prompt);
+                      openPublishModal();
+                    }}
+                  />
+                </>
+              )}
           </div>
         </div>
       </div>

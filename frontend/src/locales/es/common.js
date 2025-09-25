@@ -504,6 +504,13 @@ const TRANSLATIONS = {
         description:
           "Establece un nombre que se mostrará en la página de inicio de sesión para todos los usuarios.",
       },
+      "system-prompt": {
+        title: "Indicador del sistema",
+        description:
+          "Una instrucción predefinida que se envía a la IA antes de cada mensaje del usuario. Ayuda a guiar al asistente sobre cómo responder, asegurando un estilo, tono y comportamiento consistentes en las conversaciones.",
+        default:
+          "Dada la siguiente conversación, el contexto relevante y una pregunta de seguimiento, responde con una respuesta a la pregunta actual que hace el usuario. Devuelve solo tu respuesta a la pregunta, siguiendo las instrucciones del usuario según sea necesario.",
+      },
       "chat-message-alignment": {
         title: "Alineación de mensajes de chat",
         description:

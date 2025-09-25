@@ -489,6 +489,13 @@ const TRANSLATIONS = {
         description:
           "Iestatiet nosaukumu, kas tiek rādīts pieteikšanās lapā visiem lietotājiem.",
       },
+      "system-prompt": {
+        title: "Sistēmas uzvedne",
+        description:
+          "Iepriekš definēta instrukcija, kas tiek nosūtīta AI pirms katras lietotāja ziņas. Tā palīdz vadīt asistenta atbildes, nodrošinot konsekventu stilu, toni un uzvedību sarunās.",
+        default:
+          "Ņemot vērā šādu sarunu, attiecīgo kontekstu un sekojošu jautājumu, atbildiet uz lietotāja pašreizējo jautājumu. Atgrieziet tikai savu atbildi, sekojot lietotāja instrukcijām.",
+      },
       "chat-message-alignment": {
         title: "Sarunas ziņu līdzinājums",
         description:

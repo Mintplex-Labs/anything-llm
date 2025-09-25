@@ -513,6 +513,13 @@ const TRANSLATIONS = {
         description:
           "Set a name that is displayed on the login page to all users.",
       },
+      "system-prompt": {
+        title: "System Prompt",
+        description:
+          "A predefined instruction that is sent to the AI before every user message. It helps guide the assistant on how to respond, ensuring consistent style, tone, and behavior across conversations.",
+        default:
+          "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+      },
       "chat-message-alignment": {
         title: "Chat Message Alignment",
         description:

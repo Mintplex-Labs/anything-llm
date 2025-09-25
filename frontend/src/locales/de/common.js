@@ -494,6 +494,13 @@ const TRANSLATIONS = {
         description:
           "Geben Sie einen Anwendungsnamen ein, der auf der Login-Seite erscheint.",
       },
+      "system-prompt": {
+        title: "Systemanweisung",
+        description:
+          "Eine vordefinierte Anweisung, die der KI vor jeder Benutzernachricht gesendet wird. Sie hilft dem Assistenten zu verstehen, wie er antworten soll, und stellt einen konsistenten Stil, Ton und Verhalten in Gesprächen sicher.",
+        default:
+          "Angesichts des folgenden Gesprächs, des relevanten Kontexts und einer Anschlussfrage, antworte mit einer Antwort auf die aktuelle Frage des Benutzers. Gib nur deine Antwort zurück, basierend auf den obigen Informationen und den Anweisungen des Benutzers.",
+      },
       "chat-message-alignment": {
         title: "Nachrichtenanordnung im Chat",
         description:

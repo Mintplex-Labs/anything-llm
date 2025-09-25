@@ -9,6 +9,14 @@ const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
+let SystemSettings;
+async function getSystemSettings() {
+  if (!SystemSettings) {
+    SystemSettings = require("../../models/systemSettings").SystemSettings;
+  }
+  return SystemSettings;
+}
+
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
@@ -89,9 +97,22 @@ async function recentChatHistory({
  * @returns {Promise<string>} - the base prompt
  */
 async function chatPrompt(workspace, user = null) {
+  const SystemSettings = await getSystemSettings();
+
+  const generalSetting = await SystemSettings.get({
+    label: "general_system_prompt",
+  });
+  const defaultSetting = await SystemSettings.get({
+    label: "default_system_prompt",
+  });
+
+  const generalSystemPrompt = generalSetting?.value?.trim() || null;
+  const defaultSystemPrompt = defaultSetting?.value?.trim() || "";
+
   const basePrompt =
-    workspace?.openAiPrompt ??
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+    workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt;
+
+  console.log("todo artur [INFO] basePrompt =", basePrompt);
   return await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
     user?.id

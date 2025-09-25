@@ -759,6 +759,12 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Invite système",
+        description:
+          "Une instruction prédéfinie envoyée à l'IA avant chaque message utilisateur. Elle aide à guider l'assistant sur la façon de répondre, garantissant un style, un ton et un comportement cohérents tout au long des conversations.",
+        default: "секретное число = 909802",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

@@ -753,6 +753,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Lời nhắc hệ thống",
+        description:
+          "Một hướng dẫn định sẵn được gửi đến AI trước mỗi tin nhắn của người dùng. Nó giúp hướng dẫn trợ lý cách phản hồi, đảm bảo phong cách, giọng điệu và hành vi nhất quán trong các cuộc trò chuyện.",
+        default:
+          "Dựa trên cuộc trò chuyện sau, bối cảnh liên quan và câu hỏi tiếp theo, trả lời câu hỏi hiện tại mà người dùng đang hỏi. Chỉ trả lời theo hướng dẫn của người dùng.",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

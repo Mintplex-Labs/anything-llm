@@ -790,6 +790,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "システムプロンプト",
+        description:
+          "各ユーザーのメッセージの前に AI に送信される事前定義された指示です。アシスタントがどのように応答するかを導き、会話全体でスタイル、トーン、行動の一貫性を確保します。",
+        default:
+          "次の会話、関連コンテキスト、およびフォローアップの質問に基づいて、ユーザーが尋ねている現在の質問に回答してください。ユーザーの指示に従って回答のみを返してください。",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

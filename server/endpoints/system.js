@@ -15,6 +15,9 @@ const {
 const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
+const {
+  getGeneralOrDefaultSystemPrompt,
+} = require("../models/systemPromptHelper");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const fs = require("fs");
@@ -663,6 +666,23 @@ function systemEndpoints(app) {
     } catch (error) {
       console.error("Error fetching custom app name:", error);
       response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/system/general-system-prompt", async (_, response) => {
+    try {
+      const generalSystemPrompt = await getGeneralOrDefaultSystemPrompt();
+      response.status(200).json({
+        generalSystemPrompt: generalSystemPrompt,
+      });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
+      response
+        .status(500)
+        .json({
+          generalSystemPrompt: "",
+          error: "Internal server error could not fetch generalSystemPrompt",
+        });
     }
   });
 

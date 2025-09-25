@@ -754,6 +754,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Systeemprompt",
+        description:
+          "Een vooraf gedefinieerde instructie die naar de AI wordt gestuurd voor elk bericht van de gebruiker. Het helpt de assistent te begeleiden hoe te reageren en zorgt voor een consistente stijl, toon en gedrag tijdens gesprekken.",
+        default:
+          "Gezien het volgende gesprek, de relevante context en een vervolg vraag, antwoord op de huidige vraag van de gebruiker. Geef alleen je antwoord terug volgens de instructies van de gebruiker.",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

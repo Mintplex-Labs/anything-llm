@@ -464,6 +464,13 @@ const TRANSLATIONS = {
         title: "名称",
         description: "设置所有用户在登录页面看到的名称。",
       },
+      "system-prompt": {
+        title: "系统提示",
+        description:
+          "在每条用户消息之前发送给 AI 的预定义指令。它有助于指导助手如何回应，确保对话中的风格、语气和行为一致。",
+        default:
+          "在给定以下对话、相关上下文和后续问题的情况下，请回答用户当前提出的问题。仅返回你的回答，并根据用户的指示进行。",
+      },
       "chat-message-alignment": {
         title: "聊天消息对齐方式",
         description: "选择在聊天界面中使用的消息对齐模式。",
