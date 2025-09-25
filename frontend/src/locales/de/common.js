@@ -806,6 +806,35 @@ const TRANSLATIONS = {
       task_explained:
         "Sobald der Vorgang abgeschlossen ist, ist der Seiteninhalt im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
     },
+    jira: {
+      name: "Jira",
+      description:
+        "Importieren Sie ein komplettes Jira-Issue mit einem einzigen Klick.",
+      deployment_type: "Jira Bereitstellungstyp",
+      deployment_type_explained:
+        "Bestimmen Sie, ob Ihre Jira-Instanz in der Atlassian Cloud oder selbst gehostet ist.",
+      base_url: "Jira Basis-URL",
+      base_url_explained: "Dies ist die Basis-URL Ihres Jira-Bereichs.",
+      project_key: "Jira Project-Key",
+      project_key_explained:
+        "Dies ist der Project-Key Ihrer Jira-Instanz, der verwendet wird. Beginnt normalerweise mit ~",
+      username: "Jira Benutzername",
+      username_explained: "Ihr Jira Benutzername.",
+      auth_type: "Jira Authentifizierungstyp",
+      auth_type_explained:
+        "Wählen Sie den Authentifizierungstyp, den Sie verwenden möchten, um auf Ihre Jira-Issuen zuzugreifen.",
+      auth_type_username: "Benutzername und Zugriffstoken",
+      auth_type_personal: "Persönliches Zugriffstoken",
+      token: "Confluence API-Token",
+      token_explained_start:
+        "Sie müssen ein Zugriffstoken für die Authentifizierung bereitstellen. Sie können ein Zugriffstoken",
+      token_explained_link: "hier",
+      token_desc: "Zugriffstoken für die Authentifizierung.",
+      pat_token: "Confluence persönliches Zugriffstoken",
+      pat_token_explained: "Ihr Confluence persönliches Zugriffstoken.",
+      task_explained:
+        "Sobald der Vorgang abgeschlossen ist, ist der Seiteninhalt im Dokumenten-Picker zur Einbettung in Workspaces verfügbar.",
+    },
     manage: {
       documents: "Dokumente",
       "data-connectors": "Datenverbindungen",

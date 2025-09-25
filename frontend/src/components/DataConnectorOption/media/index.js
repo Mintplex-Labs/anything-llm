@@ -5,6 +5,7 @@ import Link from "./link.svg";
 import Confluence from "./confluence.jpeg";
 import DrupalWiki from "./drupalwiki.jpg";
 import Obsidian from "./obsidian.png";
+import Jira from "./jira.svg";
 
 const ConnectorImages = {
   github: GitHub,
@@ -14,6 +15,7 @@ const ConnectorImages = {
   confluence: Confluence,
   drupalwiki: DrupalWiki,
   obsidian: Obsidian,
+  jira: Jira,
 };
 
 export default ConnectorImages;

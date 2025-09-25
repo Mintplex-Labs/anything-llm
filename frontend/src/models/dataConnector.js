@@ -207,6 +207,38 @@ const DataConnector = {
         });
     },
   },
+  jira: {
+    collect: async function ({
+      baseUrl,
+      projectKey,
+      username,
+      accessToken,
+      cloud,
+      personalAccessToken,
+    }) {
+      return await fetch(`${API_BASE}/ext/jira`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          baseUrl,
+          projectKey,
+          username,
+          accessToken,
+          cloud,
+          personalAccessToken,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;

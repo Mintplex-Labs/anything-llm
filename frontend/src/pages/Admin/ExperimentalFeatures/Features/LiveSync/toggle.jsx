@@ -58,7 +58,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
           </p>
           <p className="text-theme-text-secondary text-xs italic">
             This feature only applies to web-based content, such as websites,
-            Confluence, YouTube, and GitHub files.
+            Confluence, YouTube, GitHub and Jira files.
           </p>
         </div>
       </div>

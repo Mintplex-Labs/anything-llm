@@ -862,7 +862,34 @@ const TRANSLATIONS = {
       task_explained:
         "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
-
+    jira: {
+      name: "Jira",
+      description: "Import an entire Jira issue in a single click.",
+      deployment_type: "Jira deployment type",
+      deployment_type_explained:
+        "Determine if your Jira instance is hosted on Atlassian cloud or self-hosted.",
+      base_url: "Jira base URL",
+      base_url_explained: "This is the base URL of your Jira project.",
+      project_key: "Jira project key",
+      project_key_explained:
+        "This is the project key of your Jira instance that will be used. Usually begins with ~",
+      username: "Jira Username",
+      username_explained: "Your Jira username",
+      auth_type: "Jira Auth Type",
+      auth_type_explained:
+        "Select the authentication type you want to use to access your Jira project.",
+      auth_type_username: "Username and Access Token",
+      auth_type_personal: "Personal Access Token",
+      token: "Jira Access Token",
+      token_explained_start:
+        "You need to provide an access token for authentication. You can generate an access token",
+      token_explained_link: "here",
+      token_desc: "Access token for authentication",
+      pat_token: "Jira Personal Access Token",
+      pat_token_explained: "Your Jira personal access token.",
+      task_explained:
+        "Once complete, the issue content will be available for embedding into workspaces in the document picker.",
+    },
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",

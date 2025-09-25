@@ -144,10 +144,43 @@ async function resyncDrupalWiki({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific jira issue via its chunkSource.
+ * Returns the content as a text string of the page in question and only that issue.
+ * @param {object} data - metadata from a document (e.g.: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncJira({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    // Jira data is `payload` encrypted. So we need to expand its
+    // encrypted payload back into query params so we can reFetch the page with same access token/params.
+    const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const { fetchJiraIssue } = require("../../utils/extensions/Jira");
+    const { success, reason, content } = await fetchJiraIssue({
+      pageUrl: `https:${source.pathname}`,
+      baseUrl: source.searchParams.get('baseUrl'),
+      spaceKey: source.searchParams.get('projectKey'),
+      accessToken: source.searchParams.get('token'),
+      username: source.searchParams.get('username'),
+    });
+
+    if (!success) throw new Error(`Failed to sync Jira issue content. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
   github: resyncGithub,
   drupalwiki: resyncDrupalWiki,
+  jira: resyncJira,
 }

@@ -4,7 +4,7 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab'|'jira')} validFileType
  */
 
 const DocumentSyncQueue = {
@@ -17,6 +17,7 @@ const DocumentSyncQueue = {
     "github",
     "gitlab",
     "drupalwiki",
+    "jira",
   ],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
@@ -62,6 +63,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
     if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
     if (chunkSource.startsWith("drupalwiki://")) return true; // If is a DrupalWiki document link
+    if (chunkSource.startsWith("jira://")) return true; // If is a Jira document link
     return false;
   },
 
