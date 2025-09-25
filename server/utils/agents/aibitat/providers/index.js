@@ -25,6 +25,7 @@ const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
 const MoonshotAiProvider = require("./moonshotAi.js");
 const CometApiProvider = require("./cometapi.js");
+const FoundryProvider = require("./foundry.js");
 
 module.exports = {
   OpenAIProvider,
@@ -54,4 +55,5 @@ module.exports = {
   GeminiProvider,
   DellProAiStudioProvider,
   MoonshotAiProvider,
+  FoundryProvider,
 };

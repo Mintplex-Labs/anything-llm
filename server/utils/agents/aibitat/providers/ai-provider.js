@@ -17,6 +17,7 @@ const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -251,6 +252,16 @@ class Provider {
           apiKey: null,
           ...config,
         });
+
+      case "foundry": {
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
+          },
+          apiKey: null,
+          ...config,
+        });
+      }
       case "cometapi":
         return new ChatOpenAI({
           configuration: {

@@ -209,6 +209,11 @@ class AgentHandler {
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
 
+      case "foundry":
+        if (!process.env.FOUNDRY_BASE_PATH)
+          throw new Error("Foundry base path must be provided to use agents.");
+        break;
+
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -281,6 +286,8 @@ class AgentHandler {
         return process.env.DPAIS_LLM_MODEL_PREF;
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "foundry":
+        return process.env.FOUNDRY_MODEL_PREF ?? null;
       default:
         return null;
     }
