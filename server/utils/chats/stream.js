@@ -59,7 +59,6 @@ async function streamChatWithWorkspace(
   let vectorDatabaseIsAlive = true;
   // If the vector database is PostgreSQL, we need to check if it is alive. The reason for this explicit heartbeat check is because Postgres will hang on connection if the database is not running without any error.
   if (VectorDb.name === "PGVector") {
-    console.log("Checking if PostgreSQL is alive...");
     const heartbeat = await VectorDb.heartbeat();
     if (heartbeat.error) {
       writeResponseChunk(response, {
