@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 const COLLECTION_REGEX = new RegExp(
   /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
 );
@@ -175,24 +175,23 @@ const Chroma = {
       text: contextTexts[i],
     }));
 
-    const rerankedDocs = await rerankDocuments(query, documentsForReranking, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
-    });
-
-    // Post-process to fix scores and contextTexts from the generic reranker.
+    const rerankedResults = await rerank(query, documentsForReranking, topN);
     const result = {
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
     };
 
-    rerankedDocs.sourceDocuments.forEach((item) => {
+    rerankedResults.forEach((item) => {
       if (item.rerank_score < similarityThreshold) return;
-      const { rerank_score, ...rest } = item;
-      result.sourceDocuments.push({ ...rest, score: rerank_score });
-      result.contextTexts.push(item.text);
+      const { vector: _, rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
       result.scores.push(rerank_score);
     });
     return result;

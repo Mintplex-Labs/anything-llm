@@ -5,7 +5,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 /**
  * LancedDB Client connection object
@@ -91,12 +91,34 @@ const LanceDb = {
           .toArray()
       );
 
-    const reranked = await rerankDocuments(query, vectorSearchResults, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
+    const rerankedResults = await rerank(query, vectorSearchResults, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return;
+      const { vector: _, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+      const score =
+        item?.rerank_score || this.distanceToSimilarity(item._distance);
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score,
+      });
+      result.scores.push(score);
     });
-    return reranked;
+    return result;
   },
 
   /**
@@ -376,8 +398,6 @@ const LanceDb = {
           topN,
           filterIdentifiers,
         });
-
-    console.log("result", result);
 
     const { contextTexts, sourceDocuments } = result;
     const sources = sourceDocuments.map((metadata, i) => {

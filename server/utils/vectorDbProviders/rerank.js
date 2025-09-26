@@ -1,47 +1,10 @@
 const { NativeEmbeddingReranker } = require("../EmbeddingRerankers/native");
-const { sourceIdentifier } = require("../chats");
 
-async function rerankDocuments(
-  query,
-  documents,
-  options = { topN: 4, similarityThreshold: 0.25, filterIdentifiers: [] }
-) {
-  const { topN, similarityThreshold, filterIdentifiers } = options;
+async function rerank(query, documents, topN = 4) {
   const reranker = new NativeEmbeddingReranker();
-  const result = {
-    contextTexts: [],
-    sourceDocuments: [],
-    scores: [],
-  };
-
-  await reranker
-    .rerank(query, documents, { topK: topN })
-    .then((rerankResults) => {
-      rerankResults.forEach((item) => {
-        if (item.score < similarityThreshold) return;
-
-        const { vector: _, ...rest } = item;
-        if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-          console.log(
-            "A source was filtered from context as it's parent document is pinned."
-          );
-          return;
-        }
-
-        result.contextTexts.push(rest.text);
-        result.sourceDocuments.push({
-          ...rest,
-        });
-        result.scores.push(item.score);
-      });
-    })
-    .catch((e) => {
-      console.error(e);
-      console.error("rerankDocuments", e.message);
-    });
-
-  return result;
+  return await reranker.rerank(query, documents, { topK: topN });
 }
+
 /**
  * For reranking, we want to work with a larger number of results than the topN.
  * This is because the reranker can only rerank the results it it given and we dont auto-expand the results.
@@ -60,6 +23,6 @@ function getSearchLimit(totalEmbeddings = 0, topN = 4) {
 }
 
 module.exports = {
-  rerankDocuments,
+  rerank,
   getSearchLimit,
 };
