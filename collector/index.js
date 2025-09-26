@@ -15,9 +15,21 @@ const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
+const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
 
+// Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
+if (
+  process.env.NODE_ENV === "development" &&
+  !!process.env.ENABLE_HTTP_LOGGER
+) {
+  app.use(
+    httpLogger({
+      enableTimestamps: !!process.env.ENABLE_HTTP_LOGGER_TIMESTAMPS,
+    })
+  );
+}
 app.use(cors({ origin: true }));
 app.use(
   bodyParser.text({ limit: FILE_LIMIT }),
