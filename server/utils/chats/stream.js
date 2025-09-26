@@ -66,7 +66,7 @@ async function streamChatWithWorkspace(
         type: "textResponse",
         sources: [],
         close: true,
-        error: `Postgres::${heartbeat.error}. Failed to connect to the PostgreSQL database. Please verify your connection string and confirm the database server is running.`,
+        error: `Postgres::${heartbeat.error}. Failed to connect to the PostgreSQL database. Please verify that your connection string is correct and confirm the database server is running.`,
       });
       vectorDatabaseIsAlive = false;
     }
