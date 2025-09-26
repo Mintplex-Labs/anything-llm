@@ -56,9 +56,34 @@ async function streamChatWithWorkspace(
   });
   const VectorDb = getVectorDbClass();
 
+  let vectorDatabaseIsAlive = true;
+  // If the vector database is PostgreSQL, we need to check if it is alive. The reason for this explicit heartbeat check is because Postgres will hang on connection if the database is not running without any error.
+  if (VectorDb.name === "PGVector") {
+    console.log("Checking if PostgreSQL is alive...");
+    const heartbeat = await VectorDb.heartbeat();
+    if (heartbeat.error) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        sources: [],
+        close: true,
+        error: `Postgres::${heartbeat.error}. Failed to connect to the PostgreSQL database. Please verify your connection string and confirm the database server is running.`,
+      });
+      vectorDatabaseIsAlive = false;
+    }
+  }
+
   const messageLimit = workspace?.openAiHistory || 20;
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+
+  let hasVectorizedSpace = false;
+  let embeddingsCount = 0;
+  // Only query the vector database if it is alive. This will prevent the chat from hanging if the database is not running if using PostgreSQL.
+  if (vectorDatabaseIsAlive) {
+    hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  }
+
+  const workspaceHasEmbeddings = embeddingsCount !== 0;
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -147,8 +172,9 @@ async function streamChatWithWorkspace(
     });
   });
 
+  // If the vector database is alive and the workspace has embeddings, we can perform a similarity search.
   const vectorSearchResults =
-    embeddingsCount !== 0
+    vectorDatabaseIsAlive && workspaceHasEmbeddings
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
           input: updatedMessage,
