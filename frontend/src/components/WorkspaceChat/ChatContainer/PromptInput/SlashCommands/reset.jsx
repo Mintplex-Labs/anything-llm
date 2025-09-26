@@ -1,18 +1,32 @@
+import React, { useEffect, useRef } from "react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { useTranslation } from "react-i18next";
 
-export default function ResetCommand({ setShowing, sendCommand }) {
+export default function ResetCommand({
+  setShowing,
+  sendCommand,
+  isHighlighted,
+}) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
+  const slashCommandItemRef = useRef(null);
+  // Scroll to the highlighted slash command
+  useEffect(() => {
+    if (isHighlighted) {
+      slashCommandItemRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isHighlighted]);
+
   if (isActiveAgentSession) return null; // cannot reset during active agent chat
 
   return (
     <button
+      ref={slashCommandItemRef}
       onClick={() => {
         setShowing(false);
         sendCommand({ text: "/reset", autoSubmit: true });
       }}
-      className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start"
+      className={`border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start ${isHighlighted ? "bg-theme-action-menu-item-hover" : ""}`}
     >
       <div className="w-full flex-col text-left flex pointer-events-none">
         <div className="text-white text-sm font-bold">
