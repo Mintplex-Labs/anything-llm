@@ -19,8 +19,16 @@ const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
 
-if (process.env.NODE_ENV === "development") {
-  app.use(httpLogger({ timeLogs: false }));
+// Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
+if (
+  process.env.NODE_ENV === "development" &&
+  !!process.env.ENABLE_HTTP_LOGGER
+) {
+  app.use(
+    httpLogger({
+      enableTimestamps: !!process.env.ENABLE_HTTP_LOGGER_TIMESTAMPS,
+    })
+  );
 }
 app.use(cors({ origin: true }));
 app.use(
