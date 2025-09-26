@@ -5,7 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const sanitizeNamespace = (namespace) => {
   // If namespace already starts with ns_, don't add it again
@@ -340,9 +340,10 @@ const AstraDB = {
           filterIdentifiers,
         });
 
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
+    const sources = sourceDocuments.map((doc, i) => {
+      return { metadata: doc, text: contextTexts[i] };
     });
+    console.log("sources", this.curateSources(sources));
     return {
       contextTexts,
       sources: this.curateSources(sources),
@@ -385,7 +386,10 @@ const AstraDB = {
         return;
       }
       result.contextTexts.push(response.metadata.text);
-      result.sourceDocuments.push(response);
+      result.sourceDocuments.push({
+        ...response.metadata,
+        score: response.$similarity,
+      });
       result.scores.push(response.$similarity);
     });
     return result;
@@ -409,15 +413,27 @@ const AstraDB = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(
-      query,
-      sourceDocuments.map((doc) => ({ ...doc.metadata, score: null })),
-      {
-        topN,
-        similarityThreshold,
-        filterIdentifiers,
-      }
-    );
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
+    });
+    return result;
   },
   allNamespaces: async function (client) {
     try {
@@ -473,12 +489,11 @@ const AstraDB = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      if (Object.keys(source).length > 0) {
-        const metadata = source.hasOwnProperty("metadata")
-          ? source.metadata
-          : source;
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
+          ...(source.text ? { text: source.text } : {}),
         });
       }
     }

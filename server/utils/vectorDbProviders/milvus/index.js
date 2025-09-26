@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const Milvus = {
   name: "Milvus",
@@ -399,11 +399,27 @@ const Milvus = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(query, sourceDocuments, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
     });
+    return result;
   },
   "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;

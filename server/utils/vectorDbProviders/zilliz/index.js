@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -158,30 +158,38 @@ const Zilliz = {
           vectorDimension = chunks[0][0].values.length || null;
 
           await this.getOrCreateCollection(client, namespace, vectorDimension);
-          for (const chunk of chunks) {
-            // Before sending to Pinecone and saving the records to our db
-            // we need to assign the id of each chunk that is stored in the cached file.
-            const newChunks = chunk.map((chunk) => {
-              const id = uuidv4();
-              documentVectors.push({ docId, vectorId: id });
-              return { id, vector: chunk.values, metadata: chunk.metadata };
-            });
-            const insertResult = await client.insert({
-              collection_name: this.normalize(namespace),
-              data: newChunks,
-            });
+          try {
+            for (const chunk of chunks) {
+              // Before sending to Zilliz and saving the records to our db
+              // we need to assign the id of each chunk that is stored in the cached file.
+              const newChunks = chunk.map((chunk) => {
+                const id = uuidv4();
+                documentVectors.push({ docId, vectorId: id });
+                return { id, vector: chunk.values, metadata: chunk.metadata };
+              });
+              const insertResult = await client.insert({
+                collection_name: this.normalize(namespace),
+                data: newChunks,
+              });
 
-            if (insertResult?.status.error_code !== "Success") {
-              throw new Error(
-                `Error embedding into Zilliz! Reason:${insertResult?.status.reason}`
-              );
+              if (insertResult?.status.error_code !== "Success") {
+                throw new Error(
+                  `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+                );
+              }
             }
+            await DocumentVectors.bulkInsert(documentVectors);
+            await client.flushSync({
+              collection_names: [this.normalize(namespace)],
+            });
+            return { vectorized: true, error: null };
+          } catch (insertError) {
+            console.error(
+              "Error inserting cached chunks:",
+              insertError.message
+            );
+            return { vectorized: false, error: insertError.message };
           }
-          await DocumentVectors.bulkInsert(documentVectors);
-          await client.flushSync({
-            collection_names: [this.normalize(namespace)],
-          });
-          return { vectorized: true, error: null };
         }
       }
 
@@ -240,7 +248,7 @@ const Zilliz = {
             data: chunk.map((item) => ({
               id: item.id,
               vector: item.values,
-              metadata: chunk.metadata,
+              metadata: item.metadata,
             })),
           });
 
@@ -330,6 +338,7 @@ const Zilliz = {
     const sources = sourceDocuments.map((doc, i) => {
       return { metadata: doc, text: contextTexts[i] };
     });
+
     return {
       contextTexts,
       sources: this.curateSources(sources),
@@ -362,6 +371,7 @@ const Zilliz = {
         );
         return;
       }
+
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push({
         ...match.metadata,
@@ -390,11 +400,27 @@ const Zilliz = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(query, sourceDocuments, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
     });
+    return result;
   },
   "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
@@ -431,7 +457,6 @@ const Zilliz = {
         });
       }
     }
-
     return documents;
   },
 };
