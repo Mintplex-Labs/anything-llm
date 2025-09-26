@@ -9,6 +9,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { fetchSubModelModels } = require("../AiProviders/submodel");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -35,6 +36,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "submodel",
   // Embedding Engines
   "native-embedder",
 ];
@@ -92,6 +94,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "submodel":
+      return await getSubModelModels(apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     default:
@@ -725,6 +729,22 @@ async function getMoonshotAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getSubModelModels() {
+  const submodelModels = await fetchSubModelModels();
+  if (!Object.keys(submodelModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(submodelModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+	  free_quota: model.free_quota,
+	  pricing: model.pricing,
+    };
+  });
   return { models, error: null };
 }
 

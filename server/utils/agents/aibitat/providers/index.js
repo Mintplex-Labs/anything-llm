@@ -21,6 +21,7 @@ const XAIProvider = require("./xai.js");
 const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
+const SubModelProvider = require("./submodel.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
 const MoonshotAiProvider = require("./moonshotAi.js");
@@ -51,6 +52,7 @@ module.exports = {
   CometApiProvider,
   NvidiaNimProvider,
   PPIOProvider,
+  SubModelProvider,
   GeminiProvider,
   DellProAiStudioProvider,
   MoonshotAiProvider,

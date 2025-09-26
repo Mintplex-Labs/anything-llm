@@ -103,6 +103,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Moonshot AI](https://www.moonshot.ai/)
 - [CometAPI (chat models)](https://api.cometapi.com/)
+- [SubModel](https://submodel.ai)
+
 **Embedder models:**
 
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
