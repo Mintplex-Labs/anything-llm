@@ -45,10 +45,15 @@ export default function VariableRow({ variable, onRefresh }) {
           bg: "bg-blue-600/20",
           text: "text-blue-400 light:text-blue-800",
         };
-      case "dynamic":
+      case "user":
         return {
           bg: "bg-green-600/20",
           text: "text-green-400 light:text-green-800",
+        };
+      case "workspace":
+        return {
+          bg: "bg-cyan-600/20",
+          text: "text-cyan-400 light:text-cyan-800",
         };
       default:
         return {
@@ -81,7 +86,7 @@ export default function VariableRow({ variable, onRefresh }) {
           <span
             className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs leading-5 font-semibold ${colorTheme.text} shadow-sm`}
           >
-            {titleCase(variable.type)}
+            {titleCase(variable?.type ?? "static")}
           </span>
         </td>
         <td className="px-4 py-2 flex items-center justify-end gap-x-4">
