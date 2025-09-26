@@ -32,6 +32,7 @@ class OpenRouterLLM {
     if (!process.env.OPENROUTER_API_KEY)
       throw new Error("No OpenRouter API key was set.");
 
+    this.className = "OpenRouterLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://openrouter.ai/api/v1";
     this.openai = new OpenAIApi({
@@ -88,7 +89,7 @@ class OpenRouterLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**
