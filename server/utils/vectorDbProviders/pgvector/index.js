@@ -206,10 +206,26 @@ const PGVector = {
    */
   testConnectionToDB: async function () {
     try {
-      const pgClient = await this.connect();
-      await pgClient.query(this.getTablesSql);
-      await pgClient.end();
-      return { error: null, success: true };
+      // Set a 3 second timeout for the connection attempt
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Connection timed out after 3 seconds")),
+          3000
+        )
+      );
+
+      const connectionPromise = (async () => {
+        const pgClient = await this.connect();
+        try {
+          await pgClient.query(this.getTablesSql);
+        } finally {
+          await pgClient.end();
+        }
+        return { error: null, success: true };
+      })();
+
+      // Race the connection attempt against the timeout
+      return await Promise.race([connectionPromise, timeoutPromise]);
     } catch (err) {
       return { error: err.message, success: false };
     }
