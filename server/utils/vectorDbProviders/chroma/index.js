@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
+const { rerankDocuments, getSearchLimit } = require("../rerank");
 const COLLECTION_REGEX = new RegExp(
   /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
 );
@@ -148,6 +149,52 @@ const Chroma = {
       result.scores.push(similarity);
     });
 
+    return result;
+  },
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const { sourceDocuments, contextTexts } = await this.similarityResponse({
+      client,
+      namespace,
+      queryVector,
+      similarityThreshold,
+      topN: searchLimit,
+      filterIdentifiers,
+    });
+    const documentsForReranking = sourceDocuments.map((metadata, i) => ({
+      ...metadata,
+      text: contextTexts[i],
+    }));
+
+    const rerankedDocs = await rerankDocuments(query, documentsForReranking, {
+      topN,
+      similarityThreshold,
+      filterIdentifiers,
+    });
+
+    // Post-process to fix scores and contextTexts from the generic reranker.
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedDocs.sourceDocuments.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      result.sourceDocuments.push({ ...rest, score: rerank_score });
+      result.contextTexts.push(item.text);
+      result.scores.push(rerank_score);
+    });
     return result;
   },
   namespace: async function (client, namespace = null) {
@@ -348,12 +395,14 @@ const Chroma = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
 
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, this.normalize(namespace)))) {
+    const collectionName = this.normalize(namespace);
+    if (!(await this.namespaceExists(client, collectionName))) {
       return {
         contextTexts: [],
         sources: [],
@@ -362,16 +411,26 @@ const Chroma = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments, scores } =
-      await this.similarityResponse({
-        client,
-        namespace,
-        queryVector,
-        similarityThreshold,
-        topN,
-        filterIdentifiers,
-      });
+    const result = rerank
+      ? await this.rerankedSimilarityResponse({
+          client,
+          namespace,
+          query: input,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        })
+      : await this.similarityResponse({
+          client,
+          namespace,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
 
+    const { contextTexts, sourceDocuments, scores } = result;
     const sources = sourceDocuments.map((metadata, i) => ({
       metadata: {
         ...metadata,

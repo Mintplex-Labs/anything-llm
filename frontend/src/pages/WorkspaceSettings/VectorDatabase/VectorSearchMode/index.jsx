@@ -1,8 +1,5 @@
 import { useState } from "react";
 
-// We dont support all vectorDBs yet for reranking due to complexities of how each provider
-// returns information. We need to normalize the response data so Reranker can be used for each provider.
-const supportedVectorDBs = ["lancedb"];
 const hint = {
   default: {
     title: "Default",
@@ -20,8 +17,7 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
   const [selection, setSelection] = useState(
     workspace?.vectorSearchMode ?? "default"
   );
-  if (!workspace?.vectorDB || !supportedVectorDBs.includes(workspace?.vectorDB))
-    return null;
+  if (!workspace?.vectorDB) return null;
 
   return (
     <div>

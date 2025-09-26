@@ -5,7 +5,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
-const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
+const { rerankDocuments, getSearchLimit } = require("../rerank");
 
 /**
  * LancedDB Client connection object
@@ -79,68 +79,24 @@ const LanceDb = {
     similarityThreshold = 0.25,
     filterIdentifiers = [],
   }) {
-    const reranker = new NativeEmbeddingReranker();
-    const collection = await client.openTable(namespace);
     const totalEmbeddings = await this.namespaceCount(namespace);
-    const result = {
-      contextTexts: [],
-      sourceDocuments: [],
-      scores: [],
-    };
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const vectorSearchResults = await client
+      .openTable(namespace)
+      .then((tbl) =>
+        tbl
+          .vectorSearch(queryVector)
+          .distanceType("cosine")
+          .limit(searchLimit)
+          .toArray()
+      );
 
-    /**
-     * For reranking, we want to work with a larger number of results than the topN.
-     * This is because the reranker can only rerank the results it it given and we dont auto-expand the results.
-     * We want to give the reranker a larger number of results to work with.
-     *
-     * However, we cannot make this boundless as reranking is expensive and time consuming.
-     * So we limit the number of results to a maximum of 50 and a minimum of 10.
-     * This is a good balance between the number of results to rerank and the cost of reranking
-     * and ensures workspaces with 10K embeddings will still rerank within a reasonable timeframe on base level hardware.
-     *
-     * Benchmarks:
-     * On Intel Mac: 2.6 GHz 6-Core Intel Core i7 - 20 docs reranked in ~5.2 sec
-     */
-    const searchLimit = Math.max(
-      10,
-      Math.min(50, Math.ceil(totalEmbeddings * 0.1))
-    );
-    const vectorSearchResults = await collection
-      .vectorSearch(queryVector)
-      .distanceType("cosine")
-      .limit(searchLimit)
-      .toArray();
-
-    await reranker
-      .rerank(query, vectorSearchResults, { topK: topN })
-      .then((rerankResults) => {
-        rerankResults.forEach((item) => {
-          if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-            return;
-          const { vector: _, ...rest } = item;
-          if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-            console.log(
-              "LanceDB: A source was filtered from context as it's parent document is pinned."
-            );
-            return;
-          }
-          const score =
-            item?.rerank_score || this.distanceToSimilarity(item._distance);
-
-          result.contextTexts.push(rest.text);
-          result.sourceDocuments.push({
-            ...rest,
-            score,
-          });
-          result.scores.push(score);
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-        console.error("LanceDB::rerankedSimilarityResponse", e.message);
-      });
-
-    return result;
+    const reranked = await rerankDocuments(query, vectorSearchResults, {
+      topN,
+      similarityThreshold,
+      filterIdentifiers,
+    });
+    return reranked;
   },
 
   /**
@@ -420,6 +376,8 @@ const LanceDb = {
           topN,
           filterIdentifiers,
         });
+
+    console.log("result", result);
 
     const { contextTexts, sourceDocuments } = result;
     const sources = sourceDocuments.map((metadata, i) => {

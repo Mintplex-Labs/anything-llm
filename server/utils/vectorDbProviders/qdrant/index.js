@@ -5,6 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { rerankDocuments, getSearchLimit } = require("../rerank");
 
 const QDrant = {
   name: "QDrant",
@@ -85,6 +86,35 @@ const QDrant = {
     });
 
     return result;
+  },
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const { sourceDocuments } = await this.similarityResponse({
+      client,
+      namespace,
+      queryVector,
+      similarityThreshold,
+      topN: searchLimit,
+      filterIdentifiers,
+    });
+    return await rerankDocuments(
+      query,
+      sourceDocuments.map((doc) => ({ ...doc, score: null })),
+      {
+        topN,
+        similarityThreshold,
+        filterIdentifiers,
+      }
+    );
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -324,6 +354,7 @@ const QDrant = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -338,14 +369,24 @@ const QDrant = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
+    const { contextTexts, sourceDocuments } = rerank
+      ? await this.rerankedSimilarityResponse({
+          client,
+          namespace,
+          query: input,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        })
+      : await this.similarityResponse({
+          client,
+          namespace,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };

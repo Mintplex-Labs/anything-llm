@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { rerankDocuments, getSearchLimit } = require("../rerank");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -292,6 +293,7 @@ const Zilliz = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -306,14 +308,24 @@ const Zilliz = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
+    const { contextTexts, sourceDocuments } = rerank
+      ? await this.rerankedSimilarityResponse({
+          client,
+          namespace,
+          query: input,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        })
+      : await this.similarityResponse({
+          client,
+          namespace,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
 
     const sources = sourceDocuments.map((doc, i) => {
       return { metadata: doc, text: contextTexts[i] };
@@ -358,6 +370,31 @@ const Zilliz = {
       result.scores.push(match.score);
     });
     return result;
+  },
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const { sourceDocuments } = await this.similarityResponse({
+      client,
+      namespace,
+      queryVector,
+      similarityThreshold,
+      topN: searchLimit,
+      filterIdentifiers,
+    });
+    return await rerankDocuments(query, sourceDocuments, {
+      topN,
+      similarityThreshold,
+      filterIdentifiers,
+    });
   },
   "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
