@@ -1,5 +1,5 @@
 const httpLogger =
-  ({ timeLogs = false }) =>
+  ({ enableTimestamps = false }) =>
   (req, res, next) => {
     // Capture the original res.end to log response status
     const originalEnd = res.end;
@@ -11,7 +11,7 @@ const httpLogger =
         `\x1b[32m[HTTP]\x1b[0m ${statusColor}${res.statusCode}\x1b[0m ${
           req.method
         } -> ${req.path} ${
-          timeLogs
+          enableTimestamps
             ? `@ ${new Date().toLocaleTimeString("en-US", { hour12: true })}`
             : ""
         }`.trim()
