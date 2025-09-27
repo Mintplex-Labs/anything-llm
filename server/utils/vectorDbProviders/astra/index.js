@@ -343,7 +343,6 @@ const AstraDB = {
     const sources = sourceDocuments.map((doc, i) => {
       return { metadata: doc, text: contextTexts[i] };
     });
-    console.log("sources", this.curateSources(sources));
     return {
       contextTexts,
       sources: this.curateSources(sources),
