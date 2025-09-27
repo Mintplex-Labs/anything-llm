@@ -5,7 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const PineconeDB = {
   name: "Pinecone",
@@ -96,11 +96,27 @@ const PineconeDB = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(query, sourceDocuments, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
     });
+    return result;
   },
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");

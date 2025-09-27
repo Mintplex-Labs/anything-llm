@@ -5,7 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const QDrant = {
   name: "QDrant",
@@ -81,6 +81,7 @@ const QDrant = {
       result.sourceDocuments.push({
         ...(response?.payload || {}),
         id: response.id,
+        score: response.score,
       });
       result.scores.push(response.score);
     });
@@ -106,15 +107,27 @@ const QDrant = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(
-      query,
-      sourceDocuments.map((doc) => ({ ...doc, score: null })),
-      {
-        topN,
-        similarityThreshold,
-        filterIdentifiers,
-      }
-    );
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
+    });
+    return result;
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -388,8 +401,8 @@ const QDrant = {
           filterIdentifiers,
         });
 
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
+    const sources = sourceDocuments.map((doc, i) => {
+      return { metadata: doc, text: contextTexts[i] };
     });
     return {
       contextTexts,
@@ -431,12 +444,11 @@ const QDrant = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      if (Object.keys(source).length > 0) {
-        const metadata = source.hasOwnProperty("metadata")
-          ? source.metadata
-          : source;
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
+          ...(source.text ? { text: source.text } : {}),
         });
       }
     }

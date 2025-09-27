@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
-const { rerankDocuments, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const Weaviate = {
   name: "Weaviate",
@@ -116,7 +116,7 @@ const Weaviate = {
         return;
       }
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({ ...rest, id });
+      result.sourceDocuments.push({ ...rest, id, score: certainty });
       result.scores.push(certainty);
     });
 
@@ -141,11 +141,27 @@ const Weaviate = {
       topN: searchLimit,
       filterIdentifiers,
     });
-    return await rerankDocuments(query, sourceDocuments, {
-      topN,
-      similarityThreshold,
-      filterIdentifiers,
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
     });
+    return result;
   },
   allNamespaces: async function (client) {
     try {
@@ -428,8 +444,8 @@ const Weaviate = {
           filterIdentifiers,
         });
 
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
+    const sources = sourceDocuments.map((doc, i) => {
+      return { metadata: doc, text: contextTexts[i] };
     });
     return {
       contextTexts,
@@ -468,11 +484,12 @@ const Weaviate = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      if (Object.keys(source).length > 0) {
-        const metadata = source.hasOwnProperty("metadata")
-          ? source.metadata
-          : source;
-        documents.push({ ...metadata });
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
+        documents.push({
+          ...metadata,
+          ...(source.text ? { text: source.text } : {}),
+        });
       }
     }
 
