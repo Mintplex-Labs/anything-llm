@@ -3,6 +3,7 @@ const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { TextSplitter } = require("../../TextSplitter");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
+const { rerank, getSearchLimit } = require("../rerank");
 
 /*
  Embedding Table Schema (table name defined by user)
@@ -158,29 +159,31 @@ const PGVector = {
         }, PGVector.connectionTimeout);
       });
 
-      const connectionPromise = new Promise(async (resolve) => {
-        let pgClient = null;
-        try {
-          pgClient = this.client(connectionString);
-          await pgClient.connect();
-          const result = await pgClient.query(this.getTablesSql);
+      const connectionPromise = new Promise((resolve) => {
+        (async () => {
+          let pgClient = null;
+          try {
+            pgClient = this.client(connectionString);
+            await pgClient.connect();
+            const result = await pgClient.query(this.getTablesSql);
 
-          if (result.rows.length !== 0 && !!tableName) {
-            const tableExists = result.rows.some(
-              (row) => row.tablename === tableName
-            );
-            if (tableExists)
-              await this.validateExistingEmbeddingTableSchema(
-                pgClient,
-                tableName
+            if (result.rows.length !== 0 && !!tableName) {
+              const tableExists = result.rows.some(
+                (row) => row.tablename === tableName
               );
+              if (tableExists)
+                await this.validateExistingEmbeddingTableSchema(
+                  pgClient,
+                  tableName
+                );
+            }
+            resolve({ error: null, success: true });
+          } catch (err) {
+            resolve({ error: err.message, success: false });
+          } finally {
+            if (pgClient) await pgClient.end();
           }
-          resolve({ error: null, success: true });
-        } catch (err) {
-          resolve({ error: err.message, success: false });
-        } finally {
-          if (pgClient) await pgClient.end();
-        }
+        })();
       });
 
       // Race the connection attempt against the timeout
@@ -349,6 +352,48 @@ const PGVector = {
       result.scores.push(this.distanceToSimilarity(item._distance));
     });
 
+    return result;
+  },
+
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const { sourceDocuments } = await this.similarityResponse({
+      client,
+      namespace,
+      queryVector,
+      similarityThreshold,
+      topN: searchLimit,
+      filterIdentifiers,
+    });
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
+    });
     return result;
   },
 
@@ -655,6 +700,7 @@ const PGVector = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     let connection = null;
     if (!namespace || !input || !LLMConnector)
@@ -675,16 +721,25 @@ const PGVector = {
       }
 
       const queryVector = await LLMConnector.embedTextInput(input);
-      const result = await this.similarityResponse({
-        client: connection,
-        namespace,
-        queryVector,
-        similarityThreshold,
-        topN,
-        filterIdentifiers,
-      });
+      const { contextTexts, sourceDocuments } = rerank
+        ? await this.rerankedSimilarityResponse({
+            client: connection,
+            namespace,
+            query: input,
+            queryVector,
+            similarityThreshold,
+            topN,
+            filterIdentifiers,
+          })
+        : await this.similarityResponse({
+            client: connection,
+            namespace,
+            queryVector,
+            similarityThreshold,
+            topN,
+            filterIdentifiers,
+          });
 
-      const { contextTexts, sourceDocuments } = result;
       const sources = sourceDocuments.map((metadata, i) => {
         return { metadata: { ...metadata, text: contextTexts[i] } };
       });

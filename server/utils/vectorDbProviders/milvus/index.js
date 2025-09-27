@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { rerank, getSearchLimit } = require("../rerank");
 
 const Milvus = {
   name: "Milvus",
@@ -299,6 +300,7 @@ const Milvus = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -313,14 +315,24 @@ const Milvus = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
+    const { contextTexts, sourceDocuments } = rerank
+      ? await this.rerankedSimilarityResponse({
+          client,
+          namespace,
+          query: input,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        })
+      : await this.similarityResponse({
+          client,
+          namespace,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
 
     const sources = sourceDocuments.map((doc, i) => {
       return { metadata: doc, text: contextTexts[i] };
@@ -365,6 +377,47 @@ const Milvus = {
         score: match.score,
       });
       result.scores.push(match.score);
+    });
+    return result;
+  },
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const { sourceDocuments } = await this.similarityResponse({
+      client,
+      namespace,
+      queryVector,
+      similarityThreshold,
+      topN: searchLimit,
+      filterIdentifiers,
+    });
+
+    const rerankedResults = await rerank(query, sourceDocuments, topN);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    rerankedResults.forEach((item) => {
+      if (item.rerank_score < similarityThreshold) return;
+      const { rerank_score, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) return;
+
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push({
+        ...rest,
+        score: rerank_score,
+      });
+      result.scores.push(rerank_score);
     });
     return result;
   },
