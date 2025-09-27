@@ -13,4 +13,15 @@ describe("YoutubeTranscript", () => {
     // console.log("Success! Transcript length:", transcript.length);
     // console.log("First 200 characters:", transcript.substring(0, 200) + "...");
   }, 30000);
+
+  it("should fetch non asr transcript from YouTube video", async () => {
+    const videoId = "D111ao6wWH0";
+    const transcript = await YoutubeTranscript.fetchTranscript(videoId, {
+      lang: "zh-HK",
+    });
+
+    expect(transcript).toBeDefined();
+    expect(typeof transcript).toBe("string");
+    expect(transcript.length).toBeGreaterThan(0);
+  }, 30000);
 });
