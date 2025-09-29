@@ -17,6 +17,7 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "gemini-2.0-flash-lite" } = config;
     super();
+    this.className = "GeminiProvider";
     const client = new OpenAI({
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       apiKey: process.env.GEMINI_API_KEY,
@@ -134,7 +135,7 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       throw new APIError(
         error?.message
-          ? `${this.constructor.name} encountered an error while executing the request: ${error.message}`
+          ? `${this.className} encountered an error while executing the request: ${error.message}`
           : "There was an error with the Gemini provider executing the request"
       );
     }
