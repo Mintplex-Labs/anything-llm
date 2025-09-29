@@ -76,6 +76,11 @@
  */
 
 /**
+ * @typedef {Object} BaseRerankerProvider
+ * @property {function(string, {text: string}[], {topK: number}): Promise<any[]>} rerank - Reranks a list of documents.
+ */
+
+/**
  * Gets the systems current vector database provider.
  * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
@@ -463,6 +468,29 @@ function toChunks(arr, size) {
   );
 }
 
+/**
+ * Returns the Reranker provider.
+ * @returns {BaseRerankerProvider}
+ */
+function getRerankerProvider() {
+  const rerankerSelection = process.env.RERANKING_PROVIDER ?? "native";
+  switch (rerankerSelection) {
+    case "native":
+      const {
+        NativeEmbeddingReranker,
+      } = require("../EmbeddingRerankers/native");
+      return new NativeEmbeddingReranker();
+    default:
+      console.log(
+        `[RERANKING] Reranker provider ${rerankerSelection} is not supported. Using native reranker as fallback.`
+      );
+      const {
+        NativeEmbeddingReranker: Native,
+      } = require("../EmbeddingRerankers/native");
+      return new Native();
+  }
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -471,4 +499,5 @@ module.exports = {
   getBaseLLMProviderModel,
   getLLMProvider,
   toChunks,
+  getRerankerProvider,
 };

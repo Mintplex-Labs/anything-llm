@@ -1,7 +1,7 @@
-const { NativeEmbeddingReranker } = require("../EmbeddingRerankers/native");
+const { getRerankerProvider } = require("../helpers");
 
 async function rerank(query, documents, topN = 4) {
-  const reranker = new NativeEmbeddingReranker();
+  const reranker = getRerankerProvider();
   return await reranker.rerank(query, documents, { topK: topN });
 }
 
@@ -18,8 +18,9 @@ async function rerank(query, documents, topN = 4) {
  * Benchmarks:
  * On Intel Mac: 2.6 GHz 6-Core Intel Core i7 - 20 docs reranked in ~5.2 sec
  */
-function getSearchLimit(totalEmbeddings = 0, topN = 4) {
-  return Math.max(10, Math.min(50, Math.ceil(totalEmbeddings * 0.1) || topN));
+
+function getSearchLimit(totalEmbeddings = 0) {
+  return Math.max(10, Math.min(50, Math.ceil(totalEmbeddings * 0.1)));
 }
 
 module.exports = {

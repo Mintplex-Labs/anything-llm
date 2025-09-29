@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
-const { rerank, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../../EmbeddingRerankers/rerank");
 const COLLECTION_REGEX = new RegExp(
   /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
 );
@@ -161,7 +161,7 @@ const Chroma = {
     filterIdentifiers = [],
   }) {
     const totalEmbeddings = await this.namespaceCount(namespace);
-    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const searchLimit = getSearchLimit(totalEmbeddings);
     const { sourceDocuments, contextTexts } = await this.similarityResponse({
       client,
       namespace,

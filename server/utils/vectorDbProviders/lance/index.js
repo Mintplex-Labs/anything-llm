@@ -5,7 +5,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
-const { rerank, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../../EmbeddingRerankers/rerank");
 
 /**
  * LancedDB Client connection object
@@ -80,7 +80,7 @@ const LanceDb = {
     filterIdentifiers = [],
   }) {
     const totalEmbeddings = await this.namespaceCount(namespace);
-    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const searchLimit = getSearchLimit(totalEmbeddings);
     const vectorSearchResults = await client
       .openTable(namespace)
       .then((tbl) =>
@@ -99,8 +99,7 @@ const LanceDb = {
     };
 
     rerankedResults.forEach((item) => {
-      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-        return;
+      if (item.rerank_score < similarityThreshold) return;
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
         console.log(
@@ -108,8 +107,7 @@ const LanceDb = {
         );
         return;
       }
-      const score =
-        item?.rerank_score || this.distanceToSimilarity(item._distance);
+      const score = item.rerank_score;
 
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({

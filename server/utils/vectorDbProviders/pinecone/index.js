@@ -5,7 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const { rerank, getSearchLimit } = require("../rerank");
+const { rerank, getSearchLimit } = require("../../EmbeddingRerankers/rerank");
 
 const PineconeDB = {
   name: "Pinecone",
@@ -87,7 +87,7 @@ const PineconeDB = {
     filterIdentifiers = [],
   }) {
     const totalEmbeddings = await this.namespaceCount(namespace);
-    const searchLimit = getSearchLimit(totalEmbeddings, topN);
+    const searchLimit = getSearchLimit(totalEmbeddings);
     const { sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
