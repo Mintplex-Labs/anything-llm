@@ -1209,7 +1209,9 @@ function apiWorkspaceThreadEndpoints(app) {
               bestReferences[key] = {
                 title: element.title,
                 url: source,
-                summary: element.summary
+                summary: element.summary,
+                relevance_score: element.relevanceScore
+
               };
             } else {
               bestReferences[key] = undefined;
@@ -1229,6 +1231,7 @@ function apiWorkspaceThreadEndpoints(app) {
               title: source.title,
               summary: source.summary,
               url: source.hasOwnProperty("doi") ? `https://dx.doi.org/${source.doi}` : source.sourceUrl,
+              relevance_score: source.relevanceScore,
               firestore_doc_id: source.id
             }
             for (const chunk of source.chunks) {
