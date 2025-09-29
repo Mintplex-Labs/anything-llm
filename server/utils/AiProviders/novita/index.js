@@ -18,10 +18,13 @@ const cacheFolder = path.resolve(
 );
 
 class NovitaLLM {
+  defaultTimeout = 3_000;
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.NOVITA_LLM_API_KEY)
       throw new Error("No Novita API key was set.");
 
+    this.className = "NovitaLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://api.novita.ai/v3/openai";
     this.openai = new OpenAIApi({
@@ -55,19 +58,23 @@ class NovitaLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**
    * Novita has various models that never return `finish_reasons` and thus leave the stream open
    * which causes issues in subsequent messages. This timeout value forces us to close the stream after
    * x milliseconds. This is a configurable value via the NOVITA_LLM_TIMEOUT_MS value
-   * @returns {number} The timeout value in milliseconds (default: 500)
+   * @returns {number} The timeout value in milliseconds (default: 3_000)
    */
   #parseTimeout() {
-    if (isNaN(Number(process.env.NOVITA_LLM_TIMEOUT_MS))) return 500;
+    this.log(
+      `Novita timeout is set to ${process.env.NOVITA_LLM_TIMEOUT_MS ?? this.defaultTimeout}ms`
+    );
+    if (isNaN(Number(process.env.NOVITA_LLM_TIMEOUT_MS)))
+      return this.defaultTimeout;
     const setValue = Number(process.env.NOVITA_LLM_TIMEOUT_MS);
-    if (setValue < 500) return 500;
+    if (setValue < 500) return 500; // 500ms is the minimum timeout
     return setValue;
   }
 
@@ -318,7 +325,7 @@ class NovitaLLM {
             });
           }
 
-          if (message.finish_reason !== null) {
+          if (message?.finish_reason !== null) {
             writeResponseChunk(response, {
               uuid,
               sources,

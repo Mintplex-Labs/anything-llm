@@ -44,6 +44,7 @@ const PGVector = {
     "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'",
   getEmbeddingTableSchemaSql:
     "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1",
+  createExtensionSql: "CREATE EXTENSION IF NOT EXISTS vector;",
   createTableSql: (dimensions) =>
     `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
 
@@ -405,6 +406,7 @@ const PGVector = {
    */
   createTableIfNotExists: async function (connection, dimensions = 384) {
     this.log(`Creating embedding table with ${dimensions} dimensions`);
+    await connection.query(this.createExtensionSql);
     await connection.query(this.createTableSql(dimensions));
     return true;
   },
