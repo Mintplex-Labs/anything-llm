@@ -6,6 +6,7 @@ class GenericOpenAiEmbedder {
       throw new Error(
         "GenericOpenAI must have a valid base path to use for the api."
       );
+    this.className = "GenericOpenAiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = process.env.EMBEDDING_BASE_PATH;
     this.openai = new OpenAIApi({
@@ -25,7 +26,7 @@ class GenericOpenAiEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[GenericOpenAiEmbedder]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

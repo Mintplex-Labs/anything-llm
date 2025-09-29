@@ -12,6 +12,7 @@ class MoonshotAiLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.MOONSHOT_AI_API_KEY)
       throw new Error("No Moonshot AI API key was set.");
+    this.className = "MoonshotAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
@@ -36,7 +37,7 @@ class MoonshotAiLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

@@ -3,6 +3,7 @@ const { toChunks } = require("../../helpers");
 class OpenAiEmbedder {
   constructor() {
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
+    this.className = "OpenAiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
@@ -17,7 +18,7 @@ class OpenAiEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[OpenAiEmbedder]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {
