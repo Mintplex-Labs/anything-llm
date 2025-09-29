@@ -15,6 +15,7 @@ class TextGenWebUILLM {
         "TextGenWebUI must have a valid base path to use for the api."
       );
 
+    this.className = "TextGenWebUILLM";
     this.basePath = process.env.TEXT_GEN_WEB_UI_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
@@ -33,7 +34,7 @@ class TextGenWebUILLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

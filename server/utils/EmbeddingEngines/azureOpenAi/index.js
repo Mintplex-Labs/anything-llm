@@ -8,6 +8,7 @@ class AzureOpenAiEmbedder {
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
+    this.className = "AzureOpenAiEmbedder";
     this.apiVersion = "2024-12-01-preview";
     const openai = new AzureOpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
@@ -29,7 +30,7 @@ class AzureOpenAiEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[AzureOpenAiEmbedder]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   async embedTextInput(textInput) {

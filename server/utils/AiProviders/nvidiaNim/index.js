@@ -12,6 +12,7 @@ class NvidiaNimLLM {
     if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
       throw new Error("No NVIDIA NIM API Base Path was set.");
 
+    this.className = "NvidiaNimLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.nvidiaNim = new OpenAIApi({
       baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
@@ -33,7 +34,7 @@ class NvidiaNimLLM {
   }
 
   #log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

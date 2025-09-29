@@ -18,6 +18,7 @@ class PPIOLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.PPIO_API_KEY) throw new Error("No PPIO API key was set.");
 
+    this.className = "PPIOLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://api.ppinfra.com/v3/openai/";
     this.openai = new OpenAIApi({
@@ -50,7 +51,7 @@ class PPIOLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   async #syncModels() {
