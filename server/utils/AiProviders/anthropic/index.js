@@ -15,6 +15,7 @@ class AnthropicLLM {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
 
+    this.className = "AnthropicLLM";
     // Docs: https://www.npmjs.com/package/@anthropic-ai/sdk
     const AnthropicAI = require("@anthropic-ai/sdk");
     const anthropic = new AnthropicAI({
@@ -37,7 +38,7 @@ class AnthropicLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {

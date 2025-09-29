@@ -18,6 +18,7 @@ class GenericOpenAiLLM {
         "GenericOpenAI must have a valid base path to use for the api."
       );
 
+    this.className = "GenericOpenAiLLM";
     this.basePath = process.env.GENERIC_OPEN_AI_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
@@ -45,7 +46,7 @@ class GenericOpenAiLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
