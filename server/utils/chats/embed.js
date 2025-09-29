@@ -7,6 +7,11 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const {
+  EphemeralAgentHandler,
+  EphemeralEventListener,
+} = require("../agents/ephemeral");
+const { Telemetry } = require("../../models/telemetry");
 
 async function streamChatWithForEmbed(
   response,
@@ -28,6 +33,51 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
+
+  // Check for agent invocation - if message starts with @agent, handle as agent request
+  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+    await Telemetry.sendTelemetry("agent_chat_started");
+
+    // Initialize the EphemeralAgentHandler to handle agent conversation over HTTP
+    const agentHandler = new EphemeralAgentHandler({
+      uuid,
+      workspace: embed.workspace,
+      prompt: message,
+      userId: null, // Embed users are anonymous
+      threadId: null, // Embeds don't support threads
+      sessionId,
+    });
+
+    // Establish event listener that emulates websocket calls in Aibitat
+    // so that we can keep the same interface but use HTTP for embed
+    const eventListener = new EphemeralEventListener();
+    await agentHandler.init();
+    await agentHandler.createAIbitat({ handler: eventListener });
+    agentHandler.startAgentCluster();
+
+    // Stream back agent events and save to embed chat history
+    return eventListener
+      .streamAgentEvents(response, uuid)
+      .then(async ({ thoughts, textResponse }) => {
+        await EmbedChats.new({
+          embedId: embed.id,
+          prompt: message,
+          response: {
+            text: textResponse,
+            type: chatMode,
+            sources: [],
+            thoughts,
+          },
+          connection_information: response.locals.connection
+            ? {
+                ...response.locals.connection,
+                username: username ? String(username) : null,
+              }
+            : { username: username ? String(username) : null },
+          sessionId,
+        });
+      });
+  }
   const LLMConnector = getLLMProvider({
     provider: embed?.workspace?.chatProvider,
     model: chatModel ?? embed.workspace?.chatModel,
