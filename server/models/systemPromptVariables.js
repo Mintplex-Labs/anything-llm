@@ -241,16 +241,18 @@ const SystemPromptVariables = {
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
-        // Determine if the variable is a workspace or user variable
-        const isWorkspaceOrUserVariable =
-          key.startsWith("workspace.") || key.startsWith("user.");
+        // Determine if the variable is a class-based variable (workspace.X or user.X)
+        const isWorkspaceOrUserVariable = ["workspace.", "user."].some(
+          (prefix) => key.startsWith(prefix)
+        );
 
-        // Handle `workspace.X` or `user.X` variables with current workspace's or user's data
+        // Handle class-based variables with current workspace's or user's data
         if (isWorkspaceOrUserVariable) {
-          // Determine the type of variable (Workspace or User)
-          const variableTypeDisplay = key.startsWith("workspace.")
-            ? "Workspace"
-            : "User";
+          let variableTypeDisplay;
+          if (key.startsWith("workspace.")) variableTypeDisplay = "Workspace";
+          else if (key.startsWith("user.")) variableTypeDisplay = "User";
+          else throw new Error(`Invalid class-based variable: ${key}`);
+
           // Get the property name after the prefix
           const prop = key.split(".")[1];
           const variable = allVariables.find((v) => v.key === key);
@@ -261,9 +263,11 @@ const SystemPromptVariables = {
             if (variable.value.constructor.name === "AsyncFunction") {
               let value;
               try {
-                value = await variable.value(
-                  variableTypeDisplay === "Workspace" ? workspaceId : userId
-                );
+                if (variableTypeDisplay === "Workspace")
+                  value = await variable.value(workspaceId);
+                else if (variableTypeDisplay === "User")
+                  value = await variable.value(userId);
+                else throw new Error(`Invalid class-based variable: ${key}`);
               } catch (error) {
                 console.error(
                   `Error processing ${variableTypeDisplay} variable ${key}:`,
@@ -274,10 +278,20 @@ const SystemPromptVariables = {
               result = result.replace(match, value);
             } else {
               let value;
-              // Call the variable function with the appropriate workspace or user ID
-              value = variable.value(
-                variableTypeDisplay === "Workspace" ? workspaceId : userId
-              );
+              try {
+                // Call the variable function with the appropriate workspace or user ID
+                if (variableTypeDisplay === "Workspace")
+                  value = variable.value(workspaceId);
+                else if (variableTypeDisplay === "User")
+                  value = variable.value(userId);
+                else throw new Error(`Invalid class-based variable: ${key}`);
+              } catch (error) {
+                console.error(
+                  `Error processing ${variableTypeDisplay} variable ${key}:`,
+                  error
+                );
+                value = `[${variableTypeDisplay} ${prop}]`;
+              }
               result = result.replace(match, value);
             }
           } else {
