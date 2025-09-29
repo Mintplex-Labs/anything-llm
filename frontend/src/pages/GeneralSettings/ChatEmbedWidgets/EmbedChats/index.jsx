@@ -55,6 +55,7 @@ export default function EmbedChatsView() {
   const query = useQuery();
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const [showThinking, setShowThinking] = useState(true);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -92,10 +93,15 @@ export default function EmbedChatsView() {
 
   useEffect(() => {
     async function fetchChats() {
-      const { chats: _chats, hasPages = false } = await Embed.chats(offset);
-      setChats(_chats);
-      setCanNext(hasPages);
-      setLoading(false);
+      setLoading(true);
+      await Embed.chats(offset)
+        .then(({ chats: _chats, hasPages = false }) => {
+          setChats(_chats);
+          setCanNext(hasPages);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
     fetchChats();
   }, [offset]);
@@ -211,7 +217,7 @@ export default function EmbedChatsView() {
                   : "bg-theme-bg-secondary text-theme-text-primary hover:bg-theme-hover"
               }`}
             >
-              {t("embed-chats.previous")}
+              {t("common.previous")}
             </button>
             <button
               onClick={handleNext}
@@ -222,7 +228,7 @@ export default function EmbedChatsView() {
                   : "bg-theme-bg-secondary text-theme-text-primary hover:bg-theme-hover"
               }`}
             >
-              {t("embed-chats.next")}
+              {t("common.next")}
             </button>
           </div>
         )}

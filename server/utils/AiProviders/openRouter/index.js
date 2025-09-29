@@ -18,10 +18,21 @@ const cacheFolder = path.resolve(
 );
 
 class OpenRouterLLM {
+  /**
+   * Some openrouter models never send a finish_reason and thus leave the stream open in the UI.
+   * However, because OR is a middleware it can also wait an inordinately long time between chunks so we need
+   * to ensure that we dont accidentally close the stream too early. If the time between chunks is greater than this timeout
+   * we will close the stream and assume it to be complete. This is common for free models or slow providers they can
+   * possibly delegate to during invocation.
+   * @type {number}
+   */
+  defaultTimeout = 3_000;
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OPENROUTER_API_KEY)
       throw new Error("No OpenRouter API key was set.");
 
+    this.className = "OpenRouterLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://openrouter.ai/api/v1";
     this.openai = new OpenAIApi({
@@ -78,22 +89,23 @@ class OpenRouterLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**
    * OpenRouter has various models that never return `finish_reasons` and thus leave the stream open
    * which causes issues in subsequent messages. This timeout value forces us to close the stream after
    * x milliseconds. This is a configurable value via the OPENROUTER_TIMEOUT_MS value
-   * @returns {number} The timeout value in milliseconds (default: 500)
+   * @returns {number} The timeout value in milliseconds (default: 3_000)
    */
   #parseTimeout() {
     this.log(
-      `OpenRouter timeout is set to ${process.env.OPENROUTER_TIMEOUT_MS ?? 500}ms`
+      `OpenRouter timeout is set to ${process.env.OPENROUTER_TIMEOUT_MS ?? this.defaultTimeout}ms`
     );
-    if (isNaN(Number(process.env.OPENROUTER_TIMEOUT_MS))) return 500;
+    if (isNaN(Number(process.env.OPENROUTER_TIMEOUT_MS)))
+      return this.defaultTimeout;
     const setValue = Number(process.env.OPENROUTER_TIMEOUT_MS);
-    if (setValue < 500) return 500;
+    if (setValue < 500) return 500; // 500ms is the minimum timeout
     return setValue;
   }
 

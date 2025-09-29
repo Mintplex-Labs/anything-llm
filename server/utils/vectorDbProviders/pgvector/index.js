@@ -44,11 +44,61 @@ const PGVector = {
     "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'",
   getEmbeddingTableSchemaSql:
     "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1",
+  createExtensionSql: "CREATE EXTENSION IF NOT EXISTS vector;",
   createTableSql: (dimensions) =>
     `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
 
   log: function (message = null, ...args) {
     console.log(`\x1b[35m[PGVectorDb]\x1b[0m ${message}`, ...args);
+  },
+
+  /**
+   * Recursively sanitize values intended for JSONB to prevent Postgres errors
+   * like "unsupported Unicode escape sequence". This primarily removes the
+   * NUL character (\u0000) and other disallowed control characters from
+   * strings. Arrays and objects are traversed and sanitized deeply.
+   * @param {any} value
+   * @returns {any}
+   */
+  sanitizeForJsonb: function (value) {
+    // Fast path for null/undefined and primitives that do not need changes
+    if (value === null || value === undefined) return value;
+
+    // Strings: strip NUL and unsafe C0 control characters except common whitespace
+    if (typeof value === "string") {
+      // Build a sanitized string by excluding C0 control characters except
+      // horizontal tab (9), line feed (10), and carriage return (13).
+      let sanitized = "";
+      for (let i = 0; i < value.length; i++) {
+        const code = value.charCodeAt(i);
+        if (code === 9 || code === 10 || code === 13 || code >= 0x20) {
+          sanitized += value[i];
+        }
+      }
+      return sanitized;
+    }
+
+    // Arrays: sanitize each element
+    if (Array.isArray(value)) {
+      return value.map((item) => this.sanitizeForJsonb(item));
+    }
+
+    // Dates: keep as ISO string
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+
+    // Objects: sanitize each property value
+    if (typeof value === "object") {
+      const result = {};
+      for (const [k, v] of Object.entries(value)) {
+        result[k] = this.sanitizeForJsonb(v);
+      }
+      return result;
+    }
+
+    // Numbers, booleans, etc.
+    return value;
   },
 
   client: function (connectionString = null) {
@@ -361,9 +411,11 @@ const PGVector = {
 
   /**
    * Update or create a collection in the database
-   * @param {pgsql.Connection} connection
-   * @param {{id: number, vector: number[], metadata: Object}[]} submissions
-   * @param {string} namespace
+   * @param {Object} params
+   * @param {pgsql.Connection} params.connection
+   * @param {{id: number, vector: number[], metadata: Object}[]} params.submissions
+   * @param {string} params.namespace
+   * @param {number} params.dimensions
    * @returns {Promise<boolean>}
    */
   updateOrCreateCollection: async function ({
@@ -380,9 +432,10 @@ const PGVector = {
       await connection.query(`BEGIN`);
       for (const submission of submissions) {
         const embedding = `[${submission.vector.map(Number).join(",")}]`; // stringify the vector for pgvector
+        const sanitizedMetadata = this.sanitizeForJsonb(submission.metadata);
         await connection.query(
           `INSERT INTO "${PGVector.tableName()}" (id, namespace, embedding, metadata) VALUES ($1, $2, $3, $4)`,
-          [submission.id, namespace, embedding, submission.metadata]
+          [submission.id, namespace, embedding, sanitizedMetadata]
         );
       }
       this.log(`Committing ${submissions.length} vectors to ${namespace}`);
@@ -405,6 +458,7 @@ const PGVector = {
    */
   createTableIfNotExists: async function (connection, dimensions = 384) {
     this.log(`Creating embedding table with ${dimensions} dimensions`);
+    await connection.query(this.createExtensionSql);
     await connection.query(this.createTableSql(dimensions));
     return true;
   },

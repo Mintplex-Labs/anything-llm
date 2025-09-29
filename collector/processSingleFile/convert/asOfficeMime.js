@@ -12,6 +12,7 @@ async function asOfficeMime({
   fullFilePath = "",
   filename = "",
   options = {},
+  metadata = {},
 }) {
   console.log(`-- Working ${filename} --`);
   let content = "";
@@ -34,11 +35,11 @@ async function asOfficeMime({
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: filename,
-    docAuthor: "no author found",
-    description: "No description found.",
-    docSource: "Office file uploaded by the user.",
-    chunkSource: "",
+    title: metadata.title || filename,
+    docAuthor: metadata.docAuthor || "no author found",
+    description: metadata.description || "No description found.",
+    docSource: metadata.docSource || "Office file uploaded by the user.",
+    chunkSource: metadata.chunkSource || "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

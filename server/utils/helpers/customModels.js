@@ -8,6 +8,7 @@ const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
+const { fetchCometApiModels } = require("../AiProviders/cometapi");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -28,6 +29,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "deepseek",
   "apipie",
   "novita",
+  "cometapi",
   "xai",
   "gemini",
   "ppio",
@@ -76,6 +78,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getAPIPieModels(apiKey);
     case "novita":
       return await getNovitaModels();
+    case "cometapi":
+      return await getCometApiModels();
     case "xai":
       return await getXAIModels(apiKey);
     case "nvidia-nim":
@@ -441,6 +445,20 @@ async function getOpenRouterModels() {
 
 async function getNovitaModels() {
   const knownModels = await fetchNovitaModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getCometApiModels() {
+  const knownModels = await fetchCometApiModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {

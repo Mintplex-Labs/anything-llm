@@ -38,6 +38,7 @@ class CollectorApi {
       },
       runtimeSettings: {
         allowAnyIp: process.env.COLLECTOR_ALLOW_ANY_IP ?? "false",
+        browserLaunchArgs: process.env.ANYTHINGLLM_CHROMIUM_ARGS ?? [],
       },
     };
   }
@@ -63,15 +64,17 @@ class CollectorApi {
 
   /**
    * Process a document
-   * - Will append the options to the request body
+   * - Will append the options and optional metadata to the request body
    * @param {string} filename - The filename of the document to process
+   * @param {Object} metadata - Optional metadata key:value pairs
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processDocument(filename = "") {
+  async processDocument(filename = "", metadata = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
+      metadata,
       options: this.#attachOptions(),
     });
 
@@ -102,15 +105,17 @@ class CollectorApi {
    * - Will append the options to the request body
    * @param {string} link - The link to process
    * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply to the web-scraping request URL
+   * @param {[key: string]: string} metadata - Optional metadata to attach to the document
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processLink(link = "", scraperHeaders = {}) {
+  async processLink(link = "", scraperHeaders = {}, metadata = {}) {
     if (!link) return false;
 
     const data = JSON.stringify({
       link,
       scraperHeaders,
       options: this.#attachOptions(),
+      metadata: metadata,
     });
 
     return await fetch(`${this.endpoint}/process-link`, {
@@ -139,7 +144,7 @@ class CollectorApi {
    * Process raw text as a document for the collector
    * - Will append the options to the request body
    * @param {string} textContent - The text to process
-   * @param {Object} metadata - The metadata to process
+   * @param {[key: string]: string} metadata - The metadata to process
    * @returns {Promise<Object>} - The response from the collector API
    */
   async processRawText(textContent = "", metadata = {}) {
