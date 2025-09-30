@@ -76,6 +76,25 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
     return formattedMessages;
   }
 
+  /**
+   * Format the functions for the LLM.
+   * @param {any[]} functions - The functions to format.
+   * @returns {any[]} - The formatted functions.
+   */
+  formatFunctions(functions = []) {
+    return functions.map((fn) => ({
+      type: "function",
+      function: {
+        name: fn.name,
+        description: fn.description,
+        parameters: {
+          type: "object",
+          properties: fn.parameters.properties,
+        },
+      },
+    }));
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
@@ -98,7 +117,7 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
    * Streaming for Gemini only supports `tools` and not `functions`, so
    * we need to apply some transformations to the messages and functions.
    *
-   * @see {functionFormatFunctions}
+   * @see {formatFunctions}
    * @param {*} messages
    * @param {*} functions
    * @param {*} eventHandler
@@ -112,7 +131,7 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
       messages: this.cleanMsgs(this.formatMessages(messages)),
       ...(Array.isArray(functions) && functions?.length > 0
         ? {
-            tools: this.functionFormatFunctions(functions),
+            tools: this.formatFunctions(functions),
             tool_choice: "auto",
           }
         : {}),
