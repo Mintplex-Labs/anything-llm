@@ -34,7 +34,7 @@ class AzureOpenAiProvider extends Provider {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
-        stream: true,
+        stream: false,
         messages,
         ...(Array.isArray(functions) && functions?.length > 0
           ? { functions }

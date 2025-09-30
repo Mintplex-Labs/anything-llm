@@ -565,6 +565,11 @@ ${this.getHistory({ to: route.to })
 
   /**
    * Ask the for the AI provider to generate a reply to the chat.
+   * This will load the functions that the node can call and the chat history.
+   * Then before calling the provider, it will check if the provider supports agent streaming.
+   * If it does, it will call the provider asynchronously (streaming).
+   * Otherwise, it will call the provider synchronously (non-streaming).
+   * `.supportsAgentStreaming` is used to determine if the provider supports agent streaming on the respective provider.
    *
    * @param route.to The node that sent the chat.
    * @param route.from The node that will reply to the chat.
@@ -717,6 +722,17 @@ ${this.getHistory({ to: route.to })
     return completionStream?.textResponse;
   }
 
+  /**
+   * Handle the synchronous (non-streaming) execution of the provider
+   * with tool calls.
+   *
+   * @param provider
+   * @param messages
+   * @param functions
+   * @param byAgent
+   *
+   * @returns {Promise<string>}
+   */
   async handleExecution(
     provider,
     messages = [],
