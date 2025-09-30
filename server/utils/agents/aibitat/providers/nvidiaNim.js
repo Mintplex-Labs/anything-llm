@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { parseNvidiaNimBasePath } = require("../../../AiProviders/nvidiaNim");
 
 /**
  * The agent provider for the Nvidia NIM provider.
@@ -14,7 +15,7 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
     const { model } = config;
     super();
     const client = new OpenAI({
-      baseURL: process.env.NVIDIA_NIM_LLM_BASE_PATH,
+      baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
       apiKey: null,
       maxRetries: 0,
     });
@@ -29,7 +30,7 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return false;
+    return true;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

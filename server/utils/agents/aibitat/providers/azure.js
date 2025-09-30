@@ -20,7 +20,7 @@ class AzureOpenAiProvider extends Provider {
   }
 
   get supportsAgentStreaming() {
-    return false;
+    return true;
   }
 
   /**
@@ -34,7 +34,7 @@ class AzureOpenAiProvider extends Provider {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
-        // stream: true,
+        stream: true,
         messages,
         ...(Array.isArray(functions) && functions?.length > 0
           ? { functions }

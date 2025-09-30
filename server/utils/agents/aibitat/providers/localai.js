@@ -28,7 +28,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return false;
+    return true;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

@@ -38,6 +38,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  get supportsAgentStreaming() {
+    return false;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({

@@ -36,7 +36,16 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return false;
+    // Tool call streaming results in a 400/503 error for all non-gemini models
+    // using the compatible v1beta/openai/ endpoint
+    if (!this.model.startsWith("gemini")) {
+      this.providerLog(
+        `Gemini: ${this.model} does not support tool call streaming.`
+      );
+      return false;
+    }
+
+    return true;
   }
 
   /**
