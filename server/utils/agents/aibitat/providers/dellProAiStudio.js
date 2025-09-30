@@ -34,7 +34,7 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get supportsAgentStreaming() {
-    return false;
+    return true;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -58,7 +58,6 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
-      temperature: 0,
       stream: true,
       messages,
     });
