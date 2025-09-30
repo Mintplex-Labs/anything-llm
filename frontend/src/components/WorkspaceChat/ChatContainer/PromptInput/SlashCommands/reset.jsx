@@ -1,10 +1,13 @@
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { useTranslation } from "react-i18next";
 
-export default function ResetCommand({ setShowing, sendCommand }) {
+export default function ResetCommand({ setShowing, sendCommand, workspace }) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
-  if (isActiveAgentSession) return null; // cannot reset during active agent chat
+
+  // Hide reset command only if there's an active agent session AND the workspace is NOT in agent mode
+  // If workspace is in agent mode, reset should always be available (except during active sessions, but then the logic is different)
+  if (isActiveAgentSession && workspace?.chatMode !== "agent") return null;
 
   return (
     <button

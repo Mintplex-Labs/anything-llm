@@ -297,6 +297,11 @@ const TRANSLATIONS = {
         only: "רק",
         "desc-end": "אם נמצא הקשר במסמכים.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "היסטוריית צ'אט",

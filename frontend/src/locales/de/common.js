@@ -307,6 +307,11 @@ const TRANSLATIONS = {
         only: "nur",
         "desc-end": "liefern, wenn Dokumentenkontext gefunden wird.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agenten Modus",
+        desc: "Nutzt immer direkt den Agenten.",
+      },
     },
     history: {
       title: "Chat-Verlauf",

@@ -9,6 +9,21 @@ const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
+async function grepBuiltInCommand(message) {
+  const availableCommands = Object.keys(VALID_COMMANDS);
+
+  // Check if the message starts with any built-in command
+  for (let i = 0; i < availableCommands.length; i++) {
+    const cmd = availableCommands[i];
+    const re = new RegExp(`^(${cmd})`, "i");
+    if (re.test(message)) {
+      return cmd;
+    }
+  }
+
+  return message; // Return original message if no built-in command found
+}
+
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
@@ -114,6 +129,7 @@ module.exports = {
   recentChatHistory,
   chatPrompt,
   grepCommand,
+  grepBuiltInCommand,
   grepAllSlashCommands,
   VALID_COMMANDS,
 };

@@ -303,6 +303,11 @@ const TRANSLATIONS = {
         only: "tikai",
         "desc-end": "ja tiek atrasts dokumentu konteksts.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent režīms",
+        desc: "Vienmēr izmanto direktu agentu.",
+      },
     },
     history: {
       title: "Sarunu vēsture",

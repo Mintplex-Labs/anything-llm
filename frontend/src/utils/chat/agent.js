@@ -12,6 +12,7 @@ const handledEvents = [
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
+  "chatReset",
 ];
 
 export function websocketURI() {
@@ -82,6 +83,25 @@ export default function handleSocketResponse(event, setChatHistory) {
           closed: true,
           error: data.content,
           animate: false,
+          pending: false,
+        },
+      ];
+    });
+  }
+
+  // Handle action parameter for WebSocket messages (similar to HTTP chat)
+  if (data.action === "reset_chat") {
+    return setChatHistory((prev) => {
+      return [
+        {
+          uuid: v4(),
+          type: data.type,
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: data?.animate || false,
           pending: false,
         },
       ];

@@ -211,6 +211,11 @@ const TRANSLATIONS = {
         only: "僅",
         "desc-end": "在找到文件內容時提供答案。",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "對話紀錄",

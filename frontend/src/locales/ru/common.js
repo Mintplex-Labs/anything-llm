@@ -221,6 +221,11 @@ const TRANSLATIONS = {
         only: "только",
         "desc-end": "если найден контекст документов.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "История чата",

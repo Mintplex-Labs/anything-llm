@@ -7,13 +7,14 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
 const {
   grepCommand,
+  grepBuiltInCommand,
   VALID_COMMANDS,
   chatPrompt,
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
 
-const VALID_CHAT_MODE = ["chat", "query"];
+const VALID_CHAT_MODE = ["chat", "query", "agent"];
 
 async function streamChatWithWorkspace(
   response,
@@ -25,8 +26,13 @@ async function streamChatWithWorkspace(
   attachments = []
 ) {
   const uuid = uuidv4();
-  const updatedMessage = await grepCommand(message, user);
+  // In agent mode, only process built-in commands, skip SlashPresets
+  const updatedMessage =
+    chatMode === "agent"
+      ? await grepBuiltInCommand(message)
+      : await grepCommand(message, user);
 
+  // Handle valid built-in commands BEFORE agent processing
   if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
     const data = await VALID_COMMANDS[updatedMessage](
       workspace,
@@ -39,11 +45,24 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // If workspace is in agent mode AND no SlashPreset was triggered AND not a built-in command, use agent handler
+  if (chatMode === "agent" && updatedMessage === message) {
+    const isAgentChat = await grepAgents({
+      uuid,
+      response,
+      message: `@agent ${message}`, // Add @agent prefix for agent mode
+      user,
+      workspace,
+      thread,
+    });
+    if (isAgentChat) return;
+  }
+
   // If is agent enabled chat we will exit this flow early.
   const isAgentChat = await grepAgents({
     uuid,
     response,
-    message: updatedMessage,
+    message: updatedMessage, // Use updatedMessage to support SlashPresets
     user,
     workspace,
     thread,
