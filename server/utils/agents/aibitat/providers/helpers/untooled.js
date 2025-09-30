@@ -362,6 +362,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         completion.content = text;
       }
 
+      // If there are no functions, we want to run a normal chat completion.
       if (!completion?.content) {
         this.providerLog(
           "Will assume chat completion without tool call inputs."
@@ -369,7 +370,13 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         const response = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
-        completion = response.choices[0].message;
+        // If the response from the callback is the raw OpenAI Spec response object, we can use that directly.
+        // Otherwise, we will assume the response is just the string output we wanted (see: `#handleFunctionCallChat` which returns the content only)
+        // This handles both streaming and non-streaming completions.
+        completion =
+          typeof response === "string"
+            ? { content: response }
+            : response.choices?.[0]?.message;
       }
 
       // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
