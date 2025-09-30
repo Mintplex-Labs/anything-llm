@@ -33,7 +33,8 @@ async function chatPrompt(workspace, user = null) {
 
   return await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
-    user?.id
+    user?.id,
+    workspace?.id
   );
 }
 

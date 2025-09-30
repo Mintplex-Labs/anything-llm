@@ -28,6 +28,7 @@ class MSSQLConnector {
       connectionString: null, // we will force into RFC-3986
     }
   ) {
+    this.className = "MSSQLConnector";
     this.connectionString = config.connectionString;
     this._client = null;
     this.#parseDatabase();
@@ -72,7 +73,7 @@ class MSSQLConnector {
       result.rows = query.recordset;
       result.count = query.rowsAffected.reduce((sum, a) => sum + a, 0);
     } catch (err) {
-      console.log(this.constructor.name, err);
+      console.log(this.className, err);
       result.error = err.message;
     } finally {
       // Check client is connected before closing since we use this for validation
