@@ -1,4 +1,5 @@
-const { SystemSettings } = require("../models/systemSettings"); // путь поправь по проекту
+const { SystemSettings } = require("../models/systemSettings");
+const { SystemPromptVariables } = require("./systemPromptVariables"); // путь поправь по проекту
 
 async function getGeneralOrDefaultSystemPrompt() {
   try {
@@ -19,4 +20,21 @@ async function getGeneralOrDefaultSystemPrompt() {
   }
 }
 
-module.exports = { getGeneralOrDefaultSystemPrompt };
+/**
+ * Returns the base prompt for the chat. This method will also do variable
+ * substitution on the prompt if there are any defined variables in the prompt.
+ * @param {Object|null} workspace - the workspace object
+ * @param {Object|null} user - the user object
+ * @returns {Promise<string>} - the base prompt
+ */
+async function chatPrompt(workspace, user = null) {
+  const generalOrDefaultSystemPrompt = await getGeneralOrDefaultSystemPrompt();
+  const basePrompt = workspace?.openAiPrompt || generalOrDefaultSystemPrompt;
+
+  return await SystemPromptVariables.expandSystemPromptVariables(
+    basePrompt,
+    user?.id
+  );
+}
+
+module.exports = { getGeneralOrDefaultSystemPrompt, chatPrompt };

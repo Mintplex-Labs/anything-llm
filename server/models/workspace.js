@@ -6,7 +6,6 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
-const { SystemSettings } = require("./systemSettings");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -492,25 +491,14 @@ const Workspace = {
    * @returns {Promise<void>}
    */
   _trackWorkspacePromptChange: async function (prevData, newData, user = null) {
-    const generalSystemPrompt =
-      (
-        await SystemSettings.get({
-          label: "general_system_prompt",
-        })
-      )?.value ?? "";
-
-    const defaultSystemPrompt =
-      (
-        await SystemSettings.get({
-          label: "default_system_prompt",
-        })
-      )?.value ?? "";
+    const { getGeneralOrDefaultSystemPrompt } = require("./systemPromptHelper");
+    const generalOrDefaultSystemPrompt =
+      await getGeneralOrDefaultSystemPrompt();
 
     if (
       !!newData?.openAiPrompt && // new prompt is set
       !!prevData?.openAiPrompt && // previous prompt was not null (default)
-      prevData?.openAiPrompt !== generalSystemPrompt && // previous prompt was not general
-      prevData?.openAiPrompt !== defaultSystemPrompt && // previous prompt was not default
+      prevData?.openAiPrompt !== generalOrDefaultSystemPrompt && // previous prompt was not general or default
       newData?.openAiPrompt !== prevData?.openAiPrompt // previous and new prompt are not the same
     )
       await PromptHistory.handlePromptChange(prevData, user); // log the change to the prompt history
@@ -519,8 +507,7 @@ const Workspace = {
     const { EventLogs } = require("./eventLogs");
     if (
       !newData?.openAiPrompt || // no prompt change
-      newData?.openAiPrompt === generalSystemPrompt || // new prompt is general prompt
-      newData?.openAiPrompt === defaultSystemPrompt || // new prompt is default prompt
+      newData?.openAiPrompt === generalOrDefaultSystemPrompt || // new prompt is general or default prompt
       newData?.openAiPrompt === prevData?.openAiPrompt // same prompt
     )
       return;
@@ -531,7 +518,9 @@ const Workspace = {
       {
         workspaceName: prevData?.name,
         prevSystemPrompt:
-          prevData?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt,
+          prevData?.openAiPrompt ||
+          generalOrDefaultSystemPrompt ||
+          defaultSystemPrompt,
         newSystemPrompt: newData?.openAiPrompt,
       },
       user?.id

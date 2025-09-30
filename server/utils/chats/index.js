@@ -3,19 +3,10 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
-const { SystemPromptVariables } = require("../../models/systemPromptVariables");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
-
-let SystemSettings;
-async function getSystemSettings() {
-  if (!SystemSettings) {
-    SystemSettings = require("../../models/systemSettings").SystemSettings;
-  }
-  return SystemSettings;
-}
 
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
@@ -89,36 +80,6 @@ async function recentChatHistory({
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }
 
-/**
- * Returns the base prompt for the chat. This method will also do variable
- * substitution on the prompt if there are any defined variables in the prompt.
- * @param {Object|null} workspace - the workspace object
- * @param {Object|null} user - the user object
- * @returns {Promise<string>} - the base prompt
- */
-async function chatPrompt(workspace, user = null) {
-  const SystemSettings = await getSystemSettings();
-
-  const generalSetting = await SystemSettings.get({
-    label: "general_system_prompt",
-  });
-  const defaultSetting = await SystemSettings.get({
-    label: "default_system_prompt",
-  });
-
-  const generalSystemPrompt = generalSetting?.value?.trim() || null;
-  const defaultSystemPrompt = defaultSetting?.value?.trim() || "";
-
-  const basePrompt =
-    workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt;
-
-  console.log("todo artur [INFO] basePrompt =", basePrompt);
-  return await SystemPromptVariables.expandSystemPromptVariables(
-    basePrompt,
-    user?.id
-  );
-}
-
 // We use this util function to deduplicate sources from similarity searching
 // if the document is already pinned.
 // Eg: You pin a csv, if we RAG + full-text that you will get the same data
@@ -132,7 +93,6 @@ function sourceIdentifier(sourceDocument) {
 module.exports = {
   sourceIdentifier,
   recentChatHistory,
-  chatPrompt,
   grepCommand,
   grepAllSlashCommands,
   VALID_COMMANDS,

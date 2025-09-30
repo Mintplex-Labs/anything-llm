@@ -46,10 +46,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     const fetchGeneralSystemPrompt = async () => {
       const { generalSystemPrompt } =
         await System.fetchGeneralOrDefaultSystemPrompt();
-      console.log(
-        "todo artur [INFO] generalSysPrompt = " + generalSystemPrompt
-      );
-      setGeneralSystemPrompt(generalSystemPrompt ?? defaultSystemPrompt);
+      setGeneralSystemPrompt(generalSystemPrompt || defaultSystemPrompt);
       setPrompt(
         workspace?.openAiPrompt || generalSystemPrompt || defaultSystemPrompt
       );

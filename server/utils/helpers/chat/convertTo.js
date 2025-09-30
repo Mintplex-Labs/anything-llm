@@ -116,20 +116,21 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
 
     return preparedData;
   }
-
   // jsonAlpaca format does not support array outputs
   if (format === "jsonAlpaca") {
-    const preparedData = chats.map((chat) => {
-      const responseJson = safeJsonParse(chat.response, {});
-      return {
-        instruction: buildSystemPrompt(
-          chat,
-          chat.workspace ? chat.workspace.openAiPrompt : null
-        ),
-        input: chat.prompt,
-        output: responseJson.text,
-      };
-    });
+    const preparedData = await Promise.all(
+      chats.map(async (chat) => {
+        const responseJson = safeJsonParse(chat.response, {});
+        return {
+          instruction: await buildSystemPrompt(
+            chat,
+            chat.workspace ? chat.workspace.openAiPrompt : null
+          ),
+          input: chat.prompt,
+          output: responseJson.text,
+        };
+      })
+    );
 
     return preparedData;
   }

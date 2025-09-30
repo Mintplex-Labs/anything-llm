@@ -16,9 +16,6 @@ export default function GeneralSystemPrompt() {
     const fetchGeneralSystemPrompt = async () => {
       const { generalSystemPrompt } =
         await System.fetchGeneralOrDefaultSystemPrompt();
-      console.log(
-        "todo artur [INFO] generalSysPrompt = " + generalSystemPrompt
-      );
       setGeneralSystemPrompt(generalSystemPrompt ?? defaultSystemPrompt);
     };
     fetchGeneralSystemPrompt();
@@ -39,7 +36,6 @@ export default function GeneralSystemPrompt() {
       return;
     } else {
       showToast("Successfully updated general system prompt.", "success");
-      window.localStorage.removeItem(System.cacheKeys.generalSystemPrompt);
       setGeneralSystemPrompt(general_system_prompt);
       setHasChanges(false);
     }
@@ -61,35 +57,38 @@ export default function GeneralSystemPrompt() {
       <p className="text-xs text-white/60">
         {t("customization.items.system-prompt.description")}
       </p>
+
+      <textarea
+        name="generalSystemPrompt"
+        className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full min-h-[150px] py-3 px-4 resize-none overflow-auto"
+        placeholder={generalSystemPrompt || defaultSystemPrompt || ""}
+        style={{
+          textAlign: "left",
+          lineHeight: "1.5",
+        }}
+        onChange={handleChange}
+        value={generalSystemPrompt}
+      />
       <div className="flex items-center gap-x-4">
-        <input
-          name="generalSystemPrompt"
-          type="text"
-          className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full min-h-[150px] py-3 px-4 break-words text-wrap"
-          placeholder={generalSystemPrompt || defaultSystemPrompt || ""}
-          required={true}
-          autoComplete="off"
-          onChange={handleChange}
-          value={generalSystemPrompt}
-        />
-        {generalSystemPrompt !== defaultSystemPrompt && (
+        {generalSystemPrompt !== defaultSystemPrompt &&
+          generalSystemPrompt !== "" && (
+            <button
+              type="button"
+              onClick={(e) => updateGeneralSystemPrompt(e, "")}
+              className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            >
+              Clear
+            </button>
+          )}
+        {hasChanges && (
           <button
-            type="button"
-            onClick={(e) => updateGeneralSystemPrompt(e, "")}
-            className="text-white text-base font-medium hover:text-opacity-60"
+            type="submit"
+            className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
           >
-            Clear
+            Save
           </button>
         )}
       </div>
-      {hasChanges && (
-        <button
-          type="submit"
-          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-        >
-          Save
-        </button>
-      )}
     </form>
   );
 }

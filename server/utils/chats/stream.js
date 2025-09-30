@@ -8,10 +8,10 @@ const { grepAgents } = require("./agents");
 const {
   grepCommand,
   VALID_COMMANDS,
-  chatPrompt,
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const { chatPrompt } = require("../../models/systemPromptHelper");
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
