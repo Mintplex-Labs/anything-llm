@@ -9,6 +9,7 @@ class MySQLConnector {
       connectionString: null,
     }
   ) {
+    this.className = "MySQLConnector";
     this.connectionString = config.connectionString;
     this._client = null;
     this.database_id = this.#parseDatabase();
@@ -39,7 +40,7 @@ class MySQLConnector {
       result.rows = query;
       result.count = query?.length;
     } catch (err) {
-      console.log(this.constructor.name, err);
+      console.log(this.className, err);
       result.error = err.message;
     } finally {
       // Check client is connected before closing since we use this for validation
