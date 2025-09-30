@@ -47,9 +47,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const response = await this.client.chat({
       model: this.model,
       messages,
-      options: {
-        temperature: 0,
-      },
     });
     return response?.message?.content || null;
   }
@@ -59,9 +56,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       messages,
       stream: true,
-      options: {
-        temperature: 0,
-      },
     });
   }
 

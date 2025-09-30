@@ -80,7 +80,6 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
         messages: this.cleanMsgs(this.formatMessages(messages)),
       })
       .then((result) => {
