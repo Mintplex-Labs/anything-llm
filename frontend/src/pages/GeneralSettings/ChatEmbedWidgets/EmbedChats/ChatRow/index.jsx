@@ -66,7 +66,7 @@ export default function ChatRow({ chat, onDelete }) {
           onClick={openResponseModal}
           className="px-6 cursor-pointer hover:shadow-lg"
         >
-          {truncate(JSON.parse(chat.response)?.text, 40)}
+          {truncate(safeJsonParse(chat.response, {})?.text, 40)}
         </td>
         <td className="px-6">{chat.createdAt}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
