@@ -8,6 +8,7 @@ class OllamaEmbedder {
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
 
+    this.className = "OllamaEmbedder";
     this.basePath = process.env.EMBEDDING_BASE_PATH;
     this.model = process.env.EMBEDDING_MODEL_PREF;
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
@@ -20,7 +21,7 @@ class OllamaEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

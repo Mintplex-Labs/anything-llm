@@ -31,7 +31,11 @@ class OllamaAILLM {
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
       : {};
-    this.client = new Ollama({ host: this.basePath, headers: headers });
+    this.client = new Ollama({
+      host: this.basePath,
+      headers: headers,
+      fetch: this.#applyFetch(),
+    });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(
@@ -53,6 +57,43 @@ class OllamaAILLM {
         })
         .join("")
     );
+  }
+
+  /**
+   * Apply a custom fetch function to the Ollama client.
+   * This is useful when we want to bypass the default 5m timeout for global fetch
+   * for machines which run responses very slowly.
+   * @returns {Function} The custom fetch function.
+   */
+  #applyFetch() {
+    try {
+      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
+      const { Agent } = require("undici");
+      const moment = require("moment");
+      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+
+      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
+        this.#log(
+          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
+          { timeout }
+        );
+        return fetch;
+      } else timeout = Number(timeout);
+
+      const noTimeoutFetch = (input, init = {}) => {
+        return fetch(input, {
+          ...init,
+          dispatcher: new Agent({ headersTimeout: timeout }),
+        });
+      };
+
+      const humanDiff = moment.duration(timeout).humanize();
+      this.#log(`Applying custom fetch w/timeout of ${humanDiff}.`);
+      return noTimeoutFetch;
+    } catch (error) {
+      this.#log("Error applying custom fetch - using default fetch", error);
+      return fetch;
+    }
   }
 
   streamingEnabled() {
