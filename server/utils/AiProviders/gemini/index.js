@@ -421,7 +421,7 @@ class GeminiLLM {
         },
       }),
       messages,
-      true
+      false
     );
 
     return measuredStreamRequest;
