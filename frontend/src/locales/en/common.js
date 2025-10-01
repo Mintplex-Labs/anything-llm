@@ -329,7 +329,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "System Prompt",
       description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
       history: {
         title: "System Prompt History",
         clearAll: "Clear All",
