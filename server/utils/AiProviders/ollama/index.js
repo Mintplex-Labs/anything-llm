@@ -11,6 +11,8 @@ const { Ollama } = require("ollama");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
+  static _contextWindowCache = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
@@ -38,6 +40,8 @@ class OllamaAILLM {
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+
+    this._initContextWindow();
     this.#log(
       `OllamaAILLM initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
     );
@@ -45,6 +49,51 @@ class OllamaAILLM {
 
   #log(text, ...args) {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Auto-detect context window from model
+   * @private
+   */
+  async _initContextWindow() {
+    if (!this.model) return;
+
+    // Skip if already cached for this model
+    if (OllamaAILLM._contextWindowCache[this.model]) return;
+
+    // Try to auto-detect from model
+    try {
+      const headers = this.authToken
+        ? { Authorization: `Bearer ${this.authToken}` }
+        : {};
+      const response = await fetch(`${this.basePath}/api/show`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...headers,
+        },
+        body: JSON.stringify({ model: this.model }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const contextLength = data?.model_info?.["llama.context_length"];
+        if (contextLength && !isNaN(contextLength) && contextLength > 0) {
+          OllamaAILLM._contextWindowCache[this.model] = Number(contextLength);
+          this.#log(
+            `Auto-detected context length: ${OllamaAILLM._contextWindowCache[this.model]}`
+          );
+          return;
+        }
+      }
+    } catch (error) {
+      this.#log(
+        `Failed to auto-detect context length: ${error.message}. Using default.`
+      );
+    }
+
+    // Default to 4096 if auto-detection fails
+    OllamaAILLM._contextWindowCache[this.model] = 4096;
   }
 
   #appendContext(contextTexts = []) {
@@ -100,20 +149,24 @@ class OllamaAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No Ollama token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    // Check for env override
+    const limit = process.env.OLLAMA_MODEL_TOKEN_LIMIT;
+    if (limit && !isNaN(Number(limit)) && Number(limit) > 0) {
+      return Number(limit);
+    }
+
+    // Check for cached auto-detected value
+    if (modelName && OllamaAILLM._contextWindowCache[modelName]) {
+      return OllamaAILLM._contextWindowCache[modelName];
+    }
+
+    // Fallback
+    return 4096;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No Ollama token context limit was set.");
-    return Number(limit);
+    return OllamaAILLM.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
