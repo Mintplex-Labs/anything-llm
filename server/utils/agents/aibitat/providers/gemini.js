@@ -6,6 +6,8 @@ const {
   NO_SYSTEM_PROMPT_MODELS,
 } = require("../../../AiProviders/gemini/index.js");
 const { APIError } = require("../error.js");
+const { v4 } = require("uuid");
+const { safeJsonParse } = require("../../../http");
 
 /**
  * The agent provider for the Gemini provider.
@@ -31,6 +33,19 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  get supportsAgentStreaming() {
+    // Tool call streaming results in a 400/503 error for all non-gemini models
+    // using the compatible v1beta/openai/ endpoint
+    if (!this.model.startsWith("gemini")) {
+      this.providerLog(
+        `Gemini: ${this.model} does not support tool call streaming.`
+      );
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -61,11 +76,29 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
     return formattedMessages;
   }
 
+  /**
+   * Format the functions for the LLM.
+   * @param {any[]} functions - The functions to format.
+   * @returns {any[]} - The formatted functions.
+   */
+  formatFunctions(functions = []) {
+    return functions.map((fn) => ({
+      type: "function",
+      function: {
+        name: fn.name,
+        description: fn.description,
+        parameters: {
+          type: "object",
+          properties: fn.parameters.properties,
+        },
+      },
+    }));
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
         messages: this.cleanMsgs(this.formatMessages(messages)),
       })
       .then((result) => {
@@ -81,7 +114,79 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
+   * Streaming for Gemini only supports `tools` and not `functions`, so
+   * we need to apply some transformations to the messages and functions.
+   *
+   * @see {formatFunctions}
+   * @param {*} messages
+   * @param {*} functions
+   * @param {*} eventHandler
+   * @returns
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    const msgUUID = v4();
+    const stream = await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages: this.cleanMsgs(this.formatMessages(messages)),
+      ...(Array.isArray(functions) && functions?.length > 0
+        ? {
+            tools: this.formatFunctions(functions),
+            tool_choice: "auto",
+          }
+        : {}),
+    });
+
+    const result = {
+      functionCall: null,
+      textResponse: "",
+    };
+
+    for await (const chunk of stream) {
+      if (!chunk?.choices?.[0]) continue; // Skip if no choices
+      const choice = chunk.choices[0];
+
+      if (choice.delta?.content) {
+        result.textResponse += choice.delta.content;
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: choice.delta.content,
+        });
+      }
+
+      if (choice.delta?.tool_calls && choice.delta.tool_calls.length > 0) {
+        const toolCall = choice.delta.tool_calls[0];
+        if (result.functionCall)
+          result.functionCall.arguments += toolCall.function.arguments;
+        else {
+          result.functionCall = {
+            name: toolCall.function.name,
+            arguments: toolCall.function.arguments,
+          };
+        }
+
+        eventHandler?.("reportStreamEvent", {
+          uuid: `${msgUUID}:tool_call_invocation`,
+          type: "toolCallInvocation",
+          content: `Assembling Tool Call: ${result.functionCall.name}(${result.functionCall.arguments})`,
+        });
+      }
+    }
+
+    // If there are arguments, parse them as json so that the tools can use them
+    if (!!result.functionCall?.arguments)
+      result.functionCall.arguments = safeJsonParse(
+        result.functionCall.arguments,
+        {}
+      );
+    return result;
+  }
+
+  /**
    * Create a completion based on the received messages.
+   *
+   * TODO: see stream() - tool_calls are now supported, so we can use that instead of Untooled
    *
    * @param messages A list of messages to send to the API.
    * @param functions
@@ -129,7 +234,7 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
       // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost: 0,
       };
     } catch (error) {

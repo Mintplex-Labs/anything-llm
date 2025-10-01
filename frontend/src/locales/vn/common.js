@@ -223,7 +223,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "Prompt",
       description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+        "Nhập vào đây prompt cho không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra một phản hồi liên quan và chính xác.",
       history: {
         title: null,
         clearAll: null,
