@@ -134,7 +134,7 @@ class AnthropicProvider extends Provider {
 
   /**
    * Stream a chat completion from the LLM with tool calling
-   * Note: This using the OpenAI API format and may need to be adapted for other providers.
+   * Note: This using the Anthropic API SDK and its implementation is specific to Anthropic.
    *
    * @param {any[]} messages - The messages to send to the LLM.
    * @param {any[]} functions - The functions to use in the LLM.
