@@ -494,6 +494,13 @@ const TRANSLATIONS = {
         description:
           "Ustawienie nazwy wyświetlanej na stronie logowania dla wszystkich użytkowników.",
       },
+      "system-prompt": {
+        title: "Podpowiedź systemowa",
+        description:
+          "Zdefiniowana wcześniej instrukcja wysyłana do AI przed każdą wiadomością użytkownika. Pomaga kierować asystentem, jak odpowiadać, zapewniając spójny styl, ton i zachowanie w rozmowach.",
+        default:
+          "Biorąc pod uwagę poniższą rozmowę, odpowiedni kontekst i pytanie uzupełniające, odpowiedz na aktualne pytanie użytkownika. Zwróć tylko swoją odpowiedź zgodnie z instrukcjami użytkownika.",
+      },
       "chat-message-alignment": {
         title: "Wyrównanie wiadomości czatu",
         description:

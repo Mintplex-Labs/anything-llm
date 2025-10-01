@@ -483,6 +483,13 @@ const TRANSLATIONS = {
         description:
           "Defina um nome exibido na página de login para todos os usuários.",
       },
+      "system-prompt": {
+        title: "Prompt do sistema",
+        description:
+          "Uma instrução predefinida enviada à IA antes de cada mensagem do usuário. Ajuda a guiar o assistente sobre como responder, garantindo estilo, tom e comportamento consistentes nas conversas.",
+        default:
+          "Dada a seguinte conversa, contexto relevante e uma pergunta de acompanhamento, responda à pergunta atual do usuário. Retorne apenas sua resposta seguindo as instruções do usuário.",
+      },
       "chat-message-alignment": {
         title: "Alinhamento de Mensagens",
         description: "Selecione o alinhamento das mensagens no chat.",

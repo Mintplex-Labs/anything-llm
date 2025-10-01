@@ -402,6 +402,12 @@ function adminEndpoints(app) {
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
               break;
+            case "general_system_prompt":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
+            case "default_system_prompt":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             default:
               break;
           }

@@ -754,6 +754,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Sistem İsteği",
+        description:
+          "Kullanıcıdan gelen her mesajdan önce AI’ye gönderilen önceden tanımlanmış talimat. Asistanın nasıl yanıt vereceğini yönlendirmeye yardımcı olur ve konuşmalarda tutarlı stil, ton ve davranış sağlar.",
+        default:
+          "Aşağıdaki konuşma, ilgili bağlam ve takip sorusu göz önünde bulundurularak, kullanıcının sorduğu mevcut soruya cevap verin. Yalnızca kullanıcı talimatlarına göre cevabınızı döndürün.",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

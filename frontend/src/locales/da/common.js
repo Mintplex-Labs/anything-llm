@@ -798,6 +798,13 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      "system-prompt": {
+        title: "Systemprompt",
+        description:
+          "En foruddefineret instruktion, der sendes til AI'en før hver brugerbesked. Den hjælper med at guide assistenten i, hvordan der skal svares, og sikrer en konsekvent stil, tone og adfærd i samtaler.",
+        default:
+          "Givet følgende samtale, relevant kontekst og et opfølgende spørgsmål, besvar det aktuelle spørgsmål, som brugeren stiller. Returner kun dit svar i henhold til brugerens instruktioner.",
+      },
       "chat-message-alignment": {
         title: null,
         description: null,

@@ -4,11 +4,11 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
-  chatPrompt,
   sourceIdentifier,
   recentChatHistory,
   grepAllSlashCommands,
 } = require("./index");
+const { chatPrompt } = require("../../models/systemPromptHelper");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,

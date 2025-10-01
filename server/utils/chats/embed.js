@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { chatPrompt, sourceIdentifier } = require("./index");
+const { sourceIdentifier } = require("./index");
+const { chatPrompt } = require("../../models/systemPromptHelper");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   convertToPromptHistory,

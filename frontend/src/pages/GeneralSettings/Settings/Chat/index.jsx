@@ -5,6 +5,7 @@ import AutoSubmit from "../components/AutoSubmit";
 import AutoSpeak from "../components/AutoSpeak";
 import SpellCheck from "../components/SpellCheck";
 import ShowScrollbar from "../components/ShowScrollbar";
+import GeneralSystemPrompt from "@/pages/GeneralSettings/Settings/components/GeneralSystemPrompt/index.jsx";
 
 export default function ChatSettings() {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ export default function ChatSettings() {
           <AutoSpeak />
           <SpellCheck />
           <ShowScrollbar />
+          <GeneralSystemPrompt />
         </div>
       </div>
     </div>

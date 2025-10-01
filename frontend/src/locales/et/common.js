@@ -475,6 +475,13 @@ const TRANSLATIONS = {
         description:
           "Nimi, mis kuvatakse kõigile kasutajatele sisselogimislehel.",
       },
+      "system-prompt": {
+        title: "Süsteemi juhis",
+        description:
+          "Ettemääratud juhis, mis saadetakse AI-le enne iga kasutaja sõnumit. See aitab juhendada assistenti, kuidas vastata, tagades vestluste stiili, tooni ja käitumise järjepidevuse.",
+        default:
+          "Arvestades järgmist vestlust, asjakohast konteksti ja järelküsimust, vasta kasutaja esitatud küsimusele. Tagasta ainult vastus, järgides kasutaja juhiseid.",
+      },
       "chat-message-alignment": {
         title: "Vestlussõnumite joondus",
         description: "Vali sõnumite joondus vestlusliideses.",

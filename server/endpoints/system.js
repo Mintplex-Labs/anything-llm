@@ -666,6 +666,24 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/general-system-prompt", async (_, response) => {
+    try {
+      const {
+        getGeneralOrDefaultSystemPrompt,
+      } = require("../models/systemPromptHelper");
+      const generalSystemPrompt = await getGeneralOrDefaultSystemPrompt();
+      response.status(200).json({
+        generalSystemPrompt: generalSystemPrompt,
+      });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
+      response.status(500).json({
+        generalSystemPrompt: "",
+        error: "Internal server error could not fetch generalSystemPrompt",
+      });
+    }
+  });
+
   app.get(
     "/system/pfp/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

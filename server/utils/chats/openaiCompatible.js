@@ -3,7 +3,8 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const { chatPrompt, sourceIdentifier } = require("./index");
+const { sourceIdentifier } = require("./index");
+const { chatPrompt } = require("../../models/systemPromptHelper");
 
 const { PassThrough } = require("stream");
 
