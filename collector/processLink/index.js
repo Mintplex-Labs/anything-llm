@@ -14,9 +14,9 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
   return await scrapeGenericUrl({
     link,
     captureAs: "text",
-    processAsDocument: true,
     scraperHeaders,
     metadata,
+    saveAsDocument: true,
   });
 }
 
@@ -32,7 +32,7 @@ async function getLinkText(link, captureAs = "text") {
   return await scrapeGenericUrl({
     link,
     captureAs,
-    processAsDocument: false,
+    saveAsDocument: false,
   });
 }
 

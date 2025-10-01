@@ -1,37 +1,45 @@
 const { WATCH_DIRECTORY } = require("../constants");
 const fs = require("fs");
+const path = require("path");
 const { pipeline } = require("stream/promises");
 const { validURL } = require("../url");
 
 /**
  * Download a file to the hotdir
  * @param {string} url - The URL of the file to download
- * @returns {Promise<{success: boolean, data: string} | {success: false, reason: string}>} - The path to the downloaded file
+ * @param {number} maxTimeout - The maximum timeout in milliseconds
+ * @returns {Promise<{success: boolean, fileLocation: string|null, reason: string|null}>} - The path to the downloaded file
  */
+async function downloadURIToFile(url, maxTimeout = 10_000) {
+  if (!url || typeof url !== "string" || !validURL(url))
+    return { success: false, reason: "Not a valid URL.", fileLocation: null };
 
-async function downloadURIToFile(url) {
-  // Validate the URL
-  if (!validURL(url)) {
-    return { success: false, reason: "Not a valid URL." };
-  }
-  // Download the file
   try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      console.log(`Not a valid URL. ${url}`, res.status);
-      return { success: false, reason: "Not a valid URL." };
-    }
+    const abortController = new AbortController();
+    const timeout = setTimeout(() => {
+      abortController.abort();
+      console.error(
+        `Timeout ${maxTimeout}ms reached while downloading file for URL:`,
+        url.toString()
+      );
+    }, maxTimeout);
 
-    const localFilePath = `${WATCH_DIRECTORY}/${url.split("/").pop()}`;
+    const res = await fetch(url, { signal: abortController.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        return res;
+      })
+      .finally(() => clearTimeout(timeout));
+
+    const localFilePath = path.join(WATCH_DIRECTORY, path.basename(url));
     const writeStream = fs.createWriteStream(localFilePath);
-
     await pipeline(res.body, writeStream);
 
-    console.log(`[SUCCESS]: File ${url} downloaded to hotdir.`);
-    return { success: true, data: localFilePath };
+    console.log(`[SUCCESS]: File ${localFilePath} downloaded to hotdir.`);
+    return { success: true, fileLocation: localFilePath, reason: null };
   } catch (error) {
     console.error(`Error writing to hotdir: ${error} for URL: ${url}`);
-    return { success: false, reason: "Error writing to hotdir." };
+    return { success: false, reason: error.message, fileLocation: null };
   }
 }
 

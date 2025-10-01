@@ -16,6 +16,7 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
  * Process a single file and return the documents
  * @param {string} targetFilename - The filename to process
  * @param {Object} options - The options for the file processing
+ * @param {boolean} options.parseOnly - If true, the file will not be saved as a document even when `writeToServerDocuments` is called in the handler. Must be explicitly set to true to use.
  * @param {Object} metadata - The metadata for the file processing
  * @returns {Promise<{success: boolean, reason: string, documents: Object[]}>} - The documents from the file processing
  */
