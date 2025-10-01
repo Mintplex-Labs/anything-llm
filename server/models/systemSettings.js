@@ -488,7 +488,7 @@ const SystemSettings = {
 
       // LMStudio Keys
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || null,
       LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
 
       // LocalAI Keys

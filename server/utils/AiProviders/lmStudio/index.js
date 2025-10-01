@@ -9,6 +9,8 @@ const {
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
+  static _contextWindowCache = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
@@ -37,6 +39,49 @@ class LMStudioLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+
+    this._initContextWindow();
+  }
+
+  /**
+   * Auto-detect context window from LM Studio
+   * @private
+   */
+  async _initContextWindow() {
+    if (!this.model) return;
+
+    // Skip if already cached for this model
+    if (LMStudioLLM._contextWindowCache[this.model]) return;
+
+    try {
+      // LMStudio has an /api/v0/models endpoint that include max_context_length
+      const baseURL = new URL(process.env.LMSTUDIO_BASE_PATH);
+      const modelsEndpoint = `${baseURL.origin}/api/v0/models`;
+
+      const response = await fetch(modelsEndpoint);
+      if (response.ok) {
+        const data = await response.json();
+        const models = data?.data || [];
+
+        // Find the current model and extract its max_context_length
+        const modelInfo = models.find((m) => m.id === this.model);
+        if (modelInfo?.max_context_length) {
+          LMStudioLLM._contextWindowCache[this.model] =
+            modelInfo.max_context_length;
+          console.log(
+            `[LMStudio] Auto-detected context length: ${LMStudioLLM._contextWindowCache[this.model]}`
+          );
+          return;
+        }
+      }
+    } catch (error) {
+      console.log(
+        `[LMStudio] Failed to auto-detect context length: ${error.message}. Using default.`
+      );
+    }
+
+    // Default to 4096 if auto-detection fails
+    LMStudioLLM._contextWindowCache[this.model] = 4096;
   }
 
   #appendContext(contextTexts = []) {
@@ -55,20 +100,24 @@ class LMStudioLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    // Check for env override
+    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT;
+    if (limit && !isNaN(Number(limit)) && Number(limit) > 0) {
+      return Number(limit);
+    }
+
+    // Check for cached auto-detected value
+    if (modelName && LMStudioLLM._contextWindowCache[modelName]) {
+      return LMStudioLLM._contextWindowCache[modelName];
+    }
+
+    // Fallback
+    return 4096;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
-    return Number(limit);
+    return LMStudioLLM.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {

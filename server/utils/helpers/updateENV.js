@@ -83,7 +83,7 @@ const KEY_MAPPING = {
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
 
   // LocalAI Settings
