@@ -13,6 +13,7 @@ const {
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
+    this.className = "OpenAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
@@ -33,7 +34,7 @@ class OpenAiLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -167,11 +168,11 @@ class OpenAiLLM {
     return {
       textResponse: result.output.output_text,
       metrics: {
-        prompt_tokens: usage.prompt_tokens || 0,
-        completion_tokens: usage.completion_tokens || 0,
+        prompt_tokens: usage.input_tokens || 0,
+        completion_tokens: usage.output_tokens || 0,
         total_tokens: usage.total_tokens || 0,
-        outputTps: usage.completion_tokens
-          ? usage.completion_tokens / result.duration
+        outputTps: usage.output_tokens
+          ? usage.output_tokens / result.duration
           : 0,
         duration: result.duration,
       },
@@ -223,6 +224,7 @@ class OpenAiLLM {
             if (token) {
               fullText += token;
               if (!hasUsageMetrics) usage.completion_tokens++;
+
               writeResponseChunk(response, {
                 uuid,
                 sources: [],
@@ -236,7 +238,12 @@ class OpenAiLLM {
             const { response: res } = chunk;
             if (res.hasOwnProperty("usage") && !!res.usage) {
               hasUsageMetrics = true;
-              usage = { ...usage, ...res.usage };
+              usage = {
+                ...usage,
+                prompt_tokens: res.usage?.input_tokens || 0,
+                completion_tokens: res.usage?.output_tokens || 0,
+                total_tokens: res.usage?.total_tokens || 0,
+              };
             }
 
             writeResponseChunk(response, {

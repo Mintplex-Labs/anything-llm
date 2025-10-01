@@ -24,6 +24,7 @@ class NovitaLLM {
     if (!process.env.NOVITA_LLM_API_KEY)
       throw new Error("No Novita API key was set.");
 
+    this.className = "NovitaLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://api.novita.ai/v3/openai";
     this.openai = new OpenAIApi({
@@ -57,7 +58,7 @@ class NovitaLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

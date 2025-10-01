@@ -13,6 +13,7 @@ class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.DEEPSEEK_API_KEY)
       throw new Error("No DeepSeek API key was set.");
+    this.className = "DeepSeekLLM";
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
@@ -35,7 +36,7 @@ class DeepSeekLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

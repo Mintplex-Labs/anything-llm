@@ -61,7 +61,7 @@ export default function SearchBox({ user, showNewWsModal }) {
           onChange={handleSearch}
           onReset={handleReset}
           onFocus={(e) => e.target.select()}
-          className="border-none w-full h-full rounded-lg bg-theme-sidebar-item-default pl-4 pr-1 placeholder:text-theme-settings-input-placeholder placeholder:pl-4 outline-none text-white search-input peer text-sm"
+          className="border-none w-full h-full rounded-lg bg-theme-sidebar-item-default pl-9 focus:pl-4 pr-1 placeholder:text-theme-settings-input-placeholder outline-none text-white search-input peer text-sm"
         />
         <MagnifyingGlass
           size={14}

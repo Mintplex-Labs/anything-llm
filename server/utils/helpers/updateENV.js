@@ -1170,6 +1170,9 @@ function dumpENV() {
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
+
+    // Allow setting a custom response timeout for Ollama
+    "OLLAMA_RESPONSE_TIMEOUT",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
