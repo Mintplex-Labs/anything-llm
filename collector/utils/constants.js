@@ -34,6 +34,7 @@ const ACCEPTED_MIMES = {
   "image/png": [".png"],
   "image/jpeg": [".jpg"],
   "image/jpg": [".jpg"],
+  "image/webp": [".webp"],
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
@@ -71,6 +72,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".png": "./convert/asImage.js",
   ".jpg": "./convert/asImage.js",
   ".jpeg": "./convert/asImage.js",
+  ".webp": "./convert/asImage.js",
 };
 
 module.exports = {

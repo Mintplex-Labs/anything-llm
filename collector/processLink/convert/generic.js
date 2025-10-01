@@ -3,11 +3,7 @@ const path = require("path");
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
-const {
-  writeToServerDocuments,
-  trashFile,
-  documentsFolder,
-} = require("../../utils/files");
+const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const { getContentTypeFromURL, returnResult } = require("../helpers");
