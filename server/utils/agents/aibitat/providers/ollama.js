@@ -43,11 +43,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get queryOptions() {
-    console.log(
-      "OllamaProvider.queryOptions",
-      this.performanceMode,
-      OllamaAILLM.promptWindowLimit(this.model)
-    );
     return {
       ...(this.performanceMode === "base"
         ? {}
