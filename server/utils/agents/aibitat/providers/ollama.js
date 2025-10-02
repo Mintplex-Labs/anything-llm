@@ -1,6 +1,7 @@
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
@@ -37,6 +38,18 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  get performanceMode() {
+    return process.env.OLLAMA_PERFORMANCE_MODE || "base";
+  }
+
+  get queryOptions() {
+    return {
+      ...(this.performanceMode === "base"
+        ? {}
+        : { num_ctx: OllamaAILLM.promptWindowLimit(this.model) }),
+    };
+  }
+
   /**
    * Handle a chat completion with tool calling
    *
@@ -44,18 +57,22 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
+    await OllamaAILLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
       messages,
+      options: this.queryOptions,
     });
     return response?.message?.content || null;
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
       messages,
       stream: true,
+      options: this.queryOptions,
     });
   }
 

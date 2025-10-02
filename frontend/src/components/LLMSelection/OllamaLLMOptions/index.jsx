@@ -25,7 +25,7 @@ export default function OllamaLLMOptions({ settings }) {
     settings?.OllamaLLMPerformanceMode || "base"
   );
   const [maxTokens, setMaxTokens] = useState(
-    settings?.OllamaLLMTokenLimit || 4096
+    settings?.OllamaLLMTokenLimit || ""
   );
 
   return (
@@ -36,27 +36,6 @@ export default function OllamaLLMOptions({ settings }) {
           basePath={basePath.value}
           authToken={authToken.value}
         />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Max Tokens
-          </label>
-          <input
-            type="number"
-            name="OllamaLLMTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="4096"
-            defaultChecked="4096"
-            min={1}
-            value={maxTokens}
-            onChange={(e) => setMaxTokens(Number(e.target.value))}
-            onScroll={(e) => e.target.blur()}
-            required={true}
-            autoComplete="off"
-          />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum number of tokens for context and response.
-          </p>
-        </div>
       </div>
       <div className="flex justify-start mt-4">
         <button
@@ -192,6 +171,31 @@ export default function OllamaLLMOptions({ settings }) {
             </div>
           </div>
           <div className="w-full flex items-start gap-4">
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-2">
+                Max Tokens (Optional)
+              </label>
+              <input
+                type="number"
+                name="OllamaLLMTokenLimit"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="Auto-detected from model"
+                min={1}
+                value={maxTokens}
+                onChange={(e) =>
+                  setMaxTokens(e.target.value ? Number(e.target.value) : "")
+                }
+                onScroll={(e) => e.target.blur()}
+                required={false}
+                autoComplete="off"
+              />
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+                Override the context window limit. Leave empty to auto-detect
+                from the model (defaults to 4096 if detection fails).
+              </p>
+            </div>
+          </div>
+          <div className="w-full flex items-start gap-4 mt-4">
             <div className="flex flex-col w-100">
               <label className="text-white text-sm font-semibold">
                 Auth Token
@@ -206,7 +210,7 @@ export default function OllamaLLMOptions({ settings }) {
               <input
                 type="password"
                 name="OllamaLLMAuthToken"
-                className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5 focus:outline-primary-button active:outline-primary-button"
                 placeholder="Ollama Auth Token"
                 defaultValue={
                   settings?.OllamaLLMAuthToken ? "*".repeat(20) : ""
@@ -258,7 +262,7 @@ function OllamaLLMModelSelection({
     findCustomModels();
   }, [basePath, authToken]);
 
-  if (loading || customModels.length == 0) {
+  if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-2">
