@@ -541,6 +541,10 @@ const TRANSLATIONS = {
         icon: "Ikona",
         link: "Saite",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
