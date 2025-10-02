@@ -3057,16 +3057,30 @@
                       {
                         "role": "user",
                         "content": "What is AnythingLLM?",
-                        "sentAt": 1692851630
+                        "sentAt": 1692851630,
+                        "attachments": [],
+                        "chatId": 123
                       },
                       {
+                        "type": "chat",
                         "role": "assistant",
                         "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
                           }
-                        ]
+                        ],
+                        "chatId": 123,
+                        "sentAt": 1692851635,
+                        "feedbackScore": 0,
+                        "metrics": {
+                          "completionTokens": 29,
+                          "promptTokens": 123,
+                          "totalTokens": 152,
+                          "duration": 3.45,
+                          "outputTps": 4.53
+                        },
+                        "feedbackComment": "Bad response because..."
                       }
                     ]
                   }
