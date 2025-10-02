@@ -68,8 +68,16 @@ async function scrapeGenericUrl({
     const fileFilePath = fileContentResult.fileLocation;
     const targetFilename = path.basename(fileFilePath);
 
-    // If the saveAsDocument is false, we are only interested in the text content
-    // and can delete the file after we have the text content via the parseOnly option
+    /**
+     * If the saveAsDocument is false, we are only interested in the text content
+     * and can ignore the file as a document by using `parseOnly` in the options.
+     * This will send the file to the Direct Uploads folder instead of the Documents folder.
+     * that will be deleted by the cleanup-orphan-documents job that runs frequently. The trade off
+     * is that since it still is in FS we can debug its output or even potentially reuse it for other purposes.
+     *
+     * TODO: Improve this process via a new option that will instantly delete the file after processing
+     * if we find we dont need this file ever after processing.
+     */
     const processSingleFileResult = await processSingleFile(targetFilename, {
       parseOnly: saveAsDocument === false,
     });

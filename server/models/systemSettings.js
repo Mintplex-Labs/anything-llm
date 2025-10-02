@@ -569,6 +569,11 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      // Foundry Keys
+      FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
+      FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
+      FoundryModelTokenLimit: process.env.FOUNDRY_MODEL_TOKEN_LIMIT,
+
       AwsBedrockLLMConnectionMethod:
         process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
