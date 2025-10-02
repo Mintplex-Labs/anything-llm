@@ -9,6 +9,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { parseFoundryBasePath } = require("../AiProviders/foundry");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -35,6 +36,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "foundry",
   // Embedding Engines
   "native-embedder",
 ];
@@ -92,6 +94,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "foundry":
+      return await getFoundryModels(basePath);
     case "native-embedder":
       return await getNativeEmbedderModels();
     default:
@@ -726,6 +730,33 @@ async function getMoonshotAiModels(_apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
   return { models, error: null };
+}
+
+async function getFoundryModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: parseFoundryBasePath(basePath || process.env.FOUNDRY_BASE_PATH),
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) =>
+        results.data.map((model) => ({
+          ...model,
+          name: model.id,
+        }))
+      )
+      .catch((e) => {
+        console.error(`Foundry:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Foundry:getFoundryModels`, e.message);
+    return { models: [], error: "Could not fetch Foundry Models" };
+  }
 }
 
 module.exports = {
