@@ -83,7 +83,7 @@ const KEY_MAPPING = {
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
 
   // LocalAI Settings
@@ -114,7 +114,7 @@ const KEY_MAPPING = {
   },
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   OllamaLLMPerformanceMode: {
     envKey: "OLLAMA_PERFORMANCE_MODE",
