@@ -574,6 +574,11 @@ const SystemSettings = {
       FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
       FoundryModelTokenLimit: process.env.FOUNDRY_MODEL_TOKEN_LIMIT,
 
+      // Docker Model Runner Keys
+      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      DockerModelRunnerModelPref: process.env.DOCKER_MODEL_RUNNER_MODEL_PREF,
+      DockerModelRunnerModelTokenLimit: process.env.DOCKER_MODEL_RUNNER_MODEL_TOKEN_LIMIT,
+
       AwsBedrockLLMConnectionMethod:
         process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,

@@ -35,6 +35,7 @@ import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -67,6 +68,7 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
+import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -325,6 +327,18 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "FoundryBasePath",
       "FoundryModelPref",
       "FoundryModelTokenLimit",
+    ],
+  },
+  {
+    name: "Docker Model Runner",
+    value: "docker-model-runner",
+    logo: DockerModelRunnerLogo,
+    options: (settings) => <DockerModelRunnerOptions settings={settings} />,
+    description: "Run models locally using Docker Model Runner.",
+    requiredConfig: [
+      "DockerModelRunnerBasePath",
+      "DockerModelRunnerModelPref",
+      "DockerModelRunnerModelTokenLimit",
     ],
   },
   {

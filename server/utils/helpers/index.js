@@ -218,6 +218,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "foundry":
       const { FoundryLLM } = require("../AiProviders/foundry");
       return new FoundryLLM(embedder, model);
+    case "docker-model-runner":
+      const { DockerModelRunnerLLM } = require("../AiProviders/dockerModelRunner");
+      return new DockerModelRunnerLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -374,6 +377,11 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "foundry":
       const { FoundryLLM } = require("../AiProviders/foundry");
       return FoundryLLM;
+    case "docker-model-runner":
+      const {
+        DockerModelRunnerLLM,
+      } = require("../AiProviders/dockerModelRunner");
+      return DockerModelRunnerLLM;
     default:
       return null;
   }
@@ -446,6 +454,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.COMETAPI_LLM_MODEL_PREF;
     case "foundry":
       return process.env.FOUNDRY_MODEL_PREF;
+    case "docker-model-runner":
+      return process.env.DOCKER_MODEL_RUNNER_MODEL_PREF;
     default:
       return null;
   }

@@ -41,6 +41,7 @@ import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
@@ -268,6 +269,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the machine running Foundry Local",
     ],
     logo: FoundryLogo,
+  },
+  "docker-model-runner": {
+    name: "Docker Model Runner",
+    description: [
+      "Your model and chats are only accessible on the machine running Docker Model Runner",
+    ],
+    logo: DockerModelRunnerLogo,
   },
 };
 

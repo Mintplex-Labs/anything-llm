@@ -213,6 +213,10 @@ class AgentHandler {
         if (!process.env.FOUNDRY_BASE_PATH)
           throw new Error("Foundry base path must be provided to use agents.");
         break;
+      case "docker-model-runner":
+        if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
+          throw new Error("Docker Model Runner base path must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -288,6 +292,8 @@ class AgentHandler {
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
+      case "docker-model-runner":
+        return process.env.DOCKER_MODEL_RUNNER_MODEL_PREF ?? null;
       default:
         return null;
     }

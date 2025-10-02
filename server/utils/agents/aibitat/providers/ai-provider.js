@@ -270,6 +270,14 @@ class Provider {
           ...config,
         });
       }
+      case "docker-model-runner":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
