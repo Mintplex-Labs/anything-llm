@@ -11,7 +11,7 @@ const { Ollama } = require("ollama");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
-  /** @see FoundryLLM.cacheContextWindows */
+  /** @see OllamaAILLM.cacheContextWindows */
   static modelContextWindows = {};
 
   constructor(embedder = null, modelPreference = null) {
@@ -44,7 +44,7 @@ class OllamaAILLM {
         user: this.promptWindowLimit() * 0.7,
       };
       this.#log(
-        `OllamaAILLM initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
+        `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
       );
     });
   }

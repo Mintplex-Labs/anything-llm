@@ -6,16 +6,17 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { OpenAI: OpenAIApi } = require("openai");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
-  static _contextWindowCache = {};
+  /** @see LMStudioLLM.cacheContextWindows */
+  static modelContextWindows = {};
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
-    const { OpenAI: OpenAIApi } = require("openai");
     this.lmstudio = new OpenAIApi({
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
       apiKey: null,
@@ -31,57 +32,70 @@ class LMStudioLLM {
       modelPreference ||
       process.env.LMSTUDIO_MODEL_PREF ||
       "Loaded from Chat UI";
-    this.limits = {
-      history: this.promptWindowLimit() * 0.15,
-      system: this.promptWindowLimit() * 0.15,
-      user: this.promptWindowLimit() * 0.7,
-    };
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
-    this._initContextWindow();
+    LMStudioLLM.cacheContextWindows(true).then(() => {
+      this.limits = {
+        history: this.promptWindowLimit() * 0.15,
+        system: this.promptWindowLimit() * 0.15,
+        user: this.promptWindowLimit() * 0.7,
+      };
+      this.#log(
+        `initialized with\nmodel: ${this.model}\nn_ctx: ${this.promptWindowLimit()}`
+      );
+    });
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
   }
 
   /**
-   * Auto-detect context window from LM Studio
-   * @private
+   * Cache the context windows for the LMStudio models.
+   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   *
+   * This is a convenience to ensure that the context windows are correct and that the user
+   * does not have to manually set the context window for each model.
+   * @param {boolean} force - Force the cache to be refreshed.
+   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
    */
-  async _initContextWindow() {
-    if (!this.model) return;
-
-    // Skip if already cached for this model
-    if (LMStudioLLM._contextWindowCache[this.model]) return;
-
+  static async cacheContextWindows(force = false) {
     try {
-      // LMStudio has an /api/v0/models endpoint that include max_context_length
-      const baseURL = new URL(process.env.LMSTUDIO_BASE_PATH);
-      const modelsEndpoint = `${baseURL.origin}/api/v0/models`;
+      // Skip if we already have cached context windows and we're not forcing a refresh
+      if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
+        return;
 
-      const response = await fetch(modelsEndpoint);
-      if (response.ok) {
-        const data = await response.json();
-        const models = data?.data || [];
-
-        // Find the current model and extract its max_context_length
-        const modelInfo = models.find((m) => m.id === this.model);
-        if (modelInfo?.max_context_length) {
-          LMStudioLLM._contextWindowCache[this.model] =
-            modelInfo.max_context_length;
-          console.log(
-            `[LMStudio] Auto-detected context length: ${LMStudioLLM._contextWindowCache[this.model]}`
-          );
+      const endpoint = new URL(process.env.LMSTUDIO_BASE_PATH);
+      endpoint.pathname = "/api/v0/models";
+      await fetch(endpoint.toString())
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`LMStudio:cacheContextWindows - ${res.statusText}`);
+          return res.json();
+        })
+        .then(({ data: models }) => {
+          models.forEach((model) => {
+            if (model.type === "embeddings") return;
+            LMStudioLLM.modelContextWindows[model.id] =
+              model.max_context_length;
+          });
+        })
+        .catch((e) => {
+          LMStudioLLM.#slog(`Error caching context windows`, e);
           return;
-        }
-      }
-    } catch (error) {
-      console.log(
-        `[LMStudio] Failed to auto-detect context length: ${error.message}. Using default.`
-      );
-    }
+        });
 
-    // Default to 4096 if auto-detection fails
-    LMStudioLLM._contextWindowCache[this.model] = 4096;
+      LMStudioLLM.#slog(`Context windows cached for all models!`);
+    } catch (e) {
+      LMStudioLLM.#slog(`Error caching context windows`, e);
+      return;
+    }
   }
 
   #appendContext(contextTexts = []) {
@@ -101,23 +115,26 @@ class LMStudioLLM {
   }
 
   static promptWindowLimit(modelName) {
-    // Check for env override
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT;
-    if (limit && !isNaN(Number(limit)) && Number(limit) > 0) {
-      return Number(limit);
-    }
+    let userDefinedLimit = null;
+    const systemDefinedLimit =
+      Number(this.modelContextWindows[modelName]) || 4096;
 
-    // Check for cached auto-detected value
-    if (modelName && LMStudioLLM._contextWindowCache[modelName]) {
-      return LMStudioLLM._contextWindowCache[modelName];
-    }
+    if (
+      process.env.LMSTUDIO_MODEL_TOKEN_LIMIT &&
+      !isNaN(Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT)) &&
+      Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT) > 0
+    )
+      userDefinedLimit = Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT);
 
-    // Fallback
-    return 4096;
+    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
+    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
+    return systemDefinedLimit;
   }
 
   promptWindowLimit() {
-    return LMStudioLLM.promptWindowLimit(this.model);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
