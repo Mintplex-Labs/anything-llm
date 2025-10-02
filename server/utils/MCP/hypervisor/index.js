@@ -69,6 +69,7 @@ class MCPHypervisor {
 
     MCPHypervisor._instanceLock = true;
     MCPHypervisor._instance = this;
+    this.className = "MCPHypervisor";
     this.log("Initializing MCP Hypervisor - subsequent calls will boot faster");
     this.#setupConfigFile();
     MCPHypervisor._instanceLock = false;
@@ -105,7 +106,7 @@ class MCPHypervisor {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

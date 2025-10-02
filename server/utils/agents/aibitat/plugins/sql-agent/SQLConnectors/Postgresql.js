@@ -8,6 +8,7 @@ class PostgresSQLConnector {
       schema: null,
     }
   ) {
+    this.className = "PostgresSQLConnector";
     this.connectionString = config.connectionString;
     this.schema = config.schema || "public";
     this._client = new pgSql.Client({
@@ -34,7 +35,7 @@ class PostgresSQLConnector {
       result.rows = query.rows;
       result.count = query.rowCount;
     } catch (err) {
-      console.log(this.constructor.name, err);
+      console.log(this.className, err);
       result.error = err.message;
     } finally {
       // Check client is connected before closing since we use this for validation

@@ -92,7 +92,7 @@ export default function DellProAIStudioOptions({
               type="url"
               name="DellProAiStudioBasePath"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="http://localhost:8553/v1"
+              placeholder="http://localhost:8553/v1/openai"
               value={basePathValue.value}
               required={true}
               autoComplete="off"
