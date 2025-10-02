@@ -536,7 +536,9 @@ function workspaceEndpoints(app) {
         }
 
         if (!comment || String(comment).trim() === "") {
-          response.status(400).json({ success: false, message: "No comment provided" });
+          response
+            .status(400)
+            .json({ success: false, message: "No comment provided" });
           return;
         }
 

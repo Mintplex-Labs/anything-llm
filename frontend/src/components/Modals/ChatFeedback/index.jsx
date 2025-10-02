@@ -4,7 +4,13 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { useTranslation } from "react-i18next";
 
-export default function ChatFeedbackModal({ isOpen, hideModal, chatId, slug, onSubmitted }) {
+export default function ChatFeedbackModal({
+  isOpen,
+  hideModal,
+  chatId,
+  slug,
+  onSubmitted,
+}) {
   const { t } = useTranslation();
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);

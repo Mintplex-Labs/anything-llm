@@ -1,6 +1,12 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import { Check, ThumbsUp, ThumbsDown, ArrowsClockwise, Copy } from "@phosphor-icons/react";
+import {
+  Check,
+  ThumbsUp,
+  ThumbsDown,
+  ArrowsClockwise,
+  Copy,
+} from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import ChatFeedbackModal from "@/components/Modals/ChatFeedback";
 import { EditMessageAction } from "./EditMessage";
@@ -26,7 +32,8 @@ const Actions = ({
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
   const handleFeedback = async (newFeedback) => {
-    const updatedFeedback = selectedFeedback === newFeedback ? null : newFeedback;
+    const updatedFeedback =
+      selectedFeedback === newFeedback ? null : newFeedback;
     // persist feedback score first
     await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
     setSelectedFeedback(updatedFeedback);
@@ -182,4 +189,3 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
 }
 
 export default memo(Actions);
-
