@@ -616,6 +616,10 @@ const SystemSettings = {
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
+      
+      // SubModel InstaGen Access keys
+      SubModelLLMAccessKey: !!process.env.SUBMODEL_INSTAGEN_ACCESS_KEY,
+      SubModelModelPref: process.env.SUBMODEL_MODEL_PREF,
     };
   },
 
