@@ -1,7 +1,8 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
+import { Check, ThumbsUp, ThumbsDown, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
+import ChatFeedbackModal from "@/components/Modals/ChatFeedback";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
@@ -22,11 +23,18 @@ const Actions = ({
 }) => {
   const { t } = useTranslation();
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [submittingComment, setSubmittingComment] = useState(false);
   const handleFeedback = async (newFeedback) => {
-    const updatedFeedback =
-      selectedFeedback === newFeedback ? null : newFeedback;
+    const updatedFeedback = selectedFeedback === newFeedback ? null : newFeedback;
+    // persist feedback score first
     await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
     setSelectedFeedback(updatedFeedback);
+
+    // If user just set negative feedback (not unsetting), show optional feedback modal
+    if (updatedFeedback === false) {
+      setShowFeedbackModal(true);
+    }
   };
 
   return (
@@ -55,6 +63,15 @@ const Actions = ({
               IconComponent={ThumbsUp}
             />
           )}
+          {chatId && role !== "user" && !isEditing && (
+            <FeedbackButton
+              isSelected={selectedFeedback === false}
+              handleFeedback={() => handleFeedback(false)}
+              tooltipId="feedback-button"
+              tooltipContent={t("chat_window.bad_response")}
+              IconComponent={ThumbsDown}
+            />
+          )}
           <ActionMenu
             chatId={chatId}
             forkThread={forkThread}
@@ -64,6 +81,20 @@ const Actions = ({
         </div>
       </div>
       <RenderMetrics metrics={metrics} />
+      <ChatFeedbackModal
+        isOpen={showFeedbackModal}
+        hideModal={() => setShowFeedbackModal(false)}
+        chatId={chatId}
+        slug={slug}
+        onSubmitted={async (comment) => {
+          if (submittingComment) return;
+          setSubmittingComment(true);
+          try {
+            await Workspace.submitChatFeedbackComment(chatId, slug, comment);
+          } catch (e) {}
+          setSubmittingComment(false);
+        }}
+      />
     </div>
   );
 };
@@ -151,3 +182,4 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
 }
 
 export default memo(Actions);
+
