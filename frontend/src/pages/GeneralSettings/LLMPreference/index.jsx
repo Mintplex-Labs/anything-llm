@@ -316,6 +316,18 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["CometApiLLMApiKey"],
   },
   {
+    name: "Microsoft Foundry Local",
+    value: "foundry",
+    logo: FoundryLogo,
+    options: (settings) => <FoundryOptions settings={settings} />,
+    description: "Run Microsoft's Foundry models locally.",
+    requiredConfig: [
+      "FoundryBasePath",
+      "FoundryModelPref",
+      "FoundryModelTokenLimit",
+    ],
+  },
+  {
     name: "xAI",
     value: "xai",
     logo: XAILogo,
@@ -335,18 +347,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiModelPref",
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
-    ],
-  },
-  {
-    name: "Microsoft Foundry Local",
-    value: "foundry",
-    logo: FoundryLogo,
-    options: (settings) => <FoundryOptions settings={settings} />,
-    description: "Run Microsoft's Foundry models locally.",
-    requiredConfig: [
-      "FoundryBasePath",
-      "FoundryModelPref",
-      "FoundryModelTokenLimit",
     ],
   },
 ];

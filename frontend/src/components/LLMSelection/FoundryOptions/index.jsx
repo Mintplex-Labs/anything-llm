@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 
 export default function FoundryOptions({ settings }) {
   const [models, setModels] = useState([]);
@@ -14,25 +13,22 @@ export default function FoundryOptions({ settings }) {
 
   useEffect(() => {
     async function fetchModels() {
-      if (!basePath) {
-        setLoading(false);
-        setModels([]);
-        return;
-      }
-
-      setLoading(true);
-      const { models, error } = await System.customModels(
-        "foundry",
-        null,
-        basePath
-      );
-      if (error) {
-        showToast(`Error fetching models: ${error}`, "error");
-        setModels([]);
-      } else {
+      try {
+        setLoading(true);
+        if (!basePath) throw new Error("Base path is required");
+        const { models, error } = await System.customModels(
+          "foundry",
+          null,
+          basePath
+        );
+        if (error) throw new Error(error);
         setModels(models);
+      } catch (error) {
+        console.error("Error fetching Foundry models:", error);
+        setModels([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchModels();
   }, [basePath]);
@@ -104,9 +100,8 @@ export default function FoundryOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultValue={settings?.FoundryModelTokenLimit}
-            required={true}
             autoComplete="off"
-            min={1}
+            min={0}
           />
         </div>
       </div>

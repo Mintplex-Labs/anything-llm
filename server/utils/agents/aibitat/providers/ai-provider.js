@@ -194,6 +194,14 @@ class Provider {
           apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
           ...config,
         });
+      case "cometapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cometapi.com/v1",
+          },
+          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -253,7 +261,6 @@ class Provider {
           apiKey: null,
           ...config,
         });
-
       case "foundry": {
         return new ChatOpenAI({
           configuration: {
@@ -263,14 +270,6 @@ class Provider {
           ...config,
         });
       }
-      case "cometapi":
-        return new ChatOpenAI({
-          configuration: {
-            baseURL: "https://api.cometapi.com/v1",
-          },
-          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
-          ...config,
-        });
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);

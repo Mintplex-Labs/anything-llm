@@ -83,12 +83,13 @@ class FoundryLLM {
         baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
         apiKey: null,
       });
-      const models = await openai.models.list().then((result) => result.data);
-      for (const model of models) {
-        const contextWindow =
-          Number(model.maxInputTokens) + Number(model.maxOutputTokens);
-        FoundryLLM.modelContextWindows[model.id] = contextWindow;
-      }
+      (await openai.models.list().then((result) => result.data)).map(
+        (model) => {
+          const contextWindow =
+            Number(model.maxInputTokens) + Number(model.maxOutputTokens);
+          FoundryLLM.modelContextWindows[model.id] = contextWindow;
+        }
+      );
       FoundryLLM.#slog(`Context windows cached for all models!`);
     } catch (e) {
       FoundryLLM.#slog(`Error caching context windows: ${e.message}`);
@@ -118,15 +119,18 @@ class FoundryLLM {
     let userDefinedLimit = null;
     const systemDefinedLimit =
       Number(this.modelContextWindows[modelName]) || 4096;
+
     if (
       process.env.FOUNDRY_MODEL_TOKEN_LIMIT &&
       !isNaN(Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT)) &&
       Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT) > 0
     )
       userDefinedLimit = Number(process.env.FOUNDRY_MODEL_TOKEN_LIMIT);
+
     // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
     // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
-    if (userDefinedLimit) return Math.min(userDefinedLimit, systemDefinedLimit);
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
     return systemDefinedLimit;
   }
 
