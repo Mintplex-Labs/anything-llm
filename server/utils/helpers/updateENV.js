@@ -713,10 +713,18 @@ const KEY_MAPPING = {
   FoundryModelPref: {
     envKey: "FOUNDRY_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [
+      // On new model selection, re-cache the context windows
+      async (_, prevValue, __) => {
+        const { FoundryLLM } = require("../AiProviders/foundry");
+        await FoundryLLM.unloadModelFromEngine(prevValue);
+        await FoundryLLM.cacheContextWindows(true);
+      },
+    ],
   },
   FoundryModelTokenLimit: {
     envKey: "FOUNDRY_MODEL_TOKEN_LIMIT",
-    checks: [isNotEmpty],
+    checks: [],
   },
 
   // CometAPI Options
