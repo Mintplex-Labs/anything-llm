@@ -810,6 +810,10 @@ const TRANSLATIONS = {
         icon: "圖示",
         link: "連結",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {

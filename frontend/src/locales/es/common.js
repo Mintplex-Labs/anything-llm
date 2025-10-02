@@ -557,6 +557,10 @@ const TRANSLATIONS = {
         icon: "Icono",
         link: "Enlace",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {

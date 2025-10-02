@@ -509,6 +509,10 @@ const TRANSLATIONS = {
         icon: "图标",
         link: "链接",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
