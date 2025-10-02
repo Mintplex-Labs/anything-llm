@@ -769,12 +769,13 @@
           }
         },
         "requestBody": {
-          "description": "Page offset to show of workspace chats. All fields are optional and will not update unless specified.",
+          "description": "Page offset to show of workspace chats. Feedback Score to filter by all, true, or false. All fields are optional and will not update unless specified.",
           "required": false,
           "content": {
             "application/json": {
               "example": {
-                "offset": 2
+                "offset": 2,
+                "feedbackScore": true
               }
             }
           }
