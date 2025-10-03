@@ -201,7 +201,32 @@ function extensions(app) {
       return;
     }
   );
-}
 
+  app.post(
+    "/ext/jira",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadJira } = require("../utils/extensions/Jira");
+        const { success, reason, data } = await loadJira(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            title: null,
+            author: null,
+          },
+        });
+      }
+      return;
+    }
+  );
+}
 
 module.exports = extensions;
