@@ -406,8 +406,8 @@ async function getTogetherAiModels(apiKey = null) {
   }
 }
 
-async function getFireworksAiModels() {
-  const knownModels = fireworksAiModels();
+async function getFireworksAiModels(apiKey = null) {
+  const knownModels = await fireworksAiModels(apiKey);
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 

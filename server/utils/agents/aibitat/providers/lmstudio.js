@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const {
+  LMStudioLLM,
   parseLMStudioBasePath,
 } = require("../../../AiProviders/lmStudio/index.js");
 
@@ -40,6 +41,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
+    await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -58,6 +60,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
