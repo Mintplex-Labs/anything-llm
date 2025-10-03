@@ -37,6 +37,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "dpais",
   "moonshotai",
   "foundry",
+  "docker-model-runner",
   // Embedding Engines
   "native-embedder",
 ];
@@ -96,6 +97,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMoonshotAiModels(apiKey);
     case "foundry":
       return await getFoundryModels(basePath);
+    case "docker-model-runner":
+      return await getDockerModelRunnerModels(basePath);
     case "native-embedder":
       return await getNativeEmbedderModels();
     default:
@@ -756,6 +759,31 @@ async function getFoundryModels(basePath = null) {
   } catch (e) {
     console.error(`Foundry:getFoundryModels`, e.message);
     return { models: [], error: "Could not fetch Foundry Models" };
+  }
+}
+
+async function getDockerModelRunnerModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`DockerModelRunner:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
+    return {
+      models: [],
+      error: "Could not fetch Docker Model Runner Models",
+    };
   }
 }
 

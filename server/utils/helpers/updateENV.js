@@ -727,6 +727,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Docker Model Runner Options
+  DockerModelRunnerBasePath: {
+    envKey: "DOCKER_MODEL_RUNNER_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  DockerModelRunnerModelPref: {
+    envKey: "DOCKER_MODEL_RUNNER_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  DockerModelRunnerModelTokenLimit: {
+    envKey: "DOCKER_MODEL_RUNNER_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // CometAPI Options
   CometApiLLMApiKey: {
     envKey: "COMETAPI_LLM_API_KEY",
@@ -851,6 +865,7 @@ function supportedLLM(input = "") {
     "moonshotai",
     "cometapi",
     "foundry",
+    "docker-model-runner",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
