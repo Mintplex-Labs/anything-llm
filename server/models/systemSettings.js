@@ -577,7 +577,8 @@ const SystemSettings = {
       // Docker Model Runner Keys
       DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
       DockerModelRunnerModelPref: process.env.DOCKER_MODEL_RUNNER_MODEL_PREF,
-      DockerModelRunnerModelTokenLimit: process.env.DOCKER_MODEL_RUNNER_MODEL_TOKEN_LIMIT,
+      DockerModelRunnerModelTokenLimit:
+        process.env.DOCKER_MODEL_RUNNER_MODEL_TOKEN_LIMIT,
 
       AwsBedrockLLMConnectionMethod:
         process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",

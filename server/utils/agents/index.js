@@ -215,7 +215,9 @@ class AgentHandler {
         break;
       case "docker-model-runner":
         if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
-          throw new Error("Docker Model Runner base path must be provided to use agents.");
+          throw new Error(
+            "Docker Model Runner base path must be provided to use agents."
+          );
         break;
 
       default:

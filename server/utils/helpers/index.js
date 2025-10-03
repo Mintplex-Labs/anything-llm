@@ -219,7 +219,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
       const { FoundryLLM } = require("../AiProviders/foundry");
       return new FoundryLLM(embedder, model);
     case "docker-model-runner":
-      const { DockerModelRunnerLLM } = require("../AiProviders/dockerModelRunner");
+      const {
+        DockerModelRunnerLLM,
+      } = require("../AiProviders/dockerModelRunner");
       return new DockerModelRunnerLLM(embedder, model);
     default:
       throw new Error(

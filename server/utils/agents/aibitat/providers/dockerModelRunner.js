@@ -25,11 +25,14 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  get supportsAgentStreaming() {
+    return true;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
         messages,
       })
       .then((result) => {
@@ -39,73 +42,43 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
           throw new Error("Docker Model Runner chat: No results length!");
         return result.choices[0].message.content;
       })
-      .catch((_) => {
+      .catch(() => {
         return null;
       });
   }
 
-  /**
-   * Create a completion based on the received messages.
-   *
-   * @param messages A list of messages to send to the API.
-   * @param functions
-   * @returns The completion.
-   */
-  async complete(messages, functions = null) {
-    try {
-      let completion;
-      if (functions.length > 0) {
-        const { toolCall, text } = await this.functionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
+  async #handleFunctionCallStream({ messages = [] }) {
+    return await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+    });
+  }
 
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
-        }
-        completion = { content: text };
-      }
+  async stream(messages, functions = [], eventHandler = null) {
+    return await UnTooled.prototype.stream.call(
+      this,
+      messages,
+      functions,
+      this.#handleFunctionCallStream.bind(this),
+      eventHandler
+    );
+  }
 
-      if (!completion?.content) {
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const response = await this.client.chat.completions.create({
-          model: this.model,
-          messages: this.cleanMsgs(messages),
-        });
-        completion = response.choices[0].message;
-      }
-
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
-      this.deduplicator.reset("runs");
-      return {
-        result: completion.content,
-        cost: 0,
-      };
-    } catch (error) {
-      throw error;
-    }
+  async complete(messages, functions = []) {
+    return await UnTooled.prototype.complete.call(
+      this,
+      messages,
+      functions,
+      this.#handleFunctionCallChat.bind(this)
+    );
   }
 
   /**
    * Get the cost of the completion.
    *
-   * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since KoboldCPP has no cost basis.
+   * Stubbed since Docker Model Runner has no cost basis.
    */
   getCost(_usage) {
     return 0;
@@ -113,4 +86,3 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
 }
 
 module.exports = DockerModelRunnerProvider;
-
