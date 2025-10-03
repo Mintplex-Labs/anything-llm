@@ -17,6 +17,8 @@ function isNullOrNaN(value) {
 }
 
 const SystemSettings = {
+  saneDefaultSystemPrompt:
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
   protectedFields: ["multi_user_mode", "hub_api_key"],
   publicFields: [
     "footer_data",
@@ -47,6 +49,7 @@ const SystemSettings = {
     "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+    "default_system_prompt",
 
     // Meta page customization
     "meta_page_title",

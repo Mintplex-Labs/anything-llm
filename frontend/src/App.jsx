@@ -92,6 +92,9 @@ const SystemPromptVariables = lazy(
 const MobileConnections = lazy(
   () => import("@/pages/GeneralSettings/MobileConnections")
 );
+const DefaultSystemPrompt = lazy(
+  () => import("@/pages/Admin/DefaultSystemPrompt")
+);
 
 export default function App() {
   return (
@@ -216,6 +219,10 @@ export default function App() {
                   <Route
                     path="/settings/system-prompt-variables"
                     element={<AdminRoute Component={SystemPromptVariables} />}
+                  />
+                  <Route
+                    path="/settings/default-system-prompt"
+                    element={<AdminRoute Component={DefaultSystemPrompt} />}
                   />
                   <Route
                     path="/settings/browser-extension"
