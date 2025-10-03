@@ -32,13 +32,6 @@ export default function ChatSettings({ workspace }) {
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
 
-    if (!data.openAiPrompt.trim()) {
-      showToast("System prompt is required", "error", { clear: true });
-      setSaving(false);
-      // Keep hasChanges true so the button remains visible
-      return;
-    }
-
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
