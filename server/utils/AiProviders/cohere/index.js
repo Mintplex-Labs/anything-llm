@@ -27,7 +27,7 @@ class CohereLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.#log(
-      `Initialized CohereLLM with model ${this.model}. ctx: ${this.promptWindowLimit()}`
+      `Initialized with model ${this.model}. ctx: ${this.promptWindowLimit()}`
     );
   }
 
