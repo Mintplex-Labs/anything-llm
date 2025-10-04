@@ -11,7 +11,14 @@ import { useTranslation } from "react-i18next";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
+export default function SlashPresets({
+  setShowing,
+  sendCommand,
+  promptRef,
+  highlightedSlashCommand,
+  presets,
+  setPresets,
+}) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
@@ -29,7 +36,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
     openModal: openPublishModal,
     closeModal: closePublishModal,
   } = useModal();
-  const [presets, setPresets] = useState([]);
+  // const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [presetToPublish, setPresetToPublish] = useState(null);
   const [searchParams] = useSearchParams();
@@ -49,7 +56,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
       !isAddModalOpen
     )
       openAddModal();
-  }, []);
+  }, [isAddModalOpen, openAddModal, searchParams]);
 
   if (isActiveAgentSession) return null;
 
@@ -60,7 +67,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
 
   const handleSavePreset = async (preset) => {
     const { error } = await System.createSlashCommandPreset(preset);
-    if (!!error) {
+    if (error) {
       showToast(error, "error");
       return false;
     }
@@ -81,7 +88,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
       updatedPreset
     );
 
-    if (!!error) {
+    if (error) {
       showToast(error, "error");
       return;
     }
@@ -113,10 +120,11 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
 
   return (
     <>
-      {presets.map((preset) => (
+      {presets.map((preset, index) => (
         <PresetItem
           key={preset.id}
           preset={preset}
+          isHighlighted={highlightedSlashCommand === index + 1}
           onUse={() => {
             setShowing(false);
             sendCommand({ text: `${preset.command} ` });
@@ -161,10 +169,18 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   );
 }
 
-function PresetItem({ preset, onUse, onEdit, onPublish }) {
+function PresetItem({ preset, onUse, onEdit, onPublish, isHighlighted }) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
+  const slashCommandItemRef = useRef(null);
+
+  // Scroll to the highlighted slash command
+  useEffect(() => {
+    if (slashCommandItemRef.current && isHighlighted) {
+      slashCommandItemRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isHighlighted]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -186,8 +202,9 @@ function PresetItem({ preset, onUse, onEdit, onPublish }) {
 
   return (
     <button
+      ref={slashCommandItemRef}
       onClick={onUse}
-      className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start items-center relative"
+      className={`border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start items-center relative ${isHighlighted ? "bg-theme-action-menu-item-hover" : ""}`}
     >
       <div className="flex-col text-left flex pointer-events-none flex-1 min-w-0">
         <div className="text-theme-text-primary text-sm font-bold truncate">
