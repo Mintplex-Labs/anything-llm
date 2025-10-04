@@ -529,6 +529,10 @@ const TRANSLATIONS = {
         icon: "סמל",
         link: "קישור",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {

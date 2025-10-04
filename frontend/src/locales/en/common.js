@@ -564,6 +564,11 @@ const TRANSLATIONS = {
         icon: "Icon",
         link: "Link",
       },
+      "render-html": {
+        title: "Render HTML in chat",
+        description:
+          "Render HTML responses in assistant responses.\nThis can result in a much higher fidelity of response quality, but can also lead to potential security risks.",
+      },
     },
   },
 
