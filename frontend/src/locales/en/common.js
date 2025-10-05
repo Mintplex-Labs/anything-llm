@@ -1127,6 +1127,16 @@ const TRANSLATIONS = {
       },
     },
   },
+
+  noWorkspaceAccess: {
+    title: "No Workspace Access",
+    description: "You are not currently added to any workspaces. Please contact your administrator or manager to be granted access.",
+    nextSteps: "What you can do:",
+    step1: "Contact your administrator or manager to request workspace access",
+    step2: "Wait for them to add you to the appropriate workspaces",
+    contactSupport: "Contact Support",
+    userRole: "You are logged in as: {{username}} (Default User)",
+  },
 };
 
 export default TRANSLATIONS;
