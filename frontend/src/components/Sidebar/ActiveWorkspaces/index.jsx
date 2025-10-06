@@ -13,6 +13,8 @@ import ThreadContainer from "./ThreadContainer";
 import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
+import { Tooltip } from "react-tooltip";
+import { createPortal } from "react-dom";
 
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
@@ -129,6 +131,8 @@ export default function ActiveWorkspaces() {
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
                               <div className="w-[130px] overflow-hidden">
                                 <p
+                                  data-tooltip-id="workspace-name"
+                                  data-tooltip-content={workspace.name}
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden text-white
                                   ${isActive ? "font-bold" : "font-medium"} truncate
@@ -205,6 +209,15 @@ export default function ActiveWorkspaces() {
           </div>
         )}
       </Droppable>
+      {createPortal(
+        <Tooltip
+          id="workspace-name"
+          place="right"
+          delayShow={300}
+          className="tooltip !text-xs z-99"
+        />,
+        document.body
+      )}
     </DragDropContext>
   );
 }
