@@ -79,7 +79,9 @@ class OllamaAILLM {
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
       });
 
-      const { models } = await client.list();
+      const { models } = await client.list().catch(() => ({ models: [] }));
+      if (!models.length) return;
+
       const infoPromises = models.map((model) =>
         client
           .show({ model: model.name })
