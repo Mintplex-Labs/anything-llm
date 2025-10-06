@@ -73,6 +73,7 @@ export default function Sidebar() {
         </div>
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
+      <WorkspaceAndThreadTooltips />
     </>
   );
 }
