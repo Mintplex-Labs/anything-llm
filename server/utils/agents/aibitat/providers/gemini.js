@@ -30,6 +30,11 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
+  get supportsToolCalling() {
+    if (!this.model.startsWith("gemini")) return false;
+    return true;
+  }
+
   get supportsAgentStreaming() {
     // Tool call streaming results in a 400/503 error for all non-gemini models
     // using the compatible v1beta/openai/ endpoint
@@ -39,7 +44,6 @@ class GeminiProvider extends Provider {
       );
       return false;
     }
-
     return true;
   }
 
@@ -111,10 +115,12 @@ class GeminiProvider extends Provider {
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    this.providerLog("OpenAI.stream - will process this chat completion.");
+    if (!this.supportsToolCalling)
+      throw new Error(`Gemini: ${this.model} does not support tool calling.`);
+    this.providerLog("Gemini.stream - will process this chat completion.");
     try {
       const msgUUID = v4();
-      /** @type {OpenAI.OpenAI.Responses.Response} */
+      /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
       const response = await this.client.chat.completions.create({
         model: this.model,
         messages: this.#formatMessages(messages),
@@ -131,7 +137,7 @@ class GeminiProvider extends Provider {
       };
 
       for await (const streamEvent of response) {
-        /** @type {OpenAI.OpenAI.Responses.ResponseStreamEvent} */
+        /** @type {OpenAI.OpenAI.Chat.ChatCompletionChunk} */
         const chunk = streamEvent;
         const { content, tool_calls } = chunk?.choices?.[0]?.delta || {};
 
@@ -202,6 +208,9 @@ class GeminiProvider extends Provider {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    if (!this.supportsToolCalling)
+      throw new Error(`Gemini: ${this.model} does not support tool calling.`);
+    this.providerLog("Gemini.complete - will process this chat completion.");
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
@@ -212,9 +221,10 @@ class GeminiProvider extends Provider {
           : {}),
       });
 
+      /** @type {OpenAI.OpenAI.Chat.ChatCompletionMessage} */
       const completion = response.choices[0].message;
       const cost = this.getCost(response.usage);
-      if (completion.tool_calls) {
+      if (completion?.tool_calls?.length > 0) {
         const toolCall = completion.tool_calls[0];
         let functionArgs = safeJsonParse(toolCall.function.arguments, {});
         return {
