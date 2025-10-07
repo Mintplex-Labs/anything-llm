@@ -48,6 +48,38 @@ class GeminiProvider extends Provider {
   }
 
   /**
+   * Gemini specifcally will throw an error if the tool call's function name
+   * starts with a non-alpha character. So we need to prefix the function names
+   * with a valid prefix to ensure they are always valid and then strip them back
+   * so they may properly be used in the tool call.
+   *
+   * So for all tools, we force the prefix to be gtc__ to avoid issues
+   * Agent flows are already prefixed with flow__ but since we strip the prefix
+   * anyway pre and post-reply, we do it anyway to ensure consistency across all tools.
+   *
+   * This specifically impacts the custom Agent Skills since they can be a short alphanumeric
+   * and cant definitely start with a number. eg: '12xdaya31bas' -> invalid in gemini tools.
+   *
+   * Even if the tool is never called, if it is in the `tools` array and this prefix
+   * patch is not applied, gemini will throw an error.
+   *
+   * This is undocumented by google, but it is the only way to ensure that tool calls
+   * are valid.
+   *
+   * @param {string} functionName - The name of the function to prefix.
+   * @param {'add' | 'strip'} action - The action to take.
+   * @returns {string} The prefixed function name.
+   * @returns {string} The prefix to use for tool call ids.
+   */
+  prefixToolCall(functionName, action = "add") {
+    if (action === "add") return `gtc__${functionName}`;
+    // must start with gtc__ to be valid and we only strip the first instance
+    return functionName.startsWith("gtc__")
+      ? functionName.split("gtc__")[1]
+      : functionName;
+  }
+
+  /**
    * Format the messages to the Gemini API Responses format.
    * - Gemini has some loosely documented format for tool calls and it can change at any time.
    * - We need to map the function call to the correct id and Gemini will throw an error if it does not.
@@ -107,7 +139,7 @@ class GeminiProvider extends Provider {
     return functions.map((func) => ({
       type: "function",
       function: {
-        name: func.name,
+        name: this.prefixToolCall(func.name, "add"),
         description: func.description,
         parameters: func.parameters,
       },
@@ -153,7 +185,7 @@ class GeminiProvider extends Provider {
         if (tool_calls) {
           const toolCall = tool_calls[0];
           completion.functionCall = {
-            name: toolCall.function.name,
+            name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
             arguments: toolCall.function.arguments,
           };
@@ -230,7 +262,7 @@ class GeminiProvider extends Provider {
         return {
           textResponse: null,
           functionCall: {
-            name: toolCall.function.name,
+            name: this.prefixToolCall(toolCall.function.name, "strip"),
             arguments: functionArgs,
             id: toolCall.id,
           },
