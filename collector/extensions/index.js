@@ -2,7 +2,7 @@ const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
-const { validURL } = require("../utils/url");
+const { validURL, validateURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
 const { loadObsidianVault } = require("../utils/extensions/ObsidianVault");
 
@@ -119,6 +119,7 @@ function extensions(app) {
       try {
         const websiteDepth = require("../utils/extensions/WebsiteDepth");
         const { url, depth = 1, maxLinks = 20 } = reqBody(request);
+        url = validateURL(url);
         if (!validURL(url)) throw new Error("Not a valid URL.");
         const scrapedData = await websiteDepth(url, depth, maxLinks);
         response.status(200).json({ success: true, data: scrapedData });
