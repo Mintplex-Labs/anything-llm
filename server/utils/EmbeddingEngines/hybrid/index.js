@@ -20,6 +20,7 @@ class HybridEmbedder {
   model = "bm25-lexical"; // identifier for logs/analytics
   maxConcurrentChunks = null;
   embeddingMaxChunkLength = null;
+  supportsSparseVectors = true;
 
   constructor(namespace = "default") {
     this.#namespace = namespace;
@@ -97,6 +98,11 @@ class HybridEmbedder {
   search(query, k = 10) {
     this.#log("search() called", { query, k });
     return this.#sparse.search(query, k);
+  }
+
+  toSparseVector(text) {
+    this.#log("toSparseVector() called");
+    return this.#sparse.toSparseVector(text);
   }
 }
 

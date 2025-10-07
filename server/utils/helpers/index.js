@@ -213,6 +213,15 @@ function getLLMProvider({ provider = null, model = null } = {}) {
   }
 }
 
+let NativeEmbedderClass = null;
+
+function getNativeEmbedderClass() {
+  if (!NativeEmbedderClass) {
+    NativeEmbedderClass = require("../EmbeddingEngines/native").NativeEmbedder;
+  }
+  return NativeEmbedderClass;
+}
+
 /**
  * Returns the EmbedderProvider by itself to whatever is currently in the system settings.
  * @returns {BaseEmbedderProvider}
@@ -239,9 +248,10 @@ function getEmbeddingEngineSelection(namespace = "default") {
     case "ollama":
       const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
       return new OllamaEmbedder();
-    case "native":
-      const { NativeEmbedder } = require("../EmbeddingEngines/native");
+    case "native": {
+      const NativeEmbedder = getNativeEmbedderClass();
       return new NativeEmbedder();
+    }
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
       return new LMStudioEmbedder();
@@ -265,8 +275,10 @@ function getEmbeddingEngineSelection(namespace = "default") {
     case "gemini":
       const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
       return new GeminiEmbedder();
-    default:
+    default: {
+      const NativeEmbedder = getNativeEmbedderClass();
       return new NativeEmbedder();
+    }
   }
 }
 

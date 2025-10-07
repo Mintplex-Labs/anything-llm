@@ -78,6 +78,9 @@
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
+    "wink-bm25-text-search": "^3.1.2",
+    "wink-eng-lite-web-model": "^1.8.1",
+    "wink-nlp": "^1.14.3",
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
   },

@@ -1,11 +1,19 @@
-# Setup base image
-FROM ubuntu:jammy-20240627.1 AS base
-
-# Build arguments
+# Build arguments (available to all stages)
 ARG ARG_UID=1000
 ARG ARG_GID=1000
 
+# Setup base image
+FROM ubuntu:jammy-20240627.1 AS base
+
+# Bind build args into environment variables (persist to child stages)
+ARG ARG_UID
+ARG ARG_GID
+ENV APP_UID=${ARG_UID}
+ENV APP_GID=${ARG_GID}
+
 FROM base AS build-arm64
+ARG ARG_UID
+ARG ARG_GID
 RUN echo "Preparing build of AnythingLLM image for arm64 architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -38,8 +46,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
-RUN groupadd -g "$ARG_GID" anythingllm && \
-    useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
+RUN groupadd -g "$APP_GID" anythingllm && \
+    useradd -l -u "$APP_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
 # Copy docker helper scripts
@@ -72,6 +80,8 @@ RUN echo "Done running arm64 specific installation steps"
 
 # amd64-specific stage
 FROM base AS build-amd64
+ARG ARG_UID
+ARG ARG_GID
 RUN echo "Preparing build of AnythingLLM image for non-ARM architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -104,8 +114,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
-RUN groupadd -g "$ARG_GID" anythingllm && \
-    useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
+RUN groupadd -g "$APP_GID" anythingllm && \
+    useradd -l -u "$APP_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
 # Copy docker helper scripts
@@ -123,6 +133,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
 
 # hadolint ignore=DL3006
 FROM build-${TARGETARCH} AS build
+ARG ARG_UID
+ARG ARG_GID
 RUN echo "Running common build flow of AnythingLLM image for all architectures"
 
 USER anythingllm

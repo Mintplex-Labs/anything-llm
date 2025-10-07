@@ -270,6 +270,7 @@ const Milvus = {
     similarityThreshold = 0.25,
     topN = 10,
     filterIdentifiers = [],
+    rerank: rerankMode = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performHybridSearch.");
@@ -296,8 +297,35 @@ const Milvus = {
     }
 
     const embedResult = await EmbedderEngine.embedTextInput(input);
-    const queryDense =
-      typeof embedResult === "object" ? embedResult.dense : embedResult;
+    const hasHybridPayload =
+      embedResult &&
+      typeof embedResult === "object" &&
+      Array.isArray(embedResult.dense) &&
+      embedResult.dense.length > 0;
+
+    const queryDense = hasHybridPayload ? embedResult.dense : embedResult;
+
+    const querySparse = hasHybridPayload
+      ? embedResult.sparse
+      : typeof EmbedderEngine.toSparseVector === "function"
+        ? EmbedderEngine.toSparseVector(input)
+        : null;
+
+    if (
+      !querySparse ||
+      !Array.isArray(querySparse.indices) ||
+      !Array.isArray(querySparse.values)
+    ) {
+      // Fallback to dense-only search if sparse vectors are unavailable.
+      return await this.performSimilaritySearch({
+        namespace,
+        input,
+        LLMConnector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers,
+      });
+    }
 
     // Build two AnnSearch objects – one for dense, one for sparse.
     const searchRequests = [
@@ -309,12 +337,14 @@ const Milvus = {
       },
       {
         anns_field: "text_sparse",
-        data: [input], // Pass raw text for server-side BM25
+        data: [querySparse],
         params: { drop_ratio_search: 0.2 },
         limit: topN,
       },
     ];
-    const rerank = RRFRanker(60); // Standard k value for RRFRanker
+    const rerank = rerankMode
+      ? RRFRanker(typeof rerankMode === "number" ? rerankMode : 60)
+      : RRFRanker(60); // Default reciprocal-rank fusion
     const searchResponse = await client.hybridSearch({
       collection_name: this.normalize(namespace),
       data: searchRequests,
