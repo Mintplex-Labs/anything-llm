@@ -11,10 +11,10 @@ const { validateURL } = require("../utils/url");
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
 async function processLink(link, scraperHeaders = {}, metadata = {}) {
-  link = validateURL(link);
-  if (!validURL(link)) return { success: false, reason: "Not a valid URL." };
+  const validatedLink = validateURL(link);
+  if (!validURL(validatedLink)) return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
-    link,
+    link: validatedLink,
     captureAs: "text",
     scraperHeaders,
     metadata,
@@ -30,10 +30,10 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
 async function getLinkText(link, captureAs = "text") {
-  link = validateURL(link);
-  if (!validURL(link)) return { success: false, reason: "Not a valid URL." };
+  const validatedLink = validateURL(link);
+  if (!validURL(validatedLink)) return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
-    link,
+    link: validatedLink,
     captureAs,
     saveAsDocument: false,
   });
