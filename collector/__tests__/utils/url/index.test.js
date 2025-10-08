@@ -116,25 +116,43 @@ describe("validateURL", () => {
     expect(validateURL(" look here! ")).toBe("look here!");
   });
 
-  it("should preserve uppercase characters in URL and not lowercase them", () => {
+  it("should normalize the domain name to lowercase", () => {
     expect(
       validateURL(
         "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
       )
     ).toBe(
-      "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+      "https://example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+    );
+
+    expect(
+      validateURL(
+        "https://EXAMPLE.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+      )
+    ).toBe(
+      "https://example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+    );
+  });
+
+  it("should preserve uppercase characters in URL path and not lowercase them", () => {
+    expect(
+      validateURL(
+        "https://example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+      )
+    ).toBe(
+      "https://example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
     );
 
     // Without protocol it will prepend https:// but should keep case
     expect(
-      validateURL("Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER")
+      validateURL("example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER")
     ).toBe(
-      "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+      "https://example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
     );
 
     // Should also preserve uppercase path without trailing slash trimming affecting case
-    expect(validateURL("https://EXAMPLE.com/ABCDEF/")).toBe(
-      "https://EXAMPLE.com/ABCDEF"
+    expect(validateURL("https://example.com/ABCDEF/")).toBe(
+      "https://example.com/ABCDEF"
     );
   });
 });
