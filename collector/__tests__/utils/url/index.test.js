@@ -75,7 +75,9 @@ describe("validURL", () => {
 
 describe("validateURL", () => {
   it("should return the exact same URL if it's already valid", () => {
-    expect(validateURL("https://www.google.com")).toBe("https://www.google.com");
+    expect(validateURL("https://www.google.com")).toBe(
+      "https://www.google.com"
+    );
     expect(validateURL("http://www.google.com")).toBe("http://www.google.com");
     expect(validateURL("https://random")).toBe("https://random");
 
@@ -89,13 +91,17 @@ describe("validateURL", () => {
     expect(validateURL("www.google.com")).toBe("https://www.google.com");
     expect(validateURL("google.com")).toBe("https://google.com");
     expect(validateURL("ftp://www.google.com")).toBe("ftp://www.google.com");
-    expect(validateURL("mailto://www.google.com")).toBe("mailto://www.google.com");
+    expect(validateURL("mailto://www.google.com")).toBe(
+      "mailto://www.google.com"
+    );
     expect(validateURL("tel://www.google.com")).toBe("tel://www.google.com");
     expect(validateURL("data://www.google.com")).toBe("data://www.google.com");
   });
 
   it("should remove trailing slashes post-validation", () => {
-    expect(validateURL("https://www.google.com/")).toBe("https://www.google.com");
+    expect(validateURL("https://www.google.com/")).toBe(
+      "https://www.google.com"
+    );
     expect(validateURL("http://www.google.com/")).toBe("http://www.google.com");
     expect(validateURL("https://random/")).toBe("https://random");
   });
@@ -108,5 +114,27 @@ describe("validateURL", () => {
     expect(validateURL("")).toBe("");
     expect(validateURL(" ")).toBe("");
     expect(validateURL(" look here! ")).toBe("look here!");
+  });
+
+  it("should preserve uppercase characters in URL and not lowercase them", () => {
+    expect(
+      validateURL(
+        "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+      )
+    ).toBe(
+      "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+    );
+
+    // Without protocol it will prepend https:// but should keep case
+    expect(
+      validateURL("Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER")
+    ).toBe(
+      "https://Example.com/Some/PATH/To/Resource?Query=Value&Another=UPPER"
+    );
+
+    // Should also preserve uppercase path without trailing slash trimming affecting case
+    expect(validateURL("https://EXAMPLE.com/ABCDEF/")).toBe(
+      "https://EXAMPLE.com/ABCDEF"
+    );
   });
 });
