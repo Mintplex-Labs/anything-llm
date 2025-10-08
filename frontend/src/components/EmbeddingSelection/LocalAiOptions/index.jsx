@@ -20,18 +20,27 @@ export default function LocalAiOptions({ settings }) {
   });
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
   const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
+  const [maxChunkLength, setMaxChunkLength] = useState(
+    settings?.EmbeddingModelMaxChunkLength || 1000
+  );
+
+  const handleMaxChunkLengthChange = (e) => {
+    setMaxChunkLength(Number(e.target.value));
+  };
+
+  const estimatedTokens = Math.round(maxChunkLength / 4.2);
 
   return (
     <div className="w-full flex flex-col gap-y-7">
-      <div className="w-full flex items-center gap-[36px] mt-1.5">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LocalAIModelSelection
           settings={settings}
           apiKey={apiKey}
           basePath={basePath.value}
         />
-        <div className="flex flex-col w-60">
+        <div className="flex flex-col w-80">
           <label className="text-white text-sm font-semibold block mb-2">
-            Max embedding chunk length
+            Max Embedding Chunk Length (Characters)
           </label>
           <input
             type="number"
@@ -39,11 +48,20 @@ export default function LocalAiOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="1000"
             min={1}
+            value={maxChunkLength}
+            onChange={handleMaxChunkLengthChange}
             onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.EmbeddingModelMaxChunkLength}
             required={false}
             autoComplete="off"
           />
+          <div className="mt-2 space-y-1">
+            <p className="text-xs font-base text-white text-opacity-60">
+              Maximum length of text chunks in characters for embedding.
+            </p>
+            <p className="text-xs font-base text-blue-400">
+              Estimated tokens: ~{estimatedTokens} (chars ÷ 4.2)
+            </p>
+          </div>
         </div>
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-2">

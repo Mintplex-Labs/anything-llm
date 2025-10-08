@@ -8,12 +8,21 @@ export default function LiteLLMOptions({ settings }) {
   const [basePath, setBasePath] = useState(settings?.LiteLLMBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LiteLLMAPIKey);
   const [apiKey, setApiKey] = useState(settings?.LiteLLMAPIKey);
+  const [maxChunkLength, setMaxChunkLength] = useState(
+    settings?.EmbeddingModelMaxChunkLength || 8192
+  );
+
+  const handleMaxChunkLengthChange = (e) => {
+    setMaxChunkLength(Number(e.target.value));
+  };
+
+  const estimatedTokens = Math.round(maxChunkLength / 4.2);
 
   return (
     <div className="w-full flex flex-col gap-y-7">
-      <div className="w-full flex items-center gap-[36px] mt-1.5">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white text-sm font-semibold block mb-2">
             Base URL
           </label>
           <input
@@ -34,9 +43,9 @@ export default function LiteLLMOptions({ settings }) {
           basePath={basePath}
           apiKey={apiKey}
         />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Max embedding chunk length
+        <div className="flex flex-col w-80">
+          <label className="text-white text-sm font-semibold block mb-2">
+            Max Embedding Chunk Length (Characters)
           </label>
           <input
             type="number"
@@ -44,16 +53,25 @@ export default function LiteLLMOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
+            value={maxChunkLength}
+            onChange={handleMaxChunkLengthChange}
             onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.EmbeddingModelMaxChunkLength}
             required={false}
             autoComplete="off"
           />
+          <div className="mt-2 space-y-1">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+              Maximum length of text chunks in characters for embedding.
+            </p>
+            <p className="text-xs leading-[18px] font-base text-blue-400">
+              Estimated tokens: ~{estimatedTokens} (chars ÷ 4.2)
+            </p>
+          </div>
         </div>
       </div>
       <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
-          <div className="flex flex-col gap-y-1 mb-4">
+          <div className="flex flex-col gap-y-1 mb-2">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
               API Key <p className="!text-xs !italic !font-thin">optional</p>
             </label>
@@ -101,7 +119,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white text-sm font-semibold block mb-2">
           Embedding Model Selection
         </label>
         <select
@@ -122,7 +140,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex items-center">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white text-sm font-semibold block mb-2">
           Embedding Model Selection
         </label>
         <EmbeddingModelTooltip />

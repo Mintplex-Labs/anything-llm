@@ -27,13 +27,15 @@ export default function LMStudioEmbeddingOptions({ settings }) {
     setMaxChunkLength(Number(e.target.value));
   };
 
+  const estimatedTokens = Math.round(maxChunkLength / 4.2);
+
   return (
     <div className="w-full flex flex-col gap-y-7">
       <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
-        <div className="flex flex-col w-60">
+        <div className="flex flex-col w-80">
           <label className="text-white text-sm font-semibold block mb-2">
-            Max Embedding Chunk Length
+            Max Embedding Chunk Length (Characters)
           </label>
           <input
             type="number"
@@ -47,9 +49,14 @@ export default function LMStudioEmbeddingOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum length of text chunks for embedding.
-          </p>
+          <div className="mt-2 space-y-1">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+              Maximum length of text chunks in characters for embedding.
+            </p>
+            <p className="text-xs leading-[18px] font-base text-blue-400">
+              Estimated tokens: ~{estimatedTokens} (chars ÷ 4.2)
+            </p>
+          </div>
         </div>
       </div>
       <div className="flex justify-start mt-4">
@@ -153,7 +160,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {!!basePath
+            {basePath
               ? "--loading available models--"
               : "Enter LM Studio URL first"}
           </option>
