@@ -80,7 +80,7 @@ function validURL(url) {
  */
 function validateURL(url) {
   try {
-    let destination = url.trim().toLowerCase();
+    let destination = url.trim();
     // If the URL has a protocol, just pass through
     if (destination.includes("://")) {
       destination = new URL(destination).toString();
