@@ -12,7 +12,8 @@ const { validateURL } = require("../utils/url");
  */
 async function processLink(link, scraperHeaders = {}, metadata = {}) {
   const validatedLink = validateURL(link);
-  if (!validURL(validatedLink)) return { success: false, reason: "Not a valid URL." };
+  if (!validURL(validatedLink))
+    return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
     link: validatedLink,
     captureAs: "text",
@@ -31,7 +32,8 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
  */
 async function getLinkText(link, captureAs = "text") {
   const validatedLink = validateURL(link);
-  if (!validURL(validatedLink)) return { success: false, reason: "Not a valid URL." };
+  if (!validURL(validatedLink))
+    return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
     link: validatedLink,
     captureAs,
