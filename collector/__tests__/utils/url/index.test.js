@@ -74,8 +74,10 @@ describe("validURL", () => {
 });
 
 describe("validateURL", () => {
-  it("should return the exact same URL if it's already valid", () => {
-    expect(validateURL("https://www.google.com")).toBe("https://www.google.com");
+  it("should return the same URL if it's already valid", () => {
+    expect(validateURL("https://www.google.com")).toBe(
+      "https://www.google.com"
+    );
     expect(validateURL("http://www.google.com")).toBe("http://www.google.com");
     expect(validateURL("https://random")).toBe("https://random");
 
@@ -88,16 +90,22 @@ describe("validateURL", () => {
   it("should assume https:// if the URL doesn't have a protocol", () => {
     expect(validateURL("www.google.com")).toBe("https://www.google.com");
     expect(validateURL("google.com")).toBe("https://google.com");
+    expect(validateURL("EXAMPLE.com/ABCDEF/q1=UPPER")).toBe("https://example.com/ABCDEF/q1=UPPER");
     expect(validateURL("ftp://www.google.com")).toBe("ftp://www.google.com");
-    expect(validateURL("mailto://www.google.com")).toBe("mailto://www.google.com");
+    expect(validateURL("mailto://www.google.com")).toBe(
+      "mailto://www.google.com"
+    );
     expect(validateURL("tel://www.google.com")).toBe("tel://www.google.com");
     expect(validateURL("data://www.google.com")).toBe("data://www.google.com");
   });
 
   it("should remove trailing slashes post-validation", () => {
-    expect(validateURL("https://www.google.com/")).toBe("https://www.google.com");
+    expect(validateURL("https://www.google.com/")).toBe(
+      "https://www.google.com"
+    );
     expect(validateURL("http://www.google.com/")).toBe("http://www.google.com");
     expect(validateURL("https://random/")).toBe("https://random");
+    expect(validateURL("https://example.com/ABCDEF/")).toBe("https://example.com/ABCDEF");
   });
 
   it("should handle edge cases and bad data inputs", () => {
@@ -108,5 +116,14 @@ describe("validateURL", () => {
     expect(validateURL("")).toBe("");
     expect(validateURL(" ")).toBe("");
     expect(validateURL(" look here! ")).toBe("look here!");
+  });
+
+  it("should preserve case of characters in URL pathname", () => {
+    expect(validateURL("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R"))
+      .toBe("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R");
+    expect(validateURL("https://sample.com/uPeRCaSe"))
+      .toBe("https://sample.com/uPeRCaSe");
+    expect(validateURL("Example.com/PATH/To/Resource?q2=Value&q1=UPPER"))
+      .toBe("https://example.com/PATH/To/Resource?q2=Value&q1=UPPER");
   });
 });

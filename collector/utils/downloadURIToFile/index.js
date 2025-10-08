@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { pipeline } = require("stream/promises");
 const { validURL } = require("../url");
+const { default: slugify } = require("slugify");
 
 /**
  * Download a file to the hotdir
@@ -31,7 +32,12 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
       })
       .finally(() => clearTimeout(timeout));
 
-    const localFilePath = path.join(WATCH_DIRECTORY, path.basename(url));
+    const urlObj = new URL(url);
+    const filename = `${urlObj.hostname}-${slugify(
+      urlObj.pathname.replace(/\//g, "-"),
+      { lower: true }
+    )}`;
+    const localFilePath = path.join(WATCH_DIRECTORY, filename);
     const writeStream = fs.createWriteStream(localFilePath);
     await pipeline(res.body, writeStream);
 
