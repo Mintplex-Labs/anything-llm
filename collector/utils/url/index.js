@@ -82,12 +82,10 @@ function validateURL(url) {
   try {
     let destination = url.trim();
     // If the URL has a protocol, just pass through
-    if (destination.includes("://")) {
+    // If the URL doesn't have a protocol, assume https://
+    if (destination.includes("://"))
       destination = new URL(destination).toString();
-    } else {
-      // If the URL doesn't have a protocol, assume https://
-      destination = new URL(`https://${destination.trim()}`).toString();
-    }
+    else destination = new URL(`https://${destination}`).toString();
 
     // If the URL ends with a slash, remove it
     return destination.endsWith("/") ? destination.slice(0, -1) : destination;
