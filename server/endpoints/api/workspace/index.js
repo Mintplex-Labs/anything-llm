@@ -34,6 +34,7 @@ function apiWorkspaceEndpoints(app) {
             openAiTemp: 0.7,
             openAiHistory: 20,
             openAiPrompt: "Custom prompt for responses",
+            useWorkspacePromptForAgents: false,
             queryRefusalResponse: "Custom refusal message",
             chatMode: "chat",
             topN: 4
@@ -55,7 +56,8 @@ function apiWorkspaceEndpoints(app) {
                 "openAiTemp": null,
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
-                "openAiPrompt": null
+                "openAiPrompt": null,
+                "useWorkspacePromptForAgents": false
               },
               message: 'Workspace created'
             }
@@ -120,6 +122,7 @@ function apiWorkspaceEndpoints(app) {
                   "lastUpdatedAt": "2023-08-17 00:45:03",
                   "openAiHistory": 20,
                   "openAiPrompt": null,
+                  "useWorkspacePromptForAgents": false,
                   "threads": []
                 }
               ],
@@ -180,6 +183,7 @@ function apiWorkspaceEndpoints(app) {
                   "lastUpdatedAt": "2023-08-17 00:45:03",
                   "openAiHistory": 20,
                   "openAiPrompt": null,
+                  "useWorkspacePromptForAgents": false,
                   "documents": [],
                   "threads": []
                 }
@@ -292,7 +296,8 @@ function apiWorkspaceEndpoints(app) {
             "name": 'Updated Workspace Name',
             "openAiTemp": 0.2,
             "openAiHistory": 20,
-            "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."
+            "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format.",
+            "useWorkspacePromptForAgents": false
           }
         }
       }
@@ -312,6 +317,7 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
+                "useWorkspacePromptForAgents": false,
                 "documents": []
               },
               message: null,
@@ -485,6 +491,7 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
+                "useWorkspacePromptForAgents": false,
                 "documents": []
               },
               message: null,

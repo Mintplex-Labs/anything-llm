@@ -6,11 +6,7 @@ const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
-const {
-  USER_AGENT,
-  WORKSPACE_AGENT,
-  agentSkillsFromSystemSettings,
-} = require("./defaults");
+const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const { AgentHandler } = require(".");
 const {
   WorkspaceAgentInvocation,
@@ -320,17 +316,13 @@ class EphemeralAgentHandler extends AgentHandler {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+    const wsAgentDefs = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.#workspace,
+      this.#userId
     );
-
-    this.#funcsToLoad = [
-      ...(await agentSkillsFromSystemSettings()),
-      ...ImportedPlugin.activeImportedPlugins(),
-      ...AgentFlows.activeFlowPlugins(),
-      ...(await new MCPCompatibilityLayer().activeMCPServers()),
-    ];
+    this.aibitat.agent(WORKSPACE_AGENT.name, wsAgentDefs);
+    this.#funcsToLoad = wsAgentDefs?.functions || [];
   }
 
   async init() {
