@@ -34,6 +34,9 @@ class AnthropicLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.cacheControl = this.#parseCacheControl(
+      process.env.ANTHROPIC_CACHE_CONTROL
+    );
     this.log(`Initialized with ${this.model}`);
   }
 
@@ -55,6 +58,62 @@ class AnthropicLLM {
 
   isValidChatCompletionModel(_modelName = "") {
     return true;
+  }
+
+  /**
+   * Parses the cache control ENV variable
+   * @param {string} value - The ENV value (5m or 1h)
+   * @returns {null|object} Cache control configuration
+   */
+  #parseCacheControl(value) {
+    if (!value) return null;
+    const normalized = value.toLowerCase().trim();
+    if (normalized === "5m" || normalized === "1h") {
+      return { type: "ephemeral", ttl: normalized };
+    }
+    return null;
+  }
+
+  /**
+   * Checks if content meets minimum requirements for caching
+   * Per Anthropic docs: minimum 1024 tokens
+   *
+   * Certain models (Haiku 3.5, 3) have a minimum of 2048 tokens but
+   * after testing, 1024 tokens can be passed with no errors and
+   * Anthropic will automatically ignore it unless it's above the minimum of 2048 tokens.
+   * https://docs.claude.com/en/docs/build-with-claude/prompt-caching#cache-limitations
+   * @param {string} content - The content to check
+   * @returns {boolean}
+   */
+  #shouldCache(content) {
+    if (!this.cacheControl || !content) return false;
+    // Rough token estimate: ~4 chars per token
+    // Minimum 1024 tokens = ~4096 characters
+    const estimatedTokens = content.length / 4;
+    return estimatedTokens >= 1024;
+  }
+
+  /**
+   * Builds system parameter with cache control if applicable
+   * @param {string} systemContent - The system prompt content
+   * @returns {string|array} System parameter for API call
+   */
+  #buildSystemWithCache(systemContent) {
+    if (!systemContent) return systemContent;
+
+    // If caching is enabled and content is large enough
+    // apply cache control
+    if (this.#shouldCache(systemContent)) {
+      return [
+        {
+          type: "text",
+          text: systemContent,
+          cache_control: this.cacheControl,
+        },
+      ];
+    }
+
+    return systemContent;
   }
 
   /**
@@ -105,11 +164,12 @@ class AnthropicLLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     try {
+      const systemContent = messages[0].content;
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
           model: this.model,
           max_tokens: 4096,
-          system: messages[0].content, // Strip out the system message
+          system: this.#buildSystemWithCache(systemContent), // Apply cache control if enabled
           messages: messages.slice(1), // Pop off the system message
           temperature: Number(temperature ?? this.defaultTemp),
         })
@@ -117,6 +177,7 @@ class AnthropicLLM {
 
       const promptTokens = result.output.usage.input_tokens;
       const completionTokens = result.output.usage.output_tokens;
+
       return {
         textResponse: result.output.content[0].text,
         metrics: {
@@ -134,11 +195,12 @@ class AnthropicLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.anthropic.messages.stream({
         model: this.model,
         max_tokens: 4096,
-        system: messages[0].content, // Strip out the system message
+        system: this.#buildSystemWithCache(systemContent), // Apply cache control if enabled
         messages: messages.slice(1), // Pop off the system message
         temperature: Number(temperature ?? this.defaultTemp),
       }),
