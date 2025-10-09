@@ -17,7 +17,7 @@ function getExtensionFromContentType(contentType) {
       return extensions[0];
     }
   }
-  
+
   return "";
 }
 
@@ -30,10 +30,13 @@ function getExtensionFromContentType(contentType) {
 function generateSafeFilename(url, contentType) {
   const urlPath = new URL(url).pathname;
   const basename = path.basename(urlPath);
-  
+
   const currentExt = path.extname(basename).toLowerCase();
   const extensionFromContentType = getExtensionFromContentType(contentType);
-  if (extensionFromContentType && (!currentExt || !Object.values(ACCEPTED_MIMES).flat().includes(currentExt))) {
+  if (
+    extensionFromContentType &&
+    (!currentExt || !Object.values(ACCEPTED_MIMES).flat().includes(currentExt))
+  ) {
     const nameWithoutExt = path.basename(basename, currentExt);
     return `${nameWithoutExt}${extensionFromContentType}`;
   }
