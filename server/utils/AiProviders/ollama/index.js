@@ -11,6 +11,9 @@ const { Ollama } = require("ollama");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
+  /** @see OllamaAILLM.cacheContextWindows */
+  static modelContextWindows = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
@@ -22,25 +25,84 @@ class OllamaAILLM {
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
-    this.limits = {
-      history: this.promptWindowLimit() * 0.15,
-      system: this.promptWindowLimit() * 0.15,
-      user: this.promptWindowLimit() * 0.7,
-    };
 
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
       : {};
-    this.client = new Ollama({ host: this.basePath, headers: headers });
+    this.client = new Ollama({
+      host: this.basePath,
+      headers: headers,
+      fetch: this.#applyFetch(),
+    });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.#log(
-      `OllamaAILLM initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
-    );
+
+    OllamaAILLM.cacheContextWindows(true).then(() => {
+      this.limits = {
+        history: this.promptWindowLimit() * 0.15,
+        system: this.promptWindowLimit() * 0.15,
+        user: this.promptWindowLimit() * 0.7,
+      };
+      this.#log(
+        `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
+      );
+    });
   }
 
   #log(text, ...args) {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Cache the context windows for the Ollama models.
+   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   *
+   * This is a convenience to ensure that the context windows are correct and that the user
+   * does not have to manually set the context window for each model.
+   * @param {boolean} force - Force the cache to be refreshed.
+   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   */
+  static async cacheContextWindows(force = false) {
+    try {
+      // Skip if we already have cached context windows and we're not forcing a refresh
+      if (Object.keys(OllamaAILLM.modelContextWindows).length > 0 && !force)
+        return;
+
+      const authToken = process.env.OLLAMA_AUTH_TOKEN;
+      const basePath = process.env.OLLAMA_BASE_PATH;
+      const client = new Ollama({
+        host: basePath,
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+      });
+
+      const { models } = await client.list().catch(() => ({ models: [] }));
+      if (!models.length) return;
+
+      const infoPromises = models.map((model) =>
+        client
+          .show({ model: model.name })
+          .then((info) => ({ name: model.name, ...info }))
+      );
+      const infos = await Promise.all(infoPromises);
+      infos.forEach((showInfo) => {
+        if (showInfo.capabilities.includes("embedding")) return;
+        const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
+          key.endsWith(".context_length")
+        );
+        if (!contextWindowKey)
+          return (OllamaAILLM.modelContextWindows[showInfo.name] = 4096);
+        OllamaAILLM.modelContextWindows[showInfo.name] =
+          showInfo.model_info[contextWindowKey];
+      });
+      OllamaAILLM.#slog(`Context windows cached for all models!`);
+    } catch (e) {
+      OllamaAILLM.#slog(`Error caching context windows`, e);
+      return;
+    }
   }
 
   #appendContext(contextTexts = []) {
@@ -55,24 +117,68 @@ class OllamaAILLM {
     );
   }
 
+  /**
+   * Apply a custom fetch function to the Ollama client.
+   * This is useful when we want to bypass the default 5m timeout for global fetch
+   * for machines which run responses very slowly.
+   * @returns {Function} The custom fetch function.
+   */
+  #applyFetch() {
+    try {
+      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
+      const { Agent } = require("undici");
+      const moment = require("moment");
+      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+
+      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
+        this.#log(
+          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
+          { timeout }
+        );
+        return fetch;
+      } else timeout = Number(timeout);
+
+      const noTimeoutFetch = (input, init = {}) => {
+        return fetch(input, {
+          ...init,
+          dispatcher: new Agent({ headersTimeout: timeout }),
+        });
+      };
+
+      const humanDiff = moment.duration(timeout).humanize();
+      this.#log(`Applying custom fetch w/timeout of ${humanDiff}.`);
+      return noTimeoutFetch;
+    } catch (error) {
+      this.#log("Error applying custom fetch - using default fetch", error);
+      return fetch;
+    }
+  }
+
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No Ollama token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    let userDefinedLimit = null;
+    const systemDefinedLimit =
+      Number(this.modelContextWindows[modelName]) || 4096;
+
+    if (
+      process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
+      !isNaN(Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT)) &&
+      Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) > 0
+    )
+      userDefinedLimit = Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT);
+
+    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
+    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
+    return systemDefinedLimit;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No Ollama token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -146,7 +252,7 @@ class OllamaAILLM {
             use_mlock: true,
             // There are currently only two performance settings so if its not "base" - its max context.
             ...(this.performanceMode === "base"
-              ? {}
+              ? {} // TODO: if in base mode, maybe we just use half the context window when below <10K?
               : { num_ctx: this.promptWindowLimit() }),
           },
         })

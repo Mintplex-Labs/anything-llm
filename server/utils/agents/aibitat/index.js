@@ -533,23 +533,17 @@ Only return the role.
   }
 
   /**
-   * Ask the for the AI provider to generate a reply to the chat.
+   * Get the chat history between two nodes or all chats to/from a node.
    *
-   * @param route.to The node that sent the chat.
-   * @param route.from The node that will reply to the chat.
+   * @param route
+   * @returns
    */
-  async reply(route) {
-    // get the provider for the node that will reply
-    const fromConfig = this.getAgentConfig(route.from);
-
-    const chatHistory =
-      // if it is sending message to a group, send the group chat history to the provider
-      // otherwise, send the chat history between the two nodes
-      this.channels.get(route.to)
-        ? [
-            {
-              role: "user",
-              content: `You are in a whatsapp group. Read the following conversation and then reply.
+  getOrFormatNodeChatHistory(route) {
+    if (this.channels.get(route.to)) {
+      return [
+        {
+          role: "user",
+          content: `You are in a whatsapp group. Read the following conversation and then reply.
 Do not add introduction or conclusion to your reply because this will be a continuous conversation. Don't introduce yourself.
 
 CHAT HISTORY
@@ -558,20 +552,36 @@ ${this.getHistory({ to: route.to })
   .join("\n")}
 
 @${route.from}:`,
-            },
-          ]
-        : this.getHistory(route).map((c) => ({
-            content: c.content,
-            role: c.from === route.to ? "user" : "assistant",
-          }));
+        },
+      ];
+    }
 
-    // build the messages to send to the provider
+    // This is normal chat between user<->agent
+    return this.getHistory(route).map((c) => ({
+      content: c.content,
+      role: c.from === route.to ? "user" : "assistant",
+    }));
+  }
+
+  /**
+   * Ask the for the AI provider to generate a reply to the chat.
+   * This will load the functions that the node can call and the chat history.
+   * Then before calling the provider, it will check if the provider supports agent streaming.
+   * If it does, it will call the provider asynchronously (streaming).
+   * Otherwise, it will call the provider synchronously (non-streaming).
+   * `.supportsAgentStreaming` is used to determine if the provider supports agent streaming on the respective provider.
+   *
+   * @param route.to The node that sent the chat.
+   * @param route.from The node that will reply to the chat.
+   */
+  async reply(route) {
+    const fromConfig = this.getAgentConfig(route.from);
+    const chatHistory = this.getOrFormatNodeChatHistory(route);
     const messages = [
       {
         content: fromConfig.role,
         role: "system",
       },
-      // get the history of chats between the two nodes
       ...chatHistory,
     ];
 
@@ -585,18 +595,146 @@ ${this.getHistory({ to: route.to })
       ...fromConfig,
     });
 
-    // get the chat completion
-    const content = await this.handleExecution(
-      provider,
-      messages,
-      functions,
-      route.from
-    );
-    this.newMessage({ ...route, content });
+    let content;
+    if (provider.supportsAgentStreaming) {
+      this.handlerProps.log?.(
+        "[DEBUG] Provider supports agent streaming - will use async execution!"
+      );
+      content = await this.handleAsyncExecution(
+        provider,
+        messages,
+        functions,
+        route.from
+      );
+    } else {
+      this.handlerProps.log?.(
+        "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
+      );
+      content = await this.handleExecution(
+        provider,
+        messages,
+        functions,
+        route.from
+      );
+    }
 
+    this.newMessage({ ...route, content });
     return content;
   }
 
+  /**
+   * Handle the async (streaming) execution of the provider
+   * with tool calls.
+   *
+   * @param provider
+   * @param messages
+   * @param functions
+   * @param byAgent
+   *
+   * @returns {Promise<string>}
+   */
+  async handleAsyncExecution(
+    provider,
+    messages = [],
+    functions = [],
+    byAgent = null
+  ) {
+    const eventHandler = (type, data) => {
+      this?.socket?.send(type, data);
+    };
+
+    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
+    const completionStream = await provider.stream(
+      messages,
+      functions,
+      eventHandler
+    );
+
+    if (completionStream.functionCall) {
+      const { name, arguments: args } = completionStream.functionCall;
+      const fn = this.functions.get(name);
+
+      // if provider hallucinated on the function name
+      // ask the provider to complete again
+      if (!fn) {
+        return await this.handleAsyncExecution(
+          provider,
+          [
+            ...messages,
+            {
+              name,
+              role: "function",
+              content: `Function "${name}" not found. Try again.`,
+              originalFunctionCall: completionStream.functionCall,
+            },
+          ],
+          functions,
+          byAgent
+        );
+      }
+
+      // Execute the function and return the result to the provider
+      fn.caller = byAgent || "agent";
+
+      // If provider is verbose, log the tool call to the frontend
+      if (provider?.verbose) {
+        this?.introspect?.(
+          `${fn.caller} is executing \`${name}\` tool ${JSON.stringify(args, null, 2)}`
+        );
+      }
+
+      // Always log the tool call to the console for debugging purposes
+      this.handlerProps?.log?.(
+        `[debug]: ${fn.caller} is attempting to call \`${name}\` tool ${JSON.stringify(args, null, 2)}`
+      );
+
+      const result = await fn.handler(args);
+      Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+
+      // If the tool call has direct output enabled, return the result directly to the chat
+      // without any further processing and no further tool calls will be run.
+      if (this.skipHandleExecution) {
+        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this?.introspect?.(
+          `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
+        );
+        this?.introspect?.(`Tool use completed.`);
+        this.handlerProps?.log?.(
+          `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
+        );
+        return result;
+      }
+
+      return await this.handleAsyncExecution(
+        provider,
+        [
+          ...messages,
+          {
+            name,
+            role: "function",
+            content: result,
+            originalFunctionCall: completionStream.functionCall,
+          },
+        ],
+        functions,
+        byAgent
+      );
+    }
+
+    return completionStream?.textResponse;
+  }
+
+  /**
+   * Handle the synchronous (non-streaming) execution of the provider
+   * with tool calls.
+   *
+   * @param provider
+   * @param messages
+   * @param functions
+   * @param byAgent
+   *
+   * @returns {Promise<string>}
+   */
   async handleExecution(
     provider,
     messages = [],
@@ -621,6 +759,7 @@ ${this.getHistory({ to: route.to })
               name,
               role: "function",
               content: `Function "${name}" not found. Try again.`,
+              originalFunctionCall: completion.functionCall,
             },
           ],
           functions,
@@ -668,6 +807,7 @@ ${this.getHistory({ to: route.to })
             name,
             role: "function",
             content: result,
+            originalFunctionCall: completion.functionCall,
           },
         ],
         functions,
@@ -675,7 +815,7 @@ ${this.getHistory({ to: route.to })
       );
     }
 
-    return completion?.result;
+    return completion?.textResponse;
   }
 
   /**
@@ -830,6 +970,10 @@ ${this.getHistory({ to: route.to })
         return new Providers.GeminiProvider({ model: config.model });
       case "dpais":
         return new Providers.DellProAiStudioProvider({ model: config.model });
+      case "cometapi":
+        return new Providers.CometApiProvider({ model: config.model });
+      case "foundry":
+        return new Providers.FoundryProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

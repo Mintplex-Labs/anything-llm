@@ -62,6 +62,8 @@ jobs:
           tags: |
             type=raw,value=render
             type=raw,value=railway
+            type=raw,value=render-1.9.0
+            type=raw,value=railway-1.9.0
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6

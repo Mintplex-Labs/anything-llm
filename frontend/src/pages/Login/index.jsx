@@ -20,8 +20,16 @@ export default function Login() {
   const { loading, requiresAuth, mode } = usePasswordModal(!!query.get("nt"));
 
   if (loading || ssoLoading) return <FullScreenLoader />;
-  if (ssoConfig.enabled && ssoConfig.noLogin)
-    return <Navigate to={paths.sso.login()} />;
+
+  // If simple SSO is enabled and no login is allowed, redirect to the SSO login page.
+  if (ssoConfig.enabled && ssoConfig.noLogin) {
+    // If a noLoginRedirect is provided and no token is provided, redirect to that webpage.
+    if (!!ssoConfig.noLoginRedirect && !query.has("token"))
+      return window.location.replace(ssoConfig.noLoginRedirect);
+    // Otherwise, redirect to the SSO login page.
+    else return <Navigate to={paths.sso.login()} />;
+  }
+
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
 
   return <PasswordModal mode={mode} />;

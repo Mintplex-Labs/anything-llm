@@ -226,6 +226,7 @@ const RenderChatContent = memo(
       );
     let thoughtChain = null;
     let msgToRender = message;
+    if (!message) return null;
 
     // If the message is a perfect thought chain, we can render it directly
     // Complete == open and close tags match perfectly.
