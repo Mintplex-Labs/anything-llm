@@ -998,6 +998,10 @@ const TRANSLATIONS = {
         icon: "Iconiță",
         link: "Link",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {

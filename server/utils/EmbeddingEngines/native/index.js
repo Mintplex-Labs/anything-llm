@@ -30,6 +30,7 @@ class NativeEmbedder {
   #fallbackHost = "https://cdn.anythingllm.com/support/models/";
 
   constructor() {
+    this.className = "NativeEmbedder";
     this.model = this.getEmbeddingModel();
     this.modelInfo = this.getEmbedderInfo();
     this.cacheDir = path.resolve(
@@ -50,7 +51,7 @@ class NativeEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[NativeEmbedder]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

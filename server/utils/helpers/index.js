@@ -212,6 +212,12 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return new CometApiLLM(embedder, model);
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return new FoundryLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -362,6 +368,12 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return CometApiLLM;
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return FoundryLLM;
     default:
       return null;
   }
@@ -430,6 +442,10 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
+    case "cometapi":
+      return process.env.COMETAPI_LLM_MODEL_PREF;
+    case "foundry":
+      return process.env.FOUNDRY_MODEL_PREF;
     default:
       return null;
   }

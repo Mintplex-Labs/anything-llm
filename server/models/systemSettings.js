@@ -297,6 +297,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
+      SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
     };
   },
 
@@ -487,7 +488,7 @@ const SystemSettings = {
 
       // LMStudio Keys
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || null,
       LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
 
       // LocalAI Keys
@@ -500,7 +501,7 @@ const SystemSettings = {
       OllamaLLMAuthToken: !!process.env.OLLAMA_AUTH_TOKEN,
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
-      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT || null,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
@@ -568,6 +569,11 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      // Foundry Keys
+      FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
+      FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
+      FoundryModelTokenLimit: process.env.FOUNDRY_MODEL_TOKEN_LIMIT,
+
       AwsBedrockLLMConnectionMethod:
         process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
@@ -610,6 +616,11 @@ const SystemSettings = {
       DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
       DellProAiStudioTokenLimit:
         process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
+
+      // CometAPI LLM Keys
+      CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
+      CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
+      CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
     };
   },
 
@@ -648,6 +659,29 @@ const SystemSettings = {
       console.error(error.message);
       return { connectionKey: null };
     }
+  },
+
+  simpleSSO: {
+    /**
+     * Gets the no login redirect URL. If the conditions below are not met, this will return null.
+     * - If simple SSO is not enabled.
+     * - If simple SSO login page is not disabled.
+     * - If the no login redirect is not a valid URL or is not set.
+     * @returns {string | null}
+     */
+    noLoginRedirect: () => {
+      if (!("SIMPLE_SSO_ENABLED" in process.env)) return null; // if simple SSO is not enabled, return null
+      if (!("SIMPLE_SSO_NO_LOGIN" in process.env)) return null; // if the no login config is not set, return null
+      if (!("SIMPLE_SSO_NO_LOGIN_REDIRECT" in process.env)) return null; // if the no login redirect is not set, return null
+
+      try {
+        let url = new URL(process.env.SIMPLE_SSO_NO_LOGIN_REDIRECT);
+        return url.toString();
+      } catch {}
+
+      // if the no login redirect is not a valid URL or is not set, return null
+      return null;
+    },
   },
 };
 

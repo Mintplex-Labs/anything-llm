@@ -665,10 +665,7 @@ async function streamChat({
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
-    completeText = await LLMConnector.handleStream(response, stream, {
-      uuid,
-      sources,
-    });
+    completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = stream.metrics;
   }
 
@@ -695,6 +692,7 @@ async function streamChat({
       error: false,
       chatId: chat.id,
       metrics,
+      sources,
     });
     return;
   }

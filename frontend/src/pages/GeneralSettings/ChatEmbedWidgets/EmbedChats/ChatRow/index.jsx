@@ -1,9 +1,11 @@
 import truncate from "truncate";
-import { X, Trash, LinkSimple } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
+import MarkdownRenderer from "../MarkdownRenderer";
+import { safeJsonParse } from "@/utils/request";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -64,7 +66,7 @@ export default function ChatRow({ chat, onDelete }) {
           onClick={openResponseModal}
           className="px-6 cursor-pointer hover:shadow-lg"
         >
-          {truncate(JSON.parse(chat.response)?.text, 40)}
+          {truncate(safeJsonParse(chat.response, {})?.text, 40)}
         </td>
         <td className="px-6">{chat.createdAt}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
@@ -83,7 +85,11 @@ export default function ChatRow({ chat, onDelete }) {
       </ModalWrapper>
       <ModalWrapper isOpen={isResponseOpen}>
         <TextPreview
-          text={JSON.parse(chat.response)?.text}
+          text={
+            <MarkdownRenderer
+              content={safeJsonParse(chat.response, {})?.text}
+            />
+          }
           closeModal={closeResponseModal}
         />
       </ModalWrapper>
@@ -118,9 +124,9 @@ const TextPreview = ({ text, closeModal }) => {
           </button>
         </div>
         <div className="w-full p-6">
-          <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
+          <div className="w-full h-[60vh] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 light:bg-theme-bg-secondary border border-gray-500 text-white text-sm">
             {text}
-          </pre>
+          </div>
         </div>
       </div>
     </div>
@@ -132,11 +138,7 @@ const ConnectionDetails = ({
   verbose = false,
   connection_information,
 }) => {
-  let details = {};
-  try {
-    details = JSON.parse(connection_information);
-  } catch {}
-
+  const details = safeJsonParse(connection_information, {});
   if (Object.keys(details).length === 0) return null;
 
   if (verbose) {

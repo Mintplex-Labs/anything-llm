@@ -1,0 +1,103 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+![AnythingLLM](https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/images/wordmark.png)
+
+[AnythingLLM](https://github.com/Mintplex-Labs/anything-llm)
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+**Configuration & Usage**
+
+- **Config vs Secrets:** This chart exposes application configuration via two mechanisms:
+  - `config` (in `values.yaml`) — rendered into a `ConfigMap` and injected using `envFrom` in the pod. Do NOT place sensitive values (API keys, secrets) in `config` because `ConfigMap`s are not encrypted.
+  - `env` / `envFrom` — the preferred way to inject secrets. Use Kubernetes `Secret` objects and reference them from `env` (with `valueFrom.secretKeyRef`) or `envFrom.secretRef`.
+
+- **Storage & STORAGE_DIR mapping:** The chart creates (or mounts) a `PersistentVolumeClaim` using the `persistentVolume.*` settings. The container mount path is set from `persistentVolume.mountPath`. Ensure the container `STORAGE_DIR` config key matches that path (defaults are set in `values.yaml`).
+
+
+**Providing API keys & secrets (recommended)**
+
+Use Kubernetes Secrets. Below are example workflows and `values.yaml` snippets.
+
+1) Create a Kubernetes Secret with API keys:
+
+```
+kubectl create secret generic openai-secret --from-literal=OPENAI_KEY="sk-..." 
+# or from a file
+# kubectl create secret generic openai-secret --from-file=OPENAI_KEY=/path/to/keyfile
+```
+
+2) Reference the Secret from `values.yaml` using `envFrom` (recommended when your secret contains multiple env keys):
+
+```yaml
+envFrom:
+  - secretRef:
+      name: openai-secret
+```
+
+This will inject all key/value pairs from the `openai-secret` Secret as environment variables in the container.
+
+3) Or reference a single secret key via `env` (explicit mapping):
+
+```yaml
+env:
+  - name: OPENAI_KEY
+    valueFrom:
+      secretKeyRef:
+        name: openai-secret
+        key: OPENAI_KEY
+```
+
+Notes:
+- Avoid placing secret values into `config:` (the chart's `ConfigMap`) — `ConfigMap`s are visible to anyone who can read the namespace. Use `Secret` objects for any credentials/tokens.
+- If you use a GitOps workflow, consider integrating an external secret operator (ExternalSecrets, SealedSecrets, etc.) so you don't store raw secrets in Git.
+
+
+**Example `values-secret.yaml` to pass during `helm install`**
+
+```yaml
+image:
+  repository: mintplexlabs/anythingllm
+  tag: "1.9.0"
+
+service:
+  type: ClusterIP
+  port: 3001
+
+# Reference secret containing API keys
+envFrom:
+  - secretRef:
+      name: openai-secret
+
+# Optionally override other values
+persistentVolume:
+  size: 16Gi
+  mountPath: /storage
+```
+
+Install with:
+
+```
+helm install my-anythingllm ./anythingllm -f values-secret.yaml
+```
+
+**Best practices & tips**
+
+- Use `envFrom` for convenience when many environment variables are stored in a single `Secret` and use `env`/`valueFrom` for explicit single-key mappings.
+- Use `kubectl create secret generic` or your secrets management solution. If you need to reference multiple different provider keys (OpenAI, Anthropic, etc.), create a single `Secret` with multiple keys or multiple Secrets and add multiple `envFrom` entries.
+- Keep probe paths and `service.port` aligned. If your probes fail after deployment, check that the probe `port` matches the container port (or named port `http`) and that the `path` is valid.
+- For storage, if you have a pre-existing PVC set `persistentVolume.existingClaim` to the PVC name; the chart will mount that claim (and will not attempt to create a new PVC).
+- For production, provide resource `requests` and `limits` in `values.yaml` to prevent scheduler starvation and to control cost.
+
+{{ template "chart.valuesSection" . }}

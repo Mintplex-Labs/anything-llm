@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
-import { ContextWrapper } from "@/AuthContext";
+import { AuthProvider } from "@/AuthContext";
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
@@ -97,7 +97,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <Suspense fallback={<FullScreenLoader />}>
-        <ContextWrapper>
+        <AuthProvider>
           <LogoProvider>
             <PfpProvider>
               <I18nextProvider i18n={i18n}>
@@ -278,7 +278,7 @@ export default function App() {
               </I18nextProvider>
             </PfpProvider>
           </LogoProvider>
-        </ContextWrapper>
+        </AuthProvider>
       </Suspense>
     </ThemeProvider>
   );

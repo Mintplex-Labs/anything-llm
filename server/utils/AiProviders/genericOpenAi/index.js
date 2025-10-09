@@ -8,6 +8,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,10 +18,14 @@ class GenericOpenAiLLM {
         "GenericOpenAI must have a valid base path to use for the api."
       );
 
+    this.className = "GenericOpenAiLLM";
     this.basePath = process.env.GENERIC_OPEN_AI_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+      },
     });
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
@@ -41,7 +46,7 @@ class GenericOpenAiLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

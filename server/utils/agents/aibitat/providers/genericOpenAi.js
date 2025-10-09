@@ -3,6 +3,7 @@ const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { toValidNumber } = require("../../../http/index.js");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -20,6 +21,9 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
       maxRetries: 3,
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+      },
     });
 
     this._client = client;
@@ -32,6 +36,12 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  get supportsAgentStreaming() {
+    // Honor streaming being disabled via ENV via user preference.
+    if (process.env.GENERIC_OPENAI_STREAMING_DISABLED === "true") return false;
+    return true;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -54,60 +64,31 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       });
   }
 
-  /**
-   * Create a completion based on the received messages.
-   *
-   * @param messages A list of messages to send to the API.
-   * @param functions
-   * @returns The completion.
-   */
+  async #handleFunctionCallStream({ messages = [] }) {
+    return await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+    });
+  }
+
+  async stream(messages, functions = [], eventHandler = null) {
+    return await UnTooled.prototype.stream.call(
+      this,
+      messages,
+      functions,
+      this.#handleFunctionCallStream.bind(this),
+      eventHandler
+    );
+  }
+
   async complete(messages, functions = []) {
-    try {
-      let completion;
-      if (functions.length > 0) {
-        const { toolCall, text } = await this.functionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
-
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
-        }
-        completion = { content: text };
-      }
-
-      if (!completion?.content) {
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const response = await this.client.chat.completions.create({
-          model: this.model,
-          messages: this.cleanMsgs(messages),
-        });
-        completion = response.choices[0].message;
-      }
-
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
-      this.deduplicator.reset("runs");
-      return {
-        result: completion.content,
-        cost: 0,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return await UnTooled.prototype.complete.call(
+      this,
+      messages,
+      functions,
+      this.#handleFunctionCallChat.bind(this)
+    );
   }
 
   /**

@@ -1,13 +1,14 @@
 import { encode as HTMLEncode } from "he";
 import markdownIt from "markdown-it";
 import markdownItKatexPlugin from "./plugins/markdown-katex";
+import Appearance from "@/models/appearance";
 import hljs from "highlight.js";
 import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
 
 const markdown = markdownIt({
-  html: false,
+  html: Appearance.get("renderHTML") ?? false,
   typographer: true,
   highlight: function (code, lang) {
     const uuid = v4();

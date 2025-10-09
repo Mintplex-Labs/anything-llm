@@ -28,6 +28,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import CometApiLogo from "@/media/llmprovider/cometapi.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -57,6 +58,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
+import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -271,6 +273,13 @@ const LLMS = [
     logo: MoonshotAiLogo,
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
+  },
+  {
+    name: "CometAPI",
+    value: "cometapi",
+    logo: CometApiLogo,
+    options: (settings) => <CometApiLLMOptions settings={settings} />,
+    description: "500+ AI Models all in one API.",
   },
 ];
 
