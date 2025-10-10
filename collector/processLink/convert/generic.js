@@ -11,6 +11,10 @@ const { processSingleFile } = require("../../processSingleFile");
 const { downloadURIToFile } = require("../../utils/downloadURIToFile");
 const { ACCEPTED_MIMES } = require("../../utils/constants");
 const RuntimeSettings = require("../../utils/runtimeSettings");
+const { isYouTubeUrl } = require("../../utils/url");
+const {
+  fetchVideoTranscriptContent,
+} = require("../../utils/extensions/YoutubeTranscript");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -29,8 +33,8 @@ async function scrapeGenericUrl({
   metadata = {},
   saveAsDocument = true,
 }) {
-  /** @type {'web' | 'file'} */
-  let processVia = "web";
+  /** @type {'page_content' | 'file' | 'youtube_video_transcript'} */
+  let processVia = "page_content";
   console.log(`-- Working URL ${link} => (captureAs: ${captureAs}) --`);
 
   const contentType = await getContentTypeFromURL(link)
@@ -48,8 +52,13 @@ async function scrapeGenericUrl({
   if (
     !["text/html", "text/plain"].includes(contentType) &&
     contentType in ACCEPTED_MIMES
-  )
+  ) {
     processVia = "file";
+  }
+
+  if (isYouTubeUrl(link)) {
+    processVia = "youtube_video_transcript";
+  }
 
   console.log(`-- URL determined to be ${contentType} (${processVia}) --`);
   // If the content type is a file, download the file to the hotdir and process it
@@ -102,6 +111,66 @@ async function scrapeGenericUrl({
     }
 
     return processSingleFileResult;
+  }
+
+  if (processVia === "youtube_video_transcript") {
+    console.log("Pocessing YouTube video transcript");
+    const { success, reason, content, metadata } =
+      await fetchVideoTranscriptContent({
+        url: link,
+      });
+    console.log(metadata);
+    const formattedContent = `
+    <title>${metadata.title}</title>
+    <description>${metadata.description}</description>
+    <author>${metadata.author}</author>
+    <transcript>${content}</transcript>
+    `;
+    if (!success) {
+      return returnResult({
+        success: false,
+        reason: reason,
+        documents: [],
+        content: null,
+        saveAsDocument,
+      });
+    }
+    if (!saveAsDocument) {
+      return returnResult({
+        success: true,
+        content: formattedContent,
+        documents: [],
+        saveAsDocument,
+      });
+    }
+    // Save the content as a document from the URL
+    const url = new URL(link);
+    const decodedPathname = decodeURIComponent(url.pathname);
+    const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
+    const data = {
+      id: v4(),
+      url,
+      title: metadata.title || slugify(filename),
+      docAuthor: metadata.author || "no author found",
+      description: metadata.description || "No description found.",
+      docSource: metadata.source || "URL link uploaded by the user.",
+      chunkSource: `link://${link}`,
+      published: new Date().toLocaleString(),
+      wordCount: content.split(" ").length,
+      pageContent: content,
+      token_count_estimate: tokenizeString(content),
+    };
+    const document = writeToServerDocuments({
+      data,
+      filename: `url-${slugify(filename)}-${data.id}`,
+    });
+
+    return returnResult({
+      success: true,
+      content,
+      documents: [document],
+      saveAsDocument,
+    });
   }
 
   // Otherwise, assume the content is a webpage and scrape the content from the webpage

@@ -95,7 +95,23 @@ function validateURL(url) {
   }
 }
 
+/**
+ * Validates a YouTube URL
+ * @param {string} normalizedUrl
+ * @returns {boolean}
+ */
+function isYouTubeUrl(url) {
+  if (!url) {
+    return false;
+  }
+
+  const youtubeRegex =
+    /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|)([\w-]{11})(?:\S+)?$/;
+
+  return youtubeRegex.test(url);
+}
 module.exports = {
   validURL,
   validateURL,
+  isYouTubeUrl,
 };
