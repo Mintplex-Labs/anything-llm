@@ -524,14 +524,29 @@ class AgentHandler {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
+
+    // Get user object from invocation for variable expansion
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+      await WORKSPACE_AGENT.getDefinition(
+        this.provider,
+        this.invocation.workspace,
+        user
+      )
     );
 
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.invocation.workspace,
+      user
+    );
     this.#funcsToLoad = [
       ...((await USER_AGENT.getDefinition())?.functions || []),
-      ...((await WORKSPACE_AGENT.getDefinition())?.functions || []),
+      ...(workspaceAgentDef?.functions || []),
     ];
   }
 
