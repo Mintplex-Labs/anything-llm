@@ -320,9 +320,13 @@ class EphemeralAgentHandler extends AgentHandler {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
+
+    // Get user object from invocation for variable expansion
+    const user = this.#userId ? { id: this.#userId } : null;
+
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
     );
 
     this.#funcsToLoad = [
