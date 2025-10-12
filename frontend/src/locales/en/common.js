@@ -329,7 +329,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "System Prompt",
       description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
       history: {
         title: "System Prompt History",
         clearAll: "Clear All",
@@ -563,6 +563,11 @@ const TRANSLATIONS = {
           "Customize the footer items displayed on the bottom of the sidebar.",
         icon: "Icon",
         link: "Link",
+      },
+      "render-html": {
+        title: "Render HTML in chat",
+        description:
+          "Render HTML responses in assistant responses.\nThis can result in a much higher fidelity of response quality, but can also lead to potential security risks.",
       },
     },
   },

@@ -10,13 +10,15 @@
  * @property {(string|null)} model -  Overrides model used for provider.
  */
 
+const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
-const { toValidNumber } = require("../../../http");
+const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -192,6 +194,14 @@ class Provider {
           apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
           ...config,
         });
+      case "cometapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cometapi.com/v1",
+          },
+          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -251,14 +261,15 @@ class Provider {
           apiKey: null,
           ...config,
         });
-      case "cometapi":
+      case "foundry": {
         return new ChatOpenAI({
           configuration: {
-            baseURL: "https://api.cometapi.com/v1",
+            baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
           },
-          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          apiKey: null,
           ...config,
         });
+      }
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
@@ -287,6 +298,82 @@ class Provider {
       default:
         return DEFAULT_WORKSPACE_PROMPT;
     }
+  }
+
+  /**
+   * Whether the provider supports agent streaming.
+   * Disabled by default and needs to be explicitly enabled in the provider
+   * This is temporary while we migrate all providers to support agent streaming
+   * @returns {boolean}
+   */
+  get supportsAgentStreaming() {
+    return false;
+  }
+
+  /**
+   * Stream a chat completion from the LLM with tool calling
+   * Note: This using the OpenAI API format and may need to be adapted for other providers.
+   *
+   * @param {any[]} messages - The messages to send to the LLM.
+   * @param {any[]} functions - The functions to use in the LLM.
+   * @param {function} eventHandler - The event handler to use to report stream events.
+   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    this.providerLog("Provider.stream - will process this chat completion.");
+    const msgUUID = v4();
+    const stream = await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      ...(Array.isArray(functions) && functions?.length > 0
+        ? { functions }
+        : {}),
+    });
+
+    const result = {
+      functionCall: null,
+      textResponse: "",
+    };
+
+    for await (const chunk of stream) {
+      if (!chunk?.choices?.[0]) continue; // Skip if no choices
+      const choice = chunk.choices[0];
+
+      if (choice.delta?.content) {
+        result.textResponse += choice.delta.content;
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: choice.delta.content,
+        });
+      }
+
+      if (choice.delta?.function_call) {
+        // accumulate the function call
+        if (result.functionCall)
+          result.functionCall.arguments += choice.delta.function_call.arguments;
+        else result.functionCall = choice.delta.function_call;
+
+        eventHandler?.("reportStreamEvent", {
+          uuid: `${msgUUID}:tool_call_invocation`,
+          type: "toolCallInvocation",
+          content: `Assembling Tool Call: ${result.functionCall.name}(${result.functionCall.arguments})`,
+        });
+      }
+    }
+
+    // If there are arguments, parse them as json so that the tools can use them
+    if (!!result.functionCall?.arguments)
+      result.functionCall.arguments = safeJsonParse(
+        result.functionCall.arguments,
+        {}
+      );
+
+    return {
+      textResponse: result.textResponse,
+      functionCall: result.functionCall,
+    };
   }
 }
 

@@ -1,10 +1,15 @@
 const { v4 } = require("uuid");
+const path = require("path");
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { getContentTypeFromURL, returnResult } = require("../helpers");
+const { processSingleFile } = require("../../processSingleFile");
+const { downloadURIToFile } = require("../../utils/downloadURIToFile");
+const { ACCEPTED_MIMES } = require("../../utils/constants");
 const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
@@ -12,45 +17,125 @@ const RuntimeSettings = require("../../utils/runtimeSettings");
  * @param {Object} config - The configuration object
  * @param {string} config.link - The URL to scrape
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
- * @param {boolean} config.processAsDocument - Whether to process the content as a document or return the content directly. Default is true
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
  * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
+ * @param {boolean} config.saveAsDocument - Whether to save the content as a document. Default is true
  * @returns {Promise<Object>} - The content of the page
  */
 async function scrapeGenericUrl({
   link,
   captureAs = "text",
-  processAsDocument = true,
   scraperHeaders = {},
   metadata = {},
+  saveAsDocument = true,
 }) {
-  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+  /** @type {'web' | 'file'} */
+  let processVia = "web";
+  console.log(`-- Working URL ${link} => (captureAs: ${captureAs}) --`);
+
+  const contentType = await getContentTypeFromURL(link)
+    .then((result) => {
+      // If there is a reason, log it, but continue with the process
+      if (!!result.reason) console.error(result.reason);
+      return result.contentType;
+    })
+    .catch((error) => {
+      console.error("Error getting content type from URL", error);
+      return null;
+    });
+
+  // If the content is unlikely to be a webpage, assume it is a file and process it as a file
+  if (
+    !["text/html", "text/plain"].includes(contentType) &&
+    contentType in ACCEPTED_MIMES
+  )
+    processVia = "file";
+
+  console.log(`-- URL determined to be ${contentType} (${processVia}) --`);
+  // If the content type is a file, download the file to the hotdir and process it
+  // Then return the content of the file as a document or whatever the captureAs dictates.
+  if (processVia === "file") {
+    const fileContentResult = await downloadURIToFile(link);
+    if (!fileContentResult.success)
+      return returnResult({
+        success: false,
+        reason: fileContentResult.reason,
+        documents: [],
+        content: null,
+        saveAsDocument,
+      });
+
+    const fileFilePath = fileContentResult.fileLocation;
+    const targetFilename = path.basename(fileFilePath);
+
+    /**
+     * If the saveAsDocument is false, we are only interested in the text content
+     * and can ignore the file as a document by using `parseOnly` in the options.
+     * This will send the file to the Direct Uploads folder instead of the Documents folder.
+     * that will be deleted by the cleanup-orphan-documents job that runs frequently. The trade off
+     * is that since it still is in FS we can debug its output or even potentially reuse it for other purposes.
+     *
+     * TODO: Improve this process via a new option that will instantly delete the file after processing
+     * if we find we dont need this file ever after processing.
+     */
+    const processSingleFileResult = await processSingleFile(targetFilename, {
+      parseOnly: saveAsDocument === false,
+    });
+    if (!processSingleFileResult.success) {
+      return returnResult({
+        success: false,
+        reason: processSingleFileResult.reason,
+        documents: [],
+        content: null,
+        saveAsDocument,
+      });
+    }
+
+    // If we intend to return only the text content, return the content from the file
+    // and then delete the file - otherwise it will be saved as a document
+    if (!saveAsDocument) {
+      return returnResult({
+        success: true,
+        content: processSingleFileResult.documents[0].pageContent,
+        saveAsDocument,
+      });
+    }
+
+    return processSingleFileResult;
+  }
+
+  // Otherwise, assume the content is a webpage and scrape the content from the webpage
   const content = await getPageContent({
     link,
     captureAs,
     headers: scraperHeaders,
   });
 
-  if (!content.length) {
+  if (!content || !content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
-    return {
+    return returnResult({
       success: false,
       reason: `No URL content found at ${link}.`,
       documents: [],
-    };
+      content: null,
+      saveAsDocument,
+    });
   }
 
-  if (!processAsDocument) {
-    return {
+  // If the captureAs is text, return the content as a string immediately
+  // so that we dont save the content as a document
+  if (!saveAsDocument) {
+    return returnResult({
       success: true,
       content,
-    };
+      saveAsDocument,
+    });
   }
 
+  // Save the content as a document from the URL
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
   const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
-
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",

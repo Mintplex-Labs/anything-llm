@@ -546,6 +546,10 @@ const TRANSLATIONS = {
         icon: "Icon",
         link: "Link",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {

@@ -209,6 +209,11 @@ class AgentHandler {
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
 
+      case "foundry":
+        if (!process.env.FOUNDRY_BASE_PATH)
+          throw new Error("Foundry base path must be provided to use agents.");
+        break;
+
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -254,7 +259,7 @@ class AgentHandler {
       case "perplexity":
         return process.env.PERPLEXITY_MODEL_PREF ?? "sonar-small-online";
       case "textgenwebui":
-        return null;
+        return "text-generation-webui";
       case "bedrock":
         return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
       case "fireworksai":
@@ -281,6 +286,8 @@ class AgentHandler {
         return process.env.DPAIS_LLM_MODEL_PREF;
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "foundry":
+        return process.env.FOUNDRY_MODEL_PREF ?? null;
       default:
         return null;
     }

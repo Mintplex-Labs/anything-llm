@@ -46,16 +46,15 @@ const exportOptions = {
 };
 
 export default function EmbedChatsView() {
-  const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef();
-  const openMenuButton = useRef();
   const { t } = useTranslation();
+  const menuRef = useRef();
+  const query = useQuery();
+  const openMenuButton = useRef();
+  const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState([]);
-  const query = useQuery();
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const [showThinking, setShowThinking] = useState(true);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");

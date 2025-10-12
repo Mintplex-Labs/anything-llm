@@ -416,9 +416,12 @@ class GeminiLLM {
         stream: true,
         messages,
         temperature: temperature,
+        stream_options: {
+          include_usage: true,
+        },
       }),
       messages,
-      true
+      false
     );
 
     return measuredStreamRequest;
