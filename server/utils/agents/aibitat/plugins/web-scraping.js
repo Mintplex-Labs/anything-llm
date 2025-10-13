@@ -101,10 +101,35 @@ const webScraping = {
            * @returns
            */
           scrape: async function (url) {
-            // this.super.introspect(
-            //   `${this.caller}: Analyzing the resource: ${url}.`
-            // );
-            const res = await fetch(url, { method: "HEAD" });
+            // First, we need to check if the resource is accessible and retrieve the content type.
+            const HEAD_TIMEOUT_MS = 10000;
+            const headController = new AbortController();
+            const headTimeout = setTimeout(
+              () => headController.abort(),
+              HEAD_TIMEOUT_MS
+            );
+            let res;
+            try {
+              res = await fetch(url, {
+                method: "HEAD",
+                signal: headController.signal,
+              });
+            } catch (error) {
+              const isTimeout = error && error.name === "AbortError";
+              this.super.introspect(
+                `${this.caller}: Network request to ${url} failed${isTimeout ? " (timeout)" : ""}: ${error && error.message ? error.message : String(error)}`
+              );
+              if (isTimeout) {
+                throw new Error(
+                  `Timeout after ${HEAD_TIMEOUT_MS}ms while performing network request to ${url}: ${error.message}`
+                );
+              }
+              throw new Error(
+                `Network error during HEAD request to ${url}: ${error && error.message ? error.message : String(error)}`
+              );
+            } finally {
+              clearTimeout(headTimeout);
+            }
             if (!res.ok) {
               this.super.introspect(
                 `${this.caller}: The resource is not accessible. Cannot proceed.`
@@ -128,9 +153,6 @@ const webScraping = {
               contentType.includes("text/html") &&
               !this.utils.isYouTubeVideoUrl(url)
             ) {
-              // this.super.introspect(
-              //   `${this.caller}: Resource determined to be a webpage.`
-              // );
               this.super.introspect(
                 `${this.caller}: Scraping content of the webpage.`
               );
@@ -139,23 +161,18 @@ const webScraping = {
               this.utils.isYouTubeVideoUrl(url) &&
               contentType.includes("text/html")
             ) {
-              // this.super.introspect(
-              //   `${this.caller}: Resource determined to be a YouTube video.`
-              // );
               this.super.introspect(
                 `${this.caller}: Pulling transcript and metadata for the YouTube video.`
               );
               // If the resource is a file, tell the user that we are reading the content of the file.
             } else {
-              // this.super.introspect(
-              //   `${this.caller}: Resource determined to be a file: (${contentType}).`
-              // );
               this.super.introspect(
                 `${this.caller}: Reading the content of the ${this.utils
                   .getSubTypeFromContentType(contentType)
                   .toUpperCase()}.`
               );
             }
+            // Collect the content of the resource
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
 
