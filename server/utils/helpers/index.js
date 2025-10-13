@@ -218,6 +218,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "foundry":
       const { FoundryLLM } = require("../AiProviders/foundry");
       return new FoundryLLM(embedder, model);
+    case "n1n":
+      const { N1nLLM } = require("../AiProviders/n1n");
+      return new N1nLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -374,6 +377,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "foundry":
       const { FoundryLLM } = require("../AiProviders/foundry");
       return FoundryLLM;
+    case "n1n":
+      const { N1nLLM } = require("../AiProviders/n1n");
+      return N1nLLM;
     default:
       return null;
   }
