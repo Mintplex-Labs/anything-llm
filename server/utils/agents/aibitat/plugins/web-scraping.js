@@ -61,10 +61,41 @@ const webScraping = {
                 return false;
               }
 
-              const youtubeRegex =
-                /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|)([\w-]{11})(?:\S+)?$/;
+              try {
+                const urlObj = new URL(
+                  url.includes("://") ? url : `https://${url}`
+                );
+                const hostname = urlObj.hostname.replace(/^www\./, "");
 
-              return youtubeRegex.test(url);
+                if (
+                  !["youtube.com", "youtu.be", "m.youtube.com"].includes(
+                    hostname
+                  )
+                ) {
+                  return false;
+                }
+
+                const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;
+
+                // Handle youtu.be format
+                if (hostname === "youtu.be") {
+                  const videoId = urlObj.pathname.slice(1).split("/")[0];
+                  return videoIdRegex.test(videoId);
+                }
+
+                // Handle youtube.com formats
+                if (urlObj.pathname.startsWith("/watch")) {
+                  const videoId = urlObj.searchParams.get("v");
+                  return videoId && videoIdRegex.test(videoId);
+                }
+
+                const pathMatch = urlObj.pathname.match(
+                  /^\/(embed|v)\/([a-zA-Z0-9_-]{11})/
+                );
+                return pathMatch && videoIdRegex.test(pathMatch[2]);
+              } catch {
+                return false;
+              }
             },
             /**
              * Extracts the sub type from a Content-Type header and cleans
