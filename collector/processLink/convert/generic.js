@@ -114,7 +114,6 @@ async function scrapeGenericUrl({
   }
 
   if (processVia === "youtube_video_transcript") {
-    console.log("Pocessing YouTube video transcript");
     const { success, reason, content, metadata } =
       await fetchVideoTranscriptContent({
         url: link,
