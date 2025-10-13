@@ -55,8 +55,45 @@ const webScraping = {
             }
           },
 
+          utils: {
+            isYouTubeVideoUrl: function (url) {
+              if (!url) {
+                return false;
+              }
+
+              const youtubeRegex =
+                /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|)([\w-]{11})(?:\S+)?$/;
+
+              return youtubeRegex.test(url);
+            },
+            /**
+             * Extracts the sub type from a Content-Type header and cleans
+             * any parameters.
+             *
+             * @param contentTypeHeader The Content-Type header string (e.g., "application/json; charset=utf-8").
+             * @returns The sub type as a string (e.g., "json", "pdf", "csv").
+             *          Returns an empty string if the input is null, undefined, or doesn't match
+             *          a common content type pattern.
+             */
+            getSubTypeFromContentType: function (contentTypeHeader) {
+              if (!contentTypeHeader) {
+                return "";
+              }
+
+              // Remove any parameters after the semicolon (e.g., "; charset=utf-8")
+              const cleanedContentType = contentTypeHeader.split(";")[0].trim();
+
+              // Extract the part after the last slash
+              const parts = cleanedContentType.split("/");
+              if (parts.length > 1) {
+                return parts[parts.length - 1];
+              }
+
+              return ""; // Return empty string if no sub type can be determined
+            },
+          },
           /**
-           * Scrape a website and summarize the content based on objective if the content is too large.
+           * Scrape a website, pull the transcript and metadata for a YouTube video, or read the content of a file and summarize the content based on objective if the content is too large.
            * Objective is the original objective & task that user give to the agent, url is the url of the website to be scraped.
            * Here we can leverage the document collector to get raw website text quickly.
            *
@@ -64,9 +101,61 @@ const webScraping = {
            * @returns
            */
           scrape: async function (url) {
-            this.super.introspect(
-              `${this.caller}: Scraping the content of ${url}`
-            );
+            // this.super.introspect(
+            //   `${this.caller}: Analyzing the resource: ${url}.`
+            // );
+            const res = await fetch(url, { method: "HEAD" });
+            if (!res.ok) {
+              this.super.introspect(
+                `${this.caller}: The resource is not accessible. Cannot proceed.`
+              );
+              throw new Error(
+                "The resource is not accessible. Cannot proceed."
+              );
+            }
+            const contentType = res.headers.get("Content-Type");
+            if (!contentType) {
+              this.super.introspect(
+                `${this.caller}: The response from the resource does not have a Content-Type header. Cannot proceed.`
+              );
+              throw new Error(
+                "The response from the resource does not have a Content-Type header. Cannot proceed."
+              );
+            }
+
+            // If the resource is a webpage and not a YouTube video, tell the user that we are scraping the content of the webpage.
+            if (
+              contentType.includes("text/html") &&
+              !this.utils.isYouTubeVideoUrl(url)
+            ) {
+              // this.super.introspect(
+              //   `${this.caller}: Resource determined to be a webpage.`
+              // );
+              this.super.introspect(
+                `${this.caller}: Scraping content of the webpage.`
+              );
+              // If the resource is a YouTube video and the content type is text/html, tell the user that we are pulling the transcript and metadata for the YouTube video.
+            } else if (
+              this.utils.isYouTubeVideoUrl(url) &&
+              contentType.includes("text/html")
+            ) {
+              // this.super.introspect(
+              //   `${this.caller}: Resource determined to be a YouTube video.`
+              // );
+              this.super.introspect(
+                `${this.caller}: Pulling transcript and metadata for the YouTube video.`
+              );
+              // If the resource is a file, tell the user that we are reading the content of the file.
+            } else {
+              // this.super.introspect(
+              //   `${this.caller}: Resource determined to be a file: (${contentType}).`
+              // );
+              this.super.introspect(
+                `${this.caller}: Reading the content of the ${this.utils
+                  .getSubTypeFromContentType(contentType)
+                  .toUpperCase()}.`
+              );
+            }
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
 
@@ -92,7 +181,7 @@ const webScraping = {
               Provider.contextLimit(this.super.provider, this.super.model)
             ) {
               this.super.introspect(
-                `${this.caller}: Looking over the content of the page. ~${tokenEstimate} tokens.`
+                `${this.caller}: Content is within the model's context limit. ~${tokenEstimate} tokens.`
               );
               return content;
             }
