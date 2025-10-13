@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['agentic-streaming'] # put your current branch to create a build. Core team only.
+    branches: ['gemini-migration-agents'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

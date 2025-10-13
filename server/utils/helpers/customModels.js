@@ -37,8 +37,10 @@ const SUPPORT_CUSTOM_MODELS = [
   "dpais",
   "moonshotai",
   "foundry",
+  "cohere",
   // Embedding Engines
   "native-embedder",
+  "cohere-embedder",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -96,8 +98,12 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMoonshotAiModels(apiKey);
     case "foundry":
       return await getFoundryModels(basePath);
+    case "cohere":
+      return await getCohereModels(apiKey, "chat");
     case "native-embedder":
       return await getNativeEmbedderModels();
+    case "cohere-embedder":
+      return await getCohereModels(apiKey, "embed");
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -757,6 +763,39 @@ async function getFoundryModels(basePath = null) {
     console.error(`Foundry:getFoundryModels`, e.message);
     return { models: [], error: "Could not fetch Foundry Models" };
   }
+}
+
+/**
+ * Get Cohere models
+ * @param {string} _apiKey - The API key to use
+ * @param {'chat' | 'embed'} type - The type of model to get
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getCohereModels(_apiKey = null, type = "chat") {
+  const apiKey =
+    _apiKey === true
+      ? process.env.COHERE_API_KEY
+      : _apiKey || process.env.COHERE_API_KEY || null;
+
+  const { CohereClient } = require("cohere-ai");
+  const cohere = new CohereClient({
+    token: apiKey,
+  });
+  const models = await cohere.models
+    .list({ pageSize: 1000, endpoint: type })
+    .then((results) => results.models)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.name,
+      }))
+    )
+    .catch((e) => {
+      console.error(`Cohere:listModels`, e.message);
+      return [];
+    });
+
+  return { models, error: null };
 }
 
 module.exports = {

@@ -106,6 +106,8 @@ export default function ActiveWorkspaces() {
                               ? null
                               : paths.workspace.chat(workspace.slug)
                           }
+                          data-tooltip-id="workspace-name"
+                          data-tooltip-content={workspace.name}
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]

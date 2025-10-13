@@ -54,7 +54,7 @@ function isInvalidIp({ hostname }) {
 }
 
 /**
- * Validates a URL
+ * Validates a URL strictly
  * - Checks the URL forms a valid URL
  * - Checks the URL is at least HTTP(S)
  * - Checks the URL is not an internal IP - can be bypassed via COLLECTOR_ALLOW_ANY_IP
@@ -71,6 +71,31 @@ function validURL(url) {
   return false;
 }
 
+/**
+ * Modifies a URL to be valid:
+ * - Checks the URL is at least HTTP(S) so that protocol exists
+ * - Checks the URL forms a valid URL
+ * @param {string} url
+ * @returns {string}
+ */
+function validateURL(url) {
+  try {
+    let destination = url.trim();
+    // If the URL has a protocol, just pass through
+    // If the URL doesn't have a protocol, assume https://
+    if (destination.includes("://"))
+      destination = new URL(destination).toString();
+    else destination = new URL(`https://${destination}`).toString();
+
+    // If the URL ends with a slash, remove it
+    return destination.endsWith("/") ? destination.slice(0, -1) : destination;
+  } catch {
+    if (typeof url !== "string") return "";
+    return url.trim();
+  }
+}
+
 module.exports = {
   validURL,
+  validateURL,
 };

@@ -111,7 +111,7 @@ async function scrapeGenericUrl({
     headers: scraperHeaders,
   });
 
-  if (!content.length) {
+  if (!content || !content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
     return returnResult({
       success: false,
