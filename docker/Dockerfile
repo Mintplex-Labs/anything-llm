@@ -162,9 +162,10 @@ FROM backend-build AS production-build
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
 USER root
-RUN chown -R anythingllm:anythingllm /app/server && \
-    chown -R anythingllm:anythingllm /app/collector
+# Ensure everything in /app dir is owned and traversable by the runtime user
+RUN chown -R anythingllm:anythingllm /app && chmod -R u+rwX /app
 USER anythingllm
+
 
 # Setup the environment
 ENV NODE_ENV=production
