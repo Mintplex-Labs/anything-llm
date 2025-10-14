@@ -92,7 +92,7 @@ const webScraping = {
                 const pathMatch = urlObj.pathname.match(
                   /^\/(embed|v)\/([a-zA-Z0-9_-]{11})/
                 );
-                return pathMatch && videoIdRegex.test(pathMatch[2]);
+                return pathMatch ? videoIdRegex.test(pathMatch[2]) : false;
               } catch {
                 return false;
               }
