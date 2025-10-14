@@ -96,11 +96,11 @@ function validateURL(url) {
 }
 
 /**
- * Validates a YouTube URL
+ * Validates a YouTube Video URL
  * @param {string} url
  * @returns {boolean}
  */
-function isYouTubeUrl(url) {
+function isYouTubeVideoUrl(url) {
   if (!url) {
     return false;
   }
@@ -138,5 +138,5 @@ function isYouTubeUrl(url) {
 module.exports = {
   validURL,
   validateURL,
-  isYouTubeUrl,
+  isYouTubeVideoUrl,
 };

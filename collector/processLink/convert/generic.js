@@ -11,7 +11,7 @@ const { processSingleFile } = require("../../processSingleFile");
 const { downloadURIToFile } = require("../../utils/downloadURIToFile");
 const { ACCEPTED_MIMES } = require("../../utils/constants");
 const RuntimeSettings = require("../../utils/runtimeSettings");
-const { isYouTubeUrl } = require("../../utils/url");
+const { isYouTubeVideoUrl } = require("../../utils/url");
 const {
   fetchVideoTranscriptContent,
 } = require("../../utils/extensions/YoutubeTranscript");
@@ -56,7 +56,7 @@ async function scrapeGenericUrl({
     processVia = "file";
   }
 
-  if (isYouTubeUrl(link)) {
+  if (isYouTubeVideoUrl(link)) {
     processVia = "youtube_video_transcript";
   }
 
