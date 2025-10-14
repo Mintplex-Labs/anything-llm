@@ -1,4 +1,8 @@
-const { validURL, validateURL, isYouTubeUrl } = require("../../../utils/url");
+const {
+  validURL,
+  validateURL,
+  isYouTubeVideoUrl,
+} = require("../../../utils/url");
 
 // Mock the RuntimeSettings module
 jest.mock("../../../utils/runtimeSettings", () => {
@@ -135,43 +139,49 @@ describe("validateURL", () => {
   });
 });
 
-describe("isYouTubeUrl", () => {
+describe("isYouTubeVideoUrl", () => {
   const ID = "dQw4w9WgXcQ"; // 11-char valid video id
 
   it("returns true for youtube watch URLs with v param", () => {
-    expect(isYouTubeUrl(`https://www.youtube.com/watch?v=${ID}`)).toBe(true);
-    expect(isYouTubeUrl(`https://youtube.com/watch?v=${ID}&t=10s`)).toBe(true);
-    expect(isYouTubeUrl(`https://m.youtube.com/watch?v=${ID}`)).toBe(true);
-    expect(isYouTubeUrl(`youtube.com/watch?v=${ID}`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://www.youtube.com/watch?v=${ID}`)).toBe(
+      true
+    );
+    expect(isYouTubeVideoUrl(`https://youtube.com/watch?v=${ID}&t=10s`)).toBe(
+      true
+    );
+    expect(isYouTubeVideoUrl(`https://m.youtube.com/watch?v=${ID}`)).toBe(true);
+    expect(isYouTubeVideoUrl(`youtube.com/watch?v=${ID}`)).toBe(true);
   });
 
   it("returns true for youtu.be short URLs", () => {
-    expect(isYouTubeUrl(`https://youtu.be/${ID}`)).toBe(true);
-    expect(isYouTubeUrl(`https://youtu.be/${ID}?si=abc`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://youtu.be/${ID}`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://youtu.be/${ID}?si=abc`)).toBe(true);
     // extra path segments after id should still validate the id component
-    expect(isYouTubeUrl(`https://youtu.be/${ID}/extra`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://youtu.be/${ID}/extra`)).toBe(true);
   });
 
   it("returns true for embed and v path formats", () => {
-    expect(isYouTubeUrl(`https://www.youtube.com/embed/${ID}`)).toBe(true);
-    expect(isYouTubeUrl(`https://youtube.com/v/${ID}`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://www.youtube.com/embed/${ID}`)).toBe(true);
+    expect(isYouTubeVideoUrl(`https://youtube.com/v/${ID}`)).toBe(true);
   });
 
   it("returns false for non-YouTube hosts", () => {
-    expect(isYouTubeUrl("https://example.com/watch?v=dQw4w9WgXcQ")).toBe(false);
-    expect(isYouTubeUrl("https://vimeo.com/123456")).toBe(false);
+    expect(isYouTubeVideoUrl("https://example.com/watch?v=dQw4w9WgXcQ")).toBe(
+      false
+    );
+    expect(isYouTubeVideoUrl("https://vimeo.com/123456")).toBe(false);
   });
 
   it("returns false for unrelated YouTube paths without a video id", () => {
-    expect(isYouTubeUrl("https://www.youtube.com/user/somechannel")).toBe(
+    expect(isYouTubeVideoUrl("https://www.youtube.com/user/somechannel")).toBe(
       false
     );
-    expect(isYouTubeUrl("https://www.youtube.com/")).toBe(false);
+    expect(isYouTubeVideoUrl("https://www.youtube.com/")).toBe(false);
   });
 
   it("returns false for empty or bad inputs", () => {
-    expect(isYouTubeUrl("")).toBe(false);
-    expect(isYouTubeUrl(null)).toBe(false);
-    expect(isYouTubeUrl(undefined)).toBe(false);
+    expect(isYouTubeVideoUrl("")).toBe(false);
+    expect(isYouTubeVideoUrl(null)).toBe(false);
+    expect(isYouTubeVideoUrl(undefined)).toBe(false);
   });
 });
