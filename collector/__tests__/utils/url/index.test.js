@@ -1,4 +1,4 @@
-const { validURL, validateURL } = require("../../../utils/url");
+const { validURL, validateURL, isYouTubeUrl } = require("../../../utils/url");
 
 // Mock the RuntimeSettings module
 jest.mock("../../../utils/runtimeSettings", () => {
@@ -90,7 +90,9 @@ describe("validateURL", () => {
   it("should assume https:// if the URL doesn't have a protocol", () => {
     expect(validateURL("www.google.com")).toBe("https://www.google.com");
     expect(validateURL("google.com")).toBe("https://google.com");
-    expect(validateURL("EXAMPLE.com/ABCDEF/q1=UPPER")).toBe("https://example.com/ABCDEF/q1=UPPER");
+    expect(validateURL("EXAMPLE.com/ABCDEF/q1=UPPER")).toBe(
+      "https://example.com/ABCDEF/q1=UPPER"
+    );
     expect(validateURL("ftp://www.google.com")).toBe("ftp://www.google.com");
     expect(validateURL("mailto://www.google.com")).toBe(
       "mailto://www.google.com"
@@ -105,7 +107,9 @@ describe("validateURL", () => {
     );
     expect(validateURL("http://www.google.com/")).toBe("http://www.google.com");
     expect(validateURL("https://random/")).toBe("https://random");
-    expect(validateURL("https://example.com/ABCDEF/")).toBe("https://example.com/ABCDEF");
+    expect(validateURL("https://example.com/ABCDEF/")).toBe(
+      "https://example.com/ABCDEF"
+    );
   });
 
   it("should handle edge cases and bad data inputs", () => {
@@ -119,11 +123,55 @@ describe("validateURL", () => {
   });
 
   it("should preserve case of characters in URL pathname", () => {
-    expect(validateURL("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R"))
-      .toBe("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R");
-    expect(validateURL("https://sample.com/uPeRCaSe"))
-      .toBe("https://sample.com/uPeRCaSe");
-    expect(validateURL("Example.com/PATH/To/Resource?q2=Value&q1=UPPER"))
-      .toBe("https://example.com/PATH/To/Resource?q2=Value&q1=UPPER");
+    expect(
+      validateURL("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R")
+    ).toBe("https://example.com/To/ResOURce?q1=Value&qZ22=UPPE!R");
+    expect(validateURL("https://sample.com/uPeRCaSe")).toBe(
+      "https://sample.com/uPeRCaSe"
+    );
+    expect(validateURL("Example.com/PATH/To/Resource?q2=Value&q1=UPPER")).toBe(
+      "https://example.com/PATH/To/Resource?q2=Value&q1=UPPER"
+    );
+  });
+});
+
+describe("isYouTubeUrl", () => {
+  const ID = "dQw4w9WgXcQ"; // 11-char valid video id
+
+  it("returns true for youtube watch URLs with v param", () => {
+    expect(isYouTubeUrl(`https://www.youtube.com/watch?v=${ID}`)).toBe(true);
+    expect(isYouTubeUrl(`https://youtube.com/watch?v=${ID}&t=10s`)).toBe(true);
+    expect(isYouTubeUrl(`https://m.youtube.com/watch?v=${ID}`)).toBe(true);
+    expect(isYouTubeUrl(`youtube.com/watch?v=${ID}`)).toBe(true);
+  });
+
+  it("returns true for youtu.be short URLs", () => {
+    expect(isYouTubeUrl(`https://youtu.be/${ID}`)).toBe(true);
+    expect(isYouTubeUrl(`https://youtu.be/${ID}?si=abc`)).toBe(true);
+    // extra path segments after id should still validate the id component
+    expect(isYouTubeUrl(`https://youtu.be/${ID}/extra`)).toBe(true);
+  });
+
+  it("returns true for embed and v path formats", () => {
+    expect(isYouTubeUrl(`https://www.youtube.com/embed/${ID}`)).toBe(true);
+    expect(isYouTubeUrl(`https://youtube.com/v/${ID}`)).toBe(true);
+  });
+
+  it("returns false for non-YouTube hosts", () => {
+    expect(isYouTubeUrl("https://example.com/watch?v=dQw4w9WgXcQ")).toBe(false);
+    expect(isYouTubeUrl("https://vimeo.com/123456")).toBe(false);
+  });
+
+  it("returns false for unrelated YouTube paths without a video id", () => {
+    expect(isYouTubeUrl("https://www.youtube.com/user/somechannel")).toBe(
+      false
+    );
+    expect(isYouTubeUrl("https://www.youtube.com/")).toBe(false);
+  });
+
+  it("returns false for empty or bad inputs", () => {
+    expect(isYouTubeUrl("")).toBe(false);
+    expect(isYouTubeUrl(null)).toBe(false);
+    expect(isYouTubeUrl(undefined)).toBe(false);
   });
 });
