@@ -1,15 +1,18 @@
 const { v4 } = require("uuid");
-const path = require("path");
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
-const { getContentTypeFromURL, returnResult } = require("../helpers");
-const { processSingleFile } = require("../../processSingleFile");
-const { downloadURIToFile } = require("../../utils/downloadURIToFile");
-const { ACCEPTED_MIMES } = require("../../utils/constants");
+const {
+  returnResult,
+  determineContentType,
+  processAsFile,
+} = require("../helpers");
+const {
+  loadYouTubeTranscript,
+} = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
@@ -29,80 +32,23 @@ async function scrapeGenericUrl({
   metadata = {},
   saveAsDocument = true,
 }) {
-  /** @type {'web' | 'file'} */
-  let processVia = "web";
+  /** @type {'web' | 'file' | 'youtube'} */
   console.log(`-- Working URL ${link} => (captureAs: ${captureAs}) --`);
-
-  const contentType = await getContentTypeFromURL(link)
-    .then((result) => {
-      // If there is a reason, log it, but continue with the process
-      if (!!result.reason) console.error(result.reason);
-      return result.contentType;
-    })
-    .catch((error) => {
-      console.error("Error getting content type from URL", error);
-      return null;
-    });
-
-  // If the content is unlikely to be a webpage, assume it is a file and process it as a file
-  if (
-    !["text/html", "text/plain"].includes(contentType) &&
-    contentType in ACCEPTED_MIMES
-  )
-    processVia = "file";
-
+  let { contentType, processVia } = await determineContentType(link);
   console.log(`-- URL determined to be ${contentType} (${processVia}) --`);
-  // If the content type is a file, download the file to the hotdir and process it
-  // Then return the content of the file as a document or whatever the captureAs dictates.
-  if (processVia === "file") {
-    const fileContentResult = await downloadURIToFile(link);
-    if (!fileContentResult.success)
-      return returnResult({
-        success: false,
-        reason: fileContentResult.reason,
-        documents: [],
-        content: null,
-        saveAsDocument,
-      });
 
-    const fileFilePath = fileContentResult.fileLocation;
-    const targetFilename = path.basename(fileFilePath);
-
-    /**
-     * If the saveAsDocument is false, we are only interested in the text content
-     * and can ignore the file as a document by using `parseOnly` in the options.
-     * This will send the file to the Direct Uploads folder instead of the Documents folder.
-     * that will be deleted by the cleanup-orphan-documents job that runs frequently. The trade off
-     * is that since it still is in FS we can debug its output or even potentially reuse it for other purposes.
-     *
-     * TODO: Improve this process via a new option that will instantly delete the file after processing
-     * if we find we dont need this file ever after processing.
-     */
-    const processSingleFileResult = await processSingleFile(targetFilename, {
-      parseOnly: saveAsDocument === false,
-    });
-    if (!processSingleFileResult.success) {
-      return returnResult({
-        success: false,
-        reason: processSingleFileResult.reason,
-        documents: [],
-        content: null,
-        saveAsDocument,
-      });
-    }
-
-    // If we intend to return only the text content, return the content from the file
-    // and then delete the file - otherwise it will be saved as a document
-    if (!saveAsDocument) {
-      return returnResult({
-        success: true,
-        content: processSingleFileResult.documents[0].pageContent,
-        saveAsDocument,
-      });
-    }
-
-    return processSingleFileResult;
-  }
+  /**
+   * When the content is a file or a YouTube video, we can use the existing processing functions
+   * These are self-contained and will return the correct response based on the saveAsDocument flag already
+   * so we can return the content immediately.
+   */
+  if (processVia === "file")
+    return await processAsFile({ uri: link, saveAsDocument });
+  else if (processVia === "youtube")
+    return await loadYouTubeTranscript(
+      { url: link },
+      { parseOnly: saveAsDocument === false }
+    );
 
   // Otherwise, assume the content is a webpage and scrape the content from the webpage
   const content = await getPageContent({
@@ -110,7 +56,6 @@ async function scrapeGenericUrl({
     captureAs,
     headers: scraperHeaders,
   });
-
   if (!content || !content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
     return returnResult({
@@ -124,13 +69,12 @@ async function scrapeGenericUrl({
 
   // If the captureAs is text, return the content as a string immediately
   // so that we dont save the content as a document
-  if (!saveAsDocument) {
+  if (!saveAsDocument)
     return returnResult({
       success: true,
       content,
       saveAsDocument,
     });
-  }
 
   // Save the content as a document from the URL
   const url = new URL(link);
