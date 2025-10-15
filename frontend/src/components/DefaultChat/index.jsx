@@ -24,16 +24,16 @@ export default function DefaultChatContainer() {
       const workspacesPayload = await Workspace.all();
 
       // Validate lastVisitedWorkspace after fetching
-    const serializedLastVisitedWorkspace = localStorage.getItem(
-      LAST_VISITED_WORKSPACE
-    );
+      const serializedLastVisitedWorkspace = localStorage.getItem(
+        LAST_VISITED_WORKSPACE
+      );
 
       let validLastVisitedWorkspace = null;
-    if (serializedLastVisitedWorkspace) {
-      try {
-        const deserializedLastVisitedWorkspace = JSON.parse(
-          serializedLastVisitedWorkspace
-        );
+      if (serializedLastVisitedWorkspace) {
+        try {
+          const deserializedLastVisitedWorkspace = JSON.parse(
+            serializedLastVisitedWorkspace
+          );
 
           // Check if it still exists in allowed workspaces
           const isValid = workspacesPayload.some(
@@ -46,8 +46,8 @@ export default function DefaultChatContainer() {
           } else {
             localStorage.removeItem(LAST_VISITED_WORKSPACE);
           }
-      } catch (error) {
-        console.error(error);
+        } catch (error) {
+          console.error(error);
           localStorage.removeItem(LAST_VISITED_WORKSPACE);
         }
       }
@@ -66,38 +66,52 @@ export default function DefaultChatContainer() {
         showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
     >
-      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
-        <img
-          src={logo}
-          alt="Custom Logo"
-          className=" w-[140px] h-fit mb-5 rounded-lg"
-        />
-        <h1 className="text-white text-base font-semibold mb-4">
-          Welcome, {user.username}!
-        </h1>
-        <p className="text-theme-home-text-secondary text-sm text-center">
-          {hasWorkspaces ? (
-            <>Choose a workspace to start chatting!</>
-          ) : (
-            <>
-              Please reach out to your administrator to be assigned a workspace
-              and begin chatting.
-            </>
-          )}
-        </p>
-        {hasWorkspaces && (
-          <NavLink
-            to={paths.workspace.chat(
-              lastVisitedWorkspace?.slug || workspaces[0].slug
+      {loading ? (
+        <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
+          {/* Logo skeleton */}
+          <div className="w-[140px] h-[140px] mb-5 rounded-lg bg-theme-bg-primary animate-pulse" />
+          {/* Title skeleton */}
+          <div className="w-48 h-6 mb-4 rounded bg-theme-bg-primary animate-pulse" />
+          {/* Paragraph skeleton */}
+          <div className="w-80 h-4 mb-2 rounded bg-theme-bg-primary animate-pulse" />
+          <div className="w-64 h-4 rounded bg-theme-bg-primary animate-pulse" />
+          {/* Button skeleton */}
+          <div className="mt-[29px] w-40 h-[34px] rounded-lg bg-theme-bg-primary animate-pulse" />
+        </div>
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
+          <img
+            src={logo}
+            alt="Custom Logo"
+            className=" w-[140px] h-fit mb-5 rounded-lg"
+          />
+          <h1 className="text-white text-base font-semibold mb-4">
+            Welcome, {user.username}!
+          </h1>
+          <p className="text-theme-home-text-secondary text-sm text-center">
+            {hasWorkspaces ? (
+              <>Choose a workspace to start chatting!</>
+            ) : (
+              <>
+                You currently aren’t assigned to any workspaces. <br /> Please
+                contact your administrator to request access and begin chatting.
+              </>
             )}
-            className="text-sm font-medium mt-[29px] w-40 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
-          >
-            <div className="">
-              Go to {lastVisitedWorkspace?.name || workspaces[0].name}
-            </div>
-          </NavLink>
-        )}
-      </div>
+          </p>
+          {hasWorkspaces && (
+            <NavLink
+              to={paths.workspace.chat(
+                lastVisitedWorkspace?.slug || workspaces[0].slug
+              )}
+              className="text-sm font-medium mt-[29px] w-40 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
+            >
+              <div className="">
+                Go to {lastVisitedWorkspace?.name || workspaces[0].name}
+              </div>
+            </NavLink>
+          )}
+        </div>
+      )}
     </div>
   );
 }
