@@ -19,6 +19,9 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const {
+  SystemPromptVariables,
+} = require("../../../../models/systemPromptVariables");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -288,16 +291,34 @@ class Provider {
     return llm.promptWindowLimit(modelName);
   }
 
-  // For some providers we may want to override the system prompt to be more verbose.
-  // Currently we only do this for lmstudio, but we probably will want to expand this even more
-  // to any Untooled LLM.
-  static systemPrompt(provider = null) {
+  static defaultSystemPromptForProvider(provider = null) {
     switch (provider) {
       case "lmstudio":
         return "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. Tools will be handled by another assistant and you will simply receive their responses to help answer the user prompt - always try to answer the user's prompt the best you can with the context available to you and your general knowledge.";
       default:
         return DEFAULT_WORKSPACE_PROMPT;
     }
+  }
+
+  /**
+   * Get the system prompt for a provider.
+   * @param {string} provider
+   * @param {import("@prisma/client").workspaces | null} workspace
+   * @param {import("@prisma/client").users | null} user
+   * @returns {Promise<string>}
+   */
+  static async systemPrompt({
+    provider = null,
+    workspace = null,
+    user = null,
+  }) {
+    if (!workspace?.openAiPrompt)
+      return Provider.defaultSystemPromptForProvider(provider);
+    return await SystemPromptVariables.expandSystemPromptVariables(
+      workspace.openAiPrompt,
+      user?.id || null,
+      workspace.id
+    );
   }
 
   /**
