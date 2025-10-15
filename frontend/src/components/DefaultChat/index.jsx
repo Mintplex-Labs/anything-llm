@@ -5,7 +5,6 @@ import useUser from "@/hooks/useUser";
 import Appearance from "@/models/appearance";
 import useLogo from "@/hooks/useLogo";
 import Workspace from "@/models/workspace";
-import "react-loading-skeleton/dist/skeleton.css";
 import { NavLink } from "react-router-dom";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
@@ -15,31 +14,46 @@ export default function DefaultChatContainer() {
   const { logo } = useLogo();
 
   const [lastVisitedWorkspace, setLastVisitedWorkspace] = useState(null);
+  const [{ workspaces, loading }, setWorkspaces] = useState({
+    workspaces: [],
+    loading: true,
+  });
 
   useEffect(() => {
+    async function fetchWorkspaces() {
+      const workspacesPayload = await Workspace.all();
+
+      // Validate lastVisitedWorkspace after fetching
     const serializedLastVisitedWorkspace = localStorage.getItem(
       LAST_VISITED_WORKSPACE
     );
+
+      let validLastVisitedWorkspace = null;
     if (serializedLastVisitedWorkspace) {
       try {
         const deserializedLastVisitedWorkspace = JSON.parse(
           serializedLastVisitedWorkspace
         );
-        setLastVisitedWorkspace(deserializedLastVisitedWorkspace);
+
+          // Check if it still exists in allowed workspaces
+          const isValid = workspacesPayload.some(
+            (workspace) =>
+              workspace.slug === deserializedLastVisitedWorkspace?.slug
+          );
+
+          if (isValid) {
+            validLastVisitedWorkspace = deserializedLastVisitedWorkspace;
+          } else {
+            localStorage.removeItem(LAST_VISITED_WORKSPACE);
+          }
       } catch (error) {
         console.error(error);
+          localStorage.removeItem(LAST_VISITED_WORKSPACE);
+        }
       }
-    }
-  }, []);
 
-  const [{ workspaces }, setWorkspaces] = useState({
-    workspaces: [],
-    loading: true,
-  });
-  useEffect(() => {
-    async function fetchWorkspaces() {
-      const workspaces = await Workspace.all();
-      setWorkspaces({ workspaces, loading: false });
+      setLastVisitedWorkspace(validLastVisitedWorkspace);
+      setWorkspaces({ workspaces: workspacesPayload, loading: false });
     }
     fetchWorkspaces();
   }, []);
