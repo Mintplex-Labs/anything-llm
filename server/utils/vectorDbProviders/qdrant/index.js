@@ -276,18 +276,24 @@ const QDrant = {
         const chunks = [];
 
         console.log("Inserting vectorized chunks into QDrant collection.");
-        for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
+        for (const chunk of toChunks(vectors, 500)) {
+          chunks.push(chunk);
 
-        const additionResult = await client.upsert(namespace, {
-          wait: true,
-          batch: {
-            ids: submission.ids,
-            vectors: submission.vectors,
-            payloads: submission.payloads,
-          },
-        });
-        if (additionResult?.status !== "completed")
-          throw new Error("Error embedding into QDrant", additionResult);
+          const batchIds = chunk.map((v) => v.id);
+          const batchVectors = chunk.map((v) => v.vector);
+          const batchPayloads = chunk.map((v) => v.payload);
+
+          const additionResult = await client.upsert(namespace, {
+            wait: true,
+            batch: {
+              ids: batchIds,
+              vectors: batchVectors,
+              payloads: batchPayloads,
+            },
+          });
+          if (additionResult?.status !== "completed")
+            throw new Error("Error embedding into QDrant", additionResult);
+        }
 
         await storeVectorResult(chunks, fullFilePath);
       }
