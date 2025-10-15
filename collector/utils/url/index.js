@@ -97,15 +97,17 @@ function validateURL(url) {
 
 /**
  * Validate if a link is a valid YouTube video URL
- * - Checks youtu.be
- * - youtube.com/watch?v=
- * - youtube.com/embed/
- * - youtube.com/v/
- * - youtube.com/live/
- * - youtube.com/shorts/
+ * - Checks youtu.be, youtube.com, m.youtube.com, music.youtube.com
+ * - Embed video URLs
+ * - Short URLs
+ * - Live URLs
+ * - Regular watch URLs
+ * - Optional query parameters (including ?v parameter)
+ *
+ * Can be used to extract the video ID from a YouTube video URL via the returnVideoId parameter.
  * @param {string} link - The link to validate
  * @param {boolean} returnVideoId - Whether to return the video ID if the link is a valid YouTube video URL
- * @returns {boolean} - Whether the link is a valid YouTube video URL
+ * @returns {boolean|string} - Whether the link is a valid YouTube video URL or the video ID if returnVideoId is true
  */
 function validYoutubeVideoUrl(link, returnVideoId = false) {
   try {
