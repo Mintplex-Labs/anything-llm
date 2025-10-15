@@ -28,10 +28,8 @@ function ShowWorkspaceChat() {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) {
-        setLoading(false);
-        return;
-      }
+      if (!_workspace) return setLoading(false);
+
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
       const pfpUrl = await Workspace.fetchPfp(slug);
       setWorkspace({
@@ -40,22 +38,16 @@ function ShowWorkspaceChat() {
         pfpUrl,
       });
       setLoading(false);
-    }
-    getWorkspace();
-  }, []);
-
-  // Store the last visited workspace in localStorage
-  useEffect(() => {
-    if (workspace) {
       localStorage.setItem(
         LAST_VISITED_WORKSPACE,
         JSON.stringify({
-          slug: workspace.slug,
-          name: workspace.name,
+          slug: _workspace.slug,
+          name: _workspace.name,
         })
       );
     }
-  }, [workspace]);
+    getWorkspace();
+  }, []);
 
   return (
     <>

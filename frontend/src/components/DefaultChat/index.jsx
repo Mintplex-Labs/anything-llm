@@ -8,6 +8,7 @@ import Workspace from "@/models/workspace";
 import { NavLink } from "react-router-dom";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
+import { safeJsonParse } from "@/utils/request";
 
 export default function DefaultChatContainer() {
   const { t } = useTranslation();
@@ -21,39 +22,32 @@ export default function DefaultChatContainer() {
 
   useEffect(() => {
     async function fetchWorkspaces() {
-      const workspacesPayload = await Workspace.all();
-
-      // Validate lastVisitedWorkspace after fetching
+      const availableWorkspaces = await Workspace.all();
       const serializedLastVisitedWorkspace = localStorage.getItem(
         LAST_VISITED_WORKSPACE
       );
+      if (!serializedLastVisitedWorkspace)
+        return setWorkspaces({
+          workspaces: availableWorkspaces,
+          loading: false,
+        });
 
-      let validLastVisitedWorkspace = null;
-      if (serializedLastVisitedWorkspace) {
-        try {
-          const deserializedLastVisitedWorkspace = JSON.parse(
-            serializedLastVisitedWorkspace
-          );
-
-          // Check if it still exists in allowed workspaces
-          const isValid = workspacesPayload.some(
-            (workspace) =>
-              workspace.slug === deserializedLastVisitedWorkspace?.slug
-          );
-
-          if (isValid) {
-            validLastVisitedWorkspace = deserializedLastVisitedWorkspace;
-          } else {
-            localStorage.removeItem(LAST_VISITED_WORKSPACE);
-          }
-        } catch (error) {
-          console.error(error);
-          localStorage.removeItem(LAST_VISITED_WORKSPACE);
-        }
+      try {
+        const lastVisitedWorkspace = safeJsonParse(
+          serializedLastVisitedWorkspace,
+          null
+        );
+        if (lastVisitedWorkspace == null) throw new Error("Non-parseable!");
+        const isValid = availableWorkspaces.some(
+          (ws) => ws.slug === lastVisitedWorkspace?.slug
+        );
+        if (!isValid) throw new Error("Invalid value!");
+        setLastVisitedWorkspace(lastVisitedWorkspace);
+      } catch {
+        localStorage.removeItem(LAST_VISITED_WORKSPACE);
+      } finally {
+        setWorkspaces({ workspaces: availableWorkspaces, loading: false });
       }
-
-      setLastVisitedWorkspace(validLastVisitedWorkspace);
-      setWorkspaces({ workspaces: workspacesPayload, loading: false });
     }
     fetchWorkspaces();
   }, []);
