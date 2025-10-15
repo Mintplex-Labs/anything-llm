@@ -7,9 +7,11 @@ import useLogo from "@/hooks/useLogo";
 import Workspace from "@/models/workspace";
 import { NavLink } from "react-router-dom";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
 import { safeJsonParse } from "@/utils/request";
 
 export default function DefaultChatContainer() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { logo } = useLogo();
   const [lastVisitedWorkspace, setLastVisitedWorkspace] = useState(null);
@@ -78,18 +80,10 @@ export default function DefaultChatContainer() {
           className=" w-[200px] h-fit mb-5 rounded-lg"
         />
         <h1 className="text-white text-2xl font-semibold">
-          Welcome, {user.username}!
+          {t("home.welcome")}, {user.username}!
         </h1>
-        <p className="text-theme-home-text-secondary text-base text-center">
-          {hasWorkspaces ? (
-            <>Choose a workspace to start chatting!</>
-          ) : (
-            <>
-              You currently aren't assigned to any workspaces. <br />
-              Please contact your administrator to request access to a
-              workspace.
-            </>
-          )}
+        <p className="text-theme-home-text-secondary text-base text-center whitespace-pre-line">
+          {hasWorkspaces ? t("home.chooseWorkspace") : t("home.notAssigned")}
         </p>
         {hasWorkspaces && (
           <NavLink
@@ -98,7 +92,10 @@ export default function DefaultChatContainer() {
             )}
             className="text-sm font-medium mt-[10px] w-fit px-4 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
           >
-            Go to "{lastVisitedWorkspace?.name || workspaces[0].name}" &rarr;
+            {t("home.goToWorkspace", {
+              workspace: lastVisitedWorkspace?.name || workspaces[0].name,
+            })}{" "}
+            &rarr;
           </NavLink>
         )}
       </div>
