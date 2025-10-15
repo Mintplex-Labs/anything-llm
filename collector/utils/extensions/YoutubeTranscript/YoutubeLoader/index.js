@@ -1,4 +1,4 @@
-const { validYoutubeVideoUrl } = require("../index");
+const { validYoutubeVideoUrl } = require("../../../url");
 
 /*
  * This is just a custom implementation of the Langchain JS YouTubeLoader class

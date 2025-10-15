@@ -9,34 +9,7 @@ const {
 } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { YoutubeLoader } = require("./YoutubeLoader");
-
-/**
- * Validate if a link is a valid YouTube video URL
- * - Checks youtu.be or youtube.com/watch?v=
- * @param {string} link - The link to validate
- * @param {boolean} returnVideoId - Whether to return the video ID if the link is a valid YouTube video URL
- * @returns {boolean} - Whether the link is a valid YouTube video URL
- */
-function validYoutubeVideoUrl(link, returnVideoId = false) {
-  try {
-    if (!link || typeof link !== "string") return false;
-    let urlToValidate = link;
-
-    if (!link.startsWith("http://") && !link.startsWith("https://")) {
-      urlToValidate = "https://" + link;
-      urlToValidate = new URL(urlToValidate).toString();
-    }
-
-    const regex =
-      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|(?:live\/)?|shorts\/))([\w-]{11})(?:\S+)?$/;
-    const match = urlToValidate.match(regex);
-    if (returnVideoId) return match?.[1] ?? null;
-    return !!match?.[1];
-  } catch (error) {
-    console.error("Error validating YouTube video URL", error);
-    return returnVideoId ? null : false;
-  }
-}
+const { validYoutubeVideoUrl } = require("../../url");
 
 /**
  * Fetch the transcript content for a YouTube video
@@ -184,5 +157,4 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
 module.exports = {
   loadYouTubeTranscript,
   fetchVideoTranscriptContent,
-  validYoutubeVideoUrl,
 };

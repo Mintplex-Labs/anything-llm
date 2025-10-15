@@ -1,4 +1,4 @@
-const { validYoutubeVideoUrl } = require("../index");
+const { validYoutubeVideoUrl } = require("../../../url");
 
 class YoutubeTranscriptError extends Error {
   constructor(message) {

@@ -3,9 +3,7 @@ const { validURL } = require("../../utils/url");
 const { processSingleFile } = require("../../processSingleFile");
 const { downloadURIToFile } = require("../../utils/downloadURIToFile");
 const { ACCEPTED_MIMES } = require("../../utils/constants");
-const {
-  validYoutubeVideoUrl,
-} = require("../../utils/extensions/YoutubeTranscript");
+const { validYoutubeVideoUrl } = require("../../utils/url");
 
 /**
  * Get the content type of a resource
@@ -93,7 +91,7 @@ async function determineContentType(uri) {
 
   // Dont check for content type if it is a YouTube video URL
   if (validYoutubeVideoUrl(uri))
-    return { contentType: "video/youtube", processVia: "youtube" };
+    return { contentType: "text/html", processVia: "youtube" };
 
   return await getContentTypeFromURL(uri)
     .then((result) => {
