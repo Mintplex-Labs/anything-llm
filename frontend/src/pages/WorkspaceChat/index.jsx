@@ -6,6 +6,7 @@ import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
+import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function WorkspaceChat() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -42,6 +43,19 @@ function ShowWorkspaceChat() {
     }
     getWorkspace();
   }, []);
+
+  // Store the last visited workspace in localStorage
+  useEffect(() => {
+    if (workspace) {
+      localStorage.setItem(
+        LAST_VISITED_WORKSPACE,
+        JSON.stringify({
+          slug: workspace.slug,
+          name: workspace.name,
+        })
+      );
+    }
+  }, [workspace]);
 
   return (
     <>

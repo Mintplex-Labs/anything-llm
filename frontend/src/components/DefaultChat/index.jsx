@@ -7,11 +7,31 @@ import useLogo from "@/hooks/useLogo";
 import Workspace from "@/models/workspace";
 import "react-loading-skeleton/dist/skeleton.css";
 import { NavLink } from "react-router-dom";
+import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function DefaultChatContainer() {
   const { showScrollbar } = Appearance.getSettings();
   const { user } = useUser();
   const { logo } = useLogo();
+
+  const [lastVisitedWorkspace, setLastVisitedWorkspace] = useState(null);
+
+  useEffect(() => {
+    const serializedLastVisitedWorkspace = localStorage.getItem(
+      LAST_VISITED_WORKSPACE
+    );
+    if (serializedLastVisitedWorkspace) {
+      try {
+        const deserializedLastVisitedWorkspace = JSON.parse(
+          serializedLastVisitedWorkspace
+        );
+        setLastVisitedWorkspace(deserializedLastVisitedWorkspace);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
+
   const [{ workspaces }, setWorkspaces] = useState({
     workspaces: [],
     loading: true,
@@ -43,23 +63,24 @@ export default function DefaultChatContainer() {
         </h1>
         <p className="text-theme-home-text-secondary text-sm text-center">
           {hasWorkspaces ? (
-            <>
-              You’ve been assigned to the {workspaces[0].name} workspace. Start
-              chatting now!
-            </>
+            <>Choose a workspace to start chatting!</>
           ) : (
             <>
-              Please contact your admin to get assigned to a <br />
-              workspace to get started.
+              Please reach out to your administrator to be assigned a workspace
+              and begin chatting.
             </>
           )}
         </p>
         {hasWorkspaces && (
           <NavLink
-            to={paths.workspace.chat(workspaces[0].slug)}
+            to={paths.workspace.chat(
+              lastVisitedWorkspace?.slug || workspaces[0].slug
+            )}
             className="text-sm font-medium mt-[29px] w-40 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
           >
-            <div className="">Go to {workspaces[0].name}</div>
+            <div className="">
+              Go to {lastVisitedWorkspace?.name || workspaces[0].name}
+            </div>
           </NavLink>
         )}
       </div>
