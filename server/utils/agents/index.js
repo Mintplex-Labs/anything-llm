@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
@@ -523,29 +524,20 @@ class AgentHandler {
   async #loadAgents() {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
-
-    // Get user object from invocation for variable expansion
     const user = this.invocation.user_id
-      ? { id: this.invocation.user_id }
+      ? await User.get({ id: Number(this.invocation.user_id) })
       : null;
-
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(
-        this.provider,
-        this.invocation.workspace,
-        user
-      )
-    );
-
+    const userAgentDef = await USER_AGENT.getDefinition();
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
       user
     );
+
+    this.aibitat.agent(USER_AGENT.name, userAgentDef);
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
     this.#funcsToLoad = [
-      ...((await USER_AGENT.getDefinition())?.functions || []),
+      ...(userAgentDef?.functions || []),
       ...(workspaceAgentDef?.functions || []),
     ];
   }

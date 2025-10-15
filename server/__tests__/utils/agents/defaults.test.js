@@ -39,14 +39,13 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     };
     const user = { id: 1 };
     const provider = "openai";
-
+    const expectedPrompt = await Provider.systemPrompt({ provider, workspace, user });
     const definition = await WORKSPACE_AGENT.getDefinition(
       provider,
       workspace,
       user
     );
-
-    expect(definition.role).toBe(Provider.systemPrompt(provider));
+    expect(definition.role).toBe(expectedPrompt);
     expect(SystemPromptVariables.expandSystemPromptVariables).not.toHaveBeenCalled();
   });
 
@@ -84,7 +83,6 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
     };
     const user = null;
     const provider = "lmstudio";
-
     const expandedPrompt = "You are a helpful assistant. Today is January 1, 2024.";
     SystemPromptVariables.expandSystemPromptVariables.mockResolvedValue(expandedPrompt);
 
@@ -118,15 +116,15 @@ describe("WORKSPACE_AGENT.getDefinition", () => {
 
   it("should use LMStudio specific prompt when workspace has no openAiPrompt", async () => {
     const workspace = { id: 1, openAiPrompt: null };
+    const user = null;
     const provider = "lmstudio";
-
     const definition = await WORKSPACE_AGENT.getDefinition(
       provider,
       workspace,
       null
     );
 
-    expect(definition.role).toBe(Provider.systemPrompt(provider));
+    expect(definition.role).toBe(await Provider.systemPrompt({ provider, workspace, user }));
     expect(definition.role).toContain("helpful ai assistant");
   });
 });
