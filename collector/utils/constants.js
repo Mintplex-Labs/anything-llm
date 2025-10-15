@@ -1,4 +1,19 @@
-const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
+const path = require("path");
+
+const resolveCollectorHotdir = () => {
+  if (process.env.NODE_ENV === "development") {
+    return path.resolve(__dirname, "../hotdir");
+  }
+
+  const configuredHotdir = (process.env.COLLECTOR_HOTDIR || "").trim();
+  if (configuredHotdir) {
+    return configuredHotdir;
+  }
+
+  return path.resolve(process.env.STORAGE_DIR || "", "../collector/hotdir");
+};
+
+const WATCH_DIRECTORY = resolveCollectorHotdir();
 
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],

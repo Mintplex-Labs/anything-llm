@@ -19,6 +19,20 @@ const debugLog = (...args) => {
   if (LOG_ENABLED) console.log("\x1b[36m[MilvusProvider]\x1b[0m", ...args);
 };
 
+const DEFAULT_TIMEOUT_MS = 60_000;
+
+const normalizeTimeout = (value = null) => {
+  if (!value) return DEFAULT_TIMEOUT_MS;
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed <= 0) return DEFAULT_TIMEOUT_MS;
+  return parsed;
+};
+
+const withMilvusTimeout = (options = {}, timeout) => {
+  if (!timeout || Number.isNaN(timeout) || timeout <= 0) return options;
+  return { ...options, timeout };
+};
+
 const Milvus = {
   name: "Milvus",
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names.
@@ -35,10 +49,13 @@ const Milvus = {
     if (process.env.VECTOR_DB !== "milvus")
       throw new Error("Milvus::Invalid ENV settings");
 
+    const timeout = normalizeTimeout(process.env.MILVUS_TIMEOUT_MS);
+
     const client = new MilvusClient({
       address: process.env.MILVUS_ADDRESS,
       username: process.env.MILVUS_USERNAME,
       password: process.env.MILVUS_PASSWORD,
+      timeout,
     });
 
     const { isHealthy } = await client.checkHealth();
@@ -46,13 +63,18 @@ const Milvus = {
       throw new Error(
         "MilvusDB::Invalid Heartbeat received - is the instance online?"
       );
-    return { client };
+    return { client, timeout };
   },
 
   // A unified schema that supports both standard and hybrid embeddings.
   // We will always create collections with this schema going forward.
   // It is backward compatible with old data.
-  getOrCreateCollection: async function (client, namespace, dimensions = null) {
+  getOrCreateCollection: async function (
+    client,
+    namespace,
+    dimensions = null,
+    timeout
+  ) {
     const isExists = await this.namespaceExists(client, namespace);
     if (isExists) return;
 
@@ -62,61 +84,81 @@ const Milvus = {
         `Milvus:getOrCreateCollection Unable to infer vector dimension for new collection.`
       );
 
-    await client.createCollection({
-      collection_name: this.normalize(namespace),
-      fields: [
+    await client.createCollection(
+      withMilvusTimeout(
         {
-          name: "id",
-          description: "Primary key for the vector",
-          data_type: DataType.VarChar,
-          max_length: 255,
-          is_primary_key: true,
+          collection_name: this.normalize(namespace),
+          fields: [
+            {
+              name: "id",
+              description: "Primary key for the vector",
+              data_type: DataType.VarChar,
+              max_length: 255,
+              is_primary_key: true,
+            },
+            {
+              name: "text_dense",
+              description: "Dense vector for semantic search",
+              data_type: DataType.FloatVector,
+              dim: dimensions,
+            },
+            {
+              name: "text",
+              description: "Raw text chunk for keyword matching",
+              data_type: DataType.VarChar,
+              max_length: 65535, // Max length for VarChar
+            },
+            {
+              name: "text_sparse",
+              description: "Sparse vector for keyword (BM25) search",
+              data_type: DataType.SparseFloatVector,
+            },
+            {
+              name: "metadata",
+              description: "JSON metadata object for the chunk",
+              data_type: DataType.JSON,
+            },
+          ],
         },
-        {
-          name: "text_dense",
-          description: "Dense vector for semantic search",
-          data_type: DataType.FloatVector,
-          dim: dimensions,
-        },
-        {
-          name: "text",
-          description: "Raw text chunk for keyword matching",
-          data_type: DataType.VarChar,
-          max_length: 65535, // Max length for VarChar
-        },
-        {
-          name: "text_sparse",
-          description: "Sparse vector for keyword (BM25) search",
-          data_type: DataType.SparseFloatVector,
-        },
-        {
-          name: "metadata",
-          description: "JSON metadata object for the chunk",
-          data_type: DataType.JSON,
-        },
-      ],
-    });
+        timeout
+      )
+    );
 
     // Create index for the dense vector field
-    await client.createIndex({
-      collection_name: this.normalize(namespace),
-      field_name: "text_dense",
-      index_type: IndexType.AUTOINDEX, // Let Milvus decide the best index for performance
-      metric_type: MetricType.COSINE, // Cosine is great for semantic similarity
-    });
+    await client.createIndex(
+      withMilvusTimeout(
+        {
+          collection_name: this.normalize(namespace),
+          field_name: "text_dense",
+          index_type: IndexType.AUTOINDEX, // Let Milvus decide the best index for performance
+          metric_type: MetricType.COSINE, // Cosine is great for semantic similarity
+        },
+        timeout
+      )
+    );
 
     // Create index for the sparse vector field for hybrid search
-    await client.createIndex({
-      collection_name: this.normalize(namespace),
-      field_name: "text_sparse",
-      index_type: IndexType.SPARSE_INVERTED_INDEX,
-      metric_type: MetricType.IP, // Inner Product is standard for BM25
-    });
+    await client.createIndex(
+      withMilvusTimeout(
+        {
+          collection_name: this.normalize(namespace),
+          field_name: "text_sparse",
+          index_type: IndexType.SPARSE_INVERTED_INDEX,
+          metric_type: MetricType.IP, // Inner Product is standard for BM25
+        },
+        timeout
+      )
+    );
 
     // Load the collection into memory for searching
-    await client.loadCollectionSync({
-      collection_name: this.normalize(namespace),
-    });
+    await client.loadCollectionSync(
+      withMilvusTimeout(
+        {
+          collection_name: this.normalize(namespace),
+        },
+        timeout
+      )
+    );
   },
   addDocumentToNamespace: async function (
     namespace,
@@ -185,15 +227,25 @@ const Milvus = {
       }
 
       if (vectors.length > 0) {
-        const { client } = await this.connect();
-        await this.getOrCreateCollection(client, namespace, vectorDimension);
+        const { client, timeout } = await this.connect();
+        await this.getOrCreateCollection(
+          client,
+          namespace,
+          vectorDimension,
+          timeout
+        );
 
         debugLog(`Inserting ${vectors.length} vectors into Milvus.`);
         for (const chunkBatch of toChunks(vectors, 100)) {
-          const insertResult = await client.insert({
-            collection_name: this.normalize(namespace),
-            data: chunkBatch, // The data is already in the correct format
-          });
+          const insertResult = await client.insert(
+            withMilvusTimeout(
+              {
+                collection_name: this.normalize(namespace),
+                data: chunkBatch, // The data is already in the correct format
+              },
+              timeout
+            )
+          );
 
           if (insertResult?.status.error_code !== "Success") {
             throw new Error(
@@ -201,9 +253,14 @@ const Milvus = {
             );
           }
         }
-        await client.flushSync({
-          collection_names: [this.normalize(namespace)],
-        });
+        await client.flushSync(
+          withMilvusTimeout(
+            {
+              collection_names: [this.normalize(namespace)],
+            },
+            timeout
+          )
+        );
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
@@ -225,8 +282,8 @@ const Milvus = {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
 
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
+    const { client, timeout } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace, timeout))) {
       return {
         contextTexts: [],
         sources: [],
@@ -243,14 +300,17 @@ const Milvus = {
 
     // **FIX FOR 'nq' ERROR**
     // The Milvus SDK expects the `data` field to be an array of vectors.
-    const searchParams = {
-      collection_name: this.normalize(namespace),
-      limit: topN,
-      data: [queryVector], // Wrap the single query vector in an array
-      anns_field: "text_dense", // Explicitly search the dense vector field
-      param: { nprobe: 10 },
-      output_fields: ["metadata", "text"], // Specify which fields to return
-    };
+    const searchParams = withMilvusTimeout(
+      {
+        collection_name: this.normalize(namespace),
+        limit: topN,
+        data: [queryVector], // Wrap the single query vector in an array
+        anns_field: "text_dense", // Explicitly search the dense vector field
+        param: { nprobe: 10 },
+        output_fields: ["metadata", "text"], // Specify which fields to return
+      },
+      timeout
+    );
 
     debugLog("Performing similarity search with params:", searchParams);
     const searchResponse = await client.search(searchParams);
@@ -275,8 +335,8 @@ const Milvus = {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performHybridSearch.");
 
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
+    const { client, timeout } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace, timeout))) {
       return {
         contextTexts: [],
         sources: [],
@@ -345,13 +405,18 @@ const Milvus = {
     const rerank = rerankMode
       ? RRFRanker(typeof rerankMode === "number" ? rerankMode : 60)
       : RRFRanker(60); // Default reciprocal-rank fusion
-    const searchResponse = await client.hybridSearch({
-      collection_name: this.normalize(namespace),
-      data: searchRequests,
-      rerank,
-      limit: topN,
-      output_fields: ["metadata", "text"],
-    });
+    const searchResponse = await client.hybridSearch(
+      withMilvusTimeout(
+        {
+          collection_name: this.normalize(namespace),
+          data: searchRequests,
+          rerank,
+          limit: topN,
+          output_fields: ["metadata", "text"],
+        },
+        timeout
+      )
+    );
 
     debugLog(
       `Hybrid search returned ${searchResponse.results.length} results.`

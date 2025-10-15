@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { MimeDetector } = require("./mime");
+const { WATCH_DIRECTORY } = require("../constants");
 
 /**
  * The folder where documents are stored to be stored when
@@ -129,7 +130,7 @@ function writeToServerDocuments(
 // force remove them.
 async function wipeCollectorStorage() {
   const cleanHotDir = new Promise((resolve) => {
-    const directory = path.resolve(__dirname, "../../hotdir");
+    const directory = WATCH_DIRECTORY;
     fs.readdir(directory, (err, files) => {
       if (err) resolve();
 

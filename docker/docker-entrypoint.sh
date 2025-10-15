@@ -16,12 +16,24 @@ if [ -z "$STORAGE_DIR" ]; then
     echo "================================================================"
 fi
 
-{
+{ 
   cd /app/server/ &&
     npx prisma generate --schema=./prisma/schema.prisma &&
     npx prisma migrate deploy --schema=./prisma/schema.prisma &&
     node /app/server/index.js
 } &
-{ node /app/collector/index.js; } &
-wait -n
+
+pids=($!)
+
+enable_collector=${ENABLE_COLLECTOR:-true}
+lower_enable_collector=$(echo "$enable_collector" | tr '[:upper:]' '[:lower:]')
+
+if [ "$lower_enable_collector" != "false" ]; then
+  { node /app/collector/index.js; } &
+  pids+=($!)
+else
+  echo "Collector service disabled via ENABLE_COLLECTOR=$enable_collector"
+fi
+
+wait -n "${pids[@]}"
 exit $?

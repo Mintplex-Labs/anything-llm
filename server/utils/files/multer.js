@@ -4,16 +4,27 @@ const fs = require("fs");
 const { v4 } = require("uuid");
 const { normalizePath } = require(".");
 
+const resolveCollectorHotdir = () => {
+  if (process.env.NODE_ENV === "development") {
+    return path.resolve(__dirname, "../../../collector/hotdir");
+  }
+
+  const configuredHotdir = (process.env.COLLECTOR_HOTDIR || "").trim();
+  if (configuredHotdir) {
+    return configuredHotdir;
+  }
+
+  return path.resolve(process.env.STORAGE_DIR || "", "../collector/hotdir");
+};
+
 /**
  * Handle File uploads for auto-uploading.
  * Mostly used for internal GUI/API uploads.
  */
 const fileUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../collector/hotdir`)
-        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+    const uploadOutput = resolveCollectorHotdir();
+    fs.mkdirSync(uploadOutput, { recursive: true });
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
@@ -30,10 +41,8 @@ const fileUploadStorage = multer.diskStorage({
  */
 const fileAPIUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../collector/hotdir`)
-        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+    const uploadOutput = resolveCollectorHotdir();
+    fs.mkdirSync(uploadOutput, { recursive: true });
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
