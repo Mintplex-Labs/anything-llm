@@ -9,10 +9,8 @@ import { NavLink } from "react-router-dom";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function DefaultChatContainer() {
-  const { showScrollbar } = Appearance.getSettings();
   const { user } = useUser();
   const { logo } = useLogo();
-
   const [lastVisitedWorkspace, setLastVisitedWorkspace] = useState(null);
   const [{ workspaces, loading }, setWorkspaces] = useState({
     workspaces: [],
@@ -58,15 +56,9 @@ export default function DefaultChatContainer() {
     fetchWorkspaces();
   }, []);
 
-  const hasWorkspaces = workspaces.length > 0;
-  return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className={`relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
-        showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
-    >
-      {loading ? (
+  if (loading) {
+    return (
+      <Layout>
         <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
           {/* Logo skeleton */}
           <div className="w-[140px] h-[140px] mb-5 rounded-lg bg-theme-bg-primary animate-pulse" />
@@ -78,40 +70,56 @@ export default function DefaultChatContainer() {
           {/* Button skeleton */}
           <div className="mt-[29px] w-40 h-[34px] rounded-lg bg-theme-bg-primary animate-pulse" />
         </div>
-      ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
-          <img
-            src={logo}
-            alt="Custom Logo"
-            className=" w-[140px] h-fit mb-5 rounded-lg"
-          />
-          <h1 className="text-white text-base font-semibold mb-4">
-            Welcome, {user.username}!
-          </h1>
-          <p className="text-theme-home-text-secondary text-sm text-center">
-            {hasWorkspaces ? (
-              <>Choose a workspace to start chatting!</>
-            ) : (
-              <>
-                You currently aren’t assigned to any workspaces. <br /> Please
-                contact your administrator to request access and begin chatting.
-              </>
-            )}
-          </p>
-          {hasWorkspaces && (
-            <NavLink
-              to={paths.workspace.chat(
-                lastVisitedWorkspace?.slug || workspaces[0].slug
-              )}
-              className="text-sm font-medium mt-[29px] w-40 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
-            >
-              <div className="">
-                Go to {lastVisitedWorkspace?.name || workspaces[0].name}
-              </div>
-            </NavLink>
+      </Layout>
+    );
+  }
+
+  const hasWorkspaces = workspaces.length > 0;
+  return (
+    <Layout>
+      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scroll">
+        <img
+          src={logo}
+          alt="Custom Logo"
+          className=" w-[200px] h-fit mb-5 rounded-lg"
+        />
+        <h1 className="text-white text-2xl font-semibold">
+          Welcome, {user.username}!
+        </h1>
+        <p className="text-theme-home-text-secondary text-base text-center">
+          {hasWorkspaces ? (
+            <>Choose a workspace to start chatting!</>
+          ) : (
+            <>
+              You currently aren't assigned to any workspaces. <br />
+              Please contact your administrator to request access to a
+              workspace.
+            </>
           )}
-        </div>
-      )}
-    </div>
+        </p>
+        {hasWorkspaces && (
+          <NavLink
+            to={paths.workspace.chat(
+              lastVisitedWorkspace?.slug || workspaces[0].slug
+            )}
+            className="text-sm font-medium mt-[10px] w-fit px-4 h-[34px] flex items-center justify-center rounded-lg cursor-pointer bg-theme-home-button-secondary hover:bg-theme-home-button-secondary-hover text-theme-home-button-secondary-text hover:text-theme-home-button-secondary-hover-text transition-all duration-200"
+          >
+            Go to "{lastVisitedWorkspace?.name || workspaces[0].name}" &rarr;
+          </NavLink>
+        )}
+      </div>
+    </Layout>
   );
 }
+
+const Layout = ({ children }) => {
+  const { showScrollbar } = Appearance.getSettings();
+  return (
+    <div
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className={`relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+    >
+      {children}
+    </div>
+  );
+};
