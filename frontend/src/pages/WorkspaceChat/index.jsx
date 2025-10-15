@@ -6,6 +6,7 @@ import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
+import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 
 export default function WorkspaceChat() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -27,10 +28,8 @@ function ShowWorkspaceChat() {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) {
-        setLoading(false);
-        return;
-      }
+      if (!_workspace) return setLoading(false);
+
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
       const pfpUrl = await Workspace.fetchPfp(slug);
       setWorkspace({
@@ -39,6 +38,13 @@ function ShowWorkspaceChat() {
         pfpUrl,
       });
       setLoading(false);
+      localStorage.setItem(
+        LAST_VISITED_WORKSPACE,
+        JSON.stringify({
+          slug: _workspace.slug,
+          name: _workspace.name,
+        })
+      );
     }
     getWorkspace();
   }, []);
