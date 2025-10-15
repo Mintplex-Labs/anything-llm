@@ -78,6 +78,27 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           ];
         }
 
+        // Handle textResponseChunk initialization as textResponse instead of statusResponse.
+        // Without this the first chunk creates a statusResponse (thought bubble) by falling through to the default case.
+        // Providers like Gemini send large chunks and can complete in a single chunk before the update logic can convert it.
+        // Other providers send many small chunks so the second chunk triggers the update logic to fix the type.
+        if (data.content.type === "textResponseChunk") {
+          return [
+            ...prev.filter((msg) => !!msg.content),
+            {
+              uuid: data.content.uuid,
+              type: "textResponse",
+              content: data.content.content,
+              role: "assistant",
+              sources: [],
+              closed: true,
+              error: null,
+              animate: false,
+              pending: false,
+            },
+          ];
+        }
+
         return [
           ...prev.filter((msg) => !!msg.content),
           {
