@@ -10,26 +10,39 @@ const {
 const { tokenizeString } = require("../../tokenizer");
 const { YoutubeLoader } = require("./YoutubeLoader");
 
-function validYoutubeVideoUrl(link) {
-  const UrlPattern = require("url-pattern");
-  const opts = new URL(link);
-  const url = `${opts.protocol}//${opts.host}${opts.pathname}${
-    opts.searchParams.has("v") ? `?v=${opts.searchParams.get("v")}` : ""
-  }`;
+/**
+ * Validate if a link is a valid YouTube video URL
+ * - Checks youtu.be or youtube.com/watch?v=
+ * @param {string} link - The link to validate
+ * @param {boolean} returnVideoId - Whether to return the video ID if the link is a valid YouTube video URL
+ * @returns {boolean} - Whether the link is a valid YouTube video URL
+ */
+function validYoutubeVideoUrl(link, returnVideoId = false) {
+  try {
+    if (!link || typeof link !== "string") return false;
+    let urlToValidate = link;
 
-  const shortPatternMatch = new UrlPattern(
-    "https\\://(www.)youtu.be/(:videoId)"
-  ).match(url);
-  const fullPatternMatch = new UrlPattern(
-    "https\\://(www.)youtube.com/watch?v=(:videoId)"
-  ).match(url);
-  const videoId =
-    shortPatternMatch?.videoId || fullPatternMatch?.videoId || null;
-  if (!!videoId) return true;
+    if (!link.startsWith("http://") && !link.startsWith("https://")) {
+      urlToValidate = "https://" + link;
+      urlToValidate = new URL(urlToValidate).toString();
+    }
 
-  return false;
+    const regex =
+      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|(?:live\/)?|shorts\/))([\w-]{11})(?:\S+)?$/;
+    const match = urlToValidate.match(regex);
+    if (returnVideoId) return match?.[1] ?? null;
+    return !!match?.[1];
+  } catch (error) {
+    console.error("Error validating YouTube video URL", error);
+    return returnVideoId ? null : false;
+  }
 }
 
+/**
+ * Fetch the transcript content for a YouTube video
+ * @param {string} url - The URL of the YouTube video
+ * @returns {Promise<{success: boolean, reason: string|null, content: string|null, metadata: Object}>} - The transcript content for the YouTube video
+ */
 async function fetchVideoTranscriptContent({ url }) {
   if (!validYoutubeVideoUrl(url)) {
     return {
@@ -44,15 +57,11 @@ async function fetchVideoTranscriptContent({ url }) {
   const loader = YoutubeLoader.createFromUrl(url, { addVideoInfo: true });
   const { docs, error } = await loader
     .load()
-    .then((docs) => {
-      return { docs, error: null };
-    })
-    .catch((e) => {
-      return {
-        docs: [],
-        error: e.message?.split("Error:")?.[1] || e.message,
-      };
-    });
+    .then((docs) => ({ docs, error: null }))
+    .catch((e) => ({
+      docs: [],
+      error: e.message?.split("Error:")?.[1] || e.message,
+    }));
 
   if (!docs.length || !!error) {
     return {
@@ -82,7 +91,31 @@ async function fetchVideoTranscriptContent({ url }) {
   };
 }
 
-async function loadYouTubeTranscript({ url }) {
+/**
+ * @typedef {Object} TranscriptAsDocument
+ * @property {boolean} success - Whether the transcript was successful
+ * @property {string|null} reason - The reason for the transcript
+ * @property {{title: string, author: string, destination: string}} data - The data from the transcript
+ */
+
+/**
+ * @typedef {Object} TranscriptAsContent
+ * @property {boolean} success - Whether the transcript was successful
+ * @property {string|null} reason - The reason for the transcript
+ * @property {string|null} content - The content of the transcript
+ * @property {Object[]} documents - The documents from the transcript
+ * @property {boolean} saveAsDocument - Whether to save the transcript as a document
+ */
+
+/**
+ * Load the transcript content for a YouTube video as well as save it to the server documents
+ * @param {Object} params - The parameters for the YouTube transcript
+ * @param {string} params.url - The URL of the YouTube video
+ * @param {Object} options - The options for the YouTube transcript
+ * @param {boolean} options.parseOnly - Whether to parse the transcript content only or save it to the server documents
+ * @returns {Promise<TranscriptAsDocument | TranscriptAsContent>} - The transcript content for the YouTube video
+ */
+async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
   const transcriptResults = await fetchVideoTranscriptContent({ url });
   if (!transcriptResults.success) {
     return {
@@ -90,9 +123,25 @@ async function loadYouTubeTranscript({ url }) {
       reason:
         transcriptResults.reason ||
         "An unknown error occurred during transcription retrieval",
+      documents: [],
+      content: null,
+      saveAsDocument: options.parseOnly,
+      data: {},
     };
   }
+
   const { content, metadata } = transcriptResults;
+  if (options.parseOnly) {
+    return {
+      success: true,
+      reason: null,
+      content,
+      documents: [],
+      saveAsDocument: options.parseOnly,
+      data: {},
+    };
+  }
+
   const outFolder = sanitizeFileName(
     slugify(`${metadata.author} YouTube transcripts`).toLowerCase()
   );
@@ -100,7 +149,6 @@ async function loadYouTubeTranscript({ url }) {
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
-
   const data = {
     id: v4(),
     url: url + ".youtube",
@@ -124,7 +172,7 @@ async function loadYouTubeTranscript({ url }) {
 
   return {
     success: true,
-    reason: "test",
+    reason: null,
     data: {
       title: metadata.title,
       author: metadata.author,
@@ -136,4 +184,5 @@ async function loadYouTubeTranscript({ url }) {
 module.exports = {
   loadYouTubeTranscript,
   fetchVideoTranscriptContent,
+  validYoutubeVideoUrl,
 };
