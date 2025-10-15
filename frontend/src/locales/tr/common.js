@@ -1005,6 +1005,13 @@ const TRANSLATIONS = {
       "password-label": "Örnek şifresi",
     },
   },
+  home: {
+    welcome: "Hoşgeldiniz",
+    chooseWorkspace: "Bir çalışma alanı seçerek sohbete başlayın!",
+    notAssigned:
+      "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
+    goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

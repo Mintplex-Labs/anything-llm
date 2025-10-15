@@ -1044,6 +1044,13 @@ const TRANSLATIONS = {
       "password-label": "インスタンスパスワード",
     },
   },
+  home: {
+    welcome: "ようこそ",
+    chooseWorkspace: "ワークスペースを選択してチャットを開始してください！",
+    notAssigned:
+      "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
+    goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

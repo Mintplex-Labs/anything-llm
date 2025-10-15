@@ -1050,6 +1050,13 @@ const TRANSLATIONS = {
       "password-label": "סיסמת מופע",
     },
   },
+  home: {
+    welcome: "ברוכים הבאים",
+    chooseWorkspace: "בחר סביבת עבודה כדי להתחיל לשוחח!",
+    notAssigned:
+      "אינך מוקצה לכל סביבת עבודה.\nיש ליצור קשר עם המנהל שלך כדי לבקש גישה לסביבת עבודה.",
+    goToWorkspace: 'עבור לסביבת עבודה "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

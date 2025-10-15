@@ -1065,6 +1065,13 @@ const TRANSLATIONS = {
       "password-label": "인스턴스 비밀번호",
     },
   },
+  home: {
+    welcome: "환영합니다",
+    chooseWorkspace: "워크스페이스를 선택하여 채팅을 시작하세요!",
+    notAssigned:
+      "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
+    goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

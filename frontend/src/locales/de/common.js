@@ -1075,6 +1075,13 @@ const TRANSLATIONS = {
       "password-label": "Instanzpasswort",
     },
   },
+  home: {
+    welcome: "Willkommen",
+    chooseWorkspace: "Wählen Sie ein Arbeitsbereich, um zu beginnen!",
+    notAssigned:
+      "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
+    goToWorkspace: 'Zurück zum Arbeitsbereich "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

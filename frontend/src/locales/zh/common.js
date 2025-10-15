@@ -1016,6 +1016,13 @@ const TRANSLATIONS = {
       "password-label": "实例密码",
     },
   },
+  home: {
+    welcome: "欢迎",
+    chooseWorkspace: "选择一个工作区开始聊天！",
+    notAssigned:
+      "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
+    goToWorkspace: '前往 "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

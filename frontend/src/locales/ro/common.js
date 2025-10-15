@@ -1094,6 +1094,13 @@ const TRANSLATIONS = {
       "password-label": "Parola instanței",
     },
   },
+  home: {
+    welcome: "Bine ai venit",
+    chooseWorkspace: "Alege un spațiu de lucru pentru a începe să chatezi!",
+    notAssigned:
+      "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
+    goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

@@ -1010,6 +1010,13 @@ const TRANSLATIONS = {
       "password-label": "كلمة مرور المثيل",
     },
   },
+  home: {
+    welcome: "مرحبا",
+    chooseWorkspace: "اختر مساحة العمل لبدء المحادثة!",
+    notAssigned:
+      "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
+    goToWorkspace: 'الذهاب إلى "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

@@ -72,6 +72,13 @@ const TRANSLATIONS = {
     no: "No",
     search: "Search",
   },
+  home: {
+    welcome: "Welcome",
+    chooseWorkspace: "Choose a workspace to start chatting!",
+    notAssigned:
+      "You currently aren't assigned to any workspaces.\nPlease contact your administrator to request access to a workspace.",
+    goToWorkspace: 'Go to "{{workspace}}"',
+  },
 
   // Setting Sidebar menu items.
   settings: {

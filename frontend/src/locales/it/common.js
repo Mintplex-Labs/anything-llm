@@ -1008,6 +1008,13 @@ const TRANSLATIONS = {
       "password-label": "Password istanza",
     },
   },
+  home: {
+    welcome: "Benvenuto",
+    chooseWorkspace: "Scegli uno spazio di lavoro per iniziare a chattare!",
+    notAssigned:
+      "Non sei assegnato a nessuno spazio di lavoro.\nContatta il tuo amministratore per richiedere l'accesso a uno spazio di lavoro.",
+    goToWorkspace: 'Vai allo spazio di lavoro "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

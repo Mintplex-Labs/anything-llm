@@ -1049,6 +1049,13 @@ const TRANSLATIONS = {
       "password-label": "Instansadgangskode",
     },
   },
+  home: {
+    welcome: "Velkommen",
+    chooseWorkspace: "Vælg et arbejdsområde for at starte at chatte!",
+    notAssigned:
+      "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
+    goToWorkspace: 'Gå til "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

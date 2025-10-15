@@ -1066,6 +1066,13 @@ const TRANSLATIONS = {
       "password-label": "Instances paroles",
     },
   },
+  home: {
+    welcome: "Laipni lūgti",
+    chooseWorkspace: "Izvēlies darba vietu, lai sāktu čatu!",
+    notAssigned:
+      "Jūs nav piešķirts nevienai darba vietai.\nLūdzu, sazinieties ar savu administratoru, lai pieprasītu piekļuvi darba vietai.",
+    goToWorkspace: 'Pāriet uz darba vietu "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

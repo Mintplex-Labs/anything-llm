@@ -1004,6 +1004,13 @@ const TRANSLATIONS = {
       "password-label": "Mật khẩu của instance",
     },
   },
+  home: {
+    welcome: "Chào mừng bạn",
+    chooseWorkspace: "Chọn một khu vực làm việc để bắt đầu trò chuyện!",
+    notAssigned:
+      "Bạn hiện không được giao việc nào.\nLiên hệ với quản trị viên của bạn để yêu cầu truy cập vào khu vực làm việc.",
+    goToWorkspace: 'Chuyển đến khu vực làm việc "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

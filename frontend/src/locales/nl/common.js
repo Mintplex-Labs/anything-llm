@@ -1005,6 +1005,13 @@ const TRANSLATIONS = {
       "password-label": "Instances wachtwoord",
     },
   },
+  home: {
+    welcome: "Welkom",
+    chooseWorkspace: "Kies een werkruimte om te beginnen!",
+    notAssigned:
+      "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
+    goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

@@ -1002,6 +1002,13 @@ const TRANSLATIONS = {
       "password-label": "رمز عبور نمونه",
     },
   },
+  home: {
+    welcome: "خوش آمدید",
+    chooseWorkspace: "انتخاب یک فضای کار برای شروع گفتگو!",
+    notAssigned:
+      "شما در حال حاضر به هیچ فضای کاری اختصاص نیافته‌اید.\nلطفاً با مدیر خود تماس بگیرید تا دسترسی به یک فضای کار را درخواست کنید.",
+    goToWorkspace: 'به فضای کار "{{workspace}}" بروید',
+  },
 };
 
 export default TRANSLATIONS;

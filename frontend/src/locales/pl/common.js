@@ -1092,6 +1092,13 @@ const TRANSLATIONS = {
       "password-label": "Hasło instancji",
     },
   },
+  home: {
+    welcome: "Witamy",
+    chooseWorkspace: "Wybierz obszar roboczy, aby rozpocząć czat!",
+    notAssigned:
+      "Nie jesteś przypisany do żadnego obszaru roboczego.\nSkontaktuj się z administratorem, aby poprosić o dostęp do obszaru roboczego.",
+    goToWorkspace: 'Przejdź do obszaru roboczego "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

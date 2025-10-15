@@ -1050,6 +1050,13 @@ const TRANSLATIONS = {
       "password-label": "Пароль экземпляра",
     },
   },
+  home: {
+    welcome: "Добро пожаловать",
+    chooseWorkspace: "Выберите рабочую область, чтобы начать чат!",
+    notAssigned:
+      "Вы не назначены ни к одной рабочей области.\nСвяжитесь с администратором, чтобы запросить доступ к рабочей области.",
+    goToWorkspace: 'Перейти к рабочей области "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;

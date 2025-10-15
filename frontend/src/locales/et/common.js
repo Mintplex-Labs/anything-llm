@@ -1042,6 +1042,13 @@ const TRANSLATIONS = {
       "password-label": "Instantsi parool",
     },
   },
+  home: {
+    welcome: "Tere tulemast",
+    chooseWorkspace: "Vali tööruum, et alustada vestlust!",
+    notAssigned:
+      "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
+    goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
 };
 
 export default TRANSLATIONS;
