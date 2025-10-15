@@ -14,7 +14,7 @@ const { validYoutubeVideoUrl } = require("../../url");
 /**
  * Fetch the transcript content for a YouTube video
  * @param {string} url - The URL of the YouTube video
- * @returns {Promise<{success: boolean, reason: string|null, content: string|null, metadata: Object}>} - The transcript content for the YouTube video
+ * @returns {Promise<{success: boolean, reason: string|null, content: string|null, metadata: TranscriptMetadata}>} - The transcript content for the YouTube video
  */
 async function fetchVideoTranscriptContent({ url }) {
   if (!validYoutubeVideoUrl(url)) {
@@ -65,10 +65,19 @@ async function fetchVideoTranscriptContent({ url }) {
 }
 
 /**
+ * @typedef {Object} TranscriptMetadata
+ * @property {string} title - The title of the video
+ * @property {string} author - The author of the video
+ * @property {string} description - The description of the video
+ * @property {string} view_count - The view count of the video
+ * @property {string} source - The source of the video (videoId)
+ */
+
+/**
  * @typedef {Object} TranscriptAsDocument
  * @property {boolean} success - Whether the transcript was successful
  * @property {string|null} reason - The reason for the transcript
- * @property {{title: string, author: string, destination: string}} data - The data from the transcript
+ * @property {TranscriptMetadata} metadata - The metadata from the transcript
  */
 
 /**
@@ -106,12 +115,10 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
   const { content, metadata } = transcriptResults;
 
   if (options.parseOnly) {
-    // Include video metadata in the content, this is useful for the LLM to have context about the video
-    const contentWithMetadata = `<title>${metadata.title}</title><author>${metadata.author}</author><description>${metadata.description}</description><content>${content}</content>`;
     return {
       success: true,
       reason: null,
-      content: contentWithMetadata,
+      content: buildTranscriptContentWithMetadata(content, metadata),
       documents: [],
       saveAsDocument: options.parseOnly,
       data: {},
@@ -155,6 +162,33 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
       destination: outFolder,
     },
   };
+}
+
+/**
+ * Generate the transcript content and metadata into a single string
+ *
+ * Why? For ephemeral documents where we just want the content, we want to include the metadata as keys in the content
+ * so that the LLM has context about the video, this gives it a better understanding of the video
+ * and allows it to use the metadata in the conversation if relevant.
+ * Examples:
+ * - How many views does <LINK> have?
+ * - Checkout <LINK> and tell me the key points and if it is performing well
+ * - Summarize this video <LINK>? -> description could have links and references
+ * @param {string} content - The content of the transcript
+ * @param {TranscriptMetadata} metadata - The metadata from the transcript
+ * @returns {string} - The concatenated transcript content and metadata
+ */
+function buildTranscriptContentWithMetadata(content = "", metadata = {}) {
+  const VALID_METADATA_KEYS = ["title", "author", "description", "view_count"];
+  if (!content || !metadata || Object.keys(metadata).length === 0)
+    return content;
+
+  let contentWithMetadata = "";
+  VALID_METADATA_KEYS.forEach((key) => {
+    if (!metadata[key]) return;
+    contentWithMetadata += `<${key}>${metadata[key]}</${key}>`;
+  });
+  return `${contentWithMetadata}\nTranscript:\n${content}`;
 }
 
 module.exports = {
