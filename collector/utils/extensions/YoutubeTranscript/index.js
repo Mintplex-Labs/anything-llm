@@ -104,11 +104,14 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
   }
 
   const { content, metadata } = transcriptResults;
+
   if (options.parseOnly) {
+    // Include video metadata in the content, this is useful for the LLM to have context about the video
+    const contentWithMetadata = `<title>${metadata.title}</title><author>${metadata.author}</author><description>${metadata.description}</description><content>${content}</content>`;
     return {
       success: true,
       reason: null,
-      content,
+      content: contentWithMetadata,
       documents: [],
       saveAsDocument: options.parseOnly,
       data: {},
