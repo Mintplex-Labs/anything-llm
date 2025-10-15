@@ -277,11 +277,15 @@ const QDrant = {
 
         console.log("Inserting vectorized chunks into QDrant collection.");
         for (const chunk of toChunks(vectors, 500)) {
+          const batchIds = [],
+            batchVectors = [],
+            batchPayloads = [];
           chunks.push(chunk);
-
-          const batchIds = chunk.map((v) => v.id);
-          const batchVectors = chunk.map((v) => v.vector);
-          const batchPayloads = chunk.map((v) => v.payload);
+          chunk.forEach((v) => {
+            batchIds.push(v.id);
+            batchVectors.push(v.vector);
+            batchPayloads.push(v.payload);
+          });
 
           const additionResult = await client.upsert(namespace, {
             wait: true,
