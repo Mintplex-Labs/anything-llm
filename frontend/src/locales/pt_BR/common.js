@@ -125,26 +125,6 @@ const TRANSLATIONS = {
       "back-to-login": "Voltar ao Login",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Bem-vindo ao AnythingLLM, uma ferramenta de IA open-source da Mintplex Labs que transforma qualquer conteúdo em um chatbot treinado. AnythingLLM é um software BYOK (bring-your-own-keys), sem taxas ou assinaturas.",
-    part2:
-      "AnythingLLM é a maneira mais fácil de integrar poderosas ferramentas de IA como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e outros serviços em um pacote simples.",
-    part3:
-      "AnythingLLM pode rodar localmente na sua máquina com baixo consumo de recursos. Sem GPU necessária. Disponível para instalação na nuvem ou on-premises.\nO ecossistema de IA evolui rapidamente. AnythingLLM facilita seu uso.",
-    githubIssue: "Criar issue no GitHub",
-    user1: "Como começar?!",
-    part4:
-      'É simples. As coleções são organizadas em "Workspaces". Workspaces são grupos de arquivos, documentos, imagens, PDFs e outros arquivos que serão transformados em algo que os LLMs possam entender e usar em conversas.\n\nVocê pode adicionar ou remover arquivos a qualquer momento.',
-    createWorkspace: "Crie seu primeiro workspace",
-    user2: "Isso é como um Dropbox com IA? E os chats? É um chatbot, certo?",
-    part5:
-      "AnythingLLM é mais que um Dropbox inteligente.\n\nAnythingLLM oferece duas formas de interagir com seus dados:\n\n<i>Consulta:</i> Seus chats retornarão dados encontrados nos documentos do workspace.\n\n<i>Conversacional:</i> Seus documentos + histórico de chat contribuem para o conhecimento do LLM em tempo real.\n\nVocê pode alternar entre os modos <i>durante o chat!</i>",
-    user3: "Uau, isso parece incrível, quero testar agora!",
-    part6: "Divirta-se!",
-    starOnGitHub: "Estrelar no GitHub",
-    contact: "Contate a Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError: "Por favor, crie um workspace antes de iniciar um chat.",
     checklist: {

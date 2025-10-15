@@ -127,27 +127,6 @@ const TRANSLATIONS = {
       "back-to-login": "Volver al inicio de sesión",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Bienvenido a AnythingLLM, AnythingLLM es una herramienta de IA de código abierto de Mintplex Labs que convierte cualquier cosa en un chatbot entrenado con el que puedes consultar y chatear. AnythingLLM es un software BYOK (trae tus propias claves), por lo que no hay suscripción, tarifa ni cargos por este software fuera de los servicios que deseas utilizar con él.",
-    part2:
-      "AnythingLLM es la forma más fácil de reunir potentes productos de IA como OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB y otros servicios en un paquete ordenado y sin complicaciones para aumentar tu productividad en 100x.",
-    part3:
-      "AnythingLLM puede ejecutarse totalmente de forma local en tu máquina con pocos recursos, ¡ni siquiera notarás que está ahí! No se necesita GPU. También está disponible la instalación en la nube y en las instalaciones.\nEl ecosistema de herramientas de IA se vuelve más poderoso cada día. AnythingLLM facilita su uso.",
-    githubIssue: "Crear un issue en GitHub",
-    user1: "¡¿Cómo empiezo?!",
-    part4:
-      'Es simple. Todas las colecciones se organizan en contenedores que llamamos "Espacios de trabajo". Los espacios de trabajo son contenedores de archivos, documentos, imágenes, PDF y otros archivos que se transformarán en algo que los LLM pueden entender y usar en la conversación.\n\nPuedes agregar y eliminar archivos en cualquier momento.',
-    createWorkspace: "Crea tu primer espacio de trabajo",
-    user2:
-      "¿Es esto como un Dropbox con IA o algo así? ¿Y qué hay de chatear? Es un chatbot, ¿no?",
-    part5:
-      "AnythingLLM es más que un Dropbox más inteligente.\n\nAnythingLLM ofrece dos formas de hablar con tus datos:\n\n<i>Consulta:</i> Tus chats devolverán datos o inferencias encontradas con los documentos en tu espacio de trabajo a los que tiene acceso. ¡Agregar más documentos al espacio de trabajo lo hace más inteligente!\n\n<i>Conversacional:</i> Tus documentos + tu historial de chat en curso contribuyen al conocimiento del LLM al mismo tiempo. Genial para agregar información basada en texto en tiempo real o correcciones y malentendidos que el LLM pueda tener.\n\nPuedes alternar entre cualquier modo\n<i>¡en medio del chat!</i>",
-    user3: "¡Vaya, esto suena increíble, déjame probarlo ya!",
-    part6: "¡Diviértete!",
-    starOnGitHub: "Marcar con una estrella en GitHub",
-    contact: "Contactar con Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError:
       "Por favor, crea un espacio de trabajo antes de iniciar un chat.",

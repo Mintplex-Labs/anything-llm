@@ -126,27 +126,6 @@ const TRANSLATIONS = {
       "back-to-login": "Atpakaļ uz pieteikšanos",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Laipni lūgti AnythingLLM, AnythingLLM ir Mintplex Labs izstrādāts atvērtā koda AI rīks, kas pārvērš jebko par apmācītu čatbotu, kuru varat izmantot vaicājumiem un sarunām. AnythingLLM ir BYOK (bring-your-own-keys) programmatūra, tāpēc nav abonēšanas, maksas vai papildu maksājumu par šo programmatūru, izņemot pakalpojumus, kurus vēlaties izmantot ar to.",
-    part2:
-      "AnythingLLM ir vienkāršākais veids, kā apvienot spēcīgus AI produktus, piemēram, OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB un citus pakalpojumus, kārtīgā paketē bez liekas piepūles, lai palielinātu savu produktivitāti 100 reizes.",
-    part3:
-      "AnythingLLM var darboties pilnībā lokāli jūsu datorā ar minimālu piepūli, jūs pat nepamanīsiet tā klātbūtni! GPU nav nepieciešams. Pieejama arī mākoņa un lokālā instalācija.\nAI rīku ekosistēma kļūst spēcīgāka ar katru dienu. AnythingLLM to padara viegli izmantojamu.",
-    githubIssue: "Izveidot problēmpieteikumu GitHub",
-    user1: "Kā man sākt?!",
-    part4:
-      'Tas ir vienkārši. Visas kolekcijas ir organizētas grupās, ko sauc par "Darba telpām". Darba telpas ir failu, dokumentu, attēlu, PDF un citu failu grupējumi, kas tiks pārveidoti par kaut ko, ko LLM var saprast un izmantot sarunā.\n\nJūs varat pievienot un noņemt failus jebkurā laikā.',
-    createWorkspace: "Izveidojiet savu pirmo darba telpu",
-    user2:
-      "Vai tas ir kaut kas līdzīgs AI dropbox vai tamlīdzīgi? Kā ar sarunām? Vai tas ir čatbots?",
-    part5:
-      "AnythingLLM ir vairāk nekā vienkārši gudrāks Dropbox.\n\nAnythingLLM piedāvā divus veidus, kā runāt ar saviem datiem:\n\n<i>Vaicājums:</i> Jūsu sarunas atgriezīs datus vai secinājumus, kas atrasti dokumentos jūsu darba telpā, kam tam ir piekļuve. Vairāk dokumentu pievienošana darba telpai padara to gudrāku! \n\n<i>Saruna:</i> Jūsu dokumenti + jūsu notiekošā sarunu vēsture abi vienlaikus veido LLM zināšanas. Lieliski piemērots reāllaika teksta informācijas vai korekciju un pārpratumu pievienošanai, kas varētu rasties LLM. \n\nJūs varat pārslēgties starp abiem režīmiem \n<i>sarunas vidū!</i>",
-    user3: "Vau, tas izklausās lieliski, ļaujiet man to izmēģināt tūlīt!",
-    part6: "Izbaudi!",
-    starOnGitHub: "Zvaigzne GitHub",
-    contact: "Sazināties ar Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError: "Lūdzu izveidojiet darba telpu pirms sarunas sākšanas.",
     checklist: {
