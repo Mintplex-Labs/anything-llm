@@ -1,5 +1,6 @@
 const { validURL } = require("../utils/url");
 const { scrapeGenericUrl } = require("./convert/generic");
+const { validateURL } = require("../utils/url");
 
 /**
  * Process a link and return the text content. This util will save the link as a document
@@ -10,13 +11,15 @@ const { scrapeGenericUrl } = require("./convert/generic");
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
 async function processLink(link, scraperHeaders = {}, metadata = {}) {
-  if (!validURL(link)) return { success: false, reason: "Not a valid URL." };
+  const validatedLink = validateURL(link);
+  if (!validURL(validatedLink))
+    return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
-    link,
+    link: validatedLink,
     captureAs: "text",
-    processAsDocument: true,
     scraperHeaders,
     metadata,
+    saveAsDocument: true,
   });
 }
 
@@ -28,11 +31,13 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
 async function getLinkText(link, captureAs = "text") {
-  if (!validURL(link)) return { success: false, reason: "Not a valid URL." };
+  const validatedLink = validateURL(link);
+  if (!validURL(validatedLink))
+    return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
-    link,
+    link: validatedLink,
     captureAs,
-    processAsDocument: false,
+    saveAsDocument: false,
   });
 }
 

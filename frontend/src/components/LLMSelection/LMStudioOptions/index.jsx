@@ -21,11 +21,11 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
   });
 
   const [maxTokens, setMaxTokens] = useState(
-    settings?.LMStudioTokenLimit || 4096
+    settings?.LMStudioTokenLimit || ""
   );
 
   const handleMaxTokensChange = (e) => {
-    setMaxTokens(Number(e.target.value));
+    setMaxTokens(e.target.value ? Number(e.target.value) : "");
   };
 
   return (
@@ -49,27 +49,6 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
       )}
       <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Max Tokens
-          </label>
-          <input
-            type="number"
-            name="LMStudioTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="4096"
-            defaultChecked="4096"
-            min={1}
-            value={maxTokens}
-            onChange={handleMaxTokensChange}
-            onScroll={(e) => e.target.blur()}
-            required={true}
-            autoComplete="off"
-          />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum number of tokens for context and response.
-          </p>
-        </div>
       </div>
       <div className="flex justify-start mt-4">
         <button
@@ -79,7 +58,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           }}
           className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
         >
-          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls ? "Hide" : "Show"} advanced settings
           {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
@@ -126,6 +105,27 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
               Enter the URL where LM Studio is running.
             </p>
           </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-2">
+              Max Tokens (Optional)
+            </label>
+            <input
+              type="number"
+              name="LMStudioTokenLimit"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Auto-detected from model"
+              min={1}
+              value={maxTokens}
+              onChange={handleMaxTokensChange}
+              onScroll={(e) => e.target.blur()}
+              required={false}
+              autoComplete="off"
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Override the context window limit. Leave empty to auto-detect from
+              the model (defaults to 4096 if detection fails).
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -160,7 +160,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
     findCustomModels();
   }, [basePath]);
 
-  if (loading || customModels.length == 0) {
+  if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-2">

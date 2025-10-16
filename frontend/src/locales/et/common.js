@@ -124,27 +124,6 @@ const TRANSLATIONS = {
       "back-to-login": "Tagasi sisselogimisele",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Tere tulemast AnythingLLM-i! See on Mintplex Labsi avatud lähtekoodiga AI-tööriist, mis muudab kõik failid koolitatud juturobotiks, kellega saad vestelda. AnythingLLM on BYOK-tarkvara, seega puudub igasugune tellimus- või litsentsitasu, välja arvatud kasutatavate teenuste kulud.",
-    part2:
-      "AnythingLLM on lihtsaim viis kombineerida võimsad AI-teenused nagu OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB jpt ilma vaevata, tõstes sinu produktiivsust kordades.",
-    part3:
-      "AnythingLLM võib töötada täielikult lokaalselt sinu masinas minimaalse ressursikasutusega – GPU-d pole vaja. Samuti on saadaval pilve- ja kohapealsed paigaldised.\nAI-ökosüsteem muutub iga päevaga võimekamaks ja AnythingLLM teeb selle kasutamise lihtsaks.",
-    githubIssue: "Loo GitHubis probleem",
-    user1: "Kuidas alustada?!",
-    part4:
-      'Lihtne. Kõik kogud on korraldatud "Tööruumideks". Tööruum on kaust failidest (dokumendid, pildid, PDF-id jm), mis teisendatakse LLM-ile mõistetavaks vestluskontekstiks.\n\nFailide lisamine ja eemaldamine on võimalik igal ajal.',
-    createWorkspace: "Loo esimene tööruum",
-    user2:
-      "Kas see on nagu AI-Dropbox? Aga vestlus – see peaks ju chatbot olema?",
-    part5:
-      "AnythingLLM on enamat kui nutikam Dropbox.\n\nAnythingLLM pakub kahte viisi oma andmetega suhtlemiseks:\n\n<i>Päring:</i> Vestlus tagastab andmed või järeldused olemasolevatest dokumentidest tööruumis. Mida rohkem faile lisad, seda nutikamaks see muutub!\n\n<i>Vestluslik:</i> Sinu dokumendid + käimasolev vestlus mõjutavad vastuseid samaaegselt. Sobib reaalajas info lisamiseks või LLM-i arusaamade parandamiseks.\n\nVõid režiime vahetada <i>keset vestlust!</i>",
-    user3: "Võimas! Las ma proovin kohe ära!",
-    part6: "Head kasutamist!",
-    starOnGitHub: "Tähista GitHubis",
-    contact: "Võta ühendust Mintplex Labsiga",
-  },
   "main-page": {
     noWorkspaceError: "Enne vestlust loo tööruum.",
     checklist: {
@@ -522,6 +501,10 @@ const TRANSLATIONS = {
         description: "Kohanda külgriba allosas kuvatavaid linke/ikooni.",
         icon: "Ikoon",
         link: "Link",
+      },
+      "render-html": {
+        title: null,
+        description: null,
       },
     },
   },
@@ -1037,6 +1020,13 @@ const TRANSLATIONS = {
         "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
       "password-label": "Instantsi parool",
     },
+  },
+  home: {
+    welcome: "Tere tulemast",
+    chooseWorkspace: "Vali tööruum, et alustada vestlust!",
+    notAssigned:
+      "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
+    goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
   },
 };
 

@@ -4,7 +4,8 @@ import { APPEARANCE_SETTINGS } from "@/utils/constants";
  * @typedef { 'showScrollbar' |
  * 'autoSubmitSttInput' |
  * 'autoPlayAssistantTtsResponse' |
- * 'enableSpellCheck'
+ * 'enableSpellCheck' |
+ * 'renderHTML'
  * } AvailableSettings - The supported settings for the appearance model.
  */
 
@@ -14,11 +15,12 @@ const Appearance = {
     autoSubmitSttInput: true,
     autoPlayAssistantTtsResponse: false,
     enableSpellCheck: true,
+    renderHTML: false,
   },
 
   /**
    * Fetches any locally storage settings for the user
-   * @returns {{showScrollbar: boolean}}
+   * @returns {{showScrollbar: boolean, autoSubmitSttInput: boolean, autoPlayAssistantTtsResponse: boolean, enableSpellCheck: boolean, renderHTML: boolean}}
    */
   getSettings: () => {
     try {

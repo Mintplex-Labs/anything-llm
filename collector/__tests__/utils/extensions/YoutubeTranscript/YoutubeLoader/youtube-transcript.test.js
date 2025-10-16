@@ -1,3 +1,4 @@
+process.env.STORAGE_DIR = "test-storage"; // needed for tests to run
 const { YoutubeTranscript } = require("../../../../../utils/extensions/YoutubeTranscript/YoutubeLoader/youtube-transcript.js");
 
 describe("YoutubeTranscript", () => {

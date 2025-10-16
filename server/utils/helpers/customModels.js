@@ -9,6 +9,7 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
+const { parseFoundryBasePath } = require("../AiProviders/foundry");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -35,8 +36,11 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "foundry",
+  "cohere",
   // Embedding Engines
   "native-embedder",
+  "cohere-embedder",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -92,8 +96,14 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "foundry":
+      return await getFoundryModels(basePath);
+    case "cohere":
+      return await getCohereModels(apiKey, "chat");
     case "native-embedder":
       return await getNativeEmbedderModels();
+    case "cohere-embedder":
+      return await getCohereModels(apiKey, "embed");
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -399,8 +409,8 @@ async function getTogetherAiModels(apiKey = null) {
   }
 }
 
-async function getFireworksAiModels() {
-  const knownModels = fireworksAiModels();
+async function getFireworksAiModels(apiKey = null) {
+  const knownModels = await fireworksAiModels(apiKey);
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
@@ -725,6 +735,66 @@ async function getMoonshotAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getFoundryModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: parseFoundryBasePath(basePath || process.env.FOUNDRY_BASE_PATH),
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) =>
+        results.data.map((model) => ({
+          ...model,
+          name: model.id,
+        }))
+      )
+      .catch((e) => {
+        console.error(`Foundry:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Foundry:getFoundryModels`, e.message);
+    return { models: [], error: "Could not fetch Foundry Models" };
+  }
+}
+
+/**
+ * Get Cohere models
+ * @param {string} _apiKey - The API key to use
+ * @param {'chat' | 'embed'} type - The type of model to get
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getCohereModels(_apiKey = null, type = "chat") {
+  const apiKey =
+    _apiKey === true
+      ? process.env.COHERE_API_KEY
+      : _apiKey || process.env.COHERE_API_KEY || null;
+
+  const { CohereClient } = require("cohere-ai");
+  const cohere = new CohereClient({
+    token: apiKey,
+  });
+  const models = await cohere.models
+    .list({ pageSize: 1000, endpoint: type })
+    .then((results) => results.models)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.name,
+      }))
+    )
+    .catch((e) => {
+      console.error(`Cohere:listModels`, e.message);
+      return [];
+    });
+
   return { models, error: null };
 }
 

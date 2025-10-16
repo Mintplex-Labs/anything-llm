@@ -91,6 +91,8 @@ export default function ThreadItem({
             href={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
+            data-tooltip-id="workspace-thread-name"
+            data-tooltip-content={thread.name}
             className="w-full pl-2 py-1 overflow-hidden"
             aria-current={isActive ? "page" : ""}
           >
