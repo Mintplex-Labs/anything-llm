@@ -72,7 +72,9 @@ class OllamaEmbedder {
     let error = null;
 
     // Process chunks in batches based on maxConcurrentChunks
-    const totalBatches = Math.ceil(textChunks.length / this.maxConcurrentChunks);
+    const totalBatches = Math.ceil(
+      textChunks.length / this.maxConcurrentChunks
+    );
     let currentBatch = 0;
 
     for (let i = 0; i < textChunks.length; i += this.maxConcurrentChunks) {
