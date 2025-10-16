@@ -974,6 +974,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.CometApiProvider({ model: config.model });
       case "foundry":
         return new Providers.FoundryProvider({ model: config.model });
+      case "n1n":
+        return new Providers.N1nProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
