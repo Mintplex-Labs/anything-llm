@@ -25,10 +25,70 @@ class AnthropicProvider extends Provider {
     super(client);
 
     this.model = model;
+    this.cacheControl = this.#parseCacheControl(
+      process.env.ANTHROPIC_CACHE_CONTROL
+    );
   }
 
   get supportsAgentStreaming() {
     return true;
+  }
+
+  /**
+   * Parses the cache control ENV variable
+   * @param {string} value - The ENV value (5m or 1h)
+   * @returns {null|object} Cache control configuration
+   */
+  #parseCacheControl(value) {
+    if (!value) return null;
+    const normalized = value.toLowerCase().trim();
+    if (normalized === "5m" || normalized === "1h") {
+      return { type: "ephemeral", ttl: normalized };
+    }
+    return null;
+  }
+
+  /**
+   * Checks if content meets minimum requirements for caching
+   * Per Anthropic docs: minimum 1024 tokens
+   *
+   * Certain models (Haiku 3.5, 3) have a minimum of 2048 tokens but
+   * after testing, 1024 tokens can be passed with no errors and
+   * Anthropic will automatically ignore it unless it's above the minimum of 2048 tokens.
+   * https://docs.claude.com/en/docs/build-with-claude/prompt-caching#cache-limitations
+   * @param {string} content - The content to check
+   * @returns {boolean}
+   */
+  #shouldCache(content) {
+    if (!this.cacheControl || !content) return false;
+    // Rough token estimate: ~4 chars per token
+    // Minimum 1024 tokens = ~4096 characters
+    const estimatedTokens = content.length / 4;
+    return estimatedTokens >= 1024;
+  }
+
+  /**
+   * Builds system parameter with cache control if applicable
+   * @param {string} systemContent - The system prompt content
+   * @returns {string|array} System parameter for API call
+   */
+  #buildSystemWithCache(systemContent) {
+    if (!systemContent) return systemContent;
+
+    // If caching is enabled and content is large enough
+    // apply cache control
+    if (this.#shouldCache(systemContent)) {
+      return [
+        {
+          type: "text",
+          text: systemContent,
+          cache_control: this.cacheControl,
+        },
+      ];
+    }
+
+    // Otherwise, return as plain string (no caching)
+    return systemContent;
   }
 
   #prepareMessages(messages = []) {
@@ -149,7 +209,7 @@ class AnthropicProvider extends Provider {
         {
           model: this.model,
           max_tokens: 4096,
-          system: systemPrompt,
+          system: this.#buildSystemWithCache(systemPrompt), // Apply cache control if enabled
           messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
@@ -276,7 +336,7 @@ class AnthropicProvider extends Provider {
         {
           model: this.model,
           max_tokens: 4096,
-          system: systemPrompt,
+          system: this.#buildSystemWithCache(systemPrompt), // Apply cache control if enabled
           messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
