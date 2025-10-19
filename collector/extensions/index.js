@@ -202,7 +202,26 @@ function extensions(app) {
       return;
     }
   );
-}
 
+  app.post(
+    "/ext/paperless-ngx",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadPaperlessNgx } = require("../utils/extensions/PaperlessNgx");
+        const result = await loadPaperlessNgx(reqBody(request), response);
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: null,
+        });
+      }
+      return;
+    }
+  );
+}
 
 module.exports = extensions;
