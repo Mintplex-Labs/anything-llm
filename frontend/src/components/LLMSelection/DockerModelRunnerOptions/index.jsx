@@ -3,6 +3,7 @@ import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { DOCKER_MODEL_RUNNER_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { upperCaseFirst } from "text-case";
 
 export default function DockerModelRunnerOptions({ settings }) {
   const {
@@ -125,21 +126,21 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
         required={true}
         className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
-        {customModels.length > 0 && (
-          <optgroup label="Available Docker Model Runner Models">
-            {customModels.map((model) => {
-              return (
-                <option
-                  key={model.id}
-                  value={model.id}
-                  selected={settings?.DockerModelRunnerModelPref === model.id}
-                >
-                  {model.id}
-                </option>
-              );
-            })}
-          </optgroup>
-        )}
+        <option disabled={true} selected={true}>
+          -- select a model --
+        </option>
+        {customModels.length > 0 &&
+          customModels.map((model) => {
+            return (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={settings?.DockerModelRunnerModelPref === model.id}
+              >
+                {upperCaseFirst(model.name)}
+              </option>
+            );
+          })}
         {customModels.length === 0 && (
           <option disabled={true} selected={true}>
             -- no models found --

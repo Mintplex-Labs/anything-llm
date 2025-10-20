@@ -13,8 +13,12 @@ class DockerModelRunnerLLM {
       throw new Error("No Docker Model Runner Base Path was set.");
 
     const { OpenAI: OpenAIApi } = require("openai");
+    const basePath = parseDMREndpoint(
+      process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      "openai"
+    );
     this.openai = new OpenAIApi({
-      baseURL: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      baseURL: basePath,
       apiKey: null,
     });
 
@@ -30,6 +34,9 @@ class DockerModelRunnerLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log(
+      `Initialized with model: ${this.model} and base path: ${basePath}`
+    );
   }
 
   log(text, ...args) {
@@ -189,6 +196,25 @@ class DockerModelRunnerLLM {
   }
 }
 
+/**
+ * Parse the base path of the Docker Model Runner endpoint and return the host and port.
+ * @param {string} basePath - The base path of the Docker Model Runner endpoint.
+ * @param {'openai' | 'dmr'} to - The provider to parse the endpoint for (internal DMR or openai-compatible)
+ * @returns {string | null}
+ */
+function parseDMREndpoint(basePath = null, to = "openai") {
+  if (!basePath) return null;
+  try {
+    const url = new URL(basePath);
+    if (to === "openai") url.pathname = "engines/v1";
+    else if (to === "dmr") url.pathname = "";
+    return url.toString();
+  } catch (e) {
+    return basePath;
+  }
+}
+
 module.exports = {
   DockerModelRunnerLLM,
+  parseDMREndpoint,
 };

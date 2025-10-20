@@ -2,6 +2,9 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  parseDMREndpoint,
+} = require("../../../../utils/AiProviders/dockerModelRunner");
 
 /**
  * The agent provider for the Docker Model Runner provider.
@@ -13,7 +16,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
     const { model = process.env.DOCKER_MODEL_RUNNER_MODEL_PREF } = config;
     super();
     const client = new OpenAI({
-      baseURL: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      baseURL: parseDMREndpoint(process.env.DOCKER_MODEL_RUNNER_BASE_PATH),
       apiKey: null,
     });
     this._client = client;

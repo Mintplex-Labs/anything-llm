@@ -10,6 +10,7 @@ const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
+const { parseDMREndpoint } = require("../AiProviders/dockerModelRunner");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -766,12 +767,30 @@ async function getDockerModelRunnerModels(basePath = null) {
   try {
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
-      baseURL: basePath || process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      baseURL: parseDMREndpoint(
+        basePath || process.env.DOCKER_MODEL_RUNNER_BASE_PATH
+      ),
       apiKey: null,
     });
+
+    // eg: ai/llama3.2:latest -> llama3.2
+    const parseDMRModelName = (modelId = null) => {
+      if (!modelId) return modelId;
+      const match = modelId.match(/^[^/]+\/(.*?):.*$/);
+      if (!match) return modelId;
+      return match?.[1]?.trim() || modelId;
+    };
+
     const models = await openai.models
       .list()
       .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: parseDMRModelName(model.id),
+          organization: model.owned_by,
+        }))
+      )
       .catch((e) => {
         console.error(`DockerModelRunner:listModels`, e.message);
         return [];
