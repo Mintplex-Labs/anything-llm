@@ -18,6 +18,16 @@ export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  // --- Agent Mode Toggle State ---
+  const [agentMode, setAgentMode] = useState(
+    JSON.parse(localStorage.getItem("agentMode") || "false")
+  );
+
+  useEffect(() => {
+    localStorage.setItem("agentMode", JSON.stringify(agentMode));
+  }, [agentMode]);
+  // -------------------------------
+
   useEffect(() => {
     async function getHistory() {
       if (loading) return;
@@ -34,9 +44,10 @@ export default function WorkspaceChat({ loading, workspace }) {
       setLoadingHistory(false);
     }
     getHistory();
-  }, [workspace, loading]);
+  }, [workspace, loading, threadSlug]);
 
   if (loadingHistory) return <LoadingChat />;
+
   if (!loading && !loadingHistory && !workspace) {
     return (
       <>
@@ -77,10 +88,30 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
+
   return (
     <TTSProvider>
       <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
-        <ChatContainer workspace={workspace} knownHistory={history} />
+        {/* Agent Mode Toggle UI */}
+        <div className="flex items-center justify-end mb-2 px-4">
+          <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agentMode}
+              onChange={() => setAgentMode(!agentMode)}
+              className="accent-blue-500"
+            />
+            Agent Mode
+          </label>
+        </div>
+
+        {/* Pass agentMode and setter to ChatContainer */}
+        <ChatContainer
+          workspace={workspace}
+          knownHistory={history}
+          agentMode={agentMode}
+          setAgentMode={setAgentMode}
+        />
       </DnDFileUploaderProvider>
     </TTSProvider>
   );
