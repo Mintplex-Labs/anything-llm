@@ -264,6 +264,7 @@ class OllamaAILLM {
               completion_tokens: res.eval_count,
               total_tokens: res.prompt_eval_count + res.eval_count,
             },
+            eval_duration: res.eval_duration / 1e9,
           };
         })
         .catch((e) => {
@@ -282,7 +283,9 @@ class OllamaAILLM {
         prompt_tokens: result.output.usage.prompt_tokens,
         completion_tokens: result.output.usage.completion_tokens,
         total_tokens: result.output.usage.total_tokens,
-        outputTps: result.output.usage.completion_tokens / result.duration,
+        outputTps:
+          result.output.usage.completion_tokens / result.output.eval_duration,
+        eval_duration: result.output.eval_duration,
         duration: result.duration,
       },
     };
@@ -359,6 +362,9 @@ class OllamaAILLM {
             });
             response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);
+            stream.metrics.eval_duration = chunk.eval_duration / 1e9;
+            stream.metrics.outputTps =
+              stream.metrics.completion_tokens / stream.metrics.eval_duration;
             resolve(fullText);
             break;
           }
