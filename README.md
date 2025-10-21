@@ -136,6 +136,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [PGVector](https://github.com/pgvector/pgvector)
+- [Vastbase](https://www.vastbase.com)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma & ChromaCloud](https://trychroma.com)

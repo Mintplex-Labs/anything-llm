@@ -39,6 +39,14 @@ async function resetAllVectorStores({ vectorDbKey }) {
       the dimension value of an existing vector column.
       */
       await VectorDb.reset();
+    } else if (vectorDbKey === "vastbase"){
+      /*
+      Vastbase has a reset method that drops the entire embedding table
+      which is required since if this function is called we will need to
+      reset the embedding column VECTOR dimension value and you cannot change
+      the dimension value of an existing vector column.
+      */
+      await VectorDb.reset();
     } else {
       for (const workspace of workspaces) {
         try {

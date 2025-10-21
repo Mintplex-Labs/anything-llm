@@ -425,6 +425,23 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  /*
+  Vastbase Options
+  - Does very simple validations - we should expand this in the future
+  - to ensure the connection string is valid and the table name is valid
+  - via direct query
+  */
+  VastbaseConnectionString: {
+    envKey: "VASTBASE_CONNECTION_STRING",
+    checks: [isNotEmpty, looksLikePostgresConnectionString],
+    preUpdate: [validateVastbaseConnectionString],
+  },
+  VastbaseTableName: {
+    envKey: "VASTBASE_TABLE_NAME",
+    checks: [isNotEmpty],
+    preUpdate: [validateVastbaseTableName],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -906,6 +923,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "vastbase",
   ];
   return supported.includes(input)
     ? null
@@ -1057,6 +1075,70 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
   const { PGVector } = require("../vectorDbProviders/pgvector");
   const { error, success } = await PGVector.validateConnection({
     connectionString: process.env.PGVECTOR_CONNECTION_STRING,
+    tableName: nextValue,
+  });
+  if (!success) return error;
+
+  return null;
+}
+
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} input - The Postgres connection string to validate.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function looksLikeVastbaseConnectionString(connectionString = null) {
+  if (!connectionString || !connectionString.startsWith("postgresql://"))
+    return "Invalid Vastbase connection string. Must start with postgresql://";
+  if (connectionString.includes(" "))
+    return "Invalid Vastbase connection string. Must not contain spaces.";
+  return null;
+}
+
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function validateVastbaseConnectionString(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current connection string, don't validate it.
+
+  const { Vastbase } = require("../vectorDbProviders/vastbase");
+  const { error, success } = await Vastbase.validateConnection({
+    connectionString: nextValue,
+  });
+  if (!success) return error;
+
+  // Set the ENV variable for the Vastbase connection string early so we can use it in the table check.
+  process.env[envKey] = nextValue;
+  return null;
+}
+
+/**
+ * Validates the Postgres table name for the Vastbase options.
+ * - Table should not already exist in the database.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the table name is invalid, otherwise null.
+ */
+async function validateVastbaseTableName(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current table name, don't validate it.
+  if (!process.env.VASTBASE_CONNECTION_STRING) return; // if connection string is not set, don't validate it since it will fail.
+
+  const { Vastbase } = require("../vectorDbProviders/vastbase");
+  const { error, success } = await Vastbase.validateConnection({
+    connectionString: process.env.VASTBASE_CONNECTION_STRING,
     tableName: nextValue,
   });
   if (!success) return error;

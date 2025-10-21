@@ -21,6 +21,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import VastbaseLogo from "@/media/vectordbs/vastbase.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -32,6 +33,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import VastbaseOptions from "@/components/VectorDBSelection/VastbaseOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -125,6 +127,13 @@ export default function GeneralVectorDatabase() {
       logo: PGVectorLogo,
       options: <PGVectorOptions settings={settings} />,
       description: "Vector search powered by PostgreSQL.",
+    },
+    {
+      name: "Vastbase",
+      value: "vastbase",
+      logo: VastbaseLogo,
+      options: <VastbaseOptions settings={settings} />,
+      description: "Vector search powered by Vastbase.",
     },
     {
       name: "Chroma",

@@ -37,6 +37,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import VastbaseLogo from "@/media/vectordbs/vastbase.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
@@ -279,6 +280,14 @@ export const VECTOR_DB_PRIVACY = {
       "Access to your instance is managed by you",
     ],
     logo: PGVectorLogo,
+  },
+  vastbase: {
+    name: "Vastbase",
+    description: [
+      "Your vectors and document text are stored on your Vastbase instance",
+      "Access to your instance is managed by you",
+    ],
+    logo: VastbaseLogo,
   },
   chroma: {
     name: "Chroma",

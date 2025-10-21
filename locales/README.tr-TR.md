@@ -133,6 +133,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [PGVector](https://github.com/pgvector/pgvector)
+- [Vastbase](https://www.vastdata.com.cn)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
