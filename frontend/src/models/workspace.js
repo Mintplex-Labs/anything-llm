@@ -78,6 +78,20 @@ const Workspace = {
       .catch(() => false);
     return result;
   },
+  submitChatFeedbackComment: async function (chatId, slug, comment) {
+    if (!chatId || !slug || !comment) return false;
+    const result = await fetch(
+      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}/comment`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ comment }),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+    return result;
+  },
 
   deleteChats: async function (slug = "", chatIds = []) {
     return await fetch(`${API_BASE}/workspace/${slug}/delete-chats`, {
