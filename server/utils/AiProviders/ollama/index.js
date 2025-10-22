@@ -352,6 +352,7 @@ class OllamaAILLM {
           if (chunk.done) {
             usage.prompt_tokens = chunk.prompt_eval_count;
             usage.completion_tokens = chunk.eval_count;
+            usage.eval_duration = chunk.eval_duration / 1e9;
             writeResponseChunk(response, {
               uuid,
               sources,
@@ -362,9 +363,6 @@ class OllamaAILLM {
             });
             response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);
-            stream.metrics.eval_duration = chunk.eval_duration / 1e9;
-            stream.metrics.outputTps =
-              stream.metrics.completion_tokens / stream.metrics.eval_duration;
             resolve(fullText);
             break;
           }

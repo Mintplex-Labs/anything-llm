@@ -13,6 +13,7 @@ const { TokenManager } = require("../tiktoken");
  * @property {number} total_tokens - the total number of tokens
  * @property {number} outputTps - the tokens per second of the output
  * @property {number} duration - the duration of the stream
+ * @property {number} [eval_duration] - optional eval duration from providers (e.g., Ollama) used for more accurate outputTps calculation
  */
 
 /**
@@ -88,7 +89,12 @@ class LLMPerformanceMonitor {
 
       stream.metrics.total_tokens =
         stream.metrics.prompt_tokens + (stream.metrics.completion_tokens || 0);
-      stream.metrics.outputTps = stream.metrics.completion_tokens / duration;
+
+      // Use eval_duration if provided (for providers like Ollama that report it)
+      // otherwise fall back to total request duration
+      stream.metrics.outputTps =
+        stream.metrics.completion_tokens /
+        (stream.metrics.eval_duration || duration);
       stream.metrics.duration = duration;
       return stream.metrics;
     };
