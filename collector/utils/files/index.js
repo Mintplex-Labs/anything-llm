@@ -7,10 +7,17 @@ const { WATCH_DIRECTORY } = require("../constants");
  * The folder where documents are stored to be stored when
  * processed by the collector.
  */
-const documentsFolder =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/documents`)
-    : path.resolve(process.env.STORAGE_DIR, `documents`);
+const STORAGE_DIRECTORY = process.env.STORAGE_DIR
+  ? path.resolve(process.env.STORAGE_DIR)
+  : path.resolve(__dirname, `../../../server/storage`);
+
+if (!process.env.STORAGE_DIR && process.env.NODE_ENV === "production") {
+  console.warn(
+    "STORAGE_DIR is not set; defaulting to local server storage directory."
+  );
+}
+
+const documentsFolder = path.resolve(STORAGE_DIRECTORY, `documents`);
 
 /**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
@@ -133,6 +140,7 @@ async function wipeCollectorStorage() {
     const directory = WATCH_DIRECTORY;
     fs.readdir(directory, (err, files) => {
       if (err) return resolve();
+      if (!Array.isArray(files)) return resolve();
 
       for (const file of files) {
         if (file === "__HOTDIR__.md") continue;
@@ -148,6 +156,7 @@ async function wipeCollectorStorage() {
     const directory = path.resolve(__dirname, "../../storage/tmp");
     fs.readdir(directory, (err, files) => {
       if (err) return resolve();
+      if (!Array.isArray(files)) return resolve();
 
       for (const file of files) {
         if (file === ".placeholder") continue;

@@ -6,7 +6,7 @@ const keyPath =
     ? path.resolve(__dirname, `../../../server/storage/comkey`)
     : path.resolve(
         process.env.STORAGE_DIR ??
-          path.resolve(__dirname, `../../../server/storage`),
+          path.resolve(__dirname, `../../../server/storage/comkey`),
         `comkey`
       );
 
