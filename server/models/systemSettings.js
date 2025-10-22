@@ -8,6 +8,7 @@ const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { Vastbase } = require("../utils/vectorDbProviders/vastbase");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
 
@@ -458,6 +459,10 @@ const SystemSettings = {
       // PGVector Keys
       PGVectorConnectionString: !!PGVector.connectionString() || false,
       PGVectorTableName: PGVector.tableName(),
+
+      // Vastbase Keys
+      VastbaseConnectionString: !!Vastbase.connectionString() || false,
+      VastbaseTableName: Vastbase.tableName(),
     };
   },
 
