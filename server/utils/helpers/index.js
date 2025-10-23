@@ -452,6 +452,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.COMETAPI_LLM_MODEL_PREF;
     case "foundry":
       return process.env.FOUNDRY_MODEL_PREF;
+    case "zai":
+      return process.env.ZAI_MODEL_PREF;
     default:
       return null;
   }

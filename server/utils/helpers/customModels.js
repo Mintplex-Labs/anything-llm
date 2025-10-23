@@ -816,26 +816,7 @@ async function getZAiModels(_apiKey = null) {
     .then((results) => results.data)
     .catch((e) => {
       console.error(`Z.AI:listModels`, e.message);
-      return [
-        {
-          id: "glm-4.5",
-          object: "model",
-          created: 1753632000,
-          owned_by: "z-ai",
-        },
-        {
-          id: "glm-4.5-air",
-          object: "model",
-          created: 1753632000,
-          owned_by: "z-ai",
-        },
-        {
-          id: "glm-4.6",
-          object: "model",
-          created: 1759276800,
-          owned_by: "z-ai",
-        },
-      ];
+      return [];
     });
 
   // Api Key was successful so lets save it for future uses

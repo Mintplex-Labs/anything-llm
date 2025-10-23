@@ -99,6 +99,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 - [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
+- [Z.AI (chat models)](https://z.ai/model-api)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Moonshot AI](https://www.moonshot.ai/)

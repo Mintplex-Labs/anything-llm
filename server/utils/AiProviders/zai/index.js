@@ -19,7 +19,7 @@ class ZAiLLM {
       apiKey: process.env.ZAI_API_KEY,
     });
     this.model =
-      modelPreference || process.env.ZAI_MODEL_PREF || "glm-4.6";
+      modelPreference || process.env.ZAI_MODEL_PREF || "glm-4.5";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
