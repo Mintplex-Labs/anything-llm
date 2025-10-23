@@ -621,6 +621,10 @@ const SystemSettings = {
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
+
+      // Z.AI Keys
+      ZAiApiKey: !!process.env.ZAI_API_KEY,
+      ZAiModelPref: process.env.ZAI_MODEL_PREF,
     };
   },
 

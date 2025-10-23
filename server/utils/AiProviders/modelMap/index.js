@@ -19,6 +19,7 @@ class ContextWindowFinder {
     xai: "xai",
     deepseek: "deepseek",
     moonshot: "moonshot",
+    zai: "vercel_ai_gateway",
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =

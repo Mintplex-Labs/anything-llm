@@ -740,6 +740,16 @@ const KEY_MAPPING = {
     envKey: "COMETAPI_LLM_TIMEOUT_MS",
     checks: [],
   },
+
+  // Z.AI Options
+  ZAiApiKey: {
+    envKey: "ZAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ZAiModelPref: {
+    envKey: "ZAI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -851,6 +861,7 @@ function supportedLLM(input = "") {
     "moonshotai",
     "cometapi",
     "foundry",
+    "zai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

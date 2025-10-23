@@ -120,5 +120,10 @@ const LEGACY_MODEL_MAP = {
   xai: {
     "grok-beta": 131072,
   },
+  zai: {
+    "glm-4.5": 131072,
+    "glm-4.5-air": 128000,
+    "glm-4.6": 200000,
+  },
 };
 module.exports = LEGACY_MODEL_MAP;
