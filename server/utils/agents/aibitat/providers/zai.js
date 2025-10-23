@@ -86,4 +86,3 @@ class ZAIProvider extends InheritMultiple([Provider, UnTooled]) {
 }
 
 module.exports = ZAIProvider;
-
