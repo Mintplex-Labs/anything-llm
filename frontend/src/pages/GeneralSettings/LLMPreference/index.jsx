@@ -35,6 +35,7 @@ import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import N1nLogo from "@/media/llmprovider/n1n.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -67,6 +68,7 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
+import N1nOptions from "@/components/LLMSelection/N1nOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -348,6 +350,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
+  },
+  {
+    name: "n1n",
+    value: "n1n",
+    logo: N1nLogo,
+    options: (settings) => <N1nOptions settings={settings} />,
+    description: "Access 400+ LLMs and multimodal models through n1n API.",
+    requiredConfig: ["N1nApiKey"],
   },
 ];
 
