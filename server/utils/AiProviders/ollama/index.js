@@ -263,7 +263,8 @@ class OllamaAILLM {
               prompt_tokens: res.prompt_eval_count,
               completion_tokens: res.eval_count,
               total_tokens: res.prompt_eval_count + res.eval_count,
-              eval_duration: res.eval_duration / 1e9,
+              // Override duration with Ollama's eval_duration for more accurate outputTps
+              duration: res.eval_duration / 1e9,
             },
           };
         })
@@ -284,10 +285,8 @@ class OllamaAILLM {
         completion_tokens: result.output.usage.completion_tokens,
         total_tokens: result.output.usage.total_tokens,
         outputTps:
-          result.output.usage.completion_tokens /
-          result.output.usage.eval_duration,
-        eval_duration: result.output.usage.eval_duration,
-        duration: result.duration,
+          result.output.usage.completion_tokens / result.output.usage.duration,
+        duration: result.output.usage.duration,
       },
     };
   }
@@ -353,7 +352,8 @@ class OllamaAILLM {
           if (chunk.done) {
             usage.prompt_tokens = chunk.prompt_eval_count;
             usage.completion_tokens = chunk.eval_count;
-            usage.eval_duration = chunk.eval_duration / 1e9;
+            // Override duration with Ollama's eval_duration for more accurate outputTps
+            usage.duration = chunk.eval_duration / 1e9;
             writeResponseChunk(response, {
               uuid,
               sources,
