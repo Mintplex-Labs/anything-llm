@@ -88,8 +88,13 @@ class LLMPerformanceMonitor {
 
       stream.metrics.total_tokens =
         stream.metrics.prompt_tokens + (stream.metrics.completion_tokens || 0);
-      stream.metrics.outputTps = stream.metrics.completion_tokens / duration;
-      stream.metrics.duration = duration;
+
+      // Use duration from reportedUsage if provided (for providers that have more accurate timing)
+      // otherwise use the calculated duration from stream start/end times
+      const effectiveDuration = reportedUsage.duration || duration;
+      stream.metrics.outputTps =
+        stream.metrics.completion_tokens / effectiveDuration;
+      stream.metrics.duration = effectiveDuration;
       return stream.metrics;
     };
     return stream;
