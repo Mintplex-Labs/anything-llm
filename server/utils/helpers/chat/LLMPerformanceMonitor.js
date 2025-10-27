@@ -39,6 +39,8 @@ class LLMPerformanceMonitor {
   }
   /**
    * Wraps a function and logs the duration (in seconds) of the function call.
+   * If the output contains a `usage.duration` property, it will be used instead of the calculated duration.
+   * This allows providers to supply more accurate timing information.
    * @param {Function} func
    * @returns {Promise<{output: any, duration: number}>}
    */
@@ -47,7 +49,11 @@ class LLMPerformanceMonitor {
       const start = Date.now();
       const output = await func; // is a promise
       const end = Date.now();
-      return { output, duration: (end - start) / 1000 };
+      const calculatedDuration = (end - start) / 1000;
+      // Use duration from output.usage if provided (for providers that have more accurate timing)
+      // otherwise use the calculated duration from function start/end times
+      const duration = output?.usage?.duration ?? calculatedDuration;
+      return { output, duration };
     })();
   }
 
