@@ -258,8 +258,14 @@ class OllamaAILLM {
           },
         })
         .then((res) => {
+          let content = res.message.content;
+
+          if (res.message.thinking) {
+            content = `<think>${res.message.thinking}</think>${content}`;
+          }
+
           return {
-            content: res.message.content,
+            content,
             usage: {
               prompt_tokens: res.prompt_eval_count,
               completion_tokens: res.eval_count,
@@ -340,6 +346,8 @@ class OllamaAILLM {
       };
       response.on("close", handleAbort);
 
+      let hasOpenedThinkTag = false;
+      let hasClosedThinkTag = false;
       try {
         for await (const chunk of stream) {
           if (chunk === undefined)
@@ -366,15 +374,71 @@ class OllamaAILLM {
 
           if (chunk.hasOwnProperty("message")) {
             const content = chunk.message.content;
-            fullText += content;
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: content,
-              close: false,
-              error: false,
-            });
+            const thinking = chunk.message.thinking;
+
+            // In newer Ollama versions (v0.9.0+), thinking content comes in a separate property and we have to wrap it in <think> tags ourself.
+            if (thinking) {
+              // Open <think> tag if we haven't already
+              if (!hasOpenedThinkTag) {
+                const openTag = "<think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: openTag,
+                  close: false,
+                  error: false,
+                });
+                fullText += openTag;
+                hasOpenedThinkTag = true;
+              }
+
+              // Write thinking content
+              if (thinking.length > 0) {
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: thinking,
+                  close: false,
+                  error: false,
+                });
+                fullText += thinking;
+              }
+            }
+
+            // Close think tag when thinking is done and we start receiving content
+            if (
+              thinking === undefined &&
+              hasOpenedThinkTag &&
+              !hasClosedThinkTag &&
+              content.length > 0
+            ) {
+              const closeTag = "</think>";
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: closeTag,
+                close: false,
+                error: false,
+              });
+              fullText += closeTag;
+              hasClosedThinkTag = true;
+            }
+
+            // Write content, assumes thinking is within the content property wrapped in <think> tags.
+            if (content.length > 0) {
+              fullText += content;
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: content,
+                close: false,
+                error: false,
+              });
+            }
           }
         }
       } catch (error) {
