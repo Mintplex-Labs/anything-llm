@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
+import hljs_svelte from "highlightjs-svelte";
 import "@/utils/chat/themes/github-dark.css";
 import "@/utils/chat/themes/github.css";
+hljs_svelte(hljs);
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (

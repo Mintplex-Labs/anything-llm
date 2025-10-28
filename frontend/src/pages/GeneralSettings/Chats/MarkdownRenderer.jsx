@@ -1,9 +1,11 @@
 import { useState } from "react";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
+import hljs_svelte from "highlightjs-svelte";
 import { CaretDown } from "@phosphor-icons/react";
 import "highlight.js/styles/github-dark.css";
 import DOMPurify from "@/utils/chat/purify";
+hljs_svelte(hljs);
 
 const md = new MarkdownIt({
   html: true,
