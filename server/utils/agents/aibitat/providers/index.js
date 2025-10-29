@@ -18,6 +18,7 @@ const DeepSeekProvider = require("./deepseek.js");
 const LiteLLMProvider = require("./litellm.js");
 const ApiPieProvider = require("./apipie.js");
 const XAIProvider = require("./xai.js");
+const ZAIProvider = require("./zai.js");
 const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
@@ -48,6 +49,7 @@ module.exports = {
   LiteLLMProvider,
   ApiPieProvider,
   XAIProvider,
+  ZAIProvider,
   NovitaProvider,
   CometApiProvider,
   NvidiaNimProvider,
