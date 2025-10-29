@@ -133,6 +133,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 
 - [LanceDB](https://github.com/lancedb/lancedb) （默认）
 - [PGVector](https://github.com/pgvector/pgvector)
+- [Vastbase](https://www.vastdata.com.cn)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
