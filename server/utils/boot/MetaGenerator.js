@@ -134,6 +134,10 @@ class MetaGenerator {
       },
       {
         tag: "meta",
+        props: { name: "apple-mobile-web-app-capable", content: "yes" },
+      },
+      {
+        tag: "meta",
         props: {
           name: "apple-mobile-web-app-status-bar-style",
           content: "black-translucent",
