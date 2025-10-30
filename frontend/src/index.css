@@ -261,6 +261,12 @@ body {
   }
 }
 
+@media (max-width: 600px) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
