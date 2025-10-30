@@ -139,18 +139,6 @@ class MetaGenerator {
           content: "black-translucent",
         },
       },
-      {
-        tag: "meta",
-        props: { name: "theme-color", content: "white" },
-      },
-      {
-        tag: "meta",
-        props: {
-          name: "theme-color",
-          content: "#0E0F0F",
-          media: "(prefers-color-scheme: dark)",
-        },
-      },
       { tag: "link", props: { rel: "manifest", href: "/manifest.json" } },
     ];
   }
