@@ -101,11 +101,6 @@ if (process.env.NODE_ENV !== "development") {
     })
   );
 
-  app.use("/", function (_, response) {
-    IndexPage.generate(response);
-    return;
-  });
-
   app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
@@ -171,6 +166,11 @@ if (process.env.NODE_ENV !== "development") {
         )
         .end();
     }
+  });
+
+  app.use("/", function (_, response) {
+    IndexPage.generate(response);
+    return;
   });
 } else {
   // Debug route for development connections to vectorDBs
