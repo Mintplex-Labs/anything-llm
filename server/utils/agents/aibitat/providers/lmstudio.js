@@ -41,7 +41,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
-    await LMStudioLLM.cacheContextWindows();
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await LMStudioLLM.ensureModelCached(this.model);
+
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -60,7 +63,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await LMStudioLLM.cacheContextWindows();
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await LMStudioLLM.ensureModelCached(this.model);
+
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
