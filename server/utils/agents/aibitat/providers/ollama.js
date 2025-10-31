@@ -57,7 +57,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await OllamaAILLM.ensureModelCached(this.model);
+
     const response = await this.client.chat({
       model: this.model,
       messages,
@@ -67,7 +70,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await OllamaAILLM.ensureModelCached(this.model);
+
     return await this.client.chat({
       model: this.model,
       messages,
