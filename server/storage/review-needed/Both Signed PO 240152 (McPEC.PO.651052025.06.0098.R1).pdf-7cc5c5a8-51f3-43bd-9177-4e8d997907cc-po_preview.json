@@ -1,0 +1,22 @@
+{
+  "poNumber": "McPEC.PO.651052025.06.0098.R1",
+  "rfqNumber": null,
+  "buyerName": "MCPEC MARINE & OFFSHORE ENGINEERING PTE LTD",
+  "vendorName": "MT Corp",
+  "totalAmount": null,
+  "currency": "USD",
+  "paymentTerms": "30",
+  "deliveryTerms": "CFR",
+  "deliveryDays": 98,
+  "warrantyTerms": "Warranty: 18 month(s) (extracted from document)",
+  "penaltyClauses": "Liquidated damages: 1% per week, maximum 8% (extracted) | raw: LIQUIDATED DAMAGES:\n19% per week and subject to maximum 8% of Total Purchase Order value (isrespective of bninnce quantity of undetivered portion)\nthe penalty clause shatl apply only ifthe end user imposes alate delivesy",
+  "penaltyParsed": {
+    "perWeek": 1,
+    "maximum": 8
+  },
+  "specialConditions": "Bank: MILITARY COMMERCIAL JOINT STOCK BANK - HO CHI MINH CITY BRANCH | Beneficiary: MT Corp | Account: 101100518002 (USD) | SWIFT: MSCDVNVX | Payment schedule: 19% - per week and subject to maximum 8% of Total Purchase Order value (isrespective of bninnce quantity of undetivered portion) | 20% - signing contract and proforma invoice | 70% - shipment (after receiving gaods ready announcement and proforma invoice (sufTicient supportings must bc provided) | 10% - final documentation neoeplanee",
+  "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+  "sourceFilePath": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf",
+  "note": "dry-run - DATABASE_URL not set; no DB write performed",
+  "generatedAt": "2025-10-31T08:07:49.281Z"
+}

@@ -1,0 +1,28 @@
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies for hot reload
+RUN apk add --no-cache git
+
+# Create frontend directory
+RUN mkdir -p /app/frontend
+
+# Set working directory to frontend
+WORKDIR /app/frontend
+
+# Copy package files first for better caching
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy frontend source code
+COPY frontend/ ./
+
+# Expose port for development server
+EXPOSE 3000
+
+# Default command for development
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]

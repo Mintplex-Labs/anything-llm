@@ -1,0 +1,1 @@
+{"state":{"hard_state":{"term":0,"vote":0,"commit":0},"conf_state":{"voters":[7760423665126120],"learners":[],"voters_outgoing":[],"learners_next":[],"auto_leave":false}},"latest_snapshot_meta":{"term":0,"index":0},"apply_progress_queue":null,"first_voter":7760423665126120,"peer_address_by_id":{},"peer_metadata_by_id":{},"this_peer_id":7760423665126120}

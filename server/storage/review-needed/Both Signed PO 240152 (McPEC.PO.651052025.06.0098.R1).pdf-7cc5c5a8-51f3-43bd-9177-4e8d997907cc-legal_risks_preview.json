@@ -1,0 +1,43 @@
+{
+  "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+  "documentType": "po",
+  "detectedRisks": [
+    {
+      "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+      "documentType": "po",
+      "riskType": "dispute",
+      "riskLevel": "medium",
+      "clauseText": "ice.\n\nVendor is required to indicate the POS on each invoice prior Lo submission for payrment, The original invoice shull be sent to:\n\nIMcPEC Marine and Offshore Engineering Pte Lid\n\n33 Tuas Crescent Singapore 638722\n\n|Attn: Accounting Department\n\ntn addition, an electconic copy in PDF format shall be sent by exmall to weijia@mepec.com, 'The email mus! state clearly in the subject the\npate of the Vendor an",
+      "riskDescription": "Dispute resolution / governing law: Singapore",
+      "detectionMethod": "pattern"
+    },
+    {
+      "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+      "documentType": "po",
+      "riskType": "dispute",
+      "riskLevel": "medium",
+      "clauseText": "========================================================\nTRANG 3\n============================================================\nwe McPEC MARINE & OFFSHORE ENGINEERING PTE. LTD. fA)\n38 Kian Teck Drive , Singapore 628858\nMcPEC 'Tel, +65-6861 8681, Fax. +65-6861 6626\n'Registration No. 200608237N\nGonerl Terms and Condiions for Goods\nThis Parshase Orde is ubiet tothe flloing Gsneral Terms and Conditions. Referenc",
+      "riskDescription": "Dispute resolution / governing law: Singapore",
+      "detectionMethod": "pattern"
+    },
+    {
+      "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+      "documentType": "po",
+      "riskType": "dispute",
+      "riskLevel": "medium",
+      "clauseText": "tion wih this Puchase Order ante project seiiations \"S\\\nfacade any question repiding is exstence,vaddy or tamination, (Dp which ean be ania seed between te Y (A\n'Cony and Wende sal fit be unMel to he Singapore Meio Cer for vsoluon by medion in cconane vi heyy (2)\n\"Maltin Pose th ine bing in forse. The Company and Vendor gue to prcipt nth mediation in god fui nN 0\nlinea to abide by ds en vay xefeneet chai i",
+      "riskDescription": "Dispute resolution / governing law: Singapore",
+      "detectionMethod": "pattern"
+    },
+    {
+      "documentId": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf-7cc5c5a8-51f3-43bd-9177-4e8d997907cc",
+      "documentType": "po",
+      "riskType": "dispute",
+      "riskLevel": "medium",
+      "clauseText": "e vi heyy (2)\n\"Maltin Pose th ine bing in forse. The Company and Vendor gue to prcipt nth mediation in god fui nN 0\nlinea to abide by ds en vay xefeneet chai ir}\n\n \n\n \n\n2A.' Tisconmeis ovr by the lav Singapore nh Company and Vendor ery agree to bei othe exclave jute\nihe Sigopere Court\n\nPage 2 of 2",
+      "riskDescription": "Dispute resolution / governing law: Singapore",
+      "detectionMethod": "pattern"
+    }
+  ],
+  "generatedAt": "2025-10-31T08:07:49.285Z"
+}

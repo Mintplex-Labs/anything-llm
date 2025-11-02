@@ -1,0 +1,16 @@
+{
+  "poNumber": "BD-OPS-2022-029",
+  "poDate": null,
+  "rfqNumber": "BD-OPS-2022-029",
+  "buyerName": "Unknown",
+  "vendorName": "Unknown",
+  "totalAmount": 0,
+  "currency": "USD",
+  "paymentTerms": null,
+  "deliveryTerms": "2010 to DELIVERY",
+  "deliveryDays": null,
+  "documentId": "RFQ No. BD-OPS-2022-029.pdf-3bcf821e-63c9-495b-9ae5-e64e37a0d7ef",
+  "sourceFilePath": "RFQ No. BD-OPS-2022-029.pdf",
+  "note": "dry-run - DATABASE_URL not set; no DB write performed",
+  "generatedAt": "2025-10-30T09:56:32.675Z"
+}

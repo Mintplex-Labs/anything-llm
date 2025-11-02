@@ -1,0 +1,16 @@
+{
+  "poNumber": "McPEC.PO.651052025.06.0098.R1",
+  "poDate": null,
+  "rfqNumber": "documents",
+  "buyerName": "Sa Se em",
+  "vendorName": "MTCORP",
+  "totalAmount": 0,
+  "currency": "USD",
+  "paymentTerms": "30",
+  "deliveryTerms": "CFR",
+  "deliveryDays": 98,
+  "documentId": "ee5e8670775d",
+  "sourceFilePath": "Both Signed PO 240152 (McPEC.PO.651052025.06.0098.R1).pdf",
+  "note": "dry-run - DATABASE_URL not set; no DB write performed",
+  "generatedAt": "2025-10-31T06:33:42.209Z"
+}
