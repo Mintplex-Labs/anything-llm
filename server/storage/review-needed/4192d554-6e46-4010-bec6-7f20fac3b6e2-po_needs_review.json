@@ -1,0 +1,10 @@
+{
+  "documentId": "4192d554-6e46-4010-bec6-7f20fac3b6e2",
+  "poNumber": "BD-OPS-2022-029",
+  "buyerName": "Unknown",
+  "vendorName": "Unknown",
+  "totalAmount": 0,
+  "currency": "USD",
+  "reason": "po_missing_vendor_and_total",
+  "flaggedAt": "2025-10-31T03:39:10.212Z"
+}

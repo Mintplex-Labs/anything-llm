@@ -1,0 +1,45 @@
+name: anythingllm
+
+networks:
+  anything-llm:
+    driver: bridge
+
+services:
+  anything-llm:
+    container_name: anythingllm
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+      args:
+        ARG_UID: ${UID:-1000}
+        ARG_GID: ${GID:-1000}
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - ./.env:/app/server/.env
+      - ../server/storage:/app/server/storage
+      - ../collector/hotdir/:/app/collector/hotdir
+      - ../collector/outputs/:/app/collector/outputs
+      - ../frontend:/app/frontend
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "3001:3001"
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - anything-llm
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok-anythingllm
+    command: http anything-llm:3000
+    depends_on:
+      - anything-llm
+    networks:
+      - anything-llm
+    environment:
+      - NGROK_AUTHTOKEN=31iTegltwQ32GQmc5R8MYvhsCKZ_3S9bn9qwwdYwZu4p4yqxE

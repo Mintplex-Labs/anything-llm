@@ -1,0 +1,10 @@
+# Không commit các file sensitive
+config.yml
+credentials/
+*.json
+
+# Chỉ commit template và scripts
+!config.yml.template
+!*.sh
+!README.md
+!Dockerfile

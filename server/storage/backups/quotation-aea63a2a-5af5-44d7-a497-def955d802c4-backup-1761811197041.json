@@ -1,0 +1,19 @@
+{
+  "id": "aea63a2a-5af5-44d7-a497-def955d802c4",
+  "rfqId": null,
+  "quotationNumber": "VT-1609/25-XL-DA-VVD",
+  "vendorName": "MT Corp",
+  "vendorType": "internal",
+  "vendorTaxCode": "0303014918",
+  "totalAmount": 303014918,
+  "currency": "VND",
+  "quotedDate": null,
+  "validityDays": 90,
+  "deliveryDays": 90,
+  "deliveryTerms": "VSP warchouse, Vung Tau City, .R. Vietnam.",
+  "warrantyMonths": 18,
+  "documentId": "Gia MT chao - (250136-MTC).pdf-9e70096e-de1b-4399-844d-32ba09cce8ee",
+  "sourceFilePath": "Gia MT chao - (250136-MTC).pdf",
+  "createdAt": "2025-10-30T07:29:53.930Z",
+  "updatedAt": "2025-10-30T07:51:39.304Z"
+}
