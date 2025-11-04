@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const { responseCleanerMiddleware } = require("../responseCleaner");
 
 function clientAbortedHandler(resolve, fullText) {
   console.log(
@@ -151,7 +152,7 @@ function convertToChatHistory(history = []) {
       {
         type: data?.type || "chart",
         role: "assistant",
-        content: data.text,
+        content: responseCleanerMiddleware({ text: data.text }).text,
         sources: data.sources || [],
         chatId: id,
         sentAt: moment(createdAt).unix(),
@@ -219,9 +220,11 @@ function safeJSONStringify(obj) {
   });
 }
 
-function writeResponseChunk(response, data) {
-  response.write(`data: ${safeJSONStringify(data)}\n\n`);
-  return;
+function writeResponseChunk(response, chunk) {
+  if (chunk.textResponse) {
+    chunk.textResponse = responseCleanerMiddleware({ text: chunk.textResponse }).text;
+  }
+  response.write(`data: ${JSON.stringify(chunk)}\n\n`);
 }
 
 /**
