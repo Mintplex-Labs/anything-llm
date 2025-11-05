@@ -3,9 +3,11 @@ import markdownIt from "markdown-it";
 import markdownItKatexPlugin from "./plugins/markdown-katex";
 import Appearance from "@/models/appearance";
 import hljs from "highlight.js";
+import hljs_svelte from "highlightjs-svelte";
 import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
+hljs_svelte(hljs);
 
 const markdown = markdownIt({
   html: Appearance.get("renderHTML") ?? false,

@@ -19,6 +19,7 @@
     "file-saver": "^2.0.5",
     "he": "^1.2.0",
     "highlight.js": "^11.9.0",
+    "highlightjs-svelte": "^1.0.6",
     "i18next": "^23.11.3",
     "i18next-browser-languagedetector": "^7.2.1",
     "js-levenshtein": "^1.1.6",
