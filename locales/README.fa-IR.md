@@ -138,6 +138,7 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 
 - [LanceDB](https://github.com/lancedb/lancedb) (پیش‌فرض)
 - [PGVector](https://github.com/pgvector/pgvector)
+- [Vastbase](https://www.vastdata.com.cn)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)

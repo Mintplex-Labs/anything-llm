@@ -113,6 +113,9 @@ function getVectorDbClass(getExactly = null) {
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
+    case "vastbase":
+      const { Vastbase } = require("../vectorDbProviders/vastbase");
+      return Vastbase;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
