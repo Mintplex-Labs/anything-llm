@@ -1,6 +1,5 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
-const { responseCleanerMiddleware } = require("../../../../utils/helpers/responseCleaner.js");
 
 /**
  * HTTP Interface plugin for Aibitat to emulate a websocket interface in the agent
@@ -66,12 +65,6 @@ const httpSocket = {
           if (message.from !== "USER")
             Telemetry.sendTelemetry("agent_chat_sent");
           if (message.from === "USER" && muteUserReply) return;
-
-
-          if (message.content) {
-            message.content = responseCleanerMiddleware({ text: message.content }).text;
-          }
-
           handler.send(JSON.stringify(message));
           handler.close();
         });

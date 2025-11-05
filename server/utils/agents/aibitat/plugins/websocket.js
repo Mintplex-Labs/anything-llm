@@ -1,6 +1,5 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
-const { responseCleanerMiddleware } = require("../../../../utils/helpers/responseCleaner.js");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 
 /**
@@ -88,11 +87,6 @@ const websocket = {
           if (message.from !== "USER")
             Telemetry.sendTelemetry("agent_chat_sent");
           if (message.from === "USER" && muteUserReply) return;
-
-          if (message.content) {
-            message.content = responseCleanerMiddleware({ text: message.content }).text;
-          }
-
           socket.send(JSON.stringify(message));
         });
 
