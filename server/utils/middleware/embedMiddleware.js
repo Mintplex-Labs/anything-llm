@@ -3,6 +3,7 @@ const { VALID_CHAT_MODE } = require("../chats/stream");
 const { EmbedChats } = require("../../models/embedChats");
 const { EmbedConfig } = require("../../models/embedConfig");
 const { reqBody } = require("../http");
+const { EphemeralAgentHandler } = require("../agents/ephemeral");
 
 // Finds or Aborts request for a /:embedId/ url. This should always
 // be the first middleware and the :embedID should be in the URL.
@@ -102,6 +103,23 @@ async function canRespond(request, response, next) {
           : `${embed.chat_mode} is not a valid mode.`,
       });
       return;
+    }
+
+    // Check if this is an agent request and if the workspace has agent configuration
+    if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+      if (!embed.allow_agent) {
+        response.status(400).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: true,
+          errorMsg:
+            "Agent mode is not enabled for this chat. Contact the system administrator.",
+        });
+        return;
+      }
     }
 
     if (

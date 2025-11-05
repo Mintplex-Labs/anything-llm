@@ -74,9 +74,17 @@ export default function EmbedRow({ embed }) {
             href={paths.workspace.chat(embed.workspace.slug)}
             target="_blank"
             rel="noreferrer"
-            className="text-white flex items-center hover:underline"
+            className="text-white flex items-center hover:underline gap-x-2"
           >
             {embed.workspace.name}
+            {embed.allow_agent && (
+              <span
+                className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200"
+                title="Agent support enabled"
+              >
+                @
+              </span>
+            )}
           </a>
         </th>
         <th scope="row" className="px-6 whitespace-nowrap">
