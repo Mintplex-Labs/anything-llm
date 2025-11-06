@@ -58,7 +58,7 @@ function inviteEndpoints(app) {
           console.error("Accepting invite:", error);
           response
             .status(200)
-            .json({ success: false, error: "Could not create user." });
+            .json({ success: false, error });
           return;
         }
 
