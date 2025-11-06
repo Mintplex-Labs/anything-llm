@@ -376,7 +376,7 @@ ${body}`
       const data = await response.json();
       if (!Array.isArray(data)) {
         console.warn(`Unexpected response format for ${endpoint}:`, data);
-        return [];
+        return null;
       }
 
       console.log(
