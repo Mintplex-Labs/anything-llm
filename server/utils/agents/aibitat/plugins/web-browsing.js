@@ -69,6 +69,9 @@ const webBrowsing = {
               case "google-search-engine":
                 engine = "_googleSearchEngine";
                 break;
+              case "serpapi":
+                engine = "_serpApi";
+                break;
               case "searchapi":
                 engine = "_searchApi";
                 break;
@@ -159,6 +162,255 @@ const webBrowsing = {
                 );
                 return [];
               });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Use SerpApi
+           * SerpApi supports dozens of search engines across the major platforms including Google, DuckDuckGo, Bing, eBay, Amazon, Baidu, Yandex, and more.
+           * https://serpapi.com/
+           */
+          _serpApi: async function (query) {
+            if (!process.env.AGENT_SERPAPI_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use SerpApi searching because the user has not defined the required API key.\nVisit: https://serpapi.com/ to create the API key for free.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using SerpApi to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const engine = process.env.AGENT_SERPAPI_ENGINE;
+            const queryParamKey = engine === "amazon" ? "k" : "q";
+
+            const params = new URLSearchParams({
+              engine: engine,
+              [queryParamKey]: query,
+              api_key: process.env.AGENT_SERPAPI_API_KEY,
+            });
+
+            const url = `https://serpapi.com/search.json?${params.toString()}`;
+            const { response, error } = await fetch(url, {
+              method: "GET",
+              headers: {},
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPAPI_API_KEY, 5), q: query })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`SerpApi Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+
+            switch (engine) {
+              case "google":
+                if (response.hasOwnProperty("knowledge_graph"))
+                  data.push(response.knowledge_graph);
+                if (response.hasOwnProperty("answer_box"))
+                  data.push(response.answer_box);
+                response.organic_results?.forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                response.local_results?.forEach((searchResult) => {
+                  const {
+                    title,
+                    rating,
+                    reviews,
+                    description,
+                    address,
+                    website,
+                    extensions,
+                  } = searchResult;
+                  data.push({
+                    title,
+                    rating,
+                    reviews,
+                    description,
+                    address,
+                    website,
+                    extensions,
+                  });
+                });
+              case "google_maps":
+                response.local_results?.slice(0, 10).forEach((searchResult) => {
+                  const {
+                    title,
+                    rating,
+                    reviews,
+                    description,
+                    address,
+                    website,
+                    extensions,
+                  } = searchResult;
+                  data.push({
+                    title,
+                    rating,
+                    reviews,
+                    description,
+                    address,
+                    website,
+                    extensions,
+                  });
+                });
+              case "google_images_light":
+                response.images_results
+                  ?.slice(0, 10)
+                  .forEach((searchResult) => {
+                    const { title, source, link, thumbnail } = searchResult;
+                    data.push({
+                      title,
+                      source,
+                      link,
+                      thumbnail,
+                    });
+                  });
+              case "google_shopping_light":
+                response.shopping_results
+                  ?.slice(0, 10)
+                  .forEach((searchResult) => {
+                    const {
+                      title,
+                      source,
+                      price,
+                      rating,
+                      reviews,
+                      snippet,
+                      thumbnail,
+                      product_link,
+                    } = searchResult;
+                    data.push({
+                      title,
+                      source,
+                      price,
+                      rating,
+                      reviews,
+                      snippet,
+                      thumbnail,
+                      product_link,
+                    });
+                  });
+              case "google_news_light":
+                response.news_results?.slice(0, 10).forEach((searchResult) => {
+                  const { title, link, source, thumbnail, snippet, date } =
+                    searchResult;
+                  data.push({
+                    title,
+                    link,
+                    source,
+                    thumbnail,
+                    snippet,
+                    date,
+                  });
+                });
+              case "google_jobs":
+                response.jobs_results?.forEach((searchResult) => {
+                  const {
+                    title,
+                    company_name,
+                    location,
+                    description,
+                    apply_options,
+                    extensions,
+                  } = searchResult;
+                  data.push({
+                    title,
+                    company_name,
+                    location,
+                    description,
+                    apply_options,
+                    extensions,
+                  });
+                });
+              case "google_patents":
+                response.organic_results?.forEach((searchResult) => {
+                  const {
+                    title,
+                    patent_link,
+                    snippet,
+                    inventor,
+                    assignee,
+                    publication_number,
+                  } = searchResult;
+                  data.push({
+                    title,
+                    patent_link,
+                    snippet,
+                    inventor,
+                    assignee,
+                    publication_number,
+                  });
+                });
+              case "google_scholar":
+                response.organic_results?.forEach((searchResult) => {
+                  const { title, link, snippet, publication_info } =
+                    searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    publication_info,
+                  });
+                });
+              case "baidu":
+                if (response.hasOwnProperty("answer_box"))
+                  data.push(response.answer_box);
+                response.organic_results?.forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+              case "amazon":
+                response.organic_results
+                  ?.slice(0, 10)
+                  .forEach((searchResult) => {
+                    const {
+                      title,
+                      rating,
+                      reviews,
+                      price,
+                      link_clean,
+                      thumbnail,
+                    } = searchResult;
+                    data.push({
+                      title,
+                      rating,
+                      reviews,
+                      price,
+                      link_clean,
+                      thumbnail,
+                    });
+                  });
+            }
 
             if (data.length === 0)
               return `No information was found online for the search query.`;
