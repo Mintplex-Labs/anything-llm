@@ -8,135 +8,177 @@ import { useTranslation } from "react-i18next";
 export default function CustomLogo() {
   const { t } = useTranslation();
   const { logo: _initLogo, setLogo: _setLogo } = useLogo();
-  const [logo, setLogo] = useState("");
-  const [isDefaultLogo, setIsDefaultLogo] = useState(true);
-  const fileInputRef = useRef(null);
+  const [darkLogo, setDarkLogo] = useState("");
+  const [lightLogo, setLightLogo] = useState("");
+  const [isDefaultDarkLogo, setIsDefaultDarkLogo] = useState(true);
+  const [isDefaultLightLogo, setIsDefaultLightLogo] = useState(true);
+  const darkFileInputRef = useRef(null);
+  const lightFileInputRef = useRef(null);
 
   useEffect(() => {
     async function logoInit() {
-      setLogo(_initLogo || "");
-      const _isDefaultLogo = await System.isDefaultLogo();
-      setIsDefaultLogo(_isDefaultLogo);
+      // Initialize with current logos for both themes
+      const { logoURL: darkLogoURL } = await System.fetchLogo("default");
+      const { logoURL: lightLogoURL } = await System.fetchLogo("light");
+
+      setDarkLogo(darkLogoURL || "");
+      setLightLogo(lightLogoURL || "");
+
+      const _isDefaultDarkLogo = await System.isDefaultLogo("default");
+      const _isDefaultLightLogo = await System.isDefaultLogo("light");
+
+      setIsDefaultDarkLogo(_isDefaultDarkLogo);
+      setIsDefaultLightLogo(_isDefaultLightLogo);
     }
     logoInit();
-  }, [_initLogo]);
+  }, []);
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (event, theme) => {
     const file = event.target.files[0];
     if (!file) return false;
 
     const objectURL = URL.createObjectURL(file);
-    setLogo(objectURL);
+    const backendTheme = theme; // "dark" or "light"
+
+    if (theme === "dark") {
+      setDarkLogo(objectURL);
+    } else {
+      setLightLogo(objectURL);
+    }
 
     const formData = new FormData();
     formData.append("logo", file);
-    const { success, error } = await System.uploadLogo(formData);
+    const { success, error } = await System.uploadLogo(formData, backendTheme);
     if (!success) {
       showToast(`Failed to upload logo: ${error}`, "error");
-      setLogo(_initLogo);
+      // Revert on error
+      if (theme === "dark") {
+        const { logoURL } = await System.fetchLogo("default");
+        setDarkLogo(logoURL || "");
+      } else {
+        const { logoURL } = await System.fetchLogo("light");
+        setLightLogo(logoURL || "");
+      }
       return;
     }
 
-    const { logoURL } = await System.fetchLogo();
-    _setLogo(logoURL);
+    const { logoURL } = await System.fetchLogo(theme === "dark" ? "default" : "light");
+    if (theme === "dark") {
+      setDarkLogo(logoURL);
+      setIsDefaultDarkLogo(false);
+    } else {
+      setLightLogo(logoURL);
+      setIsDefaultLightLogo(false);
+    }
+
+    // Update the global logo context if needed
+    const { logoURL: currentLogo } = await System.fetchLogo();
+    _setLogo(currentLogo);
 
     showToast("Image uploaded successfully.", "success");
-    setIsDefaultLogo(false);
   };
 
-  const handleRemoveLogo = async () => {
-    setLogo("");
-    setIsDefaultLogo(true);
+  const handleRemoveLogo = async (theme) => {
+    const backendTheme = theme; // "dark" or "light"
 
-    const { success, error } = await System.removeCustomLogo();
+    if (theme === "dark") {
+      setDarkLogo("");
+      setIsDefaultDarkLogo(true);
+    } else {
+      setLightLogo("");
+      setIsDefaultLightLogo(true);
+    }
+
+    const { success, error } = await System.removeCustomLogo(backendTheme);
     if (!success) {
       console.error("Failed to remove logo:", error);
       showToast(`Failed to remove logo: ${error}`, "error");
-      const { logoURL } = await System.fetchLogo();
-      setLogo(logoURL);
-      setIsDefaultLogo(false);
+      // Revert on error
+      if (theme === "dark") {
+        const { logoURL } = await System.fetchLogo("default");
+        setDarkLogo(logoURL || "");
+        setIsDefaultDarkLogo(false);
+      } else {
+        const { logoURL } = await System.fetchLogo("light");
+        setLightLogo(logoURL || "");
+        setIsDefaultLightLogo(false);
+      }
       return;
     }
 
-    const { logoURL } = await System.fetchLogo();
-    _setLogo(logoURL);
+    // Update the global logo context
+    const { logoURL: currentLogo } = await System.fetchLogo();
+    _setLogo(currentLogo);
 
     showToast("Image successfully removed.", "success");
   };
 
-  const triggerFileInputClick = () => {
-    fileInputRef.current?.click();
+  const triggerFileInputClick = (theme) => {
+    if (theme === "dark") {
+      darkFileInputRef.current?.click();
+    } else {
+      lightFileInputRef.current?.click();
+    }
   };
 
-  return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.items.logo.title")}
+  const renderLogoSection = (theme, logo, isDefault, fileInputRef) => (
+    <div className="flex flex-col gap-y-2">
+      <p className="text-xs font-medium text-white/80">
+        {theme === "dark" ? "Dark Mode Logo" : "Light Mode Logo"}
       </p>
-      <p className="text-xs text-white/60">
-        {t("customization.items.logo.description")}
-      </p>
-      {isDefaultLogo ? (
-        <div className="flex md:flex-row flex-col items-center">
-          <div className="flex flex-row gap-x-8">
-            <label
-              className="mt-3 transition-all duration-300 hover:opacity-60"
-              hidden={!isDefaultLogo}
+      {isDefault ? (
+        <div className="flex items-center">
+          <label className="transition-all duration-300 hover:opacity-60">
+            <input
+              id={`${theme}-logo-upload`}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleFileUpload(e, theme)}
+            />
+            <div
+              className="w-64 py-3 bg-theme-settings-input-bg rounded-xl border-2 border-dashed border-theme-text-secondary border-opacity-60 justify-center items-center inline-flex cursor-pointer"
+              htmlFor={`${theme}-logo-upload`}
             >
-              <input
-                id="logo-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <div
-                className="w-80 py-4 bg-theme-settings-input-bg rounded-2xl border-2 border-dashed border-theme-text-secondary border-opacity-60 justify-center items-center inline-flex cursor-pointer"
-                htmlFor="logo-upload"
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <div className="rounded-full bg-white/40">
-                    <Plus className="w-6 h-6 text-black/80 m-2" />
-                  </div>
-                  <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1">
-                    {t("customization.items.logo.add")}
-                  </div>
-                  <div className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1">
-                    {t("customization.items.logo.recommended")}
-                  </div>
+              <div className="flex flex-col items-center justify-center">
+                <div className="rounded-full bg-white/40">
+                  <Plus className="w-5 h-5 text-black/80 m-1.5" />
+                </div>
+                <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1">
+                  {t("customization.items.logo.add")}
                 </div>
               </div>
-            </label>
-          </div>
+            </div>
+          </label>
         </div>
       ) : (
-        <div className="flex md:flex-row flex-col items-center relative">
-          <div className="group w-80 h-[130px] mt-3 overflow-hidden">
+        <div className="flex items-center relative">
+          <div className="group w-64 h-[100px] overflow-hidden">
             <img
               src={logo}
-              alt="Uploaded Logo"
-              className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-2xl"
+              alt={`${theme} Logo`}
+              className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-xl"
             />
 
-            <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
+            <div className="absolute w-64 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-2 justify-center items-center rounded-xl bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
               <button
-                onClick={triggerFileInputClick}
-                className="text-[#FFFFFF] text-base font-medium hover:text-opacity-60 mx-2"
+                onClick={() => triggerFileInputClick(theme)}
+                className="text-[#FFFFFF] text-sm font-medium hover:text-opacity-60"
               >
                 {t("customization.items.logo.replace")}
               </button>
 
               <input
-                id="logo-upload"
+                id={`${theme}-logo-upload`}
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={handleFileUpload}
+                onChange={(e) => handleFileUpload(e, theme)}
                 ref={fileInputRef}
               />
               <button
-                onClick={handleRemoveLogo}
-                className="text-[#FFFFFF] text-base font-medium hover:text-opacity-60 mx-2"
+                onClick={() => handleRemoveLogo(theme)}
+                className="text-[#FFFFFF] text-sm font-medium hover:text-opacity-60"
               >
                 {t("customization.items.logo.remove")}
               </button>
@@ -144,6 +186,21 @@ export default function CustomLogo() {
           </div>
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-y-0.5 my-4">
+      <p className="text-sm leading-6 font-semibold text-white">
+        {t("customization.items.logo.title")}
+      </p>
+      <p className="text-xs text-white/60 mb-4">
+        {t("customization.items.logo.description")}
+      </p>
+      <div className="flex flex-row gap-x-8">
+        {renderLogoSection("dark", darkLogo, isDefaultDarkLogo, darkFileInputRef)}
+        {renderLogoSection("light", lightLogo, isDefaultLightLogo, lightFileInputRef)}
+      </div>
     </div>
   );
 }
