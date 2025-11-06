@@ -590,10 +590,13 @@ function systemEndpoints(app) {
 
   app.get("/system/logo", async function (request, response) {
     try {
-      const darkMode =
-        !request?.query?.theme || request?.query?.theme === "default";
+      const theme = request?.query?.theme || "default";
+      // Convert theme to the format expected by our functions
+      const themeParam = theme === "default" ? "dark" : theme;
+
+      const darkMode = theme === "default";
       const defaultFilename = getDefaultFilename(darkMode);
-      const logoPath = await determineLogoFilepath(defaultFilename);
+      const logoPath = await determineLogoFilepath(defaultFilename, themeParam);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
 
       if (!found) {
@@ -601,7 +604,9 @@ function systemEndpoints(app) {
         return;
       }
 
-      const currentLogoFilename = await SystemSettings.currentLogoFilename();
+      const currentLogoFilename = await SystemSettings.currentLogoFilename(themeParam);
+      const isUsingDefault = !currentLogoFilename || isDefaultFilename(currentLogoFilename);
+
       response.writeHead(200, {
         "Access-Control-Expose-Headers":
           "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
@@ -610,10 +615,7 @@ function systemEndpoints(app) {
           logoPath
         )}`,
         "Content-Length": size,
-        "X-Is-Custom-Logo":
-          currentLogoFilename !== null &&
-          currentLogoFilename !== defaultFilename &&
-          !isDefaultFilename(currentLogoFilename),
+        "X-Is-Custom-Logo": !isUsingDefault,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -789,13 +791,20 @@ function systemEndpoints(app) {
         });
       }
 
+      const theme = request?.body?.theme || null;
+      const settingKey = theme ? `logo_filename_${theme}` : "logo_filename";
+
       try {
         const newFilename = await renameLogoFile(request.file.originalname);
-        const existingLogoFilename = await SystemSettings.currentLogoFilename();
-        await removeCustomLogo(existingLogoFilename);
+
+        // Remove existing logo for this theme if it exists
+        const existingLogoFilename = await SystemSettings.currentLogoFilename(theme);
+        if (existingLogoFilename) {
+          await removeCustomLogo(existingLogoFilename);
+        }
 
         const { success, error } = await SystemSettings._updateSettings({
-          logo_filename: newFilename,
+          [settingKey]: newFilename,
         });
 
         return response.status(success ? 200 : 500).json({
@@ -810,11 +819,14 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/is-default-logo", async (_, response) => {
+  app.get("/system/is-default-logo", async (request, response) => {
     try {
-      const currentLogoFilename = await SystemSettings.currentLogoFilename();
-      const isDefaultLogo =
-        !currentLogoFilename || currentLogoFilename === LOGO_FILENAME;
+      const theme = request?.query?.theme || null;
+      const themeParam = theme === "default" ? "dark" : theme;
+      const currentLogoFilename = await SystemSettings.currentLogoFilename(themeParam);
+      const darkMode = !theme || theme === "default";
+      const defaultFilename = getDefaultFilename(darkMode);
+      const isDefaultLogo = !currentLogoFilename || currentLogoFilename === defaultFilename;
       response.status(200).json({ isDefaultLogo });
     } catch (error) {
       console.error("Error processing the logo request:", error);
@@ -825,12 +837,15 @@ function systemEndpoints(app) {
   app.get(
     "/system/remove-logo",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
+    async (request, response) => {
       try {
-        const currentLogoFilename = await SystemSettings.currentLogoFilename();
+        const theme = request?.query?.theme || null;
+        const settingKey = theme ? `logo_filename_${theme}` : "logo_filename";
+
+        const currentLogoFilename = await SystemSettings.currentLogoFilename(theme);
         await removeCustomLogo(currentLogoFilename);
         const { success, error } = await SystemSettings._updateSettings({
-          logo_filename: LOGO_FILENAME,
+          [settingKey]: null,
         });
 
         return response.status(success ? 200 : 500).json({

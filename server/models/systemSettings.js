@@ -36,6 +36,8 @@ const SystemSettings = {
   ],
   supportedFields: [
     "logo_filename",
+    "logo_filename_dark",
+    "logo_filename_light",
     "telemetry_id",
     "footer_data",
     "support_email",
@@ -397,8 +399,18 @@ const SystemSettings = {
     }
   },
 
-  currentLogoFilename: async function () {
+  currentLogoFilename: async function (theme = null) {
     try {
+      // If theme is specified, check for theme-specific logo first
+      if (theme === "dark") {
+        const darkSetting = await this.get({ label: "logo_filename_dark" });
+        if (darkSetting?.value) return darkSetting.value;
+      } else if (theme === "light") {
+        const lightSetting = await this.get({ label: "logo_filename_light" });
+        if (lightSetting?.value) return lightSetting.value;
+      }
+
+      // Fall back to the original logo_filename setting for backward compatibility
       const setting = await this.get({ label: "logo_filename" });
       return setting?.value || null;
     } catch (error) {
