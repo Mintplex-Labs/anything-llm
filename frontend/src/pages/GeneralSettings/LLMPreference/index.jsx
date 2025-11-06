@@ -520,7 +520,7 @@ export default function GeneralLLMPreference() {
                   >
                     <div className="flex gap-x-4 items-center">
                       <img
-                        src={selectedLLMObject?.logo || AnythingLLMIcon}
+                        src={selectedLLMObject?.logo || ""}
                         alt={`${selectedLLMObject?.name} logo`}
                         className="w-10 h-10 rounded-md"
                       />

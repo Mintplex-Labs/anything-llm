@@ -22,9 +22,9 @@ const PROVIDERS = [
     description: "Leverage the OpenAI Whisper-large model using your API key.",
   },
   {
-    name: "AnythingLLM Built-In",
+    name: "Built-In",
     value: "local",
-    logo: AnythingLLMIcon,
+    logo: "",
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
     description: "Run a built-in whisper model on this instance privately.",
   },

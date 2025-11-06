@@ -7,213 +7,224 @@
 }
 
 :root {
-  /* Default theme */
-  --theme-loader: #ffffff;
-  --theme-bg-primary: #0e0f0f;
-  --theme-bg-secondary: #1b1b1e;
-  --theme-bg-sidebar: #0e0f0f;
-  --theme-bg-container: #0e0f0f;
-  --theme-bg-chat: #1b1b1e;
-  --theme-bg-chat-input: #27282a;
-  --theme-text-primary: #ffffff;
-  --theme-text-secondary: rgba(255, 255, 255, 0.6);
-  --theme-placeholder: #57585a;
-  --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
-  --theme-sidebar-item-selected: rgba(255, 255, 255, 0.3);
-  --theme-sidebar-item-hover: #3f3f42;
-  --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
-  --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
-  --theme-sidebar-thread-selected: rgba(255, 255, 255, 0.05);
-  --theme-popup-menu-bg: #000000;
+  /* Beige & Pastel Theme */
+  --theme-loader: #f5e6d3;
+  --theme-bg-primary: #faf8f5;
+  --theme-bg-secondary: #f5f1eb;
+  --theme-bg-sidebar: #f7f3ed;
+  --theme-bg-container: #faf8f5;
+  --theme-bg-chat: #fefcf9;
+  --theme-bg-chat-input: #f0ebe3;
+  --theme-text-primary: #5d4e37;
+  --theme-text-secondary: rgba(93, 78, 55, 0.7);
+  --theme-placeholder: #b8a99a;
+  --theme-sidebar-item-default: rgba(245, 230, 211, 0.5);
+  --theme-sidebar-item-selected: rgba(245, 230, 211, 0.8);
+  --theme-sidebar-item-hover: #ede4d8;
+  --theme-sidebar-subitem-default: rgba(245, 230, 211, 0.3);
+  --theme-sidebar-subitem-selected: rgba(245, 230, 211, 0.5);
+  --theme-sidebar-thread-selected: rgba(245, 230, 211, 0.4);
+  --theme-popup-menu-bg: #f5e6d3;
 
-  --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
-  --theme-sidebar-border: rgba(255, 255, 255, 0.1);
-  --theme-sidebar-item-workspace-active: #ffffff;
-  --theme-sidebar-item-workspace-inactive: #ffffff;
+  --theme-sidebar-subitem-hover: rgba(245, 230, 211, 0.4);
+  --theme-sidebar-border: rgba(189, 169, 154, 0.3);
+  --theme-sidebar-item-workspace-active: #8b7355;
+  --theme-sidebar-item-workspace-inactive: #a68b6f;
 
-  --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
-  --theme-sidebar-footer-icon-fill: #ffffff;
-  --theme-sidebar-footer-icon-hover: rgba(255, 255, 255, 0.2);
+  --theme-sidebar-footer-icon: rgba(245, 230, 211, 0.6);
+  --theme-sidebar-footer-icon-fill: #8b7355;
+  --theme-sidebar-footer-icon-hover: rgba(245, 230, 211, 0.9);
 
-  --theme-chat-input-border: #525355;
-  --theme-action-menu-bg: #27282a;
-  --theme-action-menu-item-hover: rgba(255, 255, 255, 0.1);
-  --theme-settings-input-bg: #0e0f0f;
-  --theme-settings-input-placeholder: rgba(255, 255, 255, 0.5);
-  --theme-settings-input-active: rgb(255 255 255 / 0.2);
-  --theme-settings-input-text: #ffffff;
-  --theme-modal-border: #3f3f42;
+  --theme-chat-input-border: #d4c4b0;
+  --theme-action-menu-bg: #f0ebe3;
+  --theme-action-menu-item-hover: rgba(245, 230, 211, 0.6);
+  --theme-settings-input-bg: #faf8f5;
+  --theme-settings-input-placeholder: rgba(93, 78, 55, 0.5);
+  --theme-settings-input-active: rgb(189 169 154 / 0.2);
+  --theme-settings-input-text: #5d4e37;
+  --theme-modal-border: #d4c4b0;
 
-  --theme-button-primary: #46c8ff;
-  --theme-button-primary-hover: #434343;
+  --theme-button-primary: #d4a5a5;
+  --theme-button-primary-hover: #c89595;
 
-  --theme-button-cta: #7cd4fd;
+  --theme-button-cta: #b8d4c8;
 
-  --theme-file-row-even: #0e0f0f;
-  --theme-file-row-odd: #1b1b1e;
-  --theme-file-row-selected-even: rgba(14, 165, 233, 0.2);
-  --theme-file-row-selected-odd: rgba(14, 165, 233, 0.1);
-  --theme-file-picker-hover: rgb(14 165 233 / 0.2);
+  --theme-file-row-even: #faf8f5;
+  --theme-file-row-odd: #f5f1eb;
+  --theme-file-row-selected-even: rgba(212, 165, 165, 0.3);
+  --theme-file-row-selected-odd: rgba(212, 165, 165, 0.2);
+  --theme-file-picker-hover: rgb(212 165 165 / 0.25);
 
-  --theme-home-text: #ffffff;
-  --theme-home-text-secondary: #9f9fa0;
-  --theme-home-bg-card: #1a1b1b;
-  --theme-home-bg-button: #252626;
-  --theme-home-border: rgba(255, 255, 255, 0.2);
-  --theme-home-button-primary: #36bffa;
-  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
-  --theme-home-button-secondary: #27282a;
-  --theme-home-button-secondary-hover: rgba(54, 191, 250, 0.1);
-  --theme-home-button-secondary-text: #ffffff;
-  --theme-home-button-secondary-hover-text: #36bffa;
-  --theme-home-update-card-bg: #1c1c1c;
-  --theme-home-update-card-hover: #252525;
-  --theme-home-update-source: #53b1fd;
+  --theme-home-text: #5d4e37;
+  --theme-home-text-secondary: #8b7355;
+  --theme-home-bg-card: #f5f1eb;
+  --theme-home-bg-button: #ede4d8;
+  --theme-home-border: rgba(189, 169, 154, 0.3);
+  --theme-home-button-primary: #d4a5a5;
+  --theme-home-button-primary-hover: #c89595;
+  --theme-home-button-secondary: #e8ddd0;
+  --theme-home-button-secondary-hover: rgba(212, 165, 165, 0.2);
+  --theme-home-button-secondary-text: #8b7355;
+  --theme-home-button-secondary-hover-text: #a68b6f;
+  --theme-home-update-card-bg: #f5f1eb;
+  --theme-home-update-card-hover: #ede4d8;
+  --theme-home-update-source: #b8a99a;
 
-  --theme-checklist-item-bg: #203c48;
-  --theme-checklist-item-bg-hover: #255d75;
-  --theme-checklist-item-text: #b9e6fe;
-  --theme-checklist-item-completed-bg: #36463d;
-  --theme-checklist-item-completed-text: #a6f4c5;
-  --theme-checklist-checkbox-fill: #a6f4c5;
-  --theme-checklist-checkbox-text: #36463d;
-  --theme-checklist-item-hover: #36bffa;
-  --theme-checklist-checkbox-border: #ffffff;
-  --theme-checklist-button-border: #36bffa;
-  --theme-checklist-button-text: #36bffa;
-  --theme-checklist-button-hover-bg: rgba(54, 191, 250, 0.2);
-  --theme-checklist-button-hover-border: rgba(54, 191, 250, 0.8);
+  --theme-checklist-item-bg: #e8ddd0;
+  --theme-checklist-item-bg-hover: #e0d2c2;
+  --theme-checklist-item-text: #6b5a47;
+  --theme-checklist-item-completed-bg: #e0e8d8;
+  --theme-checklist-item-completed-text: #7a9b7a;
+  --theme-checklist-checkbox-fill: #b8d4c8;
+  --theme-checklist-checkbox-text: #5d4e37;
+  --theme-checklist-item-hover: #d4a5a5;
+  --theme-checklist-checkbox-border: #b8a99a;
+  --theme-checklist-button-border: #d4a5a5;
+  --theme-checklist-button-text: #d4a5a5;
+  --theme-checklist-button-hover-bg: rgba(212, 165, 165, 0.2);
+  --theme-checklist-button-hover-border: rgba(212, 165, 165, 0.8);
 
-  --theme-home-button-secondary-border: #acc1e6;
-  --theme-home-button-secondary-border-hover: #293056;
+  --theme-home-button-secondary-border: #d4c4b0;
+  --theme-home-button-secondary-border-hover: #c4b4a0;
 
-  --theme-attachment-bg: #18191a;
-  --theme-attachment-error-bg: rgba(180, 35, 24, 0.4);
-  --theme-attachment-success-bg: #18191a;
-  --theme-attachment-text: #ffffff;
-  --theme-attachment-text-secondary: rgba(255, 255, 255, 0.8);
-  --theme-attachment-icon: #ffffff;
-  --theme-attachment-icon-spinner: #ffffff;
-  --theme-attachment-icon-spinner-bg: #27282a;
+  --theme-attachment-bg: #f5f1eb;
+  --theme-attachment-error-bg: rgba(212, 165, 165, 0.4);
+  --theme-attachment-success-bg: #e0e8d8;
+  --theme-attachment-text: #5d4e37;
+  --theme-attachment-text-secondary: rgba(93, 78, 55, 0.8);
+  --theme-attachment-icon: #5d4e37;
+  --theme-attachment-icon-spinner: #d4a5a5;
+  --theme-attachment-icon-spinner-bg: #f5f1eb;
 
-  --theme-button-text: #a8a9ab;
-  --theme-button-code-hover-text: #7cd4fd;
-  --theme-button-code-hover-bg: #22343f;
-  --theme-button-disable-hover-text: #fec84b;
-  --theme-button-disable-hover-bg: #3a3128;
-  --theme-button-delete-hover-text: #f97066;
-  --theme-button-delete-hover-bg: #37282b;
+  --theme-button-text: #8b7355;
+  --theme-button-code-hover-text: #b8d4c8;
+  --theme-button-code-hover-bg: #e8f0ec;
+  --theme-button-disable-hover-text: #c9a882;
+  --theme-button-disable-hover-bg: #f5ede3;
+  --theme-button-delete-hover-text: #d4a5a5;
+  --theme-button-delete-hover-bg: #f5e6e6;
 }
 
 [data-theme="light"] {
-  --theme-loader: #000000;
-  --theme-bg-primary: #ffffff;
-  --theme-bg-secondary: #ffffff;
-  --theme-bg-sidebar: #edf2fa;
-  --theme-bg-container: #f9fbfd;
-  --theme-popup-menu-bg: #c2e7fe;
+  /* Beige & Pastel Light Theme */
+  --theme-loader: #f5e6d3;
+  --theme-bg-primary: #fefcf9;
+  --theme-bg-secondary: #faf8f5;
+  --theme-bg-sidebar: #f7f3ed;
+  --theme-bg-container: #fefcf9;
+  --theme-popup-menu-bg: #f5e6d3;
 
   --theme-bg-chat: #ffffff;
-  --theme-bg-chat-input: #eaeaea;
-  --theme-text-primary: #0e0f0f;
-  --theme-text-secondary: #7a7d7e;
-  --theme-placeholder: #9ca3af;
-  --theme-sidebar-item-default: #ffffff;
-  --theme-sidebar-item-selected: #ffffff;
-  --theme-sidebar-item-hover: #c8efff;
+  --theme-bg-chat-input: #f5f1eb;
+  --theme-text-primary: #5d4e37;
+  --theme-text-secondary: #8b7355;
+  --theme-placeholder: #b8a99a;
+  --theme-sidebar-item-default: #faf8f5;
+  --theme-sidebar-item-selected: #f5e6d3;
+  --theme-sidebar-item-hover: #ede4d8;
 
-  --theme-sidebar-item-text-inactive: #7a7d7e;
-  --theme-sidebar-item-text-active: #184558;
+  --theme-sidebar-item-text-inactive: #8b7355;
+  --theme-sidebar-item-text-active: #6b5a47;
 
-  --theme-sidebar-item-workspace-active: #000000;
-  --theme-sidebar-item-workspace-inactive: #7a7d7e;
+  --theme-sidebar-item-workspace-active: #5d4e37;
+  --theme-sidebar-item-workspace-inactive: #8b7355;
 
   --theme-sidebar-subitem-default: transparent;
-  --theme-sidebar-subitem-selected: #e2e7ee;
-  --theme-sidebar-thread-selected: #ffffff;
-  --theme-sidebar-subitem-hover: #e2e7ee;
-  --theme-sidebar-border: #d3d4d4;
+  --theme-sidebar-subitem-selected: #ede4d8;
+  --theme-sidebar-thread-selected: #faf8f5;
+  --theme-sidebar-subitem-hover: #ede4d8;
+  --theme-sidebar-border: #d4c4b0;
 
-  --theme-sidebar-footer-icon: #ffffff;
-  --theme-sidebar-footer-icon-fill: #6e6f6f;
-  --theme-sidebar-footer-icon-hover: #d8d6d6;
+  --theme-sidebar-footer-icon: #f5e6d3;
+  --theme-sidebar-footer-icon-fill: #8b7355;
+  --theme-sidebar-footer-icon-hover: #e8ddd0;
 
-  --theme-chat-input-border: #cccccc;
-  --theme-action-menu-bg: #eaeaea;
-  --theme-action-menu-item-hover: rgba(0, 0, 0, 0.1);
-  --theme-settings-input-bg: #edf2fa;
-  --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
-  --theme-settings-input-active: rgb(0 0 0 / 0.2);
-  --theme-settings-input-text: #0e0f0f;
-  --theme-modal-border: #d3d3d3;
+  --theme-chat-input-border: #d4c4b0;
+  --theme-action-menu-bg: #f5f1eb;
+  --theme-action-menu-item-hover: rgba(212, 165, 165, 0.2);
+  --theme-settings-input-bg: #faf8f5;
+  --theme-settings-input-placeholder: rgba(93, 78, 55, 0.5);
+  --theme-settings-input-active: rgb(189 169 154 / 0.2);
+  --theme-settings-input-text: #5d4e37;
+  --theme-modal-border: #d4c4b0;
 
-  --theme-button-primary: #0ba5ec;
-  --theme-button-primary-hover: #dedede;
+  --theme-button-primary: #d4a5a5;
+  --theme-button-primary-hover: #c89595;
 
-  --theme-button-cta: #7cd4fd;
+  --theme-button-cta: #b8d4c8;
 
-  --theme-file-row-even: #f5f5f5;
-  --theme-file-row-odd: #e9e9e9;
-  --theme-file-row-selected-even: #0ba5ec;
-  --theme-file-row-selected-odd: #0ba5ec;
-  --theme-file-picker-hover: #e2e7ee;
+  --theme-file-row-even: #fefcf9;
+  --theme-file-row-odd: #faf8f5;
+  --theme-file-row-selected-even: #d4a5a5;
+  --theme-file-row-selected-odd: #d4a5a5;
+  --theme-file-picker-hover: #ede4d8;
 
-  --theme-home-text: #0e0f0f;
-  --theme-home-text-secondary: #6f6f71;
-  --theme-home-bg-card: #edf2fa;
-  --theme-home-bg-button: #f3f4f6;
-  --theme-home-border: rgba(0, 0, 0, 0.1);
-  --theme-home-button-primary: #36bffa;
-  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
-  --theme-home-button-secondary: #dbe8fe;
-  --theme-home-button-secondary-hover: #b0c8f1;
-  --theme-home-button-secondary-text: #293056;
-  --theme-home-button-secondary-hover-text: #293056;
-  --theme-home-update-card-bg: #edf2fa;
-  --theme-home-update-card-hover: #f3f4f6;
-  --theme-home-update-source: #0284c7;
+  --theme-home-text: #5d4e37;
+  --theme-home-text-secondary: #8b7355;
+  --theme-home-bg-card: #f5f1eb;
+  --theme-home-bg-button: #ede4d8;
+  --theme-home-border: rgba(189, 169, 154, 0.3);
+  --theme-home-button-primary: #d4a5a5;
+  --theme-home-button-primary-hover: #c89595;
+  --theme-home-button-secondary: #e8ddd0;
+  --theme-home-button-secondary-hover: #e0d2c2;
+  --theme-home-button-secondary-text: #6b5a47;
+  --theme-home-button-secondary-hover-text: #6b5a47;
+  --theme-home-update-card-bg: #f5f1eb;
+  --theme-home-update-card-hover: #ede4d8;
+  --theme-home-update-source: #b8a99a;
 
-  --theme-checklist-item-bg: #c7e2ee;
-  --theme-checklist-item-bg-hover: #a3d9f1;
-  --theme-checklist-item-text: #0d3851;
-  --theme-checklist-item-completed-bg: #d8f3ea;
-  --theme-checklist-item-completed-text: #039855;
-  --theme-checklist-checkbox-fill: #6ce9a6;
-  --theme-checklist-checkbox-text: #ffffff;
-  --theme-checklist-item-hover: #0ba5ec;
-  --theme-checklist-checkbox-border: #6b7280;
-  --theme-checklist-button-border: #0ba5ec;
-  --theme-checklist-button-text: #0ba5ec;
-  --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);
-  --theme-checklist-button-hover-border: rgba(11, 165, 236, 0.8);
+  --theme-checklist-item-bg: #e8ddd0;
+  --theme-checklist-item-bg-hover: #e0d2c2;
+  --theme-checklist-item-text: #6b5a47;
+  --theme-checklist-item-completed-bg: #e0e8d8;
+  --theme-checklist-item-completed-text: #7a9b7a;
+  --theme-checklist-checkbox-fill: #b8d4c8;
+  --theme-checklist-checkbox-text: #5d4e37;
+  --theme-checklist-item-hover: #d4a5a5;
+  --theme-checklist-checkbox-border: #b8a99a;
+  --theme-checklist-button-border: #d4a5a5;
+  --theme-checklist-button-text: #d4a5a5;
+  --theme-checklist-button-hover-bg: rgba(212, 165, 165, 0.2);
+  --theme-checklist-button-hover-border: rgba(212, 165, 165, 0.8);
 
-  --theme-home-button-secondary-border-hover: #293056;
+  --theme-home-button-secondary-border-hover: #c4b4a0;
 
-  --theme-attachment-bg: #edf2fa;
-  --theme-attachment-error-bg: rgba(180, 35, 24, 0.3);
-  --theme-attachment-success-bg: #eaeaea;
-  --theme-attachment-text: #0e0f0f;
-  --theme-attachment-text-secondary: rgba(0, 0, 0, 0.8);
-  --theme-attachment-icon: #ffffff;
-  --theme-attachment-icon-spinner: #7cd4fd;
-  --theme-attachment-icon-spinner-bg: #ffffff;
+  --theme-attachment-bg: #f5f1eb;
+  --theme-attachment-error-bg: rgba(212, 165, 165, 0.3);
+  --theme-attachment-success-bg: #e0e8d8;
+  --theme-attachment-text: #5d4e37;
+  --theme-attachment-text-secondary: rgba(93, 78, 55, 0.8);
+  --theme-attachment-icon: #5d4e37;
+  --theme-attachment-icon-spinner: #d4a5a5;
+  --theme-attachment-icon-spinner-bg: #faf8f5;
 
-  --theme-button-text: #a8a9ab;
-  --theme-button-code-hover-text: #0ba5ec;
-  --theme-button-code-hover-bg: #e8f7fe;
-  --theme-button-disable-hover-text: #854708;
-  --theme-button-disable-hover-bg: #fef7e6;
-  --theme-button-delete-hover-text: #b42318;
-  --theme-button-delete-hover-bg: #fee4e2;
+  --theme-button-text: #8b7355;
+  --theme-button-code-hover-text: #b8d4c8;
+  --theme-button-code-hover-bg: #e8f0ec;
+  --theme-button-disable-hover-text: #c9a882;
+  --theme-button-disable-hover-bg: #f5ede3;
+  --theme-button-delete-hover-text: #d4a5a5;
+  --theme-button-delete-hover-bg: #f5e6e6;
 }
 
-[data-theme="light"] .text-white {
-  color: var(--theme-text-primary);
+/* Override all white text to be dark for visibility on beige background */
+.text-white,
+[data-theme="light"] .text-white,
+.hover\:text-white:hover {
+  color: var(--theme-text-primary) !important;
 }
 
+.text-description,
+.text-white\/60,
 [data-theme="light"] .text-description,
 [data-theme="light"] .text-white\/60 {
-  color: var(--theme-text-secondary);
+  color: var(--theme-text-secondary) !important;
+}
+
+/* Override hover states with white text */
+.hover\:text-white:hover {
+  color: var(--theme-text-primary) !important;
 }
 
 [data-theme="light"] .bg-theme-bg-secondary {
@@ -252,7 +263,7 @@ body {
     Droid Sans,
     Helvetica Neue,
     sans-serif;
-  background-color: white;
+  background-color: #faf8f5;
 }
 
 a {
@@ -634,13 +645,13 @@ dialog::backdrop {
 }
 
 .user-reply > div:first-of-type {
-  border: 2px solid white;
+  border: 2px solid #d4c4b0;
 }
 
 .reply > *:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
-  color: white;
+  color: #5d4e37;
   font-size: 14px;
 }
 
@@ -665,7 +676,8 @@ dialog::backdrop {
 }
 
 .tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+  @apply !bg-black !py-2 !px-3 !rounded-md;
+  color: #f5e6d3 !important;
 }
 
 .Toastify__toast-body {
@@ -689,7 +701,8 @@ dialog::backdrop {
 }
 
 .input-label {
-  @apply text-[14px] font-bold text-white;
+  @apply text-[14px] font-bold;
+  color: var(--theme-text-primary);
 }
 
 /**
@@ -738,7 +751,7 @@ dialog::backdrop {
 .markdown table {
   width: 100%;
   border-collapse: collapse;
-  color: #bdbdbe;
+  color: #6b5a47;
   font-size: 13px;
   margin: 30px 0px;
   border-radius: 10px;
@@ -747,21 +760,21 @@ dialog::backdrop {
 }
 
 .markdown table thead {
-  color: #fff;
+  color: #5d4e37;
   text-transform: uppercase;
   font-weight: bolder;
 }
 
 .markdown hr {
   border: 0;
-  border-top: 1px solid #cdcdcd40;
+  border-top: 1px solid rgba(212, 196, 176, 0.4);
   margin: 1rem 0;
 }
 
 .markdown table th,
 .markdown table td {
   padding: 8px 15px;
-  border-bottom: 1px solid #cdcdcd2e;
+  border-bottom: 1px solid rgba(212, 196, 176, 0.3);
   text-align: left;
 }
 
@@ -784,7 +797,7 @@ dialog::backdrop {
 [data-theme="light"] .markdown table,
 [data-theme="light"] .markdown table th,
 [data-theme="light"] .markdown table td {
-  color: #000;
+  color: #5d4e37;
 }
 
 /* List Styles */
@@ -830,7 +843,7 @@ dialog::backdrop {
 }
 
 .markdown ul li::marker {
-  color: #d0d0d0cf;
+  color: #b8a99a;
   padding-top: 10px;
 }
 
@@ -871,7 +884,7 @@ dialog::backdrop {
 
 .markdown strong {
   font-weight: 600;
-  color: #fff;
+  color: #5d4e37;
 }
 
 .file-row {
@@ -927,38 +940,38 @@ does not extend the close button beyond the viewport. */
 .white-scrollbar {
   overflow-y: scroll;
   scrollbar-width: thin;
-  scrollbar-color: #ffffff #18181b;
+  scrollbar-color: #5d4e37 #d4c4b0;
   margin-right: 8px;
 }
 
 /* Webkit browsers (Chrome, Safari) */
 .white-scrollbar::-webkit-scrollbar {
   width: 3px;
-  background-color: #18181b;
+  background-color: #d4c4b0;
 }
 
 .white-scrollbar::-webkit-scrollbar-track {
-  background-color: #18181b;
+  background-color: #d4c4b0;
   margin-right: 8px;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
+  background-color: #5d4e37;
   border-radius: 4px;
-  border: 2px solid #18181b;
+  border: 2px solid #d4c4b0;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #cccccc;
+  background-color: #6b5a47;
 }
 
 /* Recharts rendering styles */
 .recharts-text > * {
-  fill: #fff;
+  fill: #5d4e37;
 }
 
 [data-theme="light"] .recharts-text > * {
-  fill: #000;
+  fill: #5d4e37;
 }
 
 .recharts-legend-wrapper {

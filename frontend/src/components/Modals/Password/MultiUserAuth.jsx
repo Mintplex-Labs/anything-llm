@@ -47,7 +47,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="md:px-12 px-6 space-y-6 flex h-full w-full">
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-2">
-            <label className="text-white text-sm font-bold">
+            <label className="text-theme-text-primary text-sm font-bold">
               {t("login.multi-user.placeholder-username")}
             </label>
             <input
@@ -61,7 +61,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
             />
           </div>
           <div className="flex flex-col gap-y-2">
-            <label className="text-white text-sm font-bold">
+            <label className="text-theme-text-primary text-sm font-bold">
               {t("login.password-reset.recovery-codes")}
             </label>
             {recoveryCodeInputs.map((code, index) => (
@@ -87,13 +87,13 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+              className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-theme-text-primary md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
         >
           {t("login.password-reset.title")}
         </button>
         <button
           type="button"
-          className="text-white text-sm flex gap-x-1 hover:text-primary-button hover:underline -mb-8"
+              className="text-theme-text-primary text-sm flex gap-x-1 hover:text-primary-button hover:underline -mb-8"
           onClick={() => setShowRecoveryForm(false)}
         >
           {t("login.password-reset.back-to-login")}
@@ -119,10 +119,10 @@ const ResetPasswordForm = ({ onSubmit }) => {
     >
       <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6">
         <div className="flex flex-col gap-y-4 w-full">
-          <h3 className="text-4xl md:text-2xl font-bold text-white text-center md:text-left">
+          <h3 className="text-4xl md:text-2xl font-bold text-theme-text-primary text-center md:text-left">
             Reset Password
           </h3>
-          <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
+          <p className="text-sm text-theme-text-secondary md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
             Enter your new password.
           </p>
         </div>
@@ -136,7 +136,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               required
             />
           </div>
@@ -147,7 +147,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               required
             />
           </div>
@@ -156,7 +156,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+              className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-theme-text-primary md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
         >
           Reset Password
         </button>
@@ -285,15 +285,15 @@ export default function MultiUserAuth() {
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
-                <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
+                <h3 className="text-md md:text-2xl font-bold text-theme-text-primary text-center white-space-nowrap hidden md:block">
                   {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] light:via-[#75D6FF] to-[#FFFFFF] light:to-[#75D6FF] bg-clip-text text-transparent">
-                  {customAppName || "AnythingLLM"}
+                  {customAppName || ""}
                 </p>
               </div>
               <p className="text-sm text-theme-text-secondary text-center">
-                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
+                {t("login.sign-in.start")} {customAppName || ""}{" "}
                 {t("login.sign-in.end")}
               </p>
             </div>
@@ -335,7 +335,7 @@ export default function MultiUserAuth() {
             </button>
             <button
               type="button"
-              className="text-white text-sm flex gap-x-1 hover:text-primary-button hover:underline"
+              className="text-theme-text-primary text-sm flex gap-x-1 hover:text-primary-button hover:underline"
               onClick={handleResetPassword}
             >
               {t("login.multi-user.forgot-pass")}?
