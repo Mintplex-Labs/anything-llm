@@ -188,7 +188,17 @@ export default function GeneralVectorDatabase() {
     },
   ];
 
-  const selectedVDBObject = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
+  const selectedVDBObject =
+    VECTOR_DBS.find((vdb) => vdb.value === selectedVDB) || VECTOR_DBS[0];
+
+  useEffect(() => {
+    if (selectedVDB && !VECTOR_DBS.some((vdb) => vdb.value === selectedVDB)) {
+      showToast(`Failed to select vector database: ${selectedVDB}`, "error");
+      console.error(`Failed to select vector database: ${selectedVDB}`);
+      setSelectedVDB(selectedVDBObject.value);
+      setHasChanges(true);
+    }
+  }, [selectedVDB]);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
