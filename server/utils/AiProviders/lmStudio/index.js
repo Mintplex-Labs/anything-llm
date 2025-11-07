@@ -12,6 +12,8 @@ const { OpenAI: OpenAIApi } = require("openai");
 class LMStudioLLM {
   /** @see LMStudioLLM.cacheContextWindows */
   static modelContextWindows = {};
+  /** Tracks the current caching operation to prevent race conditions */
+  static _cachePromise = null;
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
@@ -36,6 +38,14 @@ class LMStudioLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
+    // Initialize limits with default values that will be updated by cacheContextWindows
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
+
+    // Start caching in background and update limits when fetched
     LMStudioLLM.cacheContextWindows(true).then(() => {
       this.limits = {
         history: this.promptWindowLimit() * 0.15,
@@ -67,34 +77,73 @@ class LMStudioLLM {
    */
   static async cacheContextWindows(force = false) {
     try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
+      if (LMStudioLLM._cachePromise && !force) {
+        return await LMStudioLLM._cachePromise;
+      }
+
+      // Already have cached context windows and not forcing a refresh
+      if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force) {
         return;
+      }
 
-      const endpoint = new URL(process.env.LMSTUDIO_BASE_PATH);
-      endpoint.pathname = "/api/v0/models";
-      await fetch(endpoint.toString())
-        .then((res) => {
-          if (!res.ok)
-            throw new Error(`LMStudio:cacheContextWindows - ${res.statusText}`);
-          return res.json();
-        })
-        .then(({ data: models }) => {
-          models.forEach((model) => {
-            if (model.type === "embeddings") return;
-            LMStudioLLM.modelContextWindows[model.id] =
-              model.max_context_length;
+      // Store cache promise to prevent multiple requests
+      LMStudioLLM._cachePromise = (async () => {
+        const endpoint = new URL(process.env.LMSTUDIO_BASE_PATH);
+        endpoint.pathname = "/api/v0/models";
+        await fetch(endpoint.toString())
+          .then((res) => {
+            if (!res.ok)
+              throw new Error(
+                `LMStudio:cacheContextWindows - ${res.statusText}`
+              );
+            return res.json();
+          })
+          .then(({ data: models }) => {
+            models.forEach((model) => {
+              if (model.type === "embeddings") return;
+              LMStudioLLM.modelContextWindows[model.id] =
+                model.max_context_length;
+            });
+          })
+          .catch((e) => {
+            LMStudioLLM.#slog(`Error caching context windows`, e);
+            return;
           });
-        })
-        .catch((e) => {
-          LMStudioLLM.#slog(`Error caching context windows`, e);
-          return;
-        });
 
-      LMStudioLLM.#slog(`Context windows cached for all models!`);
+        LMStudioLLM.#slog(`Context windows cached for all models!`);
+      })();
+
+      await LMStudioLLM._cachePromise;
     } catch (e) {
       LMStudioLLM.#slog(`Error caching context windows`, e);
       return;
+    } finally {
+      LMStudioLLM._cachePromise = null;
+    }
+  }
+
+  /**
+   * Ensure a specific model is cached. If the model is not in the cache,
+   * refresh the cache to get the latest models from LMStudio.
+   * Handles the case where users download new models after the initial cache.
+   * @param {string} modelName - Model name to check
+   * @returns {Promise<void>}
+   */
+  static async ensureModelCached(modelName) {
+    if (LMStudioLLM.modelContextWindows[modelName]) {
+      return;
+    }
+
+    // Model may have been downloaded after the initial cache so try to refresh
+    LMStudioLLM.#slog(
+      `Model "${modelName}" not in cache, refreshing model list...`
+    );
+    await LMStudioLLM.cacheContextWindows(true);
+
+    if (!LMStudioLLM.modelContextWindows[modelName]) {
+      LMStudioLLM.#slog(
+        `Model "${modelName}" still not found after refresh, will use fallback context window`
+      );
     }
   }
 
@@ -198,6 +247,10 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await LMStudioLLM.ensureModelCached(this.model);
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lmstudio.chat.completions.create({
         model: this.model,
@@ -229,6 +282,10 @@ class LMStudioLLM {
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
+
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await LMStudioLLM.ensureModelCached(this.model);
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.lmstudio.chat.completions.create({
