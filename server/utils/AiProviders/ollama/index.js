@@ -13,6 +13,8 @@ const { Ollama } = require("ollama");
 class OllamaAILLM {
   /** @see OllamaAILLM.cacheContextWindows */
   static modelContextWindows = {};
+  /** Tracks the current caching operation to prevent race conditions */
+  static _cachePromise = null;
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
@@ -37,6 +39,14 @@ class OllamaAILLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
+    // Initialize limits with default values that will be updated by cacheContextWindows
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
+
+    // Start caching in background and update limits when fetched
     OllamaAILLM.cacheContextWindows(true).then(() => {
       this.limits = {
         history: this.promptWindowLimit() * 0.15,
@@ -68,40 +78,77 @@ class OllamaAILLM {
    */
   static async cacheContextWindows(force = false) {
     try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(OllamaAILLM.modelContextWindows).length > 0 && !force)
+      if (OllamaAILLM._cachePromise && !force) {
+        return await OllamaAILLM._cachePromise;
+      }
+
+      // Already have cached context windows and not forcing a refresh
+      if (Object.keys(OllamaAILLM.modelContextWindows).length > 0 && !force) {
         return;
+      }
 
-      const authToken = process.env.OLLAMA_AUTH_TOKEN;
-      const basePath = process.env.OLLAMA_BASE_PATH;
-      const client = new Ollama({
-        host: basePath,
-        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
-      });
+      // Store cache promise to prevent multiple requests
+      OllamaAILLM._cachePromise = (async () => {
+        const authToken = process.env.OLLAMA_AUTH_TOKEN;
+        const basePath = process.env.OLLAMA_BASE_PATH;
+        const client = new Ollama({
+          host: basePath,
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        });
 
-      const { models } = await client.list().catch(() => ({ models: [] }));
-      if (!models.length) return;
+        const { models } = await client.list().catch(() => ({ models: [] }));
+        if (!models.length) return;
 
-      const infoPromises = models.map((model) =>
-        client
-          .show({ model: model.name })
-          .then((info) => ({ name: model.name, ...info }))
-      );
-      const infos = await Promise.all(infoPromises);
-      infos.forEach((showInfo) => {
-        if (showInfo.capabilities.includes("embedding")) return;
-        const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
-          key.endsWith(".context_length")
+        const infoPromises = models.map((model) =>
+          client
+            .show({ model: model.name })
+            .then((info) => ({ name: model.name, ...info }))
         );
-        if (!contextWindowKey)
-          return (OllamaAILLM.modelContextWindows[showInfo.name] = 4096);
-        OllamaAILLM.modelContextWindows[showInfo.name] =
-          showInfo.model_info[contextWindowKey];
-      });
-      OllamaAILLM.#slog(`Context windows cached for all models!`);
+        const infos = await Promise.all(infoPromises);
+        infos.forEach((showInfo) => {
+          if (showInfo.capabilities.includes("embedding")) return;
+          const contextWindowKey = Object.keys(showInfo.model_info).find(
+            (key) => key.endsWith(".context_length")
+          );
+          if (!contextWindowKey)
+            return (OllamaAILLM.modelContextWindows[showInfo.name] = 4096);
+          OllamaAILLM.modelContextWindows[showInfo.name] =
+            showInfo.model_info[contextWindowKey];
+        });
+        OllamaAILLM.#slog(`Context windows cached for all models!`);
+      })();
+
+      await OllamaAILLM._cachePromise;
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
+    } finally {
+      OllamaAILLM._cachePromise = null;
+    }
+  }
+
+  /**
+   * Ensure a specific model is cached. If the model is not in the cache,
+   * refresh the cache to get the latest models from Ollama.
+   * This handles the case where users download new models after the initial cache.
+   * @param {string} modelName - The model name to check
+   * @returns {Promise<void>}
+   */
+  static async ensureModelCached(modelName) {
+    if (OllamaAILLM.modelContextWindows[modelName]) {
+      return;
+    }
+
+    // Model may have been downloaded after the initial cache so try to refresh
+    OllamaAILLM.#slog(
+      `Model "${modelName}" not in cache, refreshing model list...`
+    );
+    await OllamaAILLM.cacheContextWindows(true);
+
+    if (!OllamaAILLM.modelContextWindows[modelName]) {
+      OllamaAILLM.#slog(
+        `Model "${modelName}" still not found after refresh, will use fallback context window`
+      );
     }
   }
 
@@ -240,6 +287,10 @@ class OllamaAILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await OllamaAILLM.ensureModelCached(this.model);
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -289,6 +340,10 @@ class OllamaAILLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    // Ensure context window is cached before proceeding
+    // Prevents race conditions and handles newly downloaded models
+    await OllamaAILLM.ensureModelCached(this.model);
+
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.client.chat({
         model: this.model,
