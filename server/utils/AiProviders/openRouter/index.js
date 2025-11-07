@@ -238,7 +238,7 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -253,6 +253,9 @@ class OpenRouterLLM {
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
+           // Add user tracking if user information is available
+           // This enables OpenRouter's user tracking features for multi-user systems
+           ...(user ? { user } : {}), 
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -294,8 +297,10 @@ class OpenRouterLLM {
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,
+         // Add user tracking if user information is available
+         // This enables OpenRouter's user tracking features for multi-user systems
+        ...(user ? { user } : {}),
       }),
-      messages
       // We have to manually count the tokens
       // OpenRouter has a ton of providers and they all can return slightly differently
       // some return chunk.usage on STOP, some do it after stop, its inconsistent.
