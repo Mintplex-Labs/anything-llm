@@ -61,14 +61,7 @@ const webBrowsing = {
            * https://programmablesearchengine.google.com/controlpanel/create
            */
           search: async function (query) {
-            const originalQuery = query;
             query = this.enhanceQueryForRecency(query);
-
-            if (query !== originalQuery) {
-              this.super.introspect(
-                `${this.caller}: Enhanced query for recency: "${originalQuery}" → "${query}"`
-              );
-            }
 
             const provider =
               (await SystemSettings.get({ label: "agent_search_provider" }))
@@ -163,7 +156,12 @@ const webBrowsing = {
               year: "numeric",
             });
 
-            return `${cleanQuery} as of ${monthYear}`;
+            const enhancedQuery = `${cleanQuery} as of ${monthYear}`;
+            this.super.introspect(
+              `${this.caller}: Enhanced query for recency: "${query}" → "${enhancedQuery}"`
+            );
+
+            return enhancedQuery;
           },
 
           /**
