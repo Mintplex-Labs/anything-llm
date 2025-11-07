@@ -61,10 +61,10 @@ const webBrowsing = {
            * https://programmablesearchengine.google.com/controlpanel/create
            */
           search: async function (query) {
-            // Augment query with date context if it's asking for recent information
-            if (this.detectRecentQuery(query)) {
-              const originalQuery = query;
-              query = this.augmentQueryWithDate(query);
+            const originalQuery = query;
+            query = this.enhanceQueryForRecency(query);
+
+            if (query !== originalQuery) {
               this.super.introspect(
                 `${this.caller}: Enhanced query for recency: "${originalQuery}" → "${query}"`
               );
@@ -121,11 +121,11 @@ const webBrowsing = {
           },
 
           /**
-           * Detects if search query asks for recent/latest/current information
-           * @param {string} query - Search query to analyze
-           * @returns {boolean} True if the query indicates need for recent results
+           * Enhances search queries asking for recent information by adding current date context
+           * @param {string} query - Original search query
+           * @returns {string} Enhanced query with current date, or original query if no enhancement needed
            */
-          detectRecentQuery(query) {
+          enhanceQueryForRecency(query) {
             const recentKeywords = [
               "today",
               "latest",
@@ -138,20 +138,16 @@ const webBrowsing = {
               "updated",
               "updates",
             ];
+
             const lowerQuery = query.toLowerCase();
-            return recentKeywords.some((keyword) =>
+            const needsRecency = recentKeywords.some((keyword) =>
               lowerQuery.includes(keyword)
             );
-          },
 
-          /**
-           * Strips date references that LLMs may have added based on their training cutoff date
-           * @param {string} query - Search query
-           * @returns {string} Search query with date references removed
-           */
-          stripDateReferences(query) {
-            // Remove date patterns "January 2025", "2024", "December 2024", etc
-            return query
+            if (!needsRecency) return query;
+
+            // Strip LLM added date references (ex: "January 2025", "2024", "December 2024", etc)
+            const cleanQuery = query
               .replace(
                 /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/gi,
                 ""
@@ -159,20 +155,14 @@ const webBrowsing = {
               .replace(/\b\d{4}\b/g, "")
               .replace(/\s{2,}/g, " ")
               .trim();
-          },
 
-          /**
-           * Augment query with current date for better recency results
-           * @param {string} query - The original search query
-           * @returns {string} Query with date context appended
-           */
-          augmentQueryWithDate(query) {
-            const cleanQuery = this.stripDateReferences(query);
+            // Get date in month year format
             const now = new Date();
             const monthYear = now.toLocaleDateString("en-US", {
               month: "long",
               year: "numeric",
             });
+
             return `${cleanQuery} as of ${monthYear}`;
           },
 
