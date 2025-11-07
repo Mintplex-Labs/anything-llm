@@ -61,6 +61,8 @@ const webBrowsing = {
            * https://programmablesearchengine.google.com/controlpanel/create
            */
           search: async function (query) {
+            query = this.enhanceQueryForRecency(query);
+
             const provider =
               (await SystemSettings.get({ label: "agent_search_provider" }))
                 ?.value ?? "unknown";
@@ -109,6 +111,57 @@ const webBrowsing = {
           middleTruncate(str, length = 5) {
             if (str.length <= length) return str;
             return `${str.slice(0, length)}...${str.slice(-length)}`;
+          },
+
+          /**
+           * Enhances search queries asking for recent information by adding current date context
+           * @param {string} query - Original search query
+           * @returns {string} Enhanced query with current date, or original query if no enhancement needed
+           */
+          enhanceQueryForRecency(query) {
+            const recentKeywords = [
+              "today",
+              "latest",
+              "recent",
+              "current",
+              "this week",
+              "this month",
+              "breaking",
+              "new",
+              "updated",
+              "updates",
+            ];
+
+            const lowerQuery = query.toLowerCase();
+            const needsRecency = recentKeywords.some((keyword) =>
+              lowerQuery.includes(keyword)
+            );
+
+            if (!needsRecency) return query;
+
+            // Strip LLM added date references (ex: "January 2025", "2024", "December 2024", etc)
+            const cleanQuery = query
+              .replace(
+                /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/gi,
+                ""
+              )
+              .replace(/\b\d{4}\b/g, "")
+              .replace(/\s{2,}/g, " ")
+              .trim();
+
+            // Get date in month year format
+            const now = new Date();
+            const monthYear = now.toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            });
+
+            const enhancedQuery = `${cleanQuery} as of ${monthYear}`;
+            this.super.introspect(
+              `${this.caller}: Enhanced query for recency: "${query}" → "${enhancedQuery}"`
+            );
+
+            return enhancedQuery;
           },
 
           /**
