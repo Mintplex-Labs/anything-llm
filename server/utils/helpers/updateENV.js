@@ -294,6 +294,10 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
   },
+  OllamaEmbeddingBatchSize: {
+    envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
+    checks: [nonZero],
+  },
 
   // Gemini Embedding Settings
   GeminiEmbeddingApiKey: {
