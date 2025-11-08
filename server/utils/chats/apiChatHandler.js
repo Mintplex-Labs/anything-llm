@@ -186,7 +186,8 @@ async function chatSync({
   });
 
   const useHybrid =
-    process.env.VECTOR_DB === "milvus" &&
+    (process.env.VECTOR_DB === "milvus" ||
+      process.env.VECTOR_DB === "zilliz") &&
     process.env.EMBEDDING_ENGINE === "hybrid";
   debugLog("Search strategy", { useHybrid });
 
@@ -502,7 +503,8 @@ async function streamChat({
   });
 
   const useHybrid =
-    process.env.VECTOR_DB?.toLowerCase() === "milvus" &&
+    (process.env.VECTOR_DB?.toLowerCase() === "milvus" ||
+      process.env.VECTOR_DB?.toLowerCase() === "zilliz") &&
     process.env.EMBEDDING_ENGINE?.toLowerCase() === "hybrid";
   debugLog("Search strategy", { useHybrid });
 

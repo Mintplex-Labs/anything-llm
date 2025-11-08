@@ -1199,13 +1199,23 @@
   resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.2.0.tgz"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
-"@grpc/grpc-js@^1.10.1":
-  version "1.10.6"
-  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.10.6.tgz"
-  integrity sha512-xP58G7wDQ4TCmN/cMUHh00DS7SRDv/+lC+xFLrTkMIN8h55X5NhZMLYbvy7dSELP15qlI6hPhNCRWVMtZMwqLA==
+"@grpc/grpc-js@1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.7.3.tgz#f2ea79f65e31622d7f86d4b4c9ae38f13ccab99a"
+  integrity sha512-H9l79u4kJ2PVSxUNA08HMYAnUBLj9v6KjYQ7SQ71hOZcEXhShE/y5iQCesP8+6/Ik/7i2O0a10bPquIcYfufog==
   dependencies:
-    "@grpc/proto-loader" "^0.7.10"
-    "@js-sdsl/ordered-map" "^4.4.2"
+    "@grpc/proto-loader" "^0.7.0"
+    "@types/node" ">=12.12.47"
+
+"@grpc/proto-loader@^0.7.0":
+  version "0.7.15"
+  resolved "https://registry.yarnpkg.com/@grpc/proto-loader/-/proto-loader-0.7.15.tgz#4cdfbf35a35461fc843abe8b9e2c0770b5095e60"
+  integrity sha512-tMXdRCfYVixjuFK+Hk0Q1s38gV9zDiDJfWL3h1rv4Qc39oILCu1TRTDt7+fGUI8K4G1Fj125Hx/ru3azECWTyQ==
+  dependencies:
+    lodash.camelcase "^4.3.0"
+    long "^5.0.0"
+    protobufjs "^7.2.5"
+    yargs "^17.7.2"
 
 "@grpc/proto-loader@^0.7.10":
   version "0.7.12"
@@ -1399,11 +1409,6 @@
   version "5.6.2"
   resolved "https://registry.npmjs.org/@js-joda/core/-/core-5.6.2.tgz"
   integrity sha512-ow4R+7C24xeTjiMTTZ4k6lvxj7MRBqvqLCQjThQff3RjOmIMokMP20LNYVFhGafJtUx/Xo2Qp4qU8eNoTVH0SA==
-
-"@js-sdsl/ordered-map@^4.4.2":
-  version "4.4.2"
-  resolved "https://registry.npmjs.org/@js-sdsl/ordered-map/-/ordered-map-4.4.2.tgz"
-  integrity sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==
 
 "@ladjs/graceful@^3.2.2":
   version "3.2.2"
@@ -1635,6 +1640,11 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
+
+"@opentelemetry/api@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.9.0.tgz#d03eba68273dc0f7509e2a3d5cba21eae10379fe"
+  integrity sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==
 
 "@petamoriken/float16@^3.8.6":
   version "3.8.6"
@@ -2671,6 +2681,13 @@
   dependencies:
     undici-types "~5.26.4"
 
+"@types/node@>=12.12.47":
+  version "24.10.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.10.0.tgz#6b79086b0dfc54e775a34ba8114dcc4e0221f31f"
+  integrity sha512-qzQZRBqkFsYyaSWXuEHc2WR9c0a0CXwiE5FWUvn7ZM+vdy1uZLfCunD38UzhuB7YN/J11ndbDBcTmOdxJo9Q7A==
+  dependencies:
+    undici-types "~7.16.0"
+
 "@types/node@^18.11.18":
   version "18.19.31"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.19.31.tgz"
@@ -2729,13 +2746,14 @@
   optionalDependencies:
     onnxruntime-node "1.14.0"
 
-"@zilliz/milvus2-sdk-node@^2.3.5":
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.4.2.tgz"
-  integrity sha512-fkPu7XXzfUvHoCnSPVOjqQpWuSnnn9x2NMmmCcIOyRzMeXIsrz4Mf/+M7LUzmT8J9F0Khx65B0rJgCu27YzWQw==
+"@zilliz/milvus2-sdk-node@^2.6.4":
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.6.4.tgz#69b560aa49e04128715a5b45e4efe62096ad0dfa"
+  integrity sha512-KXKumy7BiRm6czWgbkB2/+3m7P7MdFYuDj3JcfJX4/5nf5Ury/Y5JxWNo6jsw6Gkur2dy9f/rhG9+p5CTtL7dQ==
   dependencies:
-    "@grpc/grpc-js" "^1.10.1"
+    "@grpc/grpc-js" "1.7.3"
     "@grpc/proto-loader" "^0.7.10"
+    "@opentelemetry/api" "^1.9.0"
     "@petamoriken/float16" "^3.8.6"
     dayjs "^1.11.7"
     generic-pool "^3.9.0"
@@ -6773,6 +6791,24 @@ protobufjs@^7.2.4, protobufjs@^7.2.6:
     "@types/node" ">=13.7.0"
     long "^5.0.0"
 
+protobufjs@^7.2.5:
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.5.4.tgz#885d31fe9c4b37f25d1bb600da30b1c5b37d286a"
+  integrity sha512-CvexbZtbov6jW2eXAvLukXjXUW1TzFaivC46BpWc/3BpcCysb5Vffu+B3XHMm8lVEuy2Mm4XGex8hBSg1yapPg==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/node" ">=13.7.0"
+    long "^5.0.0"
+
 proxy-addr@~2.0.7:
   version "2.0.7"
   resolved "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz"
@@ -7803,6 +7839,11 @@ undici-types@~6.19.2:
   version "6.19.8"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
   integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
+
+undici-types@~7.16.0:
+  version "7.16.0"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.16.0.tgz#ffccdff36aea4884cbfce9a750a0580224f58a46"
+  integrity sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==
 
 undici@^6.19.5:
   version "6.21.1"

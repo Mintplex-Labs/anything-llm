@@ -80,17 +80,32 @@ async function chatSync({
       });
     });
 
+  const useHybrid =
+    (process.env.VECTOR_DB === "milvus" ||
+      process.env.VECTOR_DB === "zilliz") &&
+    process.env.EMBEDDING_ENGINE === "hybrid";
+
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: prompt,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+      ? await (useHybrid
+          ? VectorDb.performHybridSearch({
+              namespace: workspace.slug,
+              input: prompt,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            })
+          : VectorDb.performSimilaritySearch({
+              namespace: workspace.slug,
+              input: prompt,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            }))
       : {
           contextTexts: [],
           sources: [],
@@ -296,17 +311,32 @@ async function streamChat({
       });
     });
 
+  const useHybrid =
+    (process.env.VECTOR_DB === "milvus" ||
+      process.env.VECTOR_DB === "zilliz") &&
+    process.env.EMBEDDING_ENGINE === "hybrid";
+
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: prompt,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+      ? await (useHybrid
+          ? VectorDb.performHybridSearch({
+              namespace: workspace.slug,
+              input: prompt,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            })
+          : VectorDb.performSimilaritySearch({
+              namespace: workspace.slug,
+              input: prompt,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            }))
       : {
           contextTexts: [],
           sources: [],

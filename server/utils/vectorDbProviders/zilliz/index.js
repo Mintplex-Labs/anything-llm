@@ -93,6 +93,7 @@ const Zilliz = {
   // Zilliz requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
+  // When EMBEDDING_ENGINE=hybrid, creates schema with both dense and sparse vector fields.
   getOrCreateCollection: async function (client, namespace, dimensions = null) {
     const isExists = await this.namespaceExists(client, namespace);
     if (!isExists) {
@@ -101,35 +102,66 @@ const Zilliz = {
           `Zilliz:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
         );
 
+      const isHybridMode = process.env.EMBEDDING_ENGINE === "hybrid";
+      const fields = [
+        {
+          name: "id",
+          description: "id",
+          data_type: DataType.VarChar,
+          max_length: 255,
+          is_primary_key: true,
+        },
+        {
+          name: "vector",
+          description: "dense vector",
+          data_type: DataType.FloatVector,
+          dim: dimensions,
+        },
+        {
+          name: "text",
+          description: "chunk text content",
+          data_type: DataType.VarChar,
+          max_length: 65535, // Maximum length for VarChar in Milvus
+        },
+        {
+          name: "metadata",
+          decription: "metadata",
+          data_type: DataType.JSON,
+        },
+      ];
+
+      // Add sparse vector field for hybrid search
+      if (isHybridMode) {
+        fields.push({
+          name: "vector_sparse",
+          description: "sparse vector for BM25",
+          data_type: DataType.SparseFloatVector,
+        });
+      }
+
       await client.createCollection({
         collection_name: this.normalize(namespace),
-        fields: [
-          {
-            name: "id",
-            description: "id",
-            data_type: DataType.VarChar,
-            max_length: 255,
-            is_primary_key: true,
-          },
-          {
-            name: "vector",
-            description: "vector",
-            data_type: DataType.FloatVector,
-            dim: dimensions,
-          },
-          {
-            name: "metadata",
-            decription: "metadata",
-            data_type: DataType.JSON,
-          },
-        ],
+        fields,
       });
+
+      // Create index for dense vectors
       await client.createIndex({
         collection_name: this.normalize(namespace),
         field_name: "vector",
         index_type: IndexType.AUTOINDEX,
         metric_type: MetricType.COSINE,
       });
+
+      // Create index for sparse vectors if in hybrid mode
+      if (isHybridMode) {
+        await client.createIndex({
+          collection_name: this.normalize(namespace),
+          field_name: "vector_sparse",
+          index_type: IndexType.SPARSE_INVERTED_INDEX,
+          metric_type: MetricType.IP, // Inner Product for sparse vectors
+        });
+      }
+
       await client.loadCollectionSync({
         collection_name: this.normalize(namespace),
       });
@@ -163,7 +195,12 @@ const Zilliz = {
             const newChunks = chunk.map((chunk) => {
               const id = uuidv4();
               documentVectors.push({ docId, vectorId: id });
-              return { id, vector: chunk.values, metadata: chunk.metadata };
+              return {
+                id,
+                vector: chunk.values,
+                text: chunk.metadata?.text || "",
+                metadata: chunk.metadata,
+              };
             });
             const insertResult = await client.insert({
               collection_name: this.normalize(namespace),
@@ -184,7 +221,7 @@ const Zilliz = {
         }
       }
 
-      const EmbedderEngine = getEmbeddingEngineSelection();
+      const EmbedderEngine = getEmbeddingEngineSelection(namespace);
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
@@ -204,13 +241,24 @@ const Zilliz = {
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
+      const isHybridMode = EmbedderEngine?.supportsSparseVectors === true;
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
-          if (!vectorDimension) vectorDimension = vector.length;
+          // Handle hybrid embeddings (dense + sparse) vs standard embeddings
+          const denseVector = isHybridMode ? vector.dense : vector;
+          const sparseVector = isHybridMode ? vector.sparse : null;
+
+          if (!vectorDimension) {
+            vectorDimension = Array.isArray(denseVector)
+              ? denseVector.length
+              : null;
+          }
+
           const vectorRecord = {
             id: uuidv4(),
-            values: vector,
+            values: denseVector,
+            sparseValues: sparseVector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             metadata: { ...metadata, text: textChunks[i] },
@@ -233,13 +281,23 @@ const Zilliz = {
         console.log("Inserting vectorized chunks into Zilliz.");
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
-          const insertResult = await client.insert({
-            collection_name: this.normalize(namespace),
-            data: chunk.map((item) => ({
+          const insertData = chunk.map((item) => {
+            const record = {
               id: item.id,
               vector: item.values,
-              metadata: chunk.metadata,
-            })),
+              text: item.metadata?.text || "",
+              metadata: item.metadata,
+            };
+            // Add sparse vector field if in hybrid mode
+            if (isHybridMode && item.sparseValues) {
+              record.vector_sparse = item.sparseValues;
+            }
+            return record;
+          });
+
+          const insertResult = await client.insert({
+            collection_name: this.normalize(namespace),
+            data: insertData,
           });
 
           if (insertResult?.status.error_code !== "Success") {
@@ -323,6 +381,170 @@ const Zilliz = {
       message: false,
     };
   },
+  // Toggles hybrid search when EMBEDDING_ENGINE=hybrid, else uses similarity search.
+  // Hybrid search supported: uses both dense & sparse vector fields when available.
+  performHybridSearch: async function ({
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+  }) {
+    if (!namespace || !input || !LLMConnector)
+      throw new Error("Invalid request to performHybridSearch.");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        contextTexts: [],
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    // Check if embedder supports sparse vectors (hybrid embedder)
+    const embedder = LLMConnector.embedder;
+    if (!embedder?.supportsSparseVectors) {
+      console.log(
+        "Zilliz: Embedder does not support sparse vectors, falling back to similarity search"
+      );
+      return await this.performSimilaritySearch({
+        namespace,
+        input,
+        LLMConnector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers,
+      });
+    }
+
+    try {
+      // Get hybrid embedding (dense + sparse)
+      const hybridEmbedding = await embedder.embedTextInput(input);
+
+      // Validate we have both dense and sparse vectors
+      if (
+        !hybridEmbedding?.dense ||
+        !hybridEmbedding?.sparse ||
+        !Array.isArray(hybridEmbedding.dense)
+      ) {
+        console.log(
+          "Zilliz: Hybrid embedding incomplete, falling back to similarity search"
+        );
+        return await this.performSimilaritySearch({
+          namespace,
+          input,
+          LLMConnector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
+      }
+
+      const { contextTexts, sourceDocuments } = await this.hybridSearchResponse(
+        {
+          client,
+          namespace,
+          denseVector: hybridEmbedding.dense,
+          sparseVector: hybridEmbedding.sparse,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        }
+      );
+
+      const sources = sourceDocuments.map((metadata, i) => {
+        return { ...metadata, text: contextTexts[i] };
+      });
+
+      return {
+        contextTexts,
+        sources: this.curateSources(sources),
+        message: false,
+      };
+    } catch (error) {
+      console.error("Zilliz: Hybrid search failed, falling back:", error.message);
+      // Fallback to similarity search on error
+      return await this.performSimilaritySearch({
+        namespace,
+        input,
+        LLMConnector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers,
+      });
+    }
+  },
+  hybridSearchResponse: async function ({
+    client,
+    namespace,
+    denseVector,
+    sparseVector,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+  }) {
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    // Build the hybrid search request with both dense and sparse vectors
+    // Using RRF (Reciprocal Rank Fusion) as the reranking strategy
+    const searchRequests = [
+      {
+        anns_field: "vector", // dense vector field
+        data: [denseVector],
+        limit: topN * 2, // Get more results for better reranking
+        params: { nprobe: 10 },
+      },
+      {
+        anns_field: "vector_sparse", // sparse vector field
+        data: [sparseVector],
+        limit: topN * 2,
+        params: {},
+      },
+    ];
+
+    try {
+      const response = await client.hybridSearch({
+        collection_name: this.normalize(namespace),
+        data: searchRequests,
+        limit: topN,
+        output_fields: ["text", "metadata"],
+        rerank: {
+          strategy: "rrf", // Reciprocal Rank Fusion
+          params: { k: 60 },
+        },
+      });
+
+      if (!response?.results || response.results.length === 0) {
+        return result;
+      }
+
+      response.results.forEach((match) => {
+        if (match.score < similarityThreshold) return;
+        if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+          console.log(
+            "Zilliz: A source was filtered from context as it's parent document is pinned."
+          );
+          return;
+        }
+        // Use dedicated text field, fallback to metadata.text
+        result.contextTexts.push(match.text || match.metadata?.text || "");
+        result.sourceDocuments.push(match);
+        result.scores.push(match.score);
+      });
+    } catch (error) {
+      console.error("Zilliz::hybridSearchResponse error:", error.message);
+      // Return empty results on error - caller will handle fallback
+      return result;
+    }
+
+    return result;
+  },
   similarityResponse: async function ({
     client,
     namespace,
@@ -340,6 +562,7 @@ const Zilliz = {
       collection_name: this.normalize(namespace),
       vectors: queryVector,
       limit: topN,
+      output_fields: ["text", "metadata"],
     });
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
@@ -349,7 +572,8 @@ const Zilliz = {
         );
         return;
       }
-      result.contextTexts.push(match.metadata.text);
+      // Use dedicated text field, fallback to metadata.text
+      result.contextTexts.push(match.text || match.metadata?.text || "");
       result.sourceDocuments.push(match);
       result.scores.push(match.score);
     });

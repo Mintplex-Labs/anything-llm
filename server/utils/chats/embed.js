@@ -84,17 +84,32 @@ async function streamChatWithForEmbed(
       });
     });
 
+  const useHybrid =
+    (process.env.VECTOR_DB === "milvus" ||
+      process.env.VECTOR_DB === "zilliz") &&
+    process.env.EMBEDDING_ENGINE === "hybrid";
+
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
-          namespace: embed.workspace.slug,
-          input: message,
-          LLMConnector,
-          similarityThreshold: embed.workspace?.similarityThreshold,
-          topN: embed.workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: embed.workspace?.vectorSearchMode === "rerank",
-        })
+      ? await (useHybrid
+          ? VectorDb.performHybridSearch({
+              namespace: embed.workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: embed.workspace?.similarityThreshold,
+              topN: embed.workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: embed.workspace?.vectorSearchMode === "rerank",
+            })
+          : VectorDb.performSimilaritySearch({
+              namespace: embed.workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: embed.workspace?.similarityThreshold,
+              topN: embed.workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: embed.workspace?.vectorSearchMode === "rerank",
+            }))
       : {
           contextTexts: [],
           sources: [],
