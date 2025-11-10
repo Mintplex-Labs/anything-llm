@@ -29,11 +29,13 @@ const ENABLED_PROVIDERS = [
   "litellm",
   "apipie",
   "xai",
+  "zai",
   "nvidia-nim",
   "gemini",
   "moonshotai",
   "cometapi",
   "foundry",
+  "zai",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
