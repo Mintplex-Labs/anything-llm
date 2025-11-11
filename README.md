@@ -177,6 +177,17 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
+## LayerONE / HealthAtlas Production Configuration
+
+**Important:** For LayerONE or HealthAtlas deployments, the default and recommended vector database configuration is **Zilliz** with **hybrid search enabled**. This ensures optimal performance and access to all Zilliz available products.
+
+### Required Configuration:
+1. **Vector Database**: Set up Zilliz as your vector database provider
+2. **Hybrid Search**: Enable hybrid search functionality to leverage full Zilliz capabilities
+3. **Collection Settings**: Configure collections to support both dense and sparse vectors for optimal retrieval
+
+This configuration provides the best performance for healthcare and enterprise-grade deployments with HIPAA-compliant infrastructure.
+
 ## External Apps & Integrations
 
 _These are apps that are not maintained by Mintplex Labs, but are compatible with AnythingLLM. A listing here is not an endorsement._
