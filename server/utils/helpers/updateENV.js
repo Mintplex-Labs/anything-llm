@@ -235,14 +235,18 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMSessionToken: {
     envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
+  },
+  AwsBedrockLLMAPIKey: {
+    envKey: "AWS_BEDROCK_LLM_API_KEY",
     checks: [],
   },
   AwsBedrockLLMRegion: {
