@@ -21,6 +21,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 href="https://docs.anythingllm.com/setup/llm-configuration/cloud/aws-bedrock"
                 target="_blank"
                 className="underline flex gap-x-1 items-center"
+                rel="noreferrer"
               >
                 Read more on how to use AWS Bedrock in AnythingLLM
                 <ArrowSquareOut size={14} />
@@ -56,6 +57,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             Session Token (Temporary Credentials)
           </option>
           <option value="iam_role">IAM Role (Implied Credentials)</option>
+          <option value="bedrock_api_key">Bedrock API Key</option>
         </select>
       </div>
 
@@ -111,6 +113,23 @@ export default function AwsBedrockLLMOptions({ settings }) {
               defaultValue={
                 settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
               }
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        )}
+        {connectionMethod === "bedrock_api_key" && (
+          <div className="flex flex-col w-60">
+            <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              AWS Bedrock API Key
+            </label>
+            <input
+              type="password"
+              name="AwsBedrockLLMAPIKey"
+              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="AWS Bedrock API Key"
+              defaultValue={settings?.AwsBedrockLLMAPIKey ? "*".repeat(20) : ""}
               required={true}
               autoComplete="off"
               spellCheck={false}
