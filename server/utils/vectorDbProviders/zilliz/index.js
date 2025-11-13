@@ -354,7 +354,17 @@ const Zilliz = {
       throw new Error("Invalid request to performSimilaritySearch.");
 
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
+    const normalizedName = this.normalize(namespace);
+    console.log(
+      `Zilliz::performSimilaritySearch - Namespace: ${namespace}, Normalized: ${normalizedName}`
+    );
+
+    const exists = await this.namespaceExists(client, namespace);
+    console.log(
+      `Zilliz::performSimilaritySearch - Collection exists: ${exists}`
+    );
+
+    if (!exists) {
       return {
         contextTexts: [],
         sources: [],
@@ -362,7 +372,22 @@ const Zilliz = {
       };
     }
 
-    const queryVector = await LLMConnector.embedTextInput(input);
+    // Extract dense vector from hybrid embedding result (like Milvus does)
+    const { getEmbeddingEngineSelection } = require("../../helpers");
+    const EmbedderEngine = getEmbeddingEngineSelection(namespace);
+    const embedResult = await EmbedderEngine.embedTextInput(input);
+    const queryVector =
+      typeof embedResult === "object" && embedResult.hasOwnProperty("dense")
+        ? embedResult.dense
+        : embedResult;
+
+    console.log(
+      `Zilliz::performSimilaritySearch - Query vector length: ${queryVector?.length || "N/A"}`
+    );
+    console.log(
+      `Zilliz::performSimilaritySearch - Query vector type: ${Array.isArray(queryVector) ? "Array" : typeof queryVector}`
+    );
+
     const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
@@ -371,6 +396,10 @@ const Zilliz = {
       topN,
       filterIdentifiers,
     });
+
+    console.log(
+      `Zilliz::performSimilaritySearch - Found ${contextTexts.length} context texts, ${sourceDocuments.length} sources`
+    );
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };
@@ -464,7 +493,10 @@ const Zilliz = {
         message: false,
       };
     } catch (error) {
-      console.error("Zilliz: Hybrid search failed, falling back:", error.message);
+      console.error(
+        "Zilliz: Hybrid search failed, falling back:",
+        error.message
+      );
       // Fallback to similarity search on error
       return await this.performSimilaritySearch({
         namespace,
@@ -509,6 +541,13 @@ const Zilliz = {
     ];
 
     try {
+      console.log(
+        `Zilliz::hybridSearchResponse - Searching collection: ${this.normalize(namespace)}`
+      );
+      console.log(
+        `Zilliz::hybridSearchResponse - Dense vector length: ${denseVector?.length}, Sparse vector keys: ${Object.keys(sparseVector || {}).join(", ")}`
+      );
+
       const response = await client.hybridSearch({
         collection_name: this.normalize(namespace),
         data: searchRequests,
@@ -520,12 +559,72 @@ const Zilliz = {
         },
       });
 
-      if (!response?.results || response.results.length === 0) {
+      console.log(
+        `Zilliz::hybridSearchResponse - Raw response:`,
+        JSON.stringify(response, null, 2)
+      );
+      console.log(
+        `Zilliz::hybridSearchResponse - Response keys:`,
+        Object.keys(response || {})
+      );
+
+      // Check if results are nested differently
+      let results = response?.results;
+      if (!results && response?.data) {
+        results = response.data;
+        console.log(
+          "Zilliz::hybridSearchResponse - Using response.data instead of response.results"
+        );
+      }
+      if (!results && Array.isArray(response)) {
+        results = response;
+        console.log(
+          "Zilliz::hybridSearchResponse - Response is directly an array"
+        );
+      }
+
+      if (!results || results.length === 0) {
+        console.log(
+          "Zilliz::hybridSearchResponse - No results returned from hybrid search"
+        );
         return result;
       }
 
-      response.results.forEach((match) => {
-        if (match.score < similarityThreshold) return;
+      console.log(
+        `Zilliz::hybridSearchResponse - Processing ${results.length} results`
+      );
+
+      results.forEach((match, index) => {
+        console.log(`Zilliz::hybridSearchResponse - Match ${index}:`, {
+          score: match.score,
+          distance: match.distance,
+          id: match.id,
+          hasText: !!match.text,
+          hasMetadata: !!match.metadata,
+          metadataKeys: match.metadata ? Object.keys(match.metadata) : [],
+        });
+
+        // Milvus uses COSINE distance - lower score = better match
+        // So we filter when score > threshold (opposite of similarity)
+        // The score from Milvus/Zilliz is a distance, not a similarity
+        const distance =
+          match.score !== undefined
+            ? match.score
+            : match.distance !== undefined
+              ? match.distance
+              : Infinity;
+
+        // For COSINE distance: lower is better, so filter when distance > threshold
+        if (distance > similarityThreshold) {
+          console.log(
+            `Zilliz::hybridSearchResponse - Distance ${distance} above threshold ${similarityThreshold} (filtering out)`
+          );
+          return;
+        }
+
+        // Convert distance to similarity score for output (1 - distance for COSINE)
+        const similarityScore = 1 - distance;
+
         if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
           console.log(
             "Zilliz: A source was filtered from context as it's parent document is pinned."
@@ -534,11 +633,20 @@ const Zilliz = {
         }
         // Use dedicated text field, fallback to metadata.text
         result.contextTexts.push(match.text || match.metadata?.text || "");
-        result.sourceDocuments.push(match);
-        result.scores.push(match.score);
+        result.sourceDocuments.push({
+          ...match,
+          score: similarityScore,
+          _distance: distance,
+        });
+        result.scores.push(similarityScore);
       });
+
+      console.log(
+        `Zilliz::hybridSearchResponse - Final result: ${result.contextTexts.length} texts, ${result.sourceDocuments.length} sources`
+      );
     } catch (error) {
       console.error("Zilliz::hybridSearchResponse error:", error.message);
+      console.error("Zilliz::hybridSearchResponse error stack:", error.stack);
       // Return empty results on error - caller will handle fallback
       return result;
     }
@@ -558,25 +666,130 @@ const Zilliz = {
       sourceDocuments: [],
       scores: [],
     };
-    const response = await client.search({
-      collection_name: this.normalize(namespace),
-      vectors: queryVector,
-      limit: topN,
-      output_fields: ["text", "metadata"],
-    });
-    response.results.forEach((match) => {
-      if (match.score < similarityThreshold) return;
-      if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+
+    const normalizedName = this.normalize(namespace);
+    console.log(
+      `Zilliz::similarityResponse - Searching collection: ${normalizedName}`
+    );
+    console.log(
+      `Zilliz::similarityResponse - Query vector is array: ${Array.isArray(queryVector)}, length: ${queryVector?.length}`
+    );
+
+    try {
+      // Use the same format as Milvus - data array and anns_field
+      const searchParams = {
+        collection_name: normalizedName,
+        data: [queryVector], // Wrap vector in array
+        anns_field: "vector", // Field name in Zilliz collection
+        limit: topN,
+        param: { nprobe: 10 },
+        output_fields: ["text", "metadata"],
+      };
+
+      console.log(
+        `Zilliz::similarityResponse - Search params:`,
+        JSON.stringify(
+          {
+            ...searchParams,
+            data: [`[Array of ${queryVector?.length} elements]`],
+          },
+          null,
+          2
+        )
+      );
+
+      const response = await client.search(searchParams);
+
+      console.log(
+        `Zilliz::similarityResponse - Raw response:`,
+        JSON.stringify(response, null, 2)
+      );
+      console.log(
+        `Zilliz::similarityResponse - Response keys:`,
+        Object.keys(response || {})
+      );
+      console.log(
+        `Zilliz::similarityResponse - Results count: ${response?.results?.length || 0}`
+      );
+
+      // Check if results are nested differently
+      let results = response?.results;
+      if (!results && response?.data) {
+        results = response.data;
         console.log(
-          "Zilliz: A source was filtered from context as it's parent document is pinned."
+          "Zilliz::similarityResponse - Using response.data instead of response.results"
         );
-        return;
       }
-      // Use dedicated text field, fallback to metadata.text
-      result.contextTexts.push(match.text || match.metadata?.text || "");
-      result.sourceDocuments.push(match);
-      result.scores.push(match.score);
-    });
+      if (!results && Array.isArray(response)) {
+        results = response;
+        console.log(
+          "Zilliz::similarityResponse - Response is directly an array"
+        );
+      }
+
+      if (!results || results.length === 0) {
+        console.log(
+          "Zilliz::similarityResponse - No results returned from search"
+        );
+        return result;
+      }
+
+      results.forEach((match, index) => {
+        console.log(`Zilliz::similarityResponse - Match ${index}:`, {
+          score: match.score,
+          distance: match.distance,
+          id: match.id,
+          hasText: !!match.text,
+          hasMetadata: !!match.metadata,
+          metadataKeys: match.metadata ? Object.keys(match.metadata) : [],
+          fullMatch: JSON.stringify(match, null, 2),
+        });
+
+        // Milvus uses COSINE distance - lower score = better match
+        // So we filter when score > threshold (opposite of similarity)
+        // The score from Milvus/Zilliz is a distance, not a similarity
+        const distance =
+          match.score !== undefined
+            ? match.score
+            : match.distance !== undefined
+              ? match.distance
+              : Infinity;
+
+        // For COSINE distance: lower is better, so filter when distance > threshold
+        if (distance > similarityThreshold) {
+          console.log(
+            `Zilliz::similarityResponse - Distance ${distance} above threshold ${similarityThreshold} (filtering out)`
+          );
+          return;
+        }
+
+        // Convert distance to similarity score for output (1 - distance for COSINE)
+        const similarityScore = 1 - distance;
+
+        if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+          console.log(
+            "Zilliz: A source was filtered from context as it's parent document is pinned."
+          );
+          return;
+        }
+        // Use dedicated text field, fallback to metadata.text
+        result.contextTexts.push(match.text || match.metadata?.text || "");
+        result.sourceDocuments.push({
+          ...match,
+          score: similarityScore,
+          _distance: distance,
+        });
+        result.scores.push(similarityScore);
+      });
+    } catch (error) {
+      console.error("Zilliz::similarityResponse - Error:", error.message);
+      console.error("Zilliz::similarityResponse - Error stack:", error.stack);
+      return result;
+    }
+
+    console.log(
+      `Zilliz::similarityResponse - Final result: ${result.contextTexts.length} texts, ${result.sourceDocuments.length} sources`
+    );
     return result;
   },
   "namespace-stats": async function (reqBody = {}) {
