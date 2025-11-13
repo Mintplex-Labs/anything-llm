@@ -10,7 +10,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
   console.log("connectionMethod", connectionMethod);
   return (
     <div className="w-full flex flex-col">
-      {!settings?.credentialsOnly && (
+      {!settings?.credentialsOnly && connectionMethod !== "bedrock_api_key" && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
@@ -39,7 +39,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
         />
         <div className="flex flex-col w-full">
           <label className="text-theme-text-primary text-sm font-semibold block mb-3">
-            Use session token
+            Authentication Method
           </label>
           <p className="text-theme-text-secondary text-sm">
             Select the method to authenticate with AWS Bedrock.
