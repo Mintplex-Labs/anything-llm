@@ -13,7 +13,6 @@
 const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
-const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
@@ -22,6 +21,9 @@ const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
+const {
+  createBedrockChatClient,
+} = require("../../../AiProviders/bedrock/utils");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -122,20 +124,7 @@ class Provider {
           ...config,
         });
       case "bedrock":
-        // Grab just the credentials from the bedrock provider
-        // using a closure to avoid circular dependency + to avoid instantiating the provider
-        const credentials = (() => {
-          const AWSBedrockProvider = require("./bedrock");
-          const bedrockProvider = new AWSBedrockProvider();
-          return bedrockProvider.credentials;
-        })();
-
-        return new ChatBedrockConverse({
-          model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
-          region: process.env.AWS_BEDROCK_LLM_REGION,
-          credentials: credentials,
-          ...config,
-        });
+        return createBedrockChatClient(config);
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -385,7 +374,7 @@ class Provider {
     }
 
     // If there are arguments, parse them as json so that the tools can use them
-    if (!!result.functionCall?.arguments)
+    if (result.functionCall?.arguments)
       result.functionCall.arguments = safeJsonParse(
         result.functionCall.arguments,
         {}
