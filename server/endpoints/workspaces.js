@@ -518,6 +518,46 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.post(
+    "/workspace/:slug/chat-feedback/:chatId/comment",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const { comment = null } = reqBody(request);
+        const existingChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: response.locals.workspace.id,
+        });
+
+        if (!existingChat) {
+          response.status(404).end();
+          return;
+        }
+
+        if (!comment || String(comment).trim() === "") {
+          response
+            .status(400)
+            .json({ success: false, message: "No comment provided" });
+          return;
+        }
+
+        // Save feedback comment to cache table for now (simple implementation)
+        await WorkspaceChats._update(Number(chatId), {
+          // append to response metadata as feedback_comment if desired
+          feedbackComment: String(comment).trim(),
+          lastUpdatedAt: new Date(),
+        });
+
+        // Optionally, in future persist comments in a dedicated table
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error saving chat feedback comment:", error);
+        response.status(500).end();
+      }
+    }
+  );
+
   app.get(
     "/workspace/:slug/suggested-messages",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
