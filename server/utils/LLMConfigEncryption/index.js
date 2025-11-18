@@ -3,7 +3,7 @@ const { EncryptionManager } = require("../EncryptionManager");
 // Maps provider types to their sensitive field names that should be encrypted
 const SENSITIVE_FIELDS = {
   litellm: ["apiKey"],
-  ollama: [],
+  ollama: ["authToken"],
   openai: ["apiKey"],
   azure: ["apiKey"],
   anthropic: ["apiKey"],

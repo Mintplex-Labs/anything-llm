@@ -14,17 +14,33 @@ class OllamaAILLM {
   /** @see OllamaAILLM.cacheContextWindows */
   static modelContextWindows = {};
 
-  constructor(embedder = null, modelPreference = null) {
-    if (!process.env.OLLAMA_BASE_PATH)
-      throw new Error("No Ollama Base Path was set.");
+  constructor(embedder = null, modelPreference = null, config = null) {
+    // PRIORITY 1: Provided config object (from llm_connections)
+    if (config) {
+      if (!config.baseUrl) {
+        throw new Error("Ollama config must have a valid baseUrl");
+      }
 
-    this.authToken = process.env.OLLAMA_AUTH_TOKEN;
-    this.basePath = process.env.OLLAMA_BASE_PATH;
-    this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
-    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
-    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
-      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
-      : 300; // Default 5-minute timeout for Ollama model loading.
+      this.authToken = config.authToken ?? null;
+      this.basePath = config.baseUrl;
+      this.model = modelPreference || config.defaultModel;
+      this.performanceMode = config.performanceMode || "base";
+      this.keepAlive = config.keepAlive ? Number(config.keepAlive) : 300;
+    }
+    // PRIORITY 2: Environment variables (LEGACY - backward compatibility)
+    else {
+      if (!process.env.OLLAMA_BASE_PATH) {
+        throw new Error("No Ollama Base Path was set.");
+      }
+
+      this.authToken = process.env.OLLAMA_AUTH_TOKEN;
+      this.basePath = process.env.OLLAMA_BASE_PATH;
+      this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+      this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
+      this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+        ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+        : 300; // Default 5-minute timeout for Ollama model loading.
+    }
 
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
