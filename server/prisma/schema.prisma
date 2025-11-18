@@ -57,6 +57,22 @@ model system_settings {
   lastUpdatedAt DateTime @default(now())
 }
 
+model llm_connections {
+  id                   Int                   @id @default(autoincrement())
+  name                 String                @unique
+  provider             String
+  config               String // JSON-serialized provider configuration
+  isDefault            Boolean               @default(false)
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  lastUpdatedAt        DateTime              @default(now())
+  workspaces_chat      workspaces[]          @relation("WorkspaceChatConnection")
+  workspaces_agent     workspaces[]          @relation("WorkspaceAgentConnection")
+
+  @@index([provider])
+  @@index([provider, isDefault])
+}
+
 model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
@@ -134,15 +150,21 @@ model workspaces {
   lastUpdatedAt                DateTime                       @default(now())
   openAiPrompt                 String?
   similarityThreshold          Float?                         @default(0.25)
-  chatProvider                 String?
-  chatModel                    String?
+  chatProvider                 String? // DEPRECATED: Use chatConnectionId
+  chatModel                    String? // DEPRECATED: Use chatModelOverride
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")
   pfpFilename                  String?
-  agentProvider                String?
-  agentModel                   String?
+  agentProvider                String? // DEPRECATED: Use agentConnectionId
+  agentModel                   String? // DEPRECATED: Use agentModelOverride
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  chatConnectionId             Int?
+  chatConnection               llm_connections?               @relation("WorkspaceChatConnection", fields: [chatConnectionId], references: [id], onDelete: SetNull)
+  chatModelOverride            String?
+  agentConnectionId            Int?
+  agentConnection              llm_connections?               @relation("WorkspaceAgentConnection", fields: [agentConnectionId], references: [id], onDelete: SetNull)
+  agentModelOverride           String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -151,6 +173,9 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+
+  @@index([chatConnectionId])
+  @@index([agentConnectionId])
 }
 
 model workspace_threads {

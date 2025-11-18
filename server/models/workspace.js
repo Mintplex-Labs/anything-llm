@@ -46,15 +46,20 @@ const Workspace = {
     "lastUpdatedAt",
     "openAiPrompt",
     "similarityThreshold",
-    "chatProvider",
-    "chatModel",
+    "chatProvider", // DEPRECATED: Use chatConnectionId
+    "chatModel", // DEPRECATED: Use chatModelOverride
     "topN",
     "chatMode",
     // "pfpFilename",
-    "agentProvider",
-    "agentModel",
+    "agentProvider", // DEPRECATED: Use agentConnectionId
+    "agentModel", // DEPRECATED: Use agentModelOverride
     "queryRefusalResponse",
     "vectorSearchMode",
+    // NEW: LLM Connection fields
+    "chatConnectionId",
+    "chatModelOverride",
+    "agentConnectionId",
+    "agentModelOverride",
   ],
 
   validations: {
@@ -128,6 +133,26 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    chatConnectionId: (value) => {
+      if (value === null || value === undefined) return null;
+      const id = parseInt(value);
+      if (isNullOrNaN(id)) return null;
+      return id;
+    },
+    chatModelOverride: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    agentConnectionId: (value) => {
+      if (value === null || value === undefined) return null;
+      const id = parseInt(value);
+      if (isNullOrNaN(id)) return null;
+      return id;
+    },
+    agentModelOverride: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
     },
   },
 
