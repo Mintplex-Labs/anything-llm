@@ -26,6 +26,13 @@ class MetaGenerator {
   /** @type {MetaTagDefinition[]|null} */
   #customConfig = null;
 
+  #defaultManifest = {
+    name: "AnythingLLM",
+    short_name: "AnythingLLM",
+    display: "standalone",
+    orientation: "portrait",
+  };
+
   constructor() {
     if (MetaGenerator._instance) return MetaGenerator._instance;
     MetaGenerator._instance = this;
@@ -127,7 +134,7 @@ class MetaGenerator {
       { tag: "link", props: { rel: "icon", href: "/favicon.png" } },
       { tag: "link", props: { rel: "apple-touch-icon", href: "/favicon.png" } },
 
-      // PWA tags
+      // PWA specific tags
       {
         tag: "meta",
         props: { name: "mobile-web-app-capable", content: "yes" },
@@ -304,6 +311,61 @@ class MetaGenerator {
             <div id="root" class="h-screen"></div>
           </body>
         </html>`);
+  }
+
+  /**
+   * Generates the manifest.json file for the PWA application on the fly.
+   * @param {import('express').Response} response
+   * @param {number} code
+   */
+  async generateManifest(response) {
+    try {
+      const { SystemSettings } = require("./models/systemSettings");
+      const manifestName = await SystemSettings.getValueOrFallback(
+        { label: "meta_page_title" },
+        "AnythingLLM"
+      );
+      const faviconURL = await SystemSettings.getValueOrFallback(
+        { label: "meta_page_favicon" },
+        null
+      );
+
+      let iconUrl = "/favicon.png";
+      if (faviconURL) {
+        try {
+          new URL(faviconURL);
+          iconUrl = faviconURL;
+        } catch {
+          iconUrl = "/favicon.png";
+        }
+      }
+
+      const manifest = {
+        name: manifestName,
+        short_name: manifestName,
+        display: "standalone",
+        orientation: "portrait",
+        icons: [
+          {
+            src: iconUrl,
+            sizes: "any",
+            purpose: "any maskable",
+          },
+        ],
+      };
+
+      response
+        .type("application/json")
+        .status(200)
+        .send(JSON.stringify(manifest, null, 2))
+        .end();
+    } catch (_error) {
+      response
+        .type("application/json")
+        .status(500)
+        .send(JSON.stringify(this.#defaultManifest, null, 2))
+        .end();
+    }
   }
 }
 

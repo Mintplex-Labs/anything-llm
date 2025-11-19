@@ -289,6 +289,7 @@ export default {
   plugins: [
     function ({ addVariant }) {
       addVariant('light', '.light &') // Add the `light:` variant
+      addVariant('pwa', '.pwa &') // Add the `pwa:` variant
     },
   ]
 }

@@ -24,7 +24,6 @@ import {
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
-import { isStandalonePWA } from "@/utils/pwa";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -48,7 +47,6 @@ export default function PromptInput({
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
-  const isPWA = isStandalonePWA();
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -245,9 +243,7 @@ export default function PromptInput({
   }
 
   return (
-    <div
-      className={`w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center ${isPWA ? "pb-5" : "pb-4"} md:pb-0`}
-    >
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pb-4 pwa:pb-5 md:pb-0">
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
@@ -265,9 +261,7 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4 md:w-full">
-          <div
-            className={`w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm ${isPWA ? "rounded-3xl" : "rounded-2xl"} md:rounded-2xl flex flex-col px-2 overflow-hidden`}
-          >
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl md:rounded-2xl pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
             <div className="flex items-center border-b border-theme-chat-input-border mx-3">
               <textarea

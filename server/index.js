@@ -108,64 +108,8 @@ if (process.env.NODE_ENV !== "development") {
 
   // Dynamic manifest.json endpoint for PWA with custom branding support
   app.get("/manifest.json", async function (_, response) {
-    try {
-      const { SystemSettings } = require("./models/systemSettings");
-      const customTitle = await SystemSettings.getValueOrFallback(
-        { label: "meta_page_title" },
-        null
-      );
-      const faviconURL = await SystemSettings.getValueOrFallback(
-        { label: "meta_page_favicon" },
-        null
-      );
-
-      const manifestName = customTitle || "AnythingLLM";
-
-      // Validate icon URL
-      let iconUrl = "/favicon.png";
-      if (faviconURL) {
-        try {
-          new URL(faviconURL);
-          iconUrl = faviconURL;
-        } catch {
-          iconUrl = "/favicon.png";
-        }
-      }
-
-      const manifest = {
-        name: manifestName,
-        short_name: manifestName,
-        display: "standalone",
-        orientation: "portrait",
-        icons: [
-          {
-            src: iconUrl,
-            sizes: "any",
-            purpose: "any maskable",
-          },
-        ],
-      };
-
-      response.type("application/json");
-      response.send(JSON.stringify(manifest, null, 2)).end();
-    } catch (_error) {
-      // Fallback to default manifest
-      response.type("application/json");
-      response
-        .send(
-          JSON.stringify(
-            {
-              name: "AnythingLLM",
-              short_name: "AnythingLLM",
-              display: "standalone",
-              orientation: "portrait",
-            },
-            null,
-            2
-          )
-        )
-        .end();
-    }
+    IndexPage.generateManifest(response);
+    return;
   });
 
   app.use("/", function (_, response) {
