@@ -15,9 +15,9 @@ export default function hljsDefineSvelte(hljs) {
           {
             begin: /^(\s*)(\$:)/gm,
             end: /(\s*)/gm,
-            className: 'keyword'
-          }
-        ]
+            className: "keyword",
+          },
+        ],
       },
       {
         begin: /^(\s*)(<style.*>)/gm,
@@ -34,15 +34,15 @@ export default function hljsDefineSvelte(hljs) {
           {
             begin: /[\{]/,
             end: /[\}]/,
-            skip: true
+            skip: true,
           },
           {
             begin: /([#:\/@])(if|else|each|await|then|catch|debug|html)/gm,
-            className: 'keyword',
+            className: "keyword",
             relevance: 10,
-          }
+          },
         ],
-      }
-    ]
-  }
+      },
+    ],
+  };
 }
