@@ -120,6 +120,9 @@ export default {
     audioPreference: () => {
       return "/settings/audio-preference";
     },
+    defaultSystemPrompt: () => {
+      return "/settings/default-system-prompt";
+    },
     embedder: {
       modelPreference: () => "/settings/embedding-preference",
       chunkingPreference: () => "/settings/text-splitter-preference",
