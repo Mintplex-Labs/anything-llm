@@ -1,0 +1,13 @@
+diff --git a/node_modules/epub2/lib/epub.js b/node_modules/epub2/lib/epub.js
+index 729208b..8412959 100644
+--- a/node_modules/epub2/lib/epub.js
++++ b/node_modules/epub2/lib/epub.js
+@@ -536,7 +536,7 @@ class EPub extends events_1.EventEmitter {
+                         ? ''
+                         : (branch[i].navLabel && branch[i].navLabel.text || branch[i].navLabel || "").trim();
+                     */
+-                    title = (branch[i].navLabel && branch[i].navLabel.text || branch[i].navLabel || "").trim();
++                    title = String(branch[i].navLabel && branch[i].navLabel.text || branch[i].navLabel || "").trim();
+                 }
+                 var order = Number(branch[i]["@"] && branch[i]["@"].playOrder || 0);
+                 if (isNaN(order)) {
