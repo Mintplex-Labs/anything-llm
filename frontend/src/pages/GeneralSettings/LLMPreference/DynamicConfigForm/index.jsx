@@ -21,7 +21,7 @@ export default function DynamicConfigForm({
   }, [config.basePath, config.apiKey]);
 
   const fetchModels = async () => {
-    if (!config.basePath) return;
+    if (!config.basePath) return [];
 
     setLoadingModels(true);
     try {
@@ -37,10 +37,12 @@ export default function DynamicConfigForm({
       if (models && models.length > 0 && !config.defaultModel) {
         handleFieldChange("defaultModel", models[0].id);
       }
+
+      return models || [];
     } catch (error) {
       console.error("Error fetching models:", error);
-      showToast(`Failed to fetch models: ${error.message}`, "error");
       setAvailableModels([]);
+      throw error; // Re-throw so handleTestConnection can catch it
     } finally {
       setLoadingModels(false);
     }
@@ -54,10 +56,10 @@ export default function DynamicConfigForm({
 
     setTestingConnection(true);
     try {
-      await fetchModels();
-      if (availableModels.length > 0) {
+      const models = await fetchModels();
+      if (models && models.length > 0) {
         showToast(
-          `Connection successful! Found ${availableModels.length} models`,
+          `Connection successful! Found ${models.length} models`,
           "success"
         );
       } else {
