@@ -43,9 +43,6 @@ const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
 );
-const GeneralLLMConnections = lazy(
-  () => import("@/pages/GeneralSettings/LLMConnections")
-);
 const GeneralTranscriptionPreference = lazy(
   () => import("@/pages/GeneralSettings/TranscriptionPreference")
 );
@@ -130,10 +127,6 @@ export default function App() {
                   <Route
                     path="/settings/llm-preference"
                     element={<AdminRoute Component={GeneralLLMPreference} />}
-                  />
-                  <Route
-                    path="/settings/llm-connections"
-                    element={<AdminRoute Component={GeneralLLMConnections} />}
                   />
                   <Route
                     path="/settings/transcription-preference"

@@ -1,7 +1,7 @@
 const { LLMConnection } = require("../../../models/llmConnection");
 const { LLMConfigEncryption } = require("../../../utils/LLMConfigEncryption");
 const { reqBody } = require("../../../utils/http");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { validatedRequest } = require("../../../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
   ROLES,
@@ -12,7 +12,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.get(
     "/v1/llm-connections",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -68,7 +68,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.get(
     "/v1/llm-connections/:id",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -101,7 +101,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.post(
     "/v1/llm-connections/new",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -172,7 +172,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.post(
     "/v1/llm-connections/:id/update",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -207,7 +207,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.delete(
     "/v1/llm-connections/:id",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -232,7 +232,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.post(
     "/v1/llm-connections/:id/set-default",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
@@ -257,7 +257,7 @@ function apiLLMConnectionEndpoints(app) {
 
   app.post(
     "/v1/llm-connections/:id/test",
-    [validApiKey, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       /*
       #swagger.tags = ['LLM Connections']
