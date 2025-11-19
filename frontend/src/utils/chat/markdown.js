@@ -7,6 +7,10 @@ import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
 
+// Register custom lanaguages
+import hljsDefineSvelte from "./hljs-libraries/svelte";
+hljs.registerLanguage("svelte", hljsDefineSvelte);
+
 const markdown = markdownIt({
   html: Appearance.get("renderHTML") ?? false,
   typographer: true,
