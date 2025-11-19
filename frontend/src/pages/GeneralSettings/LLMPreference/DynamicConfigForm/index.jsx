@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import System from "@/models/system";
-import { Flask } from "@phosphor-icons/react";
+import { Flask, CheckCircle, XCircle } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 
 export default function DynamicConfigForm({
@@ -12,8 +12,13 @@ export default function DynamicConfigForm({
   const [availableModels, setAvailableModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState(null); // { success: boolean, message: string, modelCount: number }
+  const testDebounceTimer = useRef(null);
 
   useEffect(() => {
+    // Clear connection status when config changes
+    setConnectionStatus(null);
+
     // Auto-fetch models when basePath is provided
     if (config.basePath) {
       fetchModels();
@@ -49,23 +54,54 @@ export default function DynamicConfigForm({
   };
 
   const handleTestConnection = async () => {
+    // Debounce - only allow one test every 500ms
+    if (testDebounceTimer.current) {
+      return; // Already testing or within debounce period
+    }
+
     if (!config.basePath) {
-      showToast("Please enter a base path first", "error");
+      setConnectionStatus({
+        success: false,
+        message: "Please enter a base path first",
+        modelCount: 0,
+      });
       return;
     }
 
     setTestingConnection(true);
+    setConnectionStatus(null); // Clear previous status
+
+    // Set debounce timer
+    testDebounceTimer.current = setTimeout(() => {
+      testDebounceTimer.current = null;
+    }, 500);
+
     try {
       const models = await fetchModels();
       if (models && models.length > 0) {
+        setConnectionStatus({
+          success: true,
+          message: `Successfully connected to ${provider}`,
+          modelCount: models.length,
+        });
         showToast(
           `Connection successful! Found ${models.length} models`,
           "success"
         );
       } else {
+        setConnectionStatus({
+          success: false,
+          message: "No models returned from the provider",
+          modelCount: 0,
+        });
         showToast("Connection test failed: No models returned", "error");
       }
     } catch (error) {
+      setConnectionStatus({
+        success: false,
+        message: error.message || "Connection failed",
+        modelCount: 0,
+      });
       showToast(`Connection test failed: ${error.message}`, "error");
     } finally {
       setTestingConnection(false);
@@ -90,7 +126,7 @@ export default function DynamicConfigForm({
   return (
     <div className="space-y-4">
       <div className="border-t border-theme-modal-border pt-4">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <h4 className="text-sm font-semibold text-theme-text-primary">
             Provider Configuration
           </h4>
@@ -104,6 +140,36 @@ export default function DynamicConfigForm({
             {testingConnection ? "Testing..." : "Test Connection"}
           </button>
         </div>
+
+        {/* Connection Status Indicator */}
+        {connectionStatus && (
+          <div
+            className={`flex items-start gap-x-2 px-3 py-2 mb-4 rounded text-xs ${
+              connectionStatus.success
+                ? "bg-green-500/10 text-green-400"
+                : "bg-red-500/10 text-red-400"
+            }`}
+          >
+            {connectionStatus.success ? (
+              <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" weight="fill" />
+            ) : (
+              <XCircle className="h-4 w-4 flex-shrink-0 mt-0.5" weight="fill" />
+            )}
+            <div className="flex-1">
+              <div className="font-medium">
+                {connectionStatus.success ? "✓ Connected" : "✗ Connection Failed"}
+              </div>
+              <div className="text-xs opacity-80 mt-0.5">
+                {connectionStatus.message}
+                {connectionStatus.success &&
+                  ` • Found ${connectionStatus.modelCount} model${
+                    connectionStatus.modelCount !== 1 ? "s" : ""
+                  }`}
+              </div>
+            </div>
+          </div>
+        )}
+
         {providerConfig.fields.map((field) => (
           <div key={field.name} className="mb-4">
             <label className="block mb-2 text-sm font-medium text-theme-text-primary">
