@@ -354,16 +354,12 @@ class MetaGenerator {
         ],
       };
 
-      response
-        .type("application/json")
-        .status(200)
-        .send(JSON.stringify(manifest, null, 2))
-        .end();
+      response.type("application/json").status(200).send(manifest).end();
     } catch (_error) {
       response
         .type("application/json")
         .status(500)
-        .send(JSON.stringify(this.#defaultManifest, null, 2))
+        .send(this.#defaultManifest)
         .end();
     }
   }
