@@ -292,10 +292,21 @@ async function getGroqAiModels(_apiKey = null) {
 
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
-  const openai = new OpenAIApi({
+
+  // LiteLLM uses X-Litellm-Key header for API key authentication
+  const config = {
     baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
-    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
-  });
+    apiKey: "dummy-key", // Required by OpenAI SDK but not used
+  };
+
+  // Add custom header for LiteLLM API key if provided
+  if (apiKey || process.env.LITE_LLM_API_KEY) {
+    config.defaultHeaders = {
+      "X-Litellm-Key": apiKey || process.env.LITE_LLM_API_KEY,
+    };
+  }
+
+  const openai = new OpenAIApi(config);
   const models = await openai.models
     .list()
     .then((results) => results.data)

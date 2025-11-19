@@ -20,10 +20,20 @@ class LiteLLM {
       }
 
       this.basePath = config.basePath;
-      this.openai = new OpenAIApi({
+
+      // LiteLLM uses X-Litellm-Key header for API key authentication
+      const openaiConfig = {
         baseURL: this.basePath,
-        apiKey: config.apiKey ?? null,
-      });
+        apiKey: "dummy-key", // Required by OpenAI SDK but not used
+      };
+
+      if (config.apiKey) {
+        openaiConfig.defaultHeaders = {
+          "X-Litellm-Key": config.apiKey,
+        };
+      }
+
+      this.openai = new OpenAIApi(openaiConfig);
       this.model = modelPreference ?? config.defaultModel ?? null;
       this.maxTokens = config.modelTokenLimit ?? 4096;
       this.timeout = config.timeout ?? 30000;
@@ -37,10 +47,20 @@ class LiteLLM {
       }
 
       this.basePath = process.env.LITE_LLM_BASE_PATH;
-      this.openai = new OpenAIApi({
+
+      // LiteLLM uses X-Litellm-Key header for API key authentication
+      const openaiConfig = {
         baseURL: this.basePath,
-        apiKey: process.env.LITE_LLM_API_KEY ?? null,
-      });
+        apiKey: "dummy-key", // Required by OpenAI SDK but not used
+      };
+
+      if (process.env.LITE_LLM_API_KEY) {
+        openaiConfig.defaultHeaders = {
+          "X-Litellm-Key": process.env.LITE_LLM_API_KEY,
+        };
+      }
+
+      this.openai = new OpenAIApi(openaiConfig);
       this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
       this.maxTokens = process.env.LITE_LLM_MODEL_TOKEN_LIMIT ?? 1024;
       this.timeout = 30000;
