@@ -31,6 +31,13 @@ class MetaGenerator {
     short_name: "AnythingLLM",
     display: "standalone",
     orientation: "portrait",
+    start_url: "/",
+    icons: [
+      {
+        src: "/favicon.png",
+        sizes: "any",
+      },
+    ],
   };
 
   constructor() {
@@ -345,20 +352,16 @@ class MetaGenerator {
         short_name: manifestName,
         display: "standalone",
         orientation: "portrait",
+        start_url: "/",
         icons: [
           {
             src: iconUrl,
             sizes: "any",
-            purpose: "any maskable",
           },
         ],
       };
 
-      response
-        .type("application/json")
-        .status(200)
-        .send(manifest)
-        .end();
+      response.type("application/json").status(200).send(manifest).end();
     } catch (error) {
       this.#log(`error generating manifest: ${error.message}`, error);
       response
