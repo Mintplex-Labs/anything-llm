@@ -106,7 +106,6 @@ if (process.env.NODE_ENV !== "development") {
     response.send("User-agent: *\nDisallow: /").end();
   });
 
-  // Dynamic manifest.json endpoint for PWA with custom branding support
   app.get("/manifest.json", async function (_, response) {
     IndexPage.generateManifest(response);
     return;
