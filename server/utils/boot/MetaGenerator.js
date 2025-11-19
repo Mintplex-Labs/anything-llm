@@ -320,7 +320,7 @@ class MetaGenerator {
    */
   async generateManifest(response) {
     try {
-      const { SystemSettings } = require("./models/systemSettings");
+      const { SystemSettings } = require("../../models/systemSettings");
       const manifestName = await SystemSettings.getValueOrFallback(
         { label: "meta_page_title" },
         "AnythingLLM"
@@ -354,11 +354,16 @@ class MetaGenerator {
         ],
       };
 
-      response.type("application/json").status(200).send(manifest).end();
-    } catch (_error) {
       response
         .type("application/json")
-        .status(500)
+        .status(200)
+        .send(manifest)
+        .end();
+    } catch (error) {
+      this.#log(`error generating manifest: ${error.message}`, error);
+      response
+        .type("application/json")
+        .status(200)
         .send(this.#defaultManifest)
         .end();
     }
