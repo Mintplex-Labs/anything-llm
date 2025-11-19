@@ -114,6 +114,9 @@ export default {
     llmPreference: () => {
       return "/settings/llm-preference";
     },
+    llmConnections: () => {
+      return "/settings/llm-connections";
+    },
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
     },

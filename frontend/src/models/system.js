@@ -792,6 +792,179 @@ const System = {
       });
   },
 
+  /**
+   * LLM Connections API
+   * Manages multiple LLM provider connections
+   */
+  llmConnections: {
+    /**
+     * List all LLM connections
+     * @param {object} filters - Optional filters { provider, includeInactive }
+     * @returns {Promise<{connections: Array, error: string | null}>}
+     */
+    list: async function (filters = {}) {
+      const params = new URLSearchParams();
+      if (filters.provider) params.append("provider", filters.provider);
+      if (filters.includeInactive)
+        params.append("includeInactive", filters.includeInactive);
+
+      const queryString = params.toString();
+      const url = `${API_BASE}/v1/llm-connections${
+        queryString ? `?${queryString}` : ""
+      }`;
+
+      return fetch(url, {
+        method: "GET",
+        headers: baseHeaders(),
+      })
+        .then((res) => {
+          if (!res.ok)
+            throw new Error("Could not fetch LLM connections.");
+          return res.json();
+        })
+        .then((res) => ({ connections: res.connections || [], error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { connections: [], error: e.message };
+        });
+    },
+
+    /**
+     * Get a single LLM connection by ID
+     * @param {number} id - Connection ID
+     * @returns {Promise<{connection: object | null, error: string | null}>}
+     */
+    get: async function (id) {
+      return fetch(`${API_BASE}/v1/llm-connections/${id}`, {
+        method: "GET",
+        headers: baseHeaders(),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Could not fetch LLM connection.");
+          return res.json();
+        })
+        .then((res) => ({ connection: res.connection || null, error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { connection: null, error: e.message };
+        });
+    },
+
+    /**
+     * Create a new LLM connection
+     * @param {object} data - Connection data { name, provider, config, isDefault }
+     * @returns {Promise<{connection: object | null, error: string | null}>}
+     */
+    create: async function (data) {
+      return fetch(`${API_BASE}/v1/llm-connections/new`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify(data),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Could not create LLM connection.");
+          return res.json();
+        })
+        .then((res) => ({ connection: res.connection || null, error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { connection: null, error: e.message };
+        });
+    },
+
+    /**
+     * Update an existing LLM connection
+     * @param {number} id - Connection ID
+     * @param {object} updates - Fields to update
+     * @returns {Promise<{connection: object | null, error: string | null}>}
+     */
+    update: async function (id, updates) {
+      return fetch(`${API_BASE}/v1/llm-connections/${id}/update`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify(updates),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Could not update LLM connection.");
+          return res.json();
+        })
+        .then((res) => ({ connection: res.connection || null, error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { connection: null, error: e.message };
+        });
+    },
+
+    /**
+     * Delete (soft delete) an LLM connection
+     * @param {number} id - Connection ID
+     * @returns {Promise<{success: boolean, error: string | null}>}
+     */
+    delete: async function (id) {
+      return fetch(`${API_BASE}/v1/llm-connections/${id}`, {
+        method: "DELETE",
+        headers: baseHeaders(),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Could not delete LLM connection.");
+          return res.json();
+        })
+        .then((res) => ({ success: res.success || false, error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { success: false, error: e.message };
+        });
+    },
+
+    /**
+     * Set a connection as the default for its provider
+     * @param {number} id - Connection ID
+     * @returns {Promise<{connection: object | null, error: string | null}>}
+     */
+    setDefault: async function (id) {
+      return fetch(`${API_BASE}/v1/llm-connections/${id}/set-default`, {
+        method: "POST",
+        headers: baseHeaders(),
+      })
+        .then((res) => {
+          if (!res.ok)
+            throw new Error("Could not set connection as default.");
+          return res.json();
+        })
+        .then((res) => ({ connection: res.connection || null, error: null }))
+        .catch((e) => {
+          console.error(e);
+          return { connection: null, error: e.message };
+        });
+    },
+
+    /**
+     * Test an LLM connection
+     * @param {number} id - Connection ID
+     * @returns {Promise<{success: boolean, error: string | null, provider?: string, model?: string}>}
+     */
+    test: async function (id) {
+      return fetch(`${API_BASE}/v1/llm-connections/${id}/test`, {
+        method: "POST",
+        headers: baseHeaders(),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Connection test failed.");
+          return res.json();
+        })
+        .then((res) => ({
+          success: res.success || false,
+          provider: res.provider,
+          model: res.model,
+          error: null,
+        }))
+        .catch((e) => {
+          console.error(e);
+          return { success: false, error: e.message };
+        });
+    },
+  },
+
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,

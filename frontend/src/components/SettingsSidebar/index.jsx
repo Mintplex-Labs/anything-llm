@@ -227,6 +227,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: "LLM Connections",
+              href: paths.settings.llmConnections(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.vector-database"),
               href: paths.settings.vectorDatabase(),
               flex: true,
