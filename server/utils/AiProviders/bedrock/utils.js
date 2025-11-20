@@ -11,19 +11,28 @@ const DEFAULT_MAX_OUTPUT_TOKENS = 4096;
 /** @type {number} */
 const DEFAULT_CONTEXT_WINDOW_TOKENS = 8191;
 
-/** @type {'iam' | 'iam_role' | 'sessionToken' | 'bedrock_api_key'} */
+/** @type {'iam' | 'iam_role' | 'sessionToken' | 'apiKey'} */
 const SUPPORTED_CONNECTION_METHODS = [
   "iam",
   "iam_role",
   "sessionToken",
-  "bedrock_api_key",
+  "apiKey",
 ];
 
+/**
+ * Gets the AWS Bedrock authentication method from the environment variables.
+ * @returns {"iam" | "iam_role" | "sessionToken" | "apiKey"} The authentication method.
+ */
 function getBedrockAuthMethod() {
   const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
   return SUPPORTED_CONNECTION_METHODS.includes(method) ? method : "iam";
 }
 
+/**
+ * Creates the AWS Bedrock credentials object based on the authentication method.
+ * @param {"iam" | "iam_role" | "sessionToken" | "apiKey"} authMethod - The authentication method.
+ * @returns {object | undefined} The credentials object.
+ */
 function createBedrockCredentials(authMethod) {
   switch (authMethod) {
     case "iam": // explicit credentials
@@ -42,7 +51,7 @@ function createBedrockCredentials(authMethod) {
     // returning undefined will allow this to happen
     case "iam_role":
       return undefined;
-    case "bedrock_api_key":
+    case "apiKey":
       return fromStatic({
         token: { token: process.env.AWS_BEDROCK_LLM_API_KEY },
       });
@@ -51,11 +60,17 @@ function createBedrockCredentials(authMethod) {
   }
 }
 
+/**
+ * Creates the AWS Bedrock runtime client based on the authentication method.
+ * @param {"iam" | "iam_role" | "sessionToken" | "apiKey"} authMethod - The authentication method.
+ * @param {object | undefined} credentials - The credentials object.
+ * @returns {BedrockRuntimeClient} The runtime client.
+ */
 function createBedrockRuntimeClient(authMethod, credentials) {
   const clientOpts = {
     region: process.env.AWS_BEDROCK_LLM_REGION,
   };
-  if (authMethod === "bedrock_api_key") {
+  if (authMethod === "apiKey") {
     clientOpts.token = credentials;
     clientOpts.authSchemePreference = ["httpBearerAuth"];
   } else {
@@ -64,6 +79,15 @@ function createBedrockRuntimeClient(authMethod, credentials) {
   return new BedrockRuntimeClient(clientOpts);
 }
 
+/**
+ * Creates the AWS Bedrock chat client based on the authentication method.
+ * Used explicitly by the agent provider for the AWS Bedrock provider.
+ * @param {object} config - The configuration object.
+ * @param {"iam" | "iam_role" | "sessionToken" | "apiKey"} authMethod - The authentication method.
+ * @param {object | undefined} credentials - The credentials object.
+ * @param {string | null} model - The model to use.
+ * @returns {ChatBedrockConverse} The chat client.
+ */
 function createBedrockChatClient(config = {}, authMethod, credentials, model) {
   authMethod ||= getBedrockAuthMethod();
   credentials ||= createBedrockCredentials(authMethod);

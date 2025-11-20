@@ -374,7 +374,7 @@ class Provider {
     }
 
     // If there are arguments, parse them as json so that the tools can use them
-    if (result.functionCall?.arguments)
+    if (!!result.functionCall?.arguments)
       result.functionCall.arguments = safeJsonParse(
         result.functionCall.arguments,
         {}

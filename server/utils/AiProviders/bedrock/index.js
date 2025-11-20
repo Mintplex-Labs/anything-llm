@@ -43,7 +43,7 @@ class AWSBedrockLLM {
    */
   constructor(embedder = null, modelPreference = null) {
     const requiredEnvVars = [
-      ...(!["iam_role", "bedrock_api_key"].includes(this.authMethod)
+      ...(!["iam_role", "apiKey"].includes(this.authMethod)
         ? [
             // required for iam and sessionToken
             "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
@@ -56,7 +56,7 @@ class AWSBedrockLLM {
             "AWS_BEDROCK_LLM_SESSION_TOKEN",
           ]
         : []),
-      ...(this.authMethod === "bedrock_api_key"
+      ...(this.authMethod === "apiKey"
         ? [
             // required for bedrock api key
             "AWS_BEDROCK_LLM_API_KEY",

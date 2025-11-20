@@ -7,10 +7,9 @@ export default function AwsBedrockLLMOptions({ settings }) {
     settings?.AwsBedrockLLMConnectionMethod ?? "iam"
   );
 
-  console.log("connectionMethod", connectionMethod);
   return (
     <div className="w-full flex flex-col">
-      {!settings?.credentialsOnly && connectionMethod !== "bedrock_api_key" && (
+      {!settings?.credentialsOnly && connectionMethod !== "apiKey" && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
@@ -57,7 +56,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             Session Token (Temporary Credentials)
           </option>
           <option value="iam_role">IAM Role (Implied Credentials)</option>
-          <option value="bedrock_api_key">Bedrock API Key</option>
+          <option value="apiKey">Bedrock API Key</option>
         </select>
       </div>
 
@@ -119,7 +118,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             />
           </div>
         )}
-        {connectionMethod === "bedrock_api_key" && (
+        {connectionMethod === "apiKey" && (
           <div className="flex flex-col w-60">
             <label className="text-theme-text-primary text-sm font-semibold block mb-3">
               AWS Bedrock API Key
