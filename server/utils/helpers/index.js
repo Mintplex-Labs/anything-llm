@@ -24,6 +24,7 @@
  *
  * @typedef {Object} ChatCompletionOptions
  * @property {number} temperature - The sampling temperature for the LLM response
+ * @property {import("@prisma/client").users} user - The user object for the chat completion to send to the LLM provider for user tracking (optional)
  *
  * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
  *
