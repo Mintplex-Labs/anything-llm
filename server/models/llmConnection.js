@@ -159,10 +159,7 @@ const LLMConnection = {
         ),
       };
     } catch (error) {
-      console.error(
-        "FAILED TO GET DEFAULT LLM CONNECTION.",
-        error.message
-      );
+      console.error("FAILED TO GET DEFAULT LLM CONNECTION.", error.message);
       return null;
     }
   },

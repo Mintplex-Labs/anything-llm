@@ -1,7 +1,9 @@
 const { LLMConnection } = require("../../../models/llmConnection");
 const { LLMConfigEncryption } = require("../../../utils/LLMConfigEncryption");
 const { reqBody } = require("../../../utils/http");
-const { validatedRequest } = require("../../../utils/middleware/validatedRequest");
+const {
+  validatedRequest,
+} = require("../../../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
   ROLES,
@@ -55,7 +57,10 @@ function apiLLMConnectionEndpoints(app) {
         // Sanitize sensitive fields before sending to client
         const sanitized = connections.map((conn) => ({
           ...conn,
-          config: LLMConfigEncryption.sanitizeConfig(conn.provider, conn.config),
+          config: LLMConfigEncryption.sanitizeConfig(
+            conn.provider,
+            conn.config
+          ),
         }));
 
         response.status(200).json({ connections: sanitized });
@@ -275,8 +280,8 @@ function apiLLMConnectionEndpoints(app) {
         const { getLLMProvider } = require("../../../utils/helpers");
         const provider = await getLLMProvider({ connection });
 
-        // TODO: Make a simple test call to the provider
-        // For now, just verify it instantiated successfully
+        // Note: Currently only verifies provider instantiation.
+        // Future enhancement: make an actual test API call to validate credentials.
 
         response.status(200).json({
           success: true,
