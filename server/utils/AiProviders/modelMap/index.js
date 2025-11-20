@@ -117,8 +117,9 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
         });
       if (!remoteContexWindowMap) return null;
 
-      const modelMap = this.#formatModelMap(remoteContexWindowMap);
-      this.#validateModelMap(modelMap);
+      const modelMap = this.#validateModelMap(
+        this.#formatModelMap(remoteContexWindowMap)
+      );
       fs.writeFileSync(this.cacheFilePath, JSON.stringify(modelMap, null, 2));
       fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
       return modelMap;
@@ -140,12 +141,16 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
 
       // Validate that the context window is a number
       for (const [model, contextWindow] of Object.entries(models)) {
-        if (isNaN(contextWindow) || contextWindow <= 0)
-          throw new Error(
-            `Invalid model map for ${provider} - context window is not a positive number for model ${model}`
+        if (isNaN(contextWindow) || contextWindow <= 0) {
+          this.log(
+            `${provider}:${model} - context window is not a positive number. Got ${contextWindow}.`
           );
+          delete models[model];
+          continue;
+        }
       }
     }
+    return modelMap;
   }
 
   /**

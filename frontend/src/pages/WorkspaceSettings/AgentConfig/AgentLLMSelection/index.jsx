@@ -29,7 +29,6 @@ const ENABLED_PROVIDERS = [
   "litellm",
   "apipie",
   "xai",
-  "zai",
   "nvidia-nim",
   "gemini",
   "moonshotai",
