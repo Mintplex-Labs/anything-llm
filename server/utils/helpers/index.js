@@ -81,6 +81,7 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
+  const { LanceDb } = require("../vectorDbProviders/lance");
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
@@ -93,7 +94,6 @@ function getVectorDbClass(getExactly = null) {
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return ChromaCloud;
     case "lancedb":
-      const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
@@ -114,7 +114,10 @@ function getVectorDbClass(getExactly = null) {
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
     default:
-      throw new Error("ENV: No VECTOR_DB value found in environment!");
+      console.error(
+        `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
+      );
+      return LanceDb;
   }
 }
 
@@ -212,6 +215,12 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return new CometApiLLM(embedder, model);
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return new FoundryLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -362,6 +371,12 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return CometApiLLM;
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return FoundryLLM;
     default:
       return null;
   }
@@ -430,6 +445,10 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
+    case "cometapi":
+      return process.env.COMETAPI_LLM_MODEL_PREF;
+    case "foundry":
+      return process.env.FOUNDRY_MODEL_PREF;
     default:
       return null;
   }

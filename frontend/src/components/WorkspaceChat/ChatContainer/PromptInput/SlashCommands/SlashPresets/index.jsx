@@ -186,6 +186,8 @@ function PresetItem({ preset, onUse, onEdit, onPublish }) {
 
   return (
     <button
+      type="button"
+      data-slash-command={preset.command}
       onClick={onUse}
       className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start items-center relative"
     >

@@ -199,6 +199,7 @@ class GitLabRepoLoader {
 
     let branchesPage = [];
     while ((branchesPage = await this.fetchNextPage(branchesRequestData))) {
+      if (!Array.isArray(branchesPage) || !branchesPage?.length) break;
       this.branches.push(...branchesPage.map((branch) => branch.name));
     }
     return this.#branchPrefSort(this.branches);
@@ -221,6 +222,7 @@ class GitLabRepoLoader {
     let filesPage = null;
     let pagePromises = [];
     while ((filesPage = await this.fetchNextPage(filesRequestData))) {
+      if (!Array.isArray(filesPage) || !filesPage?.length) break;
       // Fetch all the files that are not ignored in parallel.
       pagePromises = filesPage
         .filter((file) => {
@@ -258,6 +260,7 @@ class GitLabRepoLoader {
     let issuesPage = null;
     let pagePromises = [];
     while ((issuesPage = await this.fetchNextPage(issuesRequestData))) {
+      if (!Array.isArray(issuesPage) || !issuesPage?.length) break;
       // Fetch all the issues in parallel.
       pagePromises = issuesPage.map(async (issue) => {
         const discussionsRequestData = {
@@ -269,6 +272,7 @@ class GitLabRepoLoader {
         while (
           (discussionPage = await this.fetchNextPage(discussionsRequestData))
         ) {
+          if (!Array.isArray(discussionPage) || !discussionPage?.length) break;
           discussions.push(
             ...discussionPage.map(({ notes }) =>
               notes.map(
@@ -308,6 +312,7 @@ ${body}`
     };
 
     const wikiPages = await this.fetchNextPage(wikiRequestData);
+    if (!Array.isArray(wikiPages)) return [];
     console.log(`Total wiki pages fetched: ${wikiPages.length}`);
     return wikiPages;
   }

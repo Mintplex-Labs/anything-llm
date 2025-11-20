@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
@@ -204,6 +205,16 @@ class AgentHandler {
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
 
+      case "cometapi":
+        if (!process.env.COMETAPI_LLM_API_KEY)
+          throw new Error("CometAPI API Key must be provided to use agents.");
+        break;
+
+      case "foundry":
+        if (!process.env.FOUNDRY_BASE_PATH)
+          throw new Error("Foundry base path must be provided to use agents.");
+        break;
+
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -249,7 +260,7 @@ class AgentHandler {
       case "perplexity":
         return process.env.PERPLEXITY_MODEL_PREF ?? "sonar-small-online";
       case "textgenwebui":
-        return null;
+        return "text-generation-webui";
       case "bedrock":
         return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
       case "fireworksai":
@@ -274,6 +285,10 @@ class AgentHandler {
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       case "dpais":
         return process.env.DPAIS_LLM_MODEL_PREF;
+      case "cometapi":
+        return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
+      case "foundry":
+        return process.env.FOUNDRY_MODEL_PREF ?? null;
       default:
         return null;
     }
@@ -509,15 +524,21 @@ class AgentHandler {
   async #loadAgents() {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+    const user = this.invocation.user_id
+      ? await User.get({ id: Number(this.invocation.user_id) })
+      : null;
+    const userAgentDef = await USER_AGENT.getDefinition();
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.invocation.workspace,
+      user
     );
 
+    this.aibitat.agent(USER_AGENT.name, userAgentDef);
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
     this.#funcsToLoad = [
-      ...((await USER_AGENT.getDefinition())?.functions || []),
-      ...((await WORKSPACE_AGENT.getDefinition())?.functions || []),
+      ...(userAgentDef?.functions || []),
+      ...(workspaceAgentDef?.functions || []),
     ];
   }
 

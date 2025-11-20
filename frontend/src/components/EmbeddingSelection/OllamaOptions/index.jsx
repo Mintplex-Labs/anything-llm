@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
 export default function OllamaEmbeddingOptions({ settings }) {
@@ -35,9 +36,22 @@ export default function OllamaEmbeddingOptions({ settings }) {
           basePath={basePath.value}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Max Embedding Chunk Length
-          </label>
+          <div
+            data-tooltip-place="top"
+            data-tooltip-id="max-embedding-chunk-length-tooltip"
+            className="flex gap-x-1 items-center mb-3"
+          >
+            <Info
+              size={16}
+              className="text-theme-text-secondary cursor-pointer"
+            />
+            <label className="text-white text-sm font-semibold block">
+              Max embedding chunk length
+            </label>
+            <Tooltip id="max-embedding-chunk-length-tooltip">
+              Maximum length of text chunks, in characters, for embedding.
+            </Tooltip>
+          </div>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
@@ -50,9 +64,6 @@ export default function OllamaEmbeddingOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum length of text chunks for embedding.
-          </p>
         </div>
       </div>
       <div className="flex justify-start mt-4">

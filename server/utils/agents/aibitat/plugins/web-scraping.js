@@ -45,6 +45,12 @@ const webScraping = {
               if (url) return await this.scrape(url);
               return "There is nothing we can do. This function call returns no information.";
             } catch (error) {
+              this.super.handlerProps.log(
+                `Web Scraping Error: ${error.message}`
+              );
+              this.super.introspect(
+                `${this.caller}: Web Scraping Error: ${error.message}`
+              );
               return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
             }
           },
@@ -78,15 +84,21 @@ const webScraping = {
             }
 
             const { TokenManager } = require("../../../helpers/tiktoken");
+            const tokenEstimate = new TokenManager(
+              this.super.model
+            ).countFromString(content);
             if (
-              new TokenManager(this.super.model).countFromString(content) <
+              tokenEstimate <
               Provider.contextLimit(this.super.provider, this.super.model)
             ) {
+              this.super.introspect(
+                `${this.caller}: Looking over the content of the page. ~${tokenEstimate} tokens.`
+              );
               return content;
             }
 
             this.super.introspect(
-              `${this.caller}: This page's content is way too long. I will summarize it right now.`
+              `${this.caller}: This page's content exceeds the model's context limit. Summarizing it right now.`
             );
             this.super.onAbort(() => {
               this.super.handlerProps.log(

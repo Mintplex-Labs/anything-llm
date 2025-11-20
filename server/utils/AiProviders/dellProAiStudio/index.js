@@ -13,6 +13,7 @@ class DellProAiStudioLLM {
     if (!process.env.DPAIS_LLM_BASE_PATH)
       throw new Error("No Dell Pro AI Studio Base Path was set.");
 
+    this.className = "DellProAiStudioLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.dpais = new OpenAIApi({
       baseURL: DellProAiStudioLLM.parseBasePath(),
@@ -50,7 +51,7 @@ class DellProAiStudioLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {

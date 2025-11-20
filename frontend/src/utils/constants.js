@@ -7,6 +7,7 @@ export const AUTH_TIMESTAMP = "anythingllm_authTimestamp";
 export const COMPLETE_QUESTIONNAIRE = "anythingllm_completed_questionnaire";
 export const SEEN_DOC_PIN_ALERT = "anythingllm_pinned_document_alert";
 export const SEEN_WATCH_ALERT = "anythingllm_watched_document_alert";
+export const LAST_VISITED_WORKSPACE = "anythingllm_last_visited_workspace";
 
 export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
 
@@ -38,10 +39,10 @@ export const LOCALAI_COMMON_URLS = [
 ];
 
 export const DPAIS_COMMON_URLS = [
-  "http://127.0.0.1:8553/v1",
-  "http://0.0.0.0:8553/v1",
-  "http://localhost:8553/v1",
-  "http://host.docker.internal:8553/v1",
+  "http://127.0.0.1:8553/v1/openai",
+  "http://0.0.0.0:8553/v1/openai",
+  "http://localhost:8553/v1/openai",
+  "http://host.docker.internal:8553/v1/openai",
 ];
 
 export const NVIDIA_NIM_COMMON_URLS = [

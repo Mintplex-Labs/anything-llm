@@ -1,6 +1,8 @@
 const Anthropic = require("@anthropic-ai/sdk");
 const { RetryError } = require("../error.js");
 const Provider = require("./ai-provider.js");
+const { v4 } = require("uuid");
+const { safeJsonParse } = require("../../../http");
 
 /**
  * The agent provider for the Anthropic API.
@@ -15,7 +17,7 @@ class AnthropicProvider extends Provider {
         apiKey: process.env.ANTHROPIC_API_KEY,
         maxRetries: 3,
       },
-      model = "claude-2",
+      model = "claude-3-5-sonnet-20240620",
     } = config;
 
     const client = new Anthropic(options);
@@ -25,70 +27,91 @@ class AnthropicProvider extends Provider {
     this.model = model;
   }
 
-  // For Anthropic we will always need to ensure the message sequence is role,content
-  // as we can attach any data to message nodes and this keeps the message property
-  // sent to the API always in spec.
-  #sanitize(chats) {
-    const sanitized = [...chats];
-
-    // If the first message is not a USER, Anthropic will abort so keep shifting the
-    // message array until that is the case.
-    while (sanitized.length > 0 && sanitized[0].role !== "user")
-      sanitized.shift();
-
-    return sanitized.map((msg) => {
-      const { role, content } = msg;
-      return { role, content };
-    });
+  get supportsAgentStreaming() {
+    return true;
   }
 
-  #normalizeChats(messages = []) {
-    if (!messages.length) return messages;
-    const normalized = [];
-
-    [...messages].forEach((msg, i) => {
-      if (msg.role !== "function") return normalized.push(msg);
-
-      // If the last message is a role "function" this is our special aibitat message node.
-      // and we need to remove it from the array of messages.
-      // Since Anthropic needs to have the tool call resolved, we look at the previous chat to "function"
-      // and go through its content "thought" from ~ln:143 and get the tool_call id so we can resolve
-      // this tool call properly.
-      const functionCompletion = msg;
-      const toolCallId = messages[i - 1]?.content?.find(
-        (msg) => msg.type === "tool_use"
-      )?.id;
-
-      // Append the Anthropic acceptable node to the message chain so function can resolve.
-      normalized.push({
-        role: "user",
-        content: [
-          {
-            type: "tool_result",
-            tool_use_id: toolCallId,
-            content: functionCompletion.content,
-          },
-        ],
-      });
-    });
-    return normalized;
-  }
-
-  // Anthropic handles system message as a property, so here we split the system message prompt
-  // from all the chats and then normalize them so they will be useable in case of tool_calls or general chat.
-  #parseSystemPrompt(messages = []) {
-    const chats = [];
+  #prepareMessages(messages = []) {
+    // Extract system prompt and filter out any system messages from the main chat.
     let systemPrompt =
       "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
-    for (const msg of messages) {
+    const chatMessages = messages.filter((msg) => {
       if (msg.role === "system") {
         systemPrompt = msg.content;
-        continue;
+        return false;
       }
-      chats.push(msg);
+      return true;
+    });
+
+    const processedMessages = chatMessages.reduce(
+      (processedMessages, message, index) => {
+        // Normalize `function` role to Anthropic's `tool_result` format.
+        if (message.role === "function") {
+          const prevMessage = chatMessages[index - 1];
+          if (prevMessage?.role === "assistant") {
+            const toolUse = prevMessage.content.find(
+              (item) => item.type === "tool_use"
+            );
+            if (toolUse) {
+              processedMessages.push({
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: toolUse.id,
+                    content: message.content
+                      ? String(message.content)
+                      : "Tool executed successfully.",
+                  },
+                ],
+              });
+            }
+          }
+          return processedMessages;
+        }
+
+        // Ensure message content is in array format and filter out empty text blocks.
+        let content = Array.isArray(message.content)
+          ? message.content
+          : [{ type: "text", text: message.content }];
+        content = content.filter(
+          (item) =>
+            item.type !== "text" || (item.text && item.text.trim().length > 0)
+        );
+
+        if (content.length === 0) return processedMessages;
+
+        // Add a text block to assistant messages with tool use if one doesn't exist.
+        if (
+          message.role === "assistant" &&
+          content.some((item) => item.type === "tool_use") &&
+          !content.some((item) => item.type === "text")
+        ) {
+          content.unshift({
+            type: "text",
+            text: "I'll use a tool to help answer this question.",
+          });
+        }
+
+        const lastMessage = processedMessages[processedMessages.length - 1];
+        if (lastMessage && lastMessage.role === message.role) {
+          // Merge consecutive messages from the same role.
+          lastMessage.content.push(...content);
+        } else {
+          processedMessages.push({ ...message, content });
+        }
+
+        return processedMessages;
+      },
+      []
+    );
+
+    // The first message must be from the user.
+    if (processedMessages.length > 0 && processedMessages[0].role !== "user") {
+      processedMessages.shift();
     }
 
-    return [systemPrompt, this.#normalizeChats(chats)];
+    return [systemPrompt, processedMessages];
   }
 
   // Anthropic does not use the regular schema for functions so here we need to ensure it is in there specific format
@@ -110,6 +133,136 @@ class AnthropicProvider extends Provider {
   }
 
   /**
+   * Stream a chat completion from the LLM with tool calling
+   * Note: This using the Anthropic API SDK and its implementation is specific to Anthropic.
+   *
+   * @param {any[]} messages - The messages to send to the LLM.
+   * @param {any[]} functions - The functions to use in the LLM.
+   * @param {function} eventHandler - The event handler to use to report stream events.
+   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    try {
+      const msgUUID = v4();
+      const [systemPrompt, chats] = this.#prepareMessages(messages);
+      const response = await this.client.messages.create(
+        {
+          model: this.model,
+          max_tokens: 4096,
+          system: systemPrompt,
+          messages: chats,
+          stream: true,
+          ...(Array.isArray(functions) && functions?.length > 0
+            ? { tools: this.#formatFunctions(functions) }
+            : {}),
+        },
+        { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
+      );
+
+      const result = {
+        functionCall: null,
+        textResponse: "",
+      };
+
+      for await (const chunk of response) {
+        if (chunk.type === "content_block_start") {
+          if (chunk.content_block.type === "text") {
+            result.textResponse += chunk.content_block.text;
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: chunk.content_block.text,
+            });
+          }
+
+          if (chunk.content_block.type === "tool_use") {
+            result.functionCall = {
+              id: chunk.content_block.id,
+              name: chunk.content_block.name,
+              // The initial arguments are empty {} (object) so we need to set it to an empty string.
+              // It is unclear if this is ALWAYS empty on the tool_use block or if it can possible be populated.
+              // This is a workaround to ensure the tool call is valid.
+              arguments: "",
+            };
+            eventHandler?.("reportStreamEvent", {
+              type: "toolCallInvocation",
+              uuid: `${msgUUID}:tool_call_invocation`,
+              content: `Assembling Tool Call: ${result.functionCall.name}(${result.functionCall.arguments})`,
+            });
+          }
+        }
+
+        if (chunk.type === "content_block_delta") {
+          if (chunk.delta.type === "text_delta") {
+            result.textResponse += chunk.delta.text;
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: chunk.delta.text,
+            });
+          }
+
+          if (chunk.delta.type === "input_json_delta") {
+            result.functionCall.arguments += chunk.delta.partial_json;
+            eventHandler?.("reportStreamEvent", {
+              type: "toolCallInvocation",
+              uuid: `${msgUUID}:tool_call_invocation`,
+              content: `Assembling Tool Call: ${result.functionCall.name}(${result.functionCall.arguments})`,
+            });
+          }
+        }
+      }
+
+      if (result.functionCall) {
+        result.functionCall.arguments = safeJsonParse(
+          result.functionCall.arguments,
+          {}
+        );
+        messages.push({
+          role: "assistant",
+          content: [
+            { type: "text", text: result.textResponse },
+            {
+              type: "tool_use",
+              id: result.functionCall.id,
+              name: result.functionCall.name,
+              input: result.functionCall.arguments,
+            },
+          ],
+        });
+        return {
+          textResponse: result.textResponse,
+          functionCall: {
+            name: result.functionCall.name,
+            arguments: result.functionCall.arguments,
+          },
+          cost: 0,
+        };
+      }
+
+      return {
+        textResponse: result.textResponse,
+        functionCall: null,
+        cost: 0,
+      };
+    } catch (error) {
+      // If invalid Auth error we need to abort because no amount of waiting
+      // will make auth better.
+      if (error instanceof Anthropic.AuthenticationError) throw error;
+
+      if (
+        error instanceof Anthropic.RateLimitError ||
+        error instanceof Anthropic.InternalServerError ||
+        error instanceof Anthropic.APIError // Also will catch AuthenticationError!!!
+      ) {
+        throw new RetryError(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
    * Create a completion based on the received messages.
    *
    * @param messages A list of messages to send to the Anthropic API.
@@ -118,13 +271,13 @@ class AnthropicProvider extends Provider {
    */
   async complete(messages, functions = []) {
     try {
-      const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
+      const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
         {
           model: this.model,
           max_tokens: 4096,
           system: systemPrompt,
-          messages: this.#sanitize(chats),
+          messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
@@ -185,7 +338,7 @@ class AnthropicProvider extends Provider {
 
       const completion = response.content.find((msg) => msg.type === "text");
       return {
-        result:
+        textResponse:
           completion?.text ??
           "The model failed to complete the task and return back a valid response.",
         cost: 0,

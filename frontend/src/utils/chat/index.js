@@ -103,8 +103,11 @@ export default function handleChat(
           chatId,
           metrics,
         };
-        setLoadingResponse(false);
+
+        _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID
+
         emitAssistantMessageCompleteEvent(chatId);
+        setLoadingResponse(false);
       } else {
         updatedHistory = {
           ...existingHistory,
@@ -136,15 +139,6 @@ export default function handleChat(
     setChatHistory([..._chatHistory]);
   } else if (type === "agentInitWebsocketConnection") {
     setWebsocket(chatResult.websocketUUID);
-  } else if (type === "finalizeResponseStream") {
-    const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
-    if (chatIdx !== -1) {
-      _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID
-      _chatHistory[chatIdx] = { ..._chatHistory[chatIdx], chatId }; // update response with chatID
-    }
-
-    setChatHistory([..._chatHistory]);
-    setLoadingResponse(false);
   } else if (type === "stopGeneration") {
     const chatIdx = _chatHistory.length - 1;
     const existingHistory = { ..._chatHistory[chatIdx] };

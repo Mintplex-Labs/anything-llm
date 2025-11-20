@@ -127,27 +127,6 @@ const TRANSLATIONS = {
       "back-to-login": "Înapoi la autentificare",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Bine ai venit la AnythingLLM, AnythingLLM este un instrument AI open-source creat de Mintplex Labs care transformă orice într-un chatbot antrenat cu care poți interacționa. AnythingLLM este un software BYOK (bring-your-own-keys) fără abonamente sau taxe în afară de serviciile pe care dorești să le folosești.",
-    part2:
-      "AnythingLLM este cea mai simplă modalitate de a combina produse AI puternice precum OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB și alte servicii într-un pachet ordonat care îți crește productivitatea de 100x.",
-    part3:
-      "AnythingLLM poate rula complet local pe calculatorul tău cu un consum redus de resurse, pe care nici nu îl vei observa! Nu este necesar GPU. Instalarea în cloud sau local este, de asemenea, disponibilă.\nEcosistemul de unelte AI devine tot mai puternic zilnic. AnythingLLM face aceste tehnologii ușor de folosit.",
-    githubIssue: "Creează un tichet de problemă pe GitHub",
-    user1: "Cum încep?!",
-    part4:
-      'Este simplu. Toate colecțiile sunt organizate în bucket-uri pe care le numim "Spații de Lucru". Acestea sunt containere de fișiere, documente, imagini, PDF-uri și alte fișiere care vor fi transformate într-un format pe care LLM-urile îl pot înțelege și folosi în conversație.\n\nPoți adăuga și elimina fișiere oricând.',
-    createWorkspace: "Creează primul tău spațiu de lucru",
-    user2:
-      "Este ca un Dropbox AI sau ceva de genul? Dar ce fac cu chat-ul? Este un chatbot, nu?",
-    part5:
-      "AnythingLLM este mai mult decât un Dropbox mai inteligent.\n\nAnythingLLM oferă două moduri de a discuta cu datele tale:\n\nQuery: Chaturile tale vor returna date sau inferențe găsite în documentele din spațiul de lucru accesat. Adăugarea mai multor documente face sistemul mai inteligent! \n\nConversational: Documentele tale + istoricul conversațiilor contribuie împreună la cunoașterea LLM-ului în timp real. Ideal pentru a adăuga corecții și informații textuale în timp real.\n\nPoți comuta între cele două moduri chiar în timpul conversației!",
-    user3: "Wow, sună uimitor, hai să încerc acum!",
-    part6: "Distracție plăcută!",
-    starOnGitHub: "Dă stea pe GitHub",
-    contact: "Contactează Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError:
       "Te rugăm să creezi un spațiu de lucru înainte să începi o conversație.",
@@ -998,6 +977,10 @@ const TRANSLATIONS = {
         icon: "Iconiță",
         link: "Link",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
@@ -1089,6 +1072,13 @@ const TRANSLATIONS = {
         "Protejează instanța AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
       "password-label": "Parola instanței",
     },
+  },
+  home: {
+    welcome: "Bine ai venit",
+    chooseWorkspace: "Alege un spațiu de lucru pentru a începe să chatezi!",
+    notAssigned:
+      "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
+    goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
   },
 };
 
