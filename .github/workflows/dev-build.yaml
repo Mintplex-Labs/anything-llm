@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['4534-disable-prisma-telemetry'] # put your current branch to create a build. Core team only.
+    branches: ['4595-refactor-pwa'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
