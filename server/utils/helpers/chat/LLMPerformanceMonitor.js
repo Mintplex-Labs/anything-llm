@@ -49,10 +49,7 @@ class LLMPerformanceMonitor {
       const start = Date.now();
       const output = await func; // is a promise
       const end = Date.now();
-      const calculatedDuration = (end - start) / 1000;
-      // Use duration from output.usage if provided (for providers that have more accurate timing)
-      // otherwise use the calculated duration from function start/end times
-      const duration = output?.usage?.duration ?? calculatedDuration;
+      const duration = output?.usage?.duration ?? (end - start) / 1000;
       return { output, duration };
     })();
   }
@@ -83,24 +80,20 @@ class LLMPerformanceMonitor {
 
     stream.endMeasurement = (reportedUsage = {}) => {
       const end = Date.now();
-      const duration = (end - stream.start) / 1000;
+      const estimatedDuration = (end - stream.start) / 1000;
 
       // Merge the reported usage with the existing metrics
       // so the math in the metrics object is correct when calculating
       stream.metrics = {
         ...stream.metrics,
         ...reportedUsage,
+        duration: reportedUsage?.duration ?? estimatedDuration,
       };
 
       stream.metrics.total_tokens =
         stream.metrics.prompt_tokens + (stream.metrics.completion_tokens || 0);
-
-      // Use duration from reportedUsage if provided (for providers that have more accurate timing)
-      // otherwise use the calculated duration from stream start/end times
-      const effectiveDuration = reportedUsage.duration || duration;
       stream.metrics.outputTps =
-        stream.metrics.completion_tokens / effectiveDuration;
-      stream.metrics.duration = effectiveDuration;
+        stream.metrics.completion_tokens / stream.metrics.duration;
       return stream.metrics;
     };
     return stream;
