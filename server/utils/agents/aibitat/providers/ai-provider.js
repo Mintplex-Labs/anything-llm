@@ -30,6 +30,22 @@ const DEFAULT_WORKSPACE_PROMPT =
 
 class Provider {
   _client;
+
+  /**
+   * The invocation object containing the user ID and other invocation details.
+   * @type {import("@prisma/client").workspace_agent_invocations}
+   */
+  invocation = {};
+
+  /**
+   * The user ID for the chat completion to send to the LLM provider for user tracking.
+   * In order for this to be set, the handler props must be attached to the provider after instantiation.
+   * ex: this.attachHandlerProps({ ..., invocation: { ..., user_id: 123 } });
+   * eg: `user_123`
+   * @type {string}
+   */
+  executingUserId = "";
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -42,6 +58,19 @@ class Provider {
       `\x1b[36m[AgentLLM${this?.model ? ` - ${this.model}` : ""}]\x1b[0m ${text}`,
       ...args
     );
+  }
+
+  /**
+   * Attaches handler props to the provider for reuse in the provider.
+   * - Explicitly sets the invocation object.
+   * - Explicitly sets the executing user ID from the invocation object.
+   * @param {Object} handlerProps - The handler props to attach to the provider.
+   */
+  attachHandlerProps(handlerProps = {}) {
+    this.invocation = handlerProps?.invocation || {};
+    this.executingUserId = this.invocation?.user_id
+      ? `user_${this.invocation.user_id}`
+      : "";
   }
 
   get client() {

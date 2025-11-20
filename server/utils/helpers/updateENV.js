@@ -553,6 +553,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_GSE_KEY",
     checks: [],
   },
+  AgentSerpApiKey: {
+    envKey: "AGENT_SERPAPI_API_KEY",
+    checks: [],
+  },
+  AgentSerpApiEngine: {
+    envKey: "AGENT_SERPAPI_ENGINE",
+    checks: [],
+  },
   AgentSearchApiKey: {
     envKey: "AGENT_SEARCHAPI_API_KEY",
     checks: [],
