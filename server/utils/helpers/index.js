@@ -540,11 +540,6 @@ async function getLLMProviderForWorkspace(
     const { LLMConnection } = require("../../models/llmConnection");
     const connection = await LLMConnection.get(connectionId);
     if (connection) {
-      console.log(`[getLLMProviderForWorkspace] Loaded connection ${connectionId}:`, {
-        provider: connection.provider,
-        hasApiKey: !!connection.config?.apiKey,
-        apiKeyPrefix: connection.config?.apiKey?.substring(0, 10) || 'null',
-      });
       return getLLMProvider({
         connection,
         model: modelOverride || modelOverrideField || null,
