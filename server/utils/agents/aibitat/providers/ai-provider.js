@@ -183,6 +183,14 @@ class Provider {
           apiKey: process.env.XAI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "zai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.z.ai/api/paas/v4",
+          },
+          apiKey: process.env.ZAI_API_KEY ?? null,
+          ...config,
+        });
       case "novita":
         return new ChatOpenAI({
           configuration: {

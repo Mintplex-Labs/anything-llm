@@ -435,8 +435,9 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
-            }`,
+          error: `Ollama:streaming - could not stream chat. ${
+            error?.cause ?? error.message
+          }`,
         });
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);

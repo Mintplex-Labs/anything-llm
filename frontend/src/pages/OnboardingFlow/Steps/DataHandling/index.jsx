@@ -25,6 +25,7 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -230,6 +231,15 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are visible to xAI in accordance with their terms of service.",
     ],
     logo: XAILogo,
+  },
+  zai: {
+    name: "Z.AI",
+    description: [
+      "Your content is processed in real-time and not stored on Z.AI servers",
+      "Your prompts and document text are visible to Z.AI during processing",
+      "Data is processed in accordance with Z.AI's API Services terms",
+    ],
+    logo: ZAiLogo,
   },
   ppio: {
     name: "PPIO",
