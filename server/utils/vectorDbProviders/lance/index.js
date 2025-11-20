@@ -20,9 +20,6 @@ const LanceDb = {
 
   /** @returns {Promise<{client: LanceClient}>} */
   connect: async function () {
-    if (process.env.VECTOR_DB !== "lancedb")
-      throw new Error("LanceDB::Invalid ENV settings");
-
     const client = await lancedb.connect(this.uri);
     return { client };
   },

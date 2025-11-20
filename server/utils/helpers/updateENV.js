@@ -235,14 +235,18 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMSessionToken: {
     envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
+  },
+  AwsBedrockLLMAPIKey: {
+    envKey: "AWS_BEDROCK_LLM_API_KEY",
     checks: [],
   },
   AwsBedrockLLMRegion: {
@@ -547,6 +551,14 @@ const KEY_MAPPING = {
   },
   AgentGoogleSearchEngineKey: {
     envKey: "AGENT_GSE_KEY",
+    checks: [],
+  },
+  AgentSerpApiKey: {
+    envKey: "AGENT_SERPAPI_API_KEY",
+    checks: [],
+  },
+  AgentSerpApiEngine: {
+    envKey: "AGENT_SERPAPI_ENGINE",
     checks: [],
   },
   AgentSearchApiKey: {

@@ -7,10 +7,9 @@ export default function AwsBedrockLLMOptions({ settings }) {
     settings?.AwsBedrockLLMConnectionMethod ?? "iam"
   );
 
-  console.log("connectionMethod", connectionMethod);
   return (
     <div className="w-full flex flex-col">
-      {!settings?.credentialsOnly && (
+      {!settings?.credentialsOnly && connectionMethod !== "apiKey" && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
@@ -21,6 +20,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 href="https://docs.anythingllm.com/setup/llm-configuration/cloud/aws-bedrock"
                 target="_blank"
                 className="underline flex gap-x-1 items-center"
+                rel="noreferrer"
               >
                 Read more on how to use AWS Bedrock in AnythingLLM
                 <ArrowSquareOut size={14} />
@@ -38,7 +38,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
         />
         <div className="flex flex-col w-full">
           <label className="text-theme-text-primary text-sm font-semibold block mb-3">
-            Use session token
+            Authentication Method
           </label>
           <p className="text-theme-text-secondary text-sm">
             Select the method to authenticate with AWS Bedrock.
@@ -56,6 +56,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             Session Token (Temporary Credentials)
           </option>
           <option value="iam_role">IAM Role (Implied Credentials)</option>
+          <option value="apiKey">Bedrock API Key</option>
         </select>
       </div>
 
@@ -111,6 +112,23 @@ export default function AwsBedrockLLMOptions({ settings }) {
               defaultValue={
                 settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
               }
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        )}
+        {connectionMethod === "apiKey" && (
+          <div className="flex flex-col w-60">
+            <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              AWS Bedrock API Key
+            </label>
+            <input
+              type="password"
+              name="AwsBedrockLLMAPIKey"
+              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="AWS Bedrock API Key"
+              defaultValue={settings?.AwsBedrockLLMAPIKey ? "*".repeat(20) : ""}
               required={true}
               autoComplete="off"
               spellCheck={false}

@@ -255,6 +255,18 @@ body {
   background-color: white;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0e0f0f;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
