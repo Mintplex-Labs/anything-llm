@@ -10,8 +10,14 @@ const {
 class LiteLLM {
   constructor(embedder = null, modelPreference = null, config = null) {
     const { OpenAI: OpenAIApi } = require("openai");
+    const https = require("https");
 
     this.className = "LiteLLM";
+
+    // Create HTTPS agent that accepts self-signed certificates
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false, // Allow self-signed certificates
+    });
 
     // PRIORITY 1: Provided config object (from llm_connections)
     if (config) {
@@ -21,19 +27,17 @@ class LiteLLM {
 
       this.basePath = config.basePath;
 
-      // LiteLLM uses X-Litellm-Key header for API key authentication
-      const openaiConfig = {
-        baseURL: this.basePath,
-        apiKey: "dummy-key", // Required by OpenAI SDK but not used
-      };
-
-      if (config.apiKey) {
-        openaiConfig.defaultHeaders = {
-          "X-Litellm-Key": config.apiKey,
-        };
+      // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+      let baseURL = this.basePath;
+      if (!baseURL.endsWith('/v1')) {
+        baseURL = `${baseURL}/v1`;
       }
 
-      this.openai = new OpenAIApi(openaiConfig);
+      this.openai = new OpenAIApi({
+        baseURL: baseURL,
+        apiKey: config.apiKey ?? null,
+        httpAgent: httpsAgent, // Use custom agent for HTTPS requests
+      });
       this.model = modelPreference ?? config.defaultModel ?? null;
       this.maxTokens = config.modelTokenLimit ?? 4096;
       this.timeout = config.timeout ?? 30000;
@@ -48,19 +52,17 @@ class LiteLLM {
 
       this.basePath = process.env.LITE_LLM_BASE_PATH;
 
-      // LiteLLM uses X-Litellm-Key header for API key authentication
-      const openaiConfig = {
-        baseURL: this.basePath,
-        apiKey: "dummy-key", // Required by OpenAI SDK but not used
-      };
-
-      if (process.env.LITE_LLM_API_KEY) {
-        openaiConfig.defaultHeaders = {
-          "X-Litellm-Key": process.env.LITE_LLM_API_KEY,
-        };
+      // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+      let baseURL = this.basePath;
+      if (!baseURL.endsWith('/v1')) {
+        baseURL = `${baseURL}/v1`;
       }
 
-      this.openai = new OpenAIApi(openaiConfig);
+      this.openai = new OpenAIApi({
+        baseURL: baseURL,
+        apiKey: process.env.LITE_LLM_API_KEY ?? null,
+        httpAgent: httpsAgent, // Use custom agent for HTTPS requests
+      });
       this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
       this.maxTokens = process.env.LITE_LLM_MODEL_TOKEN_LIMIT ?? 1024;
       this.timeout = 30000;

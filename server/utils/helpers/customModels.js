@@ -292,28 +292,41 @@ async function getGroqAiModels(_apiKey = null) {
 
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
+  const https = require("https");
 
-  // LiteLLM uses X-Litellm-Key header for API key authentication
-  const config = {
-    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
-    apiKey: "dummy-key", // Required by OpenAI SDK but not used
-  };
-
-  // Add custom header for LiteLLM API key if provided
-  if (apiKey || process.env.LITE_LLM_API_KEY) {
-    config.defaultHeaders = {
-      "X-Litellm-Key": apiKey || process.env.LITE_LLM_API_KEY,
-    };
+  // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+  let baseURL = basePath || process.env.LITE_LLM_BASE_PATH;
+  if (baseURL && !baseURL.endsWith('/v1')) {
+    baseURL = `${baseURL}/v1`;
   }
 
-  const openai = new OpenAIApi(config);
+  console.log(`[LiteLLM] Testing connection with original basePath: ${basePath}`);
+  console.log(`[LiteLLM] Adjusted baseURL for OpenAI SDK: ${baseURL}`);
+  console.log(`[LiteLLM] Will request: ${baseURL}/models`);
+  console.log(`[LiteLLM] API Key: ${apiKey ? '***' : 'none'}`);
+
+  // Create HTTPS agent that accepts self-signed certificates
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false, // Allow self-signed certificates
+  });
+
+  const openai = new OpenAIApi({
+    baseURL: baseURL,
+    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
+    httpAgent: httpsAgent, // Use custom agent for HTTPS requests
+  });
+
   const models = await openai.models
     .list()
     .then((results) => results.data)
     .catch((e) => {
-      console.error(`LiteLLM:listModels`, e.message);
+      console.error(`LiteLLM:listModels Error:`, e);
+      console.error(`LiteLLM:listModels Error message:`, e.message);
+      console.error(`LiteLLM:listModels Error cause:`, e.cause);
       return [];
     });
+
+  console.log(`[LiteLLM] Got ${models.length} models`);
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;

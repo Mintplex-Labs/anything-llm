@@ -8,6 +8,8 @@ export default function DynamicConfigForm({
   config,
   onChange,
   providerConfig,
+  onConnectionStatusChange,
+  connectionId = null,
 }) {
   const [availableModels, setAvailableModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
@@ -18,11 +20,15 @@ export default function DynamicConfigForm({
   useEffect(() => {
     // Clear connection status when config changes
     setConnectionStatus(null);
-
-    // Auto-fetch models when basePath is provided
-    if (config.basePath) {
-      fetchModels();
+    if (onConnectionStatusChange) {
+      onConnectionStatusChange(null);
     }
+
+    // DISABLED: Auto-fetch was causing issues - use Test Connection button instead
+    // Auto-fetch models when basePath is provided
+    // if (config.basePath) {
+    //   fetchModels();
+    // }
   }, [config.basePath, config.apiKey]);
 
   const fetchModels = async () => {
@@ -30,11 +36,16 @@ export default function DynamicConfigForm({
 
     setLoadingModels(true);
     try {
+      // If editing existing connection with redacted API key, use saved key
+      const shouldUseSavedApiKey = connectionId && config.apiKey === "***REDACTED***";
+
       const { models } = await System.customModels(
         provider,
         config.apiKey || null,
         config.basePath,
-        10000 // 10 second timeout
+        10000, // 10 second timeout
+        connectionId, // Pass connection ID so server can retrieve stored API key
+        shouldUseSavedApiKey // Flag to use stored API key
       );
       setAvailableModels(models || []);
 
@@ -79,29 +90,41 @@ export default function DynamicConfigForm({
     try {
       const models = await fetchModels();
       if (models && models.length > 0) {
-        setConnectionStatus({
+        const status = {
           success: true,
           message: `Successfully connected to ${provider}`,
           modelCount: models.length,
-        });
+        };
+        setConnectionStatus(status);
+        if (onConnectionStatusChange) {
+          onConnectionStatusChange(status);
+        }
         showToast(
           `Connection successful! Found ${models.length} models`,
           "success"
         );
       } else {
-        setConnectionStatus({
+        const status = {
           success: false,
           message: "No models returned from the provider",
           modelCount: 0,
-        });
+        };
+        setConnectionStatus(status);
+        if (onConnectionStatusChange) {
+          onConnectionStatusChange(status);
+        }
         showToast("Connection test failed: No models returned", "error");
       }
     } catch (error) {
-      setConnectionStatus({
+      const status = {
         success: false,
         message: error.message || "Connection failed",
         modelCount: 0,
-      });
+      };
+      setConnectionStatus(status);
+      if (onConnectionStatusChange) {
+        onConnectionStatusChange(status);
+      }
       showToast(`Connection test failed: ${error.message}`, "error");
     } finally {
       setTestingConnection(false);
@@ -170,88 +193,118 @@ export default function DynamicConfigForm({
           </div>
         )}
 
-        {providerConfig.fields.map((field) => (
-          <div key={field.name} className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-              {field.label} {field.required && "*"}
-            </label>
-            {field.type === "password" ? (
-              <input
-                type="password"
-                value={config[field.name] || ""}
-                onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder={field.placeholder}
-                required={field.required}
-              />
-            ) : field.type === "number" ? (
-              <input
-                type="number"
-                value={config[field.name] || ""}
-                onChange={(e) =>
-                  handleFieldChange(
-                    field.name,
-                    e.target.value ? parseInt(e.target.value) : ""
-                  )
-                }
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder={field.placeholder}
-                required={field.required}
-              />
-            ) : (
-              <input
-                type="text"
-                value={config[field.name] || ""}
-                onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder={field.placeholder}
-                required={field.required}
-              />
-            )}
-            {field.description && (
-              <p className="text-xs text-theme-text-secondary mt-1">
-                {field.description}
-              </p>
-            )}
-          </div>
-        ))}
+        {/* Render non-token-limit fields first */}
+        {providerConfig.fields
+          .filter((field) => field.name !== "modelTokenLimit")
+          .map((field) => (
+            <div key={field.name} className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-theme-text-primary">
+                {field.label} {field.required && "*"}
+              </label>
+              {field.type === "password" ? (
+                <input
+                  type="password"
+                  value={config[field.name] || ""}
+                  onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder={field.placeholder}
+                  required={field.required}
+                />
+              ) : field.type === "number" ? (
+                <input
+                  type="number"
+                  value={config[field.name] || ""}
+                  onChange={(e) =>
+                    handleFieldChange(
+                      field.name,
+                      e.target.value ? parseInt(e.target.value) : ""
+                    )
+                  }
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder={field.placeholder}
+                  required={field.required}
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={config[field.name] || ""}
+                  onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder={field.placeholder}
+                  required={field.required}
+                />
+              )}
+              {field.description && (
+                <p className="text-xs text-theme-text-secondary mt-1">
+                  {field.description}
+                </p>
+              )}
+            </div>
+          ))}
 
-        {/* Model Selection - appears after basePath is provided */}
+        {/* Model Selection and Token Limit - side by side on lg screens */}
         {config.basePath && (
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-              Default Model {loadingModels ? "(loading...)" : ""}
-            </label>
-            {loadingModels ? (
-              <select
-                disabled
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-secondary text-sm rounded-lg block w-full p-2.5"
-              >
-                <option>Loading available models...</option>
-              </select>
-            ) : availableModels.length > 0 ? (
-              <select
-                value={config.defaultModel || ""}
-                onChange={(e) => handleFieldChange("defaultModel", e.target.value)}
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              >
-                {availableModels.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.id}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <select
-                disabled
-                className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-secondary text-sm rounded-lg block w-full p-2.5"
-              >
-                <option>No models found - check connection</option>
-              </select>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            {/* Model Selection */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-theme-text-primary">
+                Default Model {loadingModels ? "(loading...)" : ""}
+              </label>
+              {loadingModels ? (
+                <select
+                  disabled
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-secondary text-sm rounded-lg block w-full p-2.5"
+                >
+                  <option>Loading available models...</option>
+                </select>
+              ) : availableModels.length > 0 ? (
+                <select
+                  value={config.defaultModel || ""}
+                  onChange={(e) => handleFieldChange("defaultModel", e.target.value)}
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                >
+                  {availableModels.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.id}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <select
+                  disabled
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-secondary text-sm rounded-lg block w-full p-2.5"
+                >
+                  <option>No models found - check connection</option>
+                </select>
+              )}
+              <p className="text-xs text-theme-text-secondary mt-1">
+                The default model to use for this connection
+              </p>
+            </div>
+
+            {/* Token Limit - only show if in provider config */}
+            {providerConfig.fields.find((f) => f.name === "modelTokenLimit") && (
+              <div>
+                <label className="block mb-2 text-sm font-medium text-theme-text-primary">
+                  Model Token Limit
+                </label>
+                <input
+                  type="number"
+                  value={config.modelTokenLimit || ""}
+                  onChange={(e) =>
+                    handleFieldChange(
+                      "modelTokenLimit",
+                      e.target.value ? parseInt(e.target.value) : ""
+                    )
+                  }
+                  className="bg-theme-settings-input-bg border border-theme-settings-input-border text-theme-text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="4096"
+                />
+                <p className="text-xs text-theme-text-secondary mt-1">
+                  Maximum tokens for the model
+                </p>
+              </div>
             )}
-            <p className="text-xs text-theme-text-secondary mt-1">
-              The default model to use for this connection
-            </p>
           </div>
         )}
       </div>

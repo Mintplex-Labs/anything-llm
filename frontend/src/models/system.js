@@ -510,7 +510,9 @@ const System = {
     provider,
     apiKey = null,
     basePath = null,
-    timeout = null
+    timeout = null,
+    connectionId = null,
+    useSavedApiKey = false
   ) {
     const controller = new AbortController();
     if (!!timeout) {
@@ -527,6 +529,8 @@ const System = {
         provider,
         apiKey,
         basePath,
+        connectionId,
+        useSavedApiKey,
       }),
     })
       .then((res) => {
@@ -808,6 +812,9 @@ const System = {
       if (filters.includeInactive)
         params.append("includeInactive", filters.includeInactive);
 
+      // Add cache-busting timestamp to prevent 304 responses
+      params.append("_t", Date.now().toString());
+
       const queryString = params.toString();
       const url = `${API_BASE}/v1/llm-connections${
         queryString ? `?${queryString}` : ""
@@ -816,6 +823,7 @@ const System = {
       return fetch(url, {
         method: "GET",
         headers: baseHeaders(),
+        cache: "no-store", // Disable browser caching
       })
         .then((res) => {
           if (!res.ok)

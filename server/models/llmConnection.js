@@ -101,11 +101,17 @@ const LLMConnection = {
    */
   where: async function (clause = {}, limit = null, orderBy = null) {
     try {
-      const connections = await prisma.llm_connections.findMany({
+      const query = {
         where: clause,
-        take: limit,
         orderBy: orderBy || { createdAt: "desc" },
-      });
+      };
+
+      // Only include take if limit is provided (Prisma doesn't accept null)
+      if (limit !== null) {
+        query.take = limit;
+      }
+
+      const connections = await prisma.llm_connections.findMany(query);
 
       // Decrypt all connections
       const encryptionManager = new LLMConfigEncryption();
