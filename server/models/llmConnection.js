@@ -193,9 +193,25 @@ const LLMConnection = {
         }
 
         const encryptionManager = new LLMConfigEncryption();
+
+        // Get existing decrypted config
+        const existingConfig = encryptionManager.decryptConfig(
+          connection.provider,
+          JSON.parse(connection.config)
+        );
+
+        // Merge with updates, preserving encrypted values where redacted placeholder is used
+        const mergedConfig = { ...data.config };
+        for (const [key, value] of Object.entries(mergedConfig)) {
+          if (value === "***REDACTED***" && existingConfig[key]) {
+            // User didn't change this field - preserve original value
+            mergedConfig[key] = existingConfig[key];
+          }
+        }
+
         const encryptedConfig = encryptionManager.encryptConfig(
           connection.provider,
-          data.config
+          mergedConfig
         );
         data.config = JSON.stringify(encryptedConfig);
       }

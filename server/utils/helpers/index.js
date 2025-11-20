@@ -511,6 +511,60 @@ function toChunks(arr, size) {
   );
 }
 
+/**
+ * Gets the LLM provider for a workspace, prioritizing connections over legacy provider settings
+ * @param {Object} workspace - The workspace object
+ * @param {string} [type='chat'] - The type of provider to get ('chat' or 'agent')
+ * @param {string} [modelOverride] - Optional model override (takes precedence over workspace settings)
+ * @returns {Promise<BaseLLMProvider>}
+ */
+async function getLLMProviderForWorkspace(
+  workspace,
+  type = "chat",
+  modelOverride = null
+) {
+  const isAgent = type === "agent";
+  const connectionId = isAgent
+    ? workspace?.agentConnectionId
+    : workspace?.chatConnectionId;
+  const legacyProvider = isAgent
+    ? workspace?.agentProvider
+    : workspace?.chatProvider;
+  const legacyModel = isAgent ? workspace?.agentModel : workspace?.chatModel;
+  const modelOverrideField = isAgent
+    ? workspace?.agentModelOverride
+    : workspace?.chatModelOverride;
+
+  // Prioritize connection if set
+  if (connectionId) {
+    const { LLMConnection } = require("../../models/llmConnection");
+    const connection = await LLMConnection.get(connectionId);
+    if (connection) {
+      console.log(`[getLLMProviderForWorkspace] Loaded connection ${connectionId}:`, {
+        provider: connection.provider,
+        hasApiKey: !!connection.config?.apiKey,
+        apiKeyPrefix: connection.config?.apiKey?.substring(0, 10) || 'null',
+      });
+      return getLLMProvider({
+        connection,
+        model: modelOverride || modelOverrideField || null,
+      });
+    } else {
+      console.error(
+        `[getLLMProviderForWorkspace] Connection ${connectionId} not found, falling back to legacy ${
+          isAgent ? "agent" : "chat"
+        }Provider`
+      );
+    }
+  }
+
+  // Fall back to legacy provider
+  return getLLMProvider({
+    provider: legacyProvider,
+    model: modelOverride || legacyModel || null,
+  });
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -518,5 +572,6 @@ module.exports = {
   getLLMProviderClass,
   getBaseLLMProviderModel,
   getLLMProvider,
+  getLLMProviderForWorkspace,
   toChunks,
 };
