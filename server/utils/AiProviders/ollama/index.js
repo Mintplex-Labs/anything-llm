@@ -8,6 +8,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
+const { v4: uuidv4 } = require("uuid");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -259,11 +260,8 @@ class OllamaAILLM {
         })
         .then((res) => {
           let content = res.message.content;
-
-          if (res.message.thinking) {
+          if (res.message.thinking)
             content = `<think>${res.message.thinking}</think>${content}`;
-          }
-
           return {
             content,
             usage: {
@@ -331,6 +329,7 @@ class OllamaAILLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let reasoningText = "";
       let usage = {
         prompt_tokens: 0,
         completion_tokens: 0,
@@ -346,8 +345,6 @@ class OllamaAILLM {
       };
       response.on("close", handleAbort);
 
-      let hasOpenedThinkTag = false;
-      let hasClosedThinkTag = false;
       try {
         for await (const chunk of stream) {
           if (chunk === undefined)
@@ -373,63 +370,50 @@ class OllamaAILLM {
           }
 
           if (chunk.hasOwnProperty("message")) {
+            // As of Ollama v0.9.0+, thinking content comes in a separate property
+            // in the response object. If it exists, we need to handle it separately by wrapping it in <think> tags.
             const content = chunk.message.content;
-            const thinking = chunk.message.thinking;
+            const reasoningToken = chunk.message.thinking;
 
-            // In newer Ollama versions (v0.9.0+), thinking content comes in a separate property and we have to wrap it in <think> tags ourself.
-            if (thinking) {
-              // Open <think> tag if we haven't already
-              if (!hasOpenedThinkTag) {
-                const openTag = "<think>";
+            if (reasoningToken) {
+              if (reasoningText.length === 0) {
+                const startTag = "<think>";
                 writeResponseChunk(response, {
                   uuid,
                   sources,
                   type: "textResponseChunk",
-                  textResponse: openTag,
+                  textResponse: startTag + reasoningToken,
                   close: false,
                   error: false,
                 });
-                fullText += openTag;
-                hasOpenedThinkTag = true;
-              }
-
-              // Write thinking content
-              if (thinking.length > 0) {
+                reasoningText += startTag + reasoningToken;
+              } else {
                 writeResponseChunk(response, {
                   uuid,
                   sources,
                   type: "textResponseChunk",
-                  textResponse: thinking,
+                  textResponse: reasoningToken,
                   close: false,
                   error: false,
                 });
-                fullText += thinking;
+                reasoningText += reasoningToken;
               }
-            }
-
-            // Close think tag when thinking is done and we start receiving content
-            if (
-              thinking === undefined &&
-              hasOpenedThinkTag &&
-              !hasClosedThinkTag &&
-              content.length > 0
-            ) {
-              const closeTag = "</think>";
-              writeResponseChunk(response, {
-                uuid,
-                sources,
-                type: "textResponseChunk",
-                textResponse: closeTag,
-                close: false,
-                error: false,
-              });
-              fullText += closeTag;
-              hasClosedThinkTag = true;
-            }
-
-            // Write content, assumes thinking is within the content property wrapped in <think> tags.
-            if (content.length > 0) {
-              fullText += content;
+            } else if (content.length > 0) {
+              // If we have reasoning text, we need to close the reasoning tag and then append the content.
+              if (reasoningText.length > 0) {
+                const endTag = "</think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: endTag,
+                  close: false,
+                  error: false,
+                });
+                fullText += reasoningText + endTag;
+                reasoningText = ""; // Reset reasoning buffer
+              }
+              fullText += content; // Append regular text
               writeResponseChunk(response, {
                 uuid,
                 sources,
@@ -448,9 +432,8 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${
-            error?.cause ?? error.message
-          }`,
+          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
+            }`,
         });
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
