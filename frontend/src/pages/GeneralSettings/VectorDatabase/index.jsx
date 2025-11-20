@@ -33,6 +33,84 @@ import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOption
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 
+const VECTOR_DBS = [
+  {
+    name: "LanceDB",
+    value: "lancedb",
+    logo: LanceDbLogo,
+    options: (_) => <LanceDBOptions />,
+    description:
+      "100% local vector DB that runs on the same instance as AnythingLLM.",
+  },
+  {
+    name: "PGVector",
+    value: "pgvector",
+    logo: PGVectorLogo,
+    options: (settings) => <PGVectorOptions settings={settings} />,
+    description: "Vector search powered by PostgreSQL.",
+  },
+  {
+    name: "Chroma",
+    value: "chroma",
+    logo: ChromaLogo,
+    options: (settings) => <ChromaDBOptions settings={settings} />,
+    description:
+      "Open source vector database you can host yourself or on the cloud.",
+  },
+  {
+    name: "Chroma Cloud",
+    value: "chromacloud",
+    logo: ChromaLogo,
+    options: (settings) => <ChromaCloudOptions settings={settings} />,
+    description:
+      "Fully managed Chroma cloud service with enterprise features and support.",
+  },
+  {
+    name: "Pinecone",
+    value: "pinecone",
+    logo: PineconeLogo,
+    options: (settings) => <PineconeDBOptions settings={settings} />,
+    description: "100% cloud-based vector database for enterprise use cases.",
+  },
+  {
+    name: "Zilliz Cloud",
+    value: "zilliz",
+    logo: ZillizLogo,
+    options: (settings) => <ZillizCloudOptions settings={settings} />,
+    description:
+      "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
+  },
+  {
+    name: "QDrant",
+    value: "qdrant",
+    logo: QDrantLogo,
+    options: (settings) => <QDrantDBOptions settings={settings} />,
+    description: "Open source local and distributed cloud vector database.",
+  },
+  {
+    name: "Weaviate",
+    value: "weaviate",
+    logo: WeaviateLogo,
+    options: (settings) => <WeaviateDBOptions settings={settings} />,
+    description:
+      "Open source local and cloud hosted multi-modal vector database.",
+  },
+  {
+    name: "Milvus",
+    value: "milvus",
+    logo: MilvusLogo,
+    options: (settings) => <MilvusDBOptions settings={settings} />,
+    description: "Open-source, highly scalable, and blazing fast.",
+  },
+  {
+    name: "AstraDB",
+    value: "astra",
+    logo: AstraDBLogo,
+    options: (settings) => <AstraDBOptions settings={settings} />,
+    description: "Vector Search for Real-world GenAI.",
+  },
+];
+
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -110,85 +188,8 @@ export default function GeneralVectorDatabase() {
     setFilteredVDBs(filtered);
   }, [searchQuery, selectedVDB]);
 
-  const VECTOR_DBS = [
-    {
-      name: "LanceDB",
-      value: "lancedb",
-      logo: LanceDbLogo,
-      options: <LanceDBOptions />,
-      description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
-    },
-    {
-      name: "PGVector",
-      value: "pgvector",
-      logo: PGVectorLogo,
-      options: <PGVectorOptions settings={settings} />,
-      description: "Vector search powered by PostgreSQL.",
-    },
-    {
-      name: "Chroma",
-      value: "chroma",
-      logo: ChromaLogo,
-      options: <ChromaDBOptions settings={settings} />,
-      description:
-        "Open source vector database you can host yourself or on the cloud.",
-    },
-    {
-      name: "Chroma Cloud",
-      value: "chromacloud",
-      logo: ChromaLogo,
-      options: <ChromaCloudOptions settings={settings} />,
-      description:
-        "Fully managed Chroma cloud service with enterprise features and support.",
-    },
-    {
-      name: "Pinecone",
-      value: "pinecone",
-      logo: PineconeLogo,
-      options: <PineconeDBOptions settings={settings} />,
-      description: "100% cloud-based vector database for enterprise use cases.",
-    },
-    {
-      name: "Zilliz Cloud",
-      value: "zilliz",
-      logo: ZillizLogo,
-      options: <ZillizCloudOptions settings={settings} />,
-      description:
-        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
-    },
-    {
-      name: "QDrant",
-      value: "qdrant",
-      logo: QDrantLogo,
-      options: <QDrantDBOptions settings={settings} />,
-      description: "Open source local and distributed cloud vector database.",
-    },
-    {
-      name: "Weaviate",
-      value: "weaviate",
-      logo: WeaviateLogo,
-      options: <WeaviateDBOptions settings={settings} />,
-      description:
-        "Open source local and cloud hosted multi-modal vector database.",
-    },
-    {
-      name: "Milvus",
-      value: "milvus",
-      logo: MilvusLogo,
-      options: <MilvusDBOptions settings={settings} />,
-      description: "Open-source, highly scalable, and blazing fast.",
-    },
-    {
-      name: "AstraDB",
-      value: "astra",
-      logo: AstraDBLogo,
-      options: <AstraDBOptions settings={settings} />,
-      description: "Vector Search for Real-world GenAI.",
-    },
-  ];
-
-  const selectedVDBObject = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
+  const selectedVDBObject =
+    VECTOR_DBS.find((vdb) => vdb.value === selectedVDB) ?? VECTOR_DBS[0];
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -320,7 +321,9 @@ export default function GeneralVectorDatabase() {
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedVDB &&
-                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options}
+                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options(
+                    settings
+                  )}
               </div>
             </div>
           </form>
