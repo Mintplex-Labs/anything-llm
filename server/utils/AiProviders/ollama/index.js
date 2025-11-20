@@ -8,6 +8,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
+const { v4: uuidv4 } = require("uuid");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -18,6 +19,7 @@ class OllamaAILLM {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
 
+    this.className = "OllamaAILLM";
     this.authToken = process.env.OLLAMA_AUTH_TOKEN;
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
@@ -257,8 +259,11 @@ class OllamaAILLM {
           },
         })
         .then((res) => {
+          let content = res.message.content;
+          if (res.message.thinking)
+            content = `<think>${res.message.thinking}</think>${content}`;
           return {
-            content: res.message.content,
+            content,
             usage: {
               prompt_tokens: res.prompt_eval_count,
               completion_tokens: res.eval_count,
@@ -326,6 +331,7 @@ class OllamaAILLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let reasoningText = "";
       let usage = {
         prompt_tokens: 0,
         completion_tokens: 0,
@@ -367,16 +373,59 @@ class OllamaAILLM {
           }
 
           if (chunk.hasOwnProperty("message")) {
+            // As of Ollama v0.9.0+, thinking content comes in a separate property
+            // in the response object. If it exists, we need to handle it separately by wrapping it in <think> tags.
             const content = chunk.message.content;
-            fullText += content;
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: content,
-              close: false,
-              error: false,
-            });
+            const reasoningToken = chunk.message.thinking;
+
+            if (reasoningToken) {
+              if (reasoningText.length === 0) {
+                const startTag = "<think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: startTag + reasoningToken,
+                  close: false,
+                  error: false,
+                });
+                reasoningText += startTag + reasoningToken;
+              } else {
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: reasoningToken,
+                  close: false,
+                  error: false,
+                });
+                reasoningText += reasoningToken;
+              }
+            } else if (content.length > 0) {
+              // If we have reasoning text, we need to close the reasoning tag and then append the content.
+              if (reasoningText.length > 0) {
+                const endTag = "</think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: endTag,
+                  close: false,
+                  error: false,
+                });
+                fullText += reasoningText + endTag;
+                reasoningText = ""; // Reset reasoning buffer
+              }
+              fullText += content; // Append regular text
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: content,
+                close: false,
+                error: false,
+              });
+            }
           }
         }
       } catch (error) {
@@ -386,9 +435,8 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${
-            error?.cause ?? error.message
-          }`,
+          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
+            }`,
         });
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
