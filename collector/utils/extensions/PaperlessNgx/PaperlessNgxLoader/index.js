@@ -3,8 +3,11 @@ const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
   constructor({ baseUrl, apiToken }) {
-    this.baseUrl = baseUrl.replace(/\/$/, "");
+    this.baseUrl = new URL(baseUrl).origin;
     this.apiToken = apiToken;
+    this.baseHeaders = {
+      Authorization: `Token ${this.apiToken}`,
+    };
   }
 
   async load() {
@@ -17,23 +20,25 @@ class PaperlessNgxLoader {
     }
   }
 
+  /**
+   * Fetches all documents from Paperless-ngx
+   * @returns {Promise<{{[key: string]: any, content: string}[]}>} The documents with their content
+   */
   async fetchAllDocuments() {
     try {
-      const response = await fetch(`${this.baseUrl}/api/documents/`, {
+      const documents = await fetch(`${this.baseUrl}/api/documents/`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${this.apiToken}`,
+          ...this.baseHeaders,
         },
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch documents from Paperless-ngx: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-      const documents = data.results || [];
+      })
+        .then((res) => res.json())
+        .then((data) => data.results || [])
+        .catch((error) => {
+          throw new Error(
+            `Failed to fetch documents from Paperless-ngx: ${error.message}`
+          );
+        });
 
       const documentsWithContent = await Promise.all(
         documents.map(async (doc) => {
@@ -42,7 +47,7 @@ class PaperlessNgxLoader {
         })
       );
 
-      return documentsWithContent;
+      return documentsWithContent.filter((doc) => !!doc.content);
     } catch (error) {
       throw new Error(
         `Failed to fetch documents from Paperless-ngx: ${error.message}`
@@ -50,36 +55,33 @@ class PaperlessNgxLoader {
     }
   }
 
+  /**
+   * Fetches the content of a document from Paperless-ngx
+   * @param {string} documentId - The ID of the document to fetch
+   * @returns {Promise<string>} The content of the document
+   */
   async fetchDocumentContent(documentId) {
     try {
       const response = await fetch(
         `${this.baseUrl}/api/documents/${documentId}/download/`,
         {
-          headers: {
-            Authorization: `Token ${this.apiToken}`,
-          },
+          headers: this.baseHeaders,
         }
       );
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`Failed to fetch document content: ${response.status}`);
-      }
 
-      // Process text and pdf files
       const contentType = response.headers.get("content-type");
-      let content;
-
-      if (contentType.includes("text/plain")) {
-        content = await response.text();
-      } else if (contentType.includes("application/pdf")) {
-        const buffer = await response.arrayBuffer();
-        content = await this.parsePdfContent(buffer);
-      } else {
-        // Fallback to text content
-        content = await response.text();
+      switch (contentType) {
+        case "text/plain":
+          return await response.text();
+        case "application/pdf":
+          const buffer = await response.arrayBuffer();
+          return await this.parsePdfContent(buffer);
+        default:
+          return await response.text();
       }
-
-      return content;
     } catch (error) {
       console.error(
         `Failed to fetch content for document ${documentId}:`,
@@ -110,7 +112,7 @@ class PaperlessNgxLoader {
       pageContent: plainTextContent,
       metadata: {
         id: doc.id,
-        title: doc.title,
+        title: doc.original_file_name,
         created: doc.created,
         modified: doc.modified,
         added: doc.added,

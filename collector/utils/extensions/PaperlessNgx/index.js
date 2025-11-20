@@ -2,7 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments, sanitizeFileName } = require("../../files");
+const {
+  writeToServerDocuments,
+  sanitizeFileName,
+  documentsFolder,
+} = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { validBaseUrl } = require("../../http");
 const PaperlessNgxLoader = require("./PaperlessNgxLoader");
@@ -38,35 +42,25 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
 
   const { docs, error } = await loader
     .load()
-    .then((docs) => {
-      return { docs, error: null };
-    })
-    .catch((e) => {
-      return {
-        docs: [],
-        error: e.message?.split("Error:")?.[1] || e.message,
-      };
-    });
+    .then((docs) => ({ docs, error: null }))
+    .catch((e) => ({
+      docs: [],
+      error: e.message?.split("Error:")?.[1] || e.message,
+    }));
 
   if (!docs.length || !!error) {
     return {
       success: false,
-      reason: error ?? "No documents found in that Paperless-ngx instance.",
+      reason:
+        error ?? "No parseable documents found in that Paperless-ngx instance.",
+      data: null,
     };
   }
 
   const outFolder = slugify(
     `paperless-${hostname}-${v4().slice(0, 4)}`
   ).toLowerCase();
-
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
 
@@ -78,8 +72,8 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
       url: doc.metadata.url,
       title: doc.metadata.title,
       docAuthor: doc.metadata.correspondent || "Unknown",
-      description: `Document Type: ${doc.metadata.documentType || "Unknown"}`,
-      docSource: `${origin} Paperless-ngx`,
+      description: `A document from the Paperless-ngx instance at ${origin}`,
+      docSource: `paperless-ngx`,
       chunkSource: generateChunkSource(
         { doc, baseUrl: origin, apiToken },
         response.locals.encryptionWorker
@@ -93,11 +87,14 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
     console.log(
       `[Paperless-ngx Loader]: Saving ${doc.metadata.title} to ${outFolder}`
     );
-
     const fileName = sanitizeFileName(
       `${slugify(doc.metadata.title)}-${data.id}`
     );
-    writeToServerDocuments(data, fileName, outFolderPath);
+    writeToServerDocuments({
+      data,
+      filename: fileName,
+      destinationOverride: outFolderPath,
+    });
   });
 
   return {
