@@ -14,7 +14,7 @@ export default function ConnectionModal({ connection, closeModal, onSuccess }) {
   const searchInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
-    provider: "litellm",
+    provider: "openai",
     config: {},
     isDefault: false,
   });
@@ -23,7 +23,7 @@ export default function ConnectionModal({ connection, closeModal, onSuccess }) {
     if (connection) {
       setFormData({
         name: connection.name || "",
-        provider: connection.provider || "litellm",
+        provider: connection.provider || "openai",
         config: connection.config || {},
         isDefault: connection.isDefault || false,
       });
@@ -31,7 +31,7 @@ export default function ConnectionModal({ connection, closeModal, onSuccess }) {
       setConnectionTestSuccess(true);
     } else {
       // For new connections, default name to provider label
-      const defaultProvider = "litellm";
+      const defaultProvider = "openai";
       setFormData({
         name: PROVIDER_CONFIGS[defaultProvider]?.label || "",
         provider: defaultProvider,
