@@ -1,3 +1,6 @@
+// Set up environment variables for tests
+process.env.STORAGE_DIR = "test-storage"; // needed for tests to run
+
 const { LLMConnection } = require("../../models/llmConnection");
 const prisma = require("../../utils/prisma");
 const { LLMConfigEncryption } = require("../../utils/LLMConfigEncryption");
