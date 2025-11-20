@@ -1,7 +1,7 @@
 /* eslint-env jest, node */
 const { OpenAICompatibleChat } = require('../../../utils/chats/openaiCompatible');
 const { WorkspaceChats } = require('../../../models/workspaceChats');
-const { getVectorDbClass, getLLMProvider } = require('../../../utils/helpers');
+const { getVectorDbClass, getLLMProviderForWorkspace } = require('../../../utils/helpers');
 const { extractTextContent, extractAttachments } = require('../../../endpoints/api/openai/helpers');
 
 // Mock dependencies
@@ -61,7 +61,7 @@ describe('OpenAICompatibleChat', () => {
       handleStream: jest.fn().mockResolvedValue('Mock streamed response'),
       defaultTemp: 0.7,
     };
-    getLLMProvider.mockReturnValue(mockLLMConnector);
+    getLLMProviderForWorkspace.mockResolvedValue(mockLLMConnector);
 
     // Setup WorkspaceChats mock
     WorkspaceChats.new.mockResolvedValue({ chat: { id: 'mock-chat-id' } });
