@@ -24,6 +24,7 @@
  *
  * @typedef {Object} ChatCompletionOptions
  * @property {number} temperature - The sampling temperature for the LLM response
+ * @property {import("@prisma/client").users} user - The user object for the chat completion to send to the LLM provider for user tracking (optional)
  *
  * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
  *
@@ -81,6 +82,7 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
+  const { LanceDb } = require("../vectorDbProviders/lance");
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
@@ -93,7 +95,6 @@ function getVectorDbClass(getExactly = null) {
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return ChromaCloud;
     case "lancedb":
-      const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
@@ -114,7 +115,10 @@ function getVectorDbClass(getExactly = null) {
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
     default:
-      throw new Error("ENV: No VECTOR_DB value found in environment!");
+      console.error(
+        `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
+      );
+      return LanceDb;
   }
 }
 
