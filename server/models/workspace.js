@@ -259,6 +259,30 @@ const Workspace = {
       validatedUpdates.chatModel = null;
     }
 
+    // Mutual exclusion: When switching to connection-based config, clear legacy fields
+    if (validatedUpdates?.chatConnectionId !== undefined && validatedUpdates.chatConnectionId !== null) {
+      validatedUpdates.chatProvider = null;
+      validatedUpdates.chatModel = null;
+    }
+
+    // Mutual exclusion: When switching to legacy provider, clear connection fields
+    if (validatedUpdates?.chatProvider !== undefined && validatedUpdates.chatProvider !== null) {
+      validatedUpdates.chatConnectionId = null;
+      validatedUpdates.chatModelOverride = null;
+    }
+
+    // Agent mutual exclusion: When switching to connection-based config, clear legacy fields
+    if (validatedUpdates?.agentConnectionId !== undefined && validatedUpdates.agentConnectionId !== null) {
+      validatedUpdates.agentProvider = null;
+      validatedUpdates.agentModel = null;
+    }
+
+    // Agent mutual exclusion: When switching to legacy provider, clear connection fields
+    if (validatedUpdates?.agentProvider !== undefined && validatedUpdates.agentProvider !== null) {
+      validatedUpdates.agentConnectionId = null;
+      validatedUpdates.agentModelOverride = null;
+    }
+
     return this._update(id, validatedUpdates);
   },
 
