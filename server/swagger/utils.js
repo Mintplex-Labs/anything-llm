@@ -9,6 +9,12 @@ function faviconUrl() {
 }
 
 function useSwagger(app) {
+  if (process.env.DISABLE_SWAGGER_DOCS === "true") {
+    console.log(
+      `\x1b[33m[SWAGGER DISABLED]\x1b[0m Swagger documentation is disabled via DISABLE_SWAGGER_DOCS environment variable.`
+    );
+    return;
+  }
   app.use('/api/docs', swaggerUi.serve);
   const options = {
     customCss: [
