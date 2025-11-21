@@ -58,6 +58,15 @@ const KEY_MAPPING = {
     envKey: "ANTHROPIC_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  AnthropicCacheControl: {
+    envKey: "ANTHROPIC_CACHE_CONTROL",
+    checks: [
+      (input) =>
+        ["none", "5m", "1h"].includes(input)
+          ? null
+          : "Invalid cache control. Must be one of: 5m, 1h.",
+    ],
+  },
 
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
