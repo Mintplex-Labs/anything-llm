@@ -36,16 +36,11 @@ class LMStudioLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
-    LMStudioLLM.cacheContextWindows(true).then(() => {
-      this.limits = {
-        history: this.promptWindowLimit() * 0.15,
-        system: this.promptWindowLimit() * 0.15,
-        user: this.promptWindowLimit() * 0.7,
-      };
-      this.#log(
-        `initialized with\nmodel: ${this.model}\nn_ctx: ${this.promptWindowLimit()}`
-      );
-    });
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    LMStudioLLM.cacheContextWindows(true);
+    this.#log(`initialized with model: ${this.model}`);
   }
 
   #log(text, ...args) {
@@ -54,6 +49,16 @@ class LMStudioLLM {
 
   static #slog(text, ...args) {
     console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await LMStudioLLM.cacheContextWindows();
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
   /**
@@ -71,7 +76,9 @@ class LMStudioLLM {
       if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
         return;
 
-      const endpoint = new URL(process.env.LMSTUDIO_BASE_PATH);
+      const endpoint = new URL(
+        parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH)
+      );
       endpoint.pathname = "/api/v0/models";
       await fetch(endpoint.toString())
         .then((res) => {
@@ -115,6 +122,13 @@ class LMStudioLLM {
   }
 
   static promptWindowLimit(modelName) {
+    if (Object.keys(LMStudioLLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
+    }
+
     let userDefinedLimit = null;
     const systemDefinedLimit =
       Number(this.modelContextWindows[modelName]) || 4096;
@@ -255,6 +269,7 @@ class LMStudioLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

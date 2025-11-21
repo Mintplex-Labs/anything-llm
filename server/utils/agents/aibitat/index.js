@@ -474,6 +474,8 @@ class AIbitat {
       ...this.defaultProvider,
       ...channelConfig,
     });
+    provider.attachHandlerProps(this.handlerProps);
+
     const history = this.getHistory({ to: channel });
 
     // build the messages to send to the provider
@@ -594,6 +596,7 @@ ${this.getHistory({ to: route.to })
       ...this.defaultProvider,
       ...fromConfig,
     });
+    provider.attachHandlerProps(this.handlerProps);
 
     let content;
     if (provider.supportsAgentStreaming) {
@@ -911,11 +914,10 @@ ${this.getHistory({ to: route.to })
    * If the provider is a string, it will return the default provider for that string.
    *
    * @param config The provider configuration.
+   * @returns {Providers.OpenAIProvider} The provider instance.
    */
   getProviderForConfig(config) {
-    if (typeof config.provider === "object") {
-      return config.provider;
-    }
+    if (typeof config.provider === "object") return config.provider;
 
     switch (config.provider) {
       case "openai":
@@ -962,6 +964,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.ApiPieProvider({ model: config.model });
       case "xai":
         return new Providers.XAIProvider({ model: config.model });
+      case "zai":
+        return new Providers.ZAIProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
       case "ppio":

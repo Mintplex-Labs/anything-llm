@@ -23,6 +23,7 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
@@ -54,6 +55,7 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
@@ -266,6 +268,13 @@ const LLMS = [
     logo: XAILogo,
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
+  },
+  {
+    name: "Z.AI",
+    value: "zai",
+    logo: ZAiLogo,
+    options: (settings) => <ZAiLLMOptions settings={settings} />,
+    description: "Run Z.AI's powerful GLM models.",
   },
   {
     name: "Moonshot AI",

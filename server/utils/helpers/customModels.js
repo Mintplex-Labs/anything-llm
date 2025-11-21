@@ -38,6 +38,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "moonshotai",
   "foundry",
   "cohere",
+  "zai",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -100,6 +101,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getFoundryModels(basePath);
     case "cohere":
       return await getCohereModels(apiKey, "chat");
+    case "zai":
+      return await getZAiModels(apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -795,6 +798,29 @@ async function getCohereModels(_apiKey = null, type = "chat") {
       return [];
     });
 
+  return { models, error: null };
+}
+
+async function getZAiModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.ZAI_API_KEY
+      : _apiKey || process.env.ZAI_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.z.ai/api/paas/v4",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`Z.AI:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.ZAI_API_KEY = apiKey;
   return { models, error: null };
 }
 

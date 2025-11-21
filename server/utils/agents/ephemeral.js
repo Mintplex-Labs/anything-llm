@@ -4,6 +4,7 @@ const ImportedPlugin = require("./imported");
 const MCPCompatibilityLayer = require("../MCP");
 const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
+const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const {
@@ -26,7 +27,7 @@ class EphemeralAgentHandler extends AgentHandler {
   #invocationUUID = null;
   /** @type {import("@prisma/client").workspaces|null} the workspace to use for the agent */
   #workspace = null;
-  /** @type {import("@prisma/client").users|null} the user id to use for the agent */
+  /** @type {import("@prisma/client").users["id"]|null} the user id to use for the agent */
   #userId = null;
   /** @type {import("@prisma/client").workspace_threads|null} the workspace thread id to use for the agent */
   #threadId = null;
@@ -69,6 +70,9 @@ class EphemeralAgentHandler extends AgentHandler {
     this.#workspace = workspace;
     this.#prompt = prompt;
 
+    // Note: userId for ephemeral agent is only available
+    // via the workspace-thread chat endpoints for the API
+    // since workspaces can belong to multiple users.
     this.#userId = userId;
     this.#threadId = threadId;
     this.#sessionId = sessionId;
@@ -319,10 +323,14 @@ class EphemeralAgentHandler extends AgentHandler {
   async #loadAgents() {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
+    this.aibitat.agent(USER_AGENT.name, USER_AGENT.getDefinition());
+    const user = this.#userId
+      ? await User.get({ id: Number(this.#userId) })
+      : null;
+
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+      await WORKSPACE_AGENT.getDefinition(this.provider, this.#workspace, user)
     );
 
     this.#funcsToLoad = [
