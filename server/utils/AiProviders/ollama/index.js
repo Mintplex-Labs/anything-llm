@@ -39,16 +39,13 @@ class OllamaAILLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
-    OllamaAILLM.cacheContextWindows(true).then(() => {
-      this.limits = {
-        history: this.promptWindowLimit() * 0.15,
-        system: this.promptWindowLimit() * 0.15,
-        user: this.promptWindowLimit() * 0.7,
-      };
-      this.#log(
-        `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
-      );
-    });
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    OllamaAILLM.cacheContextWindows(true);
+    this.#log(
+      `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}`
+    );
   }
 
   #log(text, ...args) {
@@ -57,6 +54,16 @@ class OllamaAILLM {
 
   static #slog(text, ...args) {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await OllamaAILLM.cacheContextWindows();
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
   /**
@@ -161,6 +168,13 @@ class OllamaAILLM {
   }
 
   static promptWindowLimit(modelName) {
+    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
+    }
+
     let userDefinedLimit = null;
     const systemDefinedLimit =
       Number(this.modelContextWindows[modelName]) || 4096;
@@ -455,6 +469,7 @@ class OllamaAILLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
