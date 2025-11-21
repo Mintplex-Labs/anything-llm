@@ -14,6 +14,9 @@ const {
   EphemeralEventListener,
 } = require("../agents/ephemeral");
 const { Telemetry } = require("../../models/telemetry");
+const { CollectorApi } = require("../collectorApi");
+const fs = require("fs");
+const path = require("path");
 
 /**
  * @typedef ResponseObject
@@ -25,6 +28,72 @@ const { Telemetry } = require("../../models/telemetry");
  * @property {string|null} error
  * @property {object} metrics
  */
+
+async function processDocumentAttachments(attachments = []) {
+  if (!Array.isArray(attachments) || attachments.length === 0) return [];
+  
+  const imageMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const documentAttachments = attachments.filter(
+    (att) => att && att.contentString && att.mime && !imageMimeTypes.includes(att.mime.toLowerCase())
+  );
+  
+  if (documentAttachments.length === 0) return [];
+  
+  const Collector = new CollectorApi();
+  const processingOnline = await Collector.online();
+  if (!processingOnline) {
+    console.warn("Collector API is not online, skipping document attachment processing");
+    return [];
+  }
+  
+  const hotdirPath = process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../collector/hotdir`)
+    : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+  
+  if (!fs.existsSync(hotdirPath)) {
+    fs.mkdirSync(hotdirPath, { recursive: true });
+  }
+  
+  const parsedDocuments = [];
+  
+  for (const attachment of documentAttachments) {
+    let filePath = null;
+    try {
+      let base64Data = attachment.contentString;
+      
+      const dataUriMatch = base64Data.match(/^data:[^;]+;base64,(.+)$/);
+      if (dataUriMatch) {
+        base64Data = dataUriMatch[1];
+      }
+      
+      const buffer = Buffer.from(base64Data, 'base64');
+      const filename = attachment.name || `attachment-${uuidv4()}`;
+      filePath = path.join(hotdirPath, filename);
+      
+      fs.writeFileSync(filePath, buffer);
+      
+      const { success, reason, documents } = await Collector.parseDocument(filename);
+      
+      if (success && documents && documents.length > 0) {
+        parsedDocuments.push(...documents);
+      } else {
+        console.warn(`Failed to parse attachment ${filename}:`, reason);
+      }
+    } catch (error) {
+      console.error(`Error processing attachment ${attachment.name}:`, error.message);
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (cleanupError) {
+          console.warn(`Failed to cleanup temporary file ${filePath}:`, cleanupError.message);
+        }
+      }
+    }
+  }
+  
+  return parsedDocuments;
+}
 
 /**
  * Handle synchronous chats with your workspace via the developer API endpoint
@@ -207,6 +276,20 @@ async function chatSync({
         });
       });
     });
+
+  const parsedAttachments = await processDocumentAttachments(attachments);
+  parsedAttachments.forEach((doc) => {
+    if (doc.pageContent) {
+      contextTexts.push(doc.pageContent);
+      const { pageContent, ...metadata } = doc;
+      sources.push({
+        text:
+          pageContent.slice(0, 1_000) +
+          "...continued on in source document...",
+        ...metadata,
+      });
+    }
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
@@ -544,6 +627,20 @@ async function streamChat({
         });
       });
     });
+
+  const parsedAttachments = await processDocumentAttachments(attachments);
+  parsedAttachments.forEach((doc) => {
+    if (doc.pageContent) {
+      contextTexts.push(doc.pageContent);
+      const { pageContent, ...metadata } = doc;
+      sources.push({
+        text:
+          pageContent.slice(0, 1_000) +
+          "...continued on in source document...",
+        ...metadata,
+      });
+    }
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
