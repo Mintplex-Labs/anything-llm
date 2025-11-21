@@ -61,6 +61,8 @@ model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
   password                    String
+  externalId                  String? 
+  externalProvider            String? 
   pfpFilename                 String?
   role                        String                        @default("default")
   suspended                   Int                           @default(0)
@@ -82,6 +84,8 @@ model users {
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
   prompt_history              prompt_history[]
+
+  @@index([externalId, externalProvider])
 }
 
 model recovery_codes {

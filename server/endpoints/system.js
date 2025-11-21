@@ -58,6 +58,7 @@ const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { requireAdmin } = require("../utils/middleware/requireAdmin");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -197,7 +198,11 @@ function systemEndpoints(app) {
             valid: true,
             user: User.filterFields(existingUser),
             token: makeJWT(
-              { id: existingUser.id, username: existingUser.username },
+              {
+                id: existingUser.id,
+                username: existingUser.username,
+                role: existingUser.role, // Add this line
+              },
               "30d"
             ),
             message: null,
@@ -210,7 +215,11 @@ function systemEndpoints(app) {
           valid: true,
           user: User.filterFields(existingUser),
           token: makeJWT(
-            { id: existingUser.id, username: existingUser.username },
+            {
+              id: existingUser.id,
+              username: existingUser.username,
+              role: existingUser.role, // Add this line
+            },
             "30d"
           ),
           message: null,
@@ -762,11 +771,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      handleAssetUpload,
-    ],
+    [requireAdmin, handleAssetUpload],
     async (request, response) => {
       if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });
@@ -811,28 +816,24 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get(
-    "/system/remove-logo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
-      try {
-        const currentLogoFilename = await SystemSettings.currentLogoFilename();
-        await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings._updateSettings({
-          logo_filename: LOGO_FILENAME,
-        });
+  app.get("/system/remove-logo", [requireAdmin], async (_request, response) => {
+    try {
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
+      await removeCustomLogo(currentLogoFilename);
+      const { success, error } = await SystemSettings._updateSettings({
+        logo_filename: LOGO_FILENAME,
+      });
 
-        return response.status(success ? 200 : 500).json({
-          message: success
-            ? "Logo removed successfully."
-            : error || "Failed to update with new logo.",
-        });
-      } catch (error) {
-        console.error("Error processing the logo removal:", error);
-        response.status(500).json({ message: "Error removing the logo." });
-      }
+      return response.status(success ? 200 : 500).json({
+        message: success
+          ? "Logo removed successfully."
+          : error || "Failed to update with new logo.",
+      });
+    } catch (error) {
+      console.error("Error processing the logo removal:", error);
+      response.status(500).json({ message: "Error removing the logo." });
     }
-  );
+  });
 
   app.get(
     "/system/welcome-messages",
@@ -852,7 +853,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -878,7 +879,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/api-keys", [validatedRequest], async (_, response) => {
+  app.get("/system/api-keys", [requireAdmin], async (_, response) => {
     try {
       if (response.locals.multiUserMode) {
         return response.sendStatus(401).end();
@@ -898,34 +899,30 @@ function systemEndpoints(app) {
     }
   });
 
-  app.post(
-    "/system/generate-api-key",
-    [validatedRequest],
-    async (_, response) => {
-      try {
-        if (response.locals.multiUserMode) {
-          return response.sendStatus(401).end();
-        }
-
-        const { apiKey, error } = await ApiKey.create();
-        await EventLogs.logEvent(
-          "api_key_created",
-          {},
-          response?.locals?.user?.id
-        );
-        return response.status(200).json({
-          apiKey,
-          error,
-        });
-      } catch (error) {
-        console.error(error);
-        response.status(500).json({
-          apiKey: null,
-          error: "Error generating api key.",
-        });
+  app.post("/system/generate-api-key", [requireAdmin], async (_, response) => {
+    try {
+      if (response.locals.multiUserMode) {
+        return response.sendStatus(401).end();
       }
+
+      const { apiKey, error } = await ApiKey.create();
+      await EventLogs.logEvent(
+        "api_key_created",
+        {},
+        response?.locals?.user?.id || null
+      );
+      return response.status(200).json({
+        apiKey,
+        error,
+      });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({
+        apiKey: null,
+        error: "Error generating api key.",
+      });
     }
-  );
+  });
 
   // TODO: This endpoint is replicated in the admin endpoints file.
   // and should be consolidated to be a single endpoint with flexible role protection.
