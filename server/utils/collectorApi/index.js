@@ -179,12 +179,13 @@ class CollectorApi {
   // all requests through the server. You can use this function to directly expose a specific endpoint
   // on the document processor.
   async forwardExtensionRequest({ endpoint, method, body }) {
+    const data = typeof body === "string" ? body : JSON.stringify(body);
     return await fetch(`${this.endpoint}${endpoint}`, {
       method,
-      body, // Stringified JSON!
+      body: data,
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(body),
+        "X-Integrity": this.comkey.sign(data),
         "X-Payload-Signer": this.comkey.encrypt(
           new EncryptionManager().xPayload
         ),
