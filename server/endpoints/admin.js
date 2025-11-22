@@ -3,7 +3,6 @@ const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
-const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
@@ -17,220 +16,209 @@ const {
   canModifyAdmin,
   validCanModify,
 } = require("../utils/helpers/admin");
-const { reqBody, userFromSession, safeJsonParse } = require("../utils/http");
-const {
-  strictMultiUserRoleValid,
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const { reqBody, safeJsonParse } = require("../utils/http");
+const { requireAdmin } = require("../utils/middleware/requireAdmin");
 const ImportedPlugin = require("../utils/agents/imported");
 
 function adminEndpoints(app) {
   if (!app) return;
 
-  app.get(
-    "/admin/users",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
-      try {
-        const users = await User.where();
-        response.status(200).json({ users });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
+  app.get("/admin/users", [requireAdmin], async (_request, response) => {
+    try {
+      const users = await User.where();
+      response.status(200).json({ users });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
-  app.post(
-    "/admin/users/new",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const currUser = await userFromSession(request, response);
-        const newUserParams = reqBody(request);
-        const roleValidation = validRoleSelection(currUser, newUserParams);
-
-        if (!roleValidation.valid) {
-          response
-            .status(200)
-            .json({ user: null, error: roleValidation.error });
-          return;
-        }
-
-        const { user: newUser, error } = await User.create(newUserParams);
-        if (!!newUser) {
-          await EventLogs.logEvent(
-            "user_created",
-            {
-              userName: newUser.username,
-              createdBy: currUser.username,
-            },
-            currUser.id
-          );
-        }
-
-        response.status(200).json({ user: newUser, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+  app.post("/admin/users/new", [requireAdmin], async (request, response) => {
+    try {
+      // In single-user mode, request.user.id will be null - skip this operation
+      if (!request.user.id) {
+        return response.status(400).json({
+          user: null,
+          error: "User management not available in single-user mode",
+        });
       }
-    }
-  );
+      const currUser = await User.get({ id: request.user.id });
+      const newUserParams = reqBody(request);
+      const roleValidation = validRoleSelection(currUser, newUserParams);
 
-  app.post(
-    "/admin/user/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const currUser = await userFromSession(request, response);
-        const { id } = request.params;
-        const updates = reqBody(request);
-        const user = await User.get({ id: Number(id) });
-
-        const canModify = validCanModify(currUser, user);
-        if (!canModify.valid) {
-          response.status(200).json({ success: false, error: canModify.error });
-          return;
-        }
-
-        const roleValidation = validRoleSelection(currUser, updates);
-        if (!roleValidation.valid) {
-          response
-            .status(200)
-            .json({ success: false, error: roleValidation.error });
-          return;
-        }
-
-        const validAdminRoleModification = await canModifyAdmin(user, updates);
-        if (!validAdminRoleModification.valid) {
-          response
-            .status(200)
-            .json({ success: false, error: validAdminRoleModification.error });
-          return;
-        }
-
-        const { success, error } = await User.update(id, updates);
-        response.status(200).json({ success, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+      if (!roleValidation.valid) {
+        response.status(200).json({ user: null, error: roleValidation.error });
+        return;
       }
-    }
-  );
 
-  app.delete(
-    "/admin/user/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const currUser = await userFromSession(request, response);
-        const { id } = request.params;
-        const user = await User.get({ id: Number(id) });
-
-        const canModify = validCanModify(currUser, user);
-        if (!canModify.valid) {
-          response.status(200).json({ success: false, error: canModify.error });
-          return;
-        }
-
-        await User.delete({ id: Number(id) });
+      const { user: newUser, error } = await User.create(newUserParams);
+      if (!!newUser) {
         await EventLogs.logEvent(
-          "user_deleted",
+          "user_created",
           {
-            userName: user.username,
-            deletedBy: currUser.username,
+            userName: newUser.username,
+            createdBy: currUser.username,
           },
           currUser.id
         );
-        response.status(200).json({ success: true, error: null });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
       }
-    }
-  );
 
-  app.get(
-    "/admin/invites",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
-      try {
-        const invites = await Invite.whereWithUsers();
-        response.status(200).json({ invites });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
+      response.status(200).json({ user: newUser, error });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
-  app.post(
-    "/admin/invite/new",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        const body = reqBody(request);
-        const { invite, error } = await Invite.create({
-          createdByUserId: user.id,
-          workspaceIds: body?.workspaceIds || [],
+  app.post("/admin/user/:id", [requireAdmin], async (request, response) => {
+    try {
+      // In single-user mode, request.user.id will be null - skip this operation
+      if (!request.user.id) {
+        return response.status(400).json({
+          success: false,
+          error: "User management not available in single-user mode",
         });
-
-        await EventLogs.logEvent(
-          "invite_created",
-          {
-            inviteCode: invite.code,
-            createdBy: response.locals?.user?.username,
-          },
-          response.locals?.user?.id
-        );
-        response.status(200).json({ invite, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
       }
-    }
-  );
+      const currUser = await User.get({ id: request.user.id });
+      const { id } = request.params;
+      const updates = reqBody(request);
+      const user = await User.get({ id: Number(id) });
 
-  app.delete(
-    "/admin/invite/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const { id } = request.params;
-        const { success, error } = await Invite.deactivate(id);
-        await EventLogs.logEvent(
-          "invite_deleted",
-          { deletedBy: response.locals?.user?.username },
-          response.locals?.user?.id
-        );
-        response.status(200).json({ success, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+      const canModify = validCanModify(currUser, user);
+      if (!canModify.valid) {
+        response.status(200).json({ success: false, error: canModify.error });
+        return;
       }
-    }
-  );
 
-  app.get(
-    "/admin/workspaces",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
-      try {
-        const workspaces = await Workspace.whereWithUsers();
-        response.status(200).json({ workspaces });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+      const roleValidation = validRoleSelection(currUser, updates);
+      if (!roleValidation.valid) {
+        response
+          .status(200)
+          .json({ success: false, error: roleValidation.error });
+        return;
       }
+
+      const validAdminRoleModification = await canModifyAdmin(user, updates);
+      if (!validAdminRoleModification.valid) {
+        response
+          .status(200)
+          .json({ success: false, error: validAdminRoleModification.error });
+        return;
+      }
+
+      const { success, error } = await User.update(id, updates);
+      response.status(200).json({ success, error });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
     }
-  );
+  });
+
+  app.delete("/admin/user/:id", [requireAdmin], async (request, response) => {
+    try {
+      // In single-user mode, request.user.id will be null - skip this operation
+      if (!request.user.id) {
+        return response.status(400).json({
+          success: false,
+          error: "User management not available in single-user mode",
+        });
+      }
+      const currUser = await User.get({ id: request.user.id });
+      const { id } = request.params;
+      const user = await User.get({ id: Number(id) });
+
+      const canModify = validCanModify(currUser, user);
+      if (!canModify.valid) {
+        response.status(200).json({ success: false, error: canModify.error });
+        return;
+      }
+
+      await User.delete({ id: Number(id) });
+      await EventLogs.logEvent(
+        "user_deleted",
+        {
+          userName: user.username,
+          deletedBy: currUser.username,
+        },
+        currUser.id
+      );
+      response.status(200).json({ success: true, error: null });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/admin/invites", [requireAdmin], async (_request, response) => {
+    try {
+      const invites = await Invite.whereWithUsers();
+      response.status(200).json({ invites });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/admin/invite/new", [requireAdmin], async (request, response) => {
+    try {
+      // In single-user mode, request.user.id will be null - skip this operation
+      if (!request.user.id) {
+        return response.status(400).json({
+          invite: null,
+          error: "Invite management not available in single-user mode",
+        });
+      }
+      const user = await User.get({ id: request.user.id });
+      const body = reqBody(request);
+      const { invite, error } = await Invite.create({
+        createdByUserId: user.id,
+        workspaceIds: body?.workspaceIds || [],
+      });
+
+      await EventLogs.logEvent(
+        "invite_created",
+        {
+          inviteCode: invite.code,
+          createdBy: request.user.username,
+        },
+        request.user.id
+      );
+      response.status(200).json({ invite, error });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.delete("/admin/invite/:id", [requireAdmin], async (request, response) => {
+    try {
+      const { id } = request.params;
+      const { success, error } = await Invite.deactivate(id);
+      await EventLogs.logEvent(
+        "invite_deleted",
+        { deletedBy: request.user.username || "admin" },
+        request.user.id
+      );
+      response.status(200).json({ success, error });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/admin/workspaces", [requireAdmin], async (_request, response) => {
+    try {
+      const workspaces = await Workspace.whereWithUsers();
+      response.status(200).json({ workspaces });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
 
   app.get(
     "/admin/workspaces/:workspaceId/users",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const { workspaceId } = request.params;
@@ -245,10 +233,17 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/new",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
+        // In single-user mode, request.user.id will be null - use a default or handle appropriately
+        if (!request.user.id) {
+          return response.status(400).json({
+            workspace: null,
+            error: "Workspace creation requires multi-user mode",
+          });
+        }
+        const user = await User.get({ id: request.user.id });
         const { name } = reqBody(request);
         const { workspace, message: error } = await Workspace.new(
           name,
@@ -264,7 +259,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/:workspaceId/update-users",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const { workspaceId } = request.params;
@@ -283,7 +278,7 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/workspaces/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -315,7 +310,7 @@ function adminEndpoints(app) {
   // System preferences but only by array of labels
   app.get(
     "/admin/system-preferences-for",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const requestedSettings = {};
@@ -410,70 +405,65 @@ function adminEndpoints(app) {
 
   // TODO: Delete this endpoint
   // DEPRECATED - use /admin/system-preferences-for instead with ?labels=... comma separated string of labels
-  app.get(
-    "/admin/system-preferences",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_, response) => {
-      try {
-        const embedder = getEmbeddingEngineSelection();
-        const settings = {
-          footer_data:
-            (await SystemSettings.get({ label: "footer_data" }))?.value ||
-            JSON.stringify([]),
-          support_email:
-            (await SystemSettings.get({ label: "support_email" }))?.value ||
-            null,
-          text_splitter_chunk_size:
-            (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
-              ?.value ||
-            embedder?.embeddingMaxChunkLength ||
-            null,
-          text_splitter_chunk_overlap:
-            (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
-              ?.value || null,
-          max_embed_chunk_size: embedder?.embeddingMaxChunkLength || 1000,
-          agent_search_provider:
-            (await SystemSettings.get({ label: "agent_search_provider" }))
-              ?.value || null,
-          agent_sql_connections:
-            await SystemSettings.brief.agent_sql_connections(),
-          default_agent_skills:
-            safeJsonParse(
-              (await SystemSettings.get({ label: "default_agent_skills" }))
-                ?.value,
-              []
-            ) || [],
-          disabled_agent_skills:
-            safeJsonParse(
-              (await SystemSettings.get({ label: "disabled_agent_skills" }))
-                ?.value,
-              []
-            ) || [],
-          imported_agent_skills: ImportedPlugin.listImportedPlugins(),
-          custom_app_name:
-            (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
-            null,
-          feature_flags: (await SystemSettings.getFeatureFlags()) || {},
-          meta_page_title: await SystemSettings.getValueOrFallback(
-            { label: "meta_page_title" },
-            null
-          ),
-          meta_page_favicon: await SystemSettings.getValueOrFallback(
-            { label: "meta_page_favicon" },
-            null
-          ),
-        };
-        response.status(200).json({ settings });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
+  app.get("/admin/system-preferences", [requireAdmin], async (_, response) => {
+    try {
+      const embedder = getEmbeddingEngineSelection();
+      const settings = {
+        footer_data:
+          (await SystemSettings.get({ label: "footer_data" }))?.value ||
+          JSON.stringify([]),
+        support_email:
+          (await SystemSettings.get({ label: "support_email" }))?.value || null,
+        text_splitter_chunk_size:
+          (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
+            ?.value ||
+          embedder?.embeddingMaxChunkLength ||
+          null,
+        text_splitter_chunk_overlap:
+          (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
+            ?.value || null,
+        max_embed_chunk_size: embedder?.embeddingMaxChunkLength || 1000,
+        agent_search_provider:
+          (await SystemSettings.get({ label: "agent_search_provider" }))
+            ?.value || null,
+        agent_sql_connections:
+          await SystemSettings.brief.agent_sql_connections(),
+        default_agent_skills:
+          safeJsonParse(
+            (await SystemSettings.get({ label: "default_agent_skills" }))
+              ?.value,
+            []
+          ) || [],
+        disabled_agent_skills:
+          safeJsonParse(
+            (await SystemSettings.get({ label: "disabled_agent_skills" }))
+              ?.value,
+            []
+          ) || [],
+        imported_agent_skills: ImportedPlugin.listImportedPlugins(),
+        custom_app_name:
+          (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
+          null,
+        feature_flags: (await SystemSettings.getFeatureFlags()) || {},
+        meta_page_title: await SystemSettings.getValueOrFallback(
+          { label: "meta_page_title" },
+          null
+        ),
+        meta_page_favicon: await SystemSettings.getValueOrFallback(
+          { label: "meta_page_favicon" },
+          null
+        ),
+      };
+      response.status(200).json({ settings });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
   app.post(
     "/admin/system-preferences",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const updates = reqBody(request);
@@ -486,32 +476,36 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get(
-    "/admin/api-keys",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
-    async (_request, response) => {
-      try {
-        const apiKeys = await ApiKey.whereWithUser({});
-        return response.status(200).json({
-          apiKeys,
-          error: null,
-        });
-      } catch (error) {
-        console.error(error);
-        response.status(500).json({
-          apiKey: null,
-          error: "Could not find an API Keys.",
-        });
-      }
+  app.get("/admin/api-keys", [requireAdmin], async (_request, response) => {
+    try {
+      const apiKeys = await ApiKey.whereWithUser({});
+      return response.status(200).json({
+        apiKeys,
+        error: null,
+      });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({
+        apiKey: null,
+        error: "Could not find an API Keys.",
+      });
     }
-  );
+  });
 
   app.post(
     "/admin/generate-api-key",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
+    [requireAdmin],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
+        // In single-user mode, request.user.id will be null
+        // ApiKey.create() requires a user ID, so this only works in multi-user mode
+        if (!request.user.id) {
+          return response.status(400).json({
+            apiKey: null,
+            error: "API key generation requires multi-user mode",
+          });
+        }
+        const user = await User.get({ id: request.user.id });
         const { apiKey, error } = await ApiKey.create(user.id);
         await EventLogs.logEvent(
           "api_key_created",
@@ -531,7 +525,7 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/delete-api-key/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
+    [requireAdmin],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -540,8 +534,8 @@ function adminEndpoints(app) {
 
         await EventLogs.logEvent(
           "api_key_deleted",
-          { deletedBy: response.locals?.user?.username },
-          response?.locals?.user?.id
+          { deletedBy: request.user.username || "admin" },
+          request.user.id
         );
         return response.status(200).end();
       } catch (e) {
