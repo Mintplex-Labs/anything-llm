@@ -164,7 +164,10 @@ class GenericOpenAiLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, sessionId = null }
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -172,6 +175,7 @@ class GenericOpenAiLLM {
           messages,
           temperature,
           max_tokens: this.maxTokens,
+          ...(!!sessionId ? { sessionId } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -197,7 +201,10 @@ class GenericOpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, sessionId = null }
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.openai.chat.completions.create({
         model: this.model,
@@ -205,6 +212,7 @@ class GenericOpenAiLLM {
         messages,
         temperature,
         max_tokens: this.maxTokens,
+        ...(!!sessionId ? { sessionId } : {}),
       }),
       messages
       // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning

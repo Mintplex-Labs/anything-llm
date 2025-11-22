@@ -54,6 +54,7 @@ async function streamChatWithWorkspace(
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
   });
+  const sessionId = thread?.slug ?? null;
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20;
@@ -249,6 +250,7 @@ async function streamChatWithWorkspace(
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        sessionId,
       });
 
     completeText = textResponse;
@@ -266,6 +268,7 @@ async function streamChatWithWorkspace(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      sessionId,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
