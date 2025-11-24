@@ -57,7 +57,7 @@ export default function PromptInput({
       // Notify parent component so message state is synchronized
       onChange({ target: { value: userPromptInputValue } });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Set the user prompt input value to localStorage
