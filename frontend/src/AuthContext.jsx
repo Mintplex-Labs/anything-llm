@@ -1,5 +1,10 @@
 import React, { useState, createContext } from "react";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+  USER_PROMPT_INPUT_VALUE,
+} from "@/utils/constants";
 
 export const AuthContext = createContext(null);
 export function AuthProvider(props) {
@@ -20,6 +25,7 @@ export function AuthProvider(props) {
       localStorage.removeItem(AUTH_USER);
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(AUTH_TIMESTAMP);
+      localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
       setStore({ user: null, authToken: null });
     },
   });

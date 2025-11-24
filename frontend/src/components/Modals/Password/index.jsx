@@ -6,6 +6,7 @@ import {
   AUTH_TOKEN,
   AUTH_USER,
   AUTH_TIMESTAMP,
+  USER_PROMPT_INPUT_VALUE,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
 import illustration from "@/media/illustrations/login-illustration.svg";
@@ -84,6 +85,7 @@ export function usePasswordModal(notry = false) {
             window.localStorage.removeItem(AUTH_USER);
             window.localStorage.removeItem(AUTH_TOKEN);
             window.localStorage.removeItem(AUTH_TIMESTAMP);
+            window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
             return;
           } else {
             setAuth({
@@ -126,6 +128,7 @@ export function usePasswordModal(notry = false) {
             window.localStorage.removeItem(AUTH_TOKEN);
             window.localStorage.removeItem(AUTH_USER);
             window.localStorage.removeItem(AUTH_TIMESTAMP);
+            window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
             return;
           } else {
             setAuth({
