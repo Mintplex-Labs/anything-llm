@@ -66,10 +66,8 @@ async function processDocumentAttachments(attachments = []) {
 
   const parsedDocuments = [];
   for (const attachment of documentAttachments) {
-    let filePath = null;
     try {
       let base64Data = attachment.contentString;
-
       const dataUriMatch = base64Data.match(/^data:[^;]+;base64,(.+)$/);
       if (dataUriMatch) base64Data = dataUriMatch[1];
 
@@ -77,15 +75,14 @@ async function processDocumentAttachments(attachments = []) {
       const filename = normalizePath(
         attachment.name || `attachment-${uuidv4()}`
       );
-      filePath = normalizePath(path.join(hotdirPath, filename));
+      const filePath = normalizePath(path.join(hotdirPath, filename));
       if (!isWithin(hotdirPath, filePath))
         throw new Error(`Invalid file path for attachment ${filename}`);
       fs.writeFileSync(filePath, buffer);
 
       const { success, reason, documents } =
         await Collector.parseDocument(filename);
-      if (success && documents && documents.length > 0)
-        parsedDocuments.push(...documents);
+      if (success && documents?.length > 0) parsedDocuments.push(...documents);
       else console.warn(`Failed to parse attachment ${filename}:`, reason);
     } catch (error) {
       console.error(
