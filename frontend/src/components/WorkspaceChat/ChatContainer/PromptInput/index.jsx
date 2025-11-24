@@ -54,7 +54,10 @@ export default function PromptInput({
     const userPromptInputValue = localStorage.getItem(USER_PROMPT_INPUT_VALUE);
     if (userPromptInputValue) {
       setPromptInput(userPromptInputValue);
+      // Notify parent component so message state is synchronized
+      onChange({ target: { value: userPromptInputValue } });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Set the user prompt input value to localStorage
