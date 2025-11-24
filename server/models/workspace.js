@@ -6,6 +6,7 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
+const { SystemSettings } = require("./systemSettings");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -32,8 +33,7 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
-  defaultPrompt:
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+  defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
   // commented fields are not writable, but are available on the db object
@@ -192,6 +192,14 @@ const Workspace = {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
+
+    // Get the default system prompt
+    const defaultSystemPrompt = await SystemSettings.get({
+      label: "default_system_prompt",
+    });
+    if (!!defaultSystemPrompt?.value)
+      additionalFields.openAiPrompt = defaultSystemPrompt.value;
+    else additionalFields.openAiPrompt = this.defaultPrompt;
 
     try {
       const workspace = await prisma.workspaces.create({

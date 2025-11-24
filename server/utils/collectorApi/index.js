@@ -1,4 +1,5 @@
 const { EncryptionManager } = require("../EncryptionManager");
+const { Agent } = require("undici");
 
 /**
  * @typedef {Object} CollectorOptions
@@ -14,6 +15,14 @@ const { EncryptionManager } = require("../EncryptionManager");
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
 class CollectorApi {
+  /** @type {number} - The maximum timeout for extension requests in milliseconds */
+  extensionRequestTimeout = 15 * 60_000; // 15 minutes
+  /** @type {Agent} - The agent for extension requests */
+  extensionRequestAgent = new Agent({
+    headersTimeout: this.extensionRequestTimeout,
+    bodyTimeout: this.extensionRequestTimeout,
+  });
+
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
@@ -88,6 +97,7 @@ class CollectorApi {
         ),
       },
       body: data,
+      dispatcher: new Agent({ headersTimeout: 600000 }),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
@@ -190,6 +200,9 @@ class CollectorApi {
           new EncryptionManager().xPayload
         ),
       },
+      // Extensions do a lot of work, and may take a while to complete so we need to increase the timeout
+      // substantially so that they do not show a failure to the user early.
+      dispatcher: this.extensionRequestAgent,
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");

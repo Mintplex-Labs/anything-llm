@@ -2,6 +2,7 @@ const { EventEmitter } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
+const { v4 } = require("uuid");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -694,8 +695,12 @@ ${this.getHistory({ to: route.to })
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
 
-      // If the tool call has direct output enabled, return the result directly to the chat
-      // without any further processing and no further tool calls will be run.
+      /**
+       * If the tool call has direct output enabled, return the result directly to the chat
+       * without any further processing and no further tool calls will be run.
+       * For streaming, we need to return the result directly to the chat via the event handler
+       * or else no response will be sent to the chat.
+       */
       if (this.skipHandleExecution) {
         this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
         this?.introspect?.(
@@ -705,6 +710,11 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        eventHandler?.("reportStreamEvent", {
+          type: "fullTextResponse",
+          uuid: v4(),
+          content: result,
+        });
         return result;
       }
 
