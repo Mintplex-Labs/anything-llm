@@ -346,6 +346,10 @@ const System = {
     );
     return { appName: customAppName, error: null };
   },
+  /**
+   * Fetches the default system prompt from the server.
+   * @returns {Promise<{defaultSystemPrompt: string, saneDefaultSystemPrompt: string}>}
+   */
   fetchDefaultSystemPrompt: async function () {
     return await fetch(`${API_BASE}/system/default-system-prompt`, {
       method: "GET",
@@ -358,7 +362,7 @@ const System = {
       }))
       .catch((e) => {
         console.error(e);
-        return null;
+        return { defaultSystemPrompt: "", saneDefaultSystemPrompt: "" };
       });
   },
   updateDefaultSystemPrompt: async function (defaultSystemPrompt) {

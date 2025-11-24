@@ -22,6 +22,7 @@ export default function ChatPromptSettings({
   const initialPrompt = getWorkspaceSystemPrompt(workspace);
   const [prompt, setPrompt] = useState(initialPrompt);
   const [savedPrompt, setSavedPrompt] = useState(initialPrompt);
+  const [defaultSystemPrompt, setDefaultSystemPrompt] = useState("");
 
   // UI state
   const [isEditing, setIsEditing] = useState(false);
@@ -53,17 +54,13 @@ export default function ChatPromptSettings({
       setAvailableVariables(variables);
     }
     setupVariableHighlighting();
-
-    if (searchParams.get("action") === "focus-system-prompt") {
+    if (searchParams.get("action") === "focus-system-prompt")
       setIsEditing(true);
-    }
   }, [searchParams]);
 
   // Update saved prompt when parent clears hasChanges
   useEffect(() => {
-    if (!hasChanges) {
-      setSavedPrompt(prompt);
-    }
+    if (!hasChanges) setSavedPrompt(prompt);
   }, [hasChanges, prompt]);
 
   // Auto-focus textarea when editing
@@ -72,6 +69,12 @@ export default function ChatPromptSettings({
       promptRef.current.focus();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) =>
+      setDefaultSystemPrompt(defaultSystemPrompt)
+    );
+  }, []);
 
   // Handle click outside for history panel
   useEffect(() => {
@@ -98,17 +101,15 @@ export default function ChatPromptSettings({
   const handlePublishFromHistory = (historicalPrompt) => {
     openPublishModal();
     setShowPromptHistory(false);
-    // Use the historical prompt for publishing
     setTimeout(() => setPrompt(historicalPrompt), 0);
   };
 
   // Restore to default system prompt, if no default system prompt is set
   const handleRestoreToDefaultSystemPrompt = () => {
-    System.fetchDefaultSystemPrompt().then((defaultSystemPrompt) => {
-      console.log(defaultSystemPrompt);
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) => {
       setPrompt(defaultSystemPrompt);
+      setHasChanges(true);
     });
-    // setPrompt(initialPrompt);
   };
 
   return (
@@ -173,11 +174,6 @@ export default function ChatPromptSettings({
             {showPromptHistory ? "Hide History" : "View History"}
           </button>
           <div className="relative w-full">
-            {/* <span
-              className={`${!!prompt ? "hidden" : "block"} text-sm pointer-events-none absolute top-2 left-0 p-2.5 w-full h-full !text-theme-settings-input-placeholder opacity-60`}
-            >
-              {DEFAULT_PROMPT}
-            </span> */}
             {isEditing ? (
               <textarea
                 ref={promptRef}
@@ -229,7 +225,7 @@ export default function ChatPromptSettings({
             )}
           </div>
           <div className="w-full flex flex-row items-center justify-between pt-2">
-            {isDirty && (
+            {prompt !== defaultSystemPrompt && (
               <button
                 type="button"
                 onClick={handleRestoreToDefaultSystemPrompt}

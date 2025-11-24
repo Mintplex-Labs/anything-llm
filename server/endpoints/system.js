@@ -765,28 +765,23 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { defaultSystemPrompt } = reqBody(request);
-        // if (!defaultSystemPrompt.trim()) {
-        //   return response.status(200).json({
-        //     success: true,
-        //     message: "successfully.",
-        //   });
-        // }
-
         const { success, error } = await SystemSettings.updateSettings({
           default_system_prompt: defaultSystemPrompt,
         });
-        console.log(success, error);
-        response.status(success ? 200 : 500).json({
-          success,
-          message: success
-            ? "Default system prompt updated successfully."
-            : error || "Failed to update default system prompt.",
+        if (!success)
+          throw new Error(
+            error.message || "Failed to update default system prompt."
+          );
+        response.status(200).json({
+          success: true,
+          message: "Default system prompt updated successfully.",
         });
       } catch (error) {
         console.error("Error updating default system prompt:", error);
-        response
-          .status(500)
-          .json({ message: "Internal server error", success: false });
+        response.status(500).json({
+          success: false,
+          message: error.message || "Internal server error",
+        });
       }
     }
   );

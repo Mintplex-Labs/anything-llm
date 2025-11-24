@@ -38,20 +38,18 @@ export default function DefaultSystemPrompt() {
       const { defaultSystemPrompt, saneDefaultSystemPrompt } =
         await System.fetchDefaultSystemPrompt();
       setSaneDefaultSystemPrompt(saneDefaultSystemPrompt);
-      // If custom default system prompt is set, use it. Otherwise, the user does not have a custom default system prompt and this field should be empty.
-      if (defaultSystemPrompt) {
-        setSystemPromptForm((prev) => ({
-          ...prev,
-          default: defaultSystemPrompt,
-          value: defaultSystemPrompt,
-          isLoading: false,
-        }));
-      } else {
-        setSystemPromptForm((prev) => ({
+      if (!defaultSystemPrompt)
+        return setSystemPromptForm((prev) => ({
           ...prev,
           isLoading: false,
         }));
-      }
+
+      setSystemPromptForm((prev) => ({
+        ...prev,
+        default: defaultSystemPrompt,
+        value: defaultSystemPrompt,
+        isLoading: false,
+      }));
     }
     fetchDefaultSystemPrompt();
   }, []);
@@ -74,40 +72,45 @@ export default function DefaultSystemPrompt() {
       ...prev,
       isSubmitting: true,
     }));
-    const response = await System.updateDefaultSystemPrompt(
-      systemPromptForm.value
-    );
-    console.log(response);
-    if (!response.success) {
-      showToast(
-        `Failed to update default system prompt: ${response.message}`,
-        "error"
-      );
-      setSystemPromptForm((prev) => ({
-        ...prev,
-        isSubmitting: false,
-      }));
-    } else {
-      showToast("Default system prompt updated successfully.", "success");
-      setSystemPromptForm((prev) => ({
-        ...prev,
-        default: systemPromptForm.value,
-        isDirty: false,
-        isSubmitting: false,
-      }));
+    const newSystemPrompt = systemPromptForm.value.trim();
+    await System.updateDefaultSystemPrompt(newSystemPrompt)
+      .then(({ success, message }) => {
+        if (!success) throw new Error(message);
 
-      if (!systemPromptForm.value.trim()) {
+        // If the user has set the default system prompt to the sane default, reset the value to the sane default.
+        if (
+          !newSystemPrompt ||
+          newSystemPrompt.trim() === saneDefaultSystemPrompt
+        ) {
+          return setSystemPromptForm((prev) => ({
+            ...prev,
+            value: saneDefaultSystemPrompt,
+          }));
+        }
+
+        showToast("Default system prompt updated successfully.", "success");
         setSystemPromptForm((prev) => ({
           ...prev,
-          value: saneDefaultSystemPrompt,
+          default: newSystemPrompt,
+          isDirty: false,
+          isSubmitting: false,
         }));
-      }
-    }
+      })
+      .catch((error) => {
+        showToast(
+          `Failed to update default system prompt: ${error.message}`,
+          "error"
+        );
+        setSystemPromptForm((prev) => ({
+          ...prev,
+          isSubmitting: false,
+        }));
+      });
   };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <SettingsSidebar />
-
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"

@@ -197,14 +197,9 @@ const Workspace = {
     const defaultSystemPrompt = await SystemSettings.get({
       label: "default_system_prompt",
     });
-
-    console.log(`defaultSystemPrompt`, defaultSystemPrompt);
-
-    if (!!defaultSystemPrompt?.value) {
+    if (!!defaultSystemPrompt?.value)
       additionalFields.openAiPrompt = defaultSystemPrompt.value;
-    } else {
-      additionalFields.openAiPrompt = this.defaultPrompt;
-    }
+    else additionalFields.openAiPrompt = this.defaultPrompt;
 
     try {
       const workspace = await prisma.workspaces.create({
@@ -507,20 +502,20 @@ const Workspace = {
    * @returns {Promise<void>}
    */
   _trackWorkspacePromptChange: async function (prevData, newData, user = null) {
-    const prevPrompt =
-      prevData?.systemPrompt ?? prevData?.openAiPrompt ?? this.defaultPrompt;
-    const nextPrompt =
-      newData?.systemPrompt ?? newData?.openAiPrompt ?? prevPrompt;
-
-    if (nextPrompt !== prevPrompt)
-      await PromptHistory.handlePromptChange(prevData, user);
+    if (
+      !!newData?.openAiPrompt && // new prompt is set
+      !!prevData?.openAiPrompt && // previous prompt was not null (default)
+      prevData?.openAiPrompt !== this.defaultPrompt && // previous prompt was not default
+      newData?.openAiPrompt !== prevData?.openAiPrompt // previous and new prompt are not the same
+    )
+      await PromptHistory.handlePromptChange(prevData, user); // log the change to the prompt history
 
     const { Telemetry } = require("./telemetry");
     const { EventLogs } = require("./eventLogs");
     if (
-      !nextPrompt ||
-      nextPrompt === this.defaultPrompt ||
-      nextPrompt === prevPrompt
+      !newData?.openAiPrompt || // no prompt change
+      newData?.openAiPrompt === this.defaultPrompt || // new prompt is default prompt
+      newData?.openAiPrompt === prevData?.openAiPrompt // same prompt
     )
       return;
 
@@ -529,8 +524,8 @@ const Workspace = {
       "workspace_prompt_changed",
       {
         workspaceName: prevData?.name,
-        prevSystemPrompt: prevPrompt || this.defaultPrompt,
-        newSystemPrompt: nextPrompt,
+        prevSystemPrompt: prevData?.openAiPrompt || this.defaultPrompt,
+        newSystemPrompt: newData?.openAiPrompt,
       },
       user?.id
     );
