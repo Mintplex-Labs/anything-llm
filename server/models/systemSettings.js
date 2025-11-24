@@ -17,6 +17,9 @@ function isNullOrNaN(value) {
 }
 
 const SystemSettings = {
+  /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
+  saneDefaultSystemPrompt:
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
   protectedFields: ["multi_user_mode", "hub_api_key"],
   publicFields: [
     "footer_data",
@@ -47,6 +50,7 @@ const SystemSettings = {
     "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+    "default_system_prompt",
 
     // Meta page customization
     "meta_page_title",
@@ -191,6 +195,12 @@ const SystemSettings = {
     hub_api_key: (apiKey) => {
       if (!apiKey) return null;
       return String(apiKey);
+    },
+    default_system_prompt: (prompt) => {
+      if (typeof prompt !== "string" || !prompt) return null;
+      if (prompt.trim() === SystemSettings.saneDefaultSystemPrompt)
+        return SystemSettings.saneDefaultSystemPrompt;
+      return String(prompt.trim());
     },
   },
   currentSettings: async function () {
