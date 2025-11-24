@@ -24,6 +24,7 @@ import {
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
+import { USER_PROMPT_INPUT_VALUE } from "@/utils/constants";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -47,6 +48,19 @@ export default function PromptInput({
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
+
+  // Get the user prompt input value from localStorage
+  useEffect(() => {
+    const userPromptInputValue = localStorage.getItem(USER_PROMPT_INPUT_VALUE);
+    if (userPromptInputValue) {
+      setPromptInput(userPromptInputValue);
+    }
+  }, []);
+
+  // Set the user prompt input value to localStorage
+  useEffect(() => {
+    localStorage.setItem(USER_PROMPT_INPUT_VALUE, promptInput);
+  }, [promptInput]);
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
