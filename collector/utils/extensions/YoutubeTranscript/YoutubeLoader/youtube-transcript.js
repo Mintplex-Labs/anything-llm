@@ -1,3 +1,5 @@
+const { validYoutubeVideoUrl } = require("../../../url");
+
 class YoutubeTranscriptError extends Error {
   constructor(message) {
     super(`[YoutubeTranscript] ${message}`);
@@ -229,13 +231,9 @@ class YoutubeTranscript {
    * @returns {string} YouTube video ID
    */
   static retrieveVideoId(videoId) {
-    if (videoId.length === 11) return videoId;
-
-    const RE_YOUTUBE =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const matchId = videoId.match(RE_YOUTUBE);
-
-    if (matchId?.[1]) return matchId[1];
+    if (videoId.length === 11) return videoId; // already a valid ID most likely
+    const matchedId = validYoutubeVideoUrl(videoId, true);
+    if (matchedId) return matchedId;
     throw new YoutubeTranscriptError(
       "Impossible to retrieve Youtube video ID."
     );

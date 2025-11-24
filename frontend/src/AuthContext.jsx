@@ -2,7 +2,7 @@ import React, { useState, createContext } from "react";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
 export const AuthContext = createContext(null);
-export function ContextWrapper(props) {
+export function AuthProvider(props) {
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);
   const [store, setStore] = useState({

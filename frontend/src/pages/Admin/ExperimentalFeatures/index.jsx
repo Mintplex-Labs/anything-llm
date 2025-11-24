@@ -52,14 +52,28 @@ export default function ExperimentalFeatures() {
             <p className="text-lg font-medium">Experimental Features</p>
           </div>
           {/* Feature list */}
-          <FeatureList
-            features={configurableFeatures}
-            selectedFeature={selectedFeature}
-            handleClick={setSelectedFeature}
-            activeFeatures={Object.keys(featureFlags).filter(
-              (flag) => featureFlags[flag]
-            )}
-          />
+          <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
+            {Object.values(configurableFeatures).map((feature, index) => {
+              const isFirst = index === 0;
+              const isLast =
+                index === Object.values(configurableFeatures).length - 1;
+              return (
+                <FeatureItem
+                  key={feature.key}
+                  feature={feature}
+                  isSelected={selectedFeature === feature.key}
+                  isActive={featureFlags[feature.key]}
+                  handleClick={setSelectedFeature}
+                  borderClass={[
+                    ...(isFirst ? ["rounded-t-xl"] : []),
+                    ...(isLast
+                      ? ["rounded-b-xl"]
+                      : ["border-b border-white/10"]),
+                  ].join(" ")}
+                />
+              );
+            })}
+          </div>
         </div>
 
         {/* Selected feature setting panel */}
@@ -103,63 +117,46 @@ function FeatureLayout({ children }) {
   );
 }
 
-function FeatureList({
-  features = [],
-  selectedFeature = null,
-  handleClick = null,
-  activeFeatures = [],
+function FeatureItem({
+  feature = {},
+  isSelected = false,
+  isActive = false,
+  handleClick = () => {},
+  borderClass = "border-b border-white/10",
 }) {
-  if (Object.keys(features).length === 0) return null;
-
   return (
     <div
-      className={`bg-theme-bg-secondary text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
+      key={feature.key}
+      className={`py-3 px-4 flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-white/5 ${borderClass} ${
+        isSelected ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
       }`}
+      onClick={() => {
+        if (feature?.href) window.location.hash = feature.href;
+        else handleClick?.(feature.key);
+      }}
     >
-      {Object.entries(features).map(([feature, settings], index) => (
-        <div
-          key={feature}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === Object.keys(features).length - 1
-              ? "rounded-b-xl"
-              : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300 hover:bg-white/5 ${
-            selectedFeature === feature
-              ? "bg-white/10 light:bg-theme-bg-sidebar  "
-              : ""
-          }`}
-          onClick={() => {
-            if (settings?.href) window.location.replace(settings.href);
-            else handleClick?.(feature);
-          }}
-        >
-          <div className="text-sm font-light">{settings.title}</div>
-          <div className="flex items-center gap-x-2">
-            {settings.autoEnabled ? (
-              <>
-                <div className="text-sm text-theme-text-secondary font-medium">
-                  On
-                </div>
-                <div className="w-[14px]" />
-              </>
-            ) : (
-              <>
-                <div className="text-sm text-theme-text-secondary font-medium">
-                  {activeFeatures.includes(settings.key) ? "On" : "Off"}
-                </div>
-                <CaretRight
-                  size={14}
-                  weight="bold"
-                  className="text-theme-text-secondary"
-                />
-              </>
-            )}
-          </div>
-        </div>
-      ))}
+      <div className="text-sm font-light">{feature.title}</div>
+      <div className="flex items-center gap-x-2">
+        {feature.autoEnabled ? (
+          <>
+            <div className="text-sm text-theme-text-secondary font-medium">
+              On
+            </div>
+            <div className="w-[14px]" />
+          </>
+        ) : (
+          <>
+            <div className="text-sm text-theme-text-secondary font-medium">
+              {isActive ? "On" : "Off"}
+            </div>
+            <CaretRight
+              size={14}
+              weight="bold"
+              className="text-theme-text-secondary"
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

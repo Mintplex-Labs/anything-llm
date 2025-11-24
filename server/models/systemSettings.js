@@ -109,6 +109,7 @@ const SystemSettings = {
         if (
           ![
             "google-search-engine",
+            "serpapi",
             "searchapi",
             "serper-dot-dev",
             "bing-search",
@@ -279,6 +280,8 @@ const SystemSettings = {
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
       AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSerpApiKey: !!process.env.AGENT_SERPAPI_API_KEY || null,
+      AgentSerpApiEngine: process.env.AGENT_SERPAPI_ENGINE || "google",
       AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
       AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
@@ -481,6 +484,7 @@ const SystemSettings = {
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
       AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+      AnthropicCacheControl: process.env.ANTHROPIC_CACHE_CONTROL || "none",
 
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
@@ -491,7 +495,7 @@ const SystemSettings = {
 
       // LMStudio Keys
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || null,
       LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
 
       // LocalAI Keys
@@ -504,7 +508,7 @@ const SystemSettings = {
       OllamaLLMAuthToken: !!process.env.OLLAMA_AUTH_TOKEN,
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
-      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT || null,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
@@ -572,11 +576,17 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      // Foundry Keys
+      FoundryBasePath: process.env.FOUNDRY_BASE_PATH,
+      FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
+      FoundryModelTokenLimit: process.env.FOUNDRY_MODEL_TOKEN_LIMIT,
+
       AwsBedrockLLMConnectionMethod:
         process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
       AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
       AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+      AwsBedrockLLMAPIKey: !!process.env.AWS_BEDROCK_LLM_API_KEY,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
@@ -619,6 +629,10 @@ const SystemSettings = {
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
       CometApiLLMTimeout: process.env.COMETAPI_LLM_TIMEOUT_MS,
+
+      // Z.AI Keys
+      ZAiApiKey: !!process.env.ZAI_API_KEY,
+      ZAiModelPref: process.env.ZAI_MODEL_PREF,
     };
   },
 

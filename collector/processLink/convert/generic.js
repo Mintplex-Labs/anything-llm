@@ -5,6 +5,14 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const {
+  returnResult,
+  determineContentType,
+  processAsFile,
+} = require("../helpers");
+const {
+  loadYouTubeTranscript,
+} = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
@@ -12,45 +20,66 @@ const RuntimeSettings = require("../../utils/runtimeSettings");
  * @param {Object} config - The configuration object
  * @param {string} config.link - The URL to scrape
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
- * @param {boolean} config.processAsDocument - Whether to process the content as a document or return the content directly. Default is true
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
  * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
+ * @param {boolean} config.saveAsDocument - Whether to save the content as a document. Default is true
  * @returns {Promise<Object>} - The content of the page
  */
 async function scrapeGenericUrl({
   link,
   captureAs = "text",
-  processAsDocument = true,
   scraperHeaders = {},
   metadata = {},
+  saveAsDocument = true,
 }) {
-  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+  /** @type {'web' | 'file' | 'youtube'} */
+  console.log(`-- Working URL ${link} => (captureAs: ${captureAs}) --`);
+  let { contentType, processVia } = await determineContentType(link);
+  console.log(`-- URL determined to be ${contentType} (${processVia}) --`);
+
+  /**
+   * When the content is a file or a YouTube video, we can use the existing processing functions
+   * These are self-contained and will return the correct response based on the saveAsDocument flag already
+   * so we can return the content immediately.
+   */
+  if (processVia === "file")
+    return await processAsFile({ uri: link, saveAsDocument });
+  else if (processVia === "youtube")
+    return await loadYouTubeTranscript(
+      { url: link },
+      { parseOnly: saveAsDocument === false }
+    );
+
+  // Otherwise, assume the content is a webpage and scrape the content from the webpage
   const content = await getPageContent({
     link,
     captureAs,
     headers: scraperHeaders,
   });
-
-  if (!content.length) {
+  if (!content || !content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
-    return {
+    return returnResult({
       success: false,
       reason: `No URL content found at ${link}.`,
       documents: [],
-    };
+      content: null,
+      saveAsDocument,
+    });
   }
 
-  if (!processAsDocument) {
-    return {
+  // If the captureAs is text, return the content as a string immediately
+  // so that we dont save the content as a document
+  if (!saveAsDocument)
+    return returnResult({
       success: true,
       content,
-    };
-  }
+      saveAsDocument,
+    });
 
+  // Save the content as a document from the URL
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
   const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
-
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",

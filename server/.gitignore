@@ -1,6 +1,7 @@
 .env.production
 .env.development
 .env.test
+server/.env
 storage/assets/*
 !storage/assets/anything-llm.png
 storage/documents/*

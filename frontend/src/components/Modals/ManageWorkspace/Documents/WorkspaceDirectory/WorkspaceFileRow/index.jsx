@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import {
-  formatDate,
+  formatDateTimeAsMoment,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
@@ -70,8 +70,8 @@ export default function WorkspaceFileRow({
         data-tooltip-id="ws-directory-item"
         data-tooltip-content={JSON.stringify({
           title: item.title,
-          date: formatDate(item?.published),
-          extension: getFileExtension(item.url).toUpperCase(),
+          date: formatDateTimeAsMoment(item?.published),
+          extension: getFileExtension(item.url),
         })}
       >
         <div className="shrink-0 w-3 h-3">

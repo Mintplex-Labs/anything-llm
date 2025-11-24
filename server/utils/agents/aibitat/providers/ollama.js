@@ -1,6 +1,7 @@
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
@@ -37,6 +38,18 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  get performanceMode() {
+    return process.env.OLLAMA_PERFORMANCE_MODE || "base";
+  }
+
+  get queryOptions() {
+    return {
+      ...(this.performanceMode === "base"
+        ? {}
+        : { num_ctx: OllamaAILLM.promptWindowLimit(this.model) }),
+    };
+  }
+
   /**
    * Handle a chat completion with tool calling
    *
@@ -44,18 +57,22 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
+    await OllamaAILLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
       messages,
+      options: this.queryOptions,
     });
     return response?.message?.content || null;
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
       messages,
       stream: true,
+      options: this.queryOptions,
     });
   }
 
@@ -71,7 +88,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     if (history[history.length - 1].role !== "user") return null;
 
     const msgUUID = v4();
+    let token = "";
     let textResponse = "";
+    let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
 
@@ -82,17 +101,32 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     for await (const chunk of stream) {
-      if (
-        !chunk.hasOwnProperty("message") ||
-        !chunk.message.hasOwnProperty("content")
-      )
-        continue;
+      if (!chunk.hasOwnProperty("message")) continue;
 
-      textResponse += chunk.message.content;
+      const content = chunk.message?.content;
+      const reasoningToken = chunk.message?.thinking;
+      if (reasoningToken) {
+        if (reasoningText.length === 0) {
+          reasoningText = `Thinking:\n\n${reasoningToken}`;
+          token = reasoningText;
+        } else {
+          reasoningText += reasoningToken;
+          token = reasoningToken;
+        }
+      } else if (content.length > 0) {
+        if (reasoningText.length > 0) {
+          token = `\n\nDone thinking.\n\n${content}`;
+          reasoningText = "";
+        } else {
+          token = content;
+        }
+        textResponse += content;
+      }
+
       eventHandler?.("reportStreamEvent", {
         type: "statusResponse",
         uuid: msgUUID,
-        content: chunk.message.content,
+        content: token,
       });
     }
 
@@ -208,23 +242,39 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         );
         const msgUUID = v4();
         completion = { content: "" };
+        let reasoningText = "";
+        let token = "";
         const stream = await this.#handleFunctionCallStream({
           messages: this.cleanMsgs(messages),
         });
 
         for await (const chunk of stream) {
-          if (
-            !chunk.hasOwnProperty("message") ||
-            !chunk.message.hasOwnProperty("content")
-          )
-            continue;
+          if (!chunk.hasOwnProperty("message")) continue;
 
-          const delta = chunk.message.content;
-          completion.content += delta;
+          const content = chunk.message?.content;
+          const reasoningToken = chunk.message?.thinking;
+          if (reasoningToken) {
+            if (reasoningText.length === 0) {
+              reasoningText = `<think>${reasoningToken}`;
+              token = `<think>${reasoningToken}`;
+            } else {
+              reasoningText += reasoningToken;
+              token = reasoningToken;
+            }
+          } else if (content.length > 0) {
+            if (reasoningText.length > 0) {
+              token = `</think>${content}`;
+              reasoningText = "";
+            } else {
+              token = content;
+            }
+          }
+
+          completion.content += token;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
             uuid: msgUUID,
-            content: delta,
+            content: token,
           });
         }
       }
