@@ -29,10 +29,11 @@ export default function usePromptInputStorage({
   setPromptInput,
 }) {
   const { threadSlug = null, slug: workspaceSlug } = useParams();
-  // Get the user prompt input value from localStorage
   useEffect(() => {
+    // Get the user prompt input map from localStorage
     let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
 
+    // Attempt to deserialize the prompt input map
     try {
       promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
     } catch (error) {
@@ -49,16 +50,18 @@ export default function usePromptInputStorage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Set the user prompt input value to localStorage
+  // Set the user prompt input map to localStorage
   useEffect(() => {
     let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
 
+    // Attempt to deserialize the prompt input map
     try {
       promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
     } catch (error) {
       promptInputMap = {};
     }
 
+    // Set the user prompt input value to the prompt input map by the thread slug or workspace slug (if in the default thread)
     promptInputMap[threadSlug ?? workspaceSlug] = promptInput;
     localStorage.setItem(USER_PROMPT_INPUT_MAP, JSON.stringify(promptInputMap));
   }, [promptInput, threadSlug, workspaceSlug]);
