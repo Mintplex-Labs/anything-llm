@@ -920,6 +920,7 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "openrouter",
   ];
   return supported.includes(input)
     ? null

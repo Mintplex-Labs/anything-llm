@@ -1,4 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+const {
+  fetchOpenRouterEmbeddingModels,
+} = require("../EmbeddingEngines/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
@@ -42,6 +45,7 @@ const SUPPORT_CUSTOM_MODELS = [
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
+  "openrouter-embedder",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -107,6 +111,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNativeEmbedderModels();
     case "cohere-embedder":
       return await getCohereModels(apiKey, "embed");
+    case "openrouter-embedder":
+      return await getOpenRouterEmbeddingModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -821,6 +827,21 @@ async function getZAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.ZAI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getOpenRouterEmbeddingModels() {
+  const knownModels = await fetchOpenRouterEmbeddingModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
   return { models, error: null };
 }
 
