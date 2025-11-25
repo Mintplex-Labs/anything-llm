@@ -232,6 +232,7 @@ const SystemSettings = {
           : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
