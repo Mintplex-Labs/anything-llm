@@ -1,13 +1,20 @@
+const fs = require("fs");
+const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
-const { MODEL_MAP } = require("../modelMap");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const cacheFolder = path.resolve(
+  process.env.STORAGE_DIR
+    ? path.resolve(process.env.STORAGE_DIR, "models", "giteeai")
+    : path.resolve(__dirname, `../../../storage/models/giteeai`)
+);
+const { safeJsonParse, toValidNumber } = require("../../http");
 
 class GiteeAILLM {
   constructor(embedder = null, modelPreference = null) {
@@ -28,11 +35,45 @@ class GiteeAILLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
     this.log("Initialized with model:", this.model);
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
+  // from the current date. If it is, then we will refetch the API so that all the models are up
+  // to date.
+  #cacheIsStale() {
+    const MAX_STALE = 6.048e8; // 1 Week in MS
+    if (!fs.existsSync(this.cacheAtPath)) return true;
+    const now = Number(new Date());
+    const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
+    return now - timestampMs > MAX_STALE;
+  }
+
+  // This function fetches the models from the GiteeAI API and caches them locally.
+  async #syncModels() {
+    if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
+      return false;
+
+    this.log("Model cache is not present or stale. Fetching from GiteeAI API.");
+    await giteeAiModels();
+    return;
+  }
+
+  models() {
+    if (!fs.existsSync(this.cacheModelPath)) return {};
+    return safeJsonParse(
+      fs.readFileSync(this.cacheModelPath, { encoding: "utf-8" }),
+      {}
+    );
   }
 
   #appendContext(contextTexts = []) {
@@ -51,16 +92,12 @@ class GiteeAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName) {
-    // return MODEL_MAP.giteeai[modelName] ?? 8192;
-    // TODO using external API data and caching it
-    return 8192;
+  static promptWindowLimit(_model) {
+    return toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT, 8192);
   }
 
   promptWindowLimit() {
-    // return MODEL_MAP.giteeai[this.model] ?? 8192;
-    // TODO using external API data and caching it
-    return 8192;
+    return toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT, 8192);
   }
 
   async isValidChatCompletionModel(modelName = "") {
@@ -308,6 +345,55 @@ class GiteeAILLM {
   }
 }
 
+async function giteeAiModels() {
+  const url = new URL("https://ai.gitee.com/v1/models");
+  url.searchParams.set("type", "text2text");
+  return await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.GITEE_AI_API_KEY}`,
+    },
+  })
+    .then((res) => res.json())
+    .then(({ data = [] }) => data)
+    .then((models = []) => {
+      const validModels = {};
+      models.forEach(
+        (model) =>
+          (validModels[model.id] = {
+            id: model.id,
+            name: model.id,
+            organization: model.owned_by,
+          })
+      );
+      // Cache all response information
+      if (!fs.existsSync(cacheFolder))
+        fs.mkdirSync(cacheFolder, { recursive: true });
+      fs.writeFileSync(
+        path.resolve(cacheFolder, "models.json"),
+        JSON.stringify(validModels),
+        {
+          encoding: "utf-8",
+        }
+      );
+      fs.writeFileSync(
+        path.resolve(cacheFolder, ".cached_at"),
+        String(Number(new Date())),
+        {
+          encoding: "utf-8",
+        }
+      );
+
+      return validModels;
+    })
+    .catch((e) => {
+      console.error(e);
+      return {};
+    });
+}
+
 module.exports = {
   GiteeAILLM,
+  giteeAiModels,
 };

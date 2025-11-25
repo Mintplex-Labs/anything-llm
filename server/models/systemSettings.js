@@ -610,10 +610,6 @@ const SystemSettings = {
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
 
-      // GiteeAI API Keys
-      GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
-      GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
-
       // APIPie LLM API Keys
       ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
       ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
@@ -645,6 +641,11 @@ const SystemSettings = {
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,
       ZAiModelPref: process.env.ZAI_MODEL_PREF,
+
+      // GiteeAI API Keys
+      GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
+      GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
+      GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 

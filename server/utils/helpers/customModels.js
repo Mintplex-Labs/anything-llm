@@ -599,28 +599,17 @@ async function getDeepSeekModels(apiKey = null) {
   return { models, error: null };
 }
 
-async function getGiteeAIModels(apiKey = null) {
-  const { OpenAI: OpenAIApi } = require("openai");
-  const openai = new OpenAIApi({
-    apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://ai.gitee.com/v1",
+async function getGiteeAIModels() {
+  const { giteeAiModels } = require("../AiProviders/giteeai");
+  const modelMap = await giteeAiModels();
+  if (!Object.keys(modelMap).length === 0) return { models: [], error: null };
+  const models = Object.values(modelMap).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization ?? "GiteeAI",
+      name: model.id,
+    };
   });
-  const models = await openai.models
-    .list()
-    .then((results) => results.data)
-    .then((models) =>
-      models.map((model) => ({
-        id: model.id,
-        name: model.id,
-        organization: model.owned_by,
-      }))
-    )
-    .catch((e) => {
-      console.error(`GiteeAI:listModels`, e.message);
-      return [];
-    });
-
-  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
   return { models, error: null };
 }
 
