@@ -3,7 +3,7 @@ import {
   AUTH_TIMESTAMP,
   AUTH_TOKEN,
   AUTH_USER,
-  USER_PROMPT_INPUT_VALUE,
+  USER_PROMPT_INPUT_MAP,
 } from "@/utils/constants";
 
 export const AuthContext = createContext(null);
@@ -25,7 +25,7 @@ export function AuthProvider(props) {
       localStorage.removeItem(AUTH_USER);
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(AUTH_TIMESTAMP);
-      localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
+      localStorage.removeItem(USER_PROMPT_INPUT_MAP);
       setStore({ user: null, authToken: null });
     },
   });

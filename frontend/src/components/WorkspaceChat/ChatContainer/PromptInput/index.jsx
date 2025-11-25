@@ -24,7 +24,7 @@ import {
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
-import { USER_PROMPT_INPUT_VALUE } from "@/utils/constants";
+import usePromptInputStorage from "@/hooks/usePromptInputStorage";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -49,21 +49,12 @@ export default function PromptInput({
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
 
-  // Get the user prompt input value from localStorage
-  useEffect(() => {
-    const userPromptInputValue = localStorage.getItem(USER_PROMPT_INPUT_VALUE);
-    if (userPromptInputValue) {
-      setPromptInput(userPromptInputValue);
-      // Notify parent component so message state is synchronized
-      onChange({ target: { value: userPromptInputValue } });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Set the user prompt input value to localStorage
-  useEffect(() => {
-    localStorage.setItem(USER_PROMPT_INPUT_VALUE, promptInput);
-  }, [promptInput]);
+  // Synchronizes prompt input value with localStorage, scoped to the current thread.
+  usePromptInputStorage({
+    onChange,
+    promptInput,
+    setPromptInput,
+  });
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
