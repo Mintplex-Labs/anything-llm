@@ -641,6 +641,11 @@ const SystemSettings = {
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,
       ZAiModelPref: process.env.ZAI_MODEL_PREF,
+
+      // GiteeAI API Keys
+      GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
+      GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
+      GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 

@@ -42,6 +42,7 @@ import DPAISLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
@@ -278,6 +279,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the machine running Foundry Local",
     ],
     logo: FoundryLogo,
+  },
+  giteeai: {
+    name: "GiteeAI",
+    description: [
+      "Your model and chat contents are visible to GiteeAI in accordance with their terms of service.",
+    ],
+    logo: GiteeAILogo,
   },
 };
 

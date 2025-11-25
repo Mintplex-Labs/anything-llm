@@ -42,6 +42,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "foundry",
   "cohere",
   "zai",
+  "giteeai",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -113,6 +114,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getCohereModels(apiKey, "embed");
     case "openrouter-embedder":
       return await getOpenRouterEmbeddingModels();
+    case "giteeai":
+      return await getGiteeAIModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -593,6 +596,20 @@ async function getDeepSeekModels(apiKey = null) {
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getGiteeAIModels() {
+  const { giteeAiModels } = require("../AiProviders/giteeai");
+  const modelMap = await giteeAiModels();
+  if (!Object.keys(modelMap).length === 0) return { models: [], error: null };
+  const models = Object.values(modelMap).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization ?? "GiteeAI",
+      name: model.id,
+    };
+  });
   return { models, error: null };
 }
 
