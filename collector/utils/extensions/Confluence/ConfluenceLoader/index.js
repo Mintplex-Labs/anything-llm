@@ -68,14 +68,9 @@ class ConfluencePagesLoader {
       const authHeader = this.authorizationHeader;
       if (authHeader) initialHeaders.Authorization = authHeader;
 
-      // Configure fetch options with SSL bypass if enabled
-      const fetchOptions = {
-        headers: initialHeaders,
-      };
-
       // If SSL bypass is enabled, set the NODE_TLS_REJECT_UNAUTHORIZED environment variable
       if (this.bypassSSL) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-      const response = await fetch(url, fetchOptions);
+      const response = await fetch(url, { headers: initialHeaders });
       if (!response.ok) {
         throw new Error(
           `Failed to fetch ${url} from Confluence: ${response.status}`
