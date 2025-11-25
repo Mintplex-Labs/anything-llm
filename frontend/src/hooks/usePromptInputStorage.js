@@ -2,6 +2,7 @@ import { USER_PROMPT_INPUT_MAP } from "@/utils/constants";
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { safeJsonParse } from "@/utils/request";
 
 /**
  * Synchronizes prompt input value with localStorage, scoped to the current thread.
@@ -31,17 +32,11 @@ export default function usePromptInputStorage({
 }) {
   const { threadSlug = null, slug: workspaceSlug } = useParams();
   useEffect(() => {
-    // Get the user prompt input map from localStorage
-    let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
+    const serializedPromptInputMap =
+      localStorage.getItem(USER_PROMPT_INPUT_MAP) || "{}";
 
-    // Attempt to deserialize the prompt input map
-    try {
-      promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
-    } catch (error) {
-      promptInputMap = {};
-    }
+    const promptInputMap = safeJsonParse(serializedPromptInputMap, {});
 
-    // If there is a thread slug, use it, otherwise the user is probably in the default thread and use the workspace slug
     const userPromptInputValue = promptInputMap[threadSlug ?? workspaceSlug];
     if (userPromptInputValue) {
       setPromptInput(userPromptInputValue);
@@ -51,20 +46,12 @@ export default function usePromptInputStorage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Set the user prompt input map to localStorage (debounced by 300ms)
   const debouncedWriteToStorage = useMemo(
     () =>
       debounce((value, slug) => {
-        let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
-
-        // Attempt to deserialize the prompt input map
-        try {
-          promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
-        } catch (error) {
-          promptInputMap = {};
-        }
-
-        // Set the user prompt input value to the prompt input map by the thread slug or workspace slug (if in the default thread)
+        const serializedPromptInputMap =
+          localStorage.getItem(USER_PROMPT_INPUT_MAP) || "{}";
+        const promptInputMap = safeJsonParse(serializedPromptInputMap, {});
         promptInputMap[slug] = value;
         localStorage.setItem(
           USER_PROMPT_INPUT_MAP,
