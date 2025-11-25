@@ -1,6 +1,7 @@
 import { USER_PROMPT_INPUT_MAP } from "@/utils/constants";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import debounce from "lodash.debounce";
 
 /**
  * Synchronizes prompt input value with localStorage, scoped to the current thread.
@@ -50,19 +51,35 @@ export default function usePromptInputStorage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Set the user prompt input map to localStorage
+  // Set the user prompt input map to localStorage (debounced by 300ms)
+  const debouncedWriteToStorage = useMemo(
+    () =>
+      debounce((value, slug) => {
+        let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
+
+        // Attempt to deserialize the prompt input map
+        try {
+          promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
+        } catch (error) {
+          promptInputMap = {};
+        }
+
+        // Set the user prompt input value to the prompt input map by the thread slug or workspace slug (if in the default thread)
+        promptInputMap[slug] = value;
+        localStorage.setItem(
+          USER_PROMPT_INPUT_MAP,
+          JSON.stringify(promptInputMap)
+        );
+      }, 500),
+    []
+  );
+
   useEffect(() => {
-    let promptInputMap = localStorage.getItem(USER_PROMPT_INPUT_MAP);
+    debouncedWriteToStorage(promptInput, threadSlug ?? workspaceSlug);
 
-    // Attempt to deserialize the prompt input map
-    try {
-      promptInputMap = promptInputMap ? JSON.parse(promptInputMap) : {};
-    } catch (error) {
-      promptInputMap = {};
-    }
-
-    // Set the user prompt input value to the prompt input map by the thread slug or workspace slug (if in the default thread)
-    promptInputMap[threadSlug ?? workspaceSlug] = promptInput;
-    localStorage.setItem(USER_PROMPT_INPUT_MAP, JSON.stringify(promptInputMap));
-  }, [promptInput, threadSlug, workspaceSlug]);
+    // Cleanup: cancel pending debounced calls on unmount or when dependencies change
+    return () => {
+      debouncedWriteToStorage.cancel();
+    };
+  }, [promptInput, threadSlug, workspaceSlug, debouncedWriteToStorage]);
 }
