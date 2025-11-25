@@ -35,9 +35,7 @@ class OpenRouterEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
-    // we concurrently execute each max batch of text chunks possible.
-    // Refer to constructor maxConcurrentChunks for more info.
+    this.log(`Embedding ${textChunks.length} document chunks...`);
     const embeddingRequests = [];
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(

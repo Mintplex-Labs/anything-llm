@@ -403,6 +403,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: LMStudioLogo,
   },
+  openrouter: {
+    name: "OpenRouter",
+    description: [
+      "Your document text is sent to OpenRouter's servers for processing",
+      "Your document text is stored or managed according to the terms of service of OpenRouter API Terms of Service",
+    ],
+    logo: OpenRouterLogo,
+  },
   cohere: {
     name: "Cohere",
     description: [
