@@ -39,7 +39,6 @@ export default function usePromptInputStorage({
       promptInputMap = {};
     }
 
-    console.log("promptInputMap", promptInputMap);
     // If there is a thread slug, use it, otherwise the user is probably in the default thread and use the workspace slug
     const userPromptInputValue = promptInputMap[threadSlug ?? workspaceSlug];
     if (userPromptInputValue) {
