@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import { CaretDown, CaretUp } from "@phosphor-icons/react";
 
 export default function AnthropicAiOptions({ settings }) {
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
   const [inputValue, setInputValue] = useState(settings?.AnthropicApiKey);
   const [anthropicApiKey, setAnthropicApiKey] = useState(
     settings?.AnthropicApiKey
@@ -27,13 +29,62 @@ export default function AnthropicAiOptions({ settings }) {
             onBlur={() => setAnthropicApiKey(inputValue)}
           />
         </div>
-
         {!settings?.credentialsOnly && (
           <AnthropicModelSelection
             apiKey={anthropicApiKey}
             settings={settings}
           />
         )}
+      </div>
+      <div className="flex justify-start mt-4">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowAdvancedControls(!showAdvancedControls);
+          }}
+          className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
+        >
+          {showAdvancedControls ? "Hide" : "Show"} advanced settings
+          {showAdvancedControls ? (
+            <CaretUp size={14} className="ml-1" />
+          ) : (
+            <CaretDown size={14} className="ml-1" />
+          )}
+        </button>
+      </div>
+      <div hidden={!showAdvancedControls}>
+        <div className="w-full flex items-start gap-4 mt-1.5">
+          <div className="flex flex-col w-60">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-white text-sm font-semibold">
+                Prompt Caching
+              </label>
+            </div>
+            <select
+              name="AnthropicCacheControl"
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            >
+              <option
+                value="none"
+                selected={settings?.AnthropicCacheControl === "none"}
+              >
+                No caching
+              </option>
+              <option
+                value="5m"
+                selected={settings?.AnthropicCacheControl === "5m"}
+              >
+                5 minutes
+              </option>
+              <option
+                value="1h"
+                selected={settings?.AnthropicCacheControl === "1h"}
+              >
+                1 hour
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   );

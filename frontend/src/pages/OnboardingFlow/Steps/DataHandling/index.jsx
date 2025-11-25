@@ -25,6 +25,7 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -231,6 +232,15 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: XAILogo,
   },
+  zai: {
+    name: "Z.AI",
+    description: [
+      "Your content is processed in real-time and not stored on Z.AI servers",
+      "Your prompts and document text are visible to Z.AI during processing",
+      "Data is processed in accordance with Z.AI's API Services terms",
+    ],
+    logo: ZAiLogo,
+  },
   ppio: {
     name: "PPIO",
     description: [
@@ -392,6 +402,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LMStudio",
     ],
     logo: LMStudioLogo,
+  },
+  openrouter: {
+    name: "OpenRouter",
+    description: [
+      "Your document text is sent to OpenRouter's servers for processing",
+      "Your document text is stored or managed according to the terms of service of OpenRouter API Terms of Service",
+    ],
+    logo: OpenRouterLogo,
   },
   cohere: {
     name: "Cohere",
