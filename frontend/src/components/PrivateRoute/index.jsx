@@ -3,12 +3,7 @@ import { Navigate } from "react-router-dom";
 import { FullScreenLoader } from "../Preloader";
 import validateSessionTokenForUser from "@/utils/session";
 import paths from "@/utils/paths";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-  USER_PROMPT_INPUT_VALUE,
-} from "@/utils/constants";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
@@ -75,7 +70,6 @@ function useIsAuthenticated() {
         localStorage.removeItem(AUTH_USER);
         localStorage.removeItem(AUTH_TOKEN);
         localStorage.removeItem(AUTH_TIMESTAMP);
-        localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
         setIsAuthed(false);
         return;
       }

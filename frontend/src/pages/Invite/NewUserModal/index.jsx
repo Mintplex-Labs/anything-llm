@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import Invite from "@/models/invite";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
-import {
-  AUTH_TOKEN,
-  AUTH_USER,
-  USER_PROMPT_INPUT_VALUE,
-} from "@/utils/constants";
+import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import System from "@/models/system";
 
 export default function NewUserModal() {
@@ -23,8 +19,6 @@ export default function NewUserModal() {
     if (success) {
       const { valid, user, token, message } = await System.requestToken(data);
       if (valid && !!token && !!user) {
-        // Clear prompt input in multi-user mode so new user doesn't see previous user's input
-        window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
         window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
         window.localStorage.setItem(AUTH_TOKEN, token);
         window.location = paths.home();

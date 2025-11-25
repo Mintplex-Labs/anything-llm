@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import System from "../../../models/system";
-import {
-  AUTH_TOKEN,
-  AUTH_USER,
-  USER_PROMPT_INPUT_VALUE,
-} from "../../../utils/constants";
+import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
 import paths from "../../../utils/paths";
 import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -204,8 +200,6 @@ export default function MultiUserAuth() {
         setRecoveryCodes(recoveryCodes);
         openRecoveryCodeModal();
       } else {
-        // Clear prompt input in multi-user mode so new user doesn't see previous user's input
-        window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
         window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
         window.localStorage.setItem(AUTH_TOKEN, token);
         window.location = paths.home();
@@ -258,8 +252,6 @@ export default function MultiUserAuth() {
 
   useEffect(() => {
     if (downloadComplete && user && token) {
-      // Clear prompt input in multi-user mode so new user doesn't see previous user's input
-      window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
       window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
       window.localStorage.setItem(AUTH_TOKEN, token);
       window.location = paths.home();

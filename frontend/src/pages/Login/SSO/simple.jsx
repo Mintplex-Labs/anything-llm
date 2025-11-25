@@ -3,12 +3,7 @@ import { FullScreenLoader } from "@/components/Preloader";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-  USER_PROMPT_INPUT_VALUE,
-} from "@/utils/constants";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
 export default function SimpleSSOPassthrough() {
   const query = useQuery();
@@ -24,7 +19,6 @@ export default function SimpleSSOPassthrough() {
       window.localStorage.removeItem(AUTH_USER);
       window.localStorage.removeItem(AUTH_TOKEN);
       window.localStorage.removeItem(AUTH_TIMESTAMP);
-      window.localStorage.removeItem(USER_PROMPT_INPUT_VALUE);
 
       System.simpleSSOLogin(query.get("token"))
         .then((res) => {
