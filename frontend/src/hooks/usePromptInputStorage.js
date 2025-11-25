@@ -64,7 +64,6 @@ export default function usePromptInputStorage({
   useEffect(() => {
     debouncedWriteToStorage(promptInput, threadSlug ?? workspaceSlug);
 
-    // Cleanup: cancel pending debounced calls on unmount or when dependencies change
     return () => {
       debouncedWriteToStorage.cancel();
     };
