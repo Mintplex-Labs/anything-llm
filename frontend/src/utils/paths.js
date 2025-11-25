@@ -120,6 +120,9 @@ export default {
     audioPreference: () => {
       return "/settings/audio-preference";
     },
+    defaultSystemPrompt: () => {
+      return "/settings/default-system-prompt";
+    },
     embedder: {
       modelPreference: () => "/settings/embedding-preference",
       chunkingPreference: () => "/settings/text-splitter-preference",
@@ -213,6 +216,9 @@ export default {
 
   // TODO: Migrate all docs.anythingllm.com links to the new docs.
   documentation: {
+    mobileIntroduction: () => {
+      return "https://docs.anythingllm.com/mobile/overview";
+    },
     contextWindows: () => {
       return "https://docs.anythingllm.com/chatting-with-documents/introduction#you-exceed-the-context-window---what-now";
     },

@@ -106,7 +106,7 @@ const WorkspaceParsedFiles = {
       if (!location) throw new Error("No file location in metadata");
 
       // Get file from metadata location
-      const sourceFile = path.join(directUploadsPath, location.split("/")[1]);
+      const sourceFile = path.join(directUploadsPath, path.basename(location));
       if (!fs.existsSync(sourceFile)) throw new Error("Source file not found");
 
       // Move to custom-documents
@@ -115,7 +115,7 @@ const WorkspaceParsedFiles = {
         fs.mkdirSync(customDocsPath, { recursive: true });
 
       // Copy the file to custom-documents
-      const targetPath = path.join(customDocsPath, location.split("/")[1]);
+      const targetPath = path.join(customDocsPath, path.basename(location));
       fs.copyFileSync(sourceFile, targetPath);
       fs.unlinkSync(sourceFile);
 
@@ -125,7 +125,7 @@ const WorkspaceParsedFiles = {
         embedded = [],
       } = await Document.addDocuments(
         workspace,
-        [`custom-documents/${location.split("/")[1]}`],
+        [`custom-documents/${path.basename(location)}`],
         parsedFile.userId
       );
 
@@ -202,7 +202,10 @@ const WorkspaceParsedFiles = {
         const location = metadata.location;
         if (!location) continue;
 
-        const sourceFile = path.join(directUploadsPath, location.split("/")[1]);
+        const sourceFile = path.join(
+          directUploadsPath,
+          path.basename(location)
+        );
         if (!fs.existsSync(sourceFile)) continue;
 
         const content = fs.readFileSync(sourceFile, "utf-8");

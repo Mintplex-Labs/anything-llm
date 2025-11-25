@@ -1,4 +1,5 @@
 const { EncryptionManager } = require("../EncryptionManager");
+const { Agent } = require("undici");
 
 /**
  * @typedef {Object} CollectorOptions
@@ -14,6 +15,14 @@ const { EncryptionManager } = require("../EncryptionManager");
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
 class CollectorApi {
+  /** @type {number} - The maximum timeout for extension requests in milliseconds */
+  extensionRequestTimeout = 15 * 60_000; // 15 minutes
+  /** @type {Agent} - The agent for extension requests */
+  extensionRequestAgent = new Agent({
+    headersTimeout: this.extensionRequestTimeout,
+    bodyTimeout: this.extensionRequestTimeout,
+  });
+
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
@@ -38,6 +47,7 @@ class CollectorApi {
       },
       runtimeSettings: {
         allowAnyIp: process.env.COLLECTOR_ALLOW_ANY_IP ?? "false",
+        browserLaunchArgs: process.env.ANYTHINGLLM_CHROMIUM_ARGS ?? [],
       },
     };
   }
@@ -63,15 +73,17 @@ class CollectorApi {
 
   /**
    * Process a document
-   * - Will append the options to the request body
+   * - Will append the options and optional metadata to the request body
    * @param {string} filename - The filename of the document to process
+   * @param {Object} metadata - Optional metadata key:value pairs
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processDocument(filename = "") {
+  async processDocument(filename = "", metadata = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
+      metadata,
       options: this.#attachOptions(),
     });
 
@@ -85,6 +97,7 @@ class CollectorApi {
         ),
       },
       body: data,
+      dispatcher: new Agent({ headersTimeout: 600000 }),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
@@ -102,15 +115,17 @@ class CollectorApi {
    * - Will append the options to the request body
    * @param {string} link - The link to process
    * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply to the web-scraping request URL
+   * @param {[key: string]: string} metadata - Optional metadata to attach to the document
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processLink(link = "", scraperHeaders = {}) {
+  async processLink(link = "", scraperHeaders = {}, metadata = {}) {
     if (!link) return false;
 
     const data = JSON.stringify({
       link,
       scraperHeaders,
       options: this.#attachOptions(),
+      metadata: metadata,
     });
 
     return await fetch(`${this.endpoint}/process-link`, {
@@ -139,7 +154,7 @@ class CollectorApi {
    * Process raw text as a document for the collector
    * - Will append the options to the request body
    * @param {string} textContent - The text to process
-   * @param {Object} metadata - The metadata to process
+   * @param {[key: string]: string} metadata - The metadata to process
    * @returns {Promise<Object>} - The response from the collector API
    */
   async processRawText(textContent = "", metadata = {}) {
@@ -174,16 +189,20 @@ class CollectorApi {
   // all requests through the server. You can use this function to directly expose a specific endpoint
   // on the document processor.
   async forwardExtensionRequest({ endpoint, method, body }) {
+    const data = typeof body === "string" ? body : JSON.stringify(body);
     return await fetch(`${this.endpoint}${endpoint}`, {
       method,
-      body, // Stringified JSON!
+      body: data,
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(body),
+        "X-Integrity": this.comkey.sign(data),
         "X-Payload-Signer": this.comkey.encrypt(
           new EncryptionManager().xPayload
         ),
       },
+      // Extensions do a lot of work, and may take a while to complete so we need to increase the timeout
+      // substantially so that they do not show a failure to the user early.
+      dispatcher: this.extensionRequestAgent,
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");

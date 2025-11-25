@@ -58,6 +58,15 @@ const KEY_MAPPING = {
     envKey: "ANTHROPIC_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  AnthropicCacheControl: {
+    envKey: "ANTHROPIC_CACHE_CONTROL",
+    checks: [
+      (input) =>
+        ["none", "5m", "1h"].includes(input)
+          ? null
+          : "Invalid cache control. Must be one of: 5m, 1h.",
+    ],
+  },
 
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
@@ -83,7 +92,7 @@ const KEY_MAPPING = {
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
 
   // LocalAI Settings
@@ -114,7 +123,7 @@ const KEY_MAPPING = {
   },
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   OllamaLLMPerformanceMode: {
     envKey: "OLLAMA_PERFORMANCE_MODE",
@@ -235,14 +244,18 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
-    checks: [isNotEmpty],
+    checks: [],
   },
   AwsBedrockLLMSessionToken: {
     envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
+  },
+  AwsBedrockLLMAPIKey: {
+    envKey: "AWS_BEDROCK_LLM_API_KEY",
     checks: [],
   },
   AwsBedrockLLMRegion: {
@@ -292,6 +305,10 @@ const KEY_MAPPING = {
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
+    checks: [nonZero],
+  },
+  OllamaEmbeddingBatchSize: {
+    envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
     checks: [nonZero],
   },
 
@@ -549,6 +566,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_GSE_KEY",
     checks: [],
   },
+  AgentSerpApiKey: {
+    envKey: "AGENT_SERPAPI_API_KEY",
+    checks: [],
+  },
+  AgentSerpApiEngine: {
+    envKey: "AGENT_SERPAPI_ENGINE",
+    checks: [],
+  },
   AgentSearchApiKey: {
     envKey: "AGENT_SEARCHAPI_API_KEY",
     checks: [],
@@ -704,6 +729,52 @@ const KEY_MAPPING = {
     envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Foundry Options
+  FoundryBasePath: {
+    envKey: "FOUNDRY_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  FoundryModelPref: {
+    envKey: "FOUNDRY_MODEL_PREF",
+    checks: [isNotEmpty],
+    postUpdate: [
+      // On new model selection, re-cache the context windows
+      async (_, prevValue, __) => {
+        const { FoundryLLM } = require("../AiProviders/foundry");
+        await FoundryLLM.unloadModelFromEngine(prevValue);
+        await FoundryLLM.cacheContextWindows(true);
+      },
+    ],
+  },
+  FoundryModelTokenLimit: {
+    envKey: "FOUNDRY_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+
+  // CometAPI Options
+  CometApiLLMApiKey: {
+    envKey: "COMETAPI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMModelPref: {
+    envKey: "COMETAPI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMTimeout: {
+    envKey: "COMETAPI_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+
+  // Z.AI Options
+  ZAiApiKey: {
+    envKey: "ZAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ZAiModelPref: {
+    envKey: "ZAI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -813,6 +884,9 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "cometapi",
+    "foundry",
+    "zai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -850,6 +924,7 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "openrouter",
   ];
   return supported.includes(input)
     ? null
@@ -1137,6 +1212,7 @@ function dumpENV() {
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
+    "SIMPLE_SSO_NO_LOGIN_REDIRECT",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
 
@@ -1151,6 +1227,12 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+
+    // Specify Chromium args for collector
+    "ANYTHINGLLM_CHROMIUM_ARGS",
+
+    // Allow setting a custom response timeout for Ollama
+    "OLLAMA_RESPONSE_TIMEOUT",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

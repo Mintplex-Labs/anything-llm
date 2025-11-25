@@ -5,6 +5,7 @@ const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { SystemPromptVariables } = require("../../models/systemPromptVariables");
 
 // This is a list of skills that are built-in and default enabled.
 const DEFAULT_SKILLS = [
@@ -15,7 +16,7 @@ const DEFAULT_SKILLS = [
 
 const USER_AGENT = {
   name: "USER",
-  getDefinition: async () => {
+  getDefinition: () => {
     return {
       interrupt: "ALWAYS",
       role: "I am the human monitor and oversee this chat. Any questions on action or decision making should be directed to me.",
@@ -25,9 +26,16 @@ const USER_AGENT = {
 
 const WORKSPACE_AGENT = {
   name: "@agent",
-  getDefinition: async (provider = null) => {
+  /**
+   * Get the definition for the workspace agent with its role (prompt) and functions in Aibitat format
+   * @param {string} provider
+   * @param {import("@prisma/client").workspaces | null} workspace
+   * @param {import("@prisma/client").users | null} user
+   * @returns {Promise<{ role: string, functions: object[] }>}
+   */
+  getDefinition: async (provider = null, workspace = null, user = null) => {
     return {
-      role: Provider.systemPrompt(provider),
+      role: await Provider.systemPrompt({ provider, workspace, user }),
       functions: [
         ...(await agentSkillsFromSystemSettings()),
         ...ImportedPlugin.activeImportedPlugins(),

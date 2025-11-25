@@ -89,7 +89,6 @@ export default function ActiveWorkspaces() {
                   key={workspace.id}
                   draggableId={workspace.id.toString()}
                   index={index}
-                  isDragDisabled={user?.role === "default"}
                 >
                   {(provided, snapshot) => (
                     <div
@@ -107,6 +106,8 @@ export default function ActiveWorkspaces() {
                               ? null
                               : paths.workspace.chat(workspace.slug)
                           }
+                          data-tooltip-id="workspace-name"
+                          data-tooltip-content={workspace.name}
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]
@@ -117,18 +118,16 @@ export default function ActiveWorkspaces() {
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
-                            {user?.role !== "default" && (
-                              <div
-                                {...provided.dragHandleProps}
-                                className="cursor-grab mr-[3px]"
-                              >
-                                <DotsSixVertical
-                                  size={20}
-                                  color="var(--theme-sidebar-item-workspace-active)"
-                                  weight="bold"
-                                />
-                              </div>
-                            )}
+                            <div
+                              {...provided.dragHandleProps}
+                              className="cursor-grab mr-[3px]"
+                            >
+                              <DotsSixVertical
+                                size={20}
+                                color="var(--theme-sidebar-item-workspace-active)"
+                                weight="bold"
+                              />
+                            </div>
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
                               <div className="w-[130px] overflow-hidden">
                                 <p

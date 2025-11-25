@@ -6,14 +6,17 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { OpenAI: OpenAIApi } = require("openai");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
+  /** @see LMStudioLLM.cacheContextWindows */
+  static modelContextWindows = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
-    const { OpenAI: OpenAIApi } = require("openai");
     this.lmstudio = new OpenAIApi({
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
       apiKey: null,
@@ -29,14 +32,77 @@ class LMStudioLLM {
       modelPreference ||
       process.env.LMSTUDIO_MODEL_PREF ||
       "Loaded from Chat UI";
+
+    this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0.7;
+
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    LMStudioLLM.cacheContextWindows(true);
+    this.#log(`initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[LMStudio]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await LMStudioLLM.cacheContextWindows();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+  }
 
-    this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
+  /**
+   * Cache the context windows for the LMStudio models.
+   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
+   *
+   * This is a convenience to ensure that the context windows are correct and that the user
+   * does not have to manually set the context window for each model.
+   * @param {boolean} force - Force the cache to be refreshed.
+   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   */
+  static async cacheContextWindows(force = false) {
+    try {
+      // Skip if we already have cached context windows and we're not forcing a refresh
+      if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
+        return;
+
+      const endpoint = new URL(
+        parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH)
+      );
+      endpoint.pathname = "/api/v0/models";
+      await fetch(endpoint.toString())
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`LMStudio:cacheContextWindows - ${res.statusText}`);
+          return res.json();
+        })
+        .then(({ data: models }) => {
+          models.forEach((model) => {
+            if (model.type === "embeddings") return;
+            LMStudioLLM.modelContextWindows[model.id] =
+              model.max_context_length;
+          });
+        })
+        .catch((e) => {
+          LMStudioLLM.#slog(`Error caching context windows`, e);
+          return;
+        });
+
+      LMStudioLLM.#slog(`Context windows cached for all models!`);
+    } catch (e) {
+      LMStudioLLM.#slog(`Error caching context windows`, e);
+      return;
+    }
   }
 
   #appendContext(contextTexts = []) {
@@ -55,20 +121,34 @@ class LMStudioLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    if (Object.keys(LMStudioLLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
+    }
+
+    let userDefinedLimit = null;
+    const systemDefinedLimit =
+      Number(this.modelContextWindows[modelName]) || 4096;
+
+    if (
+      process.env.LMSTUDIO_MODEL_TOKEN_LIMIT &&
+      !isNaN(Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT)) &&
+      Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT) > 0
+    )
+      userDefinedLimit = Number(process.env.LMSTUDIO_MODEL_TOKEN_LIMIT);
+
+    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
+    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
+    return systemDefinedLimit;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -189,6 +269,7 @@ class LMStudioLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

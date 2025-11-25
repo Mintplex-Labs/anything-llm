@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -46,7 +46,7 @@
     "check-disk-space": "^3.4.0",
     "cheerio": "^1.0.0",
     "chromadb": "^2.0.1",
-    "cohere-ai": "^7.9.5",
+    "cohere-ai": "^7.19.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "elevenlabs": "^0.5.0",

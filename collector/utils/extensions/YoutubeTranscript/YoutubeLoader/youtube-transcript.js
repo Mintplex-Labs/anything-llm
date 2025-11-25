@@ -1,3 +1,5 @@
+const { validYoutubeVideoUrl } = require("../../../url");
+
 class YoutubeTranscriptError extends Error {
   constructor(message) {
     super(`[YoutubeTranscript] ${message}`);
@@ -86,6 +88,85 @@ class YoutubeTranscript {
   }
 
   /**
+   * Calculates a preference score for a caption track to determine the best match
+   * @param {Object} track - The caption track object from YouTube
+   * @param {string} track.languageCode - ISO language code (e.g., 'zh-HK', 'en', 'es')
+   * @param {string} track.kind - Track type ('asr' for auto-generated, "" for human-transcribed)
+   * @param {string[]} preferredLanguages - Array of language codes in preference order (e.g., ['zh-HK', 'en'])
+   * @returns {number} Preference score (lower is better)
+   */
+  static #calculatePreferenceScore(track, preferredLanguages) {
+    // Language preference: index in preferredLanguages array (0 = most preferred)
+    const languagePreference = preferredLanguages.indexOf(track.languageCode);
+    const languageScore = languagePreference === -1 ? 9999 : languagePreference;
+
+    // Kind bonus: prefer human-transcribed (undefined) over auto-generated ('asr')
+    const kindBonus = track.kind === "asr" ? 0.5 : 0;
+
+    return languageScore + kindBonus;
+  }
+
+  /**
+   * Finds the most suitable caption track based on preferred languages
+   * @param {string} videoBody - The raw HTML response from YouTube
+   * @param {string[]} preferredLanguages - Array of language codes in preference order
+   * @returns {Object|null} The selected caption track or null if none found
+   */
+  static #findPreferredCaptionTrack(videoBody, preferredLanguages) {
+    const captionsConfigJson = videoBody.match(
+      /"captions":(.*?),"videoDetails":/s
+    );
+
+    const captionsConfig = captionsConfigJson?.[1]
+      ? JSON.parse(captionsConfigJson[1])
+      : null;
+
+    const captionTracks = captionsConfig
+      ? captionsConfig.playerCaptionsTracklistRenderer.captionTracks
+      : null;
+
+    if (!captionTracks || captionTracks.length === 0) {
+      return null;
+    }
+
+    const sortedTracks = [...captionTracks].sort((a, b) => {
+      const scoreA = this.#calculatePreferenceScore(a, preferredLanguages);
+      const scoreB = this.#calculatePreferenceScore(b, preferredLanguages);
+      return scoreA - scoreB;
+    });
+
+    return sortedTracks[0];
+  }
+
+  /**
+   * Fetches video page content and finds the preferred caption track
+   * @param {string} videoId - YouTube video ID
+   * @param {string[]} preferredLanguages - Array of preferred language codes
+   * @returns {Promise<Object>} The preferred caption track
+   * @throws {YoutubeTranscriptError} If no suitable caption track is found
+   */
+  static async #getPreferredCaptionTrack(videoId, preferredLanguages) {
+    const videoResponse = await fetch(
+      `https://www.youtube.com/watch?v=${videoId}`,
+      { credentials: "omit" }
+    );
+    const videoBody = await videoResponse.text();
+
+    const preferredCaptionTrack = this.#findPreferredCaptionTrack(
+      videoBody,
+      preferredLanguages
+    );
+
+    if (!preferredCaptionTrack) {
+      throw new YoutubeTranscriptError(
+        "No suitable caption track found for the video"
+      );
+    }
+
+    return preferredCaptionTrack;
+  }
+
+  /**
    * Fetch transcript from YouTube video
    * @param {string} videoId - Video URL or video identifier
    * @param {Object} config - Configuration options
@@ -93,14 +174,20 @@ class YoutubeTranscript {
    * @returns {Promise<string>} Video transcript text
    */
   static async fetchTranscript(videoId, config = {}) {
+    const preferredLanguages = config?.lang ? [config?.lang, "en"] : ["en"];
     const identifier = this.retrieveVideoId(videoId);
-    const lang = config?.lang ?? "en";
 
     try {
+      const preferredCaptionTrack = await this.#getPreferredCaptionTrack(
+        identifier,
+        preferredLanguages
+      );
+
       const innerProto = this.#getBase64Protobuf({
-        param1: "asr",
-        param2: lang,
+        param1: preferredCaptionTrack.kind || "",
+        param2: preferredCaptionTrack.languageCode,
       });
+
       const params = this.#getBase64Protobuf({
         param1: identifier,
         param2: innerProto,
@@ -144,13 +231,9 @@ class YoutubeTranscript {
    * @returns {string} YouTube video ID
    */
   static retrieveVideoId(videoId) {
-    if (videoId.length === 11) return videoId;
-
-    const RE_YOUTUBE =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const matchId = videoId.match(RE_YOUTUBE);
-
-    if (matchId?.[1]) return matchId[1];
+    if (videoId.length === 11) return videoId; // already a valid ID most likely
+    const matchedId = validYoutubeVideoUrl(videoId, true);
+    if (matchedId) return matchedId;
     throw new YoutubeTranscriptError(
       "Impossible to retrieve Youtube video ID."
     );

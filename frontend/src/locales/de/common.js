@@ -127,27 +127,6 @@ const TRANSLATIONS = {
       "back-to-login": "Zurück zur Anmeldung",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Willkommen bei AnythingLLM, AnythingLLM ist ein Open-Source-KI-Tool von Mintplex Labs, das alles in einen trainierten Chatbot verwandelt, den Sie abfragen und mit dem Sie chatten können. AnythingLLM ist eine BYOK-Software (Bring-Your-Own-Keys), daher gibt es keine Abonnements, Gebühren oder Kosten für diese Software außerhalb der Dienste, die Sie damit nutzen möchten.",
-    part2:
-      "AnythingLLM ist der einfachste Weg, leistungsstarke KI-Produkte wie OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB und andere Dienste in einem übersichtlichen Paket ohne Aufwand zusammenzufassen, um Ihre Produktivität um das 100-fache zu steigern.",
-    part3:
-      "AnythingLLM kann vollständig lokal auf Ihrem Computer mit geringem Overhead laufen - Sie werden nicht einmal bemerken, dass es da ist! Keine GPU erforderlich. Cloud- und On-Premises-Installation ist ebenfalls verfügbar.\nDas KI-Tool-Ökosystem wird jeden Tag leistungsfähiger. AnythingLLM macht es einfach, es zu nutzen.",
-    githubIssue: "Erstellen Sie ein Problem auf GitHub",
-    user1: "Wie fange ich an?!",
-    part4:
-      'Es ist einfach. Alle Sammlungen sind in Behältern organisiert, die wir "Workspaces" nennen. Workspaces sind Behälter für Dateien, Dokumente, Bilder, PDFs und andere Dateien, die in etwas umgewandelt werden, das LLMs verstehen und in Gesprächen verwenden können.\n\nSie können jederzeit Dateien hinzufügen und entfernen.',
-    createWorkspace: "Erstellen Sie Ihren ersten Workspace",
-    user2:
-      "Ist das so eine Art KI-Dropbox oder so? Was ist mit dem Chatten? Es ist doch ein Chatbot, oder?",
-    part5:
-      "AnythingLLM ist mehr als eine intelligentere Dropbox.\n\nAnythingLLM bietet zwei Möglichkeiten, mit Ihren Daten zu sprechen:\n\n<i>Abfrage:</i> Ihre Chats geben Daten oder Schlussfolgerungen zurück, die in den Dokumenten Ihres Workspaces gefunden wurden, auf die es Zugriff hat. Je mehr Dokumente Sie dem Workspace hinzufügen, desto intelligenter wird er! \n\n<i>Konversation:</i> Ihre Dokumente + Ihr laufender Chat-Verlauf tragen gleichzeitig zum LLM-Wissen bei. Großartig für das Anhängen von Echtzeit-Textinformationen oder Korrekturen und Missverständnissen, die das LLM haben könnte. \n\nSie können zwischen beiden Modi wechseln \n<i>mitten im Chatten!</i>",
-    user3: "Wow, das klingt erstaunlich, lass es mich gleich ausprobieren!",
-    part6: "Viel Spaß!",
-    starOnGitHub: "Stern auf GitHub",
-    contact: "Kontaktieren Sie Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError:
       "Bitte erstellen Sie einen Workspace, bevor Sie einen Chat beginnen.",
@@ -545,6 +524,10 @@ const TRANSLATIONS = {
           "Individualisieren Sie die Elemente in der Fußzeile am unteren Ende der Seitenleiste.",
         icon: "Icon",
         link: "Link",
+      },
+      "render-html": {
+        title: null,
+        description: null,
       },
     },
   },
@@ -1070,6 +1053,13 @@ const TRANSLATIONS = {
         "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
       "password-label": "Instanzpasswort",
     },
+  },
+  home: {
+    welcome: "Willkommen",
+    chooseWorkspace: "Wählen Sie ein Arbeitsbereich, um zu beginnen!",
+    notAssigned:
+      "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
+    goToWorkspace: 'Zurück zum Arbeitsbereich "{{workspace}}"',
   },
 };
 
