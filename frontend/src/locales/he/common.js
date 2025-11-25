@@ -758,6 +758,8 @@ const TRANSLATIONS = {
       pat_token_explained: "אסימון הגישה האישי שלך ב-Confluence.",
       task_explained:
         "לאחר השלמה, תוכן העמוד יהיה זמין להטמעה בסביבות עבודה בבורר המסמכים.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "מסמכים",

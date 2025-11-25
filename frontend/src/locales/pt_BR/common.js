@@ -764,6 +764,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Seu token pessoal de acesso.",
       task_explained:
         "Após conclusão, o conteúdo da página estará disponível para vínculo.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "Documentos",
