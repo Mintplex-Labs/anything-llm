@@ -102,7 +102,15 @@ async function loadConfluence(
       description: doc.metadata.title,
       docSource: `${origin} Confluence`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, spaceKey, accessToken, username, cloud, bypassSSL },
+        {
+          doc,
+          baseUrl: origin,
+          spaceKey,
+          accessToken,
+          username,
+          cloud,
+          bypassSSL,
+        },
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),

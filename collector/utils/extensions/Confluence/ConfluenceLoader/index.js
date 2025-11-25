@@ -25,6 +25,13 @@ class ConfluencePagesLoader {
     this.personalAccessToken = personalAccessToken;
     this.cloud = cloud;
     this.bypassSSL = bypassSSL;
+    this.log("Initialized Confluence Loader");
+    if (this.bypassSSL)
+      this.log("!!SSL bypass is enabled!! Use at your own risk!!");
+  }
+
+  log(message, ...args) {
+    console.log(`\x1b[36m[Confluence Loader]\x1b[0m ${message}`, ...args);
   }
 
   get authorizationHeader() {
@@ -47,7 +54,7 @@ class ConfluencePagesLoader {
       );
       return pages.map((page) => this.createDocumentFromPage(page));
     } catch (error) {
-      console.error("Error:", error);
+      this.log("Error:", error);
       return [];
     }
   }
@@ -59,9 +66,7 @@ class ConfluencePagesLoader {
         Accept: "application/json",
       };
       const authHeader = this.authorizationHeader;
-      if (authHeader) {
-        initialHeaders.Authorization = authHeader;
-      }
+      if (authHeader) initialHeaders.Authorization = authHeader;
 
       // Configure fetch options with SSL bypass if enabled
       const fetchOptions = {
@@ -69,17 +74,8 @@ class ConfluencePagesLoader {
       };
 
       // If SSL bypass is enabled, set the NODE_TLS_REJECT_UNAUTHORIZED environment variable
-      if (this.bypassSSL) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-      }
-
+      if (this.bypassSSL) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
       const response = await fetch(url, fetchOptions);
-
-      // Reset the environment variable after the request
-      if (this.bypassSSL) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
-      }
-
       if (!response.ok) {
         throw new Error(
           `Failed to fetch ${url} from Confluence: ${response.status}`
@@ -87,11 +83,10 @@ class ConfluencePagesLoader {
       }
       return await response.json();
     } catch (error) {
-      // Reset the environment variable in case of error
-      if (this.bypassSSL) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
-      }
-      throw new Error(`Failed to fetch ${url} from Confluence: ${error}`);
+      this.log("Error:", error);
+      throw new Error(error.message);
+    } finally {
+      if (this.bypassSSL) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
     }
   }
 

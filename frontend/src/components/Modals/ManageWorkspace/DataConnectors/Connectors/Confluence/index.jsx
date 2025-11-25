@@ -201,7 +201,7 @@ export default function ConfluenceOptions() {
                           <p className="text-sm">
                             {t("connectors.confluence.token_explained_start")}
                             <a
-                              href="https://id.atlassian.com/manage-profile/security/api-token"
+                              href="https://id.atlassian.com/manage-profile/security/api-tokens"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="underline"
