@@ -295,6 +295,8 @@ class AgentHandler {
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
+      case "giteeai":
+        return process.env.GITEE_AI_MODEL_PREF ?? null;
       default:
         return null;
     }

@@ -148,6 +148,9 @@ function getModelTag() {
     case "zai":
       model = process.env.ZAI_MODEL_PREF;
       break;
+    case "giteeai":
+      model = process.env.GITEE_AI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
