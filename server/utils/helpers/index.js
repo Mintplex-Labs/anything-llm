@@ -279,6 +279,9 @@ function getEmbeddingEngineSelection() {
     case "gemini":
       const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
       return new GeminiEmbedder();
+    case "openrouter":
+      const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
+      return new OpenRouterEmbedder();
     default:
       return new NativeEmbedder();
   }

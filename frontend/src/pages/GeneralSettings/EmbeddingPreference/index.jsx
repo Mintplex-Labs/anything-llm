@@ -15,6 +15,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -29,6 +30,7 @@ import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOption
 import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
 import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
+import OpenRouterOptions from "@/components/EmbeddingSelection/OpenRouterOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -126,6 +128,13 @@ const EMBEDDERS = [
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),
     description: "Run embedding models from any OpenAI compatible API service.",
+  },
+  {
+    name: "OpenRouter",
+    value: "openrouter",
+    logo: OpenRouterLogo,
+    options: (settings) => <OpenRouterOptions settings={settings} />,
+    description: "Run embedding models from OpenRouter.",
   },
 ];
 
