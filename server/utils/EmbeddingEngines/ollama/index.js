@@ -85,7 +85,7 @@ class OllamaEmbedder {
         // Use input param instead of prompt param to support batch processing
         const res = await this.client.embed({
           model: this.model,
-          input: batch.length === 1 ? batch[0] : batch,
+          input: batch,
           options: {
             // Always set the num_ctx to the max chunk length defined by the user in the settings
             // so that the maximum context window is used and content is not truncated.
