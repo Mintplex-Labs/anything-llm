@@ -1,5 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
-const { fetchOpenRouterEmbeddingModels } = require("../EmbeddingEngines/openRouter");
+const {
+  fetchOpenRouterEmbeddingModels,
+} = require("../EmbeddingEngines/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");

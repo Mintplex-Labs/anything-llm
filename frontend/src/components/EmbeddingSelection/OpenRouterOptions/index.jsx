@@ -29,7 +29,9 @@ export default function OpenRouterOptions({ settings }) {
 function OpenRouterEmbeddingModelSelection({ settings }) {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedModel, setSelectedModel] = useState(settings?.EmbeddingModelPref || "");
+  const [selectedModel, setSelectedModel] = useState(
+    settings?.EmbeddingModelPref || ""
+  );
 
   useEffect(() => {
     async function fetchModels() {
@@ -37,13 +39,16 @@ function OpenRouterEmbeddingModelSelection({ settings }) {
       const response = await System.customModels("openrouter-embedder");
       const fetchedModels = response?.models || [];
       setModels(fetchedModels);
-      
-      if (settings?.EmbeddingModelPref && fetchedModels.some(m => m.id === settings.EmbeddingModelPref)) {
+
+      if (
+        settings?.EmbeddingModelPref &&
+        fetchedModels.some((m) => m.id === settings.EmbeddingModelPref)
+      ) {
         setSelectedModel(settings.EmbeddingModelPref);
       } else if (fetchedModels.length > 0) {
         setSelectedModel(fetchedModels[0].id);
       }
-      
+
       setLoading(false);
     }
     fetchModels();
