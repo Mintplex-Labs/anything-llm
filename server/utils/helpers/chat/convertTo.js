@@ -4,6 +4,7 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { EmbedChats } = require("../../../models/embedChats");
 const { safeJsonParse } = require("../../http");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 async function convertToCSV(preparedData) {
   const headers = new Set(["id", "workspace", "prompt", "response", "sent_at"]);
@@ -34,6 +35,7 @@ async function convertToJSONAlpaca(preparedData) {
   return JSON.stringify(preparedData, null, 4);
 }
 
+// You can validate JSONL outputs on https://jsonlines.org/validator/
 async function convertToJSONL(workspaceChatsMap) {
   return Object.values(workspaceChatsMap)
     .map((workspaceChats) => JSON.stringify(workspaceChats))
@@ -64,12 +66,24 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
 
   if (format === "csv" || format === "json") {
     const preparedData = chats.map((chat) => {
-      const responseJson = JSON.parse(chat.response);
+      const responseJson = safeJsonParse(chat.response, {});
       const baseData = {
         id: chat.id,
         prompt: chat.prompt,
         response: responseJson.text,
         sent_at: chat.createdAt,
+        // Only add attachments to the json format since we cannot arrange attachments in csv format
+        ...(format === "json"
+          ? {
+              attachments:
+                responseJson.attachments?.length > 0
+                  ? responseJson.attachments.map((attachment) => ({
+                      type: "image",
+                      image: attachmentToDataUrl(attachment),
+                    }))
+                  : [],
+            }
+          : {}),
       };
 
       if (chatType === "embed") {
@@ -101,9 +115,10 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  // jsonAlpaca format does not support array outputs
   if (format === "jsonAlpaca") {
     const preparedData = chats.map((chat) => {
-      const responseJson = JSON.parse(chat.response);
+      const responseJson = safeJsonParse(chat.response, {});
       return {
         instruction: buildSystemPrompt(
           chat,
@@ -117,18 +132,25 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  // Export to JSONL format (recommended for fine-tuning)
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
-    const responseJson = JSON.parse(response);
+    const responseJson = safeJsonParse(response, { attachments: [] });
+    const attachments = responseJson.attachments;
 
     if (!acc[workspaceId]) {
       acc[workspaceId] = {
         messages: [
           {
             role: "system",
-            content:
-              chat.workspace?.openAiPrompt ||
-              "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+            content: [
+              {
+                type: "text",
+                text:
+                  chat.workspace?.openAiPrompt ??
+                  SystemSettings.saneDefaultSystemPrompt,
+              },
+            ],
           },
         ],
       };
@@ -137,11 +159,27 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     acc[workspaceId].messages.push(
       {
         role: "user",
-        content: prompt,
+        content: [
+          {
+            type: "text",
+            text: prompt,
+          },
+          ...(attachments?.length > 0
+            ? attachments.map((attachment) => ({
+                type: "image",
+                image: attachmentToDataUrl(attachment),
+              }))
+            : []),
+        ],
       },
       {
         role: "assistant",
-        content: responseJson.text,
+        content: [
+          {
+            type: "text",
+            text: responseJson.text,
+          },
+        ],
       }
     );
 
@@ -186,8 +224,6 @@ async function exportChatsAsType(format = "jsonl", chatType = "workspace") {
   };
 }
 
-const STANDARD_PROMPT =
-  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
 function buildSystemPrompt(chat, prompt = null) {
   const sources = safeJsonParse(chat.response)?.sources || [];
   const contextTexts = sources.map((source) => source.text);
@@ -200,7 +236,18 @@ function buildSystemPrompt(chat, prompt = null) {
           })
           .join("")
       : "";
-  return `${prompt ?? STANDARD_PROMPT}${context}`;
+  return `${prompt ?? SystemSettings.saneDefaultSystemPrompt}${context}`;
+}
+
+/**
+ * Converts an attachment's content string to a proper data URL format if needed
+ * @param {Object} attachment - The attachment object containing contentString and mime type
+ * @returns {string} The properly formatted data URL
+ */
+function attachmentToDataUrl(attachment) {
+  return attachment.contentString.startsWith("data:")
+    ? attachment.contentString
+    : `data:${attachment.mime};base64,${attachment.contentString}`;
 }
 
 module.exports = {

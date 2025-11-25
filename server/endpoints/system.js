@@ -202,18 +202,18 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
-        // Check if the user has seen the recovery codes
+        // Generate a session token for the user then check if they have seen the recovery codes
+        // and if not, generate recovery codes and return them to the frontend.
+        const sessionToken = makeJWT(
+          { id: existingUser.id, username: existingUser.username },
+          process.env.JWT_EXPIRY
+        );
         if (!existingUser.seen_recovery_codes) {
           const plainTextCodes = await generateRecoveryCodes(existingUser.id);
-
-          // Return recovery codes to frontend
           response.status(200).json({
             valid: true,
             user: User.filterFields(existingUser),
-            token: makeJWT(
-              { id: existingUser.id, username: existingUser.username },
-              "30d"
-            ),
+            token: sessionToken,
             message: null,
             recoveryCodes: plainTextCodes,
           });
@@ -223,10 +223,7 @@ function systemEndpoints(app) {
         response.status(200).json({
           valid: true,
           user: User.filterFields(existingUser),
-          token: makeJWT(
-            { id: existingUser.id, username: existingUser.username },
-            "30d"
-          ),
+          token: sessionToken,
           message: null,
         });
         return;
@@ -259,7 +256,7 @@ function systemEndpoints(app) {
           valid: true,
           token: makeJWT(
             { p: new EncryptionManager().encrypt(password) },
-            "30d"
+            process.env.JWT_EXPIRY
           ),
           message: null,
         });
@@ -734,6 +731,57 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture upload:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+  app.get(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (_, response) => {
+      try {
+        const defaultSystemPrompt = await SystemSettings.get({
+          label: "default_system_prompt",
+        });
+
+        response.status(200).json({
+          success: true,
+          defaultSystemPrompt:
+            defaultSystemPrompt?.value ||
+            SystemSettings.saneDefaultSystemPrompt,
+          saneDefaultSystemPrompt: SystemSettings.saneDefaultSystemPrompt,
+        });
+      } catch (error) {
+        console.error("Error fetching default system prompt:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { defaultSystemPrompt } = reqBody(request);
+        const { success, error } = await SystemSettings.updateSettings({
+          default_system_prompt: defaultSystemPrompt,
+        });
+        if (!success)
+          throw new Error(
+            error.message || "Failed to update default system prompt."
+          );
+        response.status(200).json({
+          success: true,
+          message: "Default system prompt updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating default system prompt:", error);
+        response.status(500).json({
+          success: false,
+          message: error.message || "Internal server error",
+        });
       }
     }
   );

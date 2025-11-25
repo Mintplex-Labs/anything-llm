@@ -8,7 +8,12 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asDocX({ fullFilePath = "", filename = "" }) {
+async function asDocX({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const loader = new DocxLoader(fullFilePath);
 
   console.log(`-- Working ${filename} --`);
@@ -34,11 +39,11 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: filename,
-    docAuthor: "no author found",
-    description: "No description found.",
-    docSource: "pdf file uploaded by the user.",
-    chunkSource: "",
+    title: metadata.title || filename,
+    docAuthor: metadata.docAuthor || "no author found",
+    description: metadata.description || "No description found.",
+    docSource: metadata.docSource || "docx file uploaded by the user.",
+    chunkSource: metadata.chunkSource || "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -48,6 +53,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
   });
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);

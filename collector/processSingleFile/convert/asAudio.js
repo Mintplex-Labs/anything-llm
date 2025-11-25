@@ -14,7 +14,12 @@ const WHISPER_PROVIDERS = {
   local: LocalWhisper,
 };
 
-async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
+async function asAudio({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const WhisperProvider = WHISPER_PROVIDERS.hasOwnProperty(
     options?.whisperProvider
   )
@@ -48,11 +53,11 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: filename,
-    docAuthor: "no author found",
-    description: "No description found.",
-    docSource: "pdf file uploaded by the user.",
-    chunkSource: "",
+    title: metadata.title || filename,
+    docAuthor: metadata.docAuthor || "no author found",
+    description: metadata.description || "No description found.",
+    docSource: metadata.docSource || "audio file uploaded by the user.",
+    chunkSource: metadata.chunkSource || "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -62,6 +67,7 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
   });
   trashFile(fullFilePath);
   console.log(

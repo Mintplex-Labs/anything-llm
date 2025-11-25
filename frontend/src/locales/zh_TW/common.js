@@ -121,26 +121,6 @@ const TRANSLATIONS = {
       "back-to-login": "返回登入頁面",
     },
   },
-  welcomeMessage: {
-    part1:
-      "歡迎使用 AnythingLLM，AnythingLLM 是由 Mintplex Labs 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
-    part2:
-      "AnythingLLM 是將 OpenAI、GPT-4、LangChain、PineconeDB、ChromaDB 和其他強大 AI 產品整合在一起的最簡單方法，它能透過簡潔的套件，輕鬆地將您的生產力提高 100 倍。",
-    part3:
-      "AnythingLLM 可以完全在您的本機電腦上執行，而且使用極少的資源，您甚至不會注意到它的存在！不需要 GPU。同時也支援雲端和企業內部部署。\nAI 工具生態系統日新月異，AnythingLLM 讓使用變得更加簡單。",
-    githubIssue: "在 GitHub 上建立 issue ",
-    user1: "我該如何開始？",
-    part4:
-      "很簡單。所有資料集都組織成我們稱之為「工作區」的儲存區。工作區是檔案、文件、圖片、PDF 和其他檔案的儲存區，這些檔案將會被轉換成 LLM 可以理解並在對話中使用的格式。\n\n您可以隨時新增和移除檔案。",
-    createWorkspace: "建立您的第一個工作區",
-    user2: "這像是 AI Dropbox 之類的嗎？那對話功能呢？它是一個對話機器人嗎？",
-    part5:
-      "AnythingLLM 不僅是一個更聰明的 Dropbox。\n\nAnythingLLM 提供兩種與您的資料互動的方式：\n\n<i>查詢：</i> 您的對話將會根據工作區中可存取的文件內容，傳回資料或推論。新增更多文件到工作區會讓它變得更聰明！\n\n<i>對話：</i> 您的文件加上持續進行中的對話紀錄，兩者會同時貢獻給 LLM 的知識庫。這非常適合用於附加即時的文字資訊，或是修正 LLM 可能產生的誤解。\n\n您可以在<i>對話過程中</i>隨時切換這兩種模式！",
-    user3: "哇，這聽起來很棒，讓我馬上試試看！",
-    part6: "祝您使用愉快！",
-    starOnGitHub: "在 GitHub 上給我們星星",
-    contact: "聯絡 Mintplex Labs",
-  },
   "new-workspace": {
     title: "新增工作區",
     placeholder: "我的工作區",
@@ -438,29 +418,6 @@ const TRANSLATIONS = {
       message: "訊息",
       response: "回應",
       at: "傳送時間",
-    },
-  },
-  multi: {
-    title: "多使用者模式",
-    description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
-    enable: {
-      "is-enable": "多使用者模式已啟用",
-      enable: "啟用多使用者模式",
-      description:
-        "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
-      username: "管理員帳號使用者名稱",
-      password: "管理員帳號密碼",
-    },
-    password: {
-      title: "密碼保護",
-      description:
-        "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
-    },
-    instance: {
-      title: "系統密碼保護",
-      description:
-        "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
-      password: "系統密碼",
     },
   },
   event: {
@@ -829,6 +786,10 @@ const TRANSLATIONS = {
         icon: "圖示",
         link: "連結",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -1016,6 +977,34 @@ const TRANSLATIONS = {
         prompt_placeholder: "在此輸入您的提示...",
       },
     },
+  },
+  security: {
+    title: "安全性設定",
+    multiuser: {
+      title: "多使用者模式",
+      description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
+      enable: {
+        "is-enable": "多使用者模式已啟用",
+        enable: "啟用多使用者模式",
+        description:
+          "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
+        username: "管理員帳號使用者名稱",
+        password: "管理員帳號密碼",
+      },
+    },
+    password: {
+      title: "密碼保護",
+      description:
+        "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
+      "password-label": "實例密碼",
+    },
+  },
+  home: {
+    welcome: "歡迎",
+    chooseWorkspace: "选择一个工作区开始聊天！",
+    notAssigned:
+      "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
+    goToWorkspace: '前往 "{{workspace}}"',
   },
 };
 

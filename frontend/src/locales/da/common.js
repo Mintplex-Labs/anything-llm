@@ -127,27 +127,6 @@ const TRANSLATIONS = {
       "back-to-login": "Tilbage til log ind",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Velkommen til AnythingLLM, AnythingLLM er et open source AI-værktøj fra Mintplex Labs, der forvandler alt til en trænet chatbot, som du kan spørge og chatte med. AnythingLLM er en BYOK (bring-your-own-keys) software, så der er ingen abonnement, gebyr eller omkostninger forbundet med denne software udover de tjenester, du ønsker at bruge den med.",
-    part2:
-      "AnythingLLM er den nemmeste måde at samle kraftfulde AI-produkter som OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB og andre tjenester i en praktisk pakke uden besvær, så du kan øge din produktivitet 100 gange.",
-    part3:
-      "AnythingLLM kan køre helt lokalt på din maskine med minimal overhead, så du næsten ikke bemærker, at den er der! Ingen GPU er nødvendig. Installation i skyen og on-premises er også tilgængelig.\nAI-værktøjsøkosystemet bliver mere kraftfuldt hver dag. AnythingLLM gør det nemt at bruge.",
-    githubIssue: "Opret et issue på GitHub",
-    user1: "Hvordan kommer jeg i gang?!",
-    part4:
-      "Det er enkelt. Alle samlinger er organiseret i beholdere, som vi kalder \"arbejdsområder\". Arbejdsområder er beholdere med filer, dokumenter, billeder, PDF'er og andre filer, som vil blive transformeret til noget, LLM'er kan forstå og bruge i samtale.\n\nDu kan tilføje og fjerne filer når som helst.",
-    createWorkspace: "Opret dit første arbejdsområde",
-    user2:
-      "Er dette som en AI-dropbox eller noget? Hvad med chat? Det er jo en chatbot, ikke sandt?",
-    part5:
-      "AnythingLLM er mere end en smartere Dropbox.\n\nAnythingLLM tilbyder to måder at kommunikere med dine data på:\n\n<i>Forespørgsel:</i> Dine chats vil returnere data eller inferenser fundet i de dokumenter, som dit arbejdsområde har adgang til. Tilføjelse af flere dokumenter til arbejdsområdet gør det klogere! \n\n<i>Samtalende:</i> Dine dokumenter + din løbende chat-historik bidrager begge til LLM'ens viden samtidigt. Perfekt til at tilføje realtids tekstbaserede oplysninger eller rette fejl og misforståelser, som LLM'en måtte have. \n\nDu kan skifte mellem de to tilstande \n<i>midt i en samtale!</i>",
-    user3: "Wow, det lyder fantastisk, lad mig prøve det med det samme!",
-    part6: "Hav det sjovt!",
-    starOnGitHub: "Giv en stjerne på GitHub",
-    contact: "Kontakt Mintplex Labs",
-  },
   "new-workspace": {
     title: "Nyt arbejdsområde",
     placeholder: "Mit arbejdsområde",
@@ -460,30 +439,6 @@ const TRANSLATIONS = {
       message: "Besked",
       response: "Svar",
       at: "Sendt kl.",
-    },
-  },
-  multi: {
-    title: "Multi-brugertilstand",
-    description:
-      "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
-    enable: {
-      "is-enable": "Multi-brugertilstand er aktiveret",
-      enable: "Aktivér multi-brugertilstand",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      username: "Brugernavn til admin-konto",
-      password: "Adgangskode til admin-konto",
-    },
-    password: {
-      title: "Adgangskodebeskyttelse",
-      description:
-        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
-    },
-    instance: {
-      title: "Adgangskodebeskyt instansen",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      password: "Instansens adgangskode",
     },
   },
   event: {
@@ -867,6 +822,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -1046,6 +1005,35 @@ const TRANSLATIONS = {
         prompt_placeholder: null,
       },
     },
+  },
+  security: {
+    title: "Sikkerhed",
+    multiuser: {
+      title: "Multi-brugertilstand",
+      description:
+        "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
+      enable: {
+        "is-enable": "Multi-brugertilstand er aktiveret",
+        enable: "Aktivér multi-brugertilstand",
+        description:
+          "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
+        username: "Brugernavn til admin-konto",
+        password: "Adgangskode til admin-konto",
+      },
+    },
+    password: {
+      title: "Adgangskodebeskyttelse",
+      description:
+        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
+      "password-label": "Instansadgangskode",
+    },
+  },
+  home: {
+    welcome: "Velkommen",
+    chooseWorkspace: "Vælg et arbejdsområde for at starte at chatte!",
+    notAssigned:
+      "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
+    goToWorkspace: 'Gå til "{{workspace}}"',
   },
 };
 

@@ -117,27 +117,6 @@ const TRANSLATIONS = {
       "back-to-login": "Girişe Geri Dön",
     },
   },
-  welcomeMessage: {
-    part1:
-      "AnythingLLM'e hoş geldiniz. AnythingLLM, Mintplex Labs tarafından geliştirilen açık kaynaklı bir yapay zeka aracıdır ve her şeyi, sorgulayabileceğiniz ve sohbet edebileceğiniz eğitimli bir chatbota dönüştürür. AnythingLLM, BYOK (kendi anahtarlarınızı getirin) yazılımıdır; bu nedenle, kullanmak istediğiniz hizmetler dışında herhangi bir abonelik, ücret ya da ek masraf yoktur.",
-    part2:
-      "AnythingLLM, OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ve benzeri güçlü yapay zeka ürünlerini zahmetsizce, düzenli bir paket içinde bir araya getirmenin en kolay yoludur; böylece verimliliğinizi 100 kat artırabilirsiniz.",
-    part3:
-      "AnythingLLM tamamen yerel olarak makinenizde çok az kaynakla çalışabilir—orada olduğunu bile fark etmezsiniz! GPU gerekmez. Bulut veya şirket içi (on-premises) kurulum da mevcuttur.\nYapay zeka araç ekosistemi her geçen gün daha da güçleniyor. AnythingLLM bu gücü kolayca kullanmanızı sağlar.",
-    githubIssue: "GitHub'da bir sorun oluşturun",
-    user1: "Nasıl başlarım?!",
-    part4:
-      "Bu çok basit. Tüm koleksiyonlar, 'Çalışma Alanları' (Workspaces) adını verdiğimiz gruplar halinde düzenlenir. Çalışma Alanları; dosyalar, belgeler, resimler, PDF'ler ve diğer dosyaların LLM'lerin anlayabileceği ve sohbette kullanabileceği biçime dönüştürüleceği gruplardır.\n\nİstediğiniz zaman dosya ekleyip kaldırabilirsiniz.",
-    createWorkspace: "İlk çalışma alanınızı oluşturun",
-    user2:
-      "Bu bir tür yapay zeka Dropbox'ı gibi mi? Peki sohbet etmek nasıl? Bir chatbot değil mi?",
-    part5:
-      "AnythingLLM, sıradan bir Dropbox'tan çok daha fazlasıdır.\n\nAnythingLLM, verilerinizle etkileşime geçmenin iki yolunu sunar:\n\n<i>Sorgu (Query):</i> Sohbetleriniz, çalışma alanınızdaki belgelere erişip onlardan elde ettiği verileri veya çıkarımları size sunar. Çalışma Alanınıza daha fazla belge eklemek, onu daha akıllı hâle getirir!\n\n<i>Konuşma (Conversational):</i> Belgeleriniz ve devam eden sohbet geçmişiniz, aynı anda LLM'in bilgi tabanına katkıda bulunur. Bu, gerçek zamanlı metin bilgileri, düzeltmeler veya LLM'nin yanlış anlayabileceği noktaların düzeltilmesi için mükemmeldir.\n\nSohbet esnasında, <i>iki mod arasında istediğiniz an</i> geçiş yapabilirsiniz!",
-    user3: "Vay, harika görünüyor. Hemen denemek istiyorum!",
-    part6: "İyi eğlenceler!",
-    starOnGitHub: "GitHub'da Yıldız Verin",
-    contact: "Mintplex Labs ile İletişime Geçin",
-  },
   "new-workspace": {
     title: "Yeni Çalışma Alanı",
     placeholder: "Benim Çalışma Alanım",
@@ -453,30 +432,6 @@ const TRANSLATIONS = {
       message: "Mesaj",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
-    },
-  },
-  multi: {
-    title: "Çoklu Kullanıcı Modu",
-    description:
-      "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
-    enable: {
-      "is-enable": "Çoklu Kullanıcı Modu Etkin",
-      enable: "Çoklu Kullanıcı Modunu Etkinleştir",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      username: "Yönetici hesap kullanıcı adı",
-      password: "Yönetici hesap şifresi",
-    },
-    password: {
-      title: "Şifre Koruması",
-      description:
-        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
-    },
-    instance: {
-      title: "Örneği Şifreyle Koru",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      password: "Örnek Şifresi",
     },
   },
   event: {
@@ -823,6 +778,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -1002,6 +961,35 @@ const TRANSLATIONS = {
         prompt_placeholder: null,
       },
     },
+  },
+  security: {
+    title: "Güvenlik",
+    multiuser: {
+      title: "Çoklu Kullanıcı Modu",
+      description:
+        "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
+      enable: {
+        "is-enable": "Çoklu Kullanıcı Modu Etkin",
+        enable: "Çoklu Kullanıcı Modunu Etkinleştir",
+        description:
+          "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
+        username: "Yönetici hesap kullanıcı adı",
+        password: "Yönetici hesap şifresi",
+      },
+    },
+    password: {
+      title: "Şifre Koruması",
+      description:
+        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
+      "password-label": "Örnek şifresi",
+    },
+  },
+  home: {
+    welcome: "Hoşgeldiniz",
+    chooseWorkspace: "Bir çalışma alanı seçerek sohbete başlayın!",
+    notAssigned:
+      "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
+    goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
   },
 };
 

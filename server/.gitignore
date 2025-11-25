@@ -1,6 +1,7 @@
 .env.production
 .env.development
 .env.test
+server/.env
 storage/assets/*
 !storage/assets/anything-llm.png
 storage/documents/*
@@ -14,6 +15,7 @@ storage/plugins/agent-flows/*
 storage/plugins/office-extensions/*
 storage/plugins/anythingllm_mcp_servers.json
 !storage/documents/DOCUMENTS.md
+storage/direct-uploads
 logs/server.log
 *.db
 *.db-journal

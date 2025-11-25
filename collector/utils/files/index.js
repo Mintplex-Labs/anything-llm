@@ -12,6 +12,16 @@ const documentsFolder =
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 /**
+ * The folder where direct uploads are stored to be stored when
+ * processed by the collector. These are files that were DnD'd into UI
+ * and are not to be embedded or selectable from the file picker.
+ */
+const directUploadsFolder =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../server/storage/direct-uploads`)
+    : path.resolve(process.env.STORAGE_DIR, `direct-uploads`);
+
+/**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
  * This way we can capture all the cases where the mime type is not known but still parseable as text
  * without having to constantly add new mime type overrides.
@@ -102,22 +112,28 @@ function createdDate(filepath) {
  * @param {Object} params.data - The data to write to the file. Must look like a document object.
  * @param {string} params.filename - The name of the file to write to.
  * @param {string|null} params.destinationOverride - A forced destination to write to - will be honored if provided.
+ * @param {Object} params.options - The options for the function.
+ * @param {boolean} params.options.parseOnly - If true, the file will be written to the direct uploads folder instead of the documents folder. Will be ignored if destinationOverride is provided.
  * @returns {Object} - The data with the location added.
  */
 function writeToServerDocuments({
   data = {},
-  filename = null,
+  filename,
   destinationOverride = null,
+  options = {},
 }) {
   if (!filename) throw new Error("Filename is required!");
 
   let destination = null;
   if (destinationOverride) destination = path.resolve(destinationOverride);
+  else if (options.parseOnly) destination = path.resolve(directUploadsFolder);
   else destination = path.resolve(documentsFolder, "custom-documents");
 
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
-  const destinationFilePath = path.resolve(destination, filename) + ".json";
+  const destinationFilePath = normalizePath(
+    path.resolve(destination, filename) + ".json"
+  );
 
   fs.writeFileSync(destinationFilePath, JSON.stringify(data, null, 4), {
     encoding: "utf-8",
@@ -129,6 +145,7 @@ function writeToServerDocuments({
     // that will work since we know the location exists and since we only allow
     // 1-level deep folders this will always work. This still works for integrations like GitHub and YouTube.
     location: destinationFilePath.split("/").slice(-2).join("/"),
+    isDirectUpload: options.parseOnly || false,
   };
 }
 
@@ -207,4 +224,5 @@ module.exports = {
   isWithin,
   sanitizeFileName,
   documentsFolder,
+  directUploadsFolder,
 };

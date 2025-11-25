@@ -26,22 +26,24 @@ export default function ChatSettings({ workspace }) {
   }, []);
 
   const handleUpdate = async (e) => {
-    setSaving(true);
     e.preventDefault();
+    setSaving(true);
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
+
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
     );
-    if (!!updatedWorkspace) {
+    if (updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
+      setHasChanges(false);
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
+      // Keep hasChanges true on error so user can retry
     }
     setSaving(false);
-    setHasChanges(false);
   };
 
   if (!workspace) return null;
@@ -76,6 +78,7 @@ export default function ChatSettings({ workspace }) {
         <ChatPromptSettings
           workspace={workspace}
           setHasChanges={setHasChanges}
+          hasChanges={hasChanges}
         />
         <ChatQueryRefusalResponse
           workspace={workspace}

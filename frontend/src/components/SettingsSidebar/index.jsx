@@ -285,6 +285,12 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.invites(),
               roles: ["admin", "manager"],
             },
+            {
+              btnText: "Default System Prompt",
+              href: paths.settings.defaultSystemPrompt(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option

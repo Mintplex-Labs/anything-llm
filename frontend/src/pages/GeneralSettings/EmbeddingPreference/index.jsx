@@ -15,6 +15,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -29,6 +30,7 @@ import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOption
 import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
 import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
+import OpenRouterOptions from "@/components/EmbeddingSelection/OpenRouterOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -91,6 +93,20 @@ const EMBEDDERS = [
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
   },
   {
+    name: "OpenRouter",
+    value: "openrouter",
+    logo: OpenRouterLogo,
+    options: (settings) => <OpenRouterOptions settings={settings} />,
+    description: "Run embedding models from OpenRouter.",
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run powerful embedding models from LiteLLM.",
+  },
+  {
     name: "Cohere",
     value: "cohere",
     logo: CohereLogo,
@@ -103,13 +119,6 @@ const EMBEDDERS = [
     logo: VoyageAiLogo,
     options: (settings) => <VoyageAiOptions settings={settings} />,
     description: "Run powerful embedding models from Voyage AI.",
-  },
-  {
-    name: "LiteLLM",
-    value: "litellm",
-    logo: LiteLLMLogo,
-    options: (settings) => <LiteLLMOptions settings={settings} />,
-    description: "Run powerful embedding models from LiteLLM.",
   },
   {
     name: "Mistral AI",

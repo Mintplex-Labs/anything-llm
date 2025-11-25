@@ -121,26 +121,6 @@ const TRANSLATIONS = {
       "back-to-login": "返回登录",
     },
   },
-  welcomeMessage: {
-    part1:
-      "欢迎使用 AnythingLLM，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为你可以查询和聊天的训练有素的聊天机器人。AnythingLLM 是一款 BYOK（自带密钥）软件，因此除了你想使用的服务外，此软件不收取订阅费、费用或其他费用。",
-    part2:
-      "AnythingLLM 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将你的生产力提高 100 倍。",
-    part3:
-      "AnythingLLM 可以完全在你的本地计算机上运行，几乎没有开销，你甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。AnythingLLM 使其易于使用。",
-    githubIssue: "在 GitHub 上创建问题",
-    user1: "我该如何开始?!",
-    part4:
-      "很简单。所有集合都组织成我们称之为“工作区”的桶。工作区是文件、文档、图像、PDF 和其他文件的存储桶，这些文件将被转换为 LLM 可以理解和在对话中使用的内容。\n\n你可以随时添加和删除文件。",
-    createWorkspace: "创建你的第一个工作区",
-    user2: "这像是一个 AI Dropbox 吗？那么聊天呢？它是一个聊天机器人，不是吗？",
-    part5:
-      "AnythingLLM 不仅仅是一个更智能的 Dropbox。\n\nAnythingLLM 提供了两种与你的数据交流的方式：\n\n<i>查询：</i> 你的聊天将返回在你的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 你的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n你可以在聊天过程中 <i>切换模式！</i>",
-    user3: "哇，这听起来很棒，让我马上试试！",
-    part6: "玩得开心！",
-    starOnGitHub: "在 GitHub 上加星",
-    contact: "联系 Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError: "请在开始聊天前创建一个工作区。",
     checklist: {
@@ -509,6 +489,10 @@ const TRANSLATIONS = {
         icon: "图标",
         link: "链接",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
@@ -605,29 +589,6 @@ const TRANSLATIONS = {
       message: "消息",
       response: "响应",
       at: "发送时间",
-    },
-  },
-  multi: {
-    title: "多用户模式",
-    description: "通过激活多用户模式来设置你的实例以支持你的团队。",
-    enable: {
-      "is-enable": "多用户模式已启用",
-      enable: "启用多用户模式",
-      description:
-        "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
-      username: "管理员账户用户名",
-      password: "管理员账户密码",
-    },
-    password: {
-      title: "密码保护",
-      description:
-        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
-    },
-    instance: {
-      title: "实例密码保护",
-      description:
-        "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
-      password: "实例密码",
     },
   },
   event: {
@@ -1013,6 +974,34 @@ const TRANSLATIONS = {
         prompt_placeholder: "在此输入您的提示...",
       },
     },
+  },
+  security: {
+    title: "用户与安全",
+    multiuser: {
+      title: "多用户模式",
+      description: "通过激活多用户模式来设置你的实例以支持你的团队。",
+      enable: {
+        "is-enable": "多用户模式已启用",
+        enable: "启用多用户模式",
+        description:
+          "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
+        username: "管理员账户用户名",
+        password: "管理员账户密码",
+      },
+    },
+    password: {
+      title: "密码保护",
+      description:
+        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
+      "password-label": "实例密码",
+    },
+  },
+  home: {
+    welcome: "欢迎",
+    chooseWorkspace: "选择一个工作区开始聊天！",
+    notAssigned:
+      "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
+    goToWorkspace: '前往 "{{workspace}}"',
   },
 };
 

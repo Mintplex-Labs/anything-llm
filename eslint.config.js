@@ -46,6 +46,7 @@ export default [
       "no-undef": "warn",
       "no-empty": "warn",
       "no-extra-boolean-cast": "warn",
+      "no-prototype-builtins": "off",
       "prettier/prettier": "warn"
     }
   },

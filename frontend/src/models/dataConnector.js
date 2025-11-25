@@ -209,6 +209,25 @@ const DataConnector = {
         });
     },
   },
+
+  paperlessNgx: {
+    collect: async function ({ baseUrl, apiToken }) {
+      return await fetch(`${API_BASE}/ext/paperless-ngx`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ baseUrl, apiToken }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;

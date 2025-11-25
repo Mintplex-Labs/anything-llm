@@ -9,7 +9,12 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asMbox({ fullFilePath = "", filename = "" }) {
+async function asMbox({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   console.log(`-- Working ${filename} --`);
 
   const mails = await mboxParser(fs.createReadStream(fullFilePath))
@@ -43,13 +48,16 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     const data = {
       id: v4(),
       url: "file://" + fullFilePath,
-      title: mail?.subject
-        ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
-        : `msg_${item}-${filename}`,
-      docAuthor: mail?.from?.text,
-      description: "No description found.",
-      docSource: "Mbox message file uploaded by the user.",
-      chunkSource: "",
+      title:
+        metadata.title ||
+        (mail?.subject
+          ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+          : `msg_${item}-${filename}`),
+      docAuthor: metadata.docAuthor || mail?.from?.text,
+      description: metadata.description || "No description found.",
+      docSource:
+        metadata.docSource || "Mbox message file uploaded by the user.",
+      chunkSource: metadata.chunkSource || "",
       published: createdDate(fullFilePath),
       wordCount: content.split(" ").length,
       pageContent: content,
@@ -60,6 +68,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     const document = writeToServerDocuments({
       data,
       filename: `${slugify(filename)}-${data.id}-msg-${item}`,
+      options: { parseOnly: options.parseOnly },
     });
     documents.push(document);
   }

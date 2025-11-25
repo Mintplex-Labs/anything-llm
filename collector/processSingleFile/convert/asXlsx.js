@@ -7,6 +7,7 @@ const {
   trashFile,
   writeToServerDocuments,
   documentsFolder,
+  directUploadsFolder,
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -26,14 +27,21 @@ function convertToCSV(data) {
     .join("\n");
 }
 
-async function asXlsx({ fullFilePath = "", filename = "" }) {
+async function asXlsx({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+  metadata = {},
+}) {
   const documents = [];
   const folderName = slugify(`${path.basename(filename)}-${v4().slice(0, 4)}`, {
     lower: true,
     trim: true,
   });
+  const outFolderPath = options.parseOnly
+    ? path.resolve(directUploadsFolder, folderName)
+    : path.resolve(documentsFolder, folderName);
 
-  const outFolderPath = path.resolve(documentsFolder, folderName);
   try {
     const workSheetsFromFile = xlsx.parse(fullFilePath);
     if (!fs.existsSync(outFolderPath))
@@ -53,11 +61,12 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
         const sheetData = {
           id: v4(),
           url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
-          title: `${filename} - Sheet:${name}`,
-          docAuthor: "Unknown",
-          description: `Spreadsheet data from sheet: ${name}`,
-          docSource: "an xlsx file uploaded by the user.",
-          chunkSource: "",
+          title: metadata.title || `${filename} - Sheet:${name}`,
+          docAuthor: metadata.docAuthor || "Unknown",
+          description:
+            metadata.description || `Spreadsheet data from sheet: ${name}`,
+          docSource: metadata.docSource || "an xlsx file uploaded by the user.",
+          chunkSource: metadata.chunkSource || "",
           published: createdDate(fullFilePath),
           wordCount: content.split(/\s+/).length,
           pageContent: content,
@@ -68,6 +77,7 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
           data: sheetData,
           filename: `sheet-${slugify(name)}`,
           destinationOverride: outFolderPath,
+          options: { parseOnly: options.parseOnly },
         });
         documents.push(document);
         console.log(

@@ -68,7 +68,7 @@ const TRANSLATIONS = {
     optional: "Opcional",
     yes: "Sim",
     no: "Não",
-    search: null,
+    search: "Pesquisar",
   },
   settings: {
     title: "Configurações da Instância",
@@ -124,26 +124,6 @@ const TRANSLATIONS = {
       "recovery-code": "Código de Recuperação {{index}}",
       "back-to-login": "Voltar ao Login",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "Bem-vindo ao AnythingLLM, uma ferramenta de IA open-source da Mintplex Labs que transforma qualquer conteúdo em um chatbot treinado. AnythingLLM é um software BYOK (bring-your-own-keys), sem taxas ou assinaturas.",
-    part2:
-      "AnythingLLM é a maneira mais fácil de integrar poderosas ferramentas de IA como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e outros serviços em um pacote simples.",
-    part3:
-      "AnythingLLM pode rodar localmente na sua máquina com baixo consumo de recursos. Sem GPU necessária. Disponível para instalação na nuvem ou on-premises.\nO ecossistema de IA evolui rapidamente. AnythingLLM facilita seu uso.",
-    githubIssue: "Criar issue no GitHub",
-    user1: "Como começar?!",
-    part4:
-      'É simples. As coleções são organizadas em "Workspaces". Workspaces são grupos de arquivos, documentos, imagens, PDFs e outros arquivos que serão transformados em algo que os LLMs possam entender e usar em conversas.\n\nVocê pode adicionar ou remover arquivos a qualquer momento.',
-    createWorkspace: "Crie seu primeiro workspace",
-    user2: "Isso é como um Dropbox com IA? E os chats? É um chatbot, certo?",
-    part5:
-      "AnythingLLM é mais que um Dropbox inteligente.\n\nAnythingLLM oferece duas formas de interagir com seus dados:\n\n<i>Consulta:</i> Seus chats retornarão dados encontrados nos documentos do workspace.\n\n<i>Conversacional:</i> Seus documentos + histórico de chat contribuem para o conhecimento do LLM em tempo real.\n\nVocê pode alternar entre os modos <i>durante o chat!</i>",
-    user3: "Uau, isso parece incrível, quero testar agora!",
-    part6: "Divirta-se!",
-    starOnGitHub: "Estrelar no GitHub",
-    contact: "Contate a Mintplex Labs",
   },
   "main-page": {
     noWorkspaceError: "Por favor, crie um workspace antes de iniciar um chat.",
@@ -225,7 +205,7 @@ const TRANSLATIONS = {
         docs: "Documentação",
         star: "Avalie-nos no Github",
       },
-      keyboardShortcuts: null,
+      keyboardShortcuts: "Atalhos de Teclado",
     },
   },
   "new-workspace": {
@@ -323,7 +303,7 @@ const TRANSLATIONS = {
         clearAllConfirm:
           "Tem certeza que deseja limpar todo o histórico? Esta ação é irreversível.",
         expand: "Expandir",
-        publish: null,
+        publish: "Publicar no Hub",
       },
     },
     refusal: {
@@ -332,8 +312,9 @@ const TRANSLATIONS = {
       query: "consulta",
       "desc-end":
         "modo, você pode definir uma resposta personalizada quando nenhum contexto for encontrado.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Resposta de Recusa",
+      "tooltip-description":
+        "Configure uma mensagem personalizada quando o sistema não conseguir responder baseado no contexto disponível.",
     },
     temperature: {
       title: "Temperatura do LLM",
@@ -393,7 +374,7 @@ const TRANSLATIONS = {
       description:
         "Melhore as habilidades naturais do agente com estas funções pré-configuradas. Aplica-se a todos os workspaces.",
       rag: {
-        title: "RAG & memória longa duraçào",
+        title: "RAG & memória longa duração",
         description:
           'Permite ao agente usar documentos locais para responder suas perguntas ou perguntar ao agente "lembrar" conteúdos de sua memória de longa duração.',
       },
@@ -410,7 +391,7 @@ const TRANSLATIONS = {
       generate: {
         title: "Gerar gráficos",
         description:
-          "Permite ao agent padrão gerar diversos tipos de gráficos a partir de dados armazenados ou informados no chat.",
+          "Permite ao agente padrão gerar diversos tipos de gráficos a partir de dados armazenados ou informados no chat.",
       },
       save: {
         title: "Gerar & salvar arquivos",
@@ -530,6 +511,10 @@ const TRANSLATIONS = {
         icon: "Ícone",
         link: "Link",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
@@ -550,13 +535,13 @@ const TRANSLATIONS = {
     provider: "Provedor de LLM",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Endpoint do Serviço Azure",
+        api_key: "Chave da API",
+        chat_deployment_name: "Nome do Deployment de Chat",
+        chat_model_token_limit: "Limite de Tokens do Modelo de Chat",
+        model_type: "Tipo do Modelo",
+        default: "Padrão",
+        reasoning: "Raciocínio",
       },
     },
   },
@@ -615,7 +600,7 @@ const TRANSLATIONS = {
       workspace: "Workspace",
       chats: "Chats Enviados",
       active: "Domínios Ativos",
-      created: null,
+      created: "Criado Em",
     },
   },
   "embed-chats": {
@@ -628,30 +613,6 @@ const TRANSLATIONS = {
       message: "Mensagem",
       response: "Resposta",
       at: "Enviado Em",
-    },
-  },
-  multi: {
-    title: "Modo Multi-Usuário",
-    description:
-      "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
-    enable: {
-      "is-enable": "Modo Multi-Usuário Ativo",
-      enable: "Ativar Modo Multi-Usuário",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      username: "Nome de usuário admin",
-      password: "Senha de admin",
-    },
-    password: {
-      title: "Proteção por Senha",
-      description:
-        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
-    },
-    instance: {
-      title: "Proteger Instância",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      password: "Senha da instância",
     },
   },
   event: {
@@ -916,14 +877,15 @@ const TRANSLATIONS = {
     normal: "Normal",
     large: "Grande",
     workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
+      search: "Buscar provedores de LLM",
+      loading_workspace_settings: "Carregando configurações do workspace...",
+      available_models: "Modelos Disponíveis",
+      available_models_description: "Selecione um modelo para este workspace",
+      save: "Salvar modelo do workspace",
+      saving: "Salvando...",
+      missing_credentials: "Credenciais em falta",
+      missing_credentials_description:
+        "Configure as credenciais do LLM primeiro",
     },
   },
   profile_settings: {
@@ -939,14 +901,14 @@ const TRANSLATIONS = {
     update_account: "Atualizar conta",
     theme: "Preferência de tema",
     language: "Idioma preferido",
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+    failed_upload: "Falha no upload da foto de perfil",
+    upload_success: "Foto de perfil atualizada com sucesso",
+    failed_remove: "Falha ao remover foto de perfil",
+    profile_updated: "Perfil atualizado com sucesso",
+    failed_update_user: "Falha ao atualizar perfil do usuário",
+    account: "Conta",
+    support: "Suporte",
+    signout: "Sair",
   },
   "keyboard-shortcuts": {
     title: "Atalhos de Teclado",
@@ -959,91 +921,130 @@ const TRANSLATIONS = {
       llmPreferences: "Preferências do LLM",
       chatSettings: "Ajustes do chat",
       help: "Exibe ajuda e atalhos",
-      showLLMSelector: null,
+      showLLMSelector: "Exibir seletor de LLM",
     },
   },
   community_hub: {
     publish: {
       system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Prompt de sistema publicado!",
+        success_description:
+          "Seu prompt de sistema foi publicado com sucesso no Hub da Comunidade.",
+        success_thank_you: "Obrigado por contribuir!",
+        view_on_hub: "Ver no Hub",
+        modal_title: "Publicar prompt de sistema",
+        name_label: "Nome",
+        name_description: "Nome único para seu prompt de sistema",
+        name_placeholder: "Meu prompt de sistema incrível",
+        description_label: "Descrição",
+        description_description: "Descreva o que seu prompt de sistema faz",
+        tags_label: "Tags",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu prompt",
+        tags_placeholder: "prompt, assistente, produtividade",
+        visibility_label: "Visibilidade",
+        public_description: "Qualquer pessoa pode ver e usar este prompt",
+        private_description: "Apenas você pode ver e usar este prompt",
+        publish_button: "Publicar prompt de sistema",
+        submitting: "Publicando...",
+        submit: "Publicar",
+        prompt_label: "Prompt de sistema",
+        prompt_description: "O conteúdo do seu prompt de sistema",
+        prompt_placeholder: "Você é um assistente útil que...",
       },
       agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+        public_description:
+          "Qualquer pessoa pode ver e usar este fluxo de agente",
+        private_description: "Apenas você pode ver e usar este fluxo de agente",
+        success_title: "Fluxo de agente publicado!",
+        success_description:
+          "Seu fluxo de agente foi publicado com sucesso no Hub da Comunidade.",
+        success_thank_you: "Obrigado por contribuir!",
+        view_on_hub: "Ver no Hub",
+        modal_title: "Publicar fluxo de agente",
+        name_label: "Nome",
+        name_description: "Nome único para seu fluxo de agente",
+        name_placeholder: "Meu fluxo de agente incrível",
+        description_label: "Descrição",
+        description_description: "Descreva o que seu fluxo de agente faz",
+        tags_label: "Tags",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu fluxo",
+        tags_placeholder: "agente, automação, fluxo de trabalho",
+        visibility_label: "Visibilidade",
+        publish_button: "Publicar fluxo de agente",
+        submitting: "Publicando...",
+        submit: "Publicar",
+        privacy_note:
+          "Nota: dados sensíveis serão removidos antes da publicação",
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Faça login para publicar",
+          description:
+            "Você precisa estar logado para publicar no Hub da Comunidade",
+          button: "Fazer login",
         },
       },
       slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Comando de barra publicado!",
+        success_description:
+          "Seu comando de barra foi publicado com sucesso no Hub da Comunidade.",
+        success_thank_you: "Obrigado por contribuir!",
+        view_on_hub: "Ver no Hub",
+        modal_title: "Publicar comando de barra",
+        name_label: "Nome",
+        name_description: "Nome único para seu comando de barra",
+        name_placeholder: "Meu comando incrível",
+        description_label: "Descrição",
+        description_description: "Descreva o que seu comando faz",
+        command_label: "Comando",
+        command_description: "O comando que os usuários digitarão",
+        command_placeholder: "/meu-comando",
+        tags_label: "Tags",
+        tags_description:
+          "Adicione tags para ajudar outros a encontrar seu comando",
+        tags_placeholder: "comando, produtividade, útil",
+        visibility_label: "Visibilidade",
+        public_description: "Qualquer pessoa pode ver e usar este comando",
+        private_description: "Apenas você pode ver e usar este comando",
+        publish_button: "Publicar comando de barra",
+        submitting: "Publicando...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "O prompt que será executado quando o comando for usado",
+        prompt_placeholder: "Responda como um especialista em...",
       },
     },
+  },
+  security: {
+    title: "Segurança",
+    multiuser: {
+      title: "Modo Multi-Usuário",
+      description:
+        "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
+      enable: {
+        "is-enable": "Modo Multi-Usuário Ativo",
+        enable: "Ativar Modo Multi-Usuário",
+        description:
+          "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
+        username: "Nome de usuário admin",
+        password: "Senha de admin",
+      },
+    },
+    password: {
+      title: "Proteção por Senha",
+      description:
+        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
+      "password-label": "Senha da instância",
+    },
+  },
+  home: {
+    welcome: "Bem-vindo",
+    chooseWorkspace: "Escolha um espaço de trabalho para começar a conversar!",
+    notAssigned:
+      "Você ainda não está atribuído a nenhum espaço de trabalho.\nEntre em contato com seu administrador para solicitar acesso a um espaço de trabalho.",
+    goToWorkspace: 'Ir para o espaço de trabalho "{{workspace}}"',
   },
 };
 

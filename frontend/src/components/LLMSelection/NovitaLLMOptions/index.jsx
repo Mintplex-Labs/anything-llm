@@ -59,7 +59,7 @@ function AdvancedControls({ settings }) {
             name="NovitaLLMTimeout"
             className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.NovitaLLMTimeout ?? 500}
+            defaultValue={settings?.NovitaLLMTimeout ?? 3_000}
             autoComplete="off"
             onScroll={(e) => e.target.blur()}
             min={500}

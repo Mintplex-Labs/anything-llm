@@ -126,27 +126,6 @@ const TRANSLATIONS = {
       "back-to-login": "Powrót do logowania",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Witamy w AnythingLLM, to narzędzie AI o otwartym kodzie źródłowym autorstwa Mintplex Labs, które zamienia wszystko w wyszkolonego chatbota, z którym można wysyłać zapytania i rozmawiać. AnythingLLM to oprogramowanie BYOK (bring-your-own-keys), więc nie ma subskrypcji ani kosztów za to oprogramowanie poza usługami, których chcesz z nim używać.",
-    part2:
-      "AnythingLLM to najprostszy sposób na połączenie potężnych produktów AI, takich jak OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB i innych usług w zgrabny pakiet bez zbędnego zamieszania, aby zwiększyć produktywność 100-krotnie.",
-    part3:
-      "AnythingLLM może działać całkowicie lokalnie na komputerze z niewielkim narzutem, nawet nie zauważysz, że tam jest! Nie jest wymagany procesor graficzny. Dostępna jest również instalacja w chmurze i lokalna. Ekosystem narzędzi AI staje się coraz potężniejszy każdego dnia. AnythingLLM sprawia, że jest on łatwy w użyciu.",
-    githubIssue: "Utwórz zgłoszenie w serwisie GitHub",
-    user1: "Jak zacząć?",
-    part4:
-      'To proste. Wszystkie kolekcje są zorganizowane w zbiorach, które nazywamy "obszarami roboczymi". Obszary robocze to zbiory plików, dokumentów, obrazów, plików PDF i innych plików, które zostaną przekształcone w coś, co LLM może zrozumieć i wykorzystać w rozmowie. Pliki można dodawać i usuwać w dowolnym momencie.',
-    createWorkspace: "Utwórz swój pierwszy obszar roboczy",
-    user2:
-      "Czy to coś w rodzaju Dropboxa AI? A co z czatowaniem? To jest chatbot, prawda?",
-    part5:
-      "AnythingLLM to coś więcej niż inteligentniejszy Dropbox. AnythingLLM oferuje dwa sposoby komunikacji z danymi: <i>Pytanie:</i> Twoje czaty zwrócą dane lub wnioski znalezione w dokumentach w obszarze roboczym, do którego ma dostęp. Dodanie większej liczby dokumentów do obszaru roboczego czyni go bardziej inteligentnym! <i>Konwersacyjny:</i> Twoje dokumenty + bieżąca historia czatów jednocześnie przyczyniają się do wiedzy LLM. Świetnie nadaje się do dodawania informacji tekstowych w czasie rzeczywistym lub poprawek i nieporozumień, które może mieć LLM. Możesz przełączać się między tymi trybami <i>w trakcie rozmowy! </i>",
-    user3: "Wow, to brzmi niesamowicie, pozwól mi już to wypróbować!",
-    part6: "Miłej zabawy!",
-    starOnGitHub: "Star on GitHub",
-    contact: "Kontakt z Mintplex Labs",
-  },
   "main-page": {
     noWorkspaceError:
       "Przed rozpoczęciem czatu należy utworzyć obszar roboczy.",
@@ -546,6 +525,10 @@ const TRANSLATIONS = {
         icon: "Ikona",
         link: "Link",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
@@ -649,30 +632,6 @@ const TRANSLATIONS = {
       message: "Wiadomość",
       response: "Odpowiedź",
       at: "Wysłane o",
-    },
-  },
-  multi: {
-    title: "Tryb wielu użytkowników",
-    description:
-      "Skonfiguruj swoją instancję do obsługi zespołu, aktywując tryb wielu użytkowników.",
-    enable: {
-      "is-enable": "Tryb wielu użytkowników jest włączony",
-      enable: "Włącz tryb wielu użytkowników",
-      description:
-        "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
-      username: "Nazwa użytkownika konta administratora",
-      password: "Hasło konta administratora",
-    },
-    password: {
-      title: "Ochrona hasłem",
-      description:
-        "Chroń swoją instancję AnythingLLM hasłem. Jeśli go zapomnisz, nie ma metody odzyskiwania, więc upewnij się, że zapisałeś to hasło.",
-    },
-    instance: {
-      title: "Wystąpienie chronione hasłem",
-      description:
-        "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
-      password: "Hasło instancji",
     },
   },
   event: {
@@ -1089,6 +1048,35 @@ const TRANSLATIONS = {
         },
       },
     },
+  },
+  security: {
+    title: "Bezpieczeństwo",
+    multiuser: {
+      title: "Tryb wielu użytkowników",
+      description:
+        "Skonfiguruj swoją instancję do obsługi zespołu, aktywując tryb wielu użytkowników.",
+      enable: {
+        "is-enable": "Tryb wielu użytkowników jest włączony",
+        enable: "Włącz tryb wielu użytkowników",
+        description:
+          "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
+        username: "Nazwa użytkownika konta administratora",
+        password: "Hasło konta administratora",
+      },
+    },
+    password: {
+      title: "Ochrona hasłem",
+      description:
+        "Chroń swoją instancję AnythingLLM hasłem. Jeśli go zapomnisz, nie ma metody odzyskiwania, więc upewnij się, że zapisałeś to hasło.",
+      "password-label": "Hasło instancji",
+    },
+  },
+  home: {
+    welcome: "Witamy",
+    chooseWorkspace: "Wybierz obszar roboczy, aby rozpocząć czat!",
+    notAssigned:
+      "Nie jesteś przypisany do żadnego obszaru roboczego.\nSkontaktuj się z administratorem, aby poprosić o dostęp do obszaru roboczego.",
+    goToWorkspace: 'Przejdź do obszaru roboczego "{{workspace}}"',
   },
 };
 

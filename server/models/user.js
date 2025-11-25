@@ -13,7 +13,7 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  usernameRegex: new RegExp(/^[a-z0-9_\-.]+$/),
+  usernameRegex: new RegExp(/^[a-zA-Z0-9._%+-@]+$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -95,7 +95,7 @@ const User = {
       // Do not allow new users to bypass validation
       if (!this.usernameRegex.test(username))
         throw new Error(
-          "Username must only contain lowercase letters, periods, numbers, underscores, and hyphens with no spaces"
+          "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces"
         );
 
       const bcrypt = require("bcrypt");
@@ -175,7 +175,7 @@ const User = {
         return {
           success: false,
           error:
-            "Username must only contain lowercase letters, periods, numbers, underscores, and hyphens with no spaces",
+            "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces",
         };
 
       const user = await prisma.users.update({
@@ -216,6 +216,11 @@ const User = {
     }
   },
 
+  /**
+   * Returns a user object based on the clause provided.
+   * @param {Object} clause - The clause to use to find the user.
+   * @returns {Promise<import("@prisma/client").users|null>} The user object or null if not found.
+   */
   get: async function (clause = {}) {
     try {
       const user = await prisma.users.findFirst({ where: clause });

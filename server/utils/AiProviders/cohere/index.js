@@ -8,6 +8,7 @@ const {
 
 class CohereLLM {
   constructor(embedder = null) {
+    this.className = "CohereLLM";
     const { CohereClient } = require("cohere-ai");
     if (!process.env.COHERE_API_KEY)
       throw new Error("No Cohere API key was set.");
@@ -25,6 +26,13 @@ class CohereLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
+    this.#log(
+      `Initialized with model ${this.model}. ctx: ${this.promptWindowLimit()}`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -70,16 +78,8 @@ class CohereLLM {
     return MODEL_MAP.get("cohere", this.model) ?? 4_096;
   }
 
-  async isValidChatCompletionModel(model = "") {
-    const validModels = [
-      "command-r",
-      "command-r-plus",
-      "command",
-      "command-light",
-      "command-nightly",
-      "command-light-nightly",
-    ];
-    return validModels.includes(model);
+  async isValidChatCompletionModel() {
+    return true;
   }
 
   constructPrompt({
@@ -96,11 +96,6 @@ class CohereLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cohere chat: ${this.model} is not valid for chat completion!`
-      );
-
     const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
 
@@ -134,11 +129,6 @@ class CohereLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cohere chat: ${this.model} is not valid for chat completion!`
-      );
-
     const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
