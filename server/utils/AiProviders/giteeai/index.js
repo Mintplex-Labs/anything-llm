@@ -1,10 +1,12 @@
 const fs = require("fs");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const { safeJsonParse, toValidNumber } = require("../../http");
+const LEGACY_MODEL_MAP = require("../modelMap/legacy");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const { v4: uuidv4 } = require("uuid");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -14,8 +16,6 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "giteeai")
     : path.resolve(__dirname, `../../../storage/models/giteeai`)
 );
-const { safeJsonParse, toValidNumber } = require("../../http");
-const LEGACY_MODEL_MAP = require("../modelMap/legacy");
 
 class GiteeAILLM {
   constructor(embedder = null, modelPreference = null) {
