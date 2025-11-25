@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
-import { Warning } from "@phosphor-icons/react";
+import { Warning, Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 export default function LiteLLMOptions({ settings }) {
@@ -35,9 +35,22 @@ export default function LiteLLMOptions({ settings }) {
           apiKey={apiKey}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Max embedding chunk length
-          </label>
+          <div
+            data-tooltip-place="top"
+            data-tooltip-id="max-embedding-chunk-length-tooltip"
+            className="flex gap-x-1 items-center mb-3"
+          >
+            <Info
+              size={16}
+              className="text-theme-text-secondary cursor-pointer"
+            />
+            <label className="text-white text-sm font-semibold block">
+              Max embedding chunk length
+            </label>
+            <Tooltip id="max-embedding-chunk-length-tooltip">
+              Maximum length of text chunks, in characters, for embedding.
+            </Tooltip>
+          </div>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"

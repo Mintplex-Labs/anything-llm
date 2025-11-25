@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "تنظیمات سامانه",
@@ -115,27 +116,6 @@ const TRANSLATIONS = {
       "recovery-code": "کد بازیابی {{index}}",
       "back-to-login": "بازگشت به صفحه ورود",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "به AnythingLLM خوش آمدید. AnythingLLM یک ابزار هوش مصنوعی متن‌باز توسط Mintplex Labs است که هر چیزی را به یک ربات گفتگوی آموزش‌دیده تبدیل می‌کند که می‌توانید با آن گفتگو و پرس‌وجو کنید. AnythingLLM یک نرم‌افزار BYOK (آوردن کلیدهای خودتان) است، بنابراین هیچ اشتراک، هزینه یا مبلغی برای این نرم‌افزار خارج از سرویس‌هایی که می‌خواهید با آن استفاده کنید، وجود ندارد.",
-    part2:
-      "AnythingLLM ساده‌ترین راه برای کنار هم قرار دادن محصولات قدرتمند هوش مصنوعی مانند OpenAI، GPT-4، LangChain، PineconeDB، ChromaDB و سایر سرویس‌ها در یک بسته منظم و بدون دردسر برای افزایش بهره‌وری شما تا ۱۰۰ برابر است.",
-    part3:
-      "AnythingLLM می‌تواند کاملاً به صورت محلی روی دستگاه شما با حداقل مصرف منابع اجرا شود، طوری که حتی متوجه حضور آن نخواهید شد! نیازی به GPU نیست. نصب ابری و درون‌سازمانی نیز در دسترس است.\nاکوسیستم ابزارهای هوش مصنوعی هر روز قدرتمندتر می‌شود. AnythingLLM استفاده از آن را آسان می‌کند.",
-    githubIssue: "ایجاد مسئله در گیت‌هاب",
-    user1: "چطور شروع کنم؟!",
-    part4:
-      "خیلی ساده است. تمام مجموعه‌ها در سطل‌هایی که ما «فضای کاری» می‌نامیم سازماندهی شده‌اند. فضاهای کاری، سطل‌هایی از فایل‌ها، اسناد، تصاویر، PDF‌ها و سایر فایل‌ها هستند که به چیزی تبدیل می‌شوند که LLM‌ها می‌توانند درک کنند و در مکالمه استفاده کنند.\n\nشما می‌توانید در هر زمان فایل‌ها را اضافه و حذف کنید.",
-    createWorkspace: "ایجاد اولین فضای کاری",
-    user2:
-      "آیا این مثل یک دراپ‌باکس هوشمند است یا چیز دیگری؟ پس گفتگو چی؟ مگر این یک ربات گفتگو نیست؟",
-    part5:
-      "AnythingLLM بیشتر از یک دراپ‌باکس هوشمند است.\n\nAnythingLLM دو روش برای صحبت با داده‌های شما ارائه می‌دهد:\n\n<i>پرس‌وجو:</i> گفتگوهای شما داده‌ها یا استنباط‌های یافت شده در اسناد فضای کاری که به آن دسترسی دارد را برمی‌گرداند. افزودن اسناد بیشتر به فضای کاری آن را هوشمندتر می‌کند!\n\n<i>مکالمه‌ای:</i> اسناد شما + تاریخچه گفتگوی جاری شما هر دو همزمان به دانش LLM کمک می‌کنند. برای افزودن اطلاعات متنی بلادرنگ یا اصلاح اشتباهات و سوءتفاهم‌هایی که LLM ممکن است داشته باشد، عالی است.\n\nشما می‌توانید بین هر دو حالت \n<i>در وسط گفتگو!</i> جابجا شوید.",
-    user3: "وای، این عالی به نظر می‌رسد، بگذارید همین حالا امتحانش کنم!",
-    part6: "خوش بگذره!",
-    starOnGitHub: "ستاره در گیت‌هاب",
-    contact: "تماس با Mintplex Labs",
   },
   "new-workspace": {
     title: "فضای کاری جدید",
@@ -231,6 +211,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -239,6 +220,8 @@ const TRANSLATIONS = {
       query: "پرس‌وجو",
       "desc-end":
         "ممکن است بخواهید هنگامی که هیچ محتوایی یافت نمی‌شود، یک پاسخ رد سفارشی برگردانید.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "دمای LLM",
@@ -394,8 +377,6 @@ const TRANSLATIONS = {
       "جاسازی فرآیند تبدیل متن به بردارها است. این اعتبارنامه‌ها برای تبدیل فایل‌ها و درخواست‌های شما به فرمتی که AnythingLLM بتواند پردازش کند، ضروری هستند.",
     provider: {
       title: "ارائه‌دهنده جاسازی",
-      description:
-        "هنگام استفاده از موتور جاسازی داخلی AnythingLLM نیازی به تنظیمات نیست.",
     },
   },
   text: {
@@ -404,9 +385,6 @@ const TRANSLATIONS = {
       "تقسیم متن به شما امکان می‌دهد اسناد بزرگ را به بخش‌های کوچک‌تر تقسیم کنید که برای جاسازی و پردازش مناسب‌تر هستند.",
     "desc-end":
       "سعی کنید تعادلی بین اندازه بخش و همپوشانی ایجاد کنید تا از دست رفتن اطلاعات را به حداقل برسانید.",
-    "warn-start": "تغییر این مقادیر نیاز به",
-    "warn-center": "پردازش مجدد تمام اسناد",
-    "warn-end": "خواهد داشت.",
     size: {
       title: "حداکثر اندازه بخش",
       description:
@@ -451,30 +429,6 @@ const TRANSLATIONS = {
       message: "پیام",
       response: "پاسخ",
       at: "زمان ارسال",
-    },
-  },
-  multi: {
-    title: "حالت چند کاربره",
-    description:
-      "نمونه خود را برای پشتیبانی از تیم خود با فعال‌سازی حالت چند کاربره تنظیم کنید.",
-    enable: {
-      "is-enable": "حالت چند کاربره فعال است",
-      enable: "فعال‌سازی حالت چند کاربره",
-      description:
-        "به طور پیش‌فرض، شما تنها مدیر خواهید بود. به عنوان مدیر، باید برای تمام کاربران یا مدیران جدید حساب کاربری ایجاد کنید. رمز عبور خود را گم نکنید زیرا فقط یک کاربر مدیر می‌تواند رمزهای عبور را بازنشانی کند.",
-      username: "نام کاربری حساب مدیر",
-      password: "رمز عبور حساب مدیر",
-    },
-    password: {
-      title: "حفاظت با رمز عبور",
-      description:
-        "از نمونه AnythingLLM خود با رمز عبور محافظت کنید. اگر این رمز را فراموش کنید هیچ روش بازیابی وجود ندارد، پس حتماً این رمز عبور را ذخیره کنید.",
-    },
-    instance: {
-      title: "محافظت از نمونه با رمز عبور",
-      description:
-        "به طور پیش‌فرض، شما تنها مدیر خواهید بود. به عنوان مدیر، باید برای تمام کاربران یا مدیران جدید حساب کاربری ایجاد کنید. رمز عبور خود را گم نکنید زیرا فقط یک کاربر مدیر می‌تواند رمزهای عبور را بازنشانی کند.",
-      password: "رمز عبور نمونه",
     },
   },
   event: {
@@ -720,7 +674,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,
@@ -821,6 +775,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -917,6 +875,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "امنیت",
+    multiuser: {
+      title: "حالت چند کاربره",
+      description:
+        "نمونه خود را برای پشتیبانی از تیم خود با فعال‌سازی حالت چند کاربره تنظیم کنید.",
+      enable: {
+        "is-enable": "حالت چند کاربره فعال است",
+        enable: "فعال‌سازی حالت چند کاربره",
+        description:
+          "به طور پیش‌فرض، شما تنها مدیر خواهید بود. به عنوان مدیر، باید برای تمام کاربران یا مدیران جدید حساب کاربری ایجاد کنید. رمز عبور خود را گم نکنید زیرا فقط یک کاربر مدیر می‌تواند رمزهای عبور را بازنشانی کند.",
+        username: "نام کاربری حساب مدیر",
+        password: "رمز عبور حساب مدیر",
+      },
+    },
+    password: {
+      title: "حفاظت با رمز عبور",
+      description:
+        "از نمونه AnythingLLM خود با رمز عبور محافظت کنید. اگر این رمز را فراموش کنید هیچ روش بازیابی وجود ندارد، پس حتماً این رمز عبور را ذخیره کنید.",
+      "password-label": "رمز عبور نمونه",
+    },
+  },
+  home: {
+    welcome: "خوش آمدید",
+    chooseWorkspace: "انتخاب یک فضای کار برای شروع گفتگو!",
+    notAssigned:
+      "شما در حال حاضر به هیچ فضای کاری اختصاص نیافته‌اید.\nلطفاً با مدیر خود تماس بگیرید تا دسترسی به یک فضای کار را درخواست کنید.",
+    goToWorkspace: 'به فضای کار "{{workspace}}" بروید',
   },
 };
 

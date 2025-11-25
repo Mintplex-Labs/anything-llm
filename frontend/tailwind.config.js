@@ -61,6 +61,7 @@ export default {
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
+            placeholder: 'var(--theme-placeholder)',
           },
           sidebar: {
             item: {
@@ -288,6 +289,7 @@ export default {
   plugins: [
     function ({ addVariant }) {
       addVariant('light', '.light &') // Add the `light:` variant
+      addVariant('pwa', '.pwa &') // Add the `pwa:` variant
     },
   ]
 }

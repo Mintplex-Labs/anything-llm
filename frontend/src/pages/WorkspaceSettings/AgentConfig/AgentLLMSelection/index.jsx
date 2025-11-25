@@ -31,6 +31,10 @@ const ENABLED_PROVIDERS = [
   "xai",
   "nvidia-nim",
   "gemini",
+  "moonshotai",
+  "cometapi",
+  "foundry",
+  "zai",
   "giteeai",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support
@@ -38,14 +42,9 @@ const ENABLED_PROVIDERS = [
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
-  "groq",
-  "azure",
   "koboldcpp",
   "ollama",
   "localai",
-  "openrouter",
-  "novita",
-  "generic-openai",
   "textgenwebui",
 ];
 

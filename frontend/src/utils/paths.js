@@ -18,6 +18,11 @@ export default {
   login: (noTry = false) => {
     return `/login${noTry ? "?nt=1" : ""}`;
   },
+  sso: {
+    login: () => {
+      return "/sso/simple";
+    },
+  },
   onboarding: {
     home: () => {
       return "/onboarding";
@@ -52,6 +57,9 @@ export default {
   },
   docs: () => {
     return "https://docs.anythingllm.com";
+  },
+  chatModes: () => {
+    return "https://docs.anythingllm.com/features/chat-modes";
   },
   mailToMintplex: () => {
     return "mailto:team@mintplexlabs.com";
@@ -112,6 +120,9 @@ export default {
     audioPreference: () => {
       return "/settings/audio-preference";
     },
+    defaultSystemPrompt: () => {
+      return "/settings/default-system-prompt";
+    },
     embedder: {
       modelPreference: () => "/settings/embedding-preference",
       chunkingPreference: () => "/settings/text-splitter-preference",
@@ -156,6 +167,9 @@ export default {
     experimental: () => {
       return `/settings/beta-features`;
     },
+    mobileConnections: () => {
+      return `/settings/mobile-connections`;
+    },
   },
   agents: {
     builder: () => {
@@ -179,6 +193,9 @@ export default {
     viewMoreOfType: function (type) {
       return `${this.website()}/list/${type}`;
     },
+    viewItem: function (type, id) {
+      return `${this.website()}/i/${type}/${id}`;
+    },
     trending: () => {
       return `/settings/community-hub/trending`;
     },
@@ -194,6 +211,16 @@ export default {
     },
     noPrivateItems: () => {
       return "https://docs.anythingllm.com/community-hub/faq#no-private-items";
+    },
+  },
+
+  // TODO: Migrate all docs.anythingllm.com links to the new docs.
+  documentation: {
+    mobileIntroduction: () => {
+      return "https://docs.anythingllm.com/mobile/overview";
+    },
+    contextWindows: () => {
+      return "https://docs.anythingllm.com/chatting-with-documents/introduction#you-exceed-the-context-window---what-now";
     },
   },
 

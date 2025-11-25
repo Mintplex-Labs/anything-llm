@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Impostazioni istanza",
@@ -116,27 +117,6 @@ const TRANSLATIONS = {
       "recovery-code": "Codice di recupero {{index}}",
       "back-to-login": "Torna al Login",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "Benvenuti in AnythingLLM, AnythingLLM è uno strumento di intelligenza artificiale open source di Mintplex Labs che trasforma qualsiasi cosa in un chatbot addestrato con cui puoi effettuare query e chattare. AnythingLLM è un software BYOK (bring-your-own-keys), quindi non ci sono abbonamenti, commissioni o costi per questo software al di fuori dei servizi che vuoi utilizzare.",
-    part2:
-      "AnythingLLM è il modo più semplice per mettere insieme potenti prodotti di intelligenza artificiale come OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e altri servizi in un pacchetto ordinato e senza problemi per aumentare la tua produttività di 100 volte.",
-    part3:
-      "AnythingLLM può essere eseguito completamente in locale sulla tua macchina con un overhead minimo, non ti accorgerai nemmeno che c'è! Non serve GPU. Sono disponibili anche installazioni cloud e on-premise.\nL'ecosistema degli strumenti di intelligenza artificiale diventa ogni giorno più potente. AnythingLLM lo rende facile da usare.",
-    githubIssue: "Apri una issue su GitHub",
-    user1: "Come posso iniziare?!",
-    part4:
-      'È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo "Aree di lavoro". Le aree di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.',
-    createWorkspace: "Crea la tua prima area di lavoro",
-    user2:
-      "È come Dropbox AI o qualcosa del genere? E le chat? È un chatbot, non è vero?",
-    part5:
-      "AnythingLLM è migliore di un Dropbox più smart.\n\nAnythingLLM offre due modi di comunicare con i tuoi dati:\n\n<i>Query:</i> Le tue chat restituiranno dati o inferenze trovate con i documenti nella tua area di lavoro a cui ha accesso. Aggiungere più documenti all'area di lavoro lo rende più intelligente! \n\n<i>Conversazionale:</i> i tuoi documenti + la cronologia delle chat in corso contribuiscono entrambi alla conoscenza dell'LLM allo stesso tempo. Ottimo per aggiungere informazioni basate su testo in tempo reale o correzioni e incomprensioni che l'LLM potrebbe avere. \n\nPuoi passare da una modalità all'altra \n<i>nel mezzo della chat!</i>",
-    user3: "Wow, sembra fantastico, fammi provare!",
-    part6: "Divertiti!",
-    starOnGitHub: "Metti una stella su GitHub",
-    contact: "Contatta Mintplex Labs",
   },
   "new-workspace": {
     title: "Nuova area di lavoro",
@@ -234,6 +214,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -242,6 +223,8 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "è attiva, potresti voler restituire una risposta di rifiuto personalizzata quando non viene trovato alcun contesto.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Temperatura LLM",
@@ -400,8 +383,6 @@ const TRANSLATIONS = {
       "L'embedding è il processo di trasformazione del testo in vettori. Queste credenziali sono necessarie per trasformare i file e i prompt in un formato che AnythingLLM può utilizzare per l'elaborazione.",
     provider: {
       title: "Provider di embedding",
-      description:
-        "Non è richiesta alcuna configurazione quando si utilizza il motore di embedding nativo di AnythingLLM.",
     },
   },
   text: {
@@ -410,9 +391,6 @@ const TRANSLATIONS = {
       "A volte, potresti voler cambiare il modo predefinito in cui i nuovi documenti vengono suddivisi e spezzettati in blocchi prima di essere inseriti nel tuo database vettoriale.",
     "desc-end":
       "Dovresti modificare questa impostazione solo se capisci come funziona la suddivisione del testo e i suoi effetti collaterali.",
-    "warn-start": "Le modifiche qui si applicheranno solo a",
-    "warn-center": "nuovi documenti incorporati",
-    "warn-end": ", non documenti esistenti.",
     size: {
       title: "Dimensioni blocco di testo",
       description:
@@ -457,30 +435,6 @@ const TRANSLATIONS = {
       message: "Messaggio",
       response: "Risposta",
       at: "Inviato a",
-    },
-  },
-  multi: {
-    title: "Modalità multi-utente",
-    description:
-      "Imposta la tua istanza per supportare il tuo team attivando la modalità multi-utente.",
-    enable: {
-      "is-enable": "La modalità multi-utente è abilitata",
-      enable: "Abilita la modalità multi-utente",
-      description:
-        "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
-      username: "Nome utente account amministratore",
-      password: "Password account amministratore",
-    },
-    password: {
-      title: "Protezione password",
-      description:
-        "Proteggi la tua istanza AnythingLLM con una password. Se la dimentichi, non esiste un metodo di recupero, quindi assicurati di salvare questa password.",
-    },
-    instance: {
-      title: "Protezione password istanza",
-      description:
-        "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
-      password: "Password istanza",
     },
   },
   event: {
@@ -726,7 +680,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,
@@ -827,6 +781,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -923,6 +881,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "Sicurezza",
+    multiuser: {
+      title: "Modalità multi-utente",
+      description:
+        "Imposta la tua istanza per supportare il tuo team attivando la modalità multi-utente.",
+      enable: {
+        "is-enable": "La modalità multi-utente è abilitata",
+        enable: "Abilita la modalità multi-utente",
+        description:
+          "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
+        username: "Nome utente account amministratore",
+        password: "Password account amministratore",
+      },
+    },
+    password: {
+      title: "Protezione password",
+      description:
+        "Proteggi la tua istanza AnythingLLM con una password. Se la dimentichi, non esiste un metodo di recupero, quindi assicurati di salvare questa password.",
+      "password-label": "Password istanza",
+    },
+  },
+  home: {
+    welcome: "Benvenuto",
+    chooseWorkspace: "Scegli uno spazio di lavoro per iniziare a chattare!",
+    notAssigned:
+      "Non sei assegnato a nessuno spazio di lavoro.\nContatta il tuo amministratore per richiedere l'accesso a uno spazio di lavoro.",
+    goToWorkspace: 'Vai allo spazio di lavoro "{{workspace}}"',
   },
 };
 

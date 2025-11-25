@@ -20,9 +20,6 @@ const LanceDb = {
 
   /** @returns {Promise<{client: LanceClient}>} */
   connect: async function () {
-    if (process.env.VECTOR_DB !== "lancedb")
-      throw new Error("LanceDB::Invalid ENV settings");
-
     const client = await lancedb.connect(this.uri);
     return { client };
   },
@@ -328,10 +325,11 @@ const LanceDb = {
           20
         ),
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      console.log("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];

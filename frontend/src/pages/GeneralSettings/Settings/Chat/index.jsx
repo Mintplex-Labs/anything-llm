@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import AutoSubmit from "../components/AutoSubmit";
 import AutoSpeak from "../components/AutoSpeak";
 import SpellCheck from "../components/SpellCheck";
+import ShowScrollbar from "../components/ShowScrollbar";
+import ChatRenderHTML from "../components/ChatRenderHTML";
 
 export default function ChatSettings() {
   const { t } = useTranslation();
@@ -29,6 +31,8 @@ export default function ChatSettings() {
           <AutoSubmit />
           <AutoSpeak />
           <SpellCheck />
+          <ShowScrollbar />
+          <ChatRenderHTML />
         </div>
       </div>
     </div>

@@ -7,10 +7,18 @@ const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/documents`)
     : path.resolve(process.env.STORAGE_DIR, `documents`);
+const directUploadsPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/direct-uploads`)
+    : path.resolve(process.env.STORAGE_DIR, `direct-uploads`);
 const vectorCachePath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/vector-cache`)
     : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
+const hotdirPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../collector/hotdir`)
+    : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -91,15 +99,34 @@ async function viewLocalFiles() {
   return directory;
 }
 
+/**
+ * Gets the documents by folder name.
+ * @param {string} folderName - The name of the folder to get the documents from.
+ * @returns {Promise<{folder: string, documents: any[], code: number, error: string}>} - The documents by folder name.
+ */
 async function getDocumentsByFolder(folderName = "") {
-  if (!folderName) throw new Error("Folder name must be provided.");
+  if (!folderName) {
+    return {
+      folder: folderName,
+      documents: [],
+      code: 400,
+      error: "Folder name must be provided.",
+    };
+  }
+
   const folderPath = path.resolve(documentsPath, normalizePath(folderName));
   if (
     !isWithin(documentsPath, folderPath) ||
     !fs.existsSync(folderPath) ||
     !fs.lstatSync(folderPath).isDirectory()
-  )
-    throw new Error(`Folder "${folderName}" does not exist.`);
+  ) {
+    return {
+      folder: folderName,
+      documents: [],
+      code: 404,
+      error: `Folder "${folderName}" does not exist.`,
+    };
+  }
 
   const documents = [];
   const filenames = {};
@@ -132,7 +159,7 @@ async function getDocumentsByFolder(folderName = "") {
     );
   }
 
-  return { folder: folderName, documents };
+  return { folder: folderName, documents, code: 200, error: null };
 }
 
 /**
@@ -468,7 +495,9 @@ module.exports = {
   normalizePath,
   isWithin,
   documentsPath,
+  directUploadsPath,
   hasVectorCachedFiles,
   purgeEntireVectorCache,
   getDocumentsByFolder,
+  hotdirPath,
 };

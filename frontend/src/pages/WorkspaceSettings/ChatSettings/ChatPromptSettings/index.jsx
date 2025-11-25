@@ -1,53 +1,82 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { chatPrompt } from "@/utils/chat";
+import { getWorkspaceSystemPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
 import Highlighter from "react-highlight-words";
 import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
+import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
+import { useModal } from "@/hooks/useModal";
+import System from "@/models/system";
 
-// TODO: Move to backend and have user-language sensitive default prompt
-const DEFAULT_PROMPT =
-  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
-
-export default function ChatPromptSettings({ workspace, setHasChanges }) {
+export default function ChatPromptSettings({
+  workspace,
+  setHasChanges,
+  hasChanges,
+}) {
   const { t } = useTranslation();
-  const [availableVariables, setAvailableVariables] = useState([]);
-  const [prompt, setPrompt] = useState(chatPrompt(workspace));
+  const [searchParams] = useSearchParams();
+
+  // Prompt state
+  const initialPrompt = getWorkspaceSystemPrompt(workspace);
+  const [prompt, setPrompt] = useState(initialPrompt);
+  const [savedPrompt, setSavedPrompt] = useState(initialPrompt);
+  const [defaultSystemPrompt, setDefaultSystemPrompt] = useState("");
+
+  // UI state
   const [isEditing, setIsEditing] = useState(false);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
+  const [availableVariables, setAvailableVariables] = useState([]);
+
+  // Refs
   const promptRef = useRef(null);
   const promptHistoryRef = useRef(null);
   const historyButtonRef = useRef(null);
-  const [searchParams] = useSearchParams();
 
-  const handleRestore = (prompt) => {
-    setPrompt(prompt);
-    setShowPromptHistory(false);
-    setHasChanges(true);
-    // TODO: Autosave on restore
-  };
+  // Modals
+  const {
+    isOpen: showPublishModal,
+    closeModal: closePublishModal,
+    openModal: openPublishModal,
+  } = useModal();
 
+  // Derived state
+  const isDirty = prompt !== savedPrompt;
+  const hasBeenModified = savedPrompt?.trim() !== initialPrompt?.trim();
+  const showPublishButton =
+    !isEditing && prompt?.trim().length >= 10 && (isDirty || hasBeenModified);
+
+  // Load variables and handle focus on mount
   useEffect(() => {
     async function setupVariableHighlighting() {
       const { variables } = await SystemPromptVariable.getAll();
       setAvailableVariables(variables);
     }
     setupVariableHighlighting();
-  }, []);
-
-  useEffect(() => {
     if (searchParams.get("action") === "focus-system-prompt")
       setIsEditing(true);
   }, [searchParams]);
 
+  // Update saved prompt when parent clears hasChanges
+  useEffect(() => {
+    if (!hasChanges) setSavedPrompt(prompt);
+  }, [hasChanges, prompt]);
+
+  // Auto-focus textarea when editing
   useEffect(() => {
     if (isEditing && promptRef.current) {
       promptRef.current.focus();
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) =>
+      setDefaultSystemPrompt(defaultSystemPrompt)
+    );
+  }, []);
+
+  // Handle click outside for history panel
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -60,11 +89,28 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleRestoreFromHistory = (historicalPrompt) => {
+    setPrompt(historicalPrompt);
+    setShowPromptHistory(false);
+    setHasChanges(true);
+  };
+
+  const handlePublishFromHistory = (historicalPrompt) => {
+    openPublishModal();
+    setShowPromptHistory(false);
+    setTimeout(() => setPrompt(historicalPrompt), 0);
+  };
+
+  // Restore to default system prompt, if no default system prompt is set
+  const handleRestoreToDefaultSystemPrompt = () => {
+    System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) => {
+      setPrompt(defaultSystemPrompt);
+      setHasChanges(true);
+    });
+  };
 
   return (
     <>
@@ -72,10 +118,9 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         ref={promptHistoryRef}
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
-        onRestore={handleRestore}
-        onClose={() => {
-          setShowPromptHistory(false);
-        }}
+        onRestore={handleRestoreFromHistory}
+        onPublishClick={handlePublishFromHistory}
+        onClose={() => setShowPromptHistory(false)}
       />
       <div>
         <div className="flex flex-col">
@@ -115,12 +160,12 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           </p>
         </div>
 
-        <input type="hidden" name="openAiPrompt" defaultValue={prompt} />
+        <input type="hidden" name="openAiPrompt" value={prompt} />
         <div className="relative w-full flex flex-col items-end">
           <button
             ref={historyButtonRef}
             type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-black text-sm font-medium"
+            className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
             onClick={(e) => {
               e.preventDefault();
               setShowPromptHistory(!showPromptHistory);
@@ -129,11 +174,6 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             {showPromptHistory ? "Hide History" : "View History"}
           </button>
           <div className="relative w-full">
-            <span
-              className={`${!!prompt ? "hidden" : "block"} text-sm pointer-events-none absolute top-2 left-0 p-2.5 w-full h-full !text-theme-settings-input-placeholder opacity-60`}
-            >
-              {DEFAULT_PROMPT}
-            </span>
             {isEditing ? (
               <textarea
                 ref={promptRef}
@@ -185,18 +225,41 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             )}
           </div>
           <div className="w-full flex flex-row items-center justify-between pt-2">
-            {prompt !== DEFAULT_PROMPT && (
+            {prompt !== defaultSystemPrompt && (
               <button
                 type="button"
-                onClick={() => handleRestore(DEFAULT_PROMPT)}
-                className="text-theme-text-primary hover:text-white light:hover:text-black text-sm font-medium"
+                onClick={handleRestoreToDefaultSystemPrompt}
+                className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
               >
-                Clear
+                Restore to Default
               </button>
             )}
+            <PublishPromptCTA
+              hidden={!showPublishButton}
+              onClick={openPublishModal}
+            />
           </div>
         </div>
       </div>
+      <PublishEntityModal
+        show={showPublishModal}
+        onClose={closePublishModal}
+        entityType="system-prompt"
+        entity={prompt}
+      />
     </>
+  );
+}
+
+function PublishPromptCTA({ hidden = false, onClick }) {
+  if (hidden) return null;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-none text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
+    >
+      Publish to Community Hub
+    </button>
   );
 }

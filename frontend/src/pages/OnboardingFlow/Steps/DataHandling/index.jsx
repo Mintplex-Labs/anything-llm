@@ -25,6 +25,7 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -38,6 +39,9 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import React, { useState, useEffect } from "react";
@@ -229,6 +233,15 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: XAILogo,
   },
+  zai: {
+    name: "Z.AI",
+    description: [
+      "Your content is processed in real-time and not stored on Z.AI servers",
+      "Your prompts and document text are visible to Z.AI during processing",
+      "Data is processed in accordance with Z.AI's API Services terms",
+    ],
+    logo: ZAiLogo,
+  },
   ppio: {
     name: "PPIO",
     description: [
@@ -244,10 +257,33 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: DPAISLogo,
   },
+  moonshotai: {
+    name: "Moonshot AI",
+    description: [
+      "Your chats may be used by Moonshot AI for training and model refinement",
+      "Your prompts and document text used in response creation are visible to Moonshot AI",
+    ],
+    logo: MoonshotAiLogo,
+  },
+  cometapi: {
+    name: "CometAPI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to CometAPI",
+    ],
+    logo: CometApiLogo,
+  },
+  foundry: {
+    name: "Microsoft Foundry Local",
+    description: [
+      "Your model and chats are only accessible on the machine running Foundry Local",
+    ],
+    logo: FoundryLogo,
+  },
   giteeai: {
     name: "GiteeAI",
     description: [
-      "Quickly experience the big models and explore the AI open source world ahead of others",
+      "Your model and chat contents are visible to GiteeAI in accordance with their terms of service.",
     ],
     logo: GiteeAILogo,
   },
@@ -267,6 +303,14 @@ export const VECTOR_DB_PRIVACY = {
     description: [
       "Your vectors and document text are stored on your Chroma instance",
       "Access to your instance is managed by you",
+    ],
+    logo: ChromaLogo,
+  },
+  chromacloud: {
+    name: "Chroma Cloud",
+    description: [
+      "Your vectors and document text are stored on Chroma's cloud service",
+      "Access to your data is managed by Chroma",
     ],
     logo: ChromaLogo,
   },
@@ -366,6 +410,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LMStudio",
     ],
     logo: LMStudioLogo,
+  },
+  openrouter: {
+    name: "OpenRouter",
+    description: [
+      "Your document text is sent to OpenRouter's servers for processing",
+      "Your document text is stored or managed according to the terms of service of OpenRouter API Terms of Service",
+    ],
+    logo: OpenRouterLogo,
   },
   cohere: {
     name: "Cohere",

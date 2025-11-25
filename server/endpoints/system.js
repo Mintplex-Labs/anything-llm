@@ -54,7 +54,10 @@ const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
-const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
+const {
+  simpleSSOEnabled,
+  simpleSSOLoginDisabled,
+} = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
@@ -116,6 +119,17 @@ function systemEndpoints(app) {
       const bcrypt = require("bcrypt");
 
       if (await SystemSettings.isMultiUserMode()) {
+        if (simpleSSOLoginDisabled()) {
+          response.status(403).json({
+            user: null,
+            valid: false,
+            token: null,
+            message:
+              "[005] Login via credentials has been disabled by the administrator.",
+          });
+          return;
+        }
+
         const { username, password } = reqBody(request);
         const existingUser = await User._get({ username: String(username) });
 
@@ -188,18 +202,18 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
-        // Check if the user has seen the recovery codes
+        // Generate a session token for the user then check if they have seen the recovery codes
+        // and if not, generate recovery codes and return them to the frontend.
+        const sessionToken = makeJWT(
+          { id: existingUser.id, username: existingUser.username },
+          process.env.JWT_EXPIRY
+        );
         if (!existingUser.seen_recovery_codes) {
           const plainTextCodes = await generateRecoveryCodes(existingUser.id);
-
-          // Return recovery codes to frontend
           response.status(200).json({
             valid: true,
             user: User.filterFields(existingUser),
-            token: makeJWT(
-              { id: existingUser.id, username: existingUser.username },
-              "30d"
-            ),
+            token: sessionToken,
             message: null,
             recoveryCodes: plainTextCodes,
           });
@@ -209,10 +223,7 @@ function systemEndpoints(app) {
         response.status(200).json({
           valid: true,
           user: User.filterFields(existingUser),
-          token: makeJWT(
-            { id: existingUser.id, username: existingUser.username },
-            "30d"
-          ),
+          token: sessionToken,
           message: null,
         });
         return;
@@ -245,7 +256,7 @@ function systemEndpoints(app) {
           valid: true,
           token: makeJWT(
             { p: new EncryptionManager().encrypt(password) },
-            "30d"
+            process.env.JWT_EXPIRY
           ),
           message: null,
         });
@@ -720,6 +731,57 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture upload:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+  app.get(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (_, response) => {
+      try {
+        const defaultSystemPrompt = await SystemSettings.get({
+          label: "default_system_prompt",
+        });
+
+        response.status(200).json({
+          success: true,
+          defaultSystemPrompt:
+            defaultSystemPrompt?.value ||
+            SystemSettings.saneDefaultSystemPrompt,
+          saneDefaultSystemPrompt: SystemSettings.saneDefaultSystemPrompt,
+        });
+      } catch (error) {
+        console.error("Error fetching default system prompt:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { defaultSystemPrompt } = reqBody(request);
+        const { success, error } = await SystemSettings.updateSettings({
+          default_system_prompt: defaultSystemPrompt,
+        });
+        if (!success)
+          throw new Error(
+            error.message || "Failed to update default system prompt."
+          );
+        response.status(200).json({
+          success: true,
+          message: "Default system prompt updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating default system prompt:", error);
+        response.status(500).json({
+          success: false,
+          message: error.message || "Internal server error",
+        });
       }
     }
   );
@@ -1365,6 +1427,42 @@ function systemEndpoints(app) {
         response.status(500).json({
           success: false,
           error: `Failed to delete system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/system/validate-sql-connection",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { engine, connectionString } = reqBody(request);
+        if (!engine || !connectionString) {
+          return response.status(400).json({
+            success: false,
+            error: "Both engine and connection details are required.",
+          });
+        }
+
+        const {
+          validateConnection,
+        } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors");
+        const result = await validateConnection(engine, { connectionString });
+
+        if (!result.success) {
+          return response.status(200).json({
+            success: false,
+            error: `Unable to connect to ${engine}. Please verify your connection details.`,
+          });
+        }
+
+        response.status(200).json(result);
+      } catch (error) {
+        console.error("SQL validation error:", error);
+        response.status(500).json({
+          success: false,
+          error: `Unable to connect to ${engine}. Please verify your connection details.`,
         });
       }
     }

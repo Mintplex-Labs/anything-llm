@@ -47,7 +47,7 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
   return `<!--
 Paste this script at the bottom of your HTML before the </body> tag.
 See more style and config options on our docs
-https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
+https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md
 -->
 <script
   data-embed-id="${embed.uuid}"
@@ -90,7 +90,7 @@ const ScriptTag = ({ embed }) => {
           in the corner of your website.
         </p>
         <a
-          href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
+          href="https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md"
           target="_blank"
           rel="noreferrer"
           className="text-blue-300 light:text-blue-500 hover:underline"
@@ -101,7 +101,7 @@ const ScriptTag = ({ embed }) => {
       <button
         disabled={copied}
         onClick={handleClick}
-        className={`disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5`}
+        className={`disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5 m-1`}
       >
         <div
           className="flex w-full text-left flex-col gap-y-1 pr-6 pl-4 whitespace-pre-line"

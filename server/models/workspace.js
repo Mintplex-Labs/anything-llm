@@ -6,6 +6,7 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
+const { SystemSettings } = require("./systemSettings");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -32,8 +33,7 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
-  defaultPrompt:
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+  defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
   // commented fields are not writable, but are available on the db object
@@ -193,6 +193,14 @@ const Workspace = {
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
+    // Get the default system prompt
+    const defaultSystemPrompt = await SystemSettings.get({
+      label: "default_system_prompt",
+    });
+    if (!!defaultSystemPrompt?.value)
+      additionalFields.openAiPrompt = defaultSystemPrompt.value;
+    else additionalFields.openAiPrompt = this.defaultPrompt;
+
     try {
       const workspace = await prisma.workspaces.create({
         data: {
@@ -283,11 +291,51 @@ const Workspace = {
       return {
         ...workspace,
         documents: await Document.forWorkspace(workspace.id),
+        contextWindow: this._getContextWindow(workspace),
+        currentContextTokenCount: await this._getCurrentContextTokenCount(
+          workspace.id
+        ),
       };
     } catch (error) {
       console.error(error.message);
       return null;
     }
+  },
+
+  /**
+   * Get the total token count of all parsed files in a workspace/thread
+   * @param {number} workspaceId - The ID of the workspace
+   * @param {number|null} threadId - Optional thread ID to filter by
+   * @returns {Promise<number>} Total token count of all files
+   * @private
+   */
+  async _getCurrentContextTokenCount(workspaceId, threadId = null) {
+    const { WorkspaceParsedFiles } = require("./workspaceParsedFiles");
+    return await WorkspaceParsedFiles.totalTokenCount({
+      workspaceId: Number(workspaceId),
+      threadId: threadId ? Number(threadId) : null,
+    });
+  },
+
+  /**
+   * Get the context window size for a workspace based on its provider and model settings.
+   * If the workspace has no provider/model set, falls back to system defaults.
+   * @param {Workspace} workspace - The workspace to get context window for
+   * @returns {number|null} The context window size in tokens (defaults to null if no provider/model found)
+   * @private
+   */
+  _getContextWindow: function (workspace) {
+    const {
+      getLLMProviderClass,
+      getBaseLLMProviderModel,
+    } = require("../utils/helpers");
+    const provider = workspace.chatProvider || process.env.LLM_PROVIDER || null;
+    const LLMProvider = getLLMProviderClass({ provider });
+    const model =
+      workspace.chatModel || getBaseLLMProviderModel({ provider }) || null;
+
+    if (!provider || !model) return null;
+    return LLMProvider?.promptWindowLimit?.(model) || null;
   },
 
   get: async function (clause = {}) {
@@ -299,7 +347,14 @@ const Workspace = {
         },
       });
 
-      return workspace || null;
+      if (!workspace) return null;
+      return {
+        ...workspace,
+        contextWindow: this._getContextWindow(workspace),
+        currentContextTokenCount: await this._getCurrentContextTokenCount(
+          workspace.id
+        ),
+      };
     } catch (error) {
       console.error(error.message);
       return null;

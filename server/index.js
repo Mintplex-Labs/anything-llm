@@ -28,10 +28,23 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
+const { mobileEndpoints } = require("./endpoints/mobile");
+const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
 
+// Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
+if (
+  process.env.NODE_ENV === "development" &&
+  !!process.env.ENABLE_HTTP_LOGGER
+) {
+  app.use(
+    httpLogger({
+      enableTimestamps: !!process.env.ENABLE_HTTP_LOGGER_TIMESTAMPS,
+    })
+  );
+}
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));
@@ -65,6 +78,7 @@ developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
+mobileEndpoints(apiRouter);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
@@ -87,14 +101,19 @@ if (process.env.NODE_ENV !== "development") {
     })
   );
 
-  app.use("/", function (_, response) {
-    IndexPage.generate(response);
-    return;
-  });
-
   app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
+  });
+
+  app.get("/manifest.json", async function (_, response) {
+    IndexPage.generateManifest(response);
+    return;
+  });
+
+  app.use("/", function (_, response) {
+    IndexPage.generate(response);
+    return;
   });
 } else {
   // Debug route for development connections to vectorDBs

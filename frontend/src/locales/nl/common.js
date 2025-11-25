@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Instelling Instanties",
@@ -116,27 +117,6 @@ const TRANSLATIONS = {
       "recovery-code": "Herstelcode {{index}}",
       "back-to-login": "Terug naar Inloggen",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "Welkom bij AnythingLLM, AnythingLLM is een open-source AI-tool van Mintplex Labs die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. AnythingLLM is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
-    part2:
-      "AnythingLLM is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
-    part3:
-      "AnythingLLM kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. AnythingLLM maakt het gemakkelijk te gebruiken.",
-    githubIssue: "Maak een probleem aan op GitHub",
-    user1: "Hoe kan ik beginnen?",
-    part4:
-      "Het is simpel. Alle verzamelingen zijn georganiseerd in buckets die we \"Werkruimten\" noemen. Werkruimten zijn buckets van bestanden, documenten, afbeeldingen, PDF's en andere bestanden die worden omgezet in iets wat LLM's kunnen begrijpen en gebruiken in gesprekken.\n\nJe kunt op elk moment bestanden toevoegen en verwijderen.",
-    createWorkspace: "Maak je eerste werkruimte",
-    user2:
-      "Is dit als een AI-dropbox of zoiets? Hoe zit het met chatten? Het is toch een chatbot?",
-    part5:
-      "AnythingLLM is meer dan een slimmere Dropbox.\n\nAnythingLLM biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
-    user3: "Wauw, dit klinkt geweldig, laat me het al proberen!",
-    part6: "Veel Plezier!",
-    starOnGitHub: "Ster op GitHub",
-    contact: "Contact Mintplex Labs",
   },
   "new-workspace": {
     title: "Nieuwe Werkruimte",
@@ -233,6 +213,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -241,6 +222,8 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "modus, wil je wellicht een aangepaste afwijzingsreactie geven wanneer er geen context wordt gevonden.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Temperatuur",
@@ -397,8 +380,6 @@ const TRANSLATIONS = {
       "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
     provider: {
       title: "Inbedding Provider",
-      description:
-        "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
     },
   },
   text: {
@@ -407,9 +388,6 @@ const TRANSLATIONS = {
       "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
     "desc-end":
       "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
-    "warn-start": "Wijzigingen hier zijn alleen van toepassing op",
-    "warn-center": "nieuw ingebedde documenten",
-    "warn-end": ", niet op bestaande documenten.",
     size: {
       title: "Tekst Chunk Grootte",
       description:
@@ -454,30 +432,6 @@ const TRANSLATIONS = {
       message: "Bericht",
       response: "Reactie",
       at: "Verzonden Om",
-    },
-  },
-  multi: {
-    title: "Multi-Gebruikersmodus",
-    description:
-      "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
-    enable: {
-      "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
-      enable: "Schakel Multi-Gebruikersmodus In",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      username: "Beheerdersaccount gebruikersnaam",
-      password: "Beheerdersaccount wachtwoord",
-    },
-    password: {
-      title: "Wachtwoordbeveiliging",
-      description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
-    },
-    instance: {
-      title: "Instantie Wachtwoord Beveiligen",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      password: "Instantie wachtwoord",
     },
   },
   event: {
@@ -723,7 +677,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,
@@ -824,6 +778,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -920,6 +878,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "Veiligheid",
+    multiuser: {
+      title: "Multi-Gebruikersmodus",
+      description:
+        "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
+      enable: {
+        "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
+        enable: "Schakel Multi-Gebruikersmodus In",
+        description:
+          "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
+        username: "Beheerdersaccount gebruikersnaam",
+        password: "Beheerdersaccount wachtwoord",
+      },
+    },
+    password: {
+      title: "Wachtwoordbeveiliging",
+      description:
+        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+      "password-label": "Instances wachtwoord",
+    },
+  },
+  home: {
+    welcome: "Welkom",
+    chooseWorkspace: "Kies een werkruimte om te beginnen!",
+    notAssigned:
+      "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
+    goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
   },
 };
 

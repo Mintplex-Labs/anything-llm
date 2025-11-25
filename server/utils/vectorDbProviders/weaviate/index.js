@@ -193,7 +193,7 @@ const Weaviate = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      if (skipCache) {
+      if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
           const { client } = await this.connect();
@@ -263,10 +263,11 @@ const Weaviate = {
           20
         ),
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      console.log("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);

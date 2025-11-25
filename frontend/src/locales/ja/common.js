@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "任意",
     yes: "はい",
     no: "いいえ",
+    search: null,
   },
   settings: {
     title: "インスタンス設定",
@@ -124,27 +125,6 @@ const TRANSLATIONS = {
       "recovery-code": "回復コード {{index}}",
       "back-to-login": "ログイン画面に戻る",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "AnythingLLMへようこそ。AnythingLLMはMintplex LabsによるオープンソースのAIツールで、あらゆるものをトレーニングされたチャットボットに変換し、クエリやチャットが可能です。AnythingLLMはBYOK（Bring-Your-Own-Keys）ソフトウェアであり、このソフトウェアを使用するためのサブスクリプション、料金、または費用はありません。",
-    part2:
-      "AnythingLLMは、OpenAi、GPT-4、LangChain、PineconeDB、ChromaDBなどの強力なAI製品を簡単に統合し、手間をかけずに生産性を100倍に向上させる最も簡単な方法です。",
-    part3:
-      "AnythingLLMは、あなたのマシン上で完全にローカルで動作し、ほとんど負荷をかけません。GPUは必要ありません。クラウドおよびオンプレミスでのインストールも可能です。\nAIツールエコシステムは日々強力になっています。AnythingLLMはそれを簡単に利用できるようにします。",
-    githubIssue: "GitHubで問題を作成",
-    user1: "どうやって始めればいいの？",
-    part4:
-      "簡単です。すべてのコレクションは「ワークスペース」と呼ばれるバケットに整理されています。ワークスペースは、ファイル、ドキュメント、画像、PDFなどを含むバケットで、これらがLLMが理解し、会話で使用できるものに変換されます。\n\nいつでもファイルを追加および削除できます。",
-    createWorkspace: "最初のワークスペースを作成",
-    user2:
-      "これはAI版のDropboxみたいなもの？チャットはどうなの？チャットボットなんでしょ？",
-    part5:
-      "AnythingLLMは単なるスマートなDropbox以上のものです。\n\nAnythingLLMはデータと対話する2つの方法を提供します：\n\n<i>クエリ：</i> チャットは、ワークスペース内のドキュメントで見つかったデータや推論を返します。ワークスペースにドキュメントを追加することで、より賢くなります！\n\n<i>会話：</i> ドキュメントと進行中のチャット履歴の両方が同時にLLMの知識に貢献します。リアルタイムのテキストベースの情報や修正を追加するのに最適です。\n\nチャット中にどちらのモードにも切り替えることができます。",
-    user3: "すごい、試してみたい！",
-    part6: "楽しんでください！",
-    starOnGitHub: "GitHubでスターを付ける",
-    contact: "Mintplex Labsに連絡",
   },
   "new-workspace": {
     title: "新しいワークスペース",
@@ -240,6 +220,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -248,6 +229,8 @@ const TRANSLATIONS = {
       query: "クエリ",
       "desc-end":
         "の場合、コンテキストが見つからないときにカスタム拒否応答を返すことができます。",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM温度",
@@ -402,8 +385,6 @@ const TRANSLATIONS = {
       "埋め込みとは、テキストをベクトルに変換するプロセスです。これらの認証情報は、ファイルやプロンプトをAnythingLLMが処理できるフォーマットに変換するために必要です。",
     provider: {
       title: "埋め込みプロバイダー",
-      description:
-        "AnythingLLMのネイティブ埋め込みエンジンを使用する場合、特に設定は必要ありません。",
     },
   },
   text: {
@@ -412,9 +393,6 @@ const TRANSLATIONS = {
       "新しいドキュメントがベクトルデータベースに挿入される前に、どのように分割およびチャンク化されるかのデフォルトの方法を変更する場合があります。",
     "desc-end":
       "テキスト分割の仕組みとその副作用を理解している場合にのみ、この設定を変更するべきです。",
-    "warn-start": "ここでの変更は、",
-    "warn-center": "新しく埋め込まれるドキュメントにのみ適用されます",
-    "warn-end": "、既存のドキュメントには適用されません。",
     size: {
       title: "テキストチャンクサイズ",
       description: "1つのベクトルに含まれる最大の文字数です。",
@@ -457,30 +435,6 @@ const TRANSLATIONS = {
       message: "メッセージ",
       response: "応答",
       at: "送信日時",
-    },
-  },
-  multi: {
-    title: "マルチユーザーモード",
-    description:
-      "マルチユーザーモードを有効にして、チームをサポートするようにインスタンスを設定します。",
-    enable: {
-      "is-enable": "マルチユーザーモードが有効です",
-      enable: "マルチユーザーモードを有効にする",
-      description:
-        "デフォルトでは、あなたが唯一の管理者になります。管理者として、すべての新しいユーザーまたは管理者のアカウントを作成する必要があります。管理者ユーザーのみがパスワードをリセットできるため、パスワードを紛失しないでください。",
-      username: "管理者アカウントのユーザー名",
-      password: "管理者アカウントのパスワード",
-    },
-    password: {
-      title: "パスワード保護",
-      description:
-        "AnythingLLMインスタンスをパスワードで保護します。これを忘れた場合、回復方法はないため、このパスワードを必ず保存してください。",
-    },
-    instance: {
-      title: "インスタンスのパスワード保護",
-      description:
-        "デフォルトでは、あなたが唯一の管理者になります。管理者として、すべての新しいユーザーまたは管理者のアカウントを作成する必要があります。管理者ユーザーのみがパスワードをリセットできるため、パスワードを紛失しないでください。",
-      password: "インスタンスパスワード",
     },
   },
   event: {
@@ -759,7 +713,7 @@ const TRANSLATIONS = {
     username_description:
       "ユーザー名は小文字の英字、数字、アンダースコア、ハイフンのみ使用でき、スペースは使えません",
     new_password: "新しいパスワード",
-    passwort_description: "パスワードは8文字以上である必要があります",
+    password_description: "パスワードは8文字以上である必要があります",
     cancel: "キャンセル",
     update_account: "アカウントを更新",
     theme: "テーマ設定",
@@ -860,6 +814,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -959,6 +917,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "セキュリティ",
+    multiuser: {
+      title: "マルチユーザーモード",
+      description:
+        "マルチユーザーモードを有効にして、チームをサポートするようにインスタンスを設定します。",
+      enable: {
+        "is-enable": "マルチユーザーモードが有効です",
+        enable: "マルチユーザーモードを有効にする",
+        description:
+          "デフォルトでは、あなたが唯一の管理者になります。管理者として、すべての新しいユーザーまたは管理者のアカウントを作成する必要があります。管理者ユーザーのみがパスワードをリセットできるため、パスワードを紛失しないでください。",
+        username: "管理者アカウントのユーザー名",
+        password: "管理者アカウントのパスワード",
+      },
+    },
+    password: {
+      title: "パスワード保護",
+      description:
+        "AnythingLLMインスタンスをパスワードで保護します。これを忘れた場合、回復方法はないため、このパスワードを必ず保存してください。",
+      "password-label": "インスタンスパスワード",
+    },
+  },
+  home: {
+    welcome: "ようこそ",
+    chooseWorkspace: "ワークスペースを選択してチャットを開始してください！",
+    notAssigned:
+      "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
+    goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
   },
 };
 

@@ -89,12 +89,13 @@ async function recentChatHistory({
  * @returns {Promise<string>} - the base prompt
  */
 async function chatPrompt(workspace, user = null) {
+  const { SystemSettings } = require("../../models/systemSettings");
   const basePrompt =
-    workspace?.openAiPrompt ??
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+    workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
   return await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
-    user?.id
+    user?.id,
+    workspace?.id
   );
 }
 

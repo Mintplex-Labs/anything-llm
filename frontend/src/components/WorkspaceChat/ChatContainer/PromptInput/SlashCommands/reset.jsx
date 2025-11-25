@@ -8,9 +8,11 @@ export default function ResetCommand({ setShowing, sendCommand }) {
 
   return (
     <button
+      type="button"
+      data-slash-command="/reset"
       onClick={() => {
         setShowing(false);
-        sendCommand("/reset", true);
+        sendCommand({ text: "/reset", autoSubmit: true });
       }}
       className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start"
     >

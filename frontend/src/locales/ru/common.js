@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "Необязательный",
     yes: "Да",
     no: "Нет",
+    search: null,
   },
   settings: {
     title: "Настройки экземпляра",
@@ -124,27 +125,6 @@ const TRANSLATIONS = {
       "recovery-code": "Код восстановления {{index}}",
       "back-to-login": "Вернуться к входу",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "Добро пожаловать в AnythingLLM, открытый инструмент искусственного интеллекта от Mintplex Labs, который превращает что угодно в обученный чат-бот, с которым вы можете общаться и задавать вопросы. AnythingLLM - это ПО BYOK (принеси свои собственные ключи), поэтому за использование этого ПО нет подписки, платы или других сборов, кроме тех, что вы хотите использовать.",
-    part2:
-      "AnythingLLM - это самый простой способ объединить мощные продукты ИИ, такие как OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB и другие сервисы, в аккуратный пакет без лишних хлопот, чтобы повысить вашу продуктивность в 100 раз.",
-    part3:
-      "AnythingLLM может работать полностью локально на вашем компьютере с минимальной нагрузкой, вы даже не заметите его присутствия! GPU не требуется. Также доступна установка в облаке и на локальных серверах.\nЭкосистема инструментов ИИ становится мощнее с каждым днем. AnythingLLM упрощает их использование.",
-    githubIssue: "Создать задачу на GitHub",
-    user1: "Как начать?!",
-    part4:
-      'Это просто. Все коллекции организованы в корзины, которые мы называем "Workspaces". Workspaces - это корзины файлов, документов, изображений, PDF и других файлов, которые будут преобразованы в нечто, что LLM сможет понять и использовать в беседе.\n\nВы можете добавлять и удалять файлы в любое время.',
-    createWorkspace: "Создайте свою первую workspace",
-    user2:
-      "Это что-то вроде ИИ-дропбокса? А как насчет чата? Это ведь чат-бот, верно?",
-    part5:
-      "AnythingLLM - это больше, чем просто умный Dropbox.\n\nAnythingLLM предлагает два способа общения с вашими данными:\n\n<i>Запрос:</i> Ваши чаты будут возвращать данные или выводы, найденные в документах в вашем workspace, к которому у него есть доступ. Добавление большего количества документов в workspace делает его умнее!\n\n<i>Беседа:</i> Ваши документы и история чатов вместе способствуют знаниям LLM одновременно. Отлично подходит для добавления информации в реальном времени на основе текста или исправления и недоразумений, которые может иметь LLM.\n\nВы можете переключаться между режимами <i>прямо во время чата!</i>",
-    user3: "Вау, это звучит потрясающе, дайте попробовать прямо сейчас!",
-    part6: "Веселитесь!",
-    starOnGitHub: "Звезда на GitHub",
-    contact: "Связаться с Mintplex Labs",
   },
   "new-workspace": {
     title: "Новая Рабочая Область",
@@ -242,6 +222,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -250,6 +231,8 @@ const TRANSLATIONS = {
       query: "запроса",
       "desc-end":
         "вы можете вернуть пользовательский ответ об отказе, если контекст не найден.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Температура LLM",
@@ -406,8 +389,6 @@ const TRANSLATIONS = {
       "Встраивание - это процесс превращения текста в векторы. Эти учетные данные необходимы для превращения ваших файлов и подсказок в формат, который AnythingLLM может использовать для обработки.",
     provider: {
       title: "Поставщик встраивания",
-      description:
-        "Нет необходимости в настройке при использовании встроенного механизма встраивания AnythingLLM.",
     },
   },
   text: {
@@ -416,9 +397,6 @@ const TRANSLATIONS = {
       "Иногда может понадобиться изменить стандартный способ разделения и сегментации новых документов перед их вставкой в векторную базу данных.",
     "desc-end":
       "Следует изменять этот параметр только при полном понимании работы разделения текста и его побочных эффектов.",
-    "warn-start": "Изменения здесь будут применяться только к",
-    "warn-center": "новым встроенным документам",
-    "warn-end": ", а не к существующим документам.",
     size: {
       title: "Размер сегмента текста",
       description:
@@ -463,30 +441,6 @@ const TRANSLATIONS = {
       message: "Сообщение",
       response: "Ответ",
       at: "Отправлено в",
-    },
-  },
-  multi: {
-    title: "Многопользовательский режим",
-    description:
-      "Настройте ваш экземпляр для поддержки вашей команды, активировав многопользовательский режим.",
-    enable: {
-      "is-enable": "Многопользовательский режим включен",
-      enable: "Включить многопользовательский режим",
-      description:
-        "По умолчанию, вы будете единственным администратором. Как администратор, вы должны будете создавать учетные записи для всех новых пользователей или администраторов. Не теряйте ваш пароль, так как только администратор может сбросить пароли.",
-      username: "Имя пользователя учетной записи администратора",
-      password: "Пароль учетной записи администратора",
-    },
-    password: {
-      title: "Защита паролем",
-      description:
-        "Защитите ваш экземпляр AnythingLLM паролем. Если вы забудете его, метода восстановления не существует, поэтому убедитесь, что вы сохранили этот пароль.",
-    },
-    instance: {
-      title: "Защитить экземпляр паролем",
-      description:
-        "По умолчанию, вы будете единственным администратором. Как администратор, вы должны будете создавать учетные записи для всех новых пользователей или администраторов. Не теряйте ваш пароль, так как только администратор может сбросить пароли.",
-      password: "Пароль экземпляра",
     },
   },
   event: {
@@ -768,7 +722,7 @@ const TRANSLATIONS = {
     username_description:
       "Имя пользователя должно состоять только из строчных букв, цифр, символов подчеркивания и дефисов без пробелов",
     new_password: "Новый пароль",
-    passwort_description: "Пароль должен содержать не менее 8 символов",
+    password_description: "Пароль должен содержать не менее 8 символов",
     cancel: "Отмена",
     update_account: "Обновить учётную запись",
     theme: "Предпочтения темы",
@@ -869,6 +823,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -965,6 +923,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "Безопасность",
+    multiuser: {
+      title: "Многопользовательский режим",
+      description:
+        "Настройте ваш экземпляр для поддержки вашей команды, активировав многопользовательский режим.",
+      enable: {
+        "is-enable": "Многопользовательский режим включен",
+        enable: "Включить многопользовательский режим",
+        description:
+          "По умолчанию, вы будете единственным администратором. Как администратор, вы должны будете создавать учетные записи для всех новых пользователей или администраторов. Не теряйте ваш пароль, так как только администратор может сбросить пароли.",
+        username: "Имя пользователя учетной записи администратора",
+        password: "Пароль учетной записи администратора",
+      },
+    },
+    password: {
+      title: "Защита паролем",
+      description:
+        "Защитите ваш экземпляр AnythingLLM паролем. Если вы забудете его, метода восстановления не существует, поэтому убедитесь, что вы сохранили этот пароль.",
+      "password-label": "Пароль экземпляра",
+    },
+  },
+  home: {
+    welcome: "Добро пожаловать",
+    chooseWorkspace: "Выберите рабочую область, чтобы начать чат!",
+    notAssigned:
+      "Вы не назначены ни к одной рабочей области.\nСвяжитесь с администратором, чтобы запросить доступ к рабочей области.",
+    goToWorkspace: 'Перейти к рабочей области "{{workspace}}"',
   },
 };
 

@@ -15,9 +15,21 @@ const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
+const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const FILE_LIMIT = "3GB";
 
+// Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
+if (
+  process.env.NODE_ENV === "development" &&
+  !!process.env.ENABLE_HTTP_LOGGER
+) {
+  app.use(
+    httpLogger({
+      enableTimestamps: !!process.env.ENABLE_HTTP_LOGGER_TIMESTAMPS,
+    })
+  );
+}
 app.use(cors({ origin: true }));
 app.use(
   bodyParser.text({ limit: FILE_LIMIT }),
@@ -32,6 +44,36 @@ app.post(
   "/process",
   [verifyPayloadIntegrity],
   async function (request, response) {
+    const { filename, options = {}, metadata = {} } = reqBody(request);
+    try {
+      const targetFilename = path
+        .normalize(filename)
+        .replace(/^(\.\.(\/|\\|$))+/, "");
+      const {
+        success,
+        reason,
+        documents = [],
+      } = await processSingleFile(targetFilename, options, metadata);
+      response
+        .status(200)
+        .json({ filename: targetFilename, success, reason, documents });
+    } catch (e) {
+      console.error(e);
+      response.status(200).json({
+        filename: filename,
+        success: false,
+        reason: "A processing error occurred.",
+        documents: [],
+      });
+    }
+    return;
+  }
+);
+
+app.post(
+  "/parse",
+  [verifyPayloadIntegrity],
+  async function (request, response) {
     const { filename, options = {} } = reqBody(request);
     try {
       const targetFilename = path
@@ -41,7 +83,10 @@ app.post(
         success,
         reason,
         documents = [],
-      } = await processSingleFile(targetFilename, options);
+      } = await processSingleFile(targetFilename, {
+        ...options,
+        parseOnly: true,
+      });
       response
         .status(200)
         .json({ filename: targetFilename, success, reason, documents });
@@ -62,13 +107,13 @@ app.post(
   "/process-link",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { link, scraperHeaders = {} } = reqBody(request);
+    const { link, scraperHeaders = {}, metadata = {} } = reqBody(request);
     try {
       const {
         success,
         reason,
         documents = [],
-      } = await processLink(link, scraperHeaders);
+      } = await processLink(link, scraperHeaders, metadata);
       response.status(200).json({ url: link, success, reason, documents });
     } catch (e) {
       console.error(e);

@@ -28,6 +28,7 @@ class MSSQLConnector {
       connectionString: null, // we will force into RFC-3986
     }
   ) {
+    this.className = "MSSQLConnector";
     this.connectionString = config.connectionString;
     this._client = null;
     this.#parseDatabase();
@@ -43,8 +44,12 @@ class MSSQLConnector {
       user: parsed?.username,
       password: parsed?.password,
       database: parsed?.endpoint,
-      server: parsed?.hosts[0]?.host,
-      port: parsed?.hosts[0]?.port,
+      server: parsed?.hosts?.[0]?.host,
+      port: parsed?.hosts?.[0]?.port,
+      options: {
+        ...this.connectionConfig.options,
+        encrypt: parsed?.options?.encrypt === "true",
+      },
     };
   }
 
@@ -57,7 +62,7 @@ class MSSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
-   * @returns {import(".").QueryResult}
+   * @returns {Promise<import(".").QueryResult>}
    */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
@@ -68,18 +73,31 @@ class MSSQLConnector {
       result.rows = query.recordset;
       result.count = query.rowsAffected.reduce((sum, a) => sum + a, 0);
     } catch (err) {
-      console.log(this.constructor.name, err);
+      console.log(this.className, err);
       result.error = err.message;
     } finally {
-      await this._client.close();
-      this.#connected = false;
+      // Check client is connected before closing since we use this for validation
+      if (this._client) {
+        await this._client.close();
+        this.#connected = false;
+      }
     }
     return result;
+  }
+
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 
   getTablesSql() {
     return `SELECT name FROM sysobjects WHERE xtype='U';`;
   }
+
   getTableSchemaSql(table_name) {
     return `SELECT COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${table_name}'`;
   }

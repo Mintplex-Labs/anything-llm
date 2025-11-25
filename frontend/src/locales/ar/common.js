@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "اختياري",
     yes: "نعم",
     no: "لا",
+    search: null,
   },
   settings: {
     title: "إعدادات المثيل",
@@ -123,27 +124,6 @@ const TRANSLATIONS = {
       "recovery-code": " {{index}} رمز الاسترداد",
       "back-to-login": "العودة إلى تسجيل الدخول",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "مرحبًا بك في إيني ثينك إلْلْ اِمْ ، إيني ثينك إلْلْ اِمْ هي أداة ذكاء اصطناعي مفتوحة المصدر من مينْتْ بْلِكْس تعمل على تحويل أي شيء إلى روبوت محادثة مدرب يمكنك الاستعلام منه والمحادثة معه. إيني ثينك إلْلْ اِمْ هو برنامج (احضر مفاتيحك الخاصة) لذا لا توجد اشتراكات أو رسوم أو تكاليف لهذا البرنامج خارج الخدمات التي تريد استخدامها معه.",
-    part2:
-      "إيني ثينك إلْلْ اِمْ هي الطريقة الأسهل لوضع منتجات الذكاء الاصطناعي القوية مثل أوبن إآي و جيبيتي فور و لَنكشين و بينيكونديبي و كروماديبي وغيرها من الخدمات معًا في حزمة أنيقة لزيادة إنتاجيتك بمقدار 100 ضعف.",
-    part3:
-      "يمكن تشغيل  إيني ثينك إلْلْ اِمْ محليًا بالكامل على جهازك ولن تلاحظ حتى وجوده! لا حاجة إلى وحدة معالجة رسومية. التثبيت السحابي والمحلي متوفرين أيضًا.\nتزداد منظومة أدوات الذكاء الاصطناعي قوة يومًا بعد يوم. يجعل  إيني ثينك إلْلْ اِمْ استخدامه سهلاً.",
-    githubIssue: "إنشاء مسألة على جيثوب",
-    user1: "كيف أبدأ؟",
-    part4:
-      "الأمر بسيط. يتم تنظيم جميع  الحُزَم في  زُمَرٍ نطلق عليها مساحة العمل . وتتكون مساحات العمل من مجموعات من الملفات والمستندات والصور وملفات  بيديإفْ وغيرها من الملفات التي سيتم تحويلها إلى شيء يمكن  لنماذج التعلم العميق فهمه واستخدامه في المحادثة. يمكنك إضافة الملفات وإزالتها في أي وقت.",
-    createWorkspace: "قم بإنشاء مساحة العمل الأولى الخاصة بك",
-    user2:
-      "هل هذا يشبه دروبوكس للذكاء الاصطناعي أم ماذا؟ ماذا عن المحادثة؟ إنه روبوت محادثة أليس كذلك؟",
-    part5:
-      "إن  إيني ثينك إلْلْمْ أكثر من مجرد  دروبوكس أكثر ذكاءً.\n\n إيني ثينك إلْلْمْ يوفر طريقتين للتحدث مع بياناتك:\n\n<i>الاستعلام:</i> ستستخرج محادثاتُك البيانات أو الاستنتاجات الموجودة في مستندات مساحة العمل الخاصة بك والتي يمكنها الوصول إليها. إن إضافة المزيد من المستندات إلى مساحة العمل تجعلها أكثر ذكاءً! \n\n<i>المحادثة:</i> تساهم مستنداتك + سجل المحادثة المستمر في نفس الوقت في إغناء نموذج التعلم العميق. إنه رائع لإضافة معلومات نصية في الوقت الفعلي أو التصحيحات وسوء الفهم الذي قد يكون لدى نموذج التعلم العميق. \n\nيمكنك التبديل بين أي من الوضعين \n<i>في منتصف المحادثة!</i>",
-    user3: "ما شاء الله، هذا يبدو مذهلاً، دعني أجربه الآن!",
-    part6: "استمتع!",
-    starOnGitHub: "ابدأ على جيثوب",
-    contact: "اتصل ب مينْت بليكْس",
   },
   "new-workspace": {
     title: "مساحة عمل جديدة",
@@ -240,6 +220,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -248,6 +229,8 @@ const TRANSLATIONS = {
       query: "استعلام",
       "desc-end":
         "وضعٍية ترغب في إرجاع رفض آخر مناسب عندما لا يتم العثور على السياق.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "حرارة نموذج التعلم العميق",
@@ -402,8 +385,6 @@ const TRANSLATIONS = {
       "التضمين هو عملية تحويل النص إلى متجهات. هذه البيانات مطلوبة لتحويل ملفاتك ومطالباتك إلى تنسيق يمكن لـ إني ثينك إلْلْمْ استخدامه للمعالجة.",
     provider: {
       title: "موفر التضمين",
-      description:
-        "لا يلزم إجراء أي إعداد عند استخدام محرك التضمين الأصلي الخاص بـ إني ثينك إلْلْمْ.",
     },
   },
   text: {
@@ -412,9 +393,6 @@ const TRANSLATIONS = {
       "في بعض الأحيان، قد ترغب في تغيير الطريقة الافتراضية التي يتم بها تقسيم المستندات الجديدة وتقطيعها قبل إدراجها في قاعدة بيانات المتجهة الخاصة بك.",
     "desc-end":
       "يجب عليك فقط تعديل هذا الإعداد إذا كنت تفهم كيفية عمل تقسيم النص وتأثيراته الجانبية.",
-    "warn-start": "التغييرات هنا سوف تنطبق فقط على",
-    "warn-center": "المستندات المضمنة حديثًا",
-    "warn-end": "، وليس على المستندات الموجودة.",
     size: {
       title: "حجم قطعة النص",
       description:
@@ -459,30 +437,6 @@ const TRANSLATIONS = {
       message: "رسالة",
       response: "استجابة",
       at: "أرسلت في",
-    },
-  },
-  multi: {
-    title: "وضعية المستعملين المتعددين",
-    description:
-      "قم بإعداد مثيلك لدعم فريقك من خلال تنشيط وضعية المستعملين المتعددين.",
-    enable: {
-      "is-enable": "تم تمكين وضعية المستعملين المتعددين",
-      enable: "تمكين وضعية المستعملين المتعددين",
-      description:
-        "افتراضيًا، ستكون أنت المشرف الوحيد. وبصفتك مشرفا ستحتاج إلى إنشاء حسابات لجميع المستعملين أو المشرفين الجدد. لا تفقد كلمة مرورك، حيث يمكن فقط للمستعمل المشرف إعادة تعيين كلمات المرور.",
-      username: "اسم المستعمل لحساب المشرف",
-      password: "كلمة مرور حساب المشرف",
-    },
-    password: {
-      title: "حماية كلمة المرور",
-      description:
-        "إحم مثيل إني ثينك إلْلْمْ بكلمة المرور. إذا نسيتها فلا يوجد طريقة لاستردادها، فاحرص على حفظها.",
-    },
-    instance: {
-      title: "حماية كلمة مرور المثيل",
-      description:
-        "افتراضيًا، ستكون أنت المشرف الوحيد. وبصفتك مشرفا، ستحتاج إلى إنشاء حسابات لجميع المستعملين أو المشرفين الجدد. لا تفقد كلمة مرورك، حيث يمكن فقط لمستعمل مشرف إعادة تعيين كلمات المرور.",
-      password: "كلمة مرور المثيل",
     },
   },
   event: {
@@ -728,7 +682,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,
@@ -829,6 +783,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -925,6 +883,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "حماية",
+    multiuser: {
+      title: "وضعية المستعملين المتعددين",
+      description:
+        "قم بإعداد مثيلك لدعم فريقك من خلال تنشيط وضعية المستعملين المتعددين.",
+      enable: {
+        "is-enable": "تم تمكين وضعية المستعملين المتعددين",
+        enable: "تمكين وضعية المستعملين المتعددين",
+        description:
+          "افتراضيًا، ستكون أنت المشرف الوحيد. وبصفتك مشرفا ستحتاج إلى إنشاء حسابات لجميع المستعملين أو المشرفين الجدد. لا تفقد كلمة مرورك، حيث يمكن فقط للمستعمل المشرف إعادة تعيين كلمات المرور.",
+        username: "اسم المستعمل لحساب المشرف",
+        password: "كلمة مرور حساب المشرف",
+      },
+    },
+    password: {
+      title: "حماية كلمة المرور",
+      description:
+        "إحم مثيل إني ثينك إلْلْمْ بكلمة المرور. إذا نسيتها فلا يوجد طريقة لاستردادها، فاحرص على حفظها.",
+      "password-label": "كلمة مرور المثيل",
+    },
+  },
+  home: {
+    welcome: "مرحبا",
+    chooseWorkspace: "اختر مساحة العمل لبدء المحادثة!",
+    notAssigned:
+      "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
+    goToWorkspace: 'الذهاب إلى "{{workspace}}"',
   },
 };
 

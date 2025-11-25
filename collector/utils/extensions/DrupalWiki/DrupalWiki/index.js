@@ -202,7 +202,11 @@ class DrupalWiki {
     console.log(
       `[DrupalWiki Loader]: Saving page '${page.title}' (${page.id}) to '${this.storagePath}/${fileName}'`
     );
-    writeToServerDocuments(data, fileName, this.storagePath);
+    writeToServerDocuments({
+      data,
+      filename: fileName,
+      destinationOverride: this.storagePath,
+    });
   }
 
   /**
@@ -219,7 +223,9 @@ class DrupalWiki {
       pageId: pageId,
       accessToken: this.accessToken,
     };
-    return `drupalwiki://${this.baseUrl}?payload=${encryptionWorker.encrypt(
+    return `drupalwiki://${
+      this.baseUrl
+    }/node/${pageId}?payload=${encryptionWorker.encrypt(
       JSON.stringify(payload)
     )}`;
   }
@@ -259,17 +265,27 @@ class DrupalWiki {
    * @private
    */
   #processPageBody({ body, url, title, lastModified }) {
-    // use the title as content if there is none
     const textContent = body.trim() !== "" ? body : title;
 
     const plainTextContent = htmlToText(textContent, {
       wordwrap: false,
       preserveNewlines: true,
+      selectors: [
+        {
+          selector: "table",
+          format: "dataTable",
+          options: {
+            colSpacing: 3,
+            rowSpacing: 1,
+            uppercaseHeaderCells: true,
+            maxColumnWidth: Infinity,
+          },
+        },
+      ],
     });
-    // preserve structure
+
     const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
-    // add the link to the document
-    return `Link/URL: ${url}\n\n${plainBody}`;
+    return plainBody;
   }
 
   async #downloadAndProcessAttachments(pageId) {

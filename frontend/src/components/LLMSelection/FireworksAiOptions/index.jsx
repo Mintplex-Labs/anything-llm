@@ -2,6 +2,11 @@ import System from "@/models/system";
 import { useState, useEffect } from "react";
 
 export default function FireworksAiOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(settings?.FireworksAiLLMApiKey);
+  const [fireworksAiApiKey, setFireworksAiApiKey] = useState(
+    settings?.FireworksAiLLMApiKey
+  );
+
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
@@ -17,22 +22,27 @@ export default function FireworksAiOptions({ settings }) {
           required={true}
           autoComplete="off"
           spellCheck={false}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={() => setFireworksAiApiKey(inputValue)}
         />
       </div>
       {!settings?.credentialsOnly && (
-        <FireworksAiModelSelection settings={settings} />
+        <FireworksAiModelSelection
+          apiKey={fireworksAiApiKey}
+          settings={settings}
+        />
       )}
     </div>
   );
 }
-function FireworksAiModelSelection({ settings }) {
+function FireworksAiModelSelection({ apiKey, settings }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels("fireworksai");
+      const { models } = await System.customModels("fireworksai", apiKey);
 
       if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
@@ -47,7 +57,7 @@ function FireworksAiModelSelection({ settings }) {
       setLoading(false);
     }
     findCustomModels();
-  }, []);
+  }, [apiKey]);
 
   if (loading || Object.keys(groupedModels).length === 0) {
     return (

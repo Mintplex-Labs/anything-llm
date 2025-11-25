@@ -2,10 +2,7 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { purgeDocument } = require("../../../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../../../utils/helpers");
-const {
-  prepareWorkspaceChatsForExport,
-  exportChatsAsType,
-} = require("../../../utils/helpers/chat/convertTo");
+const { exportChatsAsType } = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -192,8 +189,10 @@ function apiSystemEndpoints(app) {
     */
       try {
         const { type = "jsonl" } = request.query;
-        const chats = await prepareWorkspaceChatsForExport(type);
-        const { contentType, data } = await exportChatsAsType(chats, type);
+        const { contentType, data } = await exportChatsAsType(
+          type,
+          "workspace"
+        );
         await EventLogs.logEvent("exported_chats", {
           type,
         });

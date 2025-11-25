@@ -146,7 +146,7 @@ const QDrant = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      if (skipCache) {
+      if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
           const { client } = await this.connect();
@@ -222,10 +222,11 @@ const QDrant = {
           20
         ),
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkPrefix: EmbedderEngine?.embeddingPrefix,
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      console.log("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -275,18 +276,28 @@ const QDrant = {
         const chunks = [];
 
         console.log("Inserting vectorized chunks into QDrant collection.");
-        for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
+        for (const chunk of toChunks(vectors, 500)) {
+          const batchIds = [],
+            batchVectors = [],
+            batchPayloads = [];
+          chunks.push(chunk);
+          chunk.forEach((v) => {
+            batchIds.push(v.id);
+            batchVectors.push(v.vector);
+            batchPayloads.push(v.payload);
+          });
 
-        const additionResult = await client.upsert(namespace, {
-          wait: true,
-          batch: {
-            ids: submission.ids,
-            vectors: submission.vectors,
-            payloads: submission.payloads,
-          },
-        });
-        if (additionResult?.status !== "completed")
-          throw new Error("Error embedding into QDrant", additionResult);
+          const additionResult = await client.upsert(namespace, {
+            wait: true,
+            batch: {
+              ids: batchIds,
+              vectors: batchVectors,
+              payloads: batchPayloads,
+            },
+          });
+          if (additionResult?.status !== "completed")
+            throw new Error("Error embedding into QDrant", additionResult);
+        }
 
         await storeVectorResult(chunks, fullFilePath);
       }

@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Instance Ayarları",
@@ -115,27 +116,6 @@ const TRANSLATIONS = {
       "recovery-code": "Kurtarma Kodu {{index}}",
       "back-to-login": "Girişe Geri Dön",
     },
-  },
-  welcomeMessage: {
-    part1:
-      "AnythingLLM'e hoş geldiniz. AnythingLLM, Mintplex Labs tarafından geliştirilen açık kaynaklı bir yapay zeka aracıdır ve her şeyi, sorgulayabileceğiniz ve sohbet edebileceğiniz eğitimli bir chatbota dönüştürür. AnythingLLM, BYOK (kendi anahtarlarınızı getirin) yazılımıdır; bu nedenle, kullanmak istediğiniz hizmetler dışında herhangi bir abonelik, ücret ya da ek masraf yoktur.",
-    part2:
-      "AnythingLLM, OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ve benzeri güçlü yapay zeka ürünlerini zahmetsizce, düzenli bir paket içinde bir araya getirmenin en kolay yoludur; böylece verimliliğinizi 100 kat artırabilirsiniz.",
-    part3:
-      "AnythingLLM tamamen yerel olarak makinenizde çok az kaynakla çalışabilir—orada olduğunu bile fark etmezsiniz! GPU gerekmez. Bulut veya şirket içi (on-premises) kurulum da mevcuttur.\nYapay zeka araç ekosistemi her geçen gün daha da güçleniyor. AnythingLLM bu gücü kolayca kullanmanızı sağlar.",
-    githubIssue: "GitHub'da bir sorun oluşturun",
-    user1: "Nasıl başlarım?!",
-    part4:
-      "Bu çok basit. Tüm koleksiyonlar, 'Çalışma Alanları' (Workspaces) adını verdiğimiz gruplar halinde düzenlenir. Çalışma Alanları; dosyalar, belgeler, resimler, PDF'ler ve diğer dosyaların LLM'lerin anlayabileceği ve sohbette kullanabileceği biçime dönüştürüleceği gruplardır.\n\nİstediğiniz zaman dosya ekleyip kaldırabilirsiniz.",
-    createWorkspace: "İlk çalışma alanınızı oluşturun",
-    user2:
-      "Bu bir tür yapay zeka Dropbox'ı gibi mi? Peki sohbet etmek nasıl? Bir chatbot değil mi?",
-    part5:
-      "AnythingLLM, sıradan bir Dropbox'tan çok daha fazlasıdır.\n\nAnythingLLM, verilerinizle etkileşime geçmenin iki yolunu sunar:\n\n<i>Sorgu (Query):</i> Sohbetleriniz, çalışma alanınızdaki belgelere erişip onlardan elde ettiği verileri veya çıkarımları size sunar. Çalışma Alanınıza daha fazla belge eklemek, onu daha akıllı hâle getirir!\n\n<i>Konuşma (Conversational):</i> Belgeleriniz ve devam eden sohbet geçmişiniz, aynı anda LLM'in bilgi tabanına katkıda bulunur. Bu, gerçek zamanlı metin bilgileri, düzeltmeler veya LLM'nin yanlış anlayabileceği noktaların düzeltilmesi için mükemmeldir.\n\nSohbet esnasında, <i>iki mod arasında istediğiniz an</i> geçiş yapabilirsiniz!",
-    user3: "Vay, harika görünüyor. Hemen denemek istiyorum!",
-    part6: "İyi eğlenceler!",
-    starOnGitHub: "GitHub'da Yıldız Verin",
-    contact: "Mintplex Labs ile İletişime Geçin",
   },
   "new-workspace": {
     title: "Yeni Çalışma Alanı",
@@ -233,6 +213,7 @@ const TRANSLATIONS = {
         deleteConfirm: null,
         clearAllConfirm: null,
         expand: null,
+        publish: null,
       },
     },
     refusal: {
@@ -241,6 +222,8 @@ const TRANSLATIONS = {
       query: "sorgu",
       "desc-end":
         "modunda bağlam bulunamazsa, özel bir ret yanıtı döndürmek isteyebilirsiniz.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Sıcaklığı",
@@ -397,8 +380,6 @@ const TRANSLATIONS = {
       "Gömme, metni vektörlere dönüştürme sürecidir. Dosyalarınızın ve komutlarınızın işlenebilmesi için AnythingLLM, bu kimlik bilgilerine ihtiyaç duyar.",
     provider: {
       title: "Embedding Sağlayıcısı",
-      description:
-        "AnythingLLM'nin yerel gömme motoru kullanıldığında ek bir kurulum gerekmez.",
     },
   },
   text: {
@@ -407,9 +388,6 @@ const TRANSLATIONS = {
       "Bazı durumlarda, yeni belgelerin vektör veritabanınıza eklenmeden önce hangi varsayılan yöntemle bölünüp parçalanacağını değiştirmek isteyebilirsiniz.",
     "desc-end":
       "Metin bölmenin nasıl çalıştığını ve olası yan etkilerini tam olarak bilmiyorsanız bu ayarı değiştirmemelisiniz.",
-    "warn-start": "Buradaki değişiklikler yalnızca",
-    "warn-center": "yeni eklenen belgeler",
-    "warn-end": "için geçerli olacak, mevcut belgelere uygulanmaz.",
     size: {
       title: "Metin Parça Boyutu",
       description:
@@ -454,30 +432,6 @@ const TRANSLATIONS = {
       message: "Mesaj",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
-    },
-  },
-  multi: {
-    title: "Çoklu Kullanıcı Modu",
-    description:
-      "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
-    enable: {
-      "is-enable": "Çoklu Kullanıcı Modu Etkin",
-      enable: "Çoklu Kullanıcı Modunu Etkinleştir",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      username: "Yönetici hesap kullanıcı adı",
-      password: "Yönetici hesap şifresi",
-    },
-    password: {
-      title: "Şifre Koruması",
-      description:
-        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
-    },
-    instance: {
-      title: "Örneği Şifreyle Koru",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      password: "Örnek Şifresi",
     },
   },
   event: {
@@ -723,7 +677,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,
@@ -824,6 +778,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -920,6 +878,118 @@ const TRANSLATIONS = {
       help: null,
       showLLMSelector: null,
     },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+      agent_flow: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        publish_button: null,
+        submitting: null,
+        submit: null,
+        privacy_note: null,
+      },
+      generic: {
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
+      slash_command: {
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        command_label: null,
+        command_description: null,
+        command_placeholder: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        public_description: null,
+        private_description: null,
+        publish_button: null,
+        submitting: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+      },
+    },
+  },
+  security: {
+    title: "Güvenlik",
+    multiuser: {
+      title: "Çoklu Kullanıcı Modu",
+      description:
+        "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
+      enable: {
+        "is-enable": "Çoklu Kullanıcı Modu Etkin",
+        enable: "Çoklu Kullanıcı Modunu Etkinleştir",
+        description:
+          "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
+        username: "Yönetici hesap kullanıcı adı",
+        password: "Yönetici hesap şifresi",
+      },
+    },
+    password: {
+      title: "Şifre Koruması",
+      description:
+        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
+      "password-label": "Örnek şifresi",
+    },
+  },
+  home: {
+    welcome: "Hoşgeldiniz",
+    chooseWorkspace: "Bir çalışma alanı seçerek sohbete başlayın!",
+    notAssigned:
+      "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
+    goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
   },
 };
 

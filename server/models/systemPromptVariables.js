@@ -7,13 +7,13 @@ const moment = require("moment");
  * @property {string} key
  * @property {string|function} value
  * @property {string} description
- * @property {'system'|'user'|'static'} type
+ * @property {'system'|'user'|'workspace'|'static'} type
  * @property {number} userId
  * @property {boolean} multiUserRequired
  */
 
 const SystemPromptVariables = {
-  VALID_TYPES: ["user", "system", "static"],
+  VALID_TYPES: ["user", "workspace", "system", "static"],
   DEFAULT_VARIABLES: [
     {
       key: "time",
@@ -35,6 +35,16 @@ const SystemPromptVariables = {
       description: "Current date and time",
       type: "system",
       multiUserRequired: false,
+    },
+    {
+      key: "user.id",
+      value: (userId = null) => {
+        if (!userId) return "[User ID]";
+        return userId;
+      },
+      description: "Current user's ID",
+      type: "user",
+      multiUserRequired: true,
     },
     {
       key: "user.name",
@@ -74,6 +84,30 @@ const SystemPromptVariables = {
       type: "user",
       multiUserRequired: true,
     },
+    {
+      key: "workspace.id",
+      value: (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace ID]";
+        return workspaceId;
+      },
+      description: "Current workspace's ID",
+      type: "workspace",
+      multiUserRequired: false,
+    },
+    {
+      key: "workspace.name",
+      value: async (workspaceId = null) => {
+        if (!workspaceId) return "[Workspace name]";
+        const workspace = await prisma.workspaces.findUnique({
+          where: { id: Number(workspaceId) },
+          select: { name: true },
+        });
+        return workspace?.name || "[Workspace name is empty or unknown]";
+      },
+      description: "Current workspace's name",
+      type: "workspace",
+      multiUserRequired: false,
+    },
   ],
 
   /**
@@ -92,15 +126,14 @@ const SystemPromptVariables = {
   /**
    * Retrieves all system prompt variables with dynamic variables as well
    * as user defined variables
-   * @param {number|null} userId - the user ID to filter variables by
+   * @param {number|null} userId - the current user ID (determines if in multi-user mode)
    * @returns {Promise<SystemPromptVariable[]>}
    */
   getAll: async function (userId = null) {
-    const dbVariables = await prisma.system_prompt_variables.findMany({
-      where: userId ? { userId: Number(userId) } : {},
-    });
-
-    const formattedDbVars = dbVariables.map((v) => ({
+    // All user-defined system variables are available to everyone globally since only admins can create them.
+    const userDefinedSystemVariables =
+      await prisma.system_prompt_variables.findMany();
+    const formattedDbVars = userDefinedSystemVariables.map((v) => ({
       id: v.id,
       key: v.key,
       value: v.value,
@@ -109,12 +142,13 @@ const SystemPromptVariables = {
       userId: v.userId,
     }));
 
-    // If userId is not provided, filter the default variables to only include non-multiUserRequired ones
-    const filteredSystemVars = !userId
+    // If userId is not provided, filter the default variables to only include non-multiUserRequired variables
+    // since we wont be able to dynamically inject user-related content.
+    const defaultSystemVariables = !userId
       ? this.DEFAULT_VARIABLES.filter((v) => !v.multiUserRequired)
       : this.DEFAULT_VARIABLES;
 
-    return [...filteredSystemVars, ...formattedDbVars];
+    return [...defaultSystemVariables, ...formattedDbVars];
   },
 
   /**
@@ -183,12 +217,17 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Injects variables into a string based on the user ID (if provided) and the variables available
+   * Injects variables into a string based on the user ID and workspace ID (if provided) and the variables available
    * @param {string} str - the input string to expand variables into
    * @param {number|null} userId - the user ID to use for dynamic variables
+   * @param {number|null} workspaceId - the workspace ID to use for workspace variables
    * @returns {Promise<string>}
    */
-  expandSystemPromptVariables: async function (str, userId = null) {
+  expandSystemPromptVariables: async function (
+    str,
+    userId = null,
+    workspaceId = null
+  ) {
     if (!str) return str;
 
     try {
@@ -202,26 +241,62 @@ const SystemPromptVariables = {
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
-        // Handle `user.X` variables with current user's data
-        if (key.startsWith("user.")) {
-          const userProp = key.split(".")[1];
+        // Determine if the variable is a class-based variable (workspace.X or user.X)
+        const isWorkspaceOrUserVariable = ["workspace.", "user."].some(
+          (prefix) => key.startsWith(prefix)
+        );
+
+        // Handle class-based variables with current workspace's or user's data
+        if (isWorkspaceOrUserVariable) {
+          let variableTypeDisplay;
+          if (key.startsWith("workspace.")) variableTypeDisplay = "Workspace";
+          else if (key.startsWith("user.")) variableTypeDisplay = "User";
+          else throw new Error(`Invalid class-based variable: ${key}`);
+
+          // Get the property name after the prefix
+          const prop = key.split(".")[1];
           const variable = allVariables.find((v) => v.key === key);
 
+          // If the variable is a function, call it to get the current value
           if (variable && typeof variable.value === "function") {
+            // If the variable is an async function, call it to get the current value
             if (variable.value.constructor.name === "AsyncFunction") {
+              let value;
               try {
-                const value = await variable.value(userId);
-                result = result.replace(match, value);
+                if (variableTypeDisplay === "Workspace")
+                  value = await variable.value(workspaceId);
+                else if (variableTypeDisplay === "User")
+                  value = await variable.value(userId);
+                else throw new Error(`Invalid class-based variable: ${key}`);
               } catch (error) {
-                console.error(`Error processing user variable ${key}:`, error);
-                result = result.replace(match, `[User ${userProp}]`);
+                console.error(
+                  `Error processing ${variableTypeDisplay} variable ${key}:`,
+                  error
+                );
+                value = `[${variableTypeDisplay} ${prop}]`;
               }
+              result = result.replace(match, value);
             } else {
-              const value = variable.value();
+              let value;
+              try {
+                // Call the variable function with the appropriate workspace or user ID
+                if (variableTypeDisplay === "Workspace")
+                  value = variable.value(workspaceId);
+                else if (variableTypeDisplay === "User")
+                  value = variable.value(userId);
+                else throw new Error(`Invalid class-based variable: ${key}`);
+              } catch (error) {
+                console.error(
+                  `Error processing ${variableTypeDisplay} variable ${key}:`,
+                  error
+                );
+                value = `[${variableTypeDisplay} ${prop}]`;
+              }
               result = result.replace(match, value);
             }
           } else {
-            result = result.replace(match, `[User ${userProp}]`);
+            // If the variable is not a function, replace the match with the variable value
+            result = result.replace(match, `[${variableTypeDisplay} ${prop}]`);
           }
           continue;
         }

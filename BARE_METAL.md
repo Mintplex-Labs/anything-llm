@@ -86,7 +86,7 @@ curl -I "http://localhost:3001/api/env-dump" | head -n 1|cut -d$' ' -f2
 echo "Rebuilding Frontend"
 cd $HOME/anything-llm/frontend && yarn && yarn build && cd $HOME/anything-llm
 
-echo "Copying to Sever Public"
+echo "Copying to Server Public"
 rm -rf server/public
 cp -r frontend/dist server/public
 
@@ -112,4 +112,36 @@ cd $HOME/anything-llm/collector
 (NODE_ENV=production node index.js) &> /logs/collector.log &
 ```
 
+## Using Nginx?
 
+If you are using Nginx, you can use the following example configuration to proxy the requests to the server. Chats for streaming require **websocket** connections, so you need to ensure that the Nginx configuration is set up to support websockets. You can do this with a simple reverse proxy configuration.
+
+```nginx
+server {
+   # Enable websocket connections for agent protocol.
+   location ~* ^/api/agent-invocation/(.*) {
+      proxy_pass http://0.0.0.0:3001;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "Upgrade";
+   }
+
+   listen 80;
+   server_name [insert FQDN here];
+   location / {
+      # Prevent timeouts on long-running requests.
+      proxy_connect_timeout       605;
+      proxy_send_timeout          605;
+      proxy_read_timeout          605;
+      send_timeout                605;
+      keepalive_timeout           605;
+
+      # Enable readable HTTP Streaming for LLM streamed responses
+      proxy_buffering off; 
+      proxy_cache off;
+
+      # Proxy your locally running service
+      proxy_pass  http://0.0.0.0:3001;
+    }
+}
+```

@@ -17,6 +17,7 @@
   --theme-bg-chat-input: #27282a;
   --theme-text-primary: #ffffff;
   --theme-text-secondary: rgba(255, 255, 255, 0.6);
+  --theme-placeholder: #57585a;
   --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
   --theme-sidebar-item-selected: rgba(255, 255, 255, 0.3);
   --theme-sidebar-item-hover: #3f3f42;
@@ -116,6 +117,7 @@
   --theme-bg-chat-input: #eaeaea;
   --theme-text-primary: #0e0f0f;
   --theme-text-secondary: #7a7d7e;
+  --theme-placeholder: #9ca3af;
   --theme-sidebar-item-default: #ffffff;
   --theme-sidebar-item-selected: #ffffff;
   --theme-sidebar-item-hover: #c8efff;
@@ -251,6 +253,18 @@ body {
     Helvetica Neue,
     sans-serif;
   background-color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0e0f0f;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    overscroll-behavior: none;
+  }
 }
 
 a {
@@ -1019,6 +1033,10 @@ does not extend the close button beyond the viewport. */
 
 .search-input::-webkit-search-cancel-button {
   filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
+}
+
+[data-theme="light"] .search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(0) brightness(0) opacity(0.5);
 }
 
 .animate-remove {

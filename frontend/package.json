@@ -28,6 +28,7 @@
     "moment": "^2.30.1",
     "onnxruntime-web": "^1.18.0",
     "pluralize": "^8.0.0",
+    "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "13.1.1",
     "react-confetti-explosion": "^2.1.2",

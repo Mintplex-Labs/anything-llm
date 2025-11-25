@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
@@ -130,6 +131,22 @@ async function streamChatWithWorkspace(
       });
     });
 
+  // Inject any parsed files for this workspace/thread/user
+  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
+    workspace,
+    thread || null,
+    user || null
+  );
+  parsedFiles.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
@@ -231,6 +248,7 @@ async function streamChatWithWorkspace(
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+        user: user,
       });
 
     completeText = textResponse;
@@ -247,6 +265,7 @@ async function streamChatWithWorkspace(
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      user: user,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,

@@ -9,6 +9,7 @@ class MySQLConnector {
       connectionString: null,
     }
   ) {
+    this.className = "MySQLConnector";
     this.connectionString = config.connectionString;
     this._client = null;
     this.database_id = this.#parseDatabase();
@@ -29,7 +30,7 @@ class MySQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
-   * @returns {import(".").QueryResult}
+   * @returns {Promise<import(".").QueryResult>}
    */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
@@ -39,13 +40,25 @@ class MySQLConnector {
       result.rows = query;
       result.count = query?.length;
     } catch (err) {
-      console.log(this.constructor.name, err);
+      console.log(this.className, err);
       result.error = err.message;
     } finally {
-      await this._client.end();
-      this.#connected = false;
+      // Check client is connected before closing since we use this for validation
+      if (this._client) {
+        await this._client.end();
+        this.#connected = false;
+      }
     }
     return result;
+  }
+
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 
   getTablesSql() {

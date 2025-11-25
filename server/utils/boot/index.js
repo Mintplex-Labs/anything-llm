@@ -3,6 +3,7 @@ const { BackgroundService } = require("../BackgroundWorkers");
 const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
+const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 
 // Testing SSL? You can make a self signed certificate and point the ENVs to that location
 // make a directory in server called 'sslcert' - cd into it
@@ -31,6 +32,7 @@ function bootSSL(app, port = 3001) {
         new CommunicationKey(true);
         new EncryptionManager();
         new BackgroundService().boot();
+        await eagerLoadContextWindows();
         console.log(`Primary server in HTTPS mode listening on port ${port}`);
       })
       .on("error", catchSigTerms);
@@ -60,6 +62,7 @@ function bootHTTP(app, port = 3001) {
       new CommunicationKey(true);
       new EncryptionManager();
       new BackgroundService().boot();
+      await eagerLoadContextWindows();
       console.log(`Primary server in HTTP mode listening on port ${port}`);
     })
     .on("error", catchSigTerms);

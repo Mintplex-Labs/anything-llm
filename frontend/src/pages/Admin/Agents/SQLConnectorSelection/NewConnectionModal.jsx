@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
 
 function assembleConnectionString({
   engine,
@@ -11,6 +13,7 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
+  encrypt = false,
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
@@ -20,7 +23,7 @@ function assembleConnectionString({
     case "mysql":
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
-      return `mssql://${username}:${password}@${host}:${port}/${database}`;
+      return `mssql://${username}:${password}@${host}:${port}/${database}?encrypt=${encrypt}`;
     default:
       return null;
   }
@@ -33,11 +36,19 @@ const DEFAULT_CONFIG = {
   host: null,
   port: null,
   database: null,
+  schema: null,
+  encrypt: false,
 };
 
-export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
+export default function NewSQLConnection({
+  isOpen,
+  closeModal,
+  onSubmit,
+  setHasChanges,
+}) {
   const [engine, setEngine] = useState(DEFAULT_ENGINE);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
+  const [isValidating, setIsValidating] = useState(false);
   if (!isOpen) return null;
 
   function handleClose() {
@@ -46,14 +57,15 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     closeModal();
   }
 
-  function onFormChange() {
-    const form = new FormData(document.getElementById("sql-connection-form"));
+  function onFormChange(e) {
+    const form = new FormData(e.target.form);
     setConfig({
       username: form.get("username").trim(),
       password: form.get("password"),
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
+      encrypt: form.get("encrypt") === "true",
     });
   }
 
@@ -61,12 +73,43 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     e.preventDefault();
     e.stopPropagation();
     const form = new FormData(e.target);
-    onSubmit({
-      engine,
-      database_id: form.get("name"),
-      connectionString: assembleConnectionString({ engine, ...config }),
-    });
-    handleClose();
+    const connectionString = assembleConnectionString({ engine, ...config });
+
+    setIsValidating(true);
+    try {
+      const { success, error } = await System.validateSQLConnection(
+        engine,
+        connectionString
+      );
+      if (!success) {
+        showToast(
+          error ||
+            "Failed to establish database connection. Please check your connection details.",
+          "error",
+          { clear: true }
+        );
+        setIsValidating(false);
+        return;
+      }
+
+      onSubmit({
+        engine,
+        database_id: form.get("name"),
+        connectionString,
+      });
+      setHasChanges(true);
+      handleClose();
+    } catch (error) {
+      console.error("Error validating connection:", error);
+      showToast(
+        error?.message ||
+          "Failed to validate connection. Please check your connection details.",
+        "error",
+        { clear: true }
+      );
+    } finally {
+      setIsValidating(false);
+    }
     return false;
   }
 
@@ -92,8 +135,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
           </div>
           <form
             id="sql-connection-form"
-            onSubmit={handleUpdate}
             onChange={onFormChange}
+            onSubmit={handleUpdate}
           >
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
@@ -226,6 +269,42 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
+
+                {engine === "postgresql" && (
+                  <div className="flex flex-col">
+                    <label className="block mb-2 text-sm font-medium text-white">
+                      Schema (optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="schema"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      placeholder="public (default schema if not specified)"
+                      required={false}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                )}
+
+                {engine === "sql-server" && (
+                  <div className="flex items-center justify-between">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="encrypt"
+                        value="true"
+                        className="sr-only peer"
+                        checked={config.encrypt}
+                      />
+                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <span className="ml-3 text-sm font-medium text-white">
+                        Enable Encryption
+                      </span>
+                    </label>
+                  </div>
+                )}
+
                 <p className="text-theme-text-secondary text-sm">
                   {assembleConnectionString({ engine, ...config })}
                 </p>
@@ -242,9 +321,10 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <button
                 type="submit"
                 form="sql-connection-form"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                disabled={isValidating}
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
               >
-                Save connection
+                {isValidating ? "Validating..." : "Save connection"}
               </button>
             </div>
           </form>

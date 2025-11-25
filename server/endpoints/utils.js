@@ -13,6 +13,7 @@ function utilEndpoints(app) {
           : "single-user",
         vectorDB: process.env.VECTOR_DB || "lancedb",
         storage: await getDiskStorage(),
+        appVersion: getDeploymentVersion(),
       };
       response.status(200).json(metrics);
     } catch (e) {
@@ -141,6 +142,12 @@ function getModelTag() {
     case "gemini":
       model = process.env.GEMINI_LLM_MODEL_PREF;
       break;
+    case "moonshotai":
+      model = process.env.MOONSHOT_AI_MODEL_PREF;
+      break;
+    case "zai":
+      model = process.env.ZAI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
@@ -148,8 +155,32 @@ function getModelTag() {
   return model;
 }
 
+/**
+ * Returns the deployment version.
+ * - Dev: reads from package.json
+ * - Prod: reads from ENV
+ * expected format: major.minor.patch
+ * @returns {string|null} The deployment version.
+ */
+function getDeploymentVersion() {
+  if (process.env.NODE_ENV === "development")
+    return require("../../package.json").version;
+  if (process.env.DEPLOYMENT_VERSION) return process.env.DEPLOYMENT_VERSION;
+  return null;
+}
+
+/**
+ * Returns the user agent for the AnythingLLM deployment.
+ * @returns {string} The user agent.
+ */
+function getAnythingLLMUserAgent() {
+  const version = getDeploymentVersion() || "unknown";
+  return `AnythingLLM/${version}`;
+}
+
 module.exports = {
   utilEndpoints,
   getGitVersion,
   getModelTag,
+  getAnythingLLMUserAgent,
 };
