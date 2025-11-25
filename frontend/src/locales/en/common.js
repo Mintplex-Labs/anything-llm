@@ -605,7 +605,7 @@ const TRANSLATIONS = {
   embedding: {
     title: "Embedding Preference",
     "desc-start":
-      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
+      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials for embedding text.",
     "desc-end":
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
