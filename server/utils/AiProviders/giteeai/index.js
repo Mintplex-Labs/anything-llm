@@ -15,6 +15,7 @@ const cacheFolder = path.resolve(
     : path.resolve(__dirname, `../../../storage/models/giteeai`)
 );
 const { safeJsonParse, toValidNumber } = require("../../http");
+const LEGACY_MODEL_MAP = require("../modelMap/legacy");
 
 class GiteeAILLM {
   constructor(embedder = null, modelPreference = null) {
@@ -92,17 +93,24 @@ class GiteeAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_model) {
-    return toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT, 8192);
+  static promptWindowLimit(model) {
+    return (
+      toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT) ||
+      LEGACY_MODEL_MAP.giteeai[model] ||
+      8192
+    );
   }
 
   promptWindowLimit() {
-    return toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT, 8192);
+    return (
+      toValidNumber(process.env.GITEE_AI_MODEL_TOKEN_LIMIT) ||
+      LEGACY_MODEL_MAP.giteeai[this.model] ||
+      8192
+    );
   }
 
   async isValidChatCompletionModel(modelName = "") {
-    const models = await this.openai.models.list().catch(() => ({ data: [] }));
-    return models.data.some((model) => model.id === modelName);
+    return true;
   }
 
   constructPrompt({
@@ -134,11 +142,6 @@ class GiteeAILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GiteeAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -172,11 +175,6 @@ class GiteeAILLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GiteeAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.openai.chat.completions.create({
         model: this.model,

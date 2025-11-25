@@ -34,9 +34,9 @@ class GiteeAIProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("DellProAiStudio chat: No results!");
+          throw new Error("GiteeAI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("DellProAiStudio chat: No results length!");
+          throw new Error("GiteeAI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
