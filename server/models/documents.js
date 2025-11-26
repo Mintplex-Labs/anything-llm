@@ -83,6 +83,19 @@ const Document = {
   addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
+    
+    // Validate VectorDb has addDocumentToNamespace method
+    if (!VectorDb || typeof VectorDb.addDocumentToNamespace !== "function") {
+      console.error(
+        `VectorDb.addDocumentToNamespace is not a function. VectorDb type: ${typeof VectorDb}, methods: ${VectorDb ? Object.keys(VectorDb).join(", ") : "null"}`
+      );
+      return {
+        failed: additions,
+        embedded: [],
+        errors: [`Vector database provider (${process.env.VECTOR_DB || "lancedb"}) does not have addDocumentToNamespace method`],
+      };
+    }
+
     const { fileData } = require("../utils/files");
     const embedded = [];
     const failedToEmbed = [];
@@ -90,7 +103,12 @@ const Document = {
 
     for (const path of additions) {
       const data = await fileData(path);
-      if (!data) continue;
+      if (!data) {
+        console.error(`Could not load document data from path: ${path}`);
+        failedToEmbed.push(path.split("/")[1] || path);
+        errors.add(`Could not load document data from ${path}`);
+        continue;
+      }
 
       const docId = uuidv4();
       const { pageContent, ...metadata } = data;
@@ -102,19 +120,35 @@ const Document = {
         metadata: JSON.stringify(metadata),
       };
 
-      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        workspace.slug,
-        { ...data, docId },
-        path
-      );
+      try {
+        const result = await VectorDb.addDocumentToNamespace(
+          workspace.slug,
+          { ...data, docId },
+          path
+        );
 
-      if (!vectorized) {
+        // Handle case where function returns false (backward compatibility)
+        const vectorized = result?.vectorized ?? (result === true || result === false ? result : false);
+        const error = result?.error ?? (result === false ? "Unknown error during vectorization" : null);
+
+        if (!vectorized) {
+          const errorMsg = error || "Unknown error during vectorization";
+          console.error(
+            `Failed to vectorize ${metadata?.title || newDoc.filename}: ${errorMsg}`
+          );
+          failedToEmbed.push(metadata?.title || newDoc.filename);
+          errors.add(errorMsg);
+          continue;
+        }
+      } catch (error) {
+        const errorMsg = error?.message || error?.toString() || "Unknown error during vectorization";
         console.error(
-          "Failed to vectorize",
-          metadata?.title || newDoc.filename
+          `Exception while vectorizing ${metadata?.title || newDoc.filename}:`,
+          errorMsg,
+          error?.stack
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
-        errors.add(error);
+        errors.add(errorMsg);
         continue;
       }
 
@@ -122,7 +156,8 @@ const Document = {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
       } catch (error) {
-        console.error(error.message);
+        console.error(`Failed to create document record: ${error.message}`);
+        // Don't fail the whole operation if DB insert fails
       }
     }
 

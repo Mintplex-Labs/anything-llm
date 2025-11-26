@@ -110,6 +110,22 @@ class TextSplitter {
           return source;
         },
       },
+      // NEW: Add description (only if meaningful)
+      description: {
+        as: "description",
+        pluck: (metadata) => {
+          const desc = metadata?.description;
+          if (
+            !desc ||
+            desc === "no description found" ||
+            desc === "Unknown" ||
+            desc.length < 10
+          )
+            return null;
+          // Truncate to keep header small
+          return desc.length > 80 ? desc.substring(0, 80) + "..." : desc;
+        },
+      },
     };
 
     const pluckedData = {};

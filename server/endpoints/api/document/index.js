@@ -8,13 +8,15 @@ const {
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
-const { reqBody } = require("../../../utils/http");
+const { reqBody, safeJsonParse } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
+const { buildOcrFromExternalFields } = require("../../../utils/ocrFieldParser");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
+const { fileData } = require("../../../utils/files");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../storage/documents")
@@ -47,6 +49,10 @@ function apiDocumentEndpoints(app) {
               addToWorkspaces: {
                 type: 'string',
                 description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
+              },
+              externalOCRFields: {
+                type: 'string',
+                description: 'JSON array string of external OCR fields extracted by Google OCR or other providers. Format: [{"fieldKey": "patient_name", "fieldValue": "John Doe", "fieldType": "string", "confidence": 0.9}, ...]',
               }
             },
             required: ['file']
@@ -91,7 +97,7 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", externalOCRFields = null } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -113,6 +119,45 @@ function apiDocumentEndpoints(app) {
             .json({ success: false, error: reason, documents })
             .end();
           return;
+        }
+
+        // Process external OCR fields if provided
+        if (externalOCRFields && documents && documents.length > 0) {
+          try {
+            for (const doc of documents) {
+              const docPath = path.resolve(documentsPath, doc.location);
+              if (fs.existsSync(docPath)) {
+                const docData = await fileData(doc.location);
+                if (docData) {
+                  // Build OCR object from external fields
+                  const ocrData = buildOcrFromExternalFields(
+                    externalOCRFields,
+                    docData.ocr || {}
+                  );
+                  
+                  // Update document with OCR data
+                  docData.ocr = ocrData;
+                  
+                  // Write back to file
+                  fs.writeFileSync(
+                    docPath,
+                    JSON.stringify(docData, null, 2),
+                    "utf8"
+                  );
+                  
+                  console.log(
+                    `[OCR] Added external OCR fields to document: ${doc.location}`
+                  );
+                }
+              }
+            }
+          } catch (ocrError) {
+            console.error(
+              "[OCR] Error processing external OCR fields:",
+              ocrError.message
+            );
+            // Don't fail the upload if OCR processing fails
+          }
         }
 
         Collector.log(
@@ -167,7 +212,11 @@ function apiDocumentEndpoints(app) {
                 addToWorkspaces: {
                   type: 'string',
                   description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
-                }
+                },
+              externalOCRFields: {
+                type: 'string',
+                description: 'JSON array string of external OCR fields extracted by Google OCR or other providers. Format: [{"fieldKey": "patient_name", "fieldValue": "John Doe", "fieldType": "string", "confidence": 0.9}, ...]',
+              }
               }
             }
           }
@@ -221,7 +270,7 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { originalname } = request.file;
-        const { addToWorkspaces = "" } = reqBody(request);
+        const { addToWorkspaces = "", externalOCRFields = null } = reqBody(request);
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
@@ -280,6 +329,45 @@ function apiDocumentEndpoints(app) {
             fs.renameSync(sourcePath, destinationPath);
             doc.location = path.join(folder, path.basename(doc.location));
             doc.name = path.basename(doc.location);
+          }
+        }
+
+        // Process external OCR fields if provided
+        if (externalOCRFields && documents && documents.length > 0) {
+          try {
+            for (const doc of documents) {
+              const docPath = path.resolve(documentsPath, doc.location);
+              if (fs.existsSync(docPath)) {
+                const docData = await fileData(doc.location);
+                if (docData) {
+                  // Build OCR object from external fields
+                  const ocrData = buildOcrFromExternalFields(
+                    externalOCRFields,
+                    docData.ocr || {}
+                  );
+                  
+                  // Update document with OCR data
+                  docData.ocr = ocrData;
+                  
+                  // Write back to file
+                  fs.writeFileSync(
+                    docPath,
+                    JSON.stringify(docData, null, 2),
+                    "utf8"
+                  );
+                  
+                  console.log(
+                    `[OCR] Added external OCR fields to document: ${doc.location}`
+                  );
+                }
+              }
+            }
+          } catch (ocrError) {
+            console.error(
+              "[OCR] Error processing external OCR fields:",
+              ocrError.message
+            );
+            // Don't fail the upload if OCR processing fails
           }
         }
 

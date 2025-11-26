@@ -10,6 +10,10 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const {
+  buildCanonicalPageContent,
+  enrichChunks,
+} = require("../../documentEnrichment");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -177,10 +181,12 @@ const Zilliz = {
     try {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
-      if (!pageContent || pageContent.length == 0) return false;
+      if (!pageContent || pageContent.length == 0) {
+        return { vectorized: false, error: "Document has no pageContent to process" };
+      }
 
       console.log("Adding new vectorized document into namespace", namespace);
-      if (skipCache) {
+      if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
           const { client } = await this.connect();
@@ -221,6 +227,31 @@ const Zilliz = {
         }
       }
 
+      // 1. Build canonical text from OCR sources (ONE TIME)
+      // documentData should be the loaded JSON doc (metadata + pageContent + ocr, if any)
+      let pageContentCanonical;
+      try {
+        pageContentCanonical = buildCanonicalPageContent({
+          ...documentData,
+          pageContent: pageContent, // fallback if no OCR
+        });
+      } catch (ocrError) {
+        console.error("[Zilliz] Error building canonical pageContent:", ocrError.message);
+        return {
+          vectorized: false,
+          error: `Error processing OCR content: ${ocrError.message}`,
+        };
+      }
+
+      // Validate canonical content after OCR merging
+      if (!pageContentCanonical || pageContentCanonical.trim().length === 0) {
+        return {
+          vectorized: false,
+          error: "Document has no content after OCR processing. Check OCR fields or pageContent.",
+        };
+      }
+
+      // 2. Split canonical text
       const EmbedderEngine = getEmbeddingEngineSelection(namespace);
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
@@ -235,14 +266,35 @@ const Zilliz = {
         ),
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
       });
-      const textChunks = await textSplitter.splitText(pageContent);
+      // rawChunks are the **plain** chunks used for BM25 / sparse search
+      const rawChunks = await textSplitter.splitText(pageContentCanonical);
 
-      console.log("Chunks created from document:", textChunks.length);
+      console.log("Chunks created from document:", rawChunks.length);
+
+      if (!rawChunks || rawChunks.length === 0) {
+        return {
+          vectorized: false,
+          error: "No chunks created from document. Document may be too short or empty.",
+        };
+      }
+
+      // 3. Enrich chunks ONCE before embedding (enrichment text is for dense embeddings)
+      let enrichedChunks;
+      try {
+        enrichedChunks = await enrichChunks(rawChunks, metadata);
+      } catch (enrichError) {
+        console.error("[Zilliz] Error enriching chunks:", enrichError.message);
+        // Fallback to raw chunks if enrichment fails
+        enrichedChunks = rawChunks;
+      }
+
+      // 4. Embed enriched chunks (ONE TIME)
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(enrichedChunks);
       const isHybridMode = EmbedderEngine?.supportsSparseVectors === true;
 
+      // 5. Store in Zilliz
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
           // Handle hybrid embeddings (dense + sparse) vs standard embeddings
@@ -259,9 +311,14 @@ const Zilliz = {
             id: uuidv4(),
             values: denseVector,
             sparseValues: sparseVector,
-            // [DO NOT REMOVE]
-            // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-            metadata: { ...metadata, text: textChunks[i] },
+            // Store RAW chunk in text field for BM25 (no enrichment)
+            text: rawChunks[i],
+            // Store enriched chunk in metadata for reference
+            metadata: {
+              ...metadata,
+              text: enrichedChunks[i], // For LangChain / AnythingLLM compatibility
+              text_raw: rawChunks[i], // Explicit raw text reference
+            },
           };
 
           vectors.push(vectorRecord);
@@ -285,7 +342,8 @@ const Zilliz = {
             const record = {
               id: item.id,
               vector: item.values,
-              text: item.metadata?.text || "",
+              // text field contains raw chunk (for BM25 / sparse search)
+              text: item.text || item.metadata?.text_raw || "",
               metadata: item.metadata,
             };
             // Add sparse vector field if in hybrid mode
@@ -295,14 +353,25 @@ const Zilliz = {
             return record;
           });
 
-          const insertResult = await client.insert({
-            collection_name: this.normalize(namespace),
-            data: insertData,
-          });
+          let insertResult;
+          try {
+            insertResult = await client.insert({
+              collection_name: this.normalize(namespace),
+              data: insertData,
+            });
+          } catch (insertError) {
+            // Handle case where insert throws an error object
+            const errorMsg = insertError?.message || insertError?.error || JSON.stringify(insertError);
+            console.error("[Zilliz] Insert operation threw error:", errorMsg);
+            throw new Error(`Zilliz insert failed: ${errorMsg}`);
+          }
 
-          if (insertResult?.status.error_code !== "Success") {
+          if (insertResult?.status?.error_code !== "Success") {
+            const errorReason = insertResult?.status?.reason || insertResult?.status?.error_code || "Unknown error";
+            const errorDetails = JSON.stringify(insertResult?.status || insertResult);
+            console.error("[Zilliz] Insert failed:", errorReason, errorDetails);
             throw new Error(
-              `Error embedding into Zilliz! Reason:${insertResult?.status.reason}`
+              `Error embedding into Zilliz! Reason: ${errorReason}. Details: ${errorDetails}`
             );
           }
         }
@@ -315,8 +384,29 @@ const Zilliz = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
-      return { vectorized: false, error: e.message };
+      // Handle different error types
+      let errorMessage = "Unknown error in addDocumentToNamespace";
+      let errorStack = "";
+      
+      if (e instanceof Error) {
+        errorMessage = e.message;
+        errorStack = e.stack || "";
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      } else if (typeof e === "object" && e !== null) {
+        // Try to extract meaningful error information from object
+        errorMessage = e.message || e.error || e.reason || JSON.stringify(e);
+        errorStack = e.stack || "";
+      }
+      
+      console.error("[Zilliz] addDocumentToNamespace error:", errorMessage);
+      if (errorStack) {
+        console.error("[Zilliz] Error stack:", errorStack);
+      }
+      // Log full error object for debugging
+      console.error("[Zilliz] Full error object:", JSON.stringify(e, Object.getOwnPropertyNames(e)));
+      
+      return { vectorized: false, error: errorMessage };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
