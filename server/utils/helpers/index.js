@@ -95,7 +95,7 @@ function getVectorDbClass(getExactly = null) {
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return ChromaCloud;
     case "lancedb":
-      return LanceDb;
+      return new LanceDb();
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
       return Weaviate;
@@ -118,7 +118,7 @@ function getVectorDbClass(getExactly = null) {
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
       );
-      return LanceDb;
+      return new LanceDb();
   }
 }
 

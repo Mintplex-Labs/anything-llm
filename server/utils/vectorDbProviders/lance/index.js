@@ -6,38 +6,49 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
+const { VectorDatabase } = require("../base");
 
 /**
  * LancedDB Client connection object
  * @typedef {import('@lancedb/lancedb').Connection} LanceClient
  */
 
-const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
-  name: "LanceDb",
+class LanceDb extends VectorDatabase {
+  constructor() {
+    super();
+    this.uri = `${
+      !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`;
+  }
+
+  get name() {
+    return "LanceDb";
+  }
 
   /** @returns {Promise<{client: LanceClient}>} */
-  connect: async function () {
+  async connect() {
     const client = await lancedb.connect(this.uri);
     return { client };
-  },
-  distanceToSimilarity: function (distance = null) {
+  }
+
+  distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
-  },
-  tables: async function () {
+  }
+
+  async tables() {
     const { client } = await this.connect();
     return await client.tableNames();
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const tables = await client.tableNames();
     let count = 0;
@@ -46,15 +57,16 @@ const LanceDb = {
       count += await table.countRows();
     }
     return count;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, _namespace);
     if (!exists) return 0;
 
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
-  },
+  }
   /**
    * Performs a SimilaritySearch + Reranking on a namespace.
    * @param {Object} params - The parameters for the rerankedSimilarityResponse.
@@ -67,7 +79,7 @@ const LanceDb = {
    * @param {string[]} params.filterIdentifiers - The identifiers of the documents to filter out.
    * @returns
    */
-  rerankedSimilarityResponse: async function ({
+  async rerankedSimilarityResponse({
     client,
     namespace,
     query,
@@ -138,7 +150,7 @@ const LanceDb = {
       });
 
     return result;
-  },
+  }
 
   /**
    * Performs a SimilaritySearch on a give LanceDB namespace.
@@ -151,7 +163,7 @@ const LanceDb = {
    * @param {string[]} params.filterIdentifiers
    * @returns
    */
-  similarityResponse: async function ({
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -192,14 +204,15 @@ const LanceDb = {
     });
 
     return result;
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  namespace: async function (client, namespace = null) {
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.openTable(namespace).catch(() => false);
     if (!collection) return null;
@@ -207,7 +220,8 @@ const LanceDb = {
     return {
       ...collection,
     };
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
@@ -215,7 +229,7 @@ const LanceDb = {
    * @param {string} namespace
    * @returns
    */
-  updateOrCreateCollection: async function (client, data = [], namespace) {
+  async updateOrCreateCollection(client, data = [], namespace) {
     const hasNamespace = await this.hasNamespace(namespace);
     if (hasNamespace) {
       const collection = await client.openTable(namespace);
@@ -225,55 +239,43 @@ const LanceDb = {
 
     await client.createTable(namespace, data);
     return true;
-  },
-  hasNamespace: async function (namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    const exists = await this.namespaceExists(client, namespace);
-    return exists;
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  namespaceExists: async function (client, namespace = null) {
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collections = await client.tableNames();
     return collections.includes(namespace);
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.dropTable(namespace);
     return true;
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
-    const { client } = await this.connect();
-    const exists = await this.namespaceExists(client, namespace);
-    if (!exists) {
-      console.error(
-        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
-      );
-      return;
-    }
+  }
 
-    const { DocumentVectors } = require("../../../models/vectors");
+  /**
+   * Delete specific vectors by their IDs from LanceDB
+   * @param {LanceClient} client - The LanceDB client
+   * @param {string} namespace - The namespace/table name
+   * @param {string[]} vectorIds - Array of vector IDs to delete
+   */
+  async deleteVectorsByIds(client, namespace, vectorIds) {
     const table = await client.openTable(namespace);
-    const vectorIds = (await DocumentVectors.where({ docId })).map(
-      (record) => record.vectorId
-    );
-
-    if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
-    return true;
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -376,8 +378,9 @@ const LanceDb = {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -427,8 +430,9 @@ const LanceDb = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -438,8 +442,9 @@ const LanceDb = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -449,14 +454,16 @@ const LanceDb = {
     return {
       message: `Namespace ${namespace} was deleted.`,
     };
-  },
-  reset: async function () {
+  }
+
+  async reset() {
     const { client } = await this.connect();
     const fs = require("fs");
     fs.rm(`${client.uri}`, { recursive: true }, () => null);
     return { reset: true };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       const { text, vector: _v, _distance: _d, ...rest } = source;
@@ -470,7 +477,7 @@ const LanceDb = {
     }
 
     return documents;
-  },
-};
+  }
+}
 
-module.exports.LanceDb = LanceDb;
+module.exports = { LanceDb };
