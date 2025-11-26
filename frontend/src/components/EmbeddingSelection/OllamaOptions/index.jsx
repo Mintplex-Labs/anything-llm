@@ -23,9 +23,16 @@ export default function OllamaEmbeddingOptions({ settings }) {
   const [maxChunkLength, setMaxChunkLength] = useState(
     settings?.EmbeddingModelMaxChunkLength || 8192
   );
+  const [batchSize, setBatchSize] = useState(
+    settings?.OllamaEmbeddingBatchSize || 1
+  );
 
   const handleMaxChunkLengthChange = (e) => {
     setMaxChunkLength(Number(e.target.value));
+  };
+
+  const handleBatchSizeChange = (e) => {
+    setBatchSize(Number(e.target.value));
   };
 
   return (
@@ -74,7 +81,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
           }}
           className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
         >
-          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls ? "Hide" : "Show"} Advanced Settings
           {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
@@ -119,6 +126,41 @@ export default function OllamaEmbeddingOptions({ settings }) {
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
               Enter the URL where Ollama is running.
+            </p>
+          </div>
+          <div className="flex flex-col w-60">
+            <div
+              data-tooltip-place="top"
+              data-tooltip-id="ollama-batch-size-tooltip"
+              className="flex gap-x-1 items-center mb-3"
+            >
+              <Info
+                size={16}
+                className="text-theme-text-secondary cursor-pointer"
+              />
+              <label className="text-white text-sm font-semibold block">
+                Embedding batch size
+              </label>
+              <Tooltip id="ollama-batch-size-tooltip">
+                Number of text chunks to embed in parallel. Higher values
+                improve speed but use more memory. Default is 1.
+              </Tooltip>
+            </div>
+            <input
+              type="number"
+              name="OllamaEmbeddingBatchSize"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="1"
+              min={1}
+              value={batchSize}
+              onChange={handleBatchSizeChange}
+              onScroll={(e) => e.target.blur()}
+              required={true}
+              autoComplete="off"
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Increase this value to process multiple chunks simultaneously for
+              faster embedding.
             </p>
           </div>
         </div>

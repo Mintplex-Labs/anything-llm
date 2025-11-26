@@ -13,7 +13,6 @@
 const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
-const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
@@ -22,12 +21,31 @@ const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
+const {
+  createBedrockChatClient,
+} = require("../../../AiProviders/bedrock/utils");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
 
 class Provider {
   _client;
+
+  /**
+   * The invocation object containing the user ID and other invocation details.
+   * @type {import("@prisma/client").workspace_agent_invocations}
+   */
+  invocation = {};
+
+  /**
+   * The user ID for the chat completion to send to the LLM provider for user tracking.
+   * In order for this to be set, the handler props must be attached to the provider after instantiation.
+   * ex: this.attachHandlerProps({ ..., invocation: { ..., user_id: 123 } });
+   * eg: `user_123`
+   * @type {string}
+   */
+  executingUserId = "";
+
   constructor(client) {
     if (this.constructor == Provider) {
       return;
@@ -40,6 +58,19 @@ class Provider {
       `\x1b[36m[AgentLLM${this?.model ? ` - ${this.model}` : ""}]\x1b[0m ${text}`,
       ...args
     );
+  }
+
+  /**
+   * Attaches handler props to the provider for reuse in the provider.
+   * - Explicitly sets the invocation object.
+   * - Explicitly sets the executing user ID from the invocation object.
+   * @param {Object} handlerProps - The handler props to attach to the provider.
+   */
+  attachHandlerProps(handlerProps = {}) {
+    this.invocation = handlerProps?.invocation || {};
+    this.executingUserId = this.invocation?.user_id
+      ? `user_${this.invocation.user_id}`
+      : "";
   }
 
   get client() {
@@ -122,20 +153,7 @@ class Provider {
           ...config,
         });
       case "bedrock":
-        // Grab just the credentials from the bedrock provider
-        // using a closure to avoid circular dependency + to avoid instantiating the provider
-        const credentials = (() => {
-          const AWSBedrockProvider = require("./bedrock");
-          const bedrockProvider = new AWSBedrockProvider();
-          return bedrockProvider.credentials;
-        })();
-
-        return new ChatBedrockConverse({
-          model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
-          region: process.env.AWS_BEDROCK_LLM_REGION,
-          credentials: credentials,
-          ...config,
-        });
+        return createBedrockChatClient(config);
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -163,6 +181,14 @@ class Provider {
             baseURL: "https://api.x.ai/v1",
           },
           apiKey: process.env.XAI_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "zai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.z.ai/api/paas/v4",
+          },
+          apiKey: process.env.ZAI_API_KEY ?? null,
           ...config,
         });
       case "novita":
@@ -203,6 +229,14 @@ class Provider {
             baseURL: "https://api.cometapi.com/v1",
           },
           apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "giteeai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://ai.gitee.com/v1",
+          },
+          apiKey: process.env.GITEE_AI_API_KEY ?? null,
           ...config,
         });
       // OSS Model Runners

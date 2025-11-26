@@ -780,6 +780,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Jūsu Confluence personiskais piekļuves tokens.",
       task_explained:
         "Kad tas būs pabeigts, lapas saturs būs pieejams iegulšanai darba vietās dokumentu atlasītājā.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "Dokumenti",

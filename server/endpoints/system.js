@@ -734,6 +734,57 @@ function systemEndpoints(app) {
       }
     }
   );
+  app.get(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (_, response) => {
+      try {
+        const defaultSystemPrompt = await SystemSettings.get({
+          label: "default_system_prompt",
+        });
+
+        response.status(200).json({
+          success: true,
+          defaultSystemPrompt:
+            defaultSystemPrompt?.value ||
+            SystemSettings.saneDefaultSystemPrompt,
+          saneDefaultSystemPrompt: SystemSettings.saneDefaultSystemPrompt,
+        });
+      } catch (error) {
+        console.error("Error fetching default system prompt:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { defaultSystemPrompt } = reqBody(request);
+        const { success, error } = await SystemSettings.updateSettings({
+          default_system_prompt: defaultSystemPrompt,
+        });
+        if (!success)
+          throw new Error(
+            error.message || "Failed to update default system prompt."
+          );
+        response.status(200).json({
+          success: true,
+          message: "Default system prompt updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating default system prompt:", error);
+        response.status(500).json({
+          success: false,
+          message: error.message || "Internal server error",
+        });
+      }
+    }
+  );
 
   app.delete(
     "/system/remove-pfp",

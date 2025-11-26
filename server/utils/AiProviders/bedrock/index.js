@@ -1,5 +1,4 @@
 const {
-  BedrockRuntimeClient,
   ConverseCommand,
   ConverseStreamCommand,
 } = require("@aws-sdk/client-bedrock-runtime");
@@ -15,9 +14,11 @@ const { v4: uuidv4 } = require("uuid");
 const {
   DEFAULT_MAX_OUTPUT_TOKENS,
   DEFAULT_CONTEXT_WINDOW_TOKENS,
-  SUPPORTED_CONNECTION_METHODS,
   getImageFormatFromMime,
   base64ToUint8Array,
+  createBedrockCredentials,
+  createBedrockRuntimeClient,
+  getBedrockAuthMethod,
 } = require("./utils");
 
 class AWSBedrockLLM {
@@ -42,7 +43,7 @@ class AWSBedrockLLM {
    */
   constructor(embedder = null, modelPreference = null) {
     const requiredEnvVars = [
-      ...(this.authMethod !== "iam_role"
+      ...(!["iam_role", "apiKey"].includes(this.authMethod)
         ? [
             // required for iam and sessionToken
             "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
@@ -53,6 +54,12 @@ class AWSBedrockLLM {
         ? [
             // required for sessionToken
             "AWS_BEDROCK_LLM_SESSION_TOKEN",
+          ]
+        : []),
+      ...(this.authMethod === "apiKey"
+        ? [
+            // required for bedrock api key
+            "AWS_BEDROCK_LLM_API_KEY",
           ]
         : []),
       "AWS_BEDROCK_LLM_REGION",
@@ -75,10 +82,10 @@ class AWSBedrockLLM {
       user: Math.floor(contextWindowLimit * 0.7),
     };
 
-    this.bedrockClient = new BedrockRuntimeClient({
-      region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: this.credentials,
-    });
+    this.bedrockClient = createBedrockRuntimeClient(
+      this.authMethod,
+      this.credentials
+    );
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -92,26 +99,7 @@ class AWSBedrockLLM {
    * @returns {object} The credentials object.
    */
   get credentials() {
-    switch (this.authMethod) {
-      case "iam": // explicit credentials
-        return {
-          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        };
-      case "sessionToken": // Session token is used for temporary credentials
-        return {
-          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-          sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
-        };
-      // IAM role is used for long-term credentials implied by system process
-      // is filled by the AWS SDK automatically if we pass in no credentials
-      // returning undefined will allow this to happen
-      case "iam_role":
-        return undefined;
-      default:
-        return undefined;
-    }
+    return createBedrockCredentials(this.authMethod);
   }
 
   /**
@@ -120,8 +108,7 @@ class AWSBedrockLLM {
    * @returns {"iam" | "iam_role" | "sessionToken"} The authentication method.
    */
   get authMethod() {
-    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    return SUPPORTED_CONNECTION_METHODS.includes(method) ? method : "iam";
+    return getBedrockAuthMethod();
   }
 
   /**
@@ -287,7 +274,7 @@ class AWSBedrockLLM {
   #generateContent({ userPrompt = "", attachments = [] }) {
     const content = [];
     // Add text block if prompt is not empty
-    if (!!userPrompt?.trim()?.length) content.push({ text: userPrompt });
+    if (userPrompt?.trim()?.length) content.push({ text: userPrompt });
 
     // Validate attachments and add valid attachments to content
     const validAttachments = this.#validateAttachments(attachments);
@@ -384,7 +371,7 @@ class AWSBedrockLLM {
     if (reasoningBlock) {
       const reasoningText =
         reasoningBlock.reasoningContent.reasoningText.text.trim();
-      if (!!reasoningText?.length)
+      if (reasoningText?.length)
         textResponse = `<think>${reasoningText}</think>${textResponse}`;
     }
     return textResponse;

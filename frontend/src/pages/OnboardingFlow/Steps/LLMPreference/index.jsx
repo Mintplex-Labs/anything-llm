@@ -23,12 +23,14 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -54,11 +56,13 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -268,6 +272,13 @@ const LLMS = [
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
   },
   {
+    name: "Z.AI",
+    value: "zai",
+    logo: ZAiLogo,
+    options: (settings) => <ZAiLLMOptions settings={settings} />,
+    description: "Run Z.AI's powerful GLM models.",
+  },
+  {
     name: "Moonshot AI",
     value: "moonshotai",
     logo: MoonshotAiLogo,
@@ -280,6 +291,13 @@ const LLMS = [
     logo: CometApiLogo,
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
+  },
+  {
+    name: "GiteeAI",
+    value: "giteeai",
+    logo: GiteeAILogo,
+    options: (settings) => <GiteeAiOptions settings={settings} />,
+    description: "Run GiteeAI's powerful LLMs.",
   },
 ];
 

@@ -8,6 +8,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
+const { v4: uuidv4 } = require("uuid");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -21,6 +22,7 @@ class OllamaAILLM {
         throw new Error("Ollama config must have a valid baseUrl");
       }
 
+      this.className = "OllamaAILLM";
       this.authToken = config.authToken ?? null;
       this.basePath = config.baseUrl;
       this.model = modelPreference || config.defaultModel;
@@ -33,6 +35,7 @@ class OllamaAILLM {
         throw new Error("No Ollama Base Path was set.");
       }
 
+      this.className = "OllamaAILLM";
       this.authToken = process.env.OLLAMA_AUTH_TOKEN;
       this.basePath = process.env.OLLAMA_BASE_PATH;
       this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
@@ -53,16 +56,13 @@ class OllamaAILLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
-    OllamaAILLM.cacheContextWindows(true).then(() => {
-      this.limits = {
-        history: this.promptWindowLimit() * 0.15,
-        system: this.promptWindowLimit() * 0.15,
-        user: this.promptWindowLimit() * 0.7,
-      };
-      this.#log(
-        `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
-      );
-    });
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    OllamaAILLM.cacheContextWindows(true);
+    this.#log(
+      `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}`
+    );
   }
 
   #log(text, ...args) {
@@ -71,6 +71,16 @@ class OllamaAILLM {
 
   static #slog(text, ...args) {
     console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await OllamaAILLM.cacheContextWindows();
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
   /**
@@ -175,6 +185,13 @@ class OllamaAILLM {
   }
 
   static promptWindowLimit(modelName) {
+    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
+    }
+
     let userDefinedLimit = null;
     const systemDefinedLimit =
       Number(this.modelContextWindows[modelName]) || 4096;
@@ -273,12 +290,16 @@ class OllamaAILLM {
           },
         })
         .then((res) => {
+          let content = res.message.content;
+          if (res.message.thinking)
+            content = `<think>${res.message.thinking}</think>${content}`;
           return {
-            content: res.message.content,
+            content,
             usage: {
               prompt_tokens: res.prompt_eval_count,
               completion_tokens: res.eval_count,
               total_tokens: res.prompt_eval_count + res.eval_count,
+              duration: res.eval_duration / 1e9,
             },
           };
         })
@@ -298,8 +319,9 @@ class OllamaAILLM {
         prompt_tokens: result.output.usage.prompt_tokens,
         completion_tokens: result.output.usage.completion_tokens,
         total_tokens: result.output.usage.total_tokens,
-        outputTps: result.output.usage.completion_tokens / result.duration,
-        duration: result.duration,
+        outputTps:
+          result.output.usage.completion_tokens / result.output.usage.duration,
+        duration: result.output.usage.duration,
       },
     };
   }
@@ -340,6 +362,7 @@ class OllamaAILLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let reasoningText = "";
       let usage = {
         prompt_tokens: 0,
         completion_tokens: 0,
@@ -365,6 +388,7 @@ class OllamaAILLM {
           if (chunk.done) {
             usage.prompt_tokens = chunk.prompt_eval_count;
             usage.completion_tokens = chunk.eval_count;
+            usage.duration = chunk.eval_duration / 1e9;
             writeResponseChunk(response, {
               uuid,
               sources,
@@ -380,16 +404,59 @@ class OllamaAILLM {
           }
 
           if (chunk.hasOwnProperty("message")) {
+            // As of Ollama v0.9.0+, thinking content comes in a separate property
+            // in the response object. If it exists, we need to handle it separately by wrapping it in <think> tags.
             const content = chunk.message.content;
-            fullText += content;
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: content,
-              close: false,
-              error: false,
-            });
+            const reasoningToken = chunk.message.thinking;
+
+            if (reasoningToken) {
+              if (reasoningText.length === 0) {
+                const startTag = "<think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: startTag + reasoningToken,
+                  close: false,
+                  error: false,
+                });
+                reasoningText += startTag + reasoningToken;
+              } else {
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: reasoningToken,
+                  close: false,
+                  error: false,
+                });
+                reasoningText += reasoningToken;
+              }
+            } else if (content.length > 0) {
+              // If we have reasoning text, we need to close the reasoning tag and then append the content.
+              if (reasoningText.length > 0) {
+                const endTag = "</think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: endTag,
+                  close: false,
+                  error: false,
+                });
+                fullText += reasoningText + endTag;
+                reasoningText = ""; // Reset reasoning buffer
+              }
+              fullText += content; // Append regular text
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: content,
+                close: false,
+                error: false,
+              });
+            }
           }
         }
       } catch (error) {
@@ -419,6 +486,7 @@ class OllamaAILLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

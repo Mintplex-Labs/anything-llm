@@ -346,6 +346,39 @@ const System = {
     );
     return { appName: customAppName, error: null };
   },
+  /**
+   * Fetches the default system prompt from the server.
+   * @returns {Promise<{defaultSystemPrompt: string, saneDefaultSystemPrompt: string}>}
+   */
+  fetchDefaultSystemPrompt: async function () {
+    return await fetch(`${API_BASE}/system/default-system-prompt`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => ({
+        defaultSystemPrompt: res.defaultSystemPrompt,
+        saneDefaultSystemPrompt: res.saneDefaultSystemPrompt,
+      }))
+      .catch((e) => {
+        console.error(e);
+        return { defaultSystemPrompt: "", saneDefaultSystemPrompt: "" };
+      });
+  },
+  updateDefaultSystemPrompt: async function (defaultSystemPrompt) {
+    try {
+      const res = await fetch(`${API_BASE}/system/default-system-prompt`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ defaultSystemPrompt }),
+      });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: e.message };
+    }
+  },
   fetchLogo: async function () {
     const url = new URL(`${fullApiUrl()}/system/logo`);
     url.searchParams.append(

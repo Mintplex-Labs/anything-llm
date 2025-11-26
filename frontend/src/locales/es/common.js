@@ -801,6 +801,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Tu token de acceso personal de Confluence.",
       task_explained:
         "Una vez completado, el contenido de la página estará disponible para incrustar en los espacios de trabajo en el selector de documentos.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "Documentos",
