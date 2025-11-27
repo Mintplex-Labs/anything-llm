@@ -544,6 +544,8 @@ const TRANSLATIONS = {
       pat_token: "Confluence 個人存取權杖",
       pat_token_explained: "您的 Confluence 個人存取權杖。",
       task_explained: "完成後，頁面內容將可供嵌入到工作區中的檔案選擇器。",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "文件",

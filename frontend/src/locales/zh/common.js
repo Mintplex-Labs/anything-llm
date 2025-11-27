@@ -715,6 +715,8 @@ const TRANSLATIONS = {
       pat_token: "Confluence 个人访问令牌",
       pat_token_explained: "您的 Confluence 个人访问令牌。",
       task_explained: "完成后，页面内容将可用于在文档选择器中嵌入至工作区。",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "文档",

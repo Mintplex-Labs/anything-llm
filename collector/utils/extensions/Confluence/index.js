@@ -20,6 +20,7 @@ async function loadConfluence(
     accessToken = null,
     cloud = true,
     personalAccessToken = null,
+    bypassSSL = false,
   },
   response
 ) {
@@ -54,6 +55,7 @@ async function loadConfluence(
     accessToken,
     cloud,
     personalAccessToken,
+    bypassSSL,
   });
 
   const { docs, error } = await loader
@@ -100,7 +102,15 @@ async function loadConfluence(
       description: doc.metadata.title,
       docSource: `${origin} Confluence`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, spaceKey, accessToken, username, cloud },
+        {
+          doc,
+          baseUrl: origin,
+          spaceKey,
+          accessToken,
+          username,
+          cloud,
+          bypassSSL,
+        },
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
@@ -144,6 +154,7 @@ async function fetchConfluencePage({
   username,
   accessToken,
   cloud = true,
+  bypassSSL = false,
 }) {
   if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
     return {
@@ -177,6 +188,7 @@ async function fetchConfluencePage({
     username,
     accessToken,
     cloud,
+    bypassSSL,
   });
 
   const { docs, error } = await loader
@@ -240,7 +252,7 @@ function validBaseUrl(baseUrl) {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, spaceKey, accessToken, username, cloud },
+  { doc, baseUrl, spaceKey, accessToken, username, cloud, bypassSSL },
   encryptionWorker
 ) {
   const payload = {
@@ -249,6 +261,7 @@ function generateChunkSource(
     token: accessToken,
     username,
     cloud,
+    bypassSSL,
   };
   return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)

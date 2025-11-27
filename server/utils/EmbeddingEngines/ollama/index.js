@@ -11,12 +11,13 @@ class OllamaEmbedder {
     this.className = "OllamaEmbedder";
     this.basePath = process.env.EMBEDDING_BASE_PATH;
     this.model = process.env.EMBEDDING_MODEL_PREF;
-    // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 1;
+    this.maxConcurrentChunks = process.env.OLLAMA_EMBEDDING_BATCH_SIZE
+      ? Number(process.env.OLLAMA_EMBEDDING_BATCH_SIZE)
+      : 1;
     this.embeddingMaxChunkLength = maximumChunkLength();
     this.client = new Ollama({ host: this.basePath });
     this.log(
-      `initialized with model ${this.model} at ${this.basePath}. num_ctx: ${this.embeddingMaxChunkLength}`
+      `initialized with model ${this.model} at ${this.basePath}. Batch size: ${this.maxConcurrentChunks}, num_ctx: ${this.embeddingMaxChunkLength}`
     );
   }
 
@@ -46,14 +47,14 @@ class OllamaEmbedder {
 
   /**
    * This function takes an array of text chunks and embeds them using the Ollama API.
-   * chunks are processed sequentially to avoid overwhelming the API with too many requests
-   * or running out of resources on the endpoint running the ollama instance.
+   * Chunks are processed in batches based on the maxConcurrentChunks setting to balance
+   * resource usage on the Ollama endpoint.
    *
    * We will use the num_ctx option to set the maximum context window to the max chunk length defined by the user in the settings
    * so that the maximum context window is used and content is not truncated.
    *
    * We also assume the default keep alive option. This could cause issues with models being unloaded and reloaded
-   * on load memory machines, but that is simply a user-end issue we cannot control. If the LLM and embedder are
+   * on low memory machines, but that is simply a user-end issue we cannot control. If the LLM and embedder are
    * constantly being loaded and unloaded, the user should use another LLM or Embedder to avoid this issue.
    * @param {string[]} textChunks - An array of text chunks to embed.
    * @returns {Promise<Array<number[]>>} - A promise that resolves to an array of embeddings.
@@ -64,17 +65,27 @@ class OllamaEmbedder {
         `Ollama service could not be reached. Is Ollama running?`
       );
     this.log(
-      `Embedding ${textChunks.length} chunks of text with ${this.model}.`
+      `Embedding ${textChunks.length} chunks of text with ${this.model} in batches of ${this.maxConcurrentChunks}.`
     );
 
     let data = [];
     let error = null;
 
-    for (const chunk of textChunks) {
+    // Process chunks in batches based on maxConcurrentChunks
+    const totalBatches = Math.ceil(
+      textChunks.length / this.maxConcurrentChunks
+    );
+    let currentBatch = 0;
+
+    for (let i = 0; i < textChunks.length; i += this.maxConcurrentChunks) {
+      const batch = textChunks.slice(i, i + this.maxConcurrentChunks);
+      currentBatch++;
+
       try {
-        const res = await this.client.embeddings({
+        // Use input param instead of prompt param to support batch processing
+        const res = await this.client.embed({
           model: this.model,
-          prompt: chunk,
+          input: batch,
           options: {
             // Always set the num_ctx to the max chunk length defined by the user in the settings
             // so that the maximum context window is used and content is not truncated.
@@ -82,11 +93,17 @@ class OllamaEmbedder {
           },
         });
 
-        const { embedding } = res;
-        if (!Array.isArray(embedding) || embedding.length === 0)
-          throw new Error("Ollama returned an empty embedding for chunk!");
+        const { embeddings } = res;
+        if (!Array.isArray(embeddings) || embeddings.length === 0)
+          throw new Error("Ollama returned empty embeddings for batch!");
 
-        data.push(embedding);
+        // Using prompt param in embed() would return a single embedding (number[])
+        // but input param returns an array of embeddings (number[][]) for batch processing.
+        // This is why we spread the embeddings array into the data array.
+        data.push(...embeddings);
+        this.log(
+          `Batch ${currentBatch}/${totalBatches}: Embedded ${embeddings.length} chunks. Total: ${data.length}/${textChunks.length}`
+        );
       } catch (err) {
         this.log(err.message);
         error = err.message;

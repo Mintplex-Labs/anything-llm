@@ -231,6 +231,14 @@ class Provider {
           apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "giteeai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://ai.gitee.com/v1",
+          },
+          apiKey: process.env.GITEE_AI_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({

@@ -785,6 +785,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Osobisty token dostępu do Confluence.",
       task_explained:
         "Po zakończeniu zawartość strony będzie dostępna do osadzenia w obszarach roboczych w selektorze dokumentów.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "Dokumenty",

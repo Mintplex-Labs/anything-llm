@@ -208,17 +208,17 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
-
       case "cometapi":
         if (!process.env.COMETAPI_LLM_API_KEY)
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
-
       case "foundry":
         if (!process.env.FOUNDRY_BASE_PATH)
           throw new Error("Foundry base path must be provided to use agents.");
         break;
-
+      case "giteeai":
+        if (!process.env.GITEE_AI_API_KEY)
+          throw new Error("GiteeAI API Key must be provided to use agents.");
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -295,6 +295,8 @@ class AgentHandler {
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
+      case "giteeai":
+        return process.env.GITEE_AI_MODEL_PREF ?? null;
       default:
         return null;
     }

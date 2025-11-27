@@ -232,6 +232,7 @@ const SystemSettings = {
           : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
@@ -640,6 +641,11 @@ const SystemSettings = {
       // Z.AI Keys
       ZAiApiKey: !!process.env.ZAI_API_KEY,
       ZAiModelPref: process.env.ZAI_MODEL_PREF,
+
+      // GiteeAI API Keys
+      GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
+      GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
+      GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 
