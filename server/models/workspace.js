@@ -46,15 +46,20 @@ const Workspace = {
     "lastUpdatedAt",
     "openAiPrompt",
     "similarityThreshold",
-    "chatProvider",
-    "chatModel",
+    "chatProvider", // DEPRECATED: Use chatConnectionId
+    "chatModel", // DEPRECATED: Use chatModelOverride
     "topN",
     "chatMode",
     // "pfpFilename",
-    "agentProvider",
-    "agentModel",
+    "agentProvider", // DEPRECATED: Use agentConnectionId
+    "agentModel", // DEPRECATED: Use agentModelOverride
     "queryRefusalResponse",
     "vectorSearchMode",
+    // NEW: LLM Connection fields
+    "chatConnectionId",
+    "chatModelOverride",
+    "agentConnectionId",
+    "agentModelOverride",
   ],
 
   validations: {
@@ -128,6 +133,26 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    chatConnectionId: (value) => {
+      if (value === null || value === undefined) return null;
+      const id = parseInt(value);
+      if (isNullOrNaN(id)) return null;
+      return id;
+    },
+    chatModelOverride: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    agentConnectionId: (value) => {
+      if (value === null || value === undefined) return null;
+      const id = parseInt(value);
+      if (isNullOrNaN(id)) return null;
+      return id;
+    },
+    agentModelOverride: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
     },
   },
 
@@ -240,6 +265,30 @@ const Workspace = {
     if (validatedUpdates?.chatProvider === "default") {
       validatedUpdates.chatProvider = null;
       validatedUpdates.chatModel = null;
+    }
+
+    // Mutual exclusion: When switching to connection-based config, clear legacy fields
+    if (validatedUpdates?.chatConnectionId !== undefined && validatedUpdates.chatConnectionId !== null) {
+      validatedUpdates.chatProvider = null;
+      validatedUpdates.chatModel = null;
+    }
+
+    // Mutual exclusion: When switching to legacy provider, clear connection fields
+    if (validatedUpdates?.chatProvider !== undefined && validatedUpdates.chatProvider !== null) {
+      validatedUpdates.chatConnectionId = null;
+      validatedUpdates.chatModelOverride = null;
+    }
+
+    // Agent mutual exclusion: When switching to connection-based config, clear legacy fields
+    if (validatedUpdates?.agentConnectionId !== undefined && validatedUpdates.agentConnectionId !== null) {
+      validatedUpdates.agentProvider = null;
+      validatedUpdates.agentModel = null;
+    }
+
+    // Agent mutual exclusion: When switching to legacy provider, clear connection fields
+    if (validatedUpdates?.agentProvider !== undefined && validatedUpdates.agentProvider !== null) {
+      validatedUpdates.agentConnectionId = null;
+      validatedUpdates.agentModelOverride = null;
     }
 
     return this._update(id, validatedUpdates);

@@ -174,7 +174,11 @@ class EphemeralAgentHandler extends AgentHandler {
       return fallback.model; // set its defined model based on fallback logic.
     }
 
-    // The provider was explicitly set, so check if the workspace has an agent model set.
+    // The provider was explicitly set, so check if the workspace has a model override (used with connections)
+    if (this.#workspace.agentModelOverride)
+      return this.#workspace.agentModelOverride;
+
+    // Check for legacy agentModel field
     if (this.#workspace.agentModel) return this.#workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
@@ -182,8 +186,28 @@ class EphemeralAgentHandler extends AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
-    this.provider = this.#workspace.agentProvider ?? null;
+  async #providerSetupAndCheck() {
+    // Prioritize connection if set, otherwise fall back to legacy agentProvider
+    if (this.#workspace.agentConnectionId) {
+      const { LLMConnection } = require("../../models/llmConnection");
+      const connection = await LLMConnection.get(
+        this.#workspace.agentConnectionId
+      );
+      if (connection) {
+        this.provider = connection.provider;
+        this.log(
+          `Using agent connection: ${connection.name} (${connection.provider})`
+        );
+      } else {
+        console.error(
+          `[EphemeralAgent] Connection ${this.#workspace.agentConnectionId} not found, falling back to agentProvider`
+        );
+        this.provider = this.#workspace.agentProvider ?? null;
+      }
+    } else {
+      this.provider = this.#workspace.agentProvider ?? null;
+    }
+
     this.model = this.#fetchModel();
 
     if (!this.provider)
@@ -342,7 +366,7 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   async init() {
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
     return this;
   }
 
