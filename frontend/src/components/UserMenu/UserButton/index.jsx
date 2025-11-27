@@ -12,6 +12,7 @@ import {
   AUTH_TOKEN,
   AUTH_USER,
   LAST_VISITED_WORKSPACE,
+  USER_PROMPT_INPUT_MAP,
 } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 
@@ -97,6 +98,7 @@ export default function UserButton() {
                 window.localStorage.removeItem(AUTH_TOKEN);
                 window.localStorage.removeItem(AUTH_TIMESTAMP);
                 window.localStorage.removeItem(LAST_VISITED_WORKSPACE);
+                window.localStorage.removeItem(USER_PROMPT_INPUT_MAP);
                 window.location.replace(paths.home());
               }}
               type="button"
