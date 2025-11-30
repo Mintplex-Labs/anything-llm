@@ -667,12 +667,13 @@ function apiAdminEndpoints(app) {
     #swagger.tags = ['Admin']
     #swagger.description = 'All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.requestBody = {
-        description: 'Page offset to show of workspace chats. All fields are optional and will not update unless specified.',
+        description: 'Page offset to show of workspace chats. Feedback Score to filter by all, true, or false. All fields are optional and will not update unless specified.',
         required: false,
         content: {
           "application/json": {
             example: {
               offset: 2,
+              feedbackScore: true
             }
           }
         }
@@ -698,15 +699,24 @@ function apiAdminEndpoints(app) {
     */
       try {
         const pgSize = 20;
-        const { offset = 0 } = reqBody(request);
+        const { offset = 0, feedbackScore = null } = reqBody(request);
+
+        // Build a where object and only include feedbackScore when it was supplied
+        const where = {};
+        if (feedbackScore !== null && feedbackScore !== undefined) {
+          // feedbackScore is expected to be boolean true/false
+          where.feedbackScore = feedbackScore;
+        }
+
         const chats = await WorkspaceChats.whereWithData(
-          {},
+          where,
           pgSize,
           offset * pgSize,
           { id: "desc" }
         );
 
-        const hasPages = (await WorkspaceChats.count()) > (offset + 1) * pgSize;
+        const totalCount = await WorkspaceChats.count(where);
+        const hasPages = totalCount > (offset + 1) * pgSize;
         response.status(200).json({ chats: chats, hasPages });
       } catch (e) {
         console.error(e);

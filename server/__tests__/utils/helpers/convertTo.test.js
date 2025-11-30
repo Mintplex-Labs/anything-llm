@@ -25,6 +25,7 @@ const mockChat = (withImages = false) => {
     workspace: { name: "Test Workspace", openAiPrompt: "Test OpenAI Prompt" },
     user: { username: "testuser" },
     feedbackScore: 1,
+    feedbackComment: "Mmhhh... not great",
   }
 };
 
@@ -61,6 +62,9 @@ describe("prepareChatsForExport", () => {
       response: responseJson.text,
       sent_at: chatExample.createdAt,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
+      comment: chatExample.feedbackComment ?? "",
+      feedbackComment: chatExample.feedbackComment ?? "",
+      feedbackScore: chatExample.feedbackScore ?? "",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
       attachments: [],
@@ -80,6 +84,9 @@ describe("prepareChatsForExport", () => {
       response: responseJson.text,
       sent_at: chatExample.createdAt,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
+      comment: chatExample.feedbackComment ?? "",
+      feedbackComment: chatExample.feedbackComment ?? "",
+      feedbackScore: chatExample.feedbackScore ?? "",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
       attachments: [
@@ -109,6 +116,9 @@ describe("prepareChatsForExport", () => {
       response: responseJson.text,
       sent_at: chatExample.createdAt,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
+      comment: chatExample.feedbackComment ?? "",
+      feedbackComment: chatExample.feedbackComment ?? "",
+      feedbackScore: chatExample.feedbackScore ?? "",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
     }]);
@@ -168,6 +178,10 @@ describe("prepareChatsForExport", () => {
               content: [{
                 type: "text",
                 text: responseJson.text,
+                feedback: {
+                   comment: chatExample.feedbackComment,
+                   score: chatExample.feedbackScore,
+                 },
               }],
             },
           ],
@@ -208,6 +222,10 @@ describe("prepareChatsForExport", () => {
               content: [{
                 type: "text",
                 text: responseJson.text,
+                feedback: {
+                   comment: chatExample.feedbackComment,
+                   score: chatExample.feedbackScore,
+                 },
               }],
             },
             {
@@ -228,6 +246,10 @@ describe("prepareChatsForExport", () => {
               content: [{
                 type: "text",
                 text: imageResponseJson.text,
+                feedback: {
+                   comment: imageChatExample.feedbackComment,
+                   score: imageChatExample.feedbackScore,
+                 },
               }],
             },
           ],

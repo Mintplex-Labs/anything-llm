@@ -72,6 +72,8 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
         prompt: chat.prompt,
         response: responseJson.text,
         sent_at: chat.createdAt,
+        feedbackScore: chat.feedbackScore ?? "",
+        feedbackComment: chat.feedbackComment ?? "",
         // Only add attachments to the json format since we cannot arrange attachments in csv format
         ...(format === "json"
           ? {
@@ -109,6 +111,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
             : chat.feedbackScore
               ? "GOOD"
               : "BAD",
+        comment: chat.feedbackComment === null ? "" : chat.feedbackComment,
       };
     });
 
@@ -156,6 +159,14 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
       };
     }
 
+    var feedback = undefined;
+    if (chat.feedbackScore !== null || chat.feedbackComment !== null) {
+      feedback = {
+        score: chat.feedbackScore ?? null,
+        comment: chat.feedbackComment ?? null,
+      };
+    }
+
     acc[workspaceId].messages.push(
       {
         role: "user",
@@ -178,6 +189,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
           {
             type: "text",
             text: responseJson.text,
+            feedback,
           },
         ],
       }

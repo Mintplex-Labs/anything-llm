@@ -838,6 +838,7 @@ const TRANSLATIONS = {
     regenerate: "Loo uuesti",
     regenerate_response: "Loo vastus uuesti",
     good_response: "Hea vastus",
+    bad_response: "Halb vastus",
     more_actions: "Rohkem toiminguid",
     hide_citations: "Peida viited",
     show_citations: "Näita viiteid",
