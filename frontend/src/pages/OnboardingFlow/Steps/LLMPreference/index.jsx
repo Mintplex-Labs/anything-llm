@@ -30,6 +30,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -61,6 +62,7 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -289,6 +291,13 @@ const LLMS = [
     logo: CometApiLogo,
     options: (settings) => <CometApiLLMOptions settings={settings} />,
     description: "500+ AI Models all in one API.",
+  },
+  {
+    name: "GiteeAI",
+    value: "giteeai",
+    logo: GiteeAILogo,
+    options: (settings) => <GiteeAiOptions settings={settings} />,
+    description: "Run GiteeAI's powerful LLMs.",
   },
 ];
 

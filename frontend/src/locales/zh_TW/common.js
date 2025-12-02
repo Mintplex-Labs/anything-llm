@@ -544,6 +544,8 @@ const TRANSLATIONS = {
       pat_token: "Confluence 個人存取權杖",
       pat_token_explained: "您的 Confluence 個人存取權杖。",
       task_explained: "完成後，頁面內容將可供嵌入到工作區中的檔案選擇器。",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "文件",
@@ -1001,9 +1003,9 @@ const TRANSLATIONS = {
   },
   home: {
     welcome: "歡迎",
-    chooseWorkspace: "选择一个工作区开始聊天！",
+    chooseWorkspace: "選擇一個工作區開始聊天！",
     notAssigned:
-      "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
+      "你目前還沒有分配到任何工作區。\n請聯繫你的管理員請求訪問一個工作區。",
     goToWorkspace: '前往 "{{workspace}}"',
   },
 };

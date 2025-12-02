@@ -36,6 +36,7 @@ import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -69,6 +70,7 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
+import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -344,6 +346,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <ZAiLLMOptions settings={settings} />,
     description: "Run Z.AI's powerful GLM models.",
     requiredConfig: ["ZAiApiKey"],
+  },
+  {
+    name: "GiteeAI",
+    value: "giteeai",
+    logo: GiteeAILogo,
+    options: (settings) => <GiteeAIOptions settings={settings} />,
+    description: "Run GiteeAI's powerful LLMs.",
+    requiredConfig: ["GiteeAIApiKey"],
   },
   {
     name: "Generic OpenAI",
