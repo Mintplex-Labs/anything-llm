@@ -1003,9 +1003,9 @@ const TRANSLATIONS = {
   },
   home: {
     welcome: "歡迎",
-    chooseWorkspace: "选择一个工作区开始聊天！",
+    chooseWorkspace: "選擇一個工作區開始聊天！",
     notAssigned:
-      "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
+      "你目前還沒有分配到任何工作區。\n請聯繫你的管理員請求訪問一個工作區。",
     goToWorkspace: '前往 "{{workspace}}"',
   },
 };
