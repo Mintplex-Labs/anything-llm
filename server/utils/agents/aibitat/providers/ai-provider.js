@@ -309,7 +309,9 @@ class Provider {
       }
       case "cohere":
         // TODO: Add support for Cohere LangChain integration w/ @langchain/cohere
-        throw new Error("Cohere does not support LangChain integration at this time.");
+        throw new Error(
+          "Cohere does not support LangChain integration at this time."
+        );
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

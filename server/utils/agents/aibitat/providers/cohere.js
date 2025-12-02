@@ -239,7 +239,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Create a completion based on the received messages.
-   * Overrides the inherited complete method to handle 
+   * Overrides the inherited complete method to handle
    * the Cohere SDK format
    *
    * @param messages - A list of messages to send to the API.
