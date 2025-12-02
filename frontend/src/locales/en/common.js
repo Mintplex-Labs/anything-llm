@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     },
   },
   common: {
-    "workspaces-name": "Workspaces Name",
+    "workspaces-name": "Workspace Name",
     error: "error",
     success: "success",
     user: "User",
