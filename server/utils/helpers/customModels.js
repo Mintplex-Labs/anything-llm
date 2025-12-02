@@ -812,7 +812,7 @@ async function getCohereModels(_apiKey = null, type = "chat") {
     .then((results) => results.models)
     .then((models) =>
       models.map((model) => ({
-        id: model.id,
+        id: model.name,
         name: model.name,
       }))
     )
