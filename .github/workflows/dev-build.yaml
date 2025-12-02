@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3906-global-default-system-prompt'] # put your current branch to create a build. Core team only.
+    branches: ['4582-epub2-static-build'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
