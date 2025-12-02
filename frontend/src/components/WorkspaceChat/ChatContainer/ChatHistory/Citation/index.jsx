@@ -69,7 +69,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 ml-14 gap-y-2">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
