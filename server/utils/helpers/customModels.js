@@ -305,6 +305,7 @@ async function getGroqAiModels(_apiKey = null) {
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const https = require("https");
+  const http = require("http");
 
   // LiteLLM uses /v1 path prefix - ensure it's appended if not present
   let baseURL = basePath || process.env.LITE_LLM_BASE_PATH;
@@ -312,33 +313,25 @@ async function liteLLMModels(basePath = null, apiKey = null) {
     baseURL = `${baseURL}/v1`;
   }
 
-  console.log(`[LiteLLM] Testing connection with original basePath: ${basePath}`);
-  console.log(`[LiteLLM] Adjusted baseURL for OpenAI SDK: ${baseURL}`);
-  console.log(`[LiteLLM] Will request: ${baseURL}/models`);
-  console.log(`[LiteLLM] API Key: ${apiKey ? '***' : 'none'}`);
-
-  // Create HTTPS agent that accepts self-signed certificates
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false, // Allow self-signed certificates
-  });
+  // Determine if HTTP or HTTPS and create appropriate agent
+  const isHttps = baseURL?.startsWith('https://');
+  const agent = isHttps
+    ? new https.Agent({ rejectUnauthorized: false })
+    : new http.Agent();
 
   const openai = new OpenAIApi({
     baseURL: baseURL,
     apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
-    httpAgent: httpsAgent, // Use custom agent for HTTPS requests
+    httpAgent: agent,
   });
 
   const models = await openai.models
     .list()
     .then((results) => results.data)
     .catch((e) => {
-      console.error(`LiteLLM:listModels Error:`, e);
-      console.error(`LiteLLM:listModels Error message:`, e.message);
-      console.error(`LiteLLM:listModels Error cause:`, e.cause);
+      console.error(`LiteLLM:listModels`, e.message);
       return [];
     });
-
-  console.log(`[LiteLLM] Got ${models.length} models`);
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
