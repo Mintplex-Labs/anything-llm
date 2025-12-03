@@ -75,7 +75,7 @@ class PGVector extends VectorDatabase {
    * @param {any} value
    * @returns {any}
    */
-  sanitizeForJsonb(value) {
+  static sanitizeForJsonb(value) {
     // Fast path for null/undefined and primitives that do not need changes
     if (value === null || value === undefined) return value;
 
@@ -95,7 +95,7 @@ class PGVector extends VectorDatabase {
 
     // Arrays: sanitize each element
     if (Array.isArray(value)) {
-      return value.map((item) => this.sanitizeForJsonb(item));
+      return value.map((item) => PGVector.sanitizeForJsonb(item));
     }
 
     // Dates: keep as ISO string
@@ -107,7 +107,7 @@ class PGVector extends VectorDatabase {
     if (typeof value === "object") {
       const result = {};
       for (const [k, v] of Object.entries(value)) {
-        result[k] = this.sanitizeForJsonb(v);
+        result[k] = PGVector.sanitizeForJsonb(v);
       }
       return result;
     }
@@ -450,7 +450,9 @@ class PGVector extends VectorDatabase {
       await connection.query(`BEGIN`);
       for (const submission of submissions) {
         const embedding = `[${submission.vector.map(Number).join(",")}]`; // stringify the vector for pgvector
-        const sanitizedMetadata = this.sanitizeForJsonb(submission.metadata);
+        const sanitizedMetadata = PGVector.sanitizeForJsonb(
+          submission.metadata
+        );
         await connection.query(
           `INSERT INTO "${PGVector.tableName()}" (id, namespace, embedding, metadata) VALUES ($1, $2, $3, $4)`,
           [submission.id, namespace, embedding, sanitizedMetadata]
