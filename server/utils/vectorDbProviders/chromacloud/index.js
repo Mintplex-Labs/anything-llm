@@ -4,10 +4,16 @@ const { Chroma } = require("../chroma");
 // ChromaCloud works exactly the same as Chroma so we can just extend the
 // Chroma class and override the connect method to use CloudClient
 
-const ChromaCloud = {
-  ...Chroma,
-  name: "ChromaCloud",
-  connect: async function () {
+class ChromaCloud extends Chroma {
+  constructor() {
+    super();
+  }
+
+  get name() {
+    return "ChromaCloud";
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "chromacloud")
       throw new Error("ChromaCloud::Invalid ENV settings");
 
@@ -23,7 +29,7 @@ const ChromaCloud = {
         "ChromaCloud::Invalid Heartbeat received - is the instance online?"
       );
     return { client };
-  },
-};
+  }
+}
 
 module.exports.ChromaCloud = ChromaCloud;

@@ -10,20 +10,29 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-const Milvus = {
-  name: "Milvus",
+class Milvus extends VectorDatabase {
+  constructor() {
+    super();
+  }
+
+  get name() {
+    return "Milvus";
+  }
+
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
   // so we need to enforce that by re-normalizing the names when communicating with
   // the DB.
   // If the first char of the collection is not an underscore or letter the collection name will be invalid.
-  normalize: function (inputString) {
+  normalize(inputString) {
     let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
     if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
       normalized = `anythingllm_${normalized}`;
     return normalized;
-  },
-  connect: async function () {
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "milvus")
       throw new Error("Milvus::Invalid ENV settings");
 
@@ -40,12 +49,14 @@ const Milvus = {
       );
 
     return { client };
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const { collection_names } = await client.listCollections();
     const total = collection_names.reduce(async (acc, collection_name) => {
@@ -55,27 +66,31 @@ const Milvus = {
       return Number(acc) + Number(statistics?.data?.row_count ?? 0);
     }, 0);
     return total;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const statistics = await client.getCollectionStatistics({
       collection_name: this.normalize(_namespace),
     });
     return Number(statistics?.data?.row_count ?? 0);
-  },
-  namespace: async function (client, namespace = null) {
+  }
+
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollectionStatistics({ collection_name: this.normalize(namespace) })
       .catch(() => null);
     return collection;
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
-  },
-  namespaceExists: async function (client, namespace = null) {
+  }
+
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
@@ -84,15 +99,27 @@ const Milvus = {
         return { value: false };
       });
     return value;
-  },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  }
+
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.dropCollection({ collection_name: this.normalize(namespace) });
     return true;
-  },
+  }
+
+  async deleteVectorsByIds(client, namespace, vectorIds) {
+    const queryIn = vectorIds.map((v) => `'${v}'`).join(",");
+    await client.deleteEntities({
+      collection_name: this.normalize(namespace),
+      expr: `id in [${queryIn}]`,
+    });
+    // Flush to ensure consistency
+    await client.flushSync({ collection_names: [this.normalize(namespace)] });
+  }
+
   // Milvus requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
-  getOrCreateCollection: async function (client, namespace, dimensions = null) {
+  async getOrCreateCollection(client, namespace, dimensions = null) {
     const isExists = await this.namespaceExists(client, namespace);
     if (!isExists) {
       if (!dimensions)
@@ -133,8 +160,9 @@ const Milvus = {
         collection_name: this.normalize(namespace),
       });
     }
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -268,8 +296,9 @@ const Milvus = {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -291,8 +320,9 @@ const Milvus = {
     // on a later call.
     await client.flushSync({ collection_names: [this.normalize(namespace)] });
     return true;
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -331,8 +361,9 @@ const Milvus = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  similarityResponse: async function ({
+  }
+
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -367,8 +398,9 @@ const Milvus = {
       result.scores.push(match.score);
     });
     return result;
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -378,8 +410,9 @@ const Milvus = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -391,8 +424,9 @@ const Milvus = {
     return {
       message: `Namespace ${namespace} was deleted along with ${vectorCount} vectors.`,
     };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       const { metadata = {} } = source;
@@ -404,7 +438,7 @@ const Milvus = {
       }
     }
     return documents;
-  },
-};
+  }
+}
 
 module.exports.Milvus = Milvus;

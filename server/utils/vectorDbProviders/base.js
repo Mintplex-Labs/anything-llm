@@ -1,7 +1,6 @@
 /**
  * Base class for all Vector Database providers.
  * All vector database providers should extend this class and implement/override the necessary methods.
- * This follows the same pattern as the LLM providers.
  */
 class VectorDatabase {
   constructor() {
