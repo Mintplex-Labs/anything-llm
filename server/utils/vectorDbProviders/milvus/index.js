@@ -322,47 +322,6 @@ class Milvus extends VectorDatabase {
     return true;
   }
 
-  async performSimilaritySearch({
-    namespace = null,
-    input = "",
-    LLMConnector = null,
-    similarityThreshold = 0.25,
-    topN = 4,
-    filterIdentifiers = [],
-  }) {
-    if (!namespace || !input || !LLMConnector)
-      throw new Error("Invalid request to performSimilaritySearch.");
-
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
-      return {
-        contextTexts: [],
-        sources: [],
-        message: "Invalid query - no documents found for workspace!",
-      };
-    }
-
-    const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
-
-    const sources = sourceDocuments.map((doc, i) => {
-      return { metadata: doc, text: contextTexts[i] };
-    });
-
-    return {
-      contextTexts,
-      sources: this.curateSources(sources),
-      message: false,
-    };
-  }
-
   async similarityResponse({
     client,
     namespace,
@@ -398,20 +357,6 @@ class Milvus extends VectorDatabase {
       result.scores.push(match.score);
     });
     return result;
-  }
-
-  curateSources(sources = []) {
-    const documents = [];
-    for (const source of sources) {
-      const { metadata = {} } = source;
-      if (Object.keys(metadata).length > 0) {
-        documents.push({
-          ...metadata,
-          ...(source.text ? { text: source.text } : {}),
-        });
-      }
-    }
-    return documents;
   }
 }
 

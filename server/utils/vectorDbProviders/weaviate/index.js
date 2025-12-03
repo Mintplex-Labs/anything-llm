@@ -393,46 +393,6 @@ class Weaviate extends VectorDatabase {
     return true;
   }
 
-  async performSimilaritySearch({
-    namespace = null,
-    input = "",
-    LLMConnector = null,
-    similarityThreshold = 0.25,
-    topN = 4,
-    filterIdentifiers = [],
-  }) {
-    if (!namespace || !input || !LLMConnector)
-      throw new Error("Invalid request to performSimilaritySearch.");
-
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
-      return {
-        contextTexts: [],
-        sources: [],
-        message: "Invalid query - no documents found for workspace!",
-      };
-    }
-
-    const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
-
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
-    });
-    return {
-      contextTexts,
-      sources: this.curateSources(sources),
-      message: false,
-    };
-  }
-
   async reset() {
     const { client } = await this.connect();
     const weaviateClasses = await this.allNamespaces(client);
@@ -440,20 +400,6 @@ class Weaviate extends VectorDatabase {
       await client.schema.classDeleter().withClassName(weaviateClass).do();
     }
     return { reset: true };
-  }
-
-  curateSources(sources = []) {
-    const documents = [];
-    for (const source of sources) {
-      if (Object.keys(source).length > 0) {
-        const metadata = source.hasOwnProperty("metadata")
-          ? source.metadata
-          : source;
-        documents.push({ ...metadata });
-      }
-    }
-
-    return documents;
   }
 
   flattenObjectForWeaviate(obj = {}) {

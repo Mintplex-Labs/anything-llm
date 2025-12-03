@@ -437,22 +437,6 @@ class AstraDB extends VectorDatabase {
       return [];
     }
   }
-
-  curateSources(sources = []) {
-    const documents = [];
-    for (const source of sources) {
-      if (Object.keys(source).length > 0) {
-        const metadata = source.hasOwnProperty("metadata")
-          ? source.metadata
-          : source;
-        documents.push({
-          ...metadata,
-        });
-      }
-    }
-
-    return documents;
-  }
 }
 
 module.exports.AstraDB = AstraDB;
