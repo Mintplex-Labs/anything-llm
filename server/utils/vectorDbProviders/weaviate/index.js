@@ -433,28 +433,6 @@ class Weaviate extends VectorDatabase {
     };
   }
 
-  async "namespace-stats"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    if (!namespace) throw new Error("namespace required");
-    const { client } = await this.connect();
-    const stats = await this.namespace(client, namespace);
-    return stats
-      ? stats
-      : { message: "No stats were able to be fetched from DB for namespace" };
-  }
-
-  async "delete-namespace"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    const { client } = await this.connect();
-    const details = await this.namespace(client, namespace);
-    await this.deleteVectorsInNamespace(client, namespace);
-    return {
-      message: `Namespace ${camelCase(namespace)} was deleted along with ${
-        details?.vectorCount
-      } vectors.`,
-    };
-  }
-
   async reset() {
     const { client } = await this.connect();
     const weaviateClasses = await this.allNamespaces(client);

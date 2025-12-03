@@ -391,32 +391,6 @@ class Zilliz extends VectorDatabase {
     return result;
   }
 
-  async "namespace-stats"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    if (!namespace) throw new Error("namespace required");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error("Namespace by that name does not exist.");
-    const stats = await this.namespace(client, namespace);
-    return stats
-      ? stats
-      : { message: "No stats were able to be fetched from DB for namespace" };
-  }
-
-  async "delete-namespace"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error("Namespace by that name does not exist.");
-
-    const statistics = await this.namespace(client, namespace);
-    await this.deleteVectorsInNamespace(client, namespace);
-    const vectorCount = Number(statistics?.data?.row_count ?? 0);
-    return {
-      message: `Namespace ${namespace} was deleted along with ${vectorCount} vectors.`,
-    };
-  }
-
   curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {

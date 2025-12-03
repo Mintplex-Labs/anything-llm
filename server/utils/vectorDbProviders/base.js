@@ -261,7 +261,7 @@ class VectorDatabase {
     const details = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
     return {
-      message: `Namespace ${namespace} was deleted along with ${details?.vectorCount || 0} vectors.`,
+      message: `Namespace ${namespace} was deleted along with ${details?.vectorCount || "all"} vectors.`,
     };
   }
 
