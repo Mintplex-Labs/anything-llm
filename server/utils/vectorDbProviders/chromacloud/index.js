@@ -2,11 +2,17 @@ const { CloudClient } = require("chromadb");
 const { Chroma } = require("../chroma");
 const { toChunks } = require("../../helpers");
 
-// ChromaCloud works nearly the same as Chroma so we can just extend the
-// Chroma class and override the connect method to use CloudClient
+/**
+ * ChromaCloud works nearly the same as Chroma so we can just extend the
+ * Chroma class and override the connect method to use the CloudClient for major differences in API functionality.
+ */
 const ChromaCloud = {
   ...Chroma,
   name: "ChromaCloud",
+  /**
+   * Basic quota/limitations for Chroma Cloud for accounts. Does not lookup client-specific limits.
+   * @see https://docs.trychroma.com/cloud/quotas-limits
+   */
   limits: {
     maxEmbeddingDim: 4_096,
     maxDocumentBytes: 16_384,
@@ -36,7 +42,6 @@ const ChromaCloud = {
    *
    * This method, if cloud, will do some simple logic/heuristics to ensure that the upserts are not too large.
    * Otherwise, it may throw a 422.
-   * @see https://docs.trychroma.com/cloud/quotas-limits
    * @param {import("chromadb").Collection} collection
    * @param {{ids: string[], embeddings: number[], metadatas: Record<string, any>[], documents: string[]}[]} submissions
    * @returns {Promise<boolean>} True if the upsert was successful, false otherwise.
