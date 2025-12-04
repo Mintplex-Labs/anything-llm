@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
+import LanguageSelector from "../LanguageSelector";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
@@ -100,6 +101,7 @@ export default function Footer() {
               />
             </Link>
           </div>
+          <LanguageSelector />
           {!isMobile && <SettingsButton />}
         </div>
         <Tooltip
@@ -133,6 +135,7 @@ export default function Footer() {
             )}
           </a>
         ))}
+        <LanguageSelector />
         {!isMobile && <SettingsButton />}
       </div>
       <Tooltip
