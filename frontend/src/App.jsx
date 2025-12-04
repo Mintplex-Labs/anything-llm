@@ -12,8 +12,11 @@ import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import { useRTL } from "@/hooks/useRTL";
 
 export default function App() {
+  // Enable RTL support for Hebrew, Arabic, and Farsi
+  useRTL();
   return (
     <ThemeProvider>
       <PWAModeProvider>
