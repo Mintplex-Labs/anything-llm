@@ -20,6 +20,8 @@ export function enforceSubmissionSchema(form) {
     data.allow_temperature_override = false;
   if (!data.hasOwnProperty("allow_prompt_override"))
     data.allow_prompt_override = false;
+  if (!data.hasOwnProperty("allow_agent"))
+    data.allow_agent = false;
   if (!data.hasOwnProperty("message_limit")) data.message_limit = 20;
   return data;
 }
@@ -90,6 +92,11 @@ export default function NewEmbedModal({ closeModal }) {
                 name="allow_prompt_override"
                 title="Enable Prompt Override"
                 hint="Allow setting of the system prompt to override the workspace default."
+              />
+              <BooleanInput
+                name="allow_agent"
+                title="Enable Agent Support"
+                hint="Allow users to invoke AI agents using @agent commands. Requires the workspace to have agents configured."
               />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
@@ -354,7 +361,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
         <input
           name={name}
           type="checkbox"
-          onClick={() => setStatus(!status)}
+          onChange={() => setStatus(!status)}
           checked={status}
           className="peer sr-only pointer-events-none"
         />
