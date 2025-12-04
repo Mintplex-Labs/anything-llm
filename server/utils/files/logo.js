@@ -30,15 +30,15 @@ function getDefaultFilename(darkMode = true) {
   return darkMode ? LOGO_FILENAME : LOGO_FILENAME_DARK;
 }
 
-async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
-  const currentLogoFilename = await SystemSettings.currentLogoFilename();
+async function determineLogoFilepath(defaultFilename = LOGO_FILENAME, theme = null) {
+  const currentLogoFilename = await SystemSettings.currentLogoFilename(theme);
   const basePath = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "assets")
     : path.join(__dirname, "../../storage/assets");
   const defaultFilepath = path.join(basePath, defaultFilename);
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
-    customLogoPath = path.join(basePath, normalizePath(currentLogoFilename));
+    const customLogoPath = path.join(basePath, normalizePath(currentLogoFilename));
     if (!isWithin(path.resolve(basePath), path.resolve(customLogoPath)))
       return defaultFilepath;
     return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;
