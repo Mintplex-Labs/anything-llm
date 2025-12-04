@@ -179,12 +179,6 @@ class Chroma extends VectorDatabase {
     };
   }
 
-  async hasNamespace(namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    return await this.namespaceExists(client, this.normalize(namespace));
-  }
-
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
@@ -394,31 +388,6 @@ class Chroma extends VectorDatabase {
       contextTexts,
       sources: this.curateSources(sources),
       message: false,
-    };
-  }
-
-  async "namespace-stats"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    if (!namespace) throw new Error("namespace required");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, this.normalize(namespace))))
-      throw new Error("Namespace by that name does not exist.");
-    const stats = await this.namespace(client, this.normalize(namespace));
-    return stats
-      ? stats
-      : { message: "No stats were able to be fetched from DB for namespace" };
-  }
-
-  async "delete-namespace"(reqBody = {}) {
-    const { namespace = null } = reqBody;
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, this.normalize(namespace))))
-      throw new Error("Namespace by that name does not exist.");
-
-    const details = await this.namespace(client, this.normalize(namespace));
-    await this.deleteVectorsInNamespace(client, this.normalize(namespace));
-    return {
-      message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
   }
 

@@ -294,50 +294,6 @@ class AstraDB extends VectorDatabase {
     }
   }
 
-  async performSimilaritySearch({
-    namespace = null,
-    input = "",
-    LLMConnector = null,
-    similarityThreshold = 0.25,
-    topN = 4,
-    filterIdentifiers = [],
-  }) {
-    if (!namespace || !input || !LLMConnector)
-      throw new Error("Invalid request to performSimilaritySearch.");
-
-    const { client } = await this.connect();
-    // Sanitize namespace before checking existence
-    const sanitizedNamespace = this.sanitizeNamespace(namespace);
-
-    if (!(await this.namespaceExists(client, sanitizedNamespace))) {
-      return {
-        contextTexts: [],
-        sources: [],
-        message:
-          "Invalid query - no namespace found for workspace in vector db!",
-      };
-    }
-
-    const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace: sanitizedNamespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
-
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
-    });
-    return {
-      contextTexts,
-      sources: this.curateSources(sources),
-      message: false,
-    };
-  }
-
   async similarityResponse({
     client,
     namespace,

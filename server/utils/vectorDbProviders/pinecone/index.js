@@ -1,4 +1,4 @@
-const { Pinecone: PineconeClient } = require("@pinecone-database/pinecone");
+const { Pinecone } = require("@pinecone-database/pinecone");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
@@ -7,7 +7,7 @@ const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
 const { VectorDatabase } = require("../base");
 
-class Pinecone extends VectorDatabase {
+class PineconeDB extends VectorDatabase {
   constructor() {
     super();
   }
@@ -20,7 +20,7 @@ class Pinecone extends VectorDatabase {
     if (process.env.VECTOR_DB !== "pinecone")
       throw new Error("Pinecone::Invalid ENV settings");
 
-    const client = new PineconeClient({
+    const client = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY,
     });
 
@@ -321,4 +321,4 @@ class Pinecone extends VectorDatabase {
   }
 }
 
-module.exports.Pinecone = Pinecone;
+module.exports.Pinecone = PineconeDB;

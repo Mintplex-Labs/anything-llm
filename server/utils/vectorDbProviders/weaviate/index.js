@@ -178,13 +178,6 @@ class Weaviate extends VectorDatabase {
     return response;
   }
 
-  async hasNamespace(namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    const weaviateClasses = await this.allNamespaces(client);
-    return weaviateClasses.includes(camelCase(namespace));
-  }
-
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const weaviateClasses = await this.allNamespaces(client);
