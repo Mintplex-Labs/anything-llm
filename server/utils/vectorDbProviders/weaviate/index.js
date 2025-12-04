@@ -372,27 +372,6 @@ class Weaviate extends VectorDatabase {
     }
   }
 
-  async deleteDocumentFromNamespace(namespace, docId) {
-    const { DocumentVectors } = require("../../../models/vectors");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) return;
-
-    const knownDocuments = await DocumentVectors.where({ docId });
-    if (knownDocuments.length === 0) return;
-
-    for (const doc of knownDocuments) {
-      await client.data
-        .deleter()
-        .withClassName(camelCase(namespace))
-        .withId(doc.vectorId)
-        .do();
-    }
-
-    const indexes = knownDocuments.map((doc) => doc.id);
-    await DocumentVectors.deleteIds(indexes);
-    return true;
-  }
-
   async reset() {
     const { client } = await this.connect();
     const weaviateClasses = await this.allNamespaces(client);

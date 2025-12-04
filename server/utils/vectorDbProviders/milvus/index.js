@@ -84,12 +84,6 @@ class Milvus extends VectorDatabase {
     return collection;
   }
 
-  async hasNamespace(namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    return await this.namespaceExists(client, namespace);
-  }
-
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { value } = await client
@@ -296,30 +290,6 @@ class Milvus extends VectorDatabase {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  }
-
-  async deleteDocumentFromNamespace(namespace, docId) {
-    const { DocumentVectors } = require("../../../models/vectors");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) return;
-    const knownDocuments = await DocumentVectors.where({ docId });
-    if (knownDocuments.length === 0) return;
-
-    const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    const queryIn = vectorIds.map((v) => `'${v}'`).join(",");
-    await client.deleteEntities({
-      collection_name: this.normalize(namespace),
-      expr: `id in [${queryIn}]`,
-    });
-
-    const indexes = knownDocuments.map((doc) => doc.id);
-    await DocumentVectors.deleteIds(indexes);
-
-    // Even after flushing Milvus can take some time to re-calc the count
-    // so all we can hope to do is flushSync so that the count can be correct
-    // on a later call.
-    await client.flushSync({ collection_names: [this.normalize(namespace)] });
-    return true;
   }
 
   async similarityResponse({

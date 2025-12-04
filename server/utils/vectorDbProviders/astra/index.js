@@ -104,12 +104,6 @@ class AstraDB extends VectorDatabase {
     };
   }
 
-  async hasNamespace(namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    return await this.namespaceExists(client, namespace);
-  }
-
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const sanitizedNamespace = this.sanitizeNamespace(namespace);
@@ -298,31 +292,6 @@ class AstraDB extends VectorDatabase {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  }
-
-  async deleteDocumentFromNamespace(namespace, docId) {
-    const { DocumentVectors } = require("../../../models/vectors");
-    const { client } = await this.connect();
-    namespace = this.sanitizeNamespace(namespace);
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error(
-        "Invalid namespace - has it been collected and populated yet?"
-      );
-    const collection = await client.collection(namespace);
-
-    const knownDocuments = await DocumentVectors.where({ docId });
-    if (knownDocuments.length === 0) return;
-
-    const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    for (const id of vectorIds) {
-      await collection.deleteMany({
-        _id: id,
-      });
-    }
-
-    const indexes = knownDocuments.map((doc) => doc.id);
-    await DocumentVectors.deleteIds(indexes);
-    return true;
   }
 
   async performSimilaritySearch({

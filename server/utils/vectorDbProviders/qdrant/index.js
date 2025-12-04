@@ -111,12 +111,6 @@ class QDrant extends VectorDatabase {
     };
   }
 
-  async hasNamespace(namespace = null) {
-    if (!namespace) return false;
-    const { client } = await this.connect();
-    return await this.namespaceExists(client, namespace);
-  }
-
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch((e) => {
@@ -333,25 +327,6 @@ class QDrant extends VectorDatabase {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  }
-
-  async deleteDocumentFromNamespace(namespace, docId) {
-    const { DocumentVectors } = require("../../../models/vectors");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) return;
-
-    const knownDocuments = await DocumentVectors.where({ docId });
-    if (knownDocuments.length === 0) return;
-
-    const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await client.delete(namespace, {
-      wait: true,
-      points: vectorIds,
-    });
-
-    const indexes = knownDocuments.map((doc) => doc.id);
-    await DocumentVectors.deleteIds(indexes);
-    return true;
   }
 
   async reset() {
