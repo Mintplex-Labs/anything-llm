@@ -92,6 +92,7 @@ class QDrant extends VectorDatabase {
       result.sourceDocuments.push({
         ...(response?.payload || {}),
         id: response.id,
+        score: response.score,
       });
       result.scores.push(response.score);
     });
