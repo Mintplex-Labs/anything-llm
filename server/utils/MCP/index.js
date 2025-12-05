@@ -46,6 +46,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 name: `${name}-${tool.name}`,
                 controller: new AbortController(),
                 description: tool.description,
+                isMCPTool: true,
                 examples: [],
                 parameters: {
                   $schema: "http://json-schema.org/draft-07/schema#",
@@ -134,7 +135,9 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       }
 
       const online = !!(await mcp.ping());
-      const tools = online ? (await mcp.listTools()).tools : [];
+      const tools = (online ? (await mcp.listTools()).tools : []).filter(
+        (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
+      );
       servers.push({
         name,
         config: config?.server || null,
