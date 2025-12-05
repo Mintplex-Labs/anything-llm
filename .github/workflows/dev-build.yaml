@@ -21,8 +21,8 @@ on:
       - 'extras/**/*' # Extra is just for news and other local content.
 
 jobs:
-  push_multi_platform_to_registries:
-    name: Push Docker multi-platform image to multiple registries
+  push_dev_build_to_dockerhub:
+    name: Push development build image to Docker Hub
     runs-on: ubuntu-22.04-arm
     permissions:
       packages: write
