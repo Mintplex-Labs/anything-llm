@@ -1248,6 +1248,9 @@ function dumpENV() {
 
     // Allow setting a custom response timeout for Ollama
     "OLLAMA_RESPONSE_TIMEOUT",
+
+    // Allow disabling of MCP tool cooldown
+    "MCP_NO_COOLDOWN",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
