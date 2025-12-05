@@ -123,6 +123,14 @@ class VectorDatabase {
   }
 
   /**
+   * Reset the vector database (delete all data)
+   * @returns {Promise<{reset: boolean}>}
+   */
+  async reset() {
+    throw new Error("Must be implemented by provider");
+  }
+
+  /**
    * Delete a document from a namespace
    * Default implementation that works for most providers.
    * Handles the DocumentVectors database logic and delegates actual vector deletion
@@ -263,14 +271,6 @@ class VectorDatabase {
     return {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount || "all"} vectors.`,
     };
-  }
-
-  /**
-   * Reset the vector database (delete all data)
-   * @returns {Promise<{reset: boolean}>}
-   */
-  async reset() {
-    throw new Error("Must be implemented by provider");
   }
 
   /**
