@@ -193,8 +193,9 @@ class MCPHypervisor {
 
     this.log(`Pruning MCP server: ${name}`);
     const mcp = this.mcps[name];
+    if (!mcp.transport) return true;
     const childProcess = mcp.transport._process;
-    if (childProcess) childProcess.kill(1);
+    if (childProcess) childProcess.kill("SIGTERM");
     mcp.transport.close();
 
     delete this.mcps[name];
@@ -215,10 +216,11 @@ class MCPHypervisor {
     for (const name of Object.keys(this.mcps)) {
       if (!this.mcps[name]) continue;
       const mcp = this.mcps[name];
+      if (!mcp.transport) continue;
       const childProcess = mcp.transport._process;
       if (childProcess)
         this.log(`Killing MCP ${name} (PID: ${childProcess.pid})`, {
-          killed: childProcess.kill(1),
+          killed: childProcess.kill("SIGTERM"),
         });
 
       mcp.transport.close();
@@ -229,17 +231,50 @@ class MCPHypervisor {
   }
 
   /**
+   * Load shell environment for desktop applications.
+   * MacOS and Linux don't inherit login shell environment. So this function
+   * fixes the PATH and accessible commands when running AnythingLLM outside of Docker during development on Mac/Linux and in-container (Linux).
+   * @returns {Promise<{[key: string]: string}>} - Environment variables from shell
+   */
+  async #loadShellEnvironment() {
+    try {
+      if (process.platform === "win32") return process.env;
+      const { default: fixPath } = await import("fix-path");
+      const { default: stripAnsi } = await import("strip-ansi");
+      fixPath();
+
+      // Due to node v20 requirement to have a minimum version of fix-path v5, we need to strip ANSI codes manually
+      // which was the only patch between v4 and v5. Here we just apply manually.
+      // https://github.com/sindresorhus/fix-path/issues/6
+      if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
+      return process.env;
+    } catch (error) {
+      console.warn(
+        "Failed to load shell environment, using process.env:",
+        error.message
+      );
+      return process.env;
+    }
+  }
+
+  /**
    * Build the MCP server environment variables - ensures proper PATH and NODE_PATH
    * inheritance across all platforms and deployment scenarios.
    * @param {Object} server - The server definition
-   * @returns {{env: { [key: string]: string } | {}}} - The environment variables
+   * @returns {Promise<{env: { [key: string]: string } | {}}}> - The environment variables
    */
-  #buildMCPServerENV(server) {
-    // Start with essential environment variables, inheriting from current process
-    // This ensures GUI applications on macOS/Linux get proper PATH inheritance
+  async #buildMCPServerENV(server) {
+    const shellEnv = await this.#loadShellEnvironment();
     let baseEnv = {
-      PATH: process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-      NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules",
+      PATH:
+        shellEnv.PATH ||
+        process.env.PATH ||
+        "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      NODE_PATH:
+        shellEnv.NODE_PATH ||
+        process.env.NODE_PATH ||
+        "/usr/local/lib/node_modules",
+      ...shellEnv, // Include all shell environment variables
     };
 
     // Docker-specific environment setup
@@ -273,21 +308,50 @@ class MCPHypervisor {
    * @returns {MCPServerTypes | null} - The server type
    */
   #parseServerType(server) {
-    if (server.hasOwnProperty("command")) return "stdio";
-    if (server.hasOwnProperty("url")) return "http";
+    if (
+      server.type === "sse" ||
+      server.type === "streamable" ||
+      server.type === "http"
+    )
+      return "http";
+    if (Object.prototype.hasOwnProperty.call(server, "command")) return "stdio";
+    if (Object.prototype.hasOwnProperty.call(server, "url")) return "http";
     return "sse";
   }
 
   /**
    * Validate the server definition by type
    * - Will throw an error if the server definition is invalid
+   * @param {string} name - The name of the MCP server
    * @param {Object} server - The server definition
    * @param {MCPServerTypes} type - The server type
    * @returns {void}
    */
-  #validateServerDefinitionByType(server, type) {
+  #validateServerDefinitionByType(name, server, type) {
+    if (
+      server.type === "sse" ||
+      server.type === "streamable" ||
+      server.type === "http"
+    ) {
+      if (!server.url) {
+        throw new Error(
+          `MCP server "${name}": missing required "url" for ${server.type} transport`
+        );
+      }
+
+      try {
+        new URL(server.url);
+      } catch (error) {
+        throw new Error(`MCP server "${name}": invalid URL "${server.url}"`);
+      }
+      return;
+    }
+
     if (type === "stdio") {
-      if (server.hasOwnProperty("args") && !Array.isArray(server.args))
+      if (
+        Object.prototype.hasOwnProperty.call(server, "args") &&
+        !Array.isArray(server.args)
+      )
         throw new Error("MCP server args must be an array");
     }
 
@@ -295,7 +359,6 @@ class MCPHypervisor {
       if (!["sse", "streamable"].includes(server?.type))
         throw new Error("MCP server type must have sse or streamable value.");
     }
-
     if (type === "sse") return;
     return;
   }
@@ -304,16 +367,16 @@ class MCPHypervisor {
    * Setup the server transport by type and server definition
    * @param {Object} server - The server definition
    * @param {MCPServerTypes} type - The server type
-   * @returns {StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport} - The server transport
+   * @returns {Promise<StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport>} - The server transport
    */
-  #setupServerTransport(server, type) {
+  async #setupServerTransport(server, type) {
     // if not stdio then it is http or sse
     if (type !== "stdio") return this.createHttpTransport(server);
 
     return new StdioClientTransport({
       command: server.command,
       args: server?.args ?? [],
-      ...this.#buildMCPServerENV(server),
+      ...(await this.#buildMCPServerENV(server)),
     });
   }
 
@@ -328,6 +391,7 @@ class MCPHypervisor {
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
+      case "http":
         return new StreamableHTTPClientTransport(url, {
           requestInit: {
             headers: server.headers,
@@ -354,10 +418,10 @@ class MCPHypervisor {
     const serverType = this.#parseServerType(server);
     if (!serverType) throw new Error("MCP server command or url is required");
 
-    this.#validateServerDefinitionByType(server, serverType);
+    this.#validateServerDefinitionByType(name, server, serverType);
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
-    const transport = this.#setupServerTransport(server, serverType);
+    const transport = await this.#setupServerTransport(server, serverType);
 
     // Add connection event listeners
     transport.onclose = () => this.log(`${name} - Transport closed`);
@@ -369,10 +433,22 @@ class MCPHypervisor {
     // Connect and await the connection with a timeout
     this.mcps[name] = mcp;
     const connectionPromise = mcp.connect(transport);
+
+    let timeoutId;
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Connection timeout")), 30_000); // 30 second timeout
+      timeoutId = setTimeout(
+        () => reject(new Error("Connection timeout")),
+        30_000
+      ); // 30 second timeout
     });
-    await Promise.race([connectionPromise, timeoutPromise]);
+
+    try {
+      await Promise.race([connectionPromise, timeoutPromise]);
+      if (timeoutId) clearTimeout(timeoutId);
+    } catch (error) {
+      if (timeoutId) clearTimeout(timeoutId);
+      throw error;
+    }
     return true;
   }
 

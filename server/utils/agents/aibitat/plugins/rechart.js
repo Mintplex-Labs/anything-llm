@@ -55,9 +55,9 @@ Make sure the format use double quotes and property names are string literals. P
           required: ["type", "title", "dataset"],
           handler: async function ({ type, dataset, title }) {
             try {
-              if (!this.tracker.isUnique(this.name)) {
+              if (this.tracker.isMarkedUnique(this.name)) {
                 this.super.handlerProps.log(
-                  `${this.name} has been run for this chat response already. It can only be called once per chat.`
+                  `${this.name} has been called for this chat response already. It can only be called once per chat.`
                 );
                 return "The chart was generated and returned to the user. This function completed successfully. Do not call this function again.";
               }
