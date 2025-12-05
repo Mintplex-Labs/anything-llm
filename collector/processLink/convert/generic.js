@@ -138,22 +138,31 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
     let pageContents = [];
     const runtimeSettings = new RuntimeSettings();
 
-    /* On MacOS 15.1, the default args cause the browser to crash
+    /** @type {import('puppeteer').PuppeteerLaunchOptions} */
+    let launchConfig = { headless: "new" };
+
+    /* On MacOS 15.1, the default args cause the browser to crash when running in headless mode.
      * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
-     * in production runs in a container, we can safely ignore the default args when in development
-     * just to patch the issue for development purposes.
+     * in production runs in a container, we can safely disable headless mode when in development
+     * to workaround the issue for development purposes.
+     *
+     * This may show a popup window when scraping a page in development mode.
+     * This is expected behavior if seen in development mode on MacOS 15+
      */
-    const ignoreDefaultArgs =
-      process.platform === "darwin" && process.env.NODE_ENV === "development";
-    if (ignoreDefaultArgs)
+    if (
+      process.platform === "darwin" &&
+      process.env.NODE_ENV === "development"
+    ) {
       console.log(
-        "Darwin Development Mode: Ignoring default args to prevent Chromium from crashing."
+        "Darwin Development Mode: Disabling headless mode to prevent Chromium from crashing."
       );
+      launchConfig.headless = "false";
+    }
+
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
-        headless: "new",
+        headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
-        ignoreDefaultArgs,
         args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
