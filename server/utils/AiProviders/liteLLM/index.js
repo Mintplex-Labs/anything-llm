@@ -8,22 +8,72 @@ const {
 } = require("../../helpers/chat/responses");
 
 class LiteLLM {
-  constructor(embedder = null, modelPreference = null) {
+  constructor(embedder = null, modelPreference = null, config = null) {
     const { OpenAI: OpenAIApi } = require("openai");
-    if (!process.env.LITE_LLM_BASE_PATH)
-      throw new Error(
-        "LiteLLM must have a valid base path to use for the api."
-      );
+    const https = require("https");
+    const http = require("http");
 
     this.className = "LiteLLM";
-    this.basePath = process.env.LITE_LLM_BASE_PATH;
-    this.openai = new OpenAIApi({
-      baseURL: this.basePath,
-      apiKey: process.env.LITE_LLM_API_KEY ?? null,
-    });
-    this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
-    this.maxTokens = process.env.LITE_LLM_MODEL_TOKEN_LIMIT ?? 1024;
+
+    // Helper to create appropriate agent for HTTP or HTTPS
+    const createAgent = (baseURL) => {
+      const isHttps = baseURL?.startsWith('https://');
+      return isHttps
+        ? new https.Agent({ rejectUnauthorized: false })
+        : new http.Agent();
+    };
+
+    // PRIORITY 1: Provided config object (from llm_connections)
+    if (config) {
+      if (!config.basePath) {
+        throw new Error("LiteLLM config must have a valid basePath");
+      }
+
+      this.basePath = config.basePath;
+
+      // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+      let baseURL = this.basePath;
+      if (!baseURL.endsWith('/v1')) {
+        baseURL = `${baseURL}/v1`;
+      }
+
+      this.openai = new OpenAIApi({
+        baseURL: baseURL,
+        apiKey: config.apiKey ?? null,
+        httpAgent: createAgent(baseURL),
+      });
+      this.model = modelPreference ?? config.defaultModel ?? null;
+      this.maxTokens = config.modelTokenLimit ?? 4096;
+      this.timeout = config.timeout ?? 30000;
+    }
+    // PRIORITY 2: Environment variables (LEGACY - backward compatibility)
+    else {
+      if (!process.env.LITE_LLM_BASE_PATH) {
+        throw new Error(
+          "LiteLLM must have a valid base path to use for the api."
+        );
+      }
+
+      this.basePath = process.env.LITE_LLM_BASE_PATH;
+
+      // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+      let baseURL = this.basePath;
+      if (!baseURL.endsWith('/v1')) {
+        baseURL = `${baseURL}/v1`;
+      }
+
+      this.openai = new OpenAIApi({
+        baseURL: baseURL,
+        apiKey: process.env.LITE_LLM_API_KEY ?? null,
+        httpAgent: createAgent(baseURL),
+      });
+      this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
+      this.maxTokens = process.env.LITE_LLM_MODEL_TOKEN_LIMIT ?? 1024;
+      this.timeout = 30000;
+    }
+
     if (!this.model) throw new Error("LiteLLM must have a valid model set.");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -65,7 +115,7 @@ class LiteLLM {
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LITE_LLM_MODEL_TOKEN_LIMIT || 4096;
+    const limit = this.maxTokens || 4096;
     if (!limit || isNaN(Number(limit)))
       throw new Error("No token context limit was set.");
     return Number(limit);

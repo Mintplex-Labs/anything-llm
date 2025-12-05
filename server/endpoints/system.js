@@ -1020,10 +1020,28 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { provider, apiKey = null, basePath = null } = reqBody(request);
+        const {
+          provider,
+          apiKey = null,
+          basePath = null,
+          connectionId = null,
+          useSavedApiKey = false,
+        } = reqBody(request);
+
+        let effectiveApiKey = apiKey;
+
+        // If useSavedApiKey flag is true and connectionId provided, retrieve the stored API key
+        if (useSavedApiKey && connectionId) {
+          const { LLMConnection } = require("../models/llmConnection");
+          const connection = await LLMConnection.get(connectionId);
+          if (connection) {
+            effectiveApiKey = connection.config.apiKey || null;
+          }
+        }
+
         const { models, error } = await getCustomModels(
           provider,
-          apiKey,
+          effectiveApiKey,
           basePath
         );
         return response.status(200).json({
@@ -1031,7 +1049,7 @@ function systemEndpoints(app) {
           error,
         });
       } catch (error) {
-        console.error(error);
+        console.error("[/system/custom-models] Exception:", error);
         response.status(500).end();
       }
     }
