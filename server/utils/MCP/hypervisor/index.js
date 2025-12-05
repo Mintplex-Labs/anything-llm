@@ -240,7 +240,13 @@ class MCPHypervisor {
     try {
       if (process.platform === "win32") return process.env;
       const { default: fixPath } = await import("fix-path");
+      const { default: stripAnsi } = await import("strip-ansi");
       fixPath();
+
+      // Due to node v20 requirement to have a minimum version of fix-path v5, we need to strip ANSI codes manually
+      // which was the only patch between v4 and v5. Here we just apply manually.
+      // https://github.com/sindresorhus/fix-path/issues/6
+      if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
       return process.env;
     } catch (error) {
       console.warn(
@@ -316,13 +322,36 @@ class MCPHypervisor {
   /**
    * Validate the server definition by type
    * - Will throw an error if the server definition is invalid
+   * @param {string} name - The name of the MCP server
    * @param {Object} server - The server definition
    * @param {MCPServerTypes} type - The server type
    * @returns {void}
    */
-  #validateServerDefinitionByType(server, type) {
+  #validateServerDefinitionByType(name, server, type) {
+    if (
+      server.type === "sse" ||
+      server.type === "streamable" ||
+      server.type === "http"
+    ) {
+      if (!server.url) {
+        throw new Error(
+          `MCP server "${name}": missing required "url" for ${server.type} transport`
+        );
+      }
+
+      try {
+        new URL(server.url);
+      } catch (error) {
+        throw new Error(`MCP server "${name}": invalid URL "${server.url}"`);
+      }
+      return;
+    }
+
     if (type === "stdio") {
-      if (server.hasOwnProperty("args") && !Array.isArray(server.args))
+      if (
+        Object.prototype.hasOwnProperty.call(server, "args") &&
+        !Array.isArray(server.args)
+      )
         throw new Error("MCP server args must be an array");
     }
 
@@ -330,7 +359,6 @@ class MCPHypervisor {
       if (!["sse", "streamable"].includes(server?.type))
         throw new Error("MCP server type must have sse or streamable value.");
     }
-
     if (type === "sse") return;
     return;
   }
@@ -390,7 +418,7 @@ class MCPHypervisor {
     const serverType = this.#parseServerType(server);
     if (!serverType) throw new Error("MCP server command or url is required");
 
-    this.#validateServerDefinitionByType(server, serverType);
+    this.#validateServerDefinitionByType(name, server, serverType);
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
     const transport = await this.#setupServerTransport(server, serverType);

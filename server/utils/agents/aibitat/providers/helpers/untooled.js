@@ -271,7 +271,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
-            cooldown: this.isMCPTool(toolCall.name, functions),
+            cooldown: this.isMCPTool(toolCall, functions),
           });
           return {
             result: null,
@@ -371,7 +371,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
-            cooldown: this.isMCPTool(toolCall.name, functions),
+            cooldown: this.isMCPTool(toolCall, functions),
           });
           return {
             result: null,

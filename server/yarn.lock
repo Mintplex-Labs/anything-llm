@@ -5464,13 +5464,12 @@ find-up@^5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-fix-path@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/fix-path/-/fix-path-5.0.0.tgz#d1541205d050153d3d91faf85ce1fd6959e48df1"
-  integrity sha512-erEWGGCN7RIu1bXTCfNVpVBdm0f5mwcbeja+4QXiEZzIQukP401sbpu8gd3Ny1vS34YNeswyMO0TdT2tP5OlHA==
+fix-path@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/fix-path/-/fix-path-4.0.0.tgz#bc1d14f038edb734ac46944a45454106952ca429"
+  integrity sha512-g31GX207Tt+psI53ZSaB1egprYbEN0ZYl90aKcO22A2LmCNnFsSq3b5YpoKp3E/QEiWByTXGJOkFQG4S07Bc1A==
   dependencies:
-    shell-path "^3.1.0"
-    strip-ansi "^7.1.2"
+    shell-path "^3.0.0"
 
 flat-cache@^3.0.4:
   version "3.2.0"
@@ -8156,7 +8155,7 @@ shell-env@^4.0.1:
     execa "^5.1.1"
     strip-ansi "^7.0.1"
 
-shell-path@^3.1.0:
+shell-path@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/shell-path/-/shell-path-3.1.0.tgz#950671fe15de70fb4d984b886d55e8a2f10bfe33"
   integrity sha512-s/9q9PEtcRmDTz69+cJ3yYBAe9yGrL7e46gm2bU4pQ9N48ecPK9QrGFnLwYgb4smOHskx4PL7wCNMktW2AoD+g==
