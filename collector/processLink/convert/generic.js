@@ -217,21 +217,20 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
     );
   }
 
-  // try {
-  //   const pageText = await fetch(link, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "text/plain",
-  //       "User-Agent":
-  //         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
-  //       ...validatedHeaders(headers),
-  //     },
-  //   }).then((res) => res.text());
-  //   return pageText;
-  // } catch (error) {
-  //   console.error("getPageContent failed to be fetched by any method.", error);
-  // }
-  throw new Error("getPageContent failed to be fetched by any method.");
+  try {
+    const pageText = await fetch(link, {
+      method: "GET",
+      headers: {
+        "Content-Type": "text/plain",
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
+        ...validatedHeaders(headers),
+      },
+    }).then((res) => res.text());
+    return pageText;
+  } catch (error) {
+    console.error("getPageContent failed to be fetched by any method.", error);
+  }
 
   return null;
 }
