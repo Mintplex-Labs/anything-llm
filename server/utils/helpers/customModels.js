@@ -713,7 +713,11 @@ async function getDellProAiStudioModels(basePath = null) {
       .then((results) => results.data)
       .then((models) => {
         return models
-          .filter((model) => model.capability === "TextToText") // Only include text-to-text models for this handler
+          .filter(m =>
+            String(m.capability)
+              .split(",")
+              .some(c => ["TextToText", "TextToTextWithTools"].includes(c.trim()))
+          ) // Only include text-to-text models for this handler
           .map((model) => {
             return {
               id: model.id,
