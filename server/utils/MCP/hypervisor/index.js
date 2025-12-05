@@ -232,8 +232,8 @@ class MCPHypervisor {
 
   /**
    * Load shell environment for desktop applications.
-   * GUI applications on macOS and Linux don't inherit login shell environment. This also
-   * fixes the PATH and accessible commands when running AnythingLLM outside of Docker.
+   * MacOS and Linux don't inherit login shell environment. So this function
+   * fixes the PATH and accessible commands when running AnythingLLM outside of Docker during development on Mac/Linux and in-container (Linux).
    * @returns {Promise<{[key: string]: string}>} - Environment variables from shell
    */
   async #loadShellEnvironment() {
