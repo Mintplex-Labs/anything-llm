@@ -93,7 +93,7 @@ function getVectorDbClass(getExactly = null) {
       return new Chroma();
     case "chromacloud":
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
-      return ChromaCloud;
+      return new ChromaCloud();
     case "lancedb":
       return LanceDb;
     case "weaviate":
