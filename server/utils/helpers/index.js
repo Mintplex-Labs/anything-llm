@@ -110,7 +110,7 @@ function getVectorDbClass(getExactly = null) {
       return Zilliz;
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
-      return AstraDB;
+      return new AstraDB();
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
