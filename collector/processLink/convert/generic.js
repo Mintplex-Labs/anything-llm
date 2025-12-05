@@ -137,10 +137,23 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
     let pageContents = [];
     const runtimeSettings = new RuntimeSettings();
+
+    /* On MacOS 15.1, the default args cause the browser to crash
+     * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+     * in production runs in a container, we can safely ignore the default args when in development
+     * just to patch the issue for development purposes.
+     */
+    const ignoreDefaultArgs =
+      process.platform === "darwin" && process.env.NODE_ENV === "development";
+    if (ignoreDefaultArgs)
+      console.log(
+        "Darwin Development Mode: Ignoring default args to prevent Chromium from crashing."
+      );
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
+        ignoreDefaultArgs,
         args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
@@ -196,20 +209,21 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
     );
   }
 
-  try {
-    const pageText = await fetch(link, {
-      method: "GET",
-      headers: {
-        "Content-Type": "text/plain",
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
-        ...validatedHeaders(headers),
-      },
-    }).then((res) => res.text());
-    return pageText;
-  } catch (error) {
-    console.error("getPageContent failed to be fetched by any method.", error);
-  }
+  // try {
+  //   const pageText = await fetch(link, {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "text/plain",
+  //       "User-Agent":
+  //         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
+  //       ...validatedHeaders(headers),
+  //     },
+  //   }).then((res) => res.text());
+  //   return pageText;
+  // } catch (error) {
+  //   console.error("getPageContent failed to be fetched by any method.", error);
+  // }
+  throw new Error("getPageContent failed to be fetched by any method.");
 
   return null;
 }
