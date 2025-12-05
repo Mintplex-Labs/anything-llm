@@ -219,6 +219,11 @@ class AgentHandler {
       case "giteeai":
         if (!process.env.GITEE_AI_API_KEY)
           throw new Error("GiteeAI API Key must be provided to use agents.");
+        break;
+      case "cohere":
+        if (!process.env.COHERE_API_KEY)
+          throw new Error("Cohere API key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -297,6 +302,8 @@ class AgentHandler {
         return process.env.FOUNDRY_MODEL_PREF ?? null;
       case "giteeai":
         return process.env.GITEE_AI_MODEL_PREF ?? null;
+      case "cohere":
+        return process.env.COHERE_MODEL_PREF ?? "command-r";
       default:
         return null;
     }
