@@ -87,7 +87,7 @@ function getVectorDbClass(getExactly = null) {
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
-      return Pinecone;
+      return new Pinecone();
     case "chroma":
       const { Chroma } = require("../vectorDbProviders/chroma");
       return Chroma;
