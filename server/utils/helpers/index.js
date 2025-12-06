@@ -101,7 +101,7 @@ function getVectorDbClass(getExactly = null) {
       return Weaviate;
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
-      return QDrant;
+      return new QDrant();
     case "milvus":
       const { Milvus } = require("../vectorDbProviders/milvus");
       return Milvus;
