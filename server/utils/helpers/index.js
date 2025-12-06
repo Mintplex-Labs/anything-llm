@@ -104,7 +104,7 @@ function getVectorDbClass(getExactly = null) {
       return QDrant;
     case "milvus":
       const { Milvus } = require("../vectorDbProviders/milvus");
-      return Milvus;
+      return new Milvus();
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
       return Zilliz;
