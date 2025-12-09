@@ -1,4 +1,4 @@
-const { AzureOpenAI } = require("openai");
+const { OpenAI } = require("openai");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 
@@ -9,10 +9,9 @@ class AzureOpenAiProvider extends Provider {
   model;
 
   constructor(config = { model: null }) {
-    const client = new AzureOpenAI({
+    const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-      apiVersion: "2024-12-01-preview",
+      baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/v1`,
     });
     super(client);
     this.model = config.model ?? process.env.OPEN_MODEL_PREF;

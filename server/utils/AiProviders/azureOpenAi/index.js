@@ -9,19 +9,23 @@ const {
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { AzureOpenAI } = require("openai");
+    const { OpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
-    this.apiVersion = "2024-12-01-preview";
-    this.openai = new AzureOpenAI({
+    this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      apiVersion: this.apiVersion,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/v1`,
     });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    /* 
+      Note: Azure OpenAI deployments do not expose model metadata that would allow us to
+      programmatically detect whether the deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.).
+      As a result, we rely on the user to explicitly set AZURE_OPENAI_MODEL_TYPE="reasoning"
+      when using reasoning models, as incorrect configuration might result in chat errors.
+    */
     this.isOTypeModel =
       process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
@@ -54,13 +58,6 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
-    // Streaming of reasoning models is not supported
-    if (this.isOTypeModel) {
-      this.#log(
-        "Streaming will be disabled. AZURE_OPENAI_MODEL_TYPE is set to 'reasoning'."
-      );
-      return false;
-    }
     return "streamGetChatCompletion" in this;
   }
 
