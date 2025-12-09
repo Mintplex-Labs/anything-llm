@@ -10,8 +10,11 @@ const COLLECTION_REGEX = new RegExp(
   /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
 );
 
-const Chroma = {
-  name: "Chroma",
+class Chroma {
+  constructor() {
+    this.name = "Chroma";
+  }
+
   // Chroma DB has specific requirements for collection names:
   // (1) Must contain 3-63 characters
   // (2) Must start and end with an alphanumeric character
@@ -20,7 +23,7 @@ const Chroma = {
   // (5) Cannot be a valid IPv4 address
   // We need to enforce these rules by normalizing the collection names
   // before communicating with the Chroma DB.
-  normalize: function (inputString) {
+  normalize(inputString) {
     if (COLLECTION_REGEX.test(inputString)) return inputString;
     let normalized = inputString.replace(/[^a-zA-Z0-9_-]/g, "-");
 
@@ -54,8 +57,9 @@ const Chroma = {
     }
 
     return normalized;
-  },
-  connect: async function () {
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "chroma")
       throw new Error("Chroma::Invalid ENV settings");
 
@@ -79,12 +83,14 @@ const Chroma = {
         "ChromaDB::Invalid Heartbeat received - is the instance online?"
       );
     return { client };
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     const { client } = await this.connect();
     return { heartbeat: await client.heartbeat() };
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const collections = await client.listCollections();
     var totalVectors = 0;
@@ -96,19 +102,22 @@ const Chroma = {
       totalVectors += await collection.count();
     }
     return totalVectors;
-  },
-  distanceToSimilarity: function (distance = null) {
+  }
+
+  distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const namespace = await this.namespace(client, this.normalize(_namespace));
     return namespace?.vectorCount || 0;
-  },
-  similarityResponse: async function ({
+  }
+
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -149,8 +158,9 @@ const Chroma = {
     });
 
     return result;
-  },
-  namespace: async function (client, namespace = null) {
+  }
+
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: this.normalize(namespace) })
@@ -161,13 +171,15 @@ const Chroma = {
       ...collection,
       vectorCount: await collection.count(),
     };
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, this.normalize(namespace));
-  },
-  namespaceExists: async function (client, namespace = null) {
+  }
+
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: this.normalize(namespace) })
@@ -176,12 +188,14 @@ const Chroma = {
         return null;
       });
     return !!collection;
-  },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  }
+
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.deleteCollection({ name: this.normalize(namespace) });
     return true;
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -320,8 +334,9 @@ const Chroma = {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -338,8 +353,9 @@ const Chroma = {
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
     return true;
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -383,8 +399,9 @@ const Chroma = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -394,8 +411,9 @@ const Chroma = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, this.normalize(namespace))))
@@ -406,13 +424,15 @@ const Chroma = {
     return {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
-  },
-  reset: async function () {
+  }
+
+  async reset() {
     const { client } = await this.connect();
     await client.reset();
     return { reset: true };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       const { metadata = {} } = source;
@@ -427,7 +447,8 @@ const Chroma = {
     }
 
     return documents;
-  },
+  }
+
   /**
    * This method is a wrapper around the ChromaCollection.add method.
    * It will return true if the add was successful, false otherwise.
@@ -436,10 +457,11 @@ const Chroma = {
    * @param {{ids: string[], embeddings: number[], metadatas: Record<string, any>[], documents: string[]}[]} submissions
    * @returns {Promise<boolean>} True if the add was successful, false otherwise.
    */
-  smartAdd: async function (collection, submissions) {
+  async smartAdd(collection, submissions) {
     await collection.add(submissions);
     return true;
-  },
+  }
+
   /**
    * This method is a wrapper around the ChromaCollection.delete method.
    * It will return the result of the delete method directly.
@@ -448,10 +470,10 @@ const Chroma = {
    * @param {string[]} vectorIds
    * @returns {Promise<boolean>} True if the delete was successful, false otherwise.
    */
-  smartDelete: async function (collection, vectorIds) {
+  async smartDelete(collection, vectorIds) {
     await collection.delete({ ids: vectorIds });
     return true;
-  },
-};
+  }
+}
 
 module.exports.Chroma = Chroma;
