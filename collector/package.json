@@ -47,6 +47,10 @@
     "winston": "^3.13.0",
     "youtubei.js": "^9.1.0"
   },
+  "resolutions": {
+    "tar-fs": "^3.0.9",
+    "ws": "^8.17.0"
+  },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.22",
