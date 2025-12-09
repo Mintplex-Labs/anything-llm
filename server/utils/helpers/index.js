@@ -107,7 +107,7 @@ function getVectorDbClass(getExactly = null) {
       return Milvus;
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
-      return Zilliz;
+      return new Zilliz();
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
       return new AstraDB();
