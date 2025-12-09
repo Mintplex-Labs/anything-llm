@@ -10,17 +10,18 @@ class ChromaCloud extends Chroma {
   constructor() {
     super();
     this.name = "ChromaCloud";
-    /**
-     * Basic quota/limitations for Chroma Cloud for accounts. Does not lookup client-specific limits.
-     * @see https://docs.trychroma.com/cloud/quotas-limits
-     */
-    this.limits = {
-      maxEmbeddingDim: 4_096,
-      maxDocumentBytes: 16_384,
-      maxMetadataBytes: 4_096,
-      maxRecordsPerWrite: 300,
-    };
   }
+
+  /**
+   * Basic quota/limitations for Chroma Cloud for accounts. Does not lookup client-specific limits.
+   * @see https://docs.trychroma.com/cloud/quotas-limits
+   */
+  limits = {
+    maxEmbeddingDim: 4_096,
+    maxDocumentBytes: 16_384,
+    maxMetadataBytes: 4_096,
+    maxRecordsPerWrite: 300,
+  };
 
   async connect() {
     if (process.env.VECTOR_DB !== "chromacloud")
