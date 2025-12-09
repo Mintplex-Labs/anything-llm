@@ -1080,7 +1080,7 @@ async function validatePGVectorConnectionString(key, prevValue, nextValue) {
   if (nextValue === process.env[envKey]) return; // If the value is the same as the current connection string, don't validate it.
 
   const { PGVector } = require("../vectorDbProviders/pgvector");
-  const { error, success } = await new PGVector().validateConnection({
+  const { error, success } = await PGVector.validateConnection({
     connectionString: nextValue,
   });
   if (!success) return error;
@@ -1107,7 +1107,7 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
   if (!process.env.PGVECTOR_CONNECTION_STRING) return; // if connection string is not set, don't validate it since it will fail.
 
   const { PGVector } = require("../vectorDbProviders/pgvector");
-  const { error, success } = await new PGVector().validateConnection({
+  const { error, success } = await PGVector.validateConnection({
     connectionString: process.env.PGVECTOR_CONNECTION_STRING,
     tableName: nextValue,
   });

@@ -470,8 +470,8 @@ const SystemSettings = {
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
 
       // PGVector Keys
-      PGVectorConnectionString: !!new PGVector().connectionString() || false,
-      PGVectorTableName: new PGVector().tableName(),
+      PGVectorConnectionString: !!PGVector.connectionString() || false,
+      PGVectorTableName: PGVector.tableName(),
     };
   },
 

@@ -39,7 +39,7 @@ class PGVector {
    * - Defaults to "anythingllm_vectors" if no table name is provided.
    * @returns {string}
    */
-  tableName() {
+  static tableName() {
     return process.env.PGVECTOR_TABLE_NAME || "anythingllm_vectors";
   }
 
@@ -48,12 +48,12 @@ class PGVector {
    * - Requires a connection string to be present in the environment variables.
    * @returns {string | null}
    */
-  connectionString() {
+  static connectionString() {
     return process.env.PGVECTOR_CONNECTION_STRING;
   }
 
   createTableSql(dimensions) {
-    return `CREATE TABLE IF NOT EXISTS "${this.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
+    return `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
   }
 
   log(message = null, ...args) {
@@ -111,7 +111,7 @@ class PGVector {
 
   client(connectionString = null) {
     return new pgsql.Client({
-      connectionString: connectionString || this.connectionString(),
+      connectionString: connectionString || PGVector.connectionString(),
     });
   }
 
@@ -199,32 +199,36 @@ class PGVector {
    * @param {{connectionString: string | null, tableName: string | null}} params
    * @returns {Promise<{error: string | null, success: boolean}>}
    */
-  async validateConnection({ connectionString = null, tableName = null }) {
+  static async validateConnection({
+    connectionString = null,
+    tableName = null,
+  }) {
     if (!connectionString) throw new Error("No connection string provided");
+    const instance = new PGVector();
 
     try {
       const timeoutPromise = new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            error: `Connection timeout (${(this.connectionTimeout / 1000).toFixed(0)}s). Please check your connection string and try again.`,
+            error: `Connection timeout (${(instance.connectionTimeout / 1000).toFixed(0)}s). Please check your connection string and try again.`,
             success: false,
           });
-        }, this.connectionTimeout);
+        }, instance.connectionTimeout);
       });
 
       const connectionPromise = new Promise(async (resolve) => {
         let pgClient = null;
         try {
-          pgClient = this.client(connectionString);
+          pgClient = instance.client(connectionString);
           await pgClient.connect();
-          const result = await pgClient.query(this.getTablesSql);
+          const result = await pgClient.query(instance.getTablesSql);
 
           if (result.rows.length !== 0 && !!tableName) {
             const tableExists = result.rows.some(
               (row) => row.tablename === tableName
             );
             if (tableExists)
-              await this.validateExistingEmbeddingTableSchema(
+              await instance.validateExistingEmbeddingTableSchema(
                 pgClient,
                 tableName
               );
@@ -241,7 +245,7 @@ class PGVector {
       const result = await Promise.race([connectionPromise, timeoutPromise]);
       return result;
     } catch (err) {
-      this.log("Validation Error:", err.message);
+      instance.log("Validation Error:", err.message);
       let readableError = err.message;
       switch (true) {
         case err.message.includes("ECONNREFUSED"):
@@ -276,9 +280,9 @@ class PGVector {
    * @returns {Promise<pgsql.Client>}
    */
   async connect() {
-    if (!this.connectionString())
+    if (!PGVector.connectionString())
       throw new Error("No connection string provided");
-    if (!this.tableName()) throw new Error("No table name provided");
+    if (!PGVector.tableName()) throw new Error("No table name provided");
 
     const client = this.client();
     await client.connect();
@@ -304,7 +308,7 @@ class PGVector {
       const tables = await connection.query(this.getTablesSql);
       if (tables.rows.length === 0) return false;
       const tableExists = tables.rows.some(
-        (row) => row.tablename === this.tableName()
+        (row) => row.tablename === PGVector.tableName()
       );
       return !!tableExists;
     } catch (err) {
@@ -320,7 +324,7 @@ class PGVector {
     try {
       connection = await this.connect();
       const result = await connection.query(
-        `SELECT COUNT(id) FROM "${this.tableName()}"`
+        `SELECT COUNT(id) FROM "${PGVector.tableName()}"`
       );
       return result.rows[0].count;
     } catch (err) {
@@ -344,7 +348,7 @@ class PGVector {
     try {
       connection = await this.connect();
       const result = await connection.query(
-        `SELECT COUNT(id) FROM "${this.tableName()}" WHERE namespace = $1`,
+        `SELECT COUNT(id) FROM "${PGVector.tableName()}" WHERE namespace = $1`,
         [namespace]
       );
       return result.rows[0].count;
@@ -382,7 +386,7 @@ class PGVector {
 
     const embedding = `[${queryVector.map(Number).join(",")}]`;
     const response = await client.query(
-      `SELECT embedding ${this.operator.cosine} $1 AS _distance, metadata FROM "${this.tableName()}" WHERE namespace = $2 ORDER BY _distance ASC LIMIT $3`,
+      `SELECT embedding ${this.operator.cosine} $1 AS _distance, metadata FROM "${PGVector.tableName()}" WHERE namespace = $2 ORDER BY _distance ASC LIMIT $3`,
       [embedding, namespace, topN]
     );
     response.rows.forEach((item) => {
@@ -439,7 +443,7 @@ class PGVector {
         const embedding = `[${submission.vector.map(Number).join(",")}]`; // stringify the vector for pgvector
         const sanitizedMetadata = this.sanitizeForJsonb(submission.metadata);
         await connection.query(
-          `INSERT INTO "${this.tableName()}" (id, namespace, embedding, metadata) VALUES ($1, $2, $3, $4)`,
+          `INSERT INTO "${PGVector.tableName()}" (id, namespace, embedding, metadata) VALUES ($1, $2, $3, $4)`,
           [submission.id, namespace, embedding, sanitizedMetadata]
         );
       }
@@ -477,7 +481,7 @@ class PGVector {
   async namespace(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     const result = await connection.query(
-      `SELECT COUNT(id) FROM "${this.tableName()}" WHERE namespace = $1`,
+      `SELECT COUNT(id) FROM "${PGVector.tableName()}" WHERE namespace = $1`,
       [namespace]
     );
     return { name: namespace, vectorCount: result.rows[0].count };
@@ -510,7 +514,7 @@ class PGVector {
   async namespaceExists(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     const result = await connection.query(
-      `SELECT COUNT(id) FROM "${this.tableName()}" WHERE namespace = $1 LIMIT 1`,
+      `SELECT COUNT(id) FROM "${PGVector.tableName()}" WHERE namespace = $1 LIMIT 1`,
       [namespace]
     );
     return result.rows[0].count > 0;
@@ -525,7 +529,7 @@ class PGVector {
   async deleteVectorsInNamespace(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     await connection.query(
-      `DELETE FROM "${this.tableName()}" WHERE namespace = $1`,
+      `DELETE FROM "${PGVector.tableName()}" WHERE namespace = $1`,
       [namespace]
     );
     return true;
@@ -682,7 +686,7 @@ class PGVector {
         await connection.query(`BEGIN`);
         for (const vectorId of vectorIds)
           await connection.query(
-            `DELETE FROM "${this.tableName()}" WHERE id = $1`,
+            `DELETE FROM "${PGVector.tableName()}" WHERE id = $1`,
             [vectorId]
           );
         await connection.query(`COMMIT`);
@@ -815,7 +819,7 @@ class PGVector {
     let connection = null;
     try {
       connection = await this.connect();
-      await connection.query(`DROP TABLE IF EXISTS "${this.tableName()}"`);
+      await connection.query(`DROP TABLE IF EXISTS "${PGVector.tableName()}"`);
       return { reset: true };
     } catch (err) {
       return { reset: false };
