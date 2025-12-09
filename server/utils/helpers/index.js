@@ -98,7 +98,7 @@ function getVectorDbClass(getExactly = null) {
       return new LanceDb();
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
-      return Weaviate;
+      return new Weaviate();
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
       return QDrant;
