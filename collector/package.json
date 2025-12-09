@@ -17,7 +17,7 @@
   "dependencies": {
     "@langchain/community": "^0.2.23",
     "@xenova/transformers": "^2.14.0",
-    "bcrypt": "^5.1.0",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
