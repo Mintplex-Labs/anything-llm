@@ -6,20 +6,24 @@ const { toChunks } = require("../../helpers");
  * ChromaCloud works nearly the same as Chroma so we can just extend the
  * Chroma class and override the connect method to use the CloudClient for major differences in API functionality.
  */
-const ChromaCloud = {
-  ...Chroma,
-  name: "ChromaCloud",
+class ChromaCloud extends Chroma {
+  constructor() {
+    super();
+    this.name = "ChromaCloud";
+  }
+
   /**
    * Basic quota/limitations for Chroma Cloud for accounts. Does not lookup client-specific limits.
    * @see https://docs.trychroma.com/cloud/quotas-limits
    */
-  limits: {
+  limits = {
     maxEmbeddingDim: 4_096,
     maxDocumentBytes: 16_384,
     maxMetadataBytes: 4_096,
     maxRecordsPerWrite: 300,
-  },
-  connect: async function () {
+  };
+
+  async connect() {
     if (process.env.VECTOR_DB !== "chromacloud")
       throw new Error("ChromaCloud::Invalid ENV settings");
 
@@ -35,7 +39,8 @@ const ChromaCloud = {
         "ChromaCloud::Invalid Heartbeat received - is the instance online?"
       );
     return { client };
-  },
+  }
+
   /**
    * Chroma Cloud has some basic limitations on upserts to protect performance and latency.
    * Local deployments do not have these limitations since they are self-hosted.
@@ -47,7 +52,7 @@ const ChromaCloud = {
    * @returns {Promise<boolean>} True if the upsert was successful, false otherwise.
    * If the upsert was not successful, the error message will be returned.
    */
-  smartAdd: async function (collection, submission) {
+  async smartAdd(collection, submission) {
     const testSubmission = {
       id: submission.ids[0],
       embedding: submission.embeddings[0],
@@ -114,7 +119,8 @@ const ChromaCloud = {
       counter++;
     }
     return true;
-  },
+  }
+
   /**
    * This method is a wrapper around the ChromaCollection.delete method.
    * It will return the result of the delete method directly.
@@ -127,7 +133,7 @@ const ChromaCloud = {
    * @param {string[]} vectorIds
    * @returns {Promise<boolean>} True if the delete was successful, false otherwise.
    */
-  smartDelete: async function (collection, vectorIds) {
+  async smartDelete(collection, vectorIds) {
     if (vectorIds.length <= this.limits.maxRecordsPerWrite)
       return await collection.delete({ ids: vectorIds });
 
@@ -142,7 +148,7 @@ const ChromaCloud = {
       counter++;
     }
     return true;
-  },
-};
+  }
+}
 
 module.exports.ChromaCloud = ChromaCloud;
