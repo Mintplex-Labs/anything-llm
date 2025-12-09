@@ -90,7 +90,7 @@ function getVectorDbClass(getExactly = null) {
       return new Pinecone();
     case "chroma":
       const { Chroma } = require("../vectorDbProviders/chroma");
-      return Chroma;
+      return new Chroma();
     case "chromacloud":
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return ChromaCloud;
