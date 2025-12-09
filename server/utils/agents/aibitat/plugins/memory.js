@@ -67,7 +67,11 @@ const memory = {
           },
           handler: async function ({ action = "", content = "" }) {
             try {
-              if (this.tracker.isDuplicate(this.name, { action, content }))
+              const { isDuplicate } = this.tracker.isDuplicate(this.name, {
+                action,
+                content,
+              });
+              if (isDuplicate)
                 return `This was a duplicated call and it's output will be ignored.`;
 
               let response = "There was nothing to do.";

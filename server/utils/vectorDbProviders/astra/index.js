@@ -373,7 +373,10 @@ const AstraDB = {
         return;
       }
       result.contextTexts.push(response.metadata.text);
-      result.sourceDocuments.push(response);
+      result.sourceDocuments.push({
+        ...response.metadata,
+        score: response.$similarity,
+      });
       result.scores.push(response.$similarity);
     });
     return result;

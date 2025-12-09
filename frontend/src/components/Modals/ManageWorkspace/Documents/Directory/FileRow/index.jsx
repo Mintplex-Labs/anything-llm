@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  formatDate,
+  formatDateTimeAsMoment,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
@@ -15,12 +15,12 @@ export default function FileRow({ item, selected, toggleSelection }) {
       }`}
     >
       <div
-        data-tooltip-id={`directory-item`}
+        data-tooltip-id="directory-item"
         className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
         data-tooltip-content={JSON.stringify({
           title: item.title,
-          date: formatDate(item?.published),
-          extension: getFileExtension(item.url).toUpperCase(),
+          date: formatDateTimeAsMoment(item?.published),
+          extension: getFileExtension(item.url),
         })}
       >
         <div

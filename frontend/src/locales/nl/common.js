@@ -118,27 +118,6 @@ const TRANSLATIONS = {
       "back-to-login": "Terug naar Inloggen",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Welkom bij AnythingLLM, AnythingLLM is een open-source AI-tool van Mintplex Labs die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. AnythingLLM is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
-    part2:
-      "AnythingLLM is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
-    part3:
-      "AnythingLLM kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. AnythingLLM maakt het gemakkelijk te gebruiken.",
-    githubIssue: "Maak een probleem aan op GitHub",
-    user1: "Hoe kan ik beginnen?",
-    part4:
-      "Het is simpel. Alle verzamelingen zijn georganiseerd in buckets die we \"Werkruimten\" noemen. Werkruimten zijn buckets van bestanden, documenten, afbeeldingen, PDF's en andere bestanden die worden omgezet in iets wat LLM's kunnen begrijpen en gebruiken in gesprekken.\n\nJe kunt op elk moment bestanden toevoegen en verwijderen.",
-    createWorkspace: "Maak je eerste werkruimte",
-    user2:
-      "Is dit als een AI-dropbox of zoiets? Hoe zit het met chatten? Het is toch een chatbot?",
-    part5:
-      "AnythingLLM is meer dan een slimmere Dropbox.\n\nAnythingLLM biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
-    user3: "Wauw, dit klinkt geweldig, laat me het al proberen!",
-    part6: "Veel Plezier!",
-    starOnGitHub: "Ster op GitHub",
-    contact: "Contact Mintplex Labs",
-  },
   "new-workspace": {
     title: "Nieuwe Werkruimte",
     placeholder: "Mijn Werkruimte",
@@ -569,6 +548,8 @@ const TRANSLATIONS = {
       pat_token: null,
       pat_token_explained: null,
       task_explained: null,
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: null,
@@ -1004,6 +985,13 @@ const TRANSLATIONS = {
         "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
       "password-label": "Instances wachtwoord",
     },
+  },
+  home: {
+    welcome: "Welkom",
+    chooseWorkspace: "Kies een werkruimte om te beginnen!",
+    notAssigned:
+      "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
+    goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
   },
 };
 

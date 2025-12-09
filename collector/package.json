@@ -21,7 +21,7 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "epub2": "^3.0.2",
+    "epub2": "git+https://github.com/Mintplex-Labs/epub2-static.git#main",
     "express": "^4.18.2",
     "fluent-ffmpeg": "^2.1.2",
     "html-to-text": "^9.0.5",
@@ -48,8 +48,8 @@
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^2.0.22",
-    "prettier": "^2.4.1",
-    "cross-env": "^7.0.3"
+    "prettier": "^2.4.1"
   }
 }

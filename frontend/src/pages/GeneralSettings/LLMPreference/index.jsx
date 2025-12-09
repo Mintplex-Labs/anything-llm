@@ -29,12 +29,14 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -62,11 +64,13 @@ import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
+import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -334,6 +338,22 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
+    name: "Z.AI",
+    value: "zai",
+    logo: ZAiLogo,
+    options: (settings) => <ZAiLLMOptions settings={settings} />,
+    description: "Run Z.AI's powerful GLM models.",
+    requiredConfig: ["ZAiApiKey"],
+  },
+  {
+    name: "GiteeAI",
+    value: "giteeai",
+    logo: GiteeAILogo,
+    options: (settings) => <GiteeAIOptions settings={settings} />,
+    description: "Run GiteeAI's powerful LLMs.",
+    requiredConfig: ["GiteeAIApiKey"],
   },
   {
     name: "Generic OpenAI",

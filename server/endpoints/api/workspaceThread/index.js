@@ -493,6 +493,11 @@ function apiWorkspaceThreadEndpoints(app) {
                  name: "image.png",
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               },
+               {
+                 name: "this is a document.pdf",
+                 mime: "application/anythingllm-document",
+                 contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
               ],
               reset: false

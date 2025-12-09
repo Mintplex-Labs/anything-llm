@@ -60,11 +60,13 @@ const saveFileInBrowser = {
           },
           handler: async function ({ file_content = "", filename }) {
             try {
-              if (
-                this.tracker.isDuplicate(this.name, { file_content, filename })
-              ) {
+              const { isDuplicate, reason } = this.tracker.isDuplicate(
+                this.name,
+                { file_content, filename }
+              );
+              if (isDuplicate) {
                 this.super.handlerProps.log(
-                  `${this.name} was called, but exited early since it was not a unique call.`
+                  `${this.name} was called, but exited early because ${reason}.`
                 );
                 return `${filename} file has been saved successfully!`;
               }

@@ -23,12 +23,53 @@ class AnthropicProvider extends Provider {
     const client = new Anthropic(options);
 
     super(client);
-
     this.model = model;
+  }
+
+  /**
+   * Parses the cache control ENV variable
+   *
+   * If caching is enabled, we can pass less than 1024 tokens and Anthropic will just
+   * ignore it unless it is above the model's minimum. Since this feature is opt-in
+   * we can safely assume that if caching is enabled that we should just pass the content as is.
+   * https://docs.claude.com/en/docs/build-with-claude/prompt-caching#cache-limitations
+   *
+   * @param {string} value - The ENV value (5m or 1h)
+   * @returns {null|{type: "ephemeral", ttl: "5m" | "1h"}} Cache control configuration
+   */
+  get cacheControl() {
+    // Store result in instance variable to avoid recalculating
+    if (this._cacheControl) return this._cacheControl;
+
+    if (!process.env.ANTHROPIC_CACHE_CONTROL) this._cacheControl = null;
+    else {
+      const normalized =
+        process.env.ANTHROPIC_CACHE_CONTROL.toLowerCase().trim();
+      if (["5m", "1h"].includes(normalized))
+        this._cacheControl = { type: "ephemeral", ttl: normalized };
+      else this._cacheControl = null;
+    }
+    return this._cacheControl;
   }
 
   get supportsAgentStreaming() {
     return true;
+  }
+
+  /**
+   * Builds system parameter with cache control if applicable
+   * @param {string} systemContent - The system prompt content
+   * @returns {string|array} System parameter for API call
+   */
+  #buildSystemPrompt(systemContent) {
+    if (!systemContent || !this.cacheControl) return systemContent;
+    return [
+      {
+        type: "text",
+        text: systemContent,
+        cache_control: this.cacheControl,
+      },
+    ];
   }
 
   #prepareMessages(messages = []) {
@@ -149,7 +190,7 @@ class AnthropicProvider extends Provider {
         {
           model: this.model,
           max_tokens: 4096,
-          system: systemPrompt,
+          system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
@@ -276,7 +317,7 @@ class AnthropicProvider extends Provider {
         {
           model: this.model,
           max_tokens: 4096,
-          system: systemPrompt,
+          system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0

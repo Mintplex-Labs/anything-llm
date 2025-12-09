@@ -238,7 +238,7 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -253,6 +253,7 @@ class OpenRouterLLM {
           // This is an OpenRouter specific option that allows us to get the reasoning text
           // before the token text.
           include_reasoning: true,
+          user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -279,7 +280,10 @@ class OpenRouterLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, user = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -294,6 +298,7 @@ class OpenRouterLLM {
         // This is an OpenRouter specific option that allows us to get the reasoning text
         // before the token text.
         include_reasoning: true,
+        user: user?.id ? `user_${user.id}` : "",
       }),
       messages
       // We have to manually count the tokens

@@ -120,5 +120,27 @@ const LEGACY_MODEL_MAP = {
   xai: {
     "grok-beta": 131072,
   },
+  giteeai: {
+    "Qwen2.5-72B-Instruct": 16_384,
+    "Qwen2.5-14B-Instruct": 24_576,
+    "Qwen2-7B-Instruct": 24_576,
+    "Qwen2.5-32B-Instruct": 32_768,
+    "Qwen2-72B-Instruct": 32_768,
+    "Qwen2-VL-72B": 32_768,
+    "QwQ-32B-Preview": 32_768,
+    "Yi-34B-Chat": 4_096,
+    "glm-4-9b-chat": 32_768,
+    "deepseek-coder-33B-instruct": 8_192,
+    "codegeex4-all-9b": 32_768,
+    "InternVL2-8B": 32_768,
+    "InternVL2.5-26B": 32_768,
+    "InternVL2.5-78B": 32_768,
+    "DeepSeek-R1-Distill-Qwen-32B": 32_768,
+    "DeepSeek-R1-Distill-Qwen-1.5B": 32_768,
+    "DeepSeek-R1-Distill-Qwen-14B": 32_768,
+    "DeepSeek-R1-Distill-Qwen-7B": 32_768,
+    "DeepSeek-V3": 32_768,
+    "DeepSeek-R1": 32_768,
+  },
 };
 module.exports = LEGACY_MODEL_MAP;

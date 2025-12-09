@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
@@ -171,6 +172,10 @@ class AgentHandler {
         if (!process.env.XAI_LLM_API_KEY)
           throw new Error("xAI API Key must be provided to use agents.");
         break;
+      case "zai":
+        if (!process.env.ZAI_API_KEY)
+          throw new Error("Z.AI API Key must be provided to use agents.");
+        break;
       case "novita":
         if (!process.env.NOVITA_LLM_API_KEY)
           throw new Error("Novita API Key must be provided to use agents.");
@@ -203,17 +208,17 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
-
       case "cometapi":
         if (!process.env.COMETAPI_LLM_API_KEY)
           throw new Error("CometAPI API Key must be provided to use agents.");
         break;
-
       case "foundry":
         if (!process.env.FOUNDRY_BASE_PATH)
           throw new Error("Foundry base path must be provided to use agents.");
         break;
-
+      case "giteeai":
+        if (!process.env.GITEE_AI_API_KEY)
+          throw new Error("GiteeAI API Key must be provided to use agents.");
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -274,6 +279,8 @@ class AgentHandler {
         return process.env.APIPIE_LLM_MODEL_PREF ?? null;
       case "xai":
         return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
+      case "zai":
+        return process.env.ZAI_MODEL_PREF ?? "glm-4.5";
       case "novita":
         return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
       case "nvidia-nim":
@@ -288,6 +295,8 @@ class AgentHandler {
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
+      case "giteeai":
+        return process.env.GITEE_AI_MODEL_PREF ?? null;
       default:
         return null;
     }
@@ -523,15 +532,21 @@ class AgentHandler {
   async #loadAgents() {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(this.provider)
+    const user = this.invocation.user_id
+      ? await User.get({ id: Number(this.invocation.user_id) })
+      : null;
+    const userAgentDef = await USER_AGENT.getDefinition();
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.invocation.workspace,
+      user
     );
 
+    this.aibitat.agent(USER_AGENT.name, userAgentDef);
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
     this.#funcsToLoad = [
-      ...((await USER_AGENT.getDefinition())?.functions || []),
-      ...((await WORKSPACE_AGENT.getDefinition())?.functions || []),
+      ...(userAgentDef?.functions || []),
+      ...(workspaceAgentDef?.functions || []),
     ];
   }
 

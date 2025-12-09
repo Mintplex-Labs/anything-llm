@@ -14,7 +14,10 @@ const {
   EphemeralEventListener,
 } = require("../agents/ephemeral");
 const { Telemetry } = require("../../models/telemetry");
-
+const { CollectorApi } = require("../collectorApi");
+const fs = require("fs");
+const path = require("path");
+const { hotdirPath, normalizePath, isWithin } = require("../files");
 /**
  * @typedef ResponseObject
  * @property {string} id - uuid of response
@@ -25,6 +28,72 @@ const { Telemetry } = require("../../models/telemetry");
  * @property {string|null} error
  * @property {object} metrics
  */
+
+/**
+ * Users can pass in documents as attachments to the chat API.
+ * The name of the document is the name of the attachment and must include the file extension.
+ * the mime type for documents is `application/anythingllm-document` - anything else is assumed to be an image.
+ * @param {{name: string, mime: string, contentString: string}[]} attachments
+ * @returns {Promise<{parsedDocuments: Object[], imageAttachments: {name: string; mime: string; contentString: string}[]}>}
+ */
+async function processDocumentAttachments(attachments = []) {
+  if (!Array.isArray(attachments) || attachments.length === 0)
+    return { parsedDocuments: [], imageAttachments: [] };
+  const documentAttachments = [];
+  const imageAttachments = [];
+  for (const attachment of attachments) {
+    if (
+      attachment &&
+      attachment.contentString &&
+      attachment.mime &&
+      attachment.mime.toLowerCase() === "application/anythingllm-document"
+    )
+      documentAttachments.push(attachment);
+    else imageAttachments.push(attachment);
+  }
+
+  if (documentAttachments.length === 0)
+    return { parsedDocuments: [], imageAttachments };
+  const Collector = new CollectorApi();
+  const processingOnline = await Collector.online();
+  if (!processingOnline) {
+    console.warn(
+      "Collector API is not online, skipping document attachment processing"
+    );
+    return { parsedDocuments: [], imageAttachments };
+  }
+  if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
+
+  const parsedDocuments = [];
+  for (const attachment of documentAttachments) {
+    try {
+      let base64Data = attachment.contentString;
+      const dataUriMatch = base64Data.match(/^data:[^;]+;base64,(.+)$/);
+      if (dataUriMatch) base64Data = dataUriMatch[1];
+
+      const buffer = Buffer.from(base64Data, "base64");
+      const filename = normalizePath(
+        attachment.name || `attachment-${uuidv4()}`
+      );
+      const filePath = normalizePath(path.join(hotdirPath, filename));
+      if (!isWithin(hotdirPath, filePath))
+        throw new Error(`Invalid file path for attachment ${filename}`);
+      fs.writeFileSync(filePath, buffer);
+
+      const { success, reason, documents } =
+        await Collector.parseDocument(filename);
+      if (success && documents?.length > 0) parsedDocuments.push(...documents);
+      else console.warn(`Failed to parse attachment ${filename}:`, reason);
+    } catch (error) {
+      console.error(
+        `Error processing attachment ${attachment.name}:`,
+        error.message
+      );
+    }
+  }
+
+  return { parsedDocuments, imageAttachments };
+}
 
 /**
  * Handle synchronous chats with your workspace via the developer API endpoint
@@ -208,6 +277,21 @@ async function chatSync({
       });
     });
 
+  const processedAttachments = await processDocumentAttachments(attachments);
+  const parsedAttachments = processedAttachments.parsedDocuments;
+  attachments = processedAttachments.imageAttachments;
+  parsedAttachments.forEach((doc) => {
+    if (doc.pageContent) {
+      contextTexts.push(doc.pageContent);
+      const { pageContent, ...metadata } = doc;
+      sources.push({
+        text:
+          pageContent.slice(0, 1_000) + "...continued on in source document...",
+        ...metadata,
+      });
+    }
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
@@ -307,6 +391,7 @@ async function chatSync({
   const { textResponse, metrics: performanceMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      user: user,
     });
 
   if (!textResponse) {
@@ -544,6 +629,21 @@ async function streamChat({
       });
     });
 
+  const processedAttachments = await processDocumentAttachments(attachments);
+  const parsedAttachments = processedAttachments.parsedDocuments;
+  attachments = processedAttachments.imageAttachments;
+  parsedAttachments.forEach((doc) => {
+    if (doc.pageContent) {
+      contextTexts.push(doc.pageContent);
+      const { pageContent, ...metadata } = doc;
+      sources.push({
+        text:
+          pageContent.slice(0, 1_000) + "...continued on in source document...",
+        ...metadata,
+      });
+    }
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
@@ -649,6 +749,7 @@ async function streamChat({
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+        user: user,
       });
     completeText = textResponse;
     metrics = performanceMetrics;
@@ -664,6 +765,7 @@ async function streamChat({
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      user: user,
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });
     metrics = stream.metrics;

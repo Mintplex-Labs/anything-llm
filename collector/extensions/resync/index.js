@@ -62,6 +62,8 @@ async function resyncConfluence({ chunkSource }, response) {
       spaceKey: source.searchParams.get('spaceKey'),
       accessToken: source.searchParams.get('token'),
       username: source.searchParams.get('username'),
+      cloud: source.searchParams.get('cloud') === 'true',
+      bypassSSL: source.searchParams.get('bypassSSL') === 'true',
     });
 
     if (!success) throw new Error(`Failed to sync Confluence page content. ${reason}`);
@@ -144,10 +146,40 @@ async function resyncDrupalWiki({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific Paperless-ngx document via its chunkSource.
+ * Returns the content as a text string of the document.
+ * @param {object} data - metadata from document (eg: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncPaperlessNgx({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const { PaperlessNgxLoader } = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
+    const loader = new PaperlessNgxLoader({
+      baseUrl: source.searchParams.get('baseUrl'),
+      apiToken: source.searchParams.get('token'),
+    });
+    const documentId = source.pathname.split('//')[1];
+    const content = await loader.fetchDocumentContent(documentId);
+
+    if (!content) throw new Error('Failed to fetch document content');
+    response.status(200).json({ success: true, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
   github: resyncGithub,
   drupalwiki: resyncDrupalWiki,
+  "paperless-ngx": resyncPaperlessNgx,
 }

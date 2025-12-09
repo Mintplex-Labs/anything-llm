@@ -14,6 +14,7 @@ class ConfluencePagesLoader {
     expand = "body.storage,version",
     personalAccessToken,
     cloud = true,
+    bypassSSL = false,
   }) {
     this.baseUrl = baseUrl;
     this.spaceKey = spaceKey;
@@ -23,6 +24,14 @@ class ConfluencePagesLoader {
     this.expand = expand;
     this.personalAccessToken = personalAccessToken;
     this.cloud = cloud;
+    this.bypassSSL = bypassSSL;
+    this.log("Initialized Confluence Loader");
+    if (this.bypassSSL)
+      this.log("!!SSL bypass is enabled!! Use at your own risk!!");
+  }
+
+  log(message, ...args) {
+    console.log(`\x1b[36m[Confluence Loader]\x1b[0m ${message}`, ...args);
   }
 
   get authorizationHeader() {
@@ -45,7 +54,7 @@ class ConfluencePagesLoader {
       );
       return pages.map((page) => this.createDocumentFromPage(page));
     } catch (error) {
-      console.error("Error:", error);
+      this.log("Error:", error);
       return [];
     }
   }
@@ -57,12 +66,11 @@ class ConfluencePagesLoader {
         Accept: "application/json",
       };
       const authHeader = this.authorizationHeader;
-      if (authHeader) {
-        initialHeaders.Authorization = authHeader;
-      }
-      const response = await fetch(url, {
-        headers: initialHeaders,
-      });
+      if (authHeader) initialHeaders.Authorization = authHeader;
+
+      // If SSL bypass is enabled, set the NODE_TLS_REJECT_UNAUTHORIZED environment variable
+      if (this.bypassSSL) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+      const response = await fetch(url, { headers: initialHeaders });
       if (!response.ok) {
         throw new Error(
           `Failed to fetch ${url} from Confluence: ${response.status}`
@@ -70,7 +78,10 @@ class ConfluencePagesLoader {
       }
       return await response.json();
     } catch (error) {
-      throw new Error(`Failed to fetch ${url} from Confluence: ${error}`);
+      this.log("Error:", error);
+      throw new Error(error.message);
+    } finally {
+      if (this.bypassSSL) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
     }
   }
 

@@ -115,7 +115,7 @@ const Weaviate = {
         return;
       }
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({ ...rest, id });
+      result.sourceDocuments.push({ ...rest, id, score: certainty });
       result.scores.push(certainty);
     });
 
