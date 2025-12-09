@@ -520,6 +520,7 @@ const TRANSLATIONS = {
         model_type: "模型类型",
         default: "预设",
         reasoning: "推理",
+        model_type_tooltip: null,
       },
     },
   },
