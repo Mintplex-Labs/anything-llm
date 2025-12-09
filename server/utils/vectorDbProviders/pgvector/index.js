@@ -16,23 +16,24 @@ const { sourceIdentifier } = require("../../chats");
 class PGVector {
   constructor() {
     this.name = "PGVector";
-    this.connectionTimeout = 30_000;
-    // Possible for this to be a user-configurable option in the future.
-    // Will require a handler per operator to ensure scores are normalized.
-    this.operator = {
-      l2: "<->",
-      innerProduct: "<#>",
-      cosine: "<=>",
-      l1: "<+>",
-      hamming: "<~>",
-      jaccard: "<%>",
-    };
-    this.getTablesSql =
-      "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'";
-    this.getEmbeddingTableSchemaSql =
-      "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1";
-    this.createExtensionSql = "CREATE EXTENSION IF NOT EXISTS vector;";
   }
+
+  connectionTimeout = 30_000;
+  // Possible for this to be a user-configurable option in the future.
+  // Will require a handler per operator to ensure scores are normalized.
+  operator = {
+    l2: "<->",
+    innerProduct: "<#>",
+    cosine: "<=>",
+    l1: "<+>",
+    hamming: "<~>",
+    jaccard: "<%>",
+  };
+  getTablesSql =
+    "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'";
+  getEmbeddingTableSchemaSql =
+    "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1";
+  createExtensionSql = "CREATE EXTENSION IF NOT EXISTS vector;";
 
   /**
    * Get the table name for the PGVector database.
