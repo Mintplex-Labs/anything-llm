@@ -225,9 +225,7 @@ const Chroma = {
               submission.documents.push(metadata.text);
             });
 
-            const additionResult = await collection.add(submission);
-            if (!additionResult)
-              throw new Error("Error embedding into ChromaDB", additionResult);
+            await this.smartAdd(collection, submission);
           }
 
           await DocumentVectors.bulkInsert(documentVectors);
@@ -304,7 +302,7 @@ const Chroma = {
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         try {
-          await collection.add(submission);
+          await this.smartAdd(collection, submission);
           console.log(
             `Successfully added ${submission.ids.length} vectors to collection ${this.normalize(namespace)}`
           );
@@ -335,7 +333,7 @@ const Chroma = {
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await collection.delete({ ids: vectorIds });
+    await this.smartDelete(collection, vectorIds);
 
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
@@ -429,6 +427,30 @@ const Chroma = {
     }
 
     return documents;
+  },
+  /**
+   * This method is a wrapper around the ChromaCollection.add method.
+   * It will return true if the add was successful, false otherwise.
+   * For local deployments, this will be the same as calling the add method directly since there are no limitations.
+   * @param {import("chromadb").Collection} collection
+   * @param {{ids: string[], embeddings: number[], metadatas: Record<string, any>[], documents: string[]}[]} submissions
+   * @returns {Promise<boolean>} True if the add was successful, false otherwise.
+   */
+  smartAdd: async function (collection, submissions) {
+    await collection.add(submissions);
+    return true;
+  },
+  /**
+   * This method is a wrapper around the ChromaCollection.delete method.
+   * It will return the result of the delete method directly.
+   * For local deployments, this will be the same as calling the delete method directly since there are no limitations.
+   * @param {import("chromadb").Collection} collection
+   * @param {string[]} vectorIds
+   * @returns {Promise<boolean>} True if the delete was successful, false otherwise.
+   */
+  smartDelete: async function (collection, vectorIds) {
+    await collection.delete({ ids: vectorIds });
+    return true;
   },
 };
 

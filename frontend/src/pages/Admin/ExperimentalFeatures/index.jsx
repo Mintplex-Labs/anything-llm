@@ -131,7 +131,7 @@ function FeatureItem({
         isSelected ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
       }`}
       onClick={() => {
-        if (feature?.href) window.location.hash = feature.href;
+        if (feature?.href) window.location = feature.href;
         else handleClick?.(feature.key);
       }}
     >

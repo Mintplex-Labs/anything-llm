@@ -126,27 +126,6 @@ const TRANSLATIONS = {
       "back-to-login": "ログイン画面に戻る",
     },
   },
-  welcomeMessage: {
-    part1:
-      "AnythingLLMへようこそ。AnythingLLMはMintplex LabsによるオープンソースのAIツールで、あらゆるものをトレーニングされたチャットボットに変換し、クエリやチャットが可能です。AnythingLLMはBYOK（Bring-Your-Own-Keys）ソフトウェアであり、このソフトウェアを使用するためのサブスクリプション、料金、または費用はありません。",
-    part2:
-      "AnythingLLMは、OpenAi、GPT-4、LangChain、PineconeDB、ChromaDBなどの強力なAI製品を簡単に統合し、手間をかけずに生産性を100倍に向上させる最も簡単な方法です。",
-    part3:
-      "AnythingLLMは、あなたのマシン上で完全にローカルで動作し、ほとんど負荷をかけません。GPUは必要ありません。クラウドおよびオンプレミスでのインストールも可能です。\nAIツールエコシステムは日々強力になっています。AnythingLLMはそれを簡単に利用できるようにします。",
-    githubIssue: "GitHubで問題を作成",
-    user1: "どうやって始めればいいの？",
-    part4:
-      "簡単です。すべてのコレクションは「ワークスペース」と呼ばれるバケットに整理されています。ワークスペースは、ファイル、ドキュメント、画像、PDFなどを含むバケットで、これらがLLMが理解し、会話で使用できるものに変換されます。\n\nいつでもファイルを追加および削除できます。",
-    createWorkspace: "最初のワークスペースを作成",
-    user2:
-      "これはAI版のDropboxみたいなもの？チャットはどうなの？チャットボットなんでしょ？",
-    part5:
-      "AnythingLLMは単なるスマートなDropbox以上のものです。\n\nAnythingLLMはデータと対話する2つの方法を提供します：\n\n<i>クエリ：</i> チャットは、ワークスペース内のドキュメントで見つかったデータや推論を返します。ワークスペースにドキュメントを追加することで、より賢くなります！\n\n<i>会話：</i> ドキュメントと進行中のチャット履歴の両方が同時にLLMの知識に貢献します。リアルタイムのテキストベースの情報や修正を追加するのに最適です。\n\nチャット中にどちらのモードにも切り替えることができます。",
-    user3: "すごい、試してみたい！",
-    part6: "楽しんでください！",
-    starOnGitHub: "GitHubでスターを付ける",
-    contact: "Mintplex Labsに連絡",
-  },
   "new-workspace": {
     title: "新しいワークスペース",
     placeholder: "マイワークスペース",
@@ -592,6 +571,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Confluenceのパーソナルアクセストークンです。",
       task_explained:
         "完了後、ページ内容がドキュメントピッカーからワークスペースに埋め込めるようになります。",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "ドキュメント",
@@ -1043,6 +1024,13 @@ const TRANSLATIONS = {
         "AnythingLLMインスタンスをパスワードで保護します。これを忘れた場合、回復方法はないため、このパスワードを必ず保存してください。",
       "password-label": "インスタンスパスワード",
     },
+  },
+  home: {
+    welcome: "ようこそ",
+    chooseWorkspace: "ワークスペースを選択してチャットを開始してください！",
+    notAssigned:
+      "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
+    goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
   },
 };
 

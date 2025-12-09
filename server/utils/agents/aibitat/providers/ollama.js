@@ -88,7 +88,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     if (history[history.length - 1].role !== "user") return null;
 
     const msgUUID = v4();
+    let token = "";
     let textResponse = "";
+    let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
 
@@ -99,17 +101,32 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     for await (const chunk of stream) {
-      if (
-        !chunk.hasOwnProperty("message") ||
-        !chunk.message.hasOwnProperty("content")
-      )
-        continue;
+      if (!chunk.hasOwnProperty("message")) continue;
 
-      textResponse += chunk.message.content;
+      const content = chunk.message?.content;
+      const reasoningToken = chunk.message?.thinking;
+      if (reasoningToken) {
+        if (reasoningText.length === 0) {
+          reasoningText = `Thinking:\n\n${reasoningToken}`;
+          token = reasoningText;
+        } else {
+          reasoningText += reasoningToken;
+          token = reasoningToken;
+        }
+      } else if (content.length > 0) {
+        if (reasoningText.length > 0) {
+          token = `\n\nDone thinking.\n\n${content}`;
+          reasoningText = "";
+        } else {
+          token = content;
+        }
+        textResponse += content;
+      }
+
       eventHandler?.("reportStreamEvent", {
         type: "statusResponse",
         uuid: msgUUID,
-        content: chunk.message.content,
+        content: token,
       });
     }
 
@@ -129,9 +146,11 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       return { toolCall: null, text: null, uuid: msgUUID };
     }
 
-    if (this.deduplicator.isDuplicate(call.name, call.arguments)) {
+    const { isDuplicate, reason: duplicateReason } =
+      this.deduplicator.isDuplicate(call.name, call.arguments);
+    if (isDuplicate) {
       this.providerLog(
-        `Function tool with exact arguments has already been called this stack.`
+        `Cannot call ${call.name} again because ${duplicateReason}.`
       );
       eventHandler?.("reportStreamEvent", {
         type: "removeStatusResponse",
@@ -180,7 +199,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {
@@ -225,23 +246,39 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         );
         const msgUUID = v4();
         completion = { content: "" };
+        let reasoningText = "";
+        let token = "";
         const stream = await this.#handleFunctionCallStream({
           messages: this.cleanMsgs(messages),
         });
 
         for await (const chunk of stream) {
-          if (
-            !chunk.hasOwnProperty("message") ||
-            !chunk.message.hasOwnProperty("content")
-          )
-            continue;
+          if (!chunk.hasOwnProperty("message")) continue;
 
-          const delta = chunk.message.content;
-          completion.content += delta;
+          const content = chunk.message?.content;
+          const reasoningToken = chunk.message?.thinking;
+          if (reasoningToken) {
+            if (reasoningText.length === 0) {
+              reasoningText = `<think>${reasoningToken}`;
+              token = `<think>${reasoningToken}`;
+            } else {
+              reasoningText += reasoningToken;
+              token = reasoningToken;
+            }
+          } else if (content.length > 0) {
+            if (reasoningText.length > 0) {
+              token = `</think>${content}`;
+              reasoningText = "";
+            } else {
+              token = content;
+            }
+          }
+
+          completion.content += token;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
             uuid: msgUUID,
-            content: delta,
+            content: token,
           });
         }
       }
@@ -281,7 +318,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {

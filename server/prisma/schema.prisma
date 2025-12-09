@@ -132,6 +132,7 @@ model workspaces {
   openAiTemp                   Float?
   openAiHistory                Int                            @default(20)
   lastUpdatedAt                DateTime                       @default(now())
+  // THIS IS THE SYSTEM PROMPT FOR THE WORKSPACE
   openAiPrompt                 String?
   similarityThreshold          Float?                         @default(0.25)
   chatProvider                 String?

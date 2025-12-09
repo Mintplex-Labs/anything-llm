@@ -10,6 +10,7 @@ import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
+import PaperlessNgxOptions from "./Connectors/PaperlessNgx";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -53,6 +54,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.obsidian,
     description: "Import Obsidian vault in a single click.",
     options: <ObsidianOptions />,
+  },
+  "paperless-ngx": {
+    name: "Paperless-ngx",
+    image: ConnectorImages.paperlessNgx,
+    description: "Import documents from your Paperless-ngx instance.",
+    options: <PaperlessNgxOptions />,
   },
 });
 

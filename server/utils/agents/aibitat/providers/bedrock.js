@@ -1,10 +1,11 @@
 const {
-  SUPPORTED_CONNECTION_METHODS,
+  createBedrockCredentials,
+  getBedrockAuthMethod,
+  createBedrockChatClient,
 } = require("../../../AiProviders/bedrock/utils.js");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { ChatBedrockConverse } = require("@langchain/aws");
 const {
   HumanMessage,
   SystemMessage,
@@ -20,11 +21,12 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(_config = {}) {
     super();
     const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
-    const client = new ChatBedrockConverse({
-      region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: this.credentials,
-      model,
-    });
+    const client = createBedrockChatClient(
+      {},
+      this.authMethod,
+      this.credentials,
+      model
+    );
 
     this._client = client;
     this.model = model;
@@ -36,25 +38,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {object} The credentials object.
    */
   get credentials() {
-    switch (this.authMethod) {
-      case "iam": // explicit credentials
-        return {
-          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        };
-      case "sessionToken": // Session token is used for temporary credentials
-        return {
-          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-          sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
-        };
-      // IAM role is used for long-term credentials implied by system process
-      // is filled by the AWS SDK automatically if we pass in no credentials
-      case "iam_role":
-        return undefined;
-      default:
-        return undefined;
-    }
+    return createBedrockCredentials(this.authMethod);
   }
 
   /**
@@ -63,8 +47,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {"iam" | "iam_role" | "sessionToken"} The authentication method.
    */
   get authMethod() {
-    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    return SUPPORTED_CONNECTION_METHODS.includes(method) ? method : "iam";
+    return getBedrockAuthMethod();
   }
 
   get client() {

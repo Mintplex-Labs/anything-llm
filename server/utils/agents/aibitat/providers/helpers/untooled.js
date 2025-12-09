@@ -46,6 +46,30 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   /**
+   * Check if a function call is an MCP tool.
+   * We do this because some MCP tools dont return values and will cause infinite loops in calling for Untooled to call the same function over and over again.
+   * Any MCP tool is automatically marked with a cooldown to prevent infinite loops of the same function over and over again.
+   *
+   * This can lead to unexpected behavior if you want a model using Untooled to call a repeat action multiple times.
+   * eg: Create 3 Jira tickets about x, y, and z. -> will skip y and z if you don't disable the cooldown.
+   *
+   * You can disable this check by setting the `MCP_NO_COOLDOWN` flag to any value in the ENV.
+   *
+   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
+   * @param {Object[]} functions - The list of functions definitions to check against.
+   * @return {boolean} - True if the function call is an MCP tool, false otherwise.
+   */
+  isMCPTool(functionCall = {}, functions = []) {
+    if (process.env.MCP_NO_COOLDOWN) return false;
+
+    const foundFunc = functions.find(
+      (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
+    );
+    if (!foundFunc) return false;
+    return foundFunc?.isMCPTool || false;
+  }
+
+  /**
    * Validate a function call against a list of functions.
    * @param {{name: string, arguments: Object}} functionCall - The function call to validate.
    * @param {Object[]} functions - The list of functions definitions to validate against.
@@ -135,9 +159,11 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       return { toolCall: null, text: null };
     }
 
-    if (this.deduplicator.isDuplicate(call.name, call.arguments)) {
+    const { isDuplicate, reason: duplicateReason } =
+      this.deduplicator.isDuplicate(call.name, call.arguments);
+    if (isDuplicate) {
       this.providerLog(
-        `Function tool with exact arguments has already been called this stack.`
+        `Cannot call ${call.name} again because ${duplicateReason}.`
       );
       return { toolCall: null, text: null };
     }
@@ -197,9 +223,11 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       return { toolCall: null, text: null, uuid: msgUUID };
     }
 
-    if (this.deduplicator.isDuplicate(call.name, call.arguments)) {
+    const { isDuplicate, reason: duplicateReason } =
+      this.deduplicator.isDuplicate(call.name, call.arguments);
+    if (isDuplicate) {
       this.providerLog(
-        `Function tool with exact arguments has already been called this stack.`
+        `Cannot call ${call.name} again because ${duplicateReason}.`
       );
       eventHandler?.("reportStreamEvent", {
         type: "removeStatusResponse",
@@ -251,7 +279,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {
@@ -349,7 +379,9 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {

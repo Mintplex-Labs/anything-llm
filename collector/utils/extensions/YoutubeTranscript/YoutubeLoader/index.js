@@ -1,3 +1,5 @@
+const { validYoutubeVideoUrl } = require("../../../url");
+
 /*
  * This is just a custom implementation of the Langchain JS YouTubeLoader class
  * as the dependency for YoutubeTranscript is quite fickle and its a rat race to keep it up
@@ -23,14 +25,9 @@ class YoutubeLoader {
    * @returns The videoId of the YouTube video.
    */
   static getVideoID(url) {
-    const match = url.match(
-      /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/
-    );
-    if (match !== null && match[1].length === 11) {
-      return match[1];
-    } else {
-      throw new Error("Failed to get youtube video id from the url");
-    }
+    const videoId = validYoutubeVideoUrl(url, true);
+    if (videoId) return videoId;
+    throw new Error("Failed to get youtube video id from the url");
   }
 
   /**

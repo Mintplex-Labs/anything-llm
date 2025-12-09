@@ -12,9 +12,9 @@
 
 // Track Run/isDuplicate prevents _exact_ data re-runs based on the SHA of their inputs
 // StartCooldown/isOnCooldown does prevention of _near-duplicate_ runs based on only the function name that is running.
-// isUnique/markUnique/removeUniqueConstraint prevents one-time functions from re-running. EG: charting.
+// isMarkedUnique/markUnique/removeUniqueConstraint prevents one-time functions from re-running. EG: charting.
 const crypto = require("crypto");
-const DEFAULT_COOLDOWN_MS = 5 * 1000;
+const DEFAULT_COOLDOWN_MS = 30 * 1000;
 
 class Deduplicator {
   #hashes = {};
@@ -22,20 +22,59 @@ class Deduplicator {
   #uniques = {};
   constructor() {}
 
-  trackRun(key, params = {}) {
+  log(message, ...args) {
+    console.log(`\x1b[36m[Deduplicator]\x1b[0m ${message}`, ...args);
+  }
+
+  trackRun(
+    key,
+    params = {},
+    options = {
+      cooldown: false,
+      cooldownInMs: DEFAULT_COOLDOWN_MS,
+      markUnique: false,
+    }
+  ) {
     const hash = crypto
       .createHash("sha256")
       .update(JSON.stringify({ key, params }))
       .digest("hex");
     this.#hashes[hash] = Number(new Date());
+    if (options.cooldown)
+      this.startCooldown(key, { cooldownInMs: options.cooldownInMs });
+    if (options.markUnique) this.markUnique(key);
   }
 
+  /**
+   * Checks if a key and params are:
+   * - exactly the same as a previous run.
+   * - on cooldown.
+   * - marked as unique.
+   * @param {string} key - The key to check.
+   * @param {Object} params - The parameters to check.
+   * @returns {{isDuplicate: boolean, reason: string}} - The result of the check.
+   */
   isDuplicate(key, params = {}) {
     const newSig = crypto
       .createHash("sha256")
       .update(JSON.stringify({ key, params }))
       .digest("hex");
-    return this.#hashes.hasOwnProperty(newSig);
+    if (this.#hashes.hasOwnProperty(newSig))
+      return {
+        isDuplicate: true,
+        reason: `an exact duplicate of previous run of ${key}`,
+      };
+    if (this.isOnCooldown(key))
+      return {
+        isDuplicate: true,
+        reason: `the function is on cooldown for ${key}.`,
+      };
+    if (this.isMarkedUnique(key))
+      return {
+        isDuplicate: true,
+        reason: `the function is marked as unique for ${key}. Can only be called once per agent session.`,
+      };
+    return { isDuplicate: false, reason: "" };
   }
 
   /**
@@ -57,28 +96,54 @@ class Deduplicator {
     return;
   }
 
+  /**
+   * Starts a cooldown for a key.
+   * @param {string} key - The key to start the cooldown for (string key of the function name).
+   * @param {Object} parameters - The parameters for the cooldown.
+   * @param {number} parameters.cooldownInMs - The cooldown in milliseconds.
+   */
   startCooldown(
     key,
     parameters = {
       cooldownInMs: DEFAULT_COOLDOWN_MS,
     }
   ) {
-    this.#cooldowns[key] = Number(new Date()) + Number(parameters.cooldownInMs);
+    const cooldownDelay = parameters.cooldownInMs || DEFAULT_COOLDOWN_MS;
+    this.log(`Starting cooldown for ${key} for ${cooldownDelay}ms`);
+    this.#cooldowns[key] = Number(new Date()) + Number(cooldownDelay);
   }
 
+  /**
+   * Checks if a key is on cooldown.
+   * @param {string} key - The key to check.
+   * @returns {boolean} - True if the key is on cooldown, false otherwise.
+   */
   isOnCooldown(key) {
     if (!this.#cooldowns.hasOwnProperty(key)) return false;
     return Number(new Date()) <= this.#cooldowns[key];
   }
 
-  isUnique(key) {
-    return !this.#uniques.hasOwnProperty(key);
+  /**
+   * Checks if a key is marked as unique and currently tracked by the deduplicator.
+   * @param {string} key - The key to check.
+   * @returns {boolean} - True if the key is marked as unique, false otherwise.
+   */
+  isMarkedUnique(key) {
+    return this.#uniques.hasOwnProperty(key);
   }
 
+  /**
+   * Removes the unique constraint for a key.
+   * @param {string} key - The key to remove the unique constraint for.
+   */
   removeUniqueConstraint(key) {
     delete this.#uniques[key];
   }
 
+  /**
+   * Marks a key as unique and currently tracked by the deduplicator.
+   * @param {string} key - The key to mark as unique.
+   */
   markUnique(key) {
     this.#uniques[key] = Number(new Date());
   }
