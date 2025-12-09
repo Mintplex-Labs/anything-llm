@@ -87,7 +87,7 @@ function getVectorDbClass(getExactly = null) {
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
-      return Pinecone;
+      return new Pinecone();
     case "chroma":
       const { Chroma } = require("../vectorDbProviders/chroma");
       return new Chroma();
@@ -95,22 +95,22 @@ function getVectorDbClass(getExactly = null) {
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return new ChromaCloud();
     case "lancedb":
-      return LanceDb;
+      return new LanceDb();
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
-      return Weaviate;
+      return new Weaviate();
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
-      return QDrant;
+      return new QDrant();
     case "milvus":
       const { Milvus } = require("../vectorDbProviders/milvus");
-      return Milvus;
+      return new Milvus();
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
-      return Zilliz;
+      return new Zilliz();
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
-      return AstraDB;
+      return new AstraDB();
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
@@ -118,7 +118,7 @@ function getVectorDbClass(getExactly = null) {
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
       );
-      return LanceDb;
+      return new LanceDb();
   }
 }
 
