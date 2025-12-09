@@ -113,7 +113,7 @@ function getVectorDbClass(getExactly = null) {
       return new AstraDB();
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
-      return PGVector;
+      return new PGVector();
     default:
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
