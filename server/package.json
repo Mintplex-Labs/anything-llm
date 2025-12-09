@@ -60,7 +60,7 @@
     "joi-password-complexity": "^5.2.0",
     "js-tiktoken": "^1.0.8",
     "jsonrepair": "^3.7.0",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.3",
     "langchain": "0.1.36",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
@@ -84,6 +84,9 @@
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
+  },
+  "resolutions": {
+    "jws": "3.2.3"
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
