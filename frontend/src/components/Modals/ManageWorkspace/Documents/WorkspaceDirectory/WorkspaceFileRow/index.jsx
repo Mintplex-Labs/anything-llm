@@ -190,8 +190,9 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
   const [watched, setWatched] = useState(item?.watched || false);
   const watchEvent = new CustomEvent("watch_document_for_changes");
 
-  const updateWatchStatus = async () => {
+  const updateWatchStatus = async (e) => {
     try {
+      e.stopPropagation();
       if (!watched) window.dispatchEvent(watchEvent);
       const success =
         await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
@@ -236,30 +237,21 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
       className="group flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2 cursor-pointer"
       onClick={updateWatchStatus}
       data-tooltip-id="watch-changes"
+      data-active={watched}
       data-tooltip-content={
         watched ? "Stop watching for changes" : "Watch document for changes"
       }
     >
-      {watched ? (
-        <Eye
-          size={16}
-          weight="fill"
-          className="outline-none text-base font-bold flex-shrink-0"
-        />
-      ) : (
-        <>
-          <Eye
-            size={16}
-            weight="regular"
-            className="outline-none text-base font-bold flex-shrink-0 group-hover:hidden"
-          />
-          <Eye
-            size={16}
-            weight="fill"
-            className="outline-none text-base font-bold flex-shrink-0 hidden group-hover:block"
-          />
-        </>
-      )}
+      <Eye
+        size={16}
+        weight="regular"
+        className="outline-none text-base font-bold flex-shrink-0 group-hover:hidden group-data-[active=true]:hidden"
+      />
+      <Eye
+        size={16}
+        weight="fill"
+        className="outline-none text-base font-bold flex-shrink-0 hidden group-hover:block group-data-[active=true]:block"
+      />
     </div>
   );
 });
