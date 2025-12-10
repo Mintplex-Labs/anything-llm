@@ -143,11 +143,7 @@ WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --network-timeout 100000 && yarn cache clean
 COPY ./frontend/ ./
-RUN yarn build && \
-    cp -r dist /tmp/frontend-build && \
-    rm -rf * && \
-    cp -r /tmp/frontend-build dist && \
-    rm -rf /tmp/frontend-build
+RUN yarn build
 WORKDIR /app
 
 # Install server layer
