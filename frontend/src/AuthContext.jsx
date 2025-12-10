@@ -1,12 +1,10 @@
 import React, { useState, createContext, useEffect } from "react";
 import {
-  API_BASE,
   AUTH_TIMESTAMP,
   AUTH_TOKEN,
   AUTH_USER,
   USER_PROMPT_INPUT_MAP,
 } from "@/utils/constants";
-import { baseHeaders } from "./utils/request";
 import System from "./models/system";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +21,7 @@ export function AuthProvider(props) {
 
   /* NOTE:
    * 1. There's no reason for these helper functions to be stateful. They could
-   * just be fucntion declarations or methods on a basic object
+   * just be regular funcs or methods on a basic object.
    * 2. These actions are not being invoked anywhere in the
    * codebase, dead code.
    */
