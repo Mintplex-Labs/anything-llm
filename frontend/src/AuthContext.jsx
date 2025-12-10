@@ -62,6 +62,7 @@ export function AuthProvider(props) {
           navigate("/login");
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.authToken]);
 
   return (
