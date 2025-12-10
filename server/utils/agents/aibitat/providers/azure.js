@@ -1,4 +1,4 @@
-const { OpenAI } = require("openai");
+const { OpenAI, AzureOpenAI } = require("openai");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 
@@ -11,11 +11,28 @@ class AzureOpenAiProvider extends Provider {
   constructor(config = { model: null }) {
     const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/v1`,
+      baseURL: AzureOpenAiProvider.#formatAzureOpenAiEndpoint(
+        process.env.AZURE_OPENAI_ENDPOINT
+      ),
     });
     super(client);
     this.model = config.model ?? process.env.OPEN_MODEL_PREF;
     this.verbose = true;
+  }
+  // Because this function needs to be called before super(), we need to define it as a static method
+  static #formatAzureOpenAiEndpoint(azureOpenAiEndpoint) {
+    try {
+      const url = new URL(azureOpenAiEndpoint);
+      url.pathname = "/openai/v1";
+      url.search = "";
+      url.hash = "";
+      url.protocol = "https";
+      return url.href;
+    } catch (error) {
+      throw new Error(
+        `"${azureOpenAiEndpoint}" is not a valid URL. Check your settings for the Azure OpenAI provider and set a valid endpoint URL.`
+      );
+    }
   }
 
   get supportsAgentStreaming() {

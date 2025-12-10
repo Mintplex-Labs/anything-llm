@@ -17,7 +17,7 @@ class AzureOpenAiLLM {
 
     this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/v1`,
+      baseURL: this.#formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     /* 
@@ -39,6 +39,20 @@ class AzureOpenAiLLM {
     this.#log(
       `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
+  }
+  #formatBaseUrl(azureOpenAiEndpoint) {
+    try {
+      const url = new URL(azureOpenAiEndpoint);
+      url.pathname = "/openai/v1";
+      url.protocol = "https";
+      url.search = "";
+      url.hash = "";
+      return url.href;
+    } catch (error) {
+      throw new Error(
+        `"${azureOpenAiEndpoint}" is not a valid URL. Check your settings for the Azure OpenAI provider and set a valid endpoint URL.`
+      );
+    }
   }
 
   #log(text, ...args) {
