@@ -135,11 +135,11 @@ function systemEndpoints(app) {
         });
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
       res.status(400).json({
         success: false,
-        message: "Failed to retrieve the user from session."
-      })
+        message: "Failed to retrieve the user from session.",
+      });
     }
   });
 
