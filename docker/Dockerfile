@@ -135,16 +135,15 @@ USER anythingllm
 WORKDIR /app
 
 # Install & Build frontend layer
-FROM build AS frontend-build
-COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
+# Use BUILDPLATFORM to run on the native host architecture (not emulated).
+# This avoids esbuild crashing under QEMU when cross-compiling.
+# The output (static HTML/CSS/JS) is platform-independent.
+FROM --platform=$BUILDPLATFORM node:18-slim AS frontend-build
 WORKDIR /app/frontend
+COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --network-timeout 100000 && yarn cache clean
-RUN yarn build && \
-    cp -r dist /tmp/frontend-build && \
-    rm -rf * && \
-    cp -r /tmp/frontend-build dist && \
-    rm -rf /tmp/frontend-build
-WORKDIR /app
+COPY ./frontend/ ./
+RUN yarn build
 
 # Install server layer
 # Also pull and build collector deps (chromium issues prevent bad bindings)
