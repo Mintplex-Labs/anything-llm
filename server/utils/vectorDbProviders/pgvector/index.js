@@ -3,6 +3,7 @@ const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { TextSplitter } = require("../../TextSplitter");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
 /*
  Embedding Table Schema (table name defined by user)
@@ -13,8 +14,9 @@ const { sourceIdentifier } = require("../../chats");
  - created_at: TIMESTAMP
 */
 
-class PGVector {
+class PGVector extends VectorDatabase {
   constructor() {
+    super();
     this.name = "PGVector";
   }
 

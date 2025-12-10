@@ -6,14 +6,16 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
+const { VectorDatabase } = require("../base");
 
 /**
  * LancedDB Client connection object
  * @typedef {import('@lancedb/lancedb').Connection} LanceClient
  */
 
-class LanceDb {
+class LanceDb extends VectorDatabase {
   constructor() {
+    super();
     this.uri = `${
       !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
     }lancedb`;

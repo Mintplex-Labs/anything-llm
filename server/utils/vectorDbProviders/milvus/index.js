@@ -10,9 +10,11 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-class Milvus {
+class Milvus extends VectorDatabase {
   constructor() {
+    super();
     this.name = "Milvus";
   }
 
