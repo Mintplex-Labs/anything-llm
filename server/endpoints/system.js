@@ -114,6 +114,35 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get("/system/refresh-user", [validatedRequest], async (req, res) => {
+    try {
+      if (multiUserMode(res)) {
+        const user = await userFromSession(req, res);
+        if (!user || user.suspended) {
+          res.sendStatus(403).end();
+          return;
+        }
+
+        res.status(200).json({
+          valid: true,
+          user: User.filterFields(user),
+          message: null,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "Multi-User Mode is not enabled.",
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({
+        success: false,
+        message: "Failed to retrieve the user from session.",
+      });
+    }
+  });
+
   app.post("/request-token", async (request, response) => {
     try {
       const bcrypt = require("bcrypt");
