@@ -7,13 +7,14 @@ import {
 } from "@/utils/constants";
 import System from "./models/system";
 import { useNavigate } from "react-router-dom";
+import { safeJsonParse } from "@/utils/request";
 
 export const AuthContext = createContext(null);
 export function AuthProvider(props) {
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);
   const [store, setStore] = useState({
-    user: localUser ? JSON.parse(localUser) : null,
+    user: localUser ? safeJsonParse(localUser, null) : null,
     authToken: localAuthToken ? localAuthToken : null,
   });
 
