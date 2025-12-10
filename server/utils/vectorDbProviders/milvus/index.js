@@ -29,7 +29,7 @@ class Milvus {
 
   async connect() {
     if (process.env.VECTOR_DB !== "milvus")
-      throw new Error("Milvus::Invalid ENV settings");
+      throw new Error(`${this.name}::Invalid ENV settings`);
 
     const client = new MilvusClient({
       address: process.env.MILVUS_ADDRESS,
@@ -40,7 +40,7 @@ class Milvus {
     const { isHealthy } = await client.checkHealth();
     if (!isHealthy)
       throw new Error(
-        "MilvusDB::Invalid Heartbeat received - is the instance online?"
+        `${this.name}::Invalid Heartbeat received - is the instance online?`
       );
 
     return { client };
@@ -90,7 +90,7 @@ class Milvus {
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
-        console.error("MilvusDB::namespaceExists", e.message);
+        console.error(`${this.name}::namespaceExists`, e.message);
         return { value: false };
       });
     return value;
@@ -109,7 +109,7 @@ class Milvus {
     if (!isExists) {
       if (!dimensions)
         throw new Error(
-          `Milvus:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
+          `${this.name}::getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
         );
 
       await client.createCollection({
@@ -185,7 +185,7 @@ class Milvus {
 
               if (insertResult?.status.error_code !== "Success") {
                 throw new Error(
-                  `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+                  `Error embedding into ${this.name}! Reason:${insertResult?.status.reason}`
                 );
               }
             }
@@ -251,7 +251,7 @@ class Milvus {
         const { client } = await this.connect();
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
-        console.log("Inserting vectorized chunks into Milvus.");
+        console.log(`Inserting vectorized chunks into ${this.name}.`);
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           const insertResult = await client.insert({
@@ -265,7 +265,7 @@ class Milvus {
 
           if (insertResult?.status.error_code !== "Success") {
             throw new Error(
-              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+              `Error embedding into ${this.name}! Reason:${insertResult?.status.reason}`
             );
           }
         }
@@ -370,7 +370,7 @@ class Milvus {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
         console.log(
-          "Milvus: A source was filtered from context as it's parent document is pinned."
+          `${this.name}: A source was filtered from context as its parent document is pinned.`
         );
         return;
       }
