@@ -85,9 +85,6 @@
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
   },
-  "resolutions": {
-    "jws": "3.2.3"
-  },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
     "cross-env": "^7.0.3",
