@@ -1,3 +1,6 @@
+# This GitHub action is for publishing of the render/railway deployment image for AnythingLLM
+# This file should ONLY BE USED FOR `render` BRANCH.
+# Render/Railway runners are all x86_64 so we can only build for amd64 without needing to use QEMU.
 name: Publish Docker image for Render & Railway deployments
 
 concurrency:
@@ -62,8 +65,9 @@ jobs:
           tags: |
             type=raw,value=render
             type=raw,value=railway
-            type=raw,value=render-1.9.1
-            type=raw,value=railway-1.9.1
+        # Uncomment these if you want to publish specific version tags or doing a release
+            # type=raw,value=render-1.9.1
+            # type=raw,value=railway-1.9.1
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
