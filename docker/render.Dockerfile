@@ -54,7 +54,8 @@ WORKDIR /app
 # Use BUILDPLATFORM to run on the native host architecture (not emulated).
 # This avoids esbuild crashing under QEMU when cross-compiling.
 # The output (static HTML/CSS/JS) is platform-independent.
-FROM base AS frontend-build
+# Note on render we dont even use QEMU, but we keep this here for consistency
+# with the primary dockerfile as well as future handling of arm64 images on Render/Railway.
 FROM --platform=$BUILDPLATFORM node:18-slim AS frontend-build
 WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/yarn.lock ./
