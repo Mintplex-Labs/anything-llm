@@ -11,7 +11,7 @@ on:
 jobs:
   push_multi_platform_to_registries:
     name: Push Docker multi-platform image to multiple registries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     permissions:
       packages: write
       contents: read
@@ -31,9 +31,6 @@ jobs:
             echo "enabled=true" >> $GITHUB_OUTPUT
           fi
         id: dockerhub
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
