@@ -131,7 +131,7 @@ function useIsExpanded({
     if (hasVisibleChildren) {
       const storedValue = localStorage.getItem(storageKey);
       if (storedValue !== null) {
-        return safeJsonParse(storedValue, true);
+        return safeJsonParse(storedValue, false);
       }
       return childOptions.some((child) => child.href === location);
     }
