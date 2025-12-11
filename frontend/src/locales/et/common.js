@@ -534,6 +534,7 @@ const TRANSLATIONS = {
         model_type: "Mudeli tüüp",
         default: "Vaikimisi",
         reasoning: "Põhjendus",
+        model_type_tooltip: null,
       },
     },
   },

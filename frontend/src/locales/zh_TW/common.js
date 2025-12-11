@@ -348,6 +348,7 @@ const TRANSLATIONS = {
         model_type: "模型類型",
         default: "預設",
         reasoning: "推理",
+        model_type_tooltip: null,
       },
     },
   },
