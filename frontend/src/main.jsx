@@ -372,6 +372,14 @@ const router = createBrowserRouter([
           return { element: <ManagerRoute Component={MobileConnections} /> };
         },
       },
+      // Catch-all route for 404s
+      {
+        path: "*",
+        lazy: async () => {
+          const { default: NotFound } = await import("@/pages/404");
+          return { element: <NotFound /> };
+        },
+      },
     ],
   },
 ]);
