@@ -60,6 +60,7 @@ FROM --platform=$BUILDPLATFORM node:18-slim AS frontend-build
 WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --network-timeout 100000 && yarn cache clean
+COPY ./frontend/ ./
 RUN yarn build
 WORKDIR /app
 
