@@ -93,7 +93,6 @@ const System = {
       })
       .then((data) => ({ success: true, data }))
       .catch((e) => {
-        console.error(e);
         return { success: false, message: e.message };
       });
   },
