@@ -5,6 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
 const sanitizeNamespace = (namespace) => {
   // If namespace already starts with ns_, don't add it again
@@ -27,8 +28,9 @@ const collectionExists = async function (client, namespace) {
   }
 };
 
-class AstraDB {
+class AstraDB extends VectorDatabase {
   constructor() {
+    super();
     this.name = "AstraDB";
   }
 

@@ -5,9 +5,11 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-class PineconeDB {
+class PineconeDB extends VectorDatabase {
   constructor() {
+    super();
     this.name = "Pinecone";
   }
 

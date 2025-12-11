@@ -6,9 +6,11 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-class Weaviate {
+class Weaviate extends VectorDatabase {
   constructor() {
+    super();
     this.name = "Weaviate";
   }
 
