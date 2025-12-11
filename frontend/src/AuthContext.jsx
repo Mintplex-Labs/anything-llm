@@ -44,24 +44,23 @@ export function AuthProvider(props) {
   // On initial mount and whenever the token changes fetch a new user object
   useEffect(() => {
     if (store.authToken) {
-      System.refreshUser()
-        .then((result) => {
-          if (!result.success) {
-            localStorage.removeItem(AUTH_USER);
-            localStorage.removeItem(AUTH_TOKEN);
-            localStorage.removeItem(AUTH_TIMESTAMP);
-            localStorage.removeItem(USER_PROMPT_INPUT_MAP);
-            setStore({ user: null, authToken: null });
-            navigate("/login");
-            return;
-          }
-          const { user } = result.data;
-          localStorage.setItem(AUTH_USER, JSON.stringify(user));
-          setStore((prev) => ({
-            ...prev,
-            user,
-          }));
-        });
+      System.refreshUser().then((result) => {
+        if (!result.success) {
+          localStorage.removeItem(AUTH_USER);
+          localStorage.removeItem(AUTH_TOKEN);
+          localStorage.removeItem(AUTH_TIMESTAMP);
+          localStorage.removeItem(USER_PROMPT_INPUT_MAP);
+          setStore({ user: null, authToken: null });
+          navigate("/login");
+          return;
+        }
+        const { user } = result.data;
+        localStorage.setItem(AUTH_USER, JSON.stringify(user));
+        setStore((prev) => ({
+          ...prev,
+          user,
+        }));
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.authToken]);
