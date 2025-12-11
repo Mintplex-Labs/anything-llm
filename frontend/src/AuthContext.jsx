@@ -45,7 +45,9 @@ export function AuthProvider(props) {
   useEffect(() => {
     if (store.authToken) {
       System.refreshUser()
-        .then(({ user }) => {
+        .then((result) => {
+          if (!result.success) throw new Error(result.message);
+          const { user } = result.data;
           localStorage.setItem(AUTH_USER, JSON.stringify(user));
           setStore((prev) => ({
             ...prev,

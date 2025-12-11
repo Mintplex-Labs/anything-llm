@@ -84,11 +84,17 @@ const System = {
       });
   },
   refreshUser: () => {
-    return fetch(`${API_BASE}/system/refresh-user`, { headers: baseHeaders() })
-      .then((res) => res.json())
-      .then((data) => data)
+    return fetch(`${API_BASE}/system/refresh-user`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not refresh user.");
+        return res.json();
+      })
+      .then((data) => ({ success: true, data }))
       .catch((e) => {
-        console.log(e);
+        console.error(e);
+        return { success: false, message: e.message };
       });
   },
   recoverAccount: async function (username, recoveryCodes) {
