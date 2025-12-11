@@ -35,6 +35,7 @@
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-error-boundary": "^6.0.0",
     "react-highlight-words": "^0.21.0",
     "react-i18next": "^14.1.1",
     "react-loading-skeleton": "^3.1.0",
