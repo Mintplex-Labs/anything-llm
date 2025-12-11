@@ -46,21 +46,21 @@ export function AuthProvider(props) {
     if (store.authToken) {
       System.refreshUser()
         .then((result) => {
-          if (!result.success) throw new Error(result.message);
+          if (!result.success) {
+            localStorage.removeItem(AUTH_USER);
+            localStorage.removeItem(AUTH_TOKEN);
+            localStorage.removeItem(AUTH_TIMESTAMP);
+            localStorage.removeItem(USER_PROMPT_INPUT_MAP);
+            setStore({ user: null, authToken: null });
+            navigate("/login");
+            return;
+          }
           const { user } = result.data;
           localStorage.setItem(AUTH_USER, JSON.stringify(user));
           setStore((prev) => ({
             ...prev,
             user,
           }));
-        })
-        .catch(() => {
-          localStorage.removeItem(AUTH_USER);
-          localStorage.removeItem(AUTH_TOKEN);
-          localStorage.removeItem(AUTH_TIMESTAMP);
-          localStorage.removeItem(USER_PROMPT_INPUT_MAP);
-          setStore({ user: null, authToken: null });
-          navigate("/login");
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
