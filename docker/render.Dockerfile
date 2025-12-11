@@ -36,6 +36,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN (getent passwd "$ARG_UID" && userdel -f "$(getent passwd "$ARG_UID" | cut -d: -f1)") || true && \
     (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
     groupadd -g "$ARG_GID" anythingllm && \
+    useradd -u "$ARG_UID" -g anythingllm -s /bin/bash --create-home anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
 # Copy docker helper scripts
