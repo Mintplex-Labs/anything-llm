@@ -1,13 +1,6 @@
-const path = require("path");
-const fs = require("fs");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config({
-      path: process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, ".env")
-        : path.resolve(__dirname, ".env"),
-    });
-
+  : require("dotenv").config();
 const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
@@ -24,6 +17,8 @@ const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const fs = require("fs");
+const path = require("path");
 const {
   getDefaultFilename,
   determineLogoFilepath,
@@ -118,35 +113,6 @@ function systemEndpoints(app) {
       }
     }
   );
-
-  app.get("/system/refresh-user", [validatedRequest], async (req, res) => {
-    try {
-      if (multiUserMode(res)) {
-        const user = await userFromSession(req, res);
-        if (!user || user.suspended) {
-          res.sendStatus(403).end();
-          return;
-        }
-
-        res.status(200).json({
-          valid: true,
-          user: User.filterFields(user),
-          message: null,
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: "Multi-User Mode is not enabled.",
-        });
-      }
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({
-        success: false,
-        message: "Failed to retrieve the user from session.",
-      });
-    }
-  });
 
   app.post("/request-token", async (request, response) => {
     try {
