@@ -774,7 +774,12 @@ const System = {
         if (!res.ok) {
           const text = await res.text();
           if (!text.startsWith("{")) throw new Error(text);
-          return JSON.parse(text);
+          return safeJsonParse(text, {
+            valid: false,
+            user: null,
+            token: null,
+            message: text,
+          });
         }
         return await res.json();
       })
