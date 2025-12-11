@@ -32,23 +32,35 @@ class PaperlessNgxLoader {
 
       while (nextUrl) {
         console.log(`Fetching documents page ${page} from Paperless-ngx`);
-        const response = await fetch(nextUrl, {
-          headers: {
-            "Content-Type": "application/json",
-            ...this.baseHeaders,
-          },
-        });
 
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch documents from Paperless-ngx: ${response.status}`
+        try {
+          const response = await fetch(nextUrl, {
+            headers: {
+              "Content-Type": "application/json",
+              ...this.baseHeaders,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch documents from Paperless-ngx: ${response.status}`
+            );
+          }
+
+          const data = await response.json();
+
+          // Filter valid docs (throws if doc is invalid)
+          const validResults = data.results.filter((doc) => doc?.id);
+          documents.push(...validResults);
+          nextUrl = data.next || null;
+          page++;
+        } catch (error) {
+          console.error(
+            `Error fetching page ${page} from Paperless-ngx:`,
+            error.message
           );
+          break;
         }
-
-        const data = await response.json();
-        documents.push(...(data.results || []));
-        nextUrl = data.next;
-        page++;
       }
 
       console.log(
