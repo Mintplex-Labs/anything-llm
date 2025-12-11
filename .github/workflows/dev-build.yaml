@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (arm64)
+name: AnythingLLM Development Docker image (amd64/arm64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['chore/bump-express-js'] # put your current branch to create a build. Core team only.
+    branches: ['chore/form-data-bump'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

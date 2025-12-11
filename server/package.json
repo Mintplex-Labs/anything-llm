@@ -85,6 +85,10 @@
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
   },
+  "resolutions": {
+    "**/graphql-request/form-data": "3.0.4",
+    "form-data": "4.0.4"
+  },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
     "cross-env": "^7.0.3",
