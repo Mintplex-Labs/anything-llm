@@ -6,11 +6,7 @@ concurrency:
 
 on:
   push:
-<<<<<<< HEAD
     branches: ['maint/upgrade-docker-base-image'] # put your current branch to create a build. Core team only.
-=======
-    branches: ['chore/form-data-bump'] # put your current branch to create a build. Core team only.
->>>>>>> 25a72f71750f002793a93c6b1e96dd9a840ae538
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
