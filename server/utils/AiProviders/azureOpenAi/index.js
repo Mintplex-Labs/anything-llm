@@ -17,7 +17,7 @@ class AzureOpenAiLLM {
 
     this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      baseURL: this.#formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
+      baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     /* 
@@ -40,7 +40,13 @@ class AzureOpenAiLLM {
       `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
   }
-  #formatBaseUrl(azureOpenAiEndpoint) {
+
+  /**
+   * Formats the Azure OpenAI endpoint URL to the correct format.
+   * @param {string} azureOpenAiEndpoint - The Azure OpenAI endpoint URL.
+   * @returns {string} The formatted URL.
+   */
+  static formatBaseUrl(azureOpenAiEndpoint) {
     try {
       const url = new URL(azureOpenAiEndpoint);
       url.pathname = "/openai/v1";
