@@ -583,6 +583,8 @@ const TRANSLATIONS = {
         chat_deployment_name: "Chat Deployment Name",
         chat_model_token_limit: "Chat Model Token Limit",
         model_type: "Model Type",
+        model_type_tooltip:
+          "If your deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.), set this to “Reasoning”. Otherwise, your chat requests may fail.",
         default: "Default",
         reasoning: "Reasoning",
       },
