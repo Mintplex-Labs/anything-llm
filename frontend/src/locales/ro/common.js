@@ -1011,6 +1011,7 @@ const TRANSLATIONS = {
         model_type: "Tip model",
         default: "Implicit",
         reasoning: "Raționament",
+        model_type_tooltip: null,
       },
     },
   },

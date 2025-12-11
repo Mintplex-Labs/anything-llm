@@ -82,7 +82,6 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
-  const { LanceDb } = require("../vectorDbProviders/lance");
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
@@ -95,6 +94,7 @@ function getVectorDbClass(getExactly = null) {
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
       return ChromaCloud;
     case "lancedb":
+      const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
@@ -118,7 +118,8 @@ function getVectorDbClass(getExactly = null) {
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
       );
-      return LanceDb;
+      const { LanceDb: DefaultLanceDb } = require("../vectorDbProviders/lance");
+      return DefaultLanceDb;
   }
 }
 
