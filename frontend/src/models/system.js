@@ -83,14 +83,6 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
-  refreshUser: () => {
-    return fetch(`${API_BASE}/system/refresh-user`, { headers: baseHeaders() })
-      .then((res) => res.json())
-      .then((data) => data)
-      .catch((e) => {
-        console.log(e);
-      });
-  },
   recoverAccount: async function (username, recoveryCodes) {
     return await fetch(`${API_BASE}/system/recover-account`, {
       method: "POST",
