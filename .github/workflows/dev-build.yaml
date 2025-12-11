@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (arm64)
+name: AnythingLLM Development Docker image (amd64/arm64)
 
 concurrency:
   group: build-${{ github.ref }}
