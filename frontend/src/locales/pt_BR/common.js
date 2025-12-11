@@ -542,6 +542,7 @@ const TRANSLATIONS = {
         model_type: "Tipo do Modelo",
         default: "Padrão",
         reasoning: "Raciocínio",
+        model_type_tooltip: null,
       },
     },
   },

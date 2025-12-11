@@ -544,6 +544,7 @@ const TRANSLATIONS = {
         model_type: "모델 유형",
         default: "기본값",
         reasoning: "추론",
+        model_type_tooltip: null,
       },
     },
   },
