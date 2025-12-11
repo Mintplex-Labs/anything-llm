@@ -141,9 +141,8 @@ export default function EmbedRow({ embed }) {
 }
 
 function ActiveDomains({ domainList }) {
-  if (!domainList) return <p>all</p>;
-  const domains = safeJsonParse(domainList, null);
-  if (!domains || domains.length === 0) return <p>all</p>;
+  const domains = safeJsonParse(domainList, null) || [];
+  if (domains.length === 0) return <p>all</p>;
   return (
     <div className="flex flex-col gap-y-2">
       {domains.map((domain, index) => {
