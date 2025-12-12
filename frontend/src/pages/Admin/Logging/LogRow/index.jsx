@@ -1,5 +1,6 @@
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { safeJsonParse } from "@/utils/request";
 
 export default function LogRow({ log }) {
   const [expanded, setExpanded] = useState(false);
@@ -8,11 +9,9 @@ export default function LogRow({ log }) {
 
   useEffect(() => {
     function parseAndSetMetadata() {
-      try {
-        let data = JSON.parse(log.metadata);
-        setHasMetadata(Object.keys(data)?.length > 0);
-        setMetadata(data);
-      } catch {}
+      const data = safeJsonParse(log.metadata, {});
+      setHasMetadata(Object.keys(data)?.length > 0);
+      setMetadata(data);
     }
     parseAndSetMetadata();
   }, [log.metadata]);
