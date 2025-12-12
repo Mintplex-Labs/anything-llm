@@ -1,4 +1,5 @@
 import { APPEARANCE_SETTINGS } from "@/utils/constants";
+import { safeJsonParse } from "@/utils/request";
 
 /**
  * @typedef { 'showScrollbar' |
@@ -23,12 +24,8 @@ const Appearance = {
    * @returns {{showScrollbar: boolean, autoSubmitSttInput: boolean, autoPlayAssistantTtsResponse: boolean, enableSpellCheck: boolean, renderHTML: boolean}}
    */
   getSettings: () => {
-    try {
-      const settings = localStorage.getItem(APPEARANCE_SETTINGS);
-      return settings ? JSON.parse(settings) : Appearance.defaultSettings;
-    } catch (e) {
-      return Appearance.defaultSettings;
-    }
+    const settings = localStorage.getItem(APPEARANCE_SETTINGS);
+    return safeJsonParse(settings, Appearance.defaultSettings);
   },
 
   /**
