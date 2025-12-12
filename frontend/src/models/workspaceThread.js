@@ -1,6 +1,6 @@
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 
@@ -144,10 +144,8 @@ const WorkspaceThread = {
           }
         },
         async onmessage(msg) {
-          try {
-            const chatResult = JSON.parse(msg.data);
-            handleChat(chatResult);
-          } catch {}
+          const chatResult = safeJsonParse(msg.data, null);
+          if (chatResult) handleChat(chatResult);
         },
         onerror(err) {
           handleChat({
