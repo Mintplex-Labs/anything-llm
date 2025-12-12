@@ -41,26 +41,34 @@ export function AuthProvider(props) {
     },
   });
 
-  // On initial mount and whenever the token changes fetch a new user object
+  /*
+   * On initial mount and whenever the token changes, fetch a new user object
+   * If the user is suspended, (success === false and data === null) logout the user and redirect to the login page
+   * If success is true and data is not null, update the user object in the store (multi-user mode only)
+   * If success is true and data is null, do nothing (single-user mode only) with or without password protection
+   */
   useEffect(() => {
-    if (store.authToken) {
-      System.refreshUser()
-        .then(({ user }) => {
-          localStorage.setItem(AUTH_USER, JSON.stringify(user));
-          setStore((prev) => ({
-            ...prev,
-            user,
-          }));
-        })
-        .catch(() => {
-          localStorage.removeItem(AUTH_USER);
-          localStorage.removeItem(AUTH_TOKEN);
-          localStorage.removeItem(AUTH_TIMESTAMP);
-          localStorage.removeItem(USER_PROMPT_INPUT_MAP);
-          setStore({ user: null, authToken: null });
-          navigate("/login");
-        });
+    async function refreshUser() {
+      const { success, user: refreshedUser } = await System.refreshUser();
+      if (success && refreshedUser === null) return;
+
+      if (!success) {
+        localStorage.removeItem(AUTH_USER);
+        localStorage.removeItem(AUTH_TOKEN);
+        localStorage.removeItem(AUTH_TIMESTAMP);
+        localStorage.removeItem(USER_PROMPT_INPUT_MAP);
+        setStore({ user: null, authToken: null });
+        navigate("/login");
+        return;
+      }
+
+      localStorage.setItem(AUTH_USER, JSON.stringify(refreshedUser));
+      setStore((prev) => ({
+        ...prev,
+        user: refreshedUser,
+      }));
     }
+    if (store.authToken) refreshUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.authToken]);
 
