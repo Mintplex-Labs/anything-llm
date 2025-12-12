@@ -83,6 +83,10 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  /**
+   * Refreshes the user object from the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
   refreshUser: () => {
     return fetch(`${API_BASE}/system/refresh-user`, {
       headers: baseHeaders(),
@@ -91,9 +95,8 @@ const System = {
         if (!res.ok) throw new Error("Could not refresh user.");
         return res.json();
       })
-      .then((data) => ({ success: true, data }))
       .catch((e) => {
-        return { success: false, message: e.message };
+        return { success: false, user: null, message: e.message };
       });
   },
   recoverAccount: async function (username, recoveryCodes) {
