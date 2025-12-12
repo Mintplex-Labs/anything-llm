@@ -1,4 +1,6 @@
+import { Info } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import { Tooltip } from "react-tooltip";
 
 export default function AzureAiOptions({ settings }) {
   const { t } = useTranslation();
@@ -79,9 +81,33 @@ export default function AzureAiOptions({ settings }) {
         </div>
 
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            {t("llm.providers.azure_openai.model_type")}
-          </label>
+          <div className="flex items-center gap-1 mb-3">
+            <label className="text-white text-sm font-semibold block">
+              {t("llm.providers.azure_openai.model_type")}
+            </label>
+            <Tooltip
+              id="azure-openai-model-type"
+              place="top"
+              delayShow={300}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            />
+            <div
+              type="button"
+              className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+              data-tooltip-id="azure-openai-model-type"
+              data-tooltip-place="top"
+              data-tooltip-content={t(
+                "llm.providers.azure_openai.model_type_tooltip"
+              )}
+            >
+              <Info size={18} className="text-theme-text-secondary" />
+            </div>
+          </div>
           <select
             name="AzureOpenAiModelType"
             defaultValue={settings?.AzureOpenAiModelType || "default"}

@@ -371,6 +371,7 @@ const TRANSLATIONS = {
         model_type: "Type de modèle",
         default: "Par défaut",
         reasoning: "Raisonnement",
+        model_type_tooltip: null,
       },
     },
   },
