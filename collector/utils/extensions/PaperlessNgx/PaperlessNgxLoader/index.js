@@ -50,6 +50,8 @@ class PaperlessNgxLoader {
           if (!validResults.length) break;
 
           documents.push(...validResults);
+
+          if (data.next === nextUrl) break;
           nextUrl = data.next || null;
           page++;
         } catch (error) {
