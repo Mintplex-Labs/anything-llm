@@ -1,5 +1,5 @@
 # Setup base image
-FROM ubuntu:jammy-20240627.1 AS base
+FROM ubuntu:noble-20251013 AS base
 
 # Build arguments
 ARG ARG_UID=1000
@@ -14,11 +14,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3013
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-        unzip curl gnupg libgfortran5 libgbm1 tzdata netcat \
-        libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
+        unzip curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd \
+        libasound2t64 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
-        libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release \
+        libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
@@ -38,7 +38,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
-RUN groupadd -g "$ARG_GID" anythingllm && \
+# First, remove any existing user/group with the target UID/GID to avoid conflicts
+RUN (getent passwd "$ARG_UID" && userdel -f "$(getent passwd "$ARG_UID" | cut -d: -f1)") || true && \
+    (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
+    groupadd -g "$ARG_GID" anythingllm && \
     useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
@@ -58,7 +61,7 @@ WORKDIR /app
 # so web-scraping would be broken in arm docker containers unless we patch it
 # by manually installing a compatible chromedriver.
 RUN echo "Need to patch Puppeteer x Chromium support for ARM86 - installing dep!" && \
-    curl https://playwright.azureedge.net/builds/chromium/1088/chromium-linux-arm64.zip -o chrome-linux.zip && \
+    curl -fSL https://webassets.anythingllm.com/chromium-1088-linux-arm64.zip -o chrome-linux.zip && \
     unzip chrome-linux.zip && \
     rm -rf chrome-linux.zip
 
@@ -80,11 +83,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3013
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-        curl gnupg libgfortran5 libgbm1 tzdata netcat \
-        libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
+        curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd \
+        libasound2t64 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
-        libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release \
+        libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
@@ -104,7 +107,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
-RUN groupadd -g "$ARG_GID" anythingllm && \
+# First, remove any existing user/group with the target UID/GID to avoid conflicts
+RUN (getent passwd "$ARG_UID" && userdel -f "$(getent passwd "$ARG_UID" | cut -d: -f1)") || true && \
+    (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
+    groupadd -g "$ARG_GID" anythingllm && \
     useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
@@ -129,15 +135,15 @@ USER anythingllm
 WORKDIR /app
 
 # Install & Build frontend layer
-FROM build AS frontend-build
-COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
+# Use BUILDPLATFORM to run on the native host architecture (not emulated).
+# This avoids esbuild crashing under QEMU when cross-compiling.
+# The output (static HTML/CSS/JS) is platform-independent.
+FROM --platform=$BUILDPLATFORM node:18-slim AS frontend-build
 WORKDIR /app/frontend
+COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --network-timeout 100000 && yarn cache clean
-RUN yarn build && \
-    cp -r dist /tmp/frontend-build && \
-    rm -rf * && \
-    cp -r /tmp/frontend-build dist && \
-    rm -rf /tmp/frontend-build
+COPY ./frontend/ ./
+RUN yarn build
 WORKDIR /app
 
 # Install server layer
@@ -161,15 +167,11 @@ USER anythingllm
 FROM backend-build AS production-build
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
-USER root
-RUN chown -R anythingllm:anythingllm /app/server && \
-    chown -R anythingllm:anythingllm /app/collector
-USER anythingllm
 
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
-ENV DEPLOYMENT_VERSION=1.9.0
+ENV DEPLOYMENT_VERSION=1.9.1
 
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \

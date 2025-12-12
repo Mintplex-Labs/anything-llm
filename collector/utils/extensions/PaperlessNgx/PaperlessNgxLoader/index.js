@@ -26,19 +26,48 @@ class PaperlessNgxLoader {
    */
   async fetchAllDocuments() {
     try {
-      const documents = await fetch(`${this.baseUrl}/api/documents/`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...this.baseHeaders,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => data.results || [])
-        .catch((error) => {
-          throw new Error(
-            `Failed to fetch documents from Paperless-ngx: ${error.message}`
+      const documents = [];
+      let nextUrl = `${this.baseUrl}/api/documents/`;
+      let page = 1;
+
+      while (nextUrl) {
+        console.log(`Fetching documents page ${page} from Paperless-ngx`);
+        try {
+          const data = await fetch(nextUrl, {
+            headers: {
+              "Content-Type": "application/json",
+              ...this.baseHeaders,
+            },
+          }).then((res) => {
+            if (!res.ok)
+              throw new Error(
+                `Failed to fetch documents from Paperless-ngx: ${res.status}`
+              );
+            return res.json();
+          });
+
+          const validResults = data.results.filter((doc) => doc?.id);
+          if (!validResults.length) break;
+
+          documents.push(...validResults);
+
+          if (data.next === nextUrl) break;
+          nextUrl = data.next || null;
+          page++;
+        } catch (error) {
+          console.error(
+            `Error fetching page ${page} from Paperless-ngx:`,
+            error
           );
-        });
+          break;
+        }
+      }
+
+      console.log(
+        `Fetched ${documents.length} documents from Paperless-ngx (Pages: ${
+          page - 1
+        })`
+      );
 
       const documentsWithContent = await Promise.all(
         documents.map(async (doc) => {

@@ -146,9 +146,11 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       return { toolCall: null, text: null, uuid: msgUUID };
     }
 
-    if (this.deduplicator.isDuplicate(call.name, call.arguments)) {
+    const { isDuplicate, reason: duplicateReason } =
+      this.deduplicator.isDuplicate(call.name, call.arguments);
+    if (isDuplicate) {
       this.providerLog(
-        `Function tool with exact arguments has already been called this stack.`
+        `Cannot call ${call.name} again because ${duplicateReason}.`
       );
       eventHandler?.("reportStreamEvent", {
         type: "removeStatusResponse",
@@ -197,7 +199,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {
@@ -314,7 +318,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {

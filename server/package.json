@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -40,8 +40,8 @@
     "@zilliz/milvus2-sdk-node": "^2.3.5",
     "adm-zip": "^0.5.16",
     "apache-arrow": "19.0.0",
-    "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^1.20.3",
     "chalk": "^4",
     "check-disk-space": "^3.4.0",
     "cheerio": "^1.0.0",
@@ -50,9 +50,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "elevenlabs": "^0.5.0",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "extract-json-from-string": "^1.0.1",
     "fast-levenshtein": "^3.0.0",
+    "fix-path": "^4.0.0",
     "graphql": "^16.7.1",
     "ip": "^2.0.1",
     "joi": "^17.11.0",
@@ -64,7 +65,7 @@
     "mime": "^3.0.0",
     "moment": "^2.29.4",
     "mssql": "^10.0.2",
-    "multer": "^1.4.5-lts.1",
+    "multer": "2.0.0",
     "mysql2": "^3.9.8",
     "ollama": "^0.5.10",
     "openai": "4.95.1",
@@ -74,6 +75,7 @@
     "posthog-node": "^3.1.1",
     "prisma": "5.3.1",
     "slugify": "^1.6.6",
+    "strip-ansi": "^7.1.2",
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
     "truncate": "^3.0.0",
@@ -82,6 +84,10 @@
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
+  },
+  "resolutions": {
+    "**/graphql-request/form-data": "3.0.4",
+    "form-data": "4.0.4"
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
