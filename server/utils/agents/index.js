@@ -353,7 +353,11 @@ class AgentHandler {
       return fallback.model; // set its defined model based on fallback logic.
     }
 
-    // The provider was explicitly set, so check if the workspace has an agent model set.
+    // The provider was explicitly set, so check if the workspace has a model override (used with connections)
+    if (this.invocation.workspace.agentModelOverride)
+      return this.invocation.workspace.agentModelOverride;
+
+    // Check for legacy agentModel field
     if (this.invocation.workspace.agentModel)
       return this.invocation.workspace.agentModel;
 
@@ -362,8 +366,28 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
-    this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
+  async #providerSetupAndCheck() {
+    // Prioritize connection if set, otherwise fall back to legacy agentProvider
+    if (this.invocation.workspace.agentConnectionId) {
+      const { LLMConnection } = require("../../models/llmConnection");
+      const connection = await LLMConnection.get(
+        this.invocation.workspace.agentConnectionId
+      );
+      if (connection) {
+        this.provider = connection.provider;
+        this.log(
+          `Using agent connection: ${connection.name} (${connection.provider})`
+        );
+      } else {
+        console.error(
+          `[Agent] Connection ${this.invocation.workspace.agentConnectionId} not found, falling back to agentProvider`
+        );
+        this.provider = this.invocation.workspace.agentProvider ?? null;
+      }
+    } else {
+      this.provider = this.invocation.workspace.agentProvider ?? null;
+    }
+
     this.model = this.#fetchModel();
 
     if (!this.provider)
@@ -552,7 +576,7 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
     return this;
   }
 

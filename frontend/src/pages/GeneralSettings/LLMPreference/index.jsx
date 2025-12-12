@@ -72,9 +72,13 @@ import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 
-import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { PlusCircle } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import ConnectionRow from "./ConnectionRow";
+import ConnectionModal from "./ConnectionModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useModal } from "@/hooks/useModal";
+import * as Skeleton from "react-loading-skeleton";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -372,50 +376,92 @@ export const AVAILABLE_LLM_PROVIDERS = [
 ];
 
 export default function GeneralLLMPreference() {
-  const [saving, setSaving] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
   const { t } = useTranslation();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const data = { LLMProvider: selectedLLM };
-    const formData = new FormData(form);
+  // LLM Connections state
+  const [connections, setConnections] = useState([]);
+  const [loadingConnections, setLoadingConnections] = useState(true);
+  const [editingConnection, setEditingConnection] = useState(null);
+  const {
+    isOpen: isConnectionModalOpen,
+    openModal: openConnectionModal,
+    closeModal: closeConnectionModal,
+  } = useModal();
 
-    for (var [key, value] of formData.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
-    setSaving(true);
 
+  const fetchConnections = async () => {
+    setLoadingConnections(true);
+    const { connections: foundConnections, error } =
+      await System.llmConnections.list({ includeInactive: false });
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
-    } else {
-      showToast("LLM preferences saved successfully.", "success");
+      showToast(`Error fetching connections: ${error}`, "error");
     }
-    setSaving(false);
-    setHasChanges(!!error);
+    setConnections(foundConnections);
+    setLoadingConnections(false);
   };
 
-  const updateLLMChoice = (selection) => {
-    setSearchQuery("");
-    setSelectedLLM(selection);
-    setSearchMenuOpen(false);
-    setHasChanges(true);
+  const handleEditConnection = (connection) => {
+    setEditingConnection(connection);
+    openConnectionModal();
   };
 
-  const handleXButton = () => {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
+  const handleDeleteConnection = async (connectionId) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this connection? Workspaces using this connection will need to be reconfigured."
+      )
+    )
+      return;
+
+    const { success, error } = await System.llmConnections.delete(connectionId);
+    if (error) {
+      showToast(`Error deleting connection: ${error}`, "error");
+      return;
     }
+
+    showToast("Connection deleted successfully.", "success");
+    fetchConnections();
+  };
+
+  const handleSetDefault = async (connectionId) => {
+    const { success, error } = await System.llmConnections.setDefault(
+      connectionId
+    );
+    if (error) {
+      showToast(`Error setting default connection: ${error}`, "error");
+      return;
+    }
+
+    showToast("Default connection updated successfully.", "success");
+    fetchConnections();
+  };
+
+  const handleTestConnection = async (connectionId) => {
+    const { success, message, error } = await System.llmConnections.test(
+      connectionId
+    );
+    if (error || !success) {
+      showToast(
+        `Connection test failed: ${message || error}`,
+        "error",
+        { autoClose: 5000 }
+      );
+      return false;
+    }
+
+    showToast(`Connection test successful: ${message}`, "success", {
+      autoClose: 3000,
+    });
+    return true;
+  };
+
+  const handleConnectionModalSuccess = () => {
+    closeConnectionModal();
+    setEditingConnection(null);
+    fetchConnections();
   };
 
   useEffect(() => {
@@ -426,14 +472,8 @@ export default function GeneralLLMPreference() {
       setLoading(false);
     }
     fetchKeys();
+    fetchConnections();
   }, []);
-
-  useEffect(() => {
-    const filtered = AVAILABLE_LLM_PROVIDERS.filter((llm) =>
-      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredLLMs(filtered);
-  }, [searchQuery, selectedLLM]);
 
   const selectedLLMObject = AVAILABLE_LLM_PROVIDERS.find(
     (llm) => llm.value === selectedLLM
@@ -441,140 +481,149 @@ export default function GeneralLLMPreference() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
-      {loading ? (
-        <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
-        >
-          <div className="w-full h-full flex justify-center items-center">
-            <PreLoader />
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+      >
+        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+            <div className="items-center flex gap-x-4">
+              <p className="text-lg leading-6 font-bold text-theme-text-primary">
+                {t("llm.title")}
+              </p>
+            </div>
+            <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
+              Manage LLM connections for your workspaces. Each connection can
+              have its own API keys and configuration, allowing you to segregate
+              usage and costs across different teams or projects.
+            </p>
+          </div>
+          <div className="w-full justify-end flex">
+            <CTAButton
+              onClick={() => {
+                setEditingConnection(null);
+                openConnectionModal();
+              }}
+              className="mt-3 mr-0 mb-4 md:-mb-14 z-10"
+            >
+              <PlusCircle className="h-4 w-4" weight="bold" /> New Connection
+            </CTAButton>
+          </div>
+          <div className="overflow-x-auto mt-6">
+            {loading || loadingConnections ? (
+              <Skeleton.default
+                height="80vh"
+                width="100%"
+                highlightColor="var(--theme-bg-primary)"
+                baseColor="var(--theme-bg-secondary)"
+                count={1}
+                className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
+                containerClassName="flex w-full"
+              />
+            ) : (
+              <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+                <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                      Name
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Provider
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Default
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Created
+                    </th>
+                    <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Environment-configured default LLM */}
+                  {selectedLLM && (
+                    <tr className="bg-transparent text-theme-text-primary text-xs border-white/10 border-b">
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <p className="font-medium text-theme-text-primary">
+                            System Default
+                          </p>
+                          <p className="text-theme-text-secondary text-xs">
+                            Configured via environment
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="capitalize text-theme-text-primary">
+                          {selectedLLMObject?.name || selectedLLM}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-2 py-1 bg-orange-500/10 text-orange-300 rounded text-xs font-medium">
+                          Fallback
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-theme-text-secondary">
+                        —
+                      </td>
+                      <td className="px-6 py-4 text-theme-text-secondary">
+                        <span className="text-xs">Read-only</span>
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* User-configured connections */}
+                  {connections.map((connection) => (
+                    <ConnectionRow
+                      key={connection.id}
+                      connection={connection}
+                      onEdit={handleEditConnection}
+                      onDelete={handleDeleteConnection}
+                      onSetDefault={handleSetDefault}
+                      onTest={handleTestConnection}
+                    />
+                  ))}
+
+                  {/* Empty state if no connections */}
+                  {connections.length === 0 && !selectedLLM && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center">
+                        <p className="text-theme-text-secondary mb-4">
+                          No LLM connections configured yet.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingConnection(null);
+                            openConnectionModal();
+                          }}
+                          className="text-primary-button hover:underline text-sm"
+                        >
+                          Create your first connection
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
-      ) : (
-        <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
-        >
-          <form onSubmit={handleSubmit} className="flex w-full">
-            <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
-                <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-white">
-                    {t("llm.title")}
-                  </p>
-                </div>
-                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  {t("llm.description")}
-                </p>
-              </div>
-              <div className="w-full justify-end flex">
-                {hasChanges && (
-                  <CTAButton
-                    onClick={() => handleSubmit()}
-                    className="mt-3 mr-0 -mb-14 z-10"
-                  >
-                    {saving ? "Saving..." : "Save changes"}
-                  </CTAButton>
-                )}
-              </div>
-              <div className="text-base font-bold text-white mt-6 mb-4">
-                {t("llm.provider")}
-              </div>
-              <div className="relative">
-                {searchMenuOpen && (
-                  <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                    onClick={() => setSearchMenuOpen(false)}
-                  />
-                )}
-                {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="llm-search"
-                          autoComplete="off"
-                          placeholder="Search all LLM providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
-                      </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
-                        {filteredLLMs.map((llm) => {
-                          return (
-                            <LLMItem
-                              key={llm.name}
-                              name={llm.name}
-                              value={llm.value}
-                              image={llm.logo}
-                              description={llm.description}
-                              checked={selectedLLM === llm.value}
-                              onClick={() => updateLLMChoice(llm.value)}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedLLMObject?.logo || AnythingLLMIcon}
-                        alt={`${selectedLLMObject?.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedLLMObject?.name || "None selected"}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedLLMObject?.description ||
-                            "You need to select an LLM"}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
-                    />
-                  </button>
-                )}
-              </div>
-              <div
-                onChange={() => setHasChanges(true)}
-                className="mt-4 flex flex-col gap-y-1"
-              >
-                {selectedLLM &&
-                  AVAILABLE_LLM_PROVIDERS.find(
-                    (llm) => llm.value === selectedLLM
-                  )?.options?.(settings)}
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
+
+        {/* Connection Modal */}
+        <ModalWrapper isOpen={isConnectionModalOpen}>
+          <ConnectionModal
+            connection={editingConnection}
+            closeModal={() => {
+              closeConnectionModal();
+              setEditingConnection(null);
+            }}
+            onSuccess={handleConnectionModalSuccess}
+          />
+        </ModalWrapper>
+      </div>
     </div>
   );
 }

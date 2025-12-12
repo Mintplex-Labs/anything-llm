@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProviderForWorkspace } = require("../helpers");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -28,10 +28,11 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider({
-    provider: embed?.workspace?.chatProvider,
-    model: chatModel ?? embed.workspace?.chatModel,
-  });
+  const LLMConnector = await getLLMProviderForWorkspace(
+    embed.workspace,
+    "chat",
+    chatModel // Use chatModel override if provided
+  );
   const VectorDb = getVectorDbClass();
 
   const messageLimit = embed.message_limit ?? 20;

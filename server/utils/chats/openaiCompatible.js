@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProviderForWorkspace } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 
@@ -17,10 +17,7 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  const LLMConnector = await getLLMProviderForWorkspace(workspace, "chat");
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -220,10 +217,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  const LLMConnector = await getLLMProviderForWorkspace(workspace, "chat");
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);

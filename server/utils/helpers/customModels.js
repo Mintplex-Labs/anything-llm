@@ -304,10 +304,27 @@ async function getGroqAiModels(_apiKey = null) {
 
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
+  const https = require("https");
+  const http = require("http");
+
+  // LiteLLM uses /v1 path prefix - ensure it's appended if not present
+  let baseURL = basePath || process.env.LITE_LLM_BASE_PATH;
+  if (baseURL && !baseURL.endsWith('/v1')) {
+    baseURL = `${baseURL}/v1`;
+  }
+
+  // Determine if HTTP or HTTPS and create appropriate agent
+  const isHttps = baseURL?.startsWith('https://');
+  const agent = isHttps
+    ? new https.Agent({ rejectUnauthorized: false })
+    : new http.Agent();
+
   const openai = new OpenAIApi({
-    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
+    baseURL: baseURL,
     apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
+    httpAgent: agent,
   });
+
   const models = await openai.models
     .list()
     .then((results) => results.data)
