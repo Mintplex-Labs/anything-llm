@@ -149,7 +149,7 @@ function systemEndpoints(app) {
 
   app.post("/request-token", async (request, response) => {
     try {
-      const bcrypt = require("bcrypt");
+      const bcrypt = require("bcryptjs");
 
       if (await SystemSettings.isMultiUserMode()) {
         if (simpleSSOLoginDisabled()) {

@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import { VisibilityIcon } from "./generic";
+import { safeJsonParse } from "@/utils/request";
 
 export default function AgentFlowHubCard({ item }) {
-  const flow = JSON.parse(item.flow);
+  const flow = safeJsonParse(item.flow, { steps: [] });
   return (
     <Link
       to={paths.communityHub.importItem(item.importId)}

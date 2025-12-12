@@ -568,6 +568,7 @@ const TRANSLATIONS = {
         model_type: "Tipo de modelo",
         default: "Predeterminado",
         reasoning: "Razonamiento",
+        model_type_tooltip: null,
       },
     },
   },
