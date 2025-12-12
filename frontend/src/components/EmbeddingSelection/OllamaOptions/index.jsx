@@ -50,13 +50,13 @@ export default function OllamaEmbeddingOptions({ settings }) {
             data-tooltip-id="max-embedding-chunk-length-tooltip"
             className="flex gap-x-1 items-center mb-3"
           >
+            <label className="text-white text-sm font-semibold block">
+              Max embedding chunk length
+            </label>
             <Info
               size={16}
               className="text-theme-text-secondary cursor-pointer"
             />
-            <label className="text-white text-sm font-semibold block">
-              Max embedding chunk length
-            </label>
             <Tooltip id="max-embedding-chunk-length-tooltip">
               Maximum length of text chunks, in characters, for embedding.
             </Tooltip>
@@ -136,13 +136,13 @@ export default function OllamaEmbeddingOptions({ settings }) {
               data-tooltip-id="ollama-batch-size-tooltip"
               className="flex gap-x-1 items-center mb-3"
             >
+              <label className="text-white text-sm font-semibold block">
+                Embedding batch size
+              </label>
               <Info
                 size={16}
                 className="text-theme-text-secondary cursor-pointer"
               />
-              <label className="text-white text-sm font-semibold block">
-                Embedding batch size
-              </label>
               <Tooltip id="ollama-batch-size-tooltip">
                 Number of text chunks to embed in parallel. Higher values
                 improve speed but use more memory. Default is 1.
