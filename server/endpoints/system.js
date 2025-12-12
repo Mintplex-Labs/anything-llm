@@ -114,34 +114,38 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/refresh-user", [validatedRequest], async (req, res) => {
-    try {
-      if (multiUserMode(res)) {
-        const user = await userFromSession(req, res);
-        if (!user || user.suspended) {
-          res.sendStatus(403).end();
-          return;
+  app.get(
+    "/system/refresh-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (!multiUserMode(response)) {
+          return response.status(403).json({
+            success: false,
+            message: "Multi-User Mode is not enabled.",
+          });
         }
 
-        res.status(200).json({
+        const user = await userFromSession(request, response);
+        if (!user || user.suspended)
+          return response.status(403).json({
+            success: false,
+            message: "User is suspended.",
+          });
+
+        return response.status(200).json({
           success: true,
           user: User.filterFields(user),
           message: null,
         });
-      } else {
-        res.status(400).json({
+      } catch (e) {
+        return response.status(400).json({
           success: false,
-          message: "Multi-User Mode is not enabled.",
+          message: "Failed to retrieve the user from session.",
         });
       }
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({
-        success: false,
-        message: "Failed to retrieve the user from session.",
-      });
     }
-  });
+  );
 
   app.post("/request-token", async (request, response) => {
     try {
