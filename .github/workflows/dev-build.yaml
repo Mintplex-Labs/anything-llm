@@ -6,11 +6,7 @@ concurrency:
 
 on:
   push:
-<<<<<<< HEAD
     branches: ['upgrade-multer'] # put your current branch to create a build. Core team only.
-=======
-    branches: ['migrate-to-bcryptjs'] # put your current branch to create a build. Core team only.
->>>>>>> 65e852d561149b250d745221e4a5d0bd540f7dfd
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
