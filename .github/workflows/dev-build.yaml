@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['upgrade-multer'] # put your current branch to create a build. Core team only.
+    branches: ['enhancement-error-boundary'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
