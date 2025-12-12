@@ -14,6 +14,8 @@ export default function OllamaEmbeddingOptions({ settings }) {
     showAdvancedControls,
     setShowAdvancedControls,
     handleAutoDetectClick,
+    authToken,
+    authTokenValue,
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama",
     initialBasePath: settings?.EmbeddingBasePath,
@@ -161,6 +163,31 @@ export default function OllamaEmbeddingOptions({ settings }) {
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
               Increase this value to process multiple chunks simultaneously for
               faster embedding.
+            </p>
+          </div>
+          <div>
+            <label className="text-white font-semibold block mb-3 text-sm">
+              Auth Token (optional)
+            </label>
+            <input
+              type="password"
+              name="OllamaLLMAuthToken"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Enter your Auth Token"
+              defaultValue={settings?.OllamaLLMAuthToken ? "*".repeat(20) : ""}
+              value={authTokenValue.value}
+              onChange={authToken.onChange}
+              onBlur={authToken.onBlur}
+              required={false}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Enter a <code>Bearer</code> Auth Token for interacting with your
+              Ollama server.
+              <br />
+              Used <b>only</b> if running Ollama behind an authentication
+              server.
             </p>
           </div>
         </div>
