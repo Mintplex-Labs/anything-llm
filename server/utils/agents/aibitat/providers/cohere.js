@@ -52,19 +52,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     const userPrompt = messages[messages.length - 1]?.content || "";
     const history = messages.slice(0, -1);
-
-    console.log(
-      "handleFunctionCallStream",
-      JSON.stringify(
-        {
-          chatHistory: this.#convertChatHistoryCohere(history),
-          message: userPrompt,
-        },
-        null,
-        2
-      )
-    );
-
     return await this.client.chatStream({
       model: this.model,
       chatHistory: this.#convertChatHistoryCohere(history),
@@ -105,7 +92,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     for await (const event of stream) {
-      console.log("event", JSON.stringify(event, null, 2));
       if (event.eventType !== "text-generation") continue;
       textResponse += event.text;
       eventHandler?.("reportStreamEvent", {
