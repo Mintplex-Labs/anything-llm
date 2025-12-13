@@ -9,7 +9,8 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
-    const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024" } = config;
+    const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024" } =
+      config;
     super();
     const client = new CohereClient({
       token: process.env.COHERE_API_KEY,
@@ -31,17 +32,17 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     let cohereHistory = [];
     chatHistory.forEach((message) => {
       switch (message.role) {
+        case "SYSTEM":
         case "system":
           cohereHistory.push({ role: "SYSTEM", message: message.content });
           break;
+        case "USER":
         case "user":
           cohereHistory.push({ role: "USER", message: message.content });
           break;
+        case "CHATBOT":
         case "assistant":
           cohereHistory.push({ role: "CHATBOT", message: message.content });
-          break;
-        default:
-          cohereHistory.push({ role: message.role, message: message.content });
           break;
       }
     });
