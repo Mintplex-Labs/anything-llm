@@ -1,5 +1,6 @@
 import { numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
+import moment from "moment";
 const MetricsContext = React.createContext();
 const SHOW_METRICS_KEY = "anythingllm_show_chat_metrics";
 const SHOW_METRICS_EVENT = "anythingllm_show_metrics_change";
@@ -28,6 +29,20 @@ function formatTps(outputTps) {
     return outputTps < 1000
       ? outputTps.toFixed(2)
       : numberWithCommas(outputTps.toFixed(0));
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Format a unix timestamp to a readable string
+ * @param {number} timestamp - unix timestamp in seconds
+ * @returns {string}
+ */
+function formatTimestamp(timestamp) {
+  try {
+    if (!timestamp) return "";
+    return moment.unix(timestamp).format("MMM D, h:mm A");
   } catch {
     return "";
   }
@@ -88,14 +103,22 @@ export function MetricsProvider({ children }) {
 
 /**
  * Render the metrics for a given chat, if available
- * @param {metrics: {duration:number, outputTps: number}} props
+ * @param {Object} props
+ * @param {Object} props.metrics - metrics object with duration, outputTps, and model
+ * @param {number} props.sentAt - unix timestamp in seconds
  * @returns
  */
-export default function RenderMetrics({ metrics = {} }) {
+export default function RenderMetrics({ metrics = {}, sentAt = null }) {
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
-  if (!metrics?.duration || !metrics?.outputTps) return null;
+
+  // Show component if we have either metrics or timestamp
+  const hasMetrics = metrics?.duration && metrics?.outputTps;
+  const hasTimestamp = sentAt;
+  const hasModel = metrics?.model;
+
+  if (!hasMetrics && !hasTimestamp && !hasModel) return null;
 
   return (
     <button
@@ -110,8 +133,15 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex justify-end items-center gap-x-[8px] ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-theme-text-secondary opacity-50">
-        {formatDuration(metrics.duration)} ({formatTps(metrics.outputTps)}{" "}
-        tok/s)
+        {hasModel && <span>{metrics.model}</span>}
+        {hasModel && (hasMetrics || hasTimestamp) && <span> · </span>}
+        {hasMetrics && (
+          <span>
+            {formatDuration(metrics.duration)} ({formatTps(metrics.outputTps)} tok/s)
+          </span>
+        )}
+        {hasMetrics && hasTimestamp && <span> · </span>}
+        {hasTimestamp && <span>{formatTimestamp(sentAt)}</span>}
       </p>
     </button>
   );

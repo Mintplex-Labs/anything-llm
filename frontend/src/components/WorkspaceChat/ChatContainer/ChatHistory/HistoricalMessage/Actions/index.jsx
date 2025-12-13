@@ -18,6 +18,7 @@ const Actions = ({
   isEditing,
   role,
   metrics = {},
+  sentAt = null,
   alignmentCls = "",
 }) => {
   const { t } = useTranslation();
@@ -63,7 +64,7 @@ const Actions = ({
           />
         </div>
       </div>
-      <RenderMetrics metrics={metrics} />
+      <RenderMetrics metrics={metrics} sentAt={sentAt} />
     </div>
   );
 };
