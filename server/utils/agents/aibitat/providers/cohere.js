@@ -40,34 +40,46 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
         case "assistant":
           cohereHistory.push({ role: "CHATBOT", message: message.content });
           break;
+        default:
+          cohereHistory.push({ role: message.role, message: message.content });
+          break;
       }
     });
 
     return cohereHistory;
   }
 
-  async #handleFunctionCallChat({ messages = [] }) {
-    const message = messages[messages.length - 1]?.content || "";
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1));
-    const result = await this.client.chat({
-      model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
-    });
-    if (!result.text) {
-      throw new Error("Cohere returned empty response");
-    }
-    return result.text;
-  }
-
   async #handleFunctionCallStream({ messages = [] }) {
-    const message = messages[messages.length - 1]?.content || "";
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1));
+    const userPrompt = messages[messages.length - 1]?.content || "";
+    const history = messages.slice(0, -1);
+
+    console.log(
+      "handleFunctionCallStream",
+      JSON.stringify(
+        {
+          chatHistory: this.#convertChatHistoryCohere(history),
+          message: userPrompt,
+        },
+        null,
+        2
+      )
+    );
+
     return await this.client.chatStream({
       model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
+      chatHistory: this.#convertChatHistoryCohere(history),
+      message: userPrompt,
     });
+  }
+
+  async stream(messages, functions = [], eventHandler = null) {
+    return await UnTooled.prototype.stream.call(
+      this,
+      messages,
+      functions,
+      this.#handleFunctionCallStream.bind(this),
+      eventHandler
+    );
   }
 
   async streamingFunctionCall(
@@ -93,9 +105,14 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     for await (const event of stream) {
-      if (event.eventType === "text-generation") {
-        textResponse += event.text;
-      }
+      console.log("event", JSON.stringify(event, null, 2));
+      if (event.eventType !== "text-generation") continue;
+      textResponse += event.text;
+      eventHandler?.("reportStreamEvent", {
+        type: "statusResponse",
+        uuid: msgUUID,
+        content: event.text,
+      });
     }
 
     const call = safeJsonParse(textResponse, null);
@@ -114,9 +131,11 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
       return { toolCall: null, text: null, uuid: msgUUID };
     }
 
-    if (this.deduplicator.isDuplicate(call.name, call.arguments)) {
+    const { isDuplicate, reason: duplicateReason } =
+      this.deduplicator.isDuplicate(call.name, call.arguments);
+    if (isDuplicate) {
       this.providerLog(
-        `Function tool with exact arguments has already been called this stack.`
+        `Cannot call ${call.name} again because ${duplicateReason}.`
       );
       eventHandler?.("reportStreamEvent", {
         type: "removeStatusResponse",
@@ -136,14 +155,13 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Stream a chat completion from the LLM with tool calling.
-   * Overrides the inherited stream method to handle
-   * the Cohere SDK format
+   * Stream a chat completion from the LLM with tool calling
+   * Override the inherited `stream` method since Cohere uses a different API format.
    *
-   * @param messages - The messages to send to the LLM.
-   * @param functions - The functions to use in the LLM.
-   * @param eventHandler - The event handler to use to report stream events.
-   * @returns The completion.
+   * @param {any[]} messages - The messages to send to the LLM.
+   * @param {any[]} functions - The functions to use in the LLM.
+   * @param {function} eventHandler - The event handler to use to report stream events.
+   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog(
@@ -165,7 +183,9 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+          });
           return {
             result: null,
             functionCall: {
@@ -215,73 +235,15 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
           messages: this.cleanMsgs(messages),
         });
 
-        for await (const event of stream) {
-          if (event.eventType === "text-generation") {
-            completion.content += event.text;
-            eventHandler?.("reportStreamEvent", {
-              type: "textResponseChunk",
-              uuid: msgUUID,
-              content: event.text,
-            });
-          }
+        for await (const chunk of stream) {
+          if (chunk.eventType !== "text-generation") continue;
+          completion.content += chunk.text;
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content: chunk.text,
+          });
         }
-      }
-
-      this.deduplicator.reset("runs");
-      return {
-        textResponse: completion.content,
-        cost: 0,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Create a completion based on the received messages.
-   * Overrides the inherited complete method to handle
-   * the Cohere SDK format
-   *
-   * @param messages - A list of messages to send to the API.
-   * @param functions - The functions available for tool calling.
-   * @returns The completion.
-   */
-  async complete(messages, functions = []) {
-    this.providerLog(
-      "CohereProvider.complete - will process this chat completion."
-    );
-    try {
-      let completion = { content: "" };
-      if (functions.length > 0) {
-        const { toolCall, text } = await this.functionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
-
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
-        }
-        completion.content = text;
-      }
-
-      if (!completion?.content) {
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const response = await this.#handleFunctionCallChat({
-          messages: this.cleanMsgs(messages),
-        });
-        completion = { content: response };
       }
 
       this.deduplicator.reset("runs");
