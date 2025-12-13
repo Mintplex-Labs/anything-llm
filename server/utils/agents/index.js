@@ -303,7 +303,7 @@ class AgentHandler {
       case "giteeai":
         return process.env.GITEE_AI_MODEL_PREF ?? null;
       case "cohere":
-        return process.env.COHERE_MODEL_PREF ?? "command-r";
+        return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
       default:
         return null;
     }
