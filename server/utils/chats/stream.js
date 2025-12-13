@@ -274,6 +274,10 @@ async function streamChatWithWorkspace(
     metrics = stream.metrics;
   }
 
+  // Add model name to metrics for display in the UI
+  const modelName = LLMConnector.model;
+  metrics = { ...metrics, model: modelName };
+
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,

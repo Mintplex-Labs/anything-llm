@@ -348,6 +348,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          sentAt={props.sentAt}
           alignmentCls={getMessageAlignment?.(props.role)}
         />
       );

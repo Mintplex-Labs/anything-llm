@@ -36,6 +36,7 @@ const HistoricalMessage = ({
   saveEditedMessage,
   forkThread,
   metrics = {},
+  sentAt = null,
   alignmentCls = "",
 }) => {
   const { t } = useTranslation();
@@ -149,6 +150,7 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
+            sentAt={sentAt}
             alignmentCls={alignmentCls}
           />
         </div>
