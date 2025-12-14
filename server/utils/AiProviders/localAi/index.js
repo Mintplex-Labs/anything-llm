@@ -145,6 +145,7 @@ class LocalAiLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
       },
     };
   }

@@ -305,6 +305,7 @@ class OllamaAILLM {
         outputTps:
           result.output.usage.completion_tokens / result.output.usage.duration,
         duration: result.output.usage.duration,
+        model: this.model,
       },
     };
   }

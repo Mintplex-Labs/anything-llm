@@ -450,6 +450,7 @@ class AWSBedrockLLM {
         total_tokens: response?.usage?.totalTokens ?? 0,
         outputTps: outputTps,
         duration: result.duration,
+        model: this.model,
       },
     };
   }
