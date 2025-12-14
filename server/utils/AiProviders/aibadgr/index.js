@@ -59,12 +59,18 @@ class AiBadgrLLM {
     return Number(limit);
   }
 
+  // Ensure the user set a value for the token limit
+  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    return this.constructor.promptWindowLimit(this.model);
+    const limit = process.env.AIBADGR_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
   }
 
-  async isValidChatCompletionModel(_modelName = "") {
-    // Accept any model name - AI Badgr handles tier names and OpenAI model mappings
+  // Short circuit since AI Badgr accepts both tier names (basic, normal, premium)
+  // and OpenAI model names which are mapped automatically by the API
+  isValidChatCompletionModel(_modelName = "") {
     return true;
   }
 
