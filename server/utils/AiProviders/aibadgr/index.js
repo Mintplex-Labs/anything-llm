@@ -60,10 +60,7 @@ class AiBadgrLLM {
   }
 
   promptWindowLimit() {
-    const limit = process.env.AIBADGR_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_modelName = "") {
