@@ -154,6 +154,8 @@ class LiteLLM {
         outputTps:
           (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -167,9 +169,10 @@ class LiteLLM {
         temperature,
         max_tokens: parseInt(this.maxTokens), // LiteLLM requires int
       }),
-      messages
+      messages,
       // runPromptTokenCalculation: true - We manually count the tokens because they may or may not be provided in the stream
-      // responses depending on LLM connected. If they are provided, then we counted for nothing, but better than nothing.
+      true,
+      this.model
     );
 
     return measuredStreamRequest;

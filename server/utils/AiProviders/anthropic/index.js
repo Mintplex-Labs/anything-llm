@@ -171,6 +171,8 @@ class AnthropicLLM {
           total_tokens: promptTokens + completionTokens,
           outputTps: completionTokens / result.duration,
           duration: result.duration,
+          model: this.model,
+          timestamp: new Date(),
         },
       };
     } catch (error) {
@@ -190,7 +192,8 @@ class AnthropicLLM {
         temperature: Number(temperature ?? this.defaultTemp),
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

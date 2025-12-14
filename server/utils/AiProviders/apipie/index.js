@@ -220,6 +220,8 @@ class ApiPieLLM {
         outputTps:
           (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -237,7 +239,9 @@ class ApiPieLLM {
         messages,
         temperature,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

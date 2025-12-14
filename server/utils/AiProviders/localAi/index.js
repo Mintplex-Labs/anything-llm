@@ -145,6 +145,8 @@ class LocalAiLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -162,7 +164,9 @@ class LocalAiLLM {
         messages,
         temperature,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }
