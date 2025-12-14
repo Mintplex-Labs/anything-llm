@@ -43,6 +43,26 @@ function getAutoShowMetrics() {
 }
 
 /**
+ * Build the metrics string for a given metrics object
+ * - Model name
+ * - Duration and output TPS
+ * - Timestamp
+ * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
+ * @returns {string}
+ */
+function buildMetricsString(metrics = {}) {
+  return [
+    metrics?.model ? metrics.model : "",
+    `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
+    metrics?.timestamp
+      ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/**
  * Toggle the show metrics setting in localStorage `anythingllm_show_chat_metrics` key
  * @returns {void}
  */
@@ -98,14 +118,6 @@ export default function RenderMetrics({ metrics = {} }) {
     useContext(MetricsContext);
   if (!metrics?.duration || !metrics?.outputTps) return null;
 
-  const modelTag = metrics?.model ? metrics.model : "";
-  const performance = `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`;
-  const timestamp = metrics?.timestamp
-    ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
-    : "";
-  const metricsString = [modelTag, performance, timestamp]
-    .filter(Boolean)
-    .join(" · ");
   return (
     <button
       type="button"
@@ -119,7 +131,7 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex justify-end items-center gap-x-[8px] ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-theme-text-secondary opacity-50">
-        {metricsString}
+        {buildMetricsString(metrics)}
       </p>
     </button>
   );
