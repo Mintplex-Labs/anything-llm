@@ -229,6 +229,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return new GiteeAILLM(embedder, model);
+    case "aibadgr":
+      const { AiBadgrLLM } = require("../AiProviders/aibadgr");
+      return new AiBadgrLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -394,6 +397,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return GiteeAILLM;
+    case "aibadgr":
+      const { AiBadgrLLM } = require("../AiProviders/aibadgr");
+      return AiBadgrLLM;
     default:
       return null;
   }

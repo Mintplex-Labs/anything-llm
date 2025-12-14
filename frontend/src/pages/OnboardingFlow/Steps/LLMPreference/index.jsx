@@ -63,6 +63,7 @@ import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
+import AiBadgrOptions from "@/components/LLMSelection/AiBadgrOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -298,6 +299,14 @@ const LLMS = [
     logo: GiteeAILogo,
     options: (settings) => <GiteeAiOptions settings={settings} />,
     description: "Run GiteeAI's powerful LLMs.",
+  },
+  {
+    name: "AI Badgr",
+    value: "aibadgr",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <AiBadgrOptions settings={settings} />,
+    description:
+      "Budget/Utility provider with tier-based models (OpenAI-compatible)",
   },
 ];
 
