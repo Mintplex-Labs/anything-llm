@@ -59,13 +59,15 @@ class LLMPerformanceMonitor {
    * Also attaches an `endMeasurement` method to the stream that will calculate the duration of the stream and metrics.
    * @param {Promise<OpenAICompatibleStream>} func
    * @param {Messages} messages - the messages sent to the LLM so we can calculate the prompt tokens since most providers do not return this on stream
-   * @param {boolean} runPromptTokenCalculation - whether to run the prompt token calculation to estimate the `prompt_tokens` metric. This is useful for providers that do not return this on stream.
+   * @param {boolean} runPromptTokenCalculation - [default: true] whether to run the prompt token calculation to estimate the `prompt_tokens` metric. This is useful for providers that do not return this on stream.
+   * @param {string} modelTag - the tag of the model that was used to generate the stream (eg: gpt-4o, claude-3-5-sonnet, qwen3/72b-instruct, etc.)
    * @returns {Promise<MonitoredStream>}
    */
   static async measureStream(
     func,
     messages = [],
-    runPromptTokenCalculation = true
+    runPromptTokenCalculation = true,
+    modelTag = ""
   ) {
     const stream = await func;
     stream.start = Date.now();
@@ -76,6 +78,7 @@ class LLMPerformanceMonitor {
       total_tokens: 0,
       outputTps: 0,
       duration: 0,
+      ...(modelTag ? { model: modelTag } : {}),
     };
 
     stream.endMeasurement = (reportedUsage = {}) => {

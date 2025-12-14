@@ -327,7 +327,8 @@ class OllamaAILLM {
         },
       }),
       messages,
-      false
+      false,
+      this.model
     ).catch((e) => {
       throw this.#errorHandler(e);
     });

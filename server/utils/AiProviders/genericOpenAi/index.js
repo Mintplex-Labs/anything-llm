@@ -207,9 +207,10 @@ class GenericOpenAiLLM {
         temperature,
         max_tokens: this.maxTokens,
       }),
-      messages
+      messages,
       // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
-      // the correct usage metrics if any at all since any provider could be connected.
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

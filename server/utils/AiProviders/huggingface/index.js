@@ -130,7 +130,9 @@ class HuggingFaceLLM {
         messages,
         temperature,
       }),
-      messages
+      messages,
+      false,
+      this.model
     );
     return measuredStreamRequest;
   }

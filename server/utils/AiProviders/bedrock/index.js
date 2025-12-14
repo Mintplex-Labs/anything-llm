@@ -493,7 +493,8 @@ class AWSBedrockLLM {
       const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
         stream,
         messages,
-        false // Indicate it's not a function call measurement
+        false,
+        this.model
       );
       return measuredStreamRequest;
     } catch (e) {

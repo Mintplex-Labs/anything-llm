@@ -193,7 +193,9 @@ class AzureOpenAiLLM {
         n: 1,
         stream: true,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
 
     return measuredStreamRequest;

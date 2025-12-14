@@ -158,7 +158,8 @@ class MistralLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
     return measuredStreamRequest;
   }

@@ -166,7 +166,8 @@ class XAiLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

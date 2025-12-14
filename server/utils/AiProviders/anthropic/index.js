@@ -191,7 +191,8 @@ class AnthropicLLM {
         temperature: Number(temperature ?? this.defaultTemp),
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

@@ -301,13 +301,15 @@ class OpenRouterLLM {
         include_reasoning: true,
         user: user?.id ? `user_${user.id}` : "",
       }),
-      messages
+      messages,
       // We have to manually count the tokens
       // OpenRouter has a ton of providers and they all can return slightly differently
       // some return chunk.usage on STOP, some do it after stop, its inconsistent.
       // So it is possible reported metrics are inaccurate since we cannot reliably
       // catch the metrics before resolving the stream - so we just pretend this functionality
       // is not available.
+      true,
+      this.model
     );
 
     return measuredStreamRequest;

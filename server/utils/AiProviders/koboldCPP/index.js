@@ -174,7 +174,9 @@ class KoboldCPPLLM {
         temperature,
         max_tokens: this.maxTokens,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

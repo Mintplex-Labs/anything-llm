@@ -243,7 +243,9 @@ class CometApiLLM {
         messages,
         temperature,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

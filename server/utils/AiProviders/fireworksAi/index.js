@@ -182,7 +182,8 @@ class FireworksAiLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
     return measuredStreamRequest;
   }

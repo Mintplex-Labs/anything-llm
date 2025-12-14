@@ -195,7 +195,8 @@ class OpenAiLLM {
         temperature: this.#temperature(this.model, temperature),
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

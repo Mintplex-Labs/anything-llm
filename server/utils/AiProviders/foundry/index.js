@@ -243,7 +243,9 @@ class FoundryLLM {
         temperature,
         max_completion_tokens: this.promptWindowLimit(),
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

@@ -422,7 +422,8 @@ class GeminiLLM {
         },
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

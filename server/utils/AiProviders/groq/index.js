@@ -222,7 +222,8 @@ class GroqLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;
