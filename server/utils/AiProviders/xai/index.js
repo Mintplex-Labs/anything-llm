@@ -148,6 +148,7 @@ class XAiLLM {
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        timestamp: new Date(),
       },
     };
   }

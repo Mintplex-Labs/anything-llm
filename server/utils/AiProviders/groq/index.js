@@ -204,6 +204,7 @@ class GroqLLM {
           result.output.usage.completion_time,
         duration: result.output.usage.total_time,
         model: this.model,
+        timestamp: new Date(),
       },
     };
   }

@@ -146,6 +146,7 @@ class LocalAiLLM {
         outputTps: completionTokens / result.duration,
         duration: result.duration,
         model: this.model,
+        timestamp: new Date(),
       },
     };
   }

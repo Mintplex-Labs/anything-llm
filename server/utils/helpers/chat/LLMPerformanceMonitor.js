@@ -91,6 +91,7 @@ class LLMPerformanceMonitor {
         ...stream.metrics,
         ...reportedUsage,
         duration: reportedUsage?.duration ?? estimatedDuration,
+        timestamp: new Date(),
       };
 
       stream.metrics.total_tokens =

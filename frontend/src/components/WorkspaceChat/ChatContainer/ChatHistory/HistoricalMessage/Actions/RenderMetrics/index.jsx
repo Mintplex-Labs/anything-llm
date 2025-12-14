@@ -1,3 +1,4 @@
+import { formatDateTimeAsMoment } from "@/utils/directories";
 import { numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
 const MetricsContext = React.createContext();
@@ -88,7 +89,7 @@ export function MetricsProvider({ children }) {
 
 /**
  * Render the metrics for a given chat, if available
- * @param {metrics: {duration:number, outputTps: number}} props
+ * @param {metrics: {duration:number, outputTps: number, model: string, timestamp: number}} props
  * @returns
  */
 export default function RenderMetrics({ metrics = {} }) {
@@ -97,6 +98,14 @@ export default function RenderMetrics({ metrics = {} }) {
     useContext(MetricsContext);
   if (!metrics?.duration || !metrics?.outputTps) return null;
 
+  const modelTag = metrics?.model ? metrics.model : "";
+  const performance = `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`;
+  const timestamp = metrics?.timestamp
+    ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
+    : "";
+  const metricsString = [modelTag, performance, timestamp]
+    .filter(Boolean)
+    .join(" · ");
   return (
     <button
       type="button"
@@ -110,8 +119,7 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex justify-end items-center gap-x-[8px] ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-theme-text-secondary opacity-50">
-        {formatDuration(metrics.duration)} ({formatTps(metrics.outputTps)}{" "}
-        tok/s)
+        {metricsString}
       </p>
     </button>
   );

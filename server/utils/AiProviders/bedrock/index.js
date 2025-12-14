@@ -423,9 +423,7 @@ class AWSBedrockLLM {
             );
           }
           throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
-        }),
-      messages,
-      false
+        })
     );
 
     const response = result.output;
@@ -451,6 +449,7 @@ class AWSBedrockLLM {
         outputTps: outputTps,
         duration: result.duration,
         model: this.model,
+        timestamp: new Date(),
       },
     };
   }

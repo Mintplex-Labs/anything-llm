@@ -172,6 +172,7 @@ class AnthropicLLM {
           outputTps: completionTokens / result.duration,
           duration: result.duration,
           model: this.model,
+          timestamp: new Date(),
         },
       };
     } catch (error) {

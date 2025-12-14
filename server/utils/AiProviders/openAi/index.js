@@ -176,6 +176,7 @@ class OpenAiLLM {
           : 0,
         duration: result.duration,
         model: this.model,
+        timestamp: new Date(),
       },
     };
   }
