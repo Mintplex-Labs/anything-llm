@@ -69,7 +69,7 @@ export function AuthProvider(props) {
       }));
     }
     if (store.authToken) refreshUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [store.authToken]);
 
   return (
