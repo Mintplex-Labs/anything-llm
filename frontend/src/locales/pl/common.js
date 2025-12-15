@@ -557,6 +557,7 @@ const TRANSLATIONS = {
         model_type: "Typ modelu",
         default: "Domyślne",
         reasoning: "Uzasadnienie",
+        model_type_tooltip: null,
       },
     },
   },

@@ -423,9 +423,7 @@ class AWSBedrockLLM {
             );
           }
           throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
-        }),
-      messages,
-      false
+        })
     );
 
     const response = result.output;
@@ -450,6 +448,8 @@ class AWSBedrockLLM {
         total_tokens: response?.usage?.totalTokens ?? 0,
         outputTps: outputTps,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -492,7 +492,8 @@ class AWSBedrockLLM {
       const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
         stream,
         messages,
-        false // Indicate it's not a function call measurement
+        false,
+        this.model
       );
       return measuredStreamRequest;
     } catch (e) {

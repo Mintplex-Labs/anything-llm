@@ -541,6 +541,7 @@ const TRANSLATIONS = {
         model_type: "סוג מודל",
         default: "ברירת מחדל",
         reasoning: "היגיון",
+        model_type_tooltip: null,
       },
     },
   },

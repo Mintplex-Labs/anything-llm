@@ -13,6 +13,7 @@
 const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
+const { ChatCohere } = require("@langchain/cohere");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
@@ -239,6 +240,11 @@ class Provider {
           apiKey: process.env.GITEE_AI_API_KEY ?? null,
           ...config,
         });
+      case "cohere":
+        return new ChatCohere({
+          apiKey: process.env.COHERE_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -307,7 +313,6 @@ class Provider {
           ...config,
         });
       }
-
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

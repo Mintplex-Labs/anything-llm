@@ -160,6 +160,8 @@ class KoboldCPPLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -173,7 +175,9 @@ class KoboldCPPLLM {
         temperature,
         max_tokens: this.maxTokens,
       }),
-      messages
+      messages,
+      true,
+      this.model
     );
     return measuredStreamRequest;
   }

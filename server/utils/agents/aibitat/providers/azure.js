@@ -1,4 +1,5 @@
-const { AzureOpenAI } = require("openai");
+const { OpenAI } = require("openai");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 
@@ -9,10 +10,9 @@ class AzureOpenAiProvider extends Provider {
   model;
 
   constructor(config = { model: null }) {
-    const client = new AzureOpenAI({
+    const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-      apiVersion: "2024-12-01-preview",
+      baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
     this.model = config.model ?? process.env.OPEN_MODEL_PREF;
@@ -84,12 +84,12 @@ class AzureOpenAiProvider extends Provider {
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting
       // will make auth better.
-      if (error instanceof AzureOpenAI.AuthenticationError) throw error;
+      if (error instanceof OpenAI.AuthenticationError) throw error;
 
       if (
-        error instanceof AzureOpenAI.RateLimitError ||
-        error instanceof AzureOpenAI.InternalServerError ||
-        error instanceof AzureOpenAI.APIError // Also will catch AuthenticationError!!!
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
         throw new RetryError(error.message);
       }

@@ -124,6 +124,8 @@ class CohereLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -139,7 +141,8 @@ class CohereLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;
