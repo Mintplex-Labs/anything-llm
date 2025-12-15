@@ -1,3 +1,4 @@
+import { formatDateTimeAsMoment } from "@/utils/directories";
 import { numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
 const MetricsContext = React.createContext();
@@ -39,6 +40,26 @@ function formatTps(outputTps) {
  */
 function getAutoShowMetrics() {
   return window?.localStorage?.getItem(SHOW_METRICS_KEY) === "true";
+}
+
+/**
+ * Build the metrics string for a given metrics object
+ * - Model name
+ * - Duration and output TPS
+ * - Timestamp
+ * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
+ * @returns {string}
+ */
+function buildMetricsString(metrics = {}) {
+  return [
+    metrics?.model ? metrics.model : "",
+    `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
+    metrics?.timestamp
+      ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 /**
@@ -88,7 +109,7 @@ export function MetricsProvider({ children }) {
 
 /**
  * Render the metrics for a given chat, if available
- * @param {metrics: {duration:number, outputTps: number}} props
+ * @param {metrics: {duration:number, outputTps: number, model: string, timestamp: number}} props
  * @returns
  */
 export default function RenderMetrics({ metrics = {} }) {
@@ -110,8 +131,7 @@ export default function RenderMetrics({ metrics = {} }) {
       className={`border-none flex justify-end items-center gap-x-[8px] ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >
       <p className="cursor-pointer text-xs font-mono text-theme-text-secondary opacity-50">
-        {formatDuration(metrics.duration)} ({formatTps(metrics.outputTps)}{" "}
-        tok/s)
+        {buildMetricsString(metrics)}
       </p>
     </button>
   );

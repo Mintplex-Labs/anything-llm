@@ -203,6 +203,8 @@ class GroqLLM {
           result.output.usage.completion_tokens /
           result.output.usage.completion_time,
         duration: result.output.usage.total_time,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -221,7 +223,8 @@ class GroqLLM {
         temperature,
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;

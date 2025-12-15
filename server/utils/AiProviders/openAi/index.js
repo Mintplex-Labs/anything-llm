@@ -175,6 +175,8 @@ class OpenAiLLM {
           ? usage.output_tokens / result.duration
           : 0,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -194,7 +196,8 @@ class OpenAiLLM {
         temperature: this.#temperature(this.model, temperature),
       }),
       messages,
-      false
+      false,
+      this.model
     );
 
     return measuredStreamRequest;
