@@ -14,7 +14,7 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs,jsx}"],
     plugins: { js },
     extends: ["js/recommended"],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: globals.browser }
   },
   {
     ...pluginReact.configs.flat.recommended,
@@ -39,7 +39,7 @@ export default defineConfig([
       "no-useless-escape": "off",
       "no-undef": "off",
       "no-unsafe-optional-chaining": "off",
-      "no-constant-binary-expression": "off",
+      "no-constant-binary-expression": "off"
     }
   }
 ])
