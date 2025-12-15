@@ -69,7 +69,6 @@ export function AuthProvider(props) {
       }));
     }
     if (store.authToken) refreshUser();
-
   }, [store.authToken]);
 
   return (

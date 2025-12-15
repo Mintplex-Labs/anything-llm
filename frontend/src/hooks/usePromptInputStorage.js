@@ -43,7 +43,6 @@ export default function usePromptInputStorage({
       // Notify parent component so message state is synchronized
       onChange({ target: { value: userPromptInputValue } });
     }
-    
   }, []);
 
   const debouncedWriteToStorage = useMemo(
