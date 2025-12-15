@@ -187,8 +187,8 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.responses.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.responses.create({
         model: this.model,
         stream: true,
         input: messages,
@@ -196,9 +196,9 @@ class OpenAiLLM {
         temperature: this.#temperature(this.model, temperature),
       }),
       messages,
-      false,
-      this.model
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

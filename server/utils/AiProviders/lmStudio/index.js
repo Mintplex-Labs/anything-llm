@@ -246,17 +246,17 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.lmstudio.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.lmstudio.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
       messages,
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 

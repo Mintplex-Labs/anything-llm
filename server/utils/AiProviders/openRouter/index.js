@@ -291,8 +291,8 @@ class OpenRouterLLM {
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
@@ -309,9 +309,9 @@ class OpenRouterLLM {
       // So it is possible reported metrics are inaccurate since we cannot reliably
       // catch the metrics before resolving the stream - so we just pretend this functionality
       // is not available.
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

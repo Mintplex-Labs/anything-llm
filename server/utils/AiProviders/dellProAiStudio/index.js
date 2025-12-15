@@ -177,17 +177,17 @@ class DellProAiStudioLLM {
         `Dell Pro AI Studio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.dpais.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.dpais.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
       messages,
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 

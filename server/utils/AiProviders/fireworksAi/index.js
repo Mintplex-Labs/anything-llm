@@ -175,17 +175,17 @@ class FireworksAiLLM {
         `FireworksAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
       messages,
-      false,
-      this.model
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 
