@@ -86,6 +86,12 @@ class LocalWhisper {
       const wavFile = new wavefile.WaveFile(buffer);
       this.#validateAudioFile(wavFile);
 
+      // Although we use ffmpeg to convert to the correct format (16k hz 32f),
+      // different versions of ffmpeg produce different results based on the
+      // environment. To ensure consistency, we convert to the correct format again.
+      wavFile.toBitDepth("32f");
+      wavFile.toSampleRate(16000);
+
       let audioData = wavFile.getSamples();
       if (Array.isArray(audioData)) {
         if (audioData.length > 1) {
