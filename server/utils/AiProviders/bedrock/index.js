@@ -489,12 +489,12 @@ class AWSBedrockLLM {
       );
 
       // If successful, wrap the stream with performance monitoring
-      const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-        stream,
+      const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+        func: stream,
         messages,
-        false,
-        this.model
-      );
+        runPromptTokenCalculation: false,
+        modelTag: this.model,
+      });
       return measuredStreamRequest;
     } catch (e) {
       // Catch errors during the initial .send() call (e.g., validation errors)

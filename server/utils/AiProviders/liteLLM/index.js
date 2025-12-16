@@ -161,8 +161,8 @@ class LiteLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
@@ -171,9 +171,9 @@ class LiteLLM {
       }),
       messages,
       // runPromptTokenCalculation: true - We manually count the tokens because they may or may not be provided in the stream
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

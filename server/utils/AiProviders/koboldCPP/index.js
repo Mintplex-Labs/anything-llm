@@ -167,8 +167,8 @@ class KoboldCPPLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
@@ -176,9 +176,9 @@ class KoboldCPPLLM {
         max_tokens: this.maxTokens,
       }),
       messages,
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 
