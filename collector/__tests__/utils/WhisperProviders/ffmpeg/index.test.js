@@ -7,9 +7,17 @@ const describeRunner = process.env.GITHUB_ACTIONS ? describe.skip : describe;
 
 describeRunner("FFMPEGWrapper", () => {
   let ffmpeg;
+  const testDir = path.resolve(__dirname, "../../../../storage/tmp");
+  const inputPath = path.resolve(testDir, "test-input.wav");
+  const outputPath = path.resolve(testDir, "test-output.wav");
 
   beforeEach(() => {
     ffmpeg = new FFMPEGWrapper();
+  });
+
+  afterEach(() => {
+    if (fs.existsSync(inputPath)) fs.rmSync(inputPath);
+    if (fs.existsSync(outputPath)) fs.rmSync(outputPath);
   });
 
   it("should find ffmpeg executable", async () => {
@@ -29,13 +37,10 @@ describeRunner("FFMPEGWrapper", () => {
   });
 
   it("should convert audio file to wav format", async () => {
-    const testDir = path.resolve(__dirname, "../../../../storage/tmp");
     if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
 
     const sampleUrl =
       "https://github.com/ringcentral/ringcentral-api-docs/blob/main/resources/sample1.wav?raw=true";
-    const inputPath = path.resolve(testDir, "test-input.wav");
-    const outputPath = path.resolve(testDir, "test-output.wav");
 
     const response = await fetch(sampleUrl);
     if (!response.ok)
@@ -53,8 +58,5 @@ describeRunner("FFMPEGWrapper", () => {
 
     const stats = fs.statSync(outputPath);
     expect(stats.size).toBeGreaterThan(0);
-
-    fs.rmSync(inputPath);
-    fs.rmSync(outputPath);
   }, 30000);
 });
