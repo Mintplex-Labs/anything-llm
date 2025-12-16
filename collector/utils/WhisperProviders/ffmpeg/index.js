@@ -30,14 +30,6 @@ class FFMPEGWrapper {
   async getFFMPEGPath() {
     if (this.ffmpegPath) return this.ffmpegPath;
 
-    if (
-      process.env.FFMPEG_PATH &&
-      this.isValidFFMPEG(process.env.FFMPEG_PATH)
-    ) {
-      this.ffmpegPath = process.env.FFMPEG_PATH;
-      return this.ffmpegPath;
-    }
-
     if (process.platform !== "win32" && !process.env.JEST_WORKER_ID) {
       try {
         const fixPath = await import("fix-path").then((m) => m.default);
@@ -66,7 +58,7 @@ class FFMPEGWrapper {
     }
 
     throw new Error(
-      "FFMPEG not found. Please install FFMPEG or set FFMPEG_PATH environment variable."
+      "FFMPEG not found. Please install FFMPEG."
     );
   }
 
