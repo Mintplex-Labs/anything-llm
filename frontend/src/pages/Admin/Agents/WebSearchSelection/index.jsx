@@ -54,7 +54,7 @@ const SEARCH_PROVIDERS = [
     logo: GoogleSearchIcon,
     options: (settings) => <GoogleSearchOptions settings={settings} />,
     description:
-      "Web search powered by a custom Google Search Engine. Check the documentation for rate limits for your account.",
+      "Web search powered by a custom Google Search Engine.",
   },
   {
     name: "SerpApi",
