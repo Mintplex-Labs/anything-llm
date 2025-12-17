@@ -52,34 +52,22 @@ import { useTranslation } from "react-i18next";
 export const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to OpenAI",
-    ],
+    policyUrl: "https://openai.com/policies/privacy-policy/",
     logo: OpenAiLogo,
   },
   azure: {
     name: "Azure OpenAI",
-    description: [
-      "Your chats will not be used for training",
-      "Your text and embedding text are not visible to OpenAI or Microsoft",
-    ],
+    policyUrl: "https://privacy.microsoft.com/privacystatement",
     logo: AzureOpenAiLogo,
   },
   anthropic: {
     name: "Anthropic",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to Anthropic",
-    ],
+    policyUrl: "https://www.anthropic.com/privacy",
     logo: AnthropicLogo,
   },
   gemini: {
     name: "Google Gemini",
-    description: [
-      "Your chats are de-identified and used in training",
-      "Your prompts and document text used in response creation are visible to Google",
-    ],
+    policyUrl: "https://policies.google.com/privacy",
     logo: GeminiLogo,
   },
   "nvidia-nim": {
@@ -112,64 +100,42 @@ export const LLM_SELECTION_PRIVACY = {
   },
   togetherai: {
     name: "TogetherAI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to TogetherAI",
-    ],
+    policyUrl: "https://www.together.ai/privacy-policy",
     logo: TogetherAILogo,
   },
   fireworksai: {
     name: "FireworksAI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to Fireworks AI",
-    ],
+    policyUrl: "https://fireworks.ai/privacy-policy",
     logo: FireworksAILogo,
   },
   mistral: {
     name: "Mistral",
-    description: [
-      "Your prompts and document text used in response creation are visible to Mistral",
-    ],
+    policyUrl: "https://mistral.ai/terms/",
     logo: MistralLogo,
   },
   huggingface: {
     name: "HuggingFace",
-    description: [
-      "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
-    ],
+    policyUrl: "https://huggingface.co/privacy",
     logo: HuggingFaceLogo,
   },
   perplexity: {
     name: "Perplexity AI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to Perplexity AI",
-    ],
+    policyUrl: "https://www.perplexity.ai/privacy",
     logo: PerplexityLogo,
   },
   openrouter: {
     name: "OpenRouter",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to OpenRouter",
-    ],
+    policyUrl: "https://openrouter.ai/privacy",
     logo: OpenRouterLogo,
   },
   novita: {
     name: "Novita AI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to Novita AI",
-    ],
+    policyUrl: "https://novita.ai/legal/privacy-policy",
     logo: NovitaLogo,
   },
   groq: {
     name: "Groq",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to Groq",
-    ],
+    policyUrl: "https://groq.com/privacy-policy/",
     logo: GroqLogo,
   },
   koboldcpp: {
@@ -195,9 +161,7 @@ export const LLM_SELECTION_PRIVACY = {
   },
   cohere: {
     name: "Cohere",
-    description: [
-      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
-    ],
+    policyUrl: "https://cohere.com/privacy",
     logo: CohereLogo,
   },
   litellm: {
@@ -209,45 +173,33 @@ export const LLM_SELECTION_PRIVACY = {
   },
   bedrock: {
     name: "AWS Bedrock",
-    description: [
-      "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
-    ],
+    policyUrl: "https://aws.amazon.com/bedrock/security-compliance/",
     logo: AWSBedrockLogo,
   },
   deepseek: {
     name: "DeepSeek",
-    description: ["Your model and chat contents are visible to DeepSeek"],
+    policyUrl:
+      "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
     logo: DeepSeekLogo,
   },
   apipie: {
     name: "APIpie.AI",
-    description: [
-      "Your model and chat contents are visible to APIpie in accordance with their terms of service.",
-    ],
+    policyUrl: "https://apipie.ai/privacy",
     logo: APIPieLogo,
   },
   xai: {
     name: "xAI",
-    description: [
-      "Your model and chat contents are visible to xAI in accordance with their terms of service.",
-    ],
+    policyUrl: "https://x.ai/legal/privacy-policy",
     logo: XAILogo,
   },
   zai: {
     name: "Z.AI",
-    description: [
-      "Your content is processed in real-time and not stored on Z.AI servers",
-      "Your prompts and document text are visible to Z.AI during processing",
-      "Data is processed in accordance with Z.AI's API Services terms",
-    ],
+    policyUrl: "https://docs.z.ai/legal-agreement/privacy-policy",
     logo: ZAiLogo,
   },
   ppio: {
     name: "PPIO",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to PPIO",
-    ],
+    policyUrl: "https://www.pipio.ai/privacy-policy",
     logo: PPIOLogo,
   },
   dpais: {
@@ -259,18 +211,12 @@ export const LLM_SELECTION_PRIVACY = {
   },
   moonshotai: {
     name: "Moonshot AI",
-    description: [
-      "Your chats may be used by Moonshot AI for training and model refinement",
-      "Your prompts and document text used in response creation are visible to Moonshot AI",
-    ],
+    policyUrl: "https://platform.moonshot.ai/docs/agreement/userprivacy",
     logo: MoonshotAiLogo,
   },
   cometapi: {
     name: "CometAPI",
-    description: [
-      "Your chats will not be used for training",
-      "Your prompts and document text used in response creation are visible to CometAPI",
-    ],
+    policyUrl: "https://apidoc.cometapi.com/privacy-policy-873819m0",
     logo: CometApiLogo,
   },
   foundry: {
@@ -282,9 +228,7 @@ export const LLM_SELECTION_PRIVACY = {
   },
   giteeai: {
     name: "GiteeAI",
-    description: [
-      "Your model and chat contents are visible to GiteeAI in accordance with their terms of service.",
-    ],
+    policyUrl: "https://ai.gitee.com/docs/appendix/privacy",
     logo: GiteeAILogo,
   },
 };
@@ -308,32 +252,22 @@ export const VECTOR_DB_PRIVACY = {
   },
   chromacloud: {
     name: "Chroma Cloud",
-    description: [
-      "Your vectors and document text are stored on Chroma's cloud service",
-      "Access to your data is managed by Chroma",
-    ],
+    policyUrl: "https://www.trychroma.com/privacy",
     logo: ChromaLogo,
   },
   pinecone: {
     name: "Pinecone",
-    description: [
-      "Your vectors and document text are stored on Pinecone's servers",
-      "Access to your data is managed by Pinecone",
-    ],
+    policyUrl: "https://www.pinecone.io/privacy/",
     logo: PineconeLogo,
   },
   qdrant: {
     name: "Qdrant",
-    description: [
-      "Your vectors and document text are stored on your Qdrant instance (cloud or self-hosted)",
-    ],
+    policyUrl: "https://qdrant.tech/legal/privacy-policy/",
     logo: QDrantLogo,
   },
   weaviate: {
     name: "Weaviate",
-    description: [
-      "Your vectors and document text are stored on your Weaviate instance (cloud or self-hosted)",
-    ],
+    policyUrl: "https://weaviate.io/privacy",
     logo: WeaviateLogo,
   },
   milvus: {
@@ -345,16 +279,12 @@ export const VECTOR_DB_PRIVACY = {
   },
   zilliz: {
     name: "Zilliz Cloud",
-    description: [
-      "Your vectors and document text are stored on your Zilliz cloud cluster.",
-    ],
+    policyUrl: "https://zilliz.com/privacy-policy",
     logo: ZillizLogo,
   },
   astra: {
     name: "AstraDB",
-    description: [
-      "Your vectors and document text are stored on your cloud AstraDB database.",
-    ],
+    policyUrl: "https://www.datastax.com/privacy",
     logo: AstraDBLogo,
   },
   lancedb: {
@@ -376,18 +306,12 @@ export const EMBEDDING_ENGINE_PRIVACY = {
   },
   openai: {
     name: "OpenAI",
-    description: [
-      "Your document text is sent to OpenAI servers",
-      "Your documents are not used for training",
-    ],
+    policyUrl: "https://openai.com/policies/privacy-policy/",
     logo: OpenAiLogo,
   },
   azure: {
     name: "Azure OpenAI",
-    description: [
-      "Your document text is sent to your Microsoft Azure service",
-      "Your documents are not used for training",
-    ],
+    policyUrl: "https://privacy.microsoft.com/privacystatement",
     logo: AzureOpenAiLogo,
   },
   localai: {
@@ -413,31 +337,22 @@ export const EMBEDDING_ENGINE_PRIVACY = {
   },
   openrouter: {
     name: "OpenRouter",
-    description: [
-      "Your document text is sent to OpenRouter's servers for processing",
-      "Your document text is stored or managed according to the terms of service of OpenRouter API Terms of Service",
-    ],
+    policyUrl: "https://openrouter.ai/privacy",
     logo: OpenRouterLogo,
   },
   cohere: {
     name: "Cohere",
-    description: [
-      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
-    ],
+    policyUrl: "https://cohere.com/privacy",
     logo: CohereLogo,
   },
   voyageai: {
     name: "Voyage AI",
-    description: [
-      "Data sent to Voyage AI's servers is shared according to the terms of service of voyageai.com.",
-    ],
+    policyUrl: "https://www.voyageai.com/privacy",
     logo: VoyageAiLogo,
   },
   mistral: {
     name: "Mistral AI",
-    description: [
-      "Data sent to Mistral AI's servers is shared according to the terms of service of https://mistral.ai.",
-    ],
+    policyUrl: "https://mistral.ai/terms/",
     logo: MistralLogo,
   },
   litellm: {
@@ -456,10 +371,7 @@ export const EMBEDDING_ENGINE_PRIVACY = {
   },
   gemini: {
     name: "Google Gemini",
-    description: [
-      "Your document text is sent to Google Gemini's servers for processing",
-      "Your document text is stored or managed according to the terms of service of Google Gemini API Terms of Service",
-    ],
+    policyUrl: "https://policies.google.com/privacy",
     logo: GeminiLogo,
   },
 };
