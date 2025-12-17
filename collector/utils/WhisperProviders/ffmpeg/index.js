@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 
 /**
  * Custom FFMPEG wrapper class for audio file conversion.
@@ -96,8 +96,19 @@ class FFMPEGWrapper {
 
     this.log(`Converting ${path.basename(inputPath)} to WAV format...`);
     // Convert to 16k hz mono 32f
-    const command = `"${ffmpegPath}" -i "${inputPath}" -ar 16000 -ac 1 -acodec pcm_f32le -y "${outputPath}"`;
-    execSync(command, { stdio: "pipe", maxBuffer: 1024 * 1024 * 10 });
+    const result = spawnSync(ffmpegPath, [
+      "-i", inputPath,
+      "-ar", "16000",
+      "-ac", "1",
+      "-acodec", "pcm_f32le",
+      "-y", outputPath
+    ], { encoding: "utf8" });
+
+    // ffmpeg writes progress to stderr
+    if (result.stderr) this.log(result.stderr.trim());
+    if (result.status !== 0) {
+      throw new Error(`FFMPEG conversion failed`);
+    }
     this.log(`Conversion complete: ${path.basename(outputPath)}`);
     return true;
   }

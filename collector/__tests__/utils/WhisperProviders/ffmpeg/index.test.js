@@ -59,4 +59,13 @@ describeRunner("FFMPEGWrapper", () => {
     const stats = fs.statSync(outputPath);
     expect(stats.size).toBeGreaterThan(0);
   }, 30000);
+
+  it("should throw error when conversion fails", async () => {
+    const nonExistentFile = path.resolve(testDir, "non-existent-file.wav");
+    const outputPath = path.resolve(testDir, "test-output-fail.wav");
+
+    await expect(
+      ffmpeg.convertAudioToWav(nonExistentFile, outputPath)
+    ).rejects.toThrow("FFMPEG conversion failed");
+  });
 });
