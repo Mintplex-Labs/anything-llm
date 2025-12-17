@@ -84,7 +84,12 @@ class LocalWhisper {
       fs.rmSync(outputFile);
 
       const wavFile = new wavefile.WaveFile(buffer);
-      this.#validateAudioFile(wavFile);
+      try {
+        this.#validateAudioFile(wavFile);
+      } catch (error) {
+        this.#log(`Audio validation failed: ${error.message}`);
+        throw new Error(`Invalid audio file: ${error.message}`);
+      }
 
       // Although we use ffmpeg to convert to the correct format (16k hz 32f),
       // different versions of ffmpeg produce different results based on the
