@@ -8,15 +8,16 @@ import { defineConfig } from "eslint/config"
 
 export default defineConfig([
   {
-    ignores: ["**/*.min.js"]
+    ignores: ["**/*.min.js", "src/media/**/*"]
   },
   {
-    files: ["**/*.{js,mjs,cjs,jsx}"],
+    files: ["src/**/*.{js,jsx}"],
     plugins: { js },
     extends: ["js/recommended"],
     languageOptions: { globals: globals.browser }
   },
   {
+    files: ["src/**/*.{js,jsx}"],
     ...pluginReact.configs.flat.recommended,
     plugins: {
       "react-hooks": pluginReactHooks,
