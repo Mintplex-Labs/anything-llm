@@ -29,7 +29,7 @@ export default defineConfig([
     },
     rules: {
       ...configPrettier.rules,
-      "prettier/prettier": "error",
+      "prettier/prettier": "warn",
       "react/react-in-jsx-scope": "off",
       "react-hooks/exhaustive-deps": "off",
       "no-extra-boolean-cast": "off",

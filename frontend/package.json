@@ -7,8 +7,10 @@
     "start": "vite --open",
     "dev": "cross-env NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build && node scripts/postbuild.js",
-    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
-    "lintv2": "eslint --fix",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format": "prettier --write ./src",
+    "lint": "yarn lint:check && yarn format",
     "preview": "vite preview"
   },
   "dependencies": {
