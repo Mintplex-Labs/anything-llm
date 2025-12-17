@@ -30,9 +30,9 @@ class FFMPEGWrapper {
   async getFFMPEGPath() {
     if (this.ffmpegPath) return this.ffmpegPath;
 
-    if (process.platform !== "win32" && !process.env.JEST_WORKER_ID) {
+    if (process.platform !== "win32") {
       try {
-        const fixPath = await import("fix-path").then((m) => m.default);
+        const fixPath = require("fix-path");
         fixPath();
       } catch (error) {
         this.log("Could not load fix-path, using system PATH");

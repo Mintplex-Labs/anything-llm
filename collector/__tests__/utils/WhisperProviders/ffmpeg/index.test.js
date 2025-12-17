@@ -1,6 +1,10 @@
 process.env.STORAGE_DIR = "test-storage";
 const fs = require("fs");
 const path = require("path");
+
+// Mock fix-path as a noop to prevent SIGSEGV (segfault)
+jest.mock("fix-path", () => jest.fn());
+
 const { FFMPEGWrapper } = require("../../../../utils/WhisperProviders/ffmpeg");
 
 const describeRunner = process.env.GITHUB_ACTIONS ? describe.skip : describe;
