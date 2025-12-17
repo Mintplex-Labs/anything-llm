@@ -57,9 +57,7 @@ class FFMPEGWrapper {
       }
     }
 
-    throw new Error(
-      "FFMPEG not found. Please install FFMPEG."
-    );
+    throw new Error("FFMPEG not found. Please install FFMPEG.");
   }
 
   /**
@@ -96,13 +94,22 @@ class FFMPEGWrapper {
 
     this.log(`Converting ${path.basename(inputPath)} to WAV format...`);
     // Convert to 16k hz mono 32f
-    const result = spawnSync(ffmpegPath, [
-      "-i", inputPath,
-      "-ar", "16000",
-      "-ac", "1",
-      "-acodec", "pcm_f32le",
-      "-y", outputPath
-    ], { encoding: "utf8" });
+    const result = spawnSync(
+      ffmpegPath,
+      [
+        "-i",
+        inputPath,
+        "-ar",
+        "16000",
+        "-ac",
+        "1",
+        "-acodec",
+        "pcm_f32le",
+        "-y",
+        outputPath,
+      ],
+      { encoding: "utf8" }
+    );
 
     // ffmpeg writes progress to stderr
     if (result.stderr) this.log(result.stderr.trim());
