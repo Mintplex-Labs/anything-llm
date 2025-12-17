@@ -77,10 +77,7 @@ class LocalWhisper {
           "[Conversion Failed]: Could not convert file to .wav format!"
         );
 
-      const chunks = [];
-      const stream = fs.createReadStream(outputFile);
-      for await (let chunk of stream) chunks.push(chunk);
-      buffer = Buffer.concat(chunks);
+      buffer = fs.readFileSync(outputFile);
       fs.rmSync(outputFile);
 
       const wavFile = new wavefile.WaveFile(buffer);
