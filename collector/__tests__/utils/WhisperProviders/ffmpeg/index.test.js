@@ -10,6 +10,7 @@ const { FFMPEGWrapper } = require("../../../../utils/WhisperProviders/ffmpeg");
 const describeRunner = process.env.GITHUB_ACTIONS ? describe.skip : describe;
 
 describeRunner("FFMPEGWrapper", () => {
+  /** @type { import("../../../../utils/WhisperProviders/ffmpeg/index").FFMPEGWrapper } */
   let ffmpeg;
   const testDir = path.resolve(__dirname, "../../../../storage/tmp");
   const inputPath = path.resolve(testDir, "test-input.wav");
@@ -25,15 +26,15 @@ describeRunner("FFMPEGWrapper", () => {
   });
 
   it("should find ffmpeg executable", async () => {
-    const ffmpegPath = await ffmpeg.getFFMPEGPath();
-    expect(ffmpegPath).toBeDefined();
-    expect(typeof ffmpegPath).toBe("string");
-    expect(ffmpegPath.length).toBeGreaterThan(0);
+    const knownPath = ffmpeg.ffmpegPath;
+    expect(knownPath).toBeDefined();
+    expect(typeof knownPath).toBe("string");
+    expect(knownPath.length).toBeGreaterThan(0);
   });
 
   it("should validate ffmpeg executable", async () => {
-    const ffmpegPath = await ffmpeg.getFFMPEGPath();
-    expect(ffmpeg.isValidFFMPEG(ffmpegPath)).toBe(true);
+    const knownPath = ffmpeg.ffmpegPath;
+    expect(ffmpeg.isValidFFMPEG(knownPath)).toBe(true);
   });
 
   it("should return false for invalid ffmpeg path", () => {
@@ -55,7 +56,7 @@ describeRunner("FFMPEGWrapper", () => {
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(inputPath, Buffer.from(buffer));
 
-    const result = await ffmpeg.convertAudioToWav(inputPath, outputPath);
+    const result = ffmpeg.convertAudioToWav(inputPath, outputPath);
 
     expect(result).toBe(true);
     expect(fs.existsSync(outputPath)).toBe(true);
@@ -64,12 +65,12 @@ describeRunner("FFMPEGWrapper", () => {
     expect(stats.size).toBeGreaterThan(0);
   }, 30000);
 
-  it("should throw error when conversion fails", async () => {
+  it("should throw error when conversion fails", () => {
     const nonExistentFile = path.resolve(testDir, "non-existent-file.wav");
     const outputPath = path.resolve(testDir, "test-output-fail.wav");
 
-    await expect(
+    expect(() => {
       ffmpeg.convertAudioToWav(nonExistentFile, outputPath)
-    ).rejects.toThrow("FFMPEG conversion failed");
+    }).toThrow(`Input file ${nonExistentFile} does not exist.`);
   });
 });

@@ -11,8 +11,12 @@ const { execSync, spawnSync } = require("child_process");
  * @class FFMPEGWrapper
  */
 class FFMPEGWrapper {
+  static _instance;
+
   constructor() {
-    this.ffmpegPath = null;
+    if (FFMPEGWrapper._instance) return FFMPEGWrapper._instance;
+    FFMPEGWrapper._instance = this;
+    this._ffmpegPath = null;
   }
 
   log(text, ...args) {
@@ -23,12 +27,11 @@ class FFMPEGWrapper {
    * Locates ffmpeg binary.
    * Uses fix-path on non-Windows platforms to ensure we can find ffmpeg.
    *
-   * @async
-   * @returns {Promise<string>} Path to ffmpeg binary
+   * @returns {string} Path to ffmpeg binary
    * @throws {Error}
    */
-  async getFFMPEGPath() {
-    if (this.ffmpegPath) return this.ffmpegPath;
+  get ffmpegPath() {
+    if (this._ffmpegPath) return this._ffmpegPath;
 
     if (process.platform !== "win32") {
       try {
@@ -39,25 +42,22 @@ class FFMPEGWrapper {
       }
     }
 
-    const possibleCommands =
-      process.platform === "win32" ? ["ffmpeg.exe", "ffmpeg"] : ["ffmpeg"];
+    try {
+      const which = process.platform === "win32" ? "where" : "which";
+      const result = execSync(`${which} ffmpeg`, { encoding: "utf8" }).trim();
+      const candidatePath = result?.split("\n")?.[0]?.trim();
+      if (!candidatePath) throw new Error("FFMPEG candidate path not found.");
+      if (!this.isValidFFMPEG(candidatePath))
+        throw new Error("FFMPEG candidate path is not valid ffmpeg binary.");
 
-    for (const cmd of possibleCommands) {
-      try {
-        const which = process.platform === "win32" ? "where" : "which";
-        const result = execSync(`${which} ${cmd}`, { encoding: "utf8" }).trim();
-        const candidatePath = result.split("\n")[0];
-
-        if (this.isValidFFMPEG(candidatePath)) {
-          this.ffmpegPath = candidatePath;
-          return this.ffmpegPath;
-        }
-      } catch (error) {
-        continue;
-      }
+      this.log(`Found FFMPEG binary at ${candidatePath}`);
+      this._ffmpegPath = candidatePath;
+      return this._ffmpegPath;
+    } catch (error) {
+      this.log(error.message);
     }
 
-    throw new Error("FFMPEG not found. Please install FFMPEG.");
+    throw new Error("FFMPEG binary not found.");
   }
 
   /**
@@ -81,21 +81,21 @@ class FFMPEGWrapper {
    * Converts audio file to WAV format with required parameters for Whisper.
    * Output: 16k hz, mono, 32bit float.
    *
-   * @async
    * @param {string} inputPath - Input path for audio file (any format supported by ffmpeg)
    * @param {string} outputPath - Output path for converted file
-   * @returns {Promise<boolean>}
+   * @returns {boolean}
    * @throws {Error} If ffmpeg binary cannot be found or conversion fails
    */
-  async convertAudioToWav(inputPath, outputPath) {
-    const ffmpegPath = await this.getFFMPEGPath();
+  convertAudioToWav(inputPath, outputPath) {
+    if (!fs.existsSync(inputPath))
+      throw new Error(`Input file ${inputPath} does not exist.`);
     const outputDir = path.dirname(outputPath);
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
     this.log(`Converting ${path.basename(inputPath)} to WAV format...`);
     // Convert to 16k hz mono 32f
     const result = spawnSync(
-      ffmpegPath,
+      this.ffmpegPath,
       [
         "-i",
         inputPath,
@@ -113,9 +113,7 @@ class FFMPEGWrapper {
 
     // ffmpeg writes progress to stderr
     if (result.stderr) this.log(result.stderr.trim());
-    if (result.status !== 0) {
-      throw new Error(`FFMPEG conversion failed`);
-    }
+    if (result.status !== 0) throw new Error(`FFMPEG conversion failed`);
     this.log(`Conversion complete: ${path.basename(outputPath)}`);
     return true;
   }
