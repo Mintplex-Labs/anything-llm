@@ -100,7 +100,7 @@ export const LLM_SELECTION_PRIVACY = {
   },
   togetherai: {
     name: "TogetherAI",
-    policyUrl: "https://www.together.ai/privacy-policy",
+    policyUrl: "https://www.together.ai/privacy",
     logo: TogetherAILogo,
   },
   fireworksai: {
@@ -184,7 +184,7 @@ export const LLM_SELECTION_PRIVACY = {
   },
   apipie: {
     name: "APIpie.AI",
-    policyUrl: "https://apipie.ai/privacy",
+    policyUrl: "https://apipie.ai/docs/Terms/privacy",
     logo: APIPieLogo,
   },
   xai: {
