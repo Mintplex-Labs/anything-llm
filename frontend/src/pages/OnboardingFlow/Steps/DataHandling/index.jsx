@@ -110,7 +110,7 @@ export const LLM_SELECTION_PRIVACY = {
   },
   mistral: {
     name: "Mistral",
-    policyUrl: "https://mistral.ai/terms/",
+    policyUrl: "https://legal.mistral.ai/terms/privacy-policy",
     logo: MistralLogo,
   },
   huggingface: {
@@ -352,7 +352,7 @@ export const EMBEDDING_ENGINE_PRIVACY = {
   },
   mistral: {
     name: "Mistral AI",
-    policyUrl: "https://mistral.ai/terms/",
+    policyUrl: "https://legal.mistral.ai/terms/privacy-policy",
     logo: MistralLogo,
   },
   litellm: {
