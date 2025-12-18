@@ -4,13 +4,8 @@ import { isMobile } from "react-device-detect";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
-import {
-  EMBEDDING_ENGINE_PRIVACY,
-  LLM_SELECTION_PRIVACY,
-  VECTOR_DB_PRIVACY,
-  FALLBACKS,
-} from "@/pages/OnboardingFlow/Steps/DataHandling";
 import { useTranslation } from "react-i18next";
+import ProviderPrivacy from "@/components/ProviderPrivacy";
 
 export default function PrivacyAndDataHandling() {
   const [settings, setSettings] = useState({});
@@ -51,8 +46,8 @@ export default function PrivacyAndDataHandling() {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <ThirdParty settings={settings} />
+            <div className="overflow-x-auto flex flex-col gap-y-6 pt-6">
+              <ProviderPrivacy />
               <TelemetryLogs settings={settings} />
             </div>
           )}
@@ -62,204 +57,194 @@ export default function PrivacyAndDataHandling() {
   );
 }
 
-function ThirdParty({ settings }) {
-  const llmChoice = settings?.LLMProvider || "openai";
-  const embeddingEngine = settings?.EmbeddingEngine || "openai";
-  const vectorDb = settings?.VectorDB || "lancedb";
-  const { t } = useTranslation();
+// function ThirdParty({ settings }) {
+//   const { t } = useTranslation();
 
-  const LLMSelection =
-    LLM_SELECTION_PRIVACY?.[llmChoice] || FALLBACKS.LLM(llmChoice);
-  const EmbeddingEngine =
-    EMBEDDING_ENGINE_PRIVACY?.[embeddingEngine] ||
-    FALLBACKS.EMBEDDING(embeddingEngine);
-  const VectorDb = VECTOR_DB_PRIVACY?.[vectorDb] || FALLBACKS.VECTOR(vectorDb);
+//   return (
+//     <div className="pt-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-theme-sidebar-border">
+//       <div className="flex flex-col gap-8 w-full max-w-2xl">
+//         <div className="flex flex-col items-start gap-y-3 border-b border-theme-sidebar-border pb-4">
+//           <div className="text-theme-text-primary text-base font-bold">
+//             {t("privacy.llm")}
+//           </div>
+//           <div className="flex items-start gap-3">
+//             <img
+//               src={LLMSelection.logo}
+//               alt="LLM Logo"
+//               className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
+//             />
+//             <div className="flex flex-col gap-2 flex-1">
+//               <div className="flex items-center gap-2 flex-wrap">
+//                 <span className="text-theme-text-primary text-sm font-semibold">
+//                   {LLMSelection.name}
+//                 </span>
+//               </div>
+//               {LLMSelection.policyUrl ? (
+//                 <div className="text-theme-text-secondary text-sm">
+//                   Your usage, chats, and data are subject to the service&apos;s{" "}
+//                   <a
+//                     className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
+//                     href={LLMSelection.policyUrl}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                   >
+//                     privacy policy
+//                     <svg
+//                       className="w-3 h-3"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+//                       />
+//                     </svg>
+//                   </a>
+//                   .
+//                 </div>
+//               ) : (
+//                 LLMSelection.description && (
+//                   <ul className="flex flex-col list-disc ml-4 gap-1">
+//                     {LLMSelection.description.map((desc, idx) => (
+//                       <li
+//                         key={idx}
+//                         className="text-theme-text-secondary text-sm"
+//                       >
+//                         {desc}
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 )
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//         <div className="flex flex-col items-start gap-y-3 border-b border-theme-sidebar-border pb-4">
+//           <div className="text-theme-text-primary text-base font-bold">
+//             {t("privacy.embedding")}
+//           </div>
+//           <div className="flex items-start gap-3">
+//             <img
+//               src={EmbeddingEngine.logo}
+//               alt="Embedding Logo"
+//               className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
+//             />
+//             <div className="flex flex-col gap-2 flex-1">
+//               <div className="flex items-center gap-2 flex-wrap">
+//                 <span className="text-theme-text-primary text-sm font-semibold">
+//                   {EmbeddingEngine.name}
+//                 </span>
+//               </div>
+//               {EmbeddingEngine.policyUrl ? (
+//                 <div className="text-theme-text-secondary text-sm">
+//                   Your usage, chats, and data are subject to the service&apos;s{" "}
+//                   <a
+//                     className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
+//                     href={EmbeddingEngine.policyUrl}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                   >
+//                     privacy policy
+//                     <svg
+//                       className="w-3 h-3"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+//                       />
+//                     </svg>
+//                   </a>
+//                   .
+//                 </div>
+//               ) : (
+//                 EmbeddingEngine.description && (
+//                   <ul className="flex flex-col list-disc ml-4 gap-1">
+//                     {EmbeddingEngine.description.map((desc, idx) => (
+//                       <li
+//                         key={idx}
+//                         className="text-theme-text-secondary text-sm"
+//                       >
+//                         {desc}
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 )
+//               )}
+//             </div>
+//           </div>
+//         </div>
 
-  return (
-    <div className="pt-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-theme-sidebar-border">
-      <div className="flex flex-col gap-8 w-full max-w-2xl">
-        <div className="flex flex-col items-start gap-y-3 border-b border-theme-sidebar-border pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.llm")}
-          </div>
-          <div className="flex items-start gap-3">
-            <img
-              src={LLMSelection.logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
-            />
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-theme-text-primary text-sm font-semibold">
-                  {LLMSelection.name}
-                </span>
-              </div>
-              {LLMSelection.policyUrl ? (
-                <div className="text-theme-text-secondary text-sm">
-                  Your usage, chats, and data are subject to the service&apos;s{" "}
-                  <a
-                    className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
-                    href={LLMSelection.policyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    privacy policy
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                  .
-                </div>
-              ) : (
-                LLMSelection.description && (
-                  <ul className="flex flex-col list-disc ml-4 gap-1">
-                    {LLMSelection.description.map((desc, idx) => (
-                      <li
-                        key={idx}
-                        className="text-theme-text-secondary text-sm"
-                      >
-                        {desc}
-                      </li>
-                    ))}
-                  </ul>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col items-start gap-y-3 border-b border-theme-sidebar-border pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.embedding")}
-          </div>
-          <div className="flex items-start gap-3">
-            <img
-              src={EmbeddingEngine.logo}
-              alt="Embedding Logo"
-              className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
-            />
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-theme-text-primary text-sm font-semibold">
-                  {EmbeddingEngine.name}
-                </span>
-              </div>
-              {EmbeddingEngine.policyUrl ? (
-                <div className="text-theme-text-secondary text-sm">
-                  Your usage, chats, and data are subject to the service&apos;s{" "}
-                  <a
-                    className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
-                    href={EmbeddingEngine.policyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    privacy policy
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                  .
-                </div>
-              ) : (
-                EmbeddingEngine.description && (
-                  <ul className="flex flex-col list-disc ml-4 gap-1">
-                    {EmbeddingEngine.description.map((desc, idx) => (
-                      <li
-                        key={idx}
-                        className="text-theme-text-secondary text-sm"
-                      >
-                        {desc}
-                      </li>
-                    ))}
-                  </ul>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start gap-y-3 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.vector")}
-          </div>
-          <div className="flex items-start gap-3">
-            <img
-              src={VectorDb.logo}
-              alt="Vector DB Logo"
-              className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
-            />
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-theme-text-primary text-sm font-semibold">
-                  {VectorDb.name}
-                </span>
-              </div>
-              {VectorDb.policyUrl ? (
-                <div className="text-theme-text-secondary text-sm">
-                  Your usage, chats, and data are subject to the service&apos;s{" "}
-                  <a
-                    className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
-                    href={VectorDb.policyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    privacy policy
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                  .
-                </div>
-              ) : (
-                VectorDb.description && (
-                  <ul className="flex flex-col list-disc ml-4 gap-1">
-                    {VectorDb.description.map((desc, idx) => (
-                      <li
-                        key={idx}
-                        className="text-theme-text-secondary text-sm"
-                      >
-                        {desc}
-                      </li>
-                    ))}
-                  </ul>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+//         <div className="flex flex-col items-start gap-y-3 pb-4">
+//           <div className="text-theme-text-primary text-base font-bold">
+//             {t("privacy.vector")}
+//           </div>
+//           <div className="flex items-start gap-3">
+//             <img
+//               src={VectorDb.logo}
+//               alt="Vector DB Logo"
+//               className="w-8 h-8 rounded flex-shrink-0 mt-0.5"
+//             />
+//             <div className="flex flex-col gap-2 flex-1">
+//               <div className="flex items-center gap-2 flex-wrap">
+//                 <span className="text-theme-text-primary text-sm font-semibold">
+//                   {VectorDb.name}
+//                 </span>
+//               </div>
+//               {VectorDb.policyUrl ? (
+//                 <div className="text-theme-text-secondary text-sm">
+//                   Your usage, chats, and data are subject to the service&apos;s{" "}
+//                   <a
+//                     className="text-theme-text-secondary hover:text-theme-text-primary text-sm font-medium underline transition-colors inline-flex items-center gap-1"
+//                     href={VectorDb.policyUrl}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                   >
+//                     privacy policy
+//                     <svg
+//                       className="w-3 h-3"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+//                       />
+//                     </svg>
+//                   </a>
+//                   .
+//                 </div>
+//               ) : (
+//                 VectorDb.description && (
+//                   <ul className="flex flex-col list-disc ml-4 gap-1">
+//                     {VectorDb.description.map((desc, idx) => (
+//                       <li
+//                         key={idx}
+//                         className="text-theme-text-secondary text-sm"
+//                       >
+//                         {desc}
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 )
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 function TelemetryLogs({ settings }) {
   const [telemetry, setTelemetry] = useState(
@@ -281,7 +266,6 @@ function TelemetryLogs({ settings }) {
   return (
     <div className="relative w-full max-h-full">
       <div className="relative rounded-lg">
-        <div className="flex items-start justify-between px-6 py-4"></div>
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
