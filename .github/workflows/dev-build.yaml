@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['enhancement-error-boundary'] # put your current branch to create a build. Core team only.
+    branches: ['refactor-eslint-frontend'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
