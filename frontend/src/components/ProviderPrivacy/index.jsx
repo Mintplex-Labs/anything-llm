@@ -4,66 +4,67 @@ import { PROVIDER_PRIVACY_MAP } from "./constants";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import { Link } from "react-router-dom";
+import { titleCase, sentenceCase } from "text-case";
+
+function defaultProvider(providerString) {
+  return {
+    name: providerString
+      ? titleCase(sentenceCase(String(providerString)))
+      : "Unknown",
+    description: [
+      `"${providerString}" has no known data handling policy defined in AnythingLLM.`,
+    ],
+    logo: AnythingLLMIcon,
+  };
+}
 
 export default function ProviderPrivacy() {
+  const [loading, setLoading] = useState(true);
   const [providers, setProviders] = useState({
-    llmProvider: "openai",
-    embeddingEngine: "openai",
-    vectorDb: "lancedb",
+    llmProvider: null,
+    embeddingEngine: null,
+    vectorDb: null,
   });
 
   useEffect(() => {
     async function fetchProviders() {
       const _settings = await System.keys();
+      const providerDefinition =
+        PROVIDER_PRIVACY_MAP.llm[_settings?.LLMProvider] ||
+        defaultProvider(_settings?.LLMProvider);
+      const embeddingEngineDefinition =
+        PROVIDER_PRIVACY_MAP.embeddingEngine[_settings?.EmbeddingEngine] ||
+        defaultProvider(_settings?.EmbeddingEngine);
+      const vectorDbDefinition =
+        PROVIDER_PRIVACY_MAP.vectorDb[_settings?.VectorDB] ||
+        defaultProvider(_settings?.VectorDB);
+
       setProviders({
-        llmProvider: _settings?.LLMProvider || "openai",
-        embeddingEngine: _settings?.EmbeddingEngine || "openai",
-        vectorDb: _settings?.VectorDB || "lancedb",
+        llmProvider: providerDefinition,
+        embeddingEngine: embeddingEngineDefinition,
+        vectorDb: vectorDbDefinition,
       });
+      setLoading(false);
     }
     fetchProviders();
   }, []);
 
-  const LLMProvider = PROVIDER_PRIVACY_MAP.llm[providers.llmProvider] || {
-    name: "Unknown",
-    description: [
-      `"${providers.llmProvider}" has no known data handling policy defined in AnythingLLM.`,
-    ],
-    logo: AnythingLLMIcon,
-  };
-  const EmbeddingProvider = PROVIDER_PRIVACY_MAP.embeddingEngine[
-    providers.embeddingEngine
-  ] || {
-    name: "Unknown",
-    description: [
-      `"${providers.embeddingEngine}" has no known data handling policy defined in AnythingLLM.`,
-    ],
-    logo: AnythingLLMIcon,
-  };
-  const VectorDbProvider = PROVIDER_PRIVACY_MAP.vectorDb[
-    providers.vectorDb
-  ] || {
-    name: "Unknown",
-    description: [
-      `"${providers.vectorDb}" has no known data handling policy defined in AnythingLLM.`,
-    ],
-    logo: AnythingLLMIcon,
-  };
+  if (loading) return null;
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
       <ProviderPrivacyItem
         title="LLM Provider"
-        provider={LLMProvider}
+        provider={providers.llmProvider}
         altText="LLM Logo"
       />
       <ProviderPrivacyItem
         title="Embedding Preference"
-        provider={EmbeddingProvider}
+        provider={providers.embeddingEngine}
         altText="Embedding Logo"
       />
       <ProviderPrivacyItem
         title="Vector Database"
-        provider={VectorDbProvider}
+        provider={providers.vectorDb}
         altText="Vector DB Logo"
       />
     </div>
