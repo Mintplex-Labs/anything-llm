@@ -29,7 +29,7 @@ export default function ProviderPrivacy() {
   const LLMProvider = LLM_PROVIDER_PRIVACY_MAP[providers.llmProvider] || {
     name: "Unknown",
     description: [
-      `"${providers.llmProvider}" has no known data handling policy defined in AnythingLLM`,
+      `"${providers.llmProvider}" has no known data handling policy defined in AnythingLLM.`,
     ],
     logo: AnythingLLMIcon,
   };
@@ -38,7 +38,7 @@ export default function ProviderPrivacy() {
   ] || {
     name: "Unknown",
     description: [
-      `"${providers.embeddingEngine}" has no known data handling policy defined in AnythingLLM`,
+      `"${providers.embeddingEngine}" has no known data handling policy defined in AnythingLLM.`,
     ],
     logo: AnythingLLMIcon,
   };
@@ -47,7 +47,7 @@ export default function ProviderPrivacy() {
   ] || {
     name: "Unknown",
     description: [
-      `"${providers.vectorDb}" has no known data handling policy defined in AnythingLLM`,
+      `"${providers.vectorDb}" has no known data handling policy defined in AnythingLLM.`,
     ],
     logo: AnythingLLMIcon,
   };

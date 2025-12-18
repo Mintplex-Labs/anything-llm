@@ -128,28 +128,28 @@ export const LLM_PROVIDER_PRIVACY_MAP = {
   "nvidia-nim": {
     name: "NVIDIA NIM",
     description: [
-      "Your model and chats are only accessible on the machine running the NVIDIA NIM",
+      "Your model and chats are only accessible on the machine running the NVIDIA NIM.",
     ],
     logo: NvidiaNimLogo,
   },
   lmstudio: {
     name: "LMStudio",
     description: [
-      "Your model and chats are only accessible on the server running LMStudio",
+      "Your model and chats are only accessible on the server running LMStudio.",
     ],
     logo: LMStudioLogo,
   },
   localai: {
     name: "LocalAI",
     description: [
-      "Your model and chats are only accessible on the server running LocalAI",
+      "Your model and chats are only accessible on the server running LocalAI.",
     ],
     logo: LocalAiLogo,
   },
   ollama: {
     name: "Ollama",
     description: [
-      "Your model and chats are only accessible on the machine running Ollama models",
+      "Your model and chats are only accessible on the machine running Ollama models.",
     ],
     logo: OllamaLogo,
   },
@@ -260,7 +260,7 @@ export const LLM_PROVIDER_PRIVACY_MAP = {
   dpais: {
     name: "Dell Pro AI Studio",
     description: [
-      "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
+      "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio.",
     ],
     logo: DPAISLogo,
   },
@@ -277,7 +277,7 @@ export const LLM_PROVIDER_PRIVACY_MAP = {
   foundry: {
     name: "Microsoft Foundry Local",
     description: [
-      "Your model and chats are only accessible on the machine running Foundry Local",
+      "Your model and chats are only accessible on the machine running Foundry Local.",
     ],
     logo: FoundryLogo,
   },
@@ -292,16 +292,16 @@ export const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
   pgvector: {
     name: "PGVector",
     description: [
-      "Your vectors and document text are stored on your PostgreSQL instance",
-      "Access to your instance is managed by you",
+      "Your vectors and document text are stored on your PostgreSQL instance.",
+      "Access to your instance is managed by you.",
     ],
     logo: PGVectorLogo,
   },
   chroma: {
     name: "Chroma",
     description: [
-      "Your vectors and document text are stored on your Chroma instance",
-      "Access to your instance is managed by you",
+      "Your vectors and document text are stored on your Chroma instance.",
+      "Access to your instance is managed by you.",
     ],
     logo: ChromaLogo,
   },
@@ -328,7 +328,7 @@ export const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
   milvus: {
     name: "Milvus",
     description: [
-      "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted)",
+      "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted).",
     ],
     logo: MilvusLogo,
   },
@@ -345,7 +345,7 @@ export const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
   lancedb: {
     name: "LanceDB",
     description: [
-      "Your vectors and document text are stored privately on this instance of AnythingLLM",
+      "Your vectors and document text are stored privately on this instance of AnythingLLM.",
     ],
     logo: LanceDbLogo,
   },
@@ -355,7 +355,7 @@ export const EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP = {
   native: {
     name: "AnythingLLM Embedder",
     description: [
-      "Your document text is embedded privately on this instance of AnythingLLM",
+      "Your document text is embedded privately on this instance of AnythingLLM.",
     ],
     logo: AnythingLLMIcon,
   },
@@ -372,21 +372,21 @@ export const EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP = {
   localai: {
     name: "LocalAI",
     description: [
-      "Your document text is embedded privately on the server running LocalAI",
+      "Your document text is embedded privately on the server running LocalAI.",
     ],
     logo: LocalAiLogo,
   },
   ollama: {
     name: "Ollama",
     description: [
-      "Your document text is embedded privately on the server running Ollama",
+      "Your document text is embedded privately on the server running Ollama.",
     ],
     logo: OllamaLogo,
   },
   lmstudio: {
     name: "LMStudio",
     description: [
-      "Your document text is embedded privately on the server running LMStudio",
+      "Your document text is embedded privately on the server running LMStudio.",
     ],
     logo: LMStudioLogo,
   },
