@@ -284,7 +284,7 @@ export const VECTOR_DB_PRIVACY = {
   },
   astra: {
     name: "AstraDB",
-    policyUrl: "https://www.datastax.com/privacy",
+    policyUrl: "https://www.ibm.com/us-en/privacy",
     logo: AstraDBLogo,
   },
   lancedb: {
