@@ -133,17 +133,17 @@ class CohereLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.cohere.chatStream({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.cohere.chatStream({
         model: this.model,
         message: message,
         chatHistory: cohereHistory,
         temperature,
       }),
       messages,
-      false,
-      this.model
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }
