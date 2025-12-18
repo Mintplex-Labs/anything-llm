@@ -22,7 +22,7 @@
     "dotenv": "^16.0.3",
     "epub2": "git+https://github.com/Mintplex-Labs/epub2-static.git#main",
     "express": "^4.21.2",
-    "fluent-ffmpeg": "^2.1.2",
+    "fix-path": "^4.0.0",
     "html-to-text": "^9.0.5",
     "ignore": "^5.3.0",
     "js-tiktoken": "^1.0.8",
