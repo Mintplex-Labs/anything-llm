@@ -5,6 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
 const sanitizeNamespace = (namespace) => {
   // If namespace already starts with ns_, don't add it again
@@ -27,9 +28,13 @@ const collectionExists = async function (client, namespace) {
   }
 };
 
-const AstraDB = {
-  name: "AstraDB",
-  connect: async function () {
+class AstraDB extends VectorDatabase {
+  constructor() {
+    super();
+    this.name = "AstraDB";
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "astra")
       throw new Error("AstraDB::Invalid ENV settings");
 
@@ -38,21 +43,24 @@ const AstraDB = {
       process?.env?.ASTRA_DB_ENDPOINT
     );
     return { client };
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     return { heartbeat: Number(new Date()) };
-  },
+  }
+
   // Astra interface will return a valid collection object even if the collection
   // does not actually exist. So we run a simple check which will always throw
   // when the table truly does not exist. Faster than iterating all collections.
-  isRealCollection: async function (astraCollection = null) {
+  async isRealCollection(astraCollection = null) {
     if (!astraCollection) return false;
     return await astraCollection
       .countDocuments()
       .then(() => true)
       .catch(() => false);
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const collectionNames = await this.allNamespaces(client);
     var totalVectors = 0;
@@ -62,13 +70,15 @@ const AstraDB = {
       totalVectors += count ? count : 0;
     }
     return totalVectors;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
-  },
-  namespace: async function (client, namespace = null) {
+  }
+
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const sanitizedNamespace = sanitizeNamespace(namespace);
     const collection = await client
@@ -86,27 +96,31 @@ const AstraDB = {
       ...collection,
       vectorCount: typeof count === "number" ? count : 0,
     };
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
-  },
-  namespaceExists: async function (client, namespace = null) {
+  }
+
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const sanitizedNamespace = sanitizeNamespace(namespace);
     const collection = await client.collection(sanitizedNamespace);
     return await this.isRealCollection(collection);
-  },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  }
+
+  async deleteVectorsInNamespace(client, namespace = null) {
     const sanitizedNamespace = sanitizeNamespace(namespace);
     await client.dropCollection(sanitizedNamespace);
     return true;
-  },
+  }
+
   // AstraDB requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
-  getOrCreateCollection: async function (client, namespace, dimensions = null) {
+  async getOrCreateCollection(client, namespace, dimensions = null) {
     const sanitizedNamespace = sanitizeNamespace(namespace);
     try {
       const exists = await collectionExists(client, sanitizedNamespace);
@@ -138,8 +152,9 @@ const AstraDB = {
       );
       throw error;
     }
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -269,8 +284,9 @@ const AstraDB = {
       console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     namespace = sanitizeNamespace(namespace);
@@ -293,8 +309,9 @@ const AstraDB = {
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
     return true;
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -336,8 +353,9 @@ const AstraDB = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  similarityResponse: async function ({
+  }
+
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -380,8 +398,9 @@ const AstraDB = {
       result.scores.push(response.$similarity);
     });
     return result;
-  },
-  allNamespaces: async function (client) {
+  }
+
+  async allNamespaces(client) {
     try {
       let header = new Headers();
       header.append("Token", client?.httpClient?.applicationToken);
@@ -406,8 +425,9 @@ const AstraDB = {
       console.error("Astra::AllNamespace", e);
       return [];
     }
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -417,8 +437,9 @@ const AstraDB = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -431,8 +452,9 @@ const AstraDB = {
         details?.vectorCount || "all"
       } vectors.`,
     };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
@@ -446,7 +468,7 @@ const AstraDB = {
     }
 
     return documents;
-  },
-};
+  }
+}
 
 module.exports.AstraDB = AstraDB;
