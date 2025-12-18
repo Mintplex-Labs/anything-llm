@@ -4,13 +4,8 @@ import { isMobile } from "react-device-detect";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
-import {
-  EMBEDDING_ENGINE_PRIVACY,
-  LLM_SELECTION_PRIVACY,
-  VECTOR_DB_PRIVACY,
-  FALLBACKS,
-} from "@/pages/OnboardingFlow/Steps/DataHandling";
 import { useTranslation } from "react-i18next";
+import ProviderPrivacy from "@/components/ProviderPrivacy";
 
 export default function PrivacyAndDataHandling() {
   const [settings, setSettings] = useState({});
@@ -51,93 +46,11 @@ export default function PrivacyAndDataHandling() {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <ThirdParty settings={settings} />
+            <div className="overflow-x-auto flex flex-col gap-y-6 pt-6">
+              <ProviderPrivacy />
               <TelemetryLogs settings={settings} />
             </div>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ThirdParty({ settings }) {
-  const llmChoice = settings?.LLMProvider || "openai";
-  const embeddingEngine = settings?.EmbeddingEngine || "openai";
-  const vectorDb = settings?.VectorDB || "lancedb";
-  const { t } = useTranslation();
-
-  const LLMSelection =
-    LLM_SELECTION_PRIVACY?.[llmChoice] || FALLBACKS.LLM(llmChoice);
-  const EmbeddingEngine =
-    EMBEDDING_ENGINE_PRIVACY?.[embeddingEngine] ||
-    FALLBACKS.EMBEDDING(embeddingEngine);
-  const VectorDb = VECTOR_DB_PRIVACY?.[vectorDb] || FALLBACKS.VECTOR(vectorDb);
-
-  return (
-    <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-theme-sidebar-border">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.llm")}
-          </div>
-          <div className="flex items-center gap-2.5">
-            <img
-              src={LLMSelection.logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded"
-            />
-            <p className="text-theme-text-primary text-sm font-bold">
-              {LLMSelection.name}
-            </p>
-          </div>
-          <ul className="flex flex-col list-disc ml-4">
-            {LLMSelection.description.map((desc) => (
-              <li className="text-theme-text-secondary text-sm">{desc}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.embedding")}
-          </div>
-          <div className="flex items-center gap-2.5">
-            <img
-              src={EmbeddingEngine.logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded"
-            />
-            <p className="text-theme-text-primary text-sm font-bold">
-              {EmbeddingEngine.name}
-            </p>
-          </div>
-          <ul className="flex flex-col list-disc ml-4">
-            {EmbeddingEngine.description.map((desc) => (
-              <li className="text-theme-text-secondary text-sm">{desc}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
-            {t("privacy.vector")}
-          </div>
-          <div className="flex items-center gap-2.5">
-            <img
-              src={VectorDb.logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded"
-            />
-            <p className="text-theme-text-primary text-sm font-bold">
-              {VectorDb.name}
-            </p>
-          </div>
-          <ul className="flex flex-col list-disc ml-4">
-            {VectorDb.description.map((desc) => (
-              <li className="text-theme-text-secondary text-sm">{desc}</li>
-            ))}
-          </ul>
         </div>
       </div>
     </div>
@@ -164,7 +77,6 @@ function TelemetryLogs({ settings }) {
   return (
     <div className="relative w-full max-h-full">
       <div className="relative rounded-lg">
-        <div className="flex items-start justify-between px-6 py-4"></div>
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
