@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import { LLM_PROVIDER_PRIVACY_MAP } from "@/utils/constants";
-import { EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP } from "@/utils/constants";
-import { VECTOR_DB_PROVIDER_PRIVACY_MAP } from "@/utils/constants";
+import { PROVIDER_PRIVACY_MAP } from "./constants";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import { Link } from "react-router-dom";
@@ -26,14 +24,14 @@ export default function ProviderPrivacy() {
     fetchProviders();
   }, []);
 
-  const LLMProvider = LLM_PROVIDER_PRIVACY_MAP[providers.llmProvider] || {
+  const LLMProvider = PROVIDER_PRIVACY_MAP.llm[providers.llmProvider] || {
     name: "Unknown",
     description: [
       `"${providers.llmProvider}" has no known data handling policy defined in AnythingLLM.`,
     ],
     logo: AnythingLLMIcon,
   };
-  const EmbeddingProvider = EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP[
+  const EmbeddingProvider = PROVIDER_PRIVACY_MAP.embeddingEngine[
     providers.embeddingEngine
   ] || {
     name: "Unknown",
@@ -42,7 +40,7 @@ export default function ProviderPrivacy() {
     ],
     logo: AnythingLLMIcon,
   };
-  const VectorDbProvider = VECTOR_DB_PROVIDER_PRIVACY_MAP[
+  const VectorDbProvider = PROVIDER_PRIVACY_MAP.vectorDb[
     providers.vectorDb
   ] || {
     name: "Unknown",
