@@ -93,7 +93,24 @@ export default function EditEmbedModal({ embed, closeModal }) {
                 hint="Allow setting of the system prompt to override the workspace default."
                 defaultValue={embed.allow_prompt_override}
               />
-
+              <BooleanInput
+                name="ip_session_binding"
+                title="Enable IP-Session Binding"
+                hint="Bind chat sessions to IP addresses to prevent session rotation abuse. When enabled, a session can only be used from the IP address that started it."
+                defaultValue={embed.ip_session_binding}
+              />
+              <NumberInput
+                name="max_chats_per_ip_per_day"
+                title="Max chats per IP per day"
+                hint="Limit the amount of chats from a single IP address in a 24 hour period. Zero is unlimited."
+                defaultValue={embed.max_chats_per_ip_per_day}
+              />
+              <NumberInput
+                name="max_chats_per_ip_per_session"
+                title="Max chats per IP per session"
+                hint="Limit the amount of chats from a single IP address per session in a 24 hour period. Zero is unlimited."
+                defaultValue={embed.max_chats_per_ip_per_session}
+              />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 After creating an embed you will be provided a link that you can

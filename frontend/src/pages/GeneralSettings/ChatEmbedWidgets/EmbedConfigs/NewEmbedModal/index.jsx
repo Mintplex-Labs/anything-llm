@@ -20,6 +20,8 @@ export function enforceSubmissionSchema(form) {
     data.allow_temperature_override = false;
   if (!data.hasOwnProperty("allow_prompt_override"))
     data.allow_prompt_override = false;
+  if (!data.hasOwnProperty("ip_session_binding"))
+    data.ip_session_binding = false;
   if (!data.hasOwnProperty("message_limit")) data.message_limit = 20;
   return data;
 }
@@ -91,7 +93,21 @@ export default function NewEmbedModal({ closeModal }) {
                 title="Enable Prompt Override"
                 hint="Allow setting of the system prompt to override the workspace default."
               />
-
+              <BooleanInput
+                name="ip_session_binding"
+                title="Enable IP-Session Binding"
+                hint="Bind chat sessions to IP addresses to prevent session rotation abuse. When enabled, a session can only be used from the IP address that started it."
+              />
+              <NumberInput
+                name="max_chats_per_ip_per_day"
+                title="Max chats per IP per day"
+                hint="Limit the amount of chats from a single IP address in a 24 hour period. Zero is unlimited."
+              />
+              <NumberInput
+                name="max_chats_per_ip_per_session"
+                title="Max chats per IP per session"
+                hint="Limit the amount of chats from a single IP address per session in a 24 hour period. Zero is unlimited."
+              />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 After creating an embed you will be provided a link that you can
