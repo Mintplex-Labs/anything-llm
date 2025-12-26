@@ -114,9 +114,55 @@ function systemEndpoints(app) {
     }
   );
 
+  /**
+   * Refreshes the user object from the session from a provided token.
+   * This does not refresh the token itself - if that is expired or invalid, the user will be logged out.
+   * This simply keeps the user object in sync with the database over the course of the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
+  app.get(
+    "/system/refresh-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (!multiUserMode(response))
+          return response
+            .status(200)
+            .json({ success: true, user: null, message: null });
+
+        const user = await userFromSession(request, response);
+        if (!user)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "Session expired or invalid.",
+          });
+
+        if (user.suspended)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "User is suspended.",
+          });
+
+        return response.status(200).json({
+          success: true,
+          user: User.filterFields(user),
+          message: null,
+        });
+      } catch (e) {
+        return response.status(500).json({
+          success: false,
+          user: null,
+          message: e.message,
+        });
+      }
+    }
+  );
+
   app.post("/request-token", async (request, response) => {
     try {
-      const bcrypt = require("bcrypt");
+      const bcrypt = require("bcryptjs");
 
       if (await SystemSettings.isMultiUserMode()) {
         if (simpleSSOLoginDisabled()) {
@@ -731,6 +777,57 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture upload:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+  app.get(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (_, response) => {
+      try {
+        const defaultSystemPrompt = await SystemSettings.get({
+          label: "default_system_prompt",
+        });
+
+        response.status(200).json({
+          success: true,
+          defaultSystemPrompt:
+            defaultSystemPrompt?.value ||
+            SystemSettings.saneDefaultSystemPrompt,
+          saneDefaultSystemPrompt: SystemSettings.saneDefaultSystemPrompt,
+        });
+      } catch (error) {
+        console.error("Error fetching default system prompt:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/default-system-prompt",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { defaultSystemPrompt } = reqBody(request);
+        const { success, error } = await SystemSettings.updateSettings({
+          default_system_prompt: defaultSystemPrompt,
+        });
+        if (!success)
+          throw new Error(
+            error.message || "Failed to update default system prompt."
+          );
+        response.status(200).json({
+          success: true,
+          message: "Default system prompt updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating default system prompt:", error);
+        response.status(500).json({
+          success: false,
+          message: error.message || "Internal server error",
+        });
       }
     }
   );

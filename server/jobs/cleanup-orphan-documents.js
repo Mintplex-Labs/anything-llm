@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { default: slugify } = require("slugify");
 const { log, conclude } = require('./helpers/index.js');
 const { WorkspaceParsedFiles } = require('../models/workspaceParsedFiles.js');
 const { directUploadsPath } = require('../utils/files');
@@ -38,7 +39,10 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
     const filesToDelete = [];
     const knownFiles = await WorkspaceParsedFiles
       .where({}, null, null, { filename: true })
-      .then(files => new Set(files.map(f => f.filename)));
+      // Slugify the filename to match the direct uploads naming convention otherwise
+      // files with spaces will not result in a match and will be pruned when attached to a thread.
+      // This could then result in files showing "Attached" but the model not seeing them during chat.
+      .then(files => new Set(files.map(f => slugify(f.filename))));
 
     if (!fs.existsSync(directUploadsPath)) return log('No direct uploads path found - exiting.');
     const filesInDirectUploadsPath = fs.readdirSync(directUploadsPath);

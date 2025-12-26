@@ -18,6 +18,7 @@ import {
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
 import ObsidianLogo from "@/media/dataConnectors/obsidian.png";
+import PaperlessNgxLogo from "@/media/dataConnectors/paperlessngx.png";
 import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import pluralize from "pluralize";
@@ -68,7 +69,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 ml-14 gap-y-2">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
@@ -216,6 +217,7 @@ const supportedSources = [
   "drupalwiki://",
   "youtube://",
   "obsidian://",
+  "paperless-ngx://",
 ];
 
 /**
@@ -291,6 +293,11 @@ function parseChunkSource({ title = "", chunks = [] }) {
         icon = "obsidian";
         break;
 
+      case "paperless-ngx://":
+        text = title;
+        icon = "paperlessNgx";
+        break;
+
       default:
         text = url.host + url.pathname;
         icon = "link";
@@ -318,7 +325,15 @@ const DrupalWikiIcon = ({ size = 16, ...props }) => (
 const ObsidianIcon = ({ size = 16, ...props }) => (
   <img src={ObsidianLogo} {...props} width={size} height={size} />
 );
-
+const PaperlessNgxIcon = ({ size = 16, ...props }) => (
+  <img
+    src={PaperlessNgxLogo}
+    {...props}
+    width={size}
+    height={size}
+    className="rounded-sm bg-white"
+  />
+);
 const ICONS = {
   file: FileText,
   link: LinkSimple,
@@ -328,4 +343,5 @@ const ICONS = {
   confluence: ConfluenceIcon,
   drupalwiki: DrupalWikiIcon,
   obsidian: ObsidianIcon,
+  paperlessNgx: PaperlessNgxIcon,
 };

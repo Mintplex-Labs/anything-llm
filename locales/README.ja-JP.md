@@ -90,7 +90,10 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [xAI](https://x.ai/)
+- [Z.AI (チャットモデル)](https://z.ai/model-api)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [CometAPI (チャットモデル)](https://api.cometapi.com/)
 
 **埋め込みモデル：**
 

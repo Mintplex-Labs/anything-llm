@@ -57,7 +57,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Find us on GitHub"
               data-tooltip-id="footer-item"
-              data-tooltip-content="View source code on GitHub"
+              data-tooltip-content="View Source Code"
             >
               <GithubLogo
                 weight="fill"

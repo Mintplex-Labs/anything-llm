@@ -11,6 +11,7 @@ class GeminiEmbedder {
     if (!process.env.GEMINI_EMBEDDING_API_KEY)
       throw new Error("No Gemini API key was set.");
 
+    this.className = "GeminiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
     this.openai = new OpenAIApi({
@@ -29,7 +30,7 @@ class GeminiEmbedder {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[GeminiEmbedder]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   /**

@@ -24,6 +24,7 @@
  *
  * @typedef {Object} ChatCompletionOptions
  * @property {number} temperature - The sampling temperature for the LLM response
+ * @property {import("@prisma/client").users} user - The user object for the chat completion to send to the LLM provider for user tracking (optional)
  *
  * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
  *
@@ -114,7 +115,11 @@ function getVectorDbClass(getExactly = null) {
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
     default:
-      throw new Error("ENV: No VECTOR_DB value found in environment!");
+      console.error(
+        `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
+      );
+      const { LanceDb: DefaultLanceDb } = require("../vectorDbProviders/lance");
+      return DefaultLanceDb;
   }
 }
 
@@ -212,6 +217,18 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return new CometApiLLM(embedder, model);
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return new FoundryLLM(embedder, model);
+    case "zai":
+      const { ZAiLLM } = require("../AiProviders/zai");
+      return new ZAiLLM(embedder, model);
+    case "giteeai":
+      const { GiteeAILLM } = require("../AiProviders/giteeai");
+      return new GiteeAILLM(embedder, model);
     case "flowiseai":
       const { FlowiseLLM } = require("../AiProviders/flowise");
       return new FlowiseLLM(embedder, model);
@@ -269,6 +286,9 @@ function getEmbeddingEngineSelection() {
     case "gemini":
       const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
       return new GeminiEmbedder();
+    case "openrouter":
+      const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
+      return new OpenRouterEmbedder();
     default:
       return new NativeEmbedder();
   }
@@ -365,6 +385,18 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
+    case "cometapi":
+      const { CometApiLLM } = require("../AiProviders/cometapi");
+      return CometApiLLM;
+    case "foundry":
+      const { FoundryLLM } = require("../AiProviders/foundry");
+      return FoundryLLM;
+    case "zai":
+      const { ZAiLLM } = require("../AiProviders/zai");
+      return ZAiLLM;
+    case "giteeai":
+      const { GiteeAILLM } = require("../AiProviders/giteeai");
+      return GiteeAILLM;
     default:
       return null;
   }
@@ -433,6 +465,14 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
+    case "cometapi":
+      return process.env.COMETAPI_LLM_MODEL_PREF;
+    case "foundry":
+      return process.env.FOUNDRY_MODEL_PREF;
+    case "zai":
+      return process.env.ZAI_MODEL_PREF;
+    case "giteeai":
+      return process.env.GITEE_AI_MODEL_PREF;
     default:
       return null;
   }

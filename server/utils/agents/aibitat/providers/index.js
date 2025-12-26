@@ -18,12 +18,17 @@ const DeepSeekProvider = require("./deepseek.js");
 const LiteLLMProvider = require("./litellm.js");
 const ApiPieProvider = require("./apipie.js");
 const XAIProvider = require("./xai.js");
+const ZAIProvider = require("./zai.js");
 const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
 const MoonshotAiProvider = require("./moonshotAi.js");
+const CometApiProvider = require("./cometapi.js");
+const FoundryProvider = require("./foundry.js");
+const GiteeAIProvider = require("./giteeai.js");
+const CohereProvider = require("./cohere.js");
 
 module.exports = {
   OpenAIProvider,
@@ -46,10 +51,15 @@ module.exports = {
   LiteLLMProvider,
   ApiPieProvider,
   XAIProvider,
+  ZAIProvider,
   NovitaProvider,
+  CometApiProvider,
   NvidiaNimProvider,
   PPIOProvider,
   GeminiProvider,
   DellProAiStudioProvider,
   MoonshotAiProvider,
+  FoundryProvider,
+  GiteeAIProvider,
+  CohereProvider,
 };

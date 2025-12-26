@@ -17,6 +17,7 @@ class KoboldCPPLLM {
         "KoboldCPP must have a valid base path to use for the api."
       );
 
+    this.className = "KoboldCPPLLM";
     this.basePath = process.env.KOBOLD_CPP_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
@@ -37,7 +38,7 @@ class KoboldCPPLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -159,21 +160,25 @@ class KoboldCPPLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
         max_tokens: this.maxTokens,
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 

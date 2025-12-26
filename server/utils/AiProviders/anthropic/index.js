@@ -15,6 +15,7 @@ class AnthropicLLM {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
 
+    this.className = "AnthropicLLM";
     // Docs: https://www.npmjs.com/package/@anthropic-ai/sdk
     const AnthropicAI = require("@anthropic-ai/sdk");
     const anthropic = new AnthropicAI({
@@ -33,11 +34,13 @@ class AnthropicLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.log(`Initialized with ${this.model}`);
+    this.log(
+      `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
+    );
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {
@@ -54,6 +57,48 @@ class AnthropicLLM {
 
   isValidChatCompletionModel(_modelName = "") {
     return true;
+  }
+
+  /**
+   * Parses the cache control ENV variable
+   *
+   * If caching is enabled, we can pass less than 1024 tokens and Anthropic will just
+   * ignore it unless it is above the model's minimum. Since this feature is opt-in
+   * we can safely assume that if caching is enabled that we should just pass the content as is.
+   * https://docs.claude.com/en/docs/build-with-claude/prompt-caching#cache-limitations
+   *
+   * @param {string} value - The ENV value (5m or 1h)
+   * @returns {null|{type: "ephemeral", ttl: "5m" | "1h"}} Cache control configuration
+   */
+  get cacheControl() {
+    // Store result in instance variable to avoid recalculating
+    if (this._cacheControl) return this._cacheControl;
+
+    if (!process.env.ANTHROPIC_CACHE_CONTROL) this._cacheControl = null;
+    else {
+      const normalized =
+        process.env.ANTHROPIC_CACHE_CONTROL.toLowerCase().trim();
+      if (["5m", "1h"].includes(normalized))
+        this._cacheControl = { type: "ephemeral", ttl: normalized };
+      else this._cacheControl = null;
+    }
+    return this._cacheControl;
+  }
+
+  /**
+   * Builds system parameter with cache control if applicable
+   * @param {string} systemContent - The system prompt content
+   * @returns {string|array} System parameter for API call
+   */
+  #buildSystemPrompt(systemContent) {
+    if (!systemContent || !this.cacheControl) return systemContent;
+    return [
+      {
+        type: "text",
+        text: systemContent,
+        cache_control: this.cacheControl,
+      },
+    ];
   }
 
   /**
@@ -104,11 +149,12 @@ class AnthropicLLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     try {
+      const systemContent = messages[0].content;
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
           model: this.model,
           max_tokens: 4096,
-          system: messages[0].content, // Strip out the system message
+          system: this.#buildSystemPrompt(systemContent),
           messages: messages.slice(1), // Pop off the system message
           temperature: Number(temperature ?? this.defaultTemp),
         })
@@ -116,6 +162,7 @@ class AnthropicLLM {
 
       const promptTokens = result.output.usage.input_tokens;
       const completionTokens = result.output.usage.output_tokens;
+
       return {
         textResponse: result.output.content[0].text,
         metrics: {
@@ -124,6 +171,8 @@ class AnthropicLLM {
           total_tokens: promptTokens + completionTokens,
           outputTps: completionTokens / result.duration,
           duration: result.duration,
+          model: this.model,
+          timestamp: new Date(),
         },
       };
     } catch (error) {
@@ -133,17 +182,19 @@ class AnthropicLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.anthropic.messages.stream({
+    const systemContent = messages[0].content;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.anthropic.messages.stream({
         model: this.model,
         max_tokens: 4096,
-        system: messages[0].content, // Strip out the system message
+        system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
         temperature: Number(temperature ?? this.defaultTemp),
       }),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

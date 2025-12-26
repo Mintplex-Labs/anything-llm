@@ -117,27 +117,6 @@ const TRANSLATIONS = {
       "back-to-login": "Back to Đăng nhập",
     },
   },
-  welcomeMessage: {
-    part1:
-      "Chào mừng đến với AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
-    part2:
-      "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
-    part3:
-      "AnythingLLM can run totally locally on your machine with little overhead you wont even notice it's there! No GPU needed. Cloud and on-premises installation is available as well.\nThe AI tooling ecosystem gets more powerful everyday. AnythingLLM makes it easy to use.",
-    githubIssue: "Create an issue on GitHub",
-    user1: "How do I get started?!",
-    part4:
-      "It's simple. All collections are organized into buckets we call \"Không gian làm việc\". Không gian làm việc are buckets of files, documents, images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation.\n\nYou can add and remove files at anytime.",
-    createWorkspace: "Create your first workspace",
-    user2:
-      "Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
-    part5:
-      "AnythingLLM is more than a smarter Dropbox.\n\nAnythingLLM offers two ways of talking with your data:\n\n<i>Query:</i> Your chats will return data or inferences found with the documents in your workspace it has access to. Adding more documents to the Workspace make it smarter! \n\n<i>Conversational:</i> Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have. \n\nYou can toggle between either mode \n<i>in the middle of chatting!</i>",
-    user3: "Wow, this sounds amazing, let me try it out already!",
-    part6: "Have Fun!",
-    starOnGitHub: "Star on GitHub",
-    contact: "Contact Mintplex Labs",
-  },
   "new-workspace": {
     title: "Không gian làm việc mới",
     placeholder: "Không gian làm việc của tôi",
@@ -223,7 +202,7 @@ const TRANSLATIONS = {
     prompt: {
       title: "Prompt",
       description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+        "Nhập vào đây prompt cho không gian làm việc này. Định nghĩa ngữ cảnh và hướng dẫn cho AI để tạo ra một phản hồi liên quan và chính xác.",
       history: {
         title: null,
         clearAll: null,
@@ -282,58 +261,58 @@ const TRANSLATIONS = {
   },
   agent: {
     "performance-warning":
-      "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
+      "Hiệu suất của các LLM không hỗ trợ rõ ràng việc gọi công cụ phụ thuộc rất nhiều vào khả năng và độ chính xác của mô hình. Một số khả năng có thể bị hạn chế hoặc không hoạt động.",
     provider: {
-      title: "Workspace Agent LLM Provider",
+      title: "Nhà cung cấp LLM cho Agent Workspace",
       description:
-        "The specific LLM provider & model that will be used for this workspace's @agent agent.",
+        "Nhà cung cấp LLM & mô hình cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
     },
     mode: {
       chat: {
-        title: "Workspace Agent Chat model",
+        title: "Mô hình Chat cho Agent Workspace",
         description:
-          "The specific chat model that will be used for this workspace's @agent agent.",
+          "Mô hình chat cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
       },
-      title: "Workspace Agent model",
+      title: "Mô hình Agent Workspace",
       description:
-        "The specific LLM model that will be used for this workspace's @agent agent.",
-      wait: "-- waiting for models --",
+        "Mô hình LLM cụ thể sẽ được sử dụng cho @agent agent của workspace này.",
+      wait: "-- đang chờ mô hình --",
     },
     skill: {
-      title: "Default agent skills",
+      title: "Kỹ năng agent mặc định",
       description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
+        "Cải thiện khả năng tự nhiên của agent mặc định với những kỹ năng được xây dựng sẵn này. Thiết lập này áp dụng cho tất cả workspace.",
       rag: {
-        title: "RAG & long-term memory",
+        title: "RAG & bộ nhớ dài hạn",
         description:
-          'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+          'Cho phép agent sử dụng tài liệu cục bộ của bạn để trả lời truy vấn hoặc yêu cầu agent "ghi nhớ" các phần nội dung để truy xuất bộ nhớ dài hạn.',
       },
       view: {
-        title: "View & summarize documents",
+        title: "Xem & tóm tắt tài liệu",
         description:
-          "Allow the agent to list and summarize the content of workspace files currently embedded.",
+          "Cho phép agent liệt kê và tóm tắt nội dung của các tệp workspace hiện đang được nhúng.",
       },
       scrape: {
-        title: "Scrape websites",
+        title: "Thu thập dữ liệu website",
         description:
-          "Allow the agent to visit and scrape the content of websites.",
+          "Cho phép agent truy cập và thu thập nội dung của các website.",
       },
       generate: {
-        title: "Generate charts",
+        title: "Tạo biểu đồ",
         description:
-          "Enable the default agent to generate various types of charts from data provided or given in chat.",
+          "Cho phép agent mặc định tạo các loại biểu đồ khác nhau từ dữ liệu được cung cấp hoặc đưa ra trong chat.",
       },
       save: {
-        title: "Generate & save files to browser",
+        title: "Tạo & lưu tệp",
         description:
-          "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
+          "Cho phép agent mặc định tạo và ghi vào các tệp có thể lưu vào máy tính của bạn.",
       },
       web: {
-        title: "Live web search and browsing",
+        title: "Tìm kiếm web trực tiếp và duyệt web",
         "desc-start":
-          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
+          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
         "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
+          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
       },
     },
   },
@@ -377,6 +356,7 @@ const TRANSLATIONS = {
         model_type: null,
         default: null,
         reasoning: null,
+        model_type_tooltip: null,
       },
     },
   },
@@ -395,7 +375,7 @@ const TRANSLATIONS = {
   embedding: {
     title: "Tùy chọn nhúng",
     "desc-start":
-      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
+      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials for embedding text.",
     "desc-end":
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
@@ -568,6 +548,8 @@ const TRANSLATIONS = {
       pat_token: null,
       pat_token_explained: null,
       task_explained: null,
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: null,
@@ -798,6 +780,10 @@ const TRANSLATIONS = {
         icon: null,
         link: null,
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   "main-page": {
@@ -999,6 +985,13 @@ const TRANSLATIONS = {
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
       "password-label": "Mật khẩu của instance",
     },
+  },
+  home: {
+    welcome: "Chào mừng bạn",
+    chooseWorkspace: "Chọn một khu vực làm việc để bắt đầu trò chuyện!",
+    notAssigned:
+      "Bạn hiện không được giao việc nào.\nLiên hệ với quản trị viên của bạn để yêu cầu truy cập vào khu vực làm việc.",
+    goToWorkspace: 'Chuyển đến khu vực làm việc "{{workspace}}"',
   },
 };
 

@@ -5,56 +5,88 @@ const {
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const {
+  returnResult,
+  determineContentType,
+  processAsFile,
+} = require("../helpers");
+const {
+  loadYouTubeTranscript,
+} = require("../../utils/extensions/YoutubeTranscript");
+const RuntimeSettings = require("../../utils/runtimeSettings");
 
 /**
  * Scrape a generic URL and return the content in the specified format
  * @param {Object} config - The configuration object
  * @param {string} config.link - The URL to scrape
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
- * @param {boolean} config.processAsDocument - Whether to process the content as a document or return the content directly. Default is true
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
+ * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
+ * @param {boolean} config.saveAsDocument - Whether to save the content as a document. Default is true
  * @returns {Promise<Object>} - The content of the page
  */
 async function scrapeGenericUrl({
   link,
   captureAs = "text",
-  processAsDocument = true,
   scraperHeaders = {},
+  metadata = {},
+  saveAsDocument = true,
 }) {
-  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+  /** @type {'web' | 'file' | 'youtube'} */
+  console.log(`-- Working URL ${link} => (captureAs: ${captureAs}) --`);
+  let { contentType, processVia } = await determineContentType(link);
+  console.log(`-- URL determined to be ${contentType} (${processVia}) --`);
+
+  /**
+   * When the content is a file or a YouTube video, we can use the existing processing functions
+   * These are self-contained and will return the correct response based on the saveAsDocument flag already
+   * so we can return the content immediately.
+   */
+  if (processVia === "file")
+    return await processAsFile({ uri: link, saveAsDocument });
+  else if (processVia === "youtube")
+    return await loadYouTubeTranscript(
+      { url: link },
+      { parseOnly: saveAsDocument === false }
+    );
+
+  // Otherwise, assume the content is a webpage and scrape the content from the webpage
   const content = await getPageContent({
     link,
     captureAs,
     headers: scraperHeaders,
   });
-
-  if (!content.length) {
+  if (!content || !content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
-    return {
+    return returnResult({
       success: false,
       reason: `No URL content found at ${link}.`,
       documents: [],
-    };
+      content: null,
+      saveAsDocument,
+    });
   }
 
-  if (!processAsDocument) {
-    return {
+  // If the captureAs is text, return the content as a string immediately
+  // so that we dont save the content as a document
+  if (!saveAsDocument)
+    return returnResult({
       success: true,
       content,
-    };
-  }
+      saveAsDocument,
+    });
 
+  // Save the content as a document from the URL
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
   const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
-
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
-    title: slugify(filename) + ".html",
-    docAuthor: "no author found",
-    description: "No description found.",
-    docSource: "URL link uploaded by the user.",
+    title: metadata.title || slugify(filename) + ".html",
+    docAuthor: metadata.docAuthor || "no author found",
+    description: metadata.description || "No description found.",
+    docSource: metadata.docSource || "URL link uploaded by the user.",
     chunkSource: `link://${link}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
@@ -104,10 +136,33 @@ function validatedHeaders(headers = {}) {
 async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
     let pageContents = [];
+    const runtimeSettings = new RuntimeSettings();
+
+    /** @type {import('puppeteer').PuppeteerLaunchOptions} */
+    let launchConfig = { headless: "new" };
+
+    /* On MacOS 15.1, the headless=new option causes the browser to crash immediately.
+     * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+     * in production runs in a container, we can disable headless mode to workaround the issue for development purposes.
+     *
+     * This may show a popup window when scraping a page in development mode.
+     * This is expected behavior if seen in development mode on MacOS 15+
+     */
+    if (
+      process.platform === "darwin" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.log(
+        "Darwin Development Mode: Disabling headless mode to prevent Chromium from crashing."
+      );
+      launchConfig.headless = "false";
+    }
+
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
-        headless: "new",
+        headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
+        args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
         waitUntil: "networkidle2",

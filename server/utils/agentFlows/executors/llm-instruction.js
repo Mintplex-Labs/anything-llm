@@ -33,7 +33,7 @@ async function executeLLMInstruction(config, context) {
 
     introspect(`Successfully received LLM response`);
     if (resultVariable) config.resultVariable = resultVariable;
-    return completion.result;
+    return completion.textResponse;
   } catch (error) {
     logger(`LLM processing failed: ${error.message}`, error);
     throw new Error(`LLM processing failed: ${error.message}`);

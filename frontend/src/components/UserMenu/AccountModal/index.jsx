@@ -10,6 +10,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
+import { safeJsonParse } from "@/utils/request";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -54,7 +55,7 @@ export default function AccountModal({ user, hideModal }) {
 
     const { success, error } = await System.updateUser(data);
     if (success) {
-      let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
+      let storedUser = safeJsonParse(localStorage.getItem(AUTH_USER), null);
       if (storedUser) {
         storedUser.username = data.username;
         storedUser.bio = data.bio;

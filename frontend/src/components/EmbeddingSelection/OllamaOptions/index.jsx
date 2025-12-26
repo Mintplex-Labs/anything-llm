@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
 export default function OllamaEmbeddingOptions({ settings }) {
@@ -13,6 +14,8 @@ export default function OllamaEmbeddingOptions({ settings }) {
     showAdvancedControls,
     setShowAdvancedControls,
     handleAutoDetectClick,
+    authToken,
+    authTokenValue,
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama",
     initialBasePath: settings?.EmbeddingBasePath,
@@ -22,9 +25,16 @@ export default function OllamaEmbeddingOptions({ settings }) {
   const [maxChunkLength, setMaxChunkLength] = useState(
     settings?.EmbeddingModelMaxChunkLength || 8192
   );
+  const [batchSize, setBatchSize] = useState(
+    settings?.OllamaEmbeddingBatchSize || 1
+  );
 
   const handleMaxChunkLengthChange = (e) => {
     setMaxChunkLength(Number(e.target.value));
+  };
+
+  const handleBatchSizeChange = (e) => {
+    setBatchSize(Number(e.target.value));
   };
 
   return (
@@ -35,9 +45,22 @@ export default function OllamaEmbeddingOptions({ settings }) {
           basePath={basePath.value}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Max Embedding Chunk Length
-          </label>
+          <div
+            data-tooltip-place="top"
+            data-tooltip-id="max-embedding-chunk-length-tooltip"
+            className="flex gap-x-1 items-center mb-3"
+          >
+            <label className="text-white text-sm font-semibold block">
+              Max embedding chunk length
+            </label>
+            <Info
+              size={16}
+              className="text-theme-text-secondary cursor-pointer"
+            />
+            <Tooltip id="max-embedding-chunk-length-tooltip">
+              Maximum length of text chunks, in characters, for embedding.
+            </Tooltip>
+          </div>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
@@ -50,9 +73,6 @@ export default function OllamaEmbeddingOptions({ settings }) {
             required={true}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum length of text chunks for embedding.
-          </p>
         </div>
       </div>
       <div className="flex justify-start mt-4">
@@ -63,7 +83,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
           }}
           className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
         >
-          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls ? "Hide" : "Show"} Advanced Settings
           {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
@@ -108,6 +128,66 @@ export default function OllamaEmbeddingOptions({ settings }) {
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
               Enter the URL where Ollama is running.
+            </p>
+          </div>
+          <div className="flex flex-col w-60">
+            <div
+              data-tooltip-place="top"
+              data-tooltip-id="ollama-batch-size-tooltip"
+              className="flex gap-x-1 items-center mb-3"
+            >
+              <label className="text-white text-sm font-semibold block">
+                Embedding batch size
+              </label>
+              <Info
+                size={16}
+                className="text-theme-text-secondary cursor-pointer"
+              />
+              <Tooltip id="ollama-batch-size-tooltip">
+                Number of text chunks to embed in parallel. Higher values
+                improve speed but use more memory. Default is 1.
+              </Tooltip>
+            </div>
+            <input
+              type="number"
+              name="OllamaEmbeddingBatchSize"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="1"
+              min={1}
+              value={batchSize}
+              onChange={handleBatchSizeChange}
+              onScroll={(e) => e.target.blur()}
+              required={true}
+              autoComplete="off"
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Increase this value to process multiple chunks simultaneously for
+              faster embedding.
+            </p>
+          </div>
+          <div>
+            <label className="text-white font-semibold block mb-3 text-sm">
+              Auth Token (optional)
+            </label>
+            <input
+              type="password"
+              name="OllamaLLMAuthToken"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Enter your Auth Token"
+              defaultValue={settings?.OllamaLLMAuthToken ? "*".repeat(20) : ""}
+              value={authTokenValue.value}
+              onChange={authToken.onChange}
+              onBlur={authToken.onBlur}
+              required={false}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Enter a <code>Bearer</code> Auth Token for interacting with your
+              Ollama server.
+              <br />
+              Used <b>only</b> if running Ollama behind an authentication
+              server.
             </p>
           </div>
         </div>

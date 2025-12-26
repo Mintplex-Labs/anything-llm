@@ -124,26 +124,6 @@ const TRANSLATIONS = {
       "back-to-login": "로그인으로 돌아가기",
     },
   },
-  welcomeMessage: {
-    part1:
-      "AnythingLLM에 오신 것을 환영합니다! AnythingLLM은 Mintplex Labs에서 개발한 오픈소스 AI 도구로, 어떤 것이든 학습된 챗봇으로 만들어 대화하고 질문할 수 있습니다. AnythingLLM은 BYOK(키 직접 제공) 방식의 소프트웨어로, 사용자가 원하는 외부 서비스 이용료 외에는 별도의 구독이나 비용이 없습니다.",
-    part2:
-      "AnythingLLM은 OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB 등 강력한 AI 서비스들을 손쉽게 하나로 묶어 생산성을 100배 높여주는 가장 쉬운 방법입니다.",
-    part3:
-      "AnythingLLM은 별도의 GPU 없이도 여러분의 컴퓨터에서 가볍게 완전히 로컬로 실행할 수 있습니다. 클라우드 및 온프레미스 설치도 지원합니다.\nAI 도구 생태계는 매일 더 강력해지고 있습니다. AnythingLLM은 이를 쉽게 활용할 수 있게 도와줍니다.",
-    githubIssue: "GitHub에서 이슈 만들기",
-    user1: "어떻게 시작하나요?!",
-    part4:
-      "아주 간단합니다. 모든 자료는 '워크스페이스'라는 버킷에 정리됩니다. 워크스페이스는 파일, 문서, 이미지, PDF 등 다양한 자료를 담는 공간이며, 이 파일들은 LLM이 이해하고 대화에 활용할 수 있도록 변환됩니다.\n\n언제든 파일을 추가하거나 삭제할 수 있습니다.",
-    createWorkspace: "첫 워크스페이스 만들기",
-    user2: "이거 AI 드롭박스 같은 건가요? 채팅은 어떻게 하나요? 챗봇 맞죠?",
-    part5:
-      "AnythingLLM은 단순한 드롭박스 그 이상입니다.\n\nAnythingLLM은 데이터와 대화하는 두 가지 방식을 제공합니다:\n\n<i>질의(Query):</i> 워크스페이스에 있는 문서를 바탕으로 데이터를 찾거나 추론 결과를 반환합니다. 문서를 더 추가할수록 더 똑똑해집니다!\n\n<i>대화(Conversational):</i> 문서와 진행 중인 채팅 내역이 동시에 LLM의 지식에 반영됩니다. 실시간 정보 추가, 오해나 오류 수정에 유용합니다.\n\n채팅 중 언제든 두 모드 간 전환이 가능합니다.",
-    user3: "와, 정말 대단하네요! 바로 써보고 싶어요!",
-    part6: "즐겁게 사용하세요!",
-    starOnGitHub: "GitHub에 스타 누르기",
-    contact: "Mintplex Labs에 문의하기",
-  },
   "main-page": {
     noWorkspaceError: "채팅을 시작하기 전에 워크스페이스를 먼저 만들어주세요.",
     checklist: {
@@ -532,6 +512,10 @@ const TRANSLATIONS = {
         icon: "아이콘",
         link: "링크",
       },
+      "render-html": {
+        title: null,
+        description: null,
+      },
     },
   },
   api: {
@@ -560,6 +544,7 @@ const TRANSLATIONS = {
         model_type: "모델 유형",
         default: "기본값",
         reasoning: "추론",
+        model_type_tooltip: null,
       },
     },
   },
@@ -782,6 +767,8 @@ const TRANSLATIONS = {
       pat_token_explained: "Confluence 계정의 개인 액세스 토큰입니다.",
       task_explained:
         "가져오기가 완료되면 페이지 내용이 문서 선택기에서 워크스페이스에 임베딩할 수 있도록 제공됩니다.",
+      bypass_ssl: null,
+      bypass_ssl_explained: null,
     },
     manage: {
       documents: "문서 관리",
@@ -1060,6 +1047,13 @@ const TRANSLATIONS = {
         "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
       "password-label": "인스턴스 비밀번호",
     },
+  },
+  home: {
+    welcome: "환영합니다",
+    chooseWorkspace: "워크스페이스를 선택하여 채팅을 시작하세요!",
+    notAssigned:
+      "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
+    goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
   },
 };
 

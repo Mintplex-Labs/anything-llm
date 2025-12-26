@@ -145,6 +145,15 @@ function getModelTag() {
     case "moonshotai":
       model = process.env.MOONSHOT_AI_MODEL_PREF;
       break;
+    case "zai":
+      model = process.env.ZAI_MODEL_PREF;
+      break;
+    case "giteeai":
+      model = process.env.GITEE_AI_MODEL_PREF;
+      break;
+    case "cohere":
+      model = process.env.COHERE_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
@@ -166,8 +175,18 @@ function getDeploymentVersion() {
   return null;
 }
 
+/**
+ * Returns the user agent for the AnythingLLM deployment.
+ * @returns {string} The user agent.
+ */
+function getAnythingLLMUserAgent() {
+  const version = getDeploymentVersion() || "unknown";
+  return `AnythingLLM/${version}`;
+}
+
 module.exports = {
   utilEndpoints,
   getGitVersion,
   getModelTag,
+  getAnythingLLMUserAgent,
 };

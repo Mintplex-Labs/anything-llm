@@ -23,6 +23,7 @@ class ApiPieLLM {
     if (!process.env.APIPIE_LLM_API_KEY)
       throw new Error("No ApiPie LLM API key was set.");
 
+    this.className = "ApiPieLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://apipie.ai/v1";
     this.openai = new OpenAIApi({
@@ -49,7 +50,7 @@ class ApiPieLLM {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
@@ -219,6 +220,8 @@ class ApiPieLLM {
         outputTps:
           (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -229,15 +232,17 @@ class ApiPieLLM {
         `ApiPie chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 

@@ -83,6 +83,22 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  /**
+   * Refreshes the user object from the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
+  refreshUser: () => {
+    return fetch(`${API_BASE}/system/refresh-user`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not refresh user.");
+        return res.json();
+      })
+      .catch((e) => {
+        return { success: false, user: null, message: e.message };
+      });
+  },
   recoverAccount: async function (username, recoveryCodes) {
     return await fetch(`${API_BASE}/system/recover-account`, {
       method: "POST",
@@ -345,6 +361,39 @@ const System = {
       JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
     );
     return { appName: customAppName, error: null };
+  },
+  /**
+   * Fetches the default system prompt from the server.
+   * @returns {Promise<{defaultSystemPrompt: string, saneDefaultSystemPrompt: string}>}
+   */
+  fetchDefaultSystemPrompt: async function () {
+    return await fetch(`${API_BASE}/system/default-system-prompt`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => ({
+        defaultSystemPrompt: res.defaultSystemPrompt,
+        saneDefaultSystemPrompt: res.saneDefaultSystemPrompt,
+      }))
+      .catch((e) => {
+        console.error(e);
+        return { defaultSystemPrompt: "", saneDefaultSystemPrompt: "" };
+      });
+  },
+  updateDefaultSystemPrompt: async function (defaultSystemPrompt) {
+    try {
+      const res = await fetch(`${API_BASE}/system/default-system-prompt`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ defaultSystemPrompt }),
+      });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: e.message };
+    }
   },
   fetchLogo: async function () {
     const url = new URL(`${fullApiUrl()}/system/logo`);

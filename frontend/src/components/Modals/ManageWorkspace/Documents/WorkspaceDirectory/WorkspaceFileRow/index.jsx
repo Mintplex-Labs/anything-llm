@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import {
-  formatDate,
+  formatDateTimeAsMoment,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
@@ -70,8 +70,8 @@ export default function WorkspaceFileRow({
         data-tooltip-id="ws-directory-item"
         data-tooltip-content={JSON.stringify({
           title: item.title,
-          date: formatDate(item?.published),
-          extension: getFileExtension(item.url).toUpperCase(),
+          date: formatDateTimeAsMoment(item?.published),
+          extension: getFileExtension(item.url),
         })}
       >
         <div className="shrink-0 w-3 h-3">
@@ -124,7 +124,6 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
   const [pinned, setPinned] = useState(
     item?.pinnedWorkspaces?.includes(workspace.id) || false
   );
-  const [hover, setHover] = useState(false);
   const pinEvent = new CustomEvent("pinned_document");
 
   const updatePinStatus = async (e) => {
@@ -162,21 +161,18 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
 
   return (
     <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
       onClick={updatePinStatus}
-      className="flex items-center ml-2 cursor-pointer"
+      className="group flex items-center ml-2 cursor-pointer"
       data-tooltip-id="pin-document"
       data-tooltip-content={
         pinned ? "Un-pin from workspace" : "Pin to workspace"
       }
     >
       {pinned ? (
-        <div
-          className={`bg-theme-settings-input-active rounded-3xl whitespace-nowrap ${hover ? "bg-red-500/20" : ""}`}
-        >
-          <p className={`text-xs px-2 py-0.5 ${hover ? "text-red-500" : ""}`}>
-            {hover ? "Un-pin" : "Pinned"}
+        <div className="bg-theme-settings-input-active group-hover:bg-red-500/20 rounded-3xl whitespace-nowrap">
+          <p className="text-xs px-2 py-0.5 group-hover:text-red-500">
+            <span className="group-hover:hidden">Pinned</span>
+            <span className="hidden group-hover:inline">Un-pin</span>
           </p>
         </div>
       ) : (
@@ -192,11 +188,11 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
 
 const WatchForChanges = memo(({ workspace, docPath, item }) => {
   const [watched, setWatched] = useState(item?.watched || false);
-  const [hover, setHover] = useState(false);
   const watchEvent = new CustomEvent("watch_document_for_changes");
 
-  const updateWatchStatus = async () => {
+  const updateWatchStatus = async (e) => {
     try {
+      e.stopPropagation();
       if (!watched) window.dispatchEvent(watchEvent);
       const success =
         await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
@@ -238,19 +234,23 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
 
   return (
     <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
+      className="group flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2 cursor-pointer"
+      onClick={updateWatchStatus}
+      data-tooltip-id="watch-changes"
+      data-active={watched}
+      data-tooltip-content={
+        watched ? "Stop watching for changes" : "Watch document for changes"
+      }
     >
       <Eye
-        data-tooltip-id="watch-changes"
-        data-tooltip-content={
-          watched ? "Stop watching for changes" : "Watch document for changes"
-        }
         size={16}
-        onClick={updateWatchStatus}
-        weight={hover || watched ? "fill" : "regular"}
-        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
+        weight="regular"
+        className="outline-none text-base font-bold flex-shrink-0 group-hover:hidden group-data-[active=true]:hidden"
+      />
+      <Eye
+        size={16}
+        weight="fill"
+        className="outline-none text-base font-bold flex-shrink-0 hidden group-hover:block group-data-[active=true]:block"
       />
     </div>
   );

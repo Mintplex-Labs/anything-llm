@@ -9,19 +9,23 @@ const {
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { AzureOpenAI } = require("openai");
+    const { OpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
-    this.apiVersion = "2024-12-01-preview";
-    this.openai = new AzureOpenAI({
+    this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      apiVersion: this.apiVersion,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    /* 
+      Note: Azure OpenAI deployments do not expose model metadata that would allow us to
+      programmatically detect whether the deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.).
+      As a result, we rely on the user to explicitly set AZURE_OPENAI_MODEL_TYPE="reasoning"
+      when using reasoning models, as incorrect configuration might result in chat errors.
+    */
     this.isOTypeModel =
       process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
@@ -35,6 +39,26 @@ class AzureOpenAiLLM {
     this.#log(
       `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
+  }
+
+  /**
+   * Formats the Azure OpenAI endpoint URL to the correct format.
+   * @param {string} azureOpenAiEndpoint - The Azure OpenAI endpoint URL.
+   * @returns {string} The formatted URL.
+   */
+  static formatBaseUrl(azureOpenAiEndpoint) {
+    try {
+      const url = new URL(azureOpenAiEndpoint);
+      url.pathname = "/openai/v1";
+      url.protocol = "https";
+      url.search = "";
+      url.hash = "";
+      return url.href;
+    } catch (error) {
+      throw new Error(
+        `"${azureOpenAiEndpoint}" is not a valid URL. Check your settings for the Azure OpenAI provider and set a valid endpoint URL.`
+      );
+    }
   }
 
   #log(text, ...args) {
@@ -54,13 +78,6 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
-    // Streaming of reasoning models is not supported
-    if (this.isOTypeModel) {
-      this.#log(
-        "Streaming will be disabled. AZURE_OPENAI_MODEL_TYPE is set to 'reasoning'."
-      );
-      return false;
-    }
     return "streamGetChatCompletion" in this;
   }
 
@@ -157,6 +174,8 @@ class AzureOpenAiLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -167,16 +186,18 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      await this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: await this.openai.chat.completions.create({
         messages,
         model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
         stream: true,
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

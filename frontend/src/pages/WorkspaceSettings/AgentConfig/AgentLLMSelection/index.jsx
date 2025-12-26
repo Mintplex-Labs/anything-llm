@@ -32,21 +32,20 @@ const ENABLED_PROVIDERS = [
   "nvidia-nim",
   "gemini",
   "moonshotai",
+  "cometapi",
+  "foundry",
+  "zai",
+  "giteeai",
+  "cohere",
   "flowiseai",
   // TODO: More agent support.
-  // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
-  "groq",
-  "azure",
   "koboldcpp",
   "ollama",
   "localai",
-  "openrouter",
-  "novita",
-  "generic-openai",
   "textgenwebui",
 ];
 

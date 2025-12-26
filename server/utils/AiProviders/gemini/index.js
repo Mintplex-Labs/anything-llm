@@ -29,6 +29,7 @@ class GeminiLLM {
     if (!process.env.GEMINI_API_KEY)
       throw new Error("No Gemini API key was set.");
 
+    this.className = "GeminiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.model =
       modelPreference ||
@@ -71,7 +72,7 @@ class GeminiLLM {
   }
 
   #log(text, ...args) {
-    console.log(`\x1b[32m[GeminiLLM]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[32m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
@@ -404,21 +405,27 @@ class GeminiLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature: temperature,
+        stream_options: {
+          include_usage: true,
+        },
       }),
       messages,
-      true
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

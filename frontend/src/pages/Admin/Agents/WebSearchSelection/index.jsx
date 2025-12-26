@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Admin from "@/models/admin";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
+import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
@@ -19,6 +20,7 @@ import {
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
+  SerpApiOptions,
   SearchApiOptions,
   SerperDotDevOptions,
   GoogleSearchOptions,
@@ -51,8 +53,15 @@ const SEARCH_PROVIDERS = [
     value: "google-search-engine",
     logo: GoogleSearchIcon,
     options: (settings) => <GoogleSearchOptions settings={settings} />,
+    description: "Web search powered by a custom Google Search Engine.",
+  },
+  {
+    name: "SerpApi",
+    value: "serpapi",
+    logo: SerpApiIcon,
+    options: (settings) => <SerpApiOptions settings={settings} />,
     description:
-      "Web search powered by a custom Google Search Engine. Free for 100 queries per day.",
+      "Scrape Google and several other search engines with SerpApi. 250 free searches every month, and then paid.",
   },
   {
     name: "SearchApi",

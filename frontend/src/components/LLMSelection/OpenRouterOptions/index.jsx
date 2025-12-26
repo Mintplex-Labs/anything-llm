@@ -57,7 +57,7 @@ function AdvancedControls({ settings }) {
             name="OpenRouterTimeout"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.OpenRouterTimeout ?? 500}
+            defaultValue={settings?.OpenRouterTimeout ?? 3_000}
             autoComplete="off"
             onScroll={(e) => e.target.blur()}
             min={500}

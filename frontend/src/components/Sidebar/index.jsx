@@ -13,6 +13,8 @@ import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
 import SearchBox from "./SearchBox";
+import { Tooltip } from "react-tooltip";
+import { createPortal } from "react-dom";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -24,7 +26,6 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
-  const { t } = useTranslation();
 
   return (
     <>
@@ -72,6 +73,7 @@ export default function Sidebar() {
         </div>
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
+      <WorkspaceAndThreadTooltips />
     </>
   );
 }
@@ -87,7 +89,6 @@ export function SidebarMobileHeader() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { user } = useUser();
-  const { t } = useTranslation();
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -201,5 +202,25 @@ function NewWorkspaceButton({ user, showNewWsModal }) {
         </p>
       </button>
     </div>
+  );
+}
+
+function WorkspaceAndThreadTooltips() {
+  return createPortal(
+    <React.Fragment>
+      <Tooltip
+        id="workspace-name"
+        place="right"
+        delayShow={800}
+        className="tooltip !text-xs z-99"
+      />
+      <Tooltip
+        id="workspace-thread-name"
+        place="right"
+        delayShow={800}
+        className="tooltip !text-xs z-99"
+      />
+    </React.Fragment>,
+    document.body
   );
 }
