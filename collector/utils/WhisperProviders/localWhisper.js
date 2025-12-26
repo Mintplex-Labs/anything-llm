@@ -64,52 +64,21 @@ class LocalWhisper {
     try {
       let buffer;
       const wavefile = require("wavefile");
-      const ffmpeg = require("fluent-ffmpeg");
+      const { FFMPEGWrapper } = require("./ffmpeg");
+      const ffmpeg = new FFMPEGWrapper();
       const outFolder = path.resolve(__dirname, `../../storage/tmp`);
       if (!fs.existsSync(outFolder))
         fs.mkdirSync(outFolder, { recursive: true });
 
-      const fileExtension = path.extname(sourcePath).toLowerCase();
-      if (fileExtension !== ".wav") {
-        this.#log(
-          `File conversion required! ${fileExtension} file detected - converting to .wav`
+      const outputFile = path.resolve(outFolder, `${v4()}.wav`);
+      const success = ffmpeg.convertAudioToWav(sourcePath, outputFile);
+      if (!success)
+        throw new Error(
+          "[Conversion Failed]: Could not convert file to .wav format!"
         );
-        const outputFile = path.resolve(outFolder, `${v4()}.wav`);
-        const convert = new Promise((resolve) => {
-          ffmpeg(sourcePath)
-            .toFormat("wav")
-            .on("error", (error) => {
-              this.#log(`Conversion Error! ${error.message}`);
-              resolve(false);
-            })
-            .on("progress", (progress) =>
-              this.#log(
-                `Conversion Processing! ${progress.targetSize}KB converted`
-              )
-            )
-            .on("end", () => {
-              this.#log(`Conversion Complete! File converted to .wav!`);
-              resolve(true);
-            })
-            .save(outputFile);
-        });
-        const success = await convert;
-        if (!success)
-          throw new Error(
-            "[Conversion Failed]: Could not convert file to .wav format!"
-          );
 
-        const chunks = [];
-        const stream = fs.createReadStream(outputFile);
-        for await (let chunk of stream) chunks.push(chunk);
-        buffer = Buffer.concat(chunks);
-        fs.rmSync(outputFile);
-      } else {
-        const chunks = [];
-        const stream = fs.createReadStream(sourcePath);
-        for await (let chunk of stream) chunks.push(chunk);
-        buffer = Buffer.concat(chunks);
-      }
+      buffer = fs.readFileSync(outputFile);
+      fs.rmSync(outputFile);
 
       const wavFile = new wavefile.WaveFile(buffer);
       try {
@@ -119,6 +88,9 @@ class LocalWhisper {
         throw new Error(`Invalid audio file: ${error.message}`);
       }
 
+      // Although we use ffmpeg to convert to the correct format (16k hz 32f),
+      // different versions of ffmpeg produce different results based on the
+      // environment. To ensure consistency, we convert to the correct format again.
       wavFile.toBitDepth("32f");
       wavFile.toSampleRate(16000);
 
