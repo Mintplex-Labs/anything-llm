@@ -3908,6 +3908,11 @@ yauzl@^2.10.0, yauzl@^2.4.2:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
 
+youtube-transcript-plus@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/youtube-transcript-plus/-/youtube-transcript-plus-1.1.2.tgz#f86851852a056088c11f4f6523ab0f8dba7d9711"
+  integrity sha512-bLlqkA6gVVUorZpcc+THuECXyAwOpnHqW2lOav9g6gGovxAP3FCD8s9GBFVjmSl3cWWwwPPXtG/zY1nD+GvQ7A==
+
 youtubei.js@^9.1.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/youtubei.js/-/youtubei.js-9.4.0.tgz#ccccaf4a295b96e3e17134a66730bbc82461594b"
