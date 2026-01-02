@@ -44,6 +44,7 @@
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "winston": "^3.13.0",
+    "youtube-transcript-plus": "^1.1.2",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
