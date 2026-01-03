@@ -93,6 +93,12 @@ export default function EditEmbedModal({ embed, closeModal }) {
                 hint="Allow setting of the system prompt to override the workspace default."
                 defaultValue={embed.allow_prompt_override}
               />
+              <BooleanInput
+                name="allow_agent"
+                title="Enable Agent Support"
+                hint="Allow users to invoke AI agents using @agent commands."
+                defaultValue={embed.allow_agent}
+              />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
