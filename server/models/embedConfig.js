@@ -12,6 +12,9 @@ const EmbedConfig = {
     "allow_prompt_override",
     "max_chats_per_day",
     "max_chats_per_session",
+    "max_chats_per_ip_per_day",
+    "max_chats_per_ip_per_session",
+    "ip_session_binding",
     "chat_mode",
     "workspace_id",
     "message_limit",
@@ -52,6 +55,18 @@ const EmbedConfig = {
             data?.message_limit,
             "message_limit"
           ),
+          max_chats_per_ip_per_day: validatedCreationData(
+            data?.max_chats_per_ip_per_day,
+            "max_chats_per_ip_per_day"
+          ),
+          max_chats_per_ip_per_session: validatedCreationData(
+            data?.max_chats_per_ip_per_session,
+            "max_chats_per_ip_per_session"
+          ),
+          ip_session_binding: validatedCreationData(
+            data?.ip_session_binding,
+            "ip_session_binding"
+          ),
           createdBy: Number(creatorId) ?? null,
           workspace: {
             connect: { id: Number(data.workspace_id) },
@@ -71,7 +86,7 @@ const EmbedConfig = {
       this.writable.includes(key)
     );
     if (validKeys.length === 0)
-      return { embed: { id }, message: "No valid fields to update!" };
+      return { embed: { id: embedId }, message: "No valid fields to update!" };
 
     const updates = {};
     validKeys.map((key) => {
@@ -189,11 +204,14 @@ const BOOLEAN_KEYS = [
   "allow_temperature_override",
   "allow_prompt_override",
   "enabled",
+  "ip_session_binding",
 ];
 
 const NUMBER_KEYS = [
   "max_chats_per_day",
   "max_chats_per_session",
+  "max_chats_per_ip_per_day",
+  "max_chats_per_ip_per_session",
   "workspace_id",
   "message_limit",
 ];
