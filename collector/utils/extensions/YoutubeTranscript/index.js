@@ -146,16 +146,21 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
     token_count_estimate: tokenizeString(content),
   };
 
+  const filename = sanitizeFileName(`${slugify(metadata.title)}-${data.id}`);
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
   writeToServerDocuments({
     data,
-    filename: sanitizeFileName(`${slugify(metadata.title)}-${data.id}`),
+    filename,
     destinationOverride: outFolderPath,
   });
 
   return {
     success: true,
     reason: null,
+    documents: [{
+      ...data,
+      location: `${outFolder}/${filename}.json`
+    }],
     data: {
       title: metadata.title,
       author: metadata.author,
