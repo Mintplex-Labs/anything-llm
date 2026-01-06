@@ -1,5 +1,5 @@
 const { safeJsonParse } = require("../../../../http");
-const { Deduplicator } = require("../../utils/dedupe");
+const { Deduplicator, DEFAULT_COOLDOWN_MS } = require("../../utils/dedupe");
 const { v4 } = require("uuid");
 
 // Useful inheritance class for a model which supports OpenAi schema for API requests
@@ -67,6 +67,21 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     );
     if (!foundFunc) return false;
     return foundFunc?.isMCPTool || false;
+  }
+
+  /**
+   * Get the cooldown time for an MCP tool.
+   * Returns the cooldown from the MCP config or default 30 seconds.
+   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
+   * @param {Object[]} functions - List of functions definitions to check against.
+   * @return {number} - Cooldown time in milliseconds or 0 if not an MCP tool.
+   */
+  getMCPCooldown(functionCall = {}, functions = []) {
+    const foundFunc = functions.find(
+      (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
+    );
+    if (!foundFunc || !foundFunc.isMCPTool) return 0;
+    return foundFunc.mcpCooldownMs || DEFAULT_COOLDOWN_MS;
   }
 
   /**
@@ -281,6 +296,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
           });
           return {
             result: null,
@@ -381,6 +397,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
           });
           return {
             result: null,
