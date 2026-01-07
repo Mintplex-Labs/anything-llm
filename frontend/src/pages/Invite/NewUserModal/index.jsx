@@ -4,16 +4,17 @@ import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_PATTERN,
-  USERNAME_REQUIREMENTS_TEXT,
 } from "@/utils/username";
 
 export default function NewUserModal() {
   const { code } = useParams();
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleCreate = async (e) => {
     setError(null);
@@ -66,7 +67,7 @@ export default function NewUserModal() {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-theme-text-secondary">
-                  {USERNAME_REQUIREMENTS_TEXT}
+                  {t("invite.username_requirements")}
                 </p>
               </div>
               <div>

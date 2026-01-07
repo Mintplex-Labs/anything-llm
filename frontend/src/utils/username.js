@@ -17,12 +17,6 @@ export const USERNAME_MAX_LENGTH = 32;
 export const USERNAME_PATTERN = "[a-z][a-z0-9._-]*";
 
 /**
- * Human-readable description of username requirements
- */
-export const USERNAME_REQUIREMENTS_TEXT =
-  "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.";
-
-/**
  * Validates a username string
  * @param {string} username - The username to validate
  * @returns {{ valid: boolean, error: string | null }}

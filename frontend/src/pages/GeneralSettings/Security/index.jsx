@@ -12,7 +12,6 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_PATTERN,
-  USERNAME_REQUIREMENTS_TEXT,
   validateUsername,
 } from "@/utils/username";
 
@@ -179,7 +178,7 @@ function MultiUserMode() {
                         defaultValue={multiUserModeEnabled ? "********" : ""}
                       />
                       <p className="text-white text-opacity-60 text-xs mt-2">
-                        {USERNAME_REQUIREMENTS_TEXT}
+                        {t("security.multiuser.enable.username_requirements")}
                       </p>
                     </div>
                     <div className="mt-4 w-80">

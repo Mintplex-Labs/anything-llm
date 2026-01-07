@@ -3,11 +3,11 @@ import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
 import { AUTH_USER } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
 import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_PATTERN,
-  USERNAME_REQUIREMENTS_TEXT,
 } from "@/utils/username";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
@@ -17,6 +17,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     enabled: user.dailyMessageLimit !== null,
     limit: user.dailyMessageLimit || 10,
   });
+  const { t } = useTranslation();
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -88,7 +89,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {USERNAME_REQUIREMENTS_TEXT}
+                  {t("admin.users.username_requirements")}
                 </p>
               </div>
               <div>
