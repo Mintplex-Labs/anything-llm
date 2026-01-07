@@ -13,7 +13,13 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  usernameRegex: new RegExp(/^[a-zA-Z0-9._%+-@]+$/),
+  /**
+   * Unix-style username regex:
+   * - Must start with a lowercase letter or underscore
+   * - Can contain lowercase letters, digits, underscores, hyphens, and periods
+   * - 2-32 characters long
+   */
+  usernameRegex: new RegExp(/^[a-z_][a-z0-9._-]*$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -27,11 +33,16 @@ const User = {
   validations: {
     username: (newValue = "") => {
       try {
-        if (String(newValue).length > 100)
-          throw new Error("Username cannot be longer than 100 characters");
-        if (String(newValue).length < 2)
+        const username = String(newValue);
+        if (username.length > 32)
+          throw new Error("Username cannot be longer than 32 characters");
+        if (username.length < 2)
           throw new Error("Username must be at least 2 characters");
-        return String(newValue);
+        if (!User.usernameRegex.test(username))
+          throw new Error(
+            "Username must start with a lowercase letter or underscore, and only contain lowercase letters, numbers, underscores, hyphens, and periods"
+          );
+        return username;
       } catch (e) {
         throw new Error(e.message);
       }
@@ -92,11 +103,8 @@ const User = {
     }
 
     try {
-      // Do not allow new users to bypass validation
-      if (!this.usernameRegex.test(username))
-        throw new Error(
-          "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces"
-        );
+      // Validate username format (validation function handles all checks)
+      this.validations.username(username);
 
       const bcrypt = require("bcryptjs");
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -167,16 +175,8 @@ const User = {
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
 
-      if (
-        updates.hasOwnProperty("username") &&
-        currentUser.username !== updates.username &&
-        !this.usernameRegex.test(updates.username)
-      )
-        return {
-          success: false,
-          error:
-            "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces",
-        };
+      // Username validation is handled by the validations.username function
+      // which is called earlier in the update flow
 
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },

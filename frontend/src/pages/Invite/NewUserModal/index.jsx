@@ -4,6 +4,11 @@ import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import System from "@/models/system";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function NewUserModal() {
   const { code } = useParams();
@@ -53,10 +58,17 @@ export default function NewUserModal() {
                   type="text"
                   className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="My username"
-                  minLength={2}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  pattern={USERNAME_PATTERN}
                   required={true}
                   autoComplete="off"
                 />
+                <p className="mt-2 text-xs text-theme-text-secondary">
+                  Username must start with a lowercase letter or underscore, and
+                  only contain lowercase letters, numbers, underscores, hyphens,
+                  and periods (2-32 characters)
+                </p>
               </div>
               <div>
                 <label
