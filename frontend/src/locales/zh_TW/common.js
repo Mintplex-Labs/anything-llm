@@ -993,6 +993,7 @@ const TRANSLATIONS = {
           "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
         username: "管理員帳號使用者名稱",
         password: "管理員帳號密碼",
+        username_requirements: null,
       },
     },
     password: {
@@ -1008,6 +1009,14 @@ const TRANSLATIONS = {
     notAssigned:
       "你目前還沒有分配到任何工作區。\n請聯繫你的管理員請求訪問一個工作區。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

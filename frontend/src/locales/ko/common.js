@@ -1039,6 +1039,7 @@ const TRANSLATIONS = {
           "당신은 기본 관리자가 됩니다. 관리자로서 모든 신규 사용자 또는 관리자의 계정을 생성해야 합니다. 비밀번호를 잃어버리면 관리자만 비밀번호를 재설정할 수 있습니다.",
         username: "관리자 계정 사용자 이름",
         password: "관리자 계정 비밀번호",
+        username_requirements: null,
       },
     },
     password: {
@@ -1054,6 +1055,14 @@ const TRANSLATIONS = {
     notAssigned:
       "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
     goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

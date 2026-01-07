@@ -1024,6 +1024,7 @@ const TRANSLATIONS = {
           "כברירת מחדל, אתה תהיה המנהל היחיד. כמנהל תצטרך ליצור חשבונות לכל המשתמשים או המנהלים החדשים. אל תאבד את סיסמתך, מכיוון שרק משתמש מנהל יכול לאפס סיסמאות.",
         username: "שם משתמש של חשבון מנהל",
         password: "סיסמת חשבון מנהל",
+        username_requirements: null,
       },
     },
     password: {
@@ -1039,6 +1040,14 @@ const TRANSLATIONS = {
     notAssigned:
       "אינך מוקצה לכל סביבת עבודה.\nיש ליצור קשר עם המנהל שלך כדי לבקש גישה לסביבת עבודה.",
     goToWorkspace: 'עבור לסביבת עבודה "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

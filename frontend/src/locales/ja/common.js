@@ -1017,6 +1017,7 @@ const TRANSLATIONS = {
           "デフォルトでは、あなたが唯一の管理者になります。管理者として、すべての新しいユーザーまたは管理者のアカウントを作成する必要があります。管理者ユーザーのみがパスワードをリセットできるため、パスワードを紛失しないでください。",
         username: "管理者アカウントのユーザー名",
         password: "管理者アカウントのパスワード",
+        username_requirements: null,
       },
     },
     password: {
@@ -1032,6 +1033,14 @@ const TRANSLATIONS = {
     notAssigned:
       "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
     goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

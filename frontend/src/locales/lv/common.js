@@ -1039,6 +1039,7 @@ const TRANSLATIONS = {
           "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
         username: "Administratora konta lietotājvārds",
         password: "Administratora konta parole",
+        username_requirements: null,
       },
     },
     password: {
@@ -1054,6 +1055,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Jūs nav piešķirts nevienai darba vietai.\nLūdzu, sazinieties ar savu administratoru, lai pieprasītu piekļuvi darba vietai.",
     goToWorkspace: 'Pāriet uz darba vietu "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

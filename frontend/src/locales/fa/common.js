@@ -975,6 +975,7 @@ const TRANSLATIONS = {
           "به طور پیش‌فرض، شما تنها مدیر خواهید بود. به عنوان مدیر، باید برای تمام کاربران یا مدیران جدید حساب کاربری ایجاد کنید. رمز عبور خود را گم نکنید زیرا فقط یک کاربر مدیر می‌تواند رمزهای عبور را بازنشانی کند.",
         username: "نام کاربری حساب مدیر",
         password: "رمز عبور حساب مدیر",
+        username_requirements: null,
       },
     },
     password: {
@@ -990,6 +991,14 @@ const TRANSLATIONS = {
     notAssigned:
       "شما در حال حاضر به هیچ فضای کاری اختصاص نیافته‌اید.\nلطفاً با مدیر خود تماس بگیرید تا دسترسی به یک فضای کار را درخواست کنید.",
     goToWorkspace: 'به فضای کار "{{workspace}}" بروید',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

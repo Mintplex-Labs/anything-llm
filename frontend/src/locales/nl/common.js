@@ -978,6 +978,7 @@ const TRANSLATIONS = {
           "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
         username: "Beheerdersaccount gebruikersnaam",
         password: "Beheerdersaccount wachtwoord",
+        username_requirements: null,
       },
     },
     password: {
@@ -993,6 +994,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
     goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

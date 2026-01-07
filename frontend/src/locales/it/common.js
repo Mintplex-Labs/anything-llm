@@ -981,6 +981,7 @@ const TRANSLATIONS = {
           "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
         username: "Nome utente account amministratore",
         password: "Password account amministratore",
+        username_requirements: null,
       },
     },
     password: {
@@ -996,6 +997,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Non sei assegnato a nessuno spazio di lavoro.\nContatta il tuo amministratore per richiedere l'accesso a uno spazio di lavoro.",
     goToWorkspace: 'Vai allo spazio di lavoro "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 
