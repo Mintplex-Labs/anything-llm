@@ -15,11 +15,11 @@ const { EventLogs } = require("./eventLogs");
 const User = {
   /**
    * Unix-style username regex:
-   * - Must start with a lowercase letter or underscore
+   * - Must start with a lowercase letter
    * - Can contain lowercase letters, digits, underscores, hyphens, and periods
    * - 2-32 characters long
    */
-  usernameRegex: new RegExp(/^[a-z_][a-z0-9._-]*$/),
+  usernameRegex: new RegExp(/^[a-z][a-z0-9._-]*$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -40,7 +40,7 @@ const User = {
           throw new Error("Username must be at least 2 characters");
         if (!User.usernameRegex.test(username))
           throw new Error(
-            "Username must start with a lowercase letter or underscore, and only contain lowercase letters, numbers, underscores, hyphens, and periods"
+            "Username must start with a lowercase letter and only contain lowercase letters, numbers, underscores, hyphens, and periods"
           );
         return username;
       } catch (e) {

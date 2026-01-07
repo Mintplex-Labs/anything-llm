@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
-  USERNAME_PATTERN,
   validateUsername,
 } from "@/utils/username";
 
@@ -300,7 +299,6 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   placeholder="Your admin username"
                   minLength={USERNAME_MIN_LENGTH}
                   maxLength={USERNAME_MAX_LENGTH}
-                  // pattern={USERNAME_PATTERN}
                   required={true}
                   autoComplete="off"
                   onChange={handleUsernameChange}

@@ -8,6 +8,13 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+  USERNAME_REQUIREMENTS_TEXT,
+  validateUsername,
+} from "@/utils/username";
 
 export default function GeneralSecurity() {
   const { t } = useTranslation();
@@ -48,6 +55,15 @@ function MultiUserMode() {
         username: form.get("username"),
         password: form.get("password"),
       };
+
+      // Validate username before submitting
+      const validation = validateUsername(data.username);
+      if (!validation.valid) {
+        showToast(validation.error, "error");
+        setSaving(false);
+        setHasChanges(true);
+        return;
+      }
 
       const { success, error } = await System.setupMultiUser(data);
       if (success) {
@@ -154,12 +170,17 @@ function MultiUserMode() {
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin username"
-                        minLength={2}
+                        minLength={USERNAME_MIN_LENGTH}
+                        maxLength={USERNAME_MAX_LENGTH}
+                        pattern={USERNAME_PATTERN}
                         required={true}
                         autoComplete="off"
                         disabled={multiUserModeEnabled}
                         defaultValue={multiUserModeEnabled ? "********" : ""}
                       />
+                      <p className="text-white text-opacity-60 text-xs mt-2">
+                        {USERNAME_REQUIREMENTS_TEXT}
+                      </p>
                     </div>
                     <div className="mt-4 w-80">
                       <label
@@ -326,7 +347,9 @@ function PasswordProtection() {
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
                         placeholder="Your Instance Password"
-                        minLength={8}
+                        minLength={PASSWORD_MIN_LENGTH}
+                        maxLength={PASSWORD_MAX_LENGTH}
+                        pattern={PASSWORD_PATTERN}
                         required={true}
                         autoComplete="off"
                         defaultValue={usePassword ? "********" : ""}

@@ -23,7 +23,7 @@ const TRANSLATIONS = {
 
       adminUsername: "Admin account username",
       adminUsernameReq:
-        "Username must be 2-32 characters, start with a lowercase letter or underscore, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+        "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
       adminPassword: "Admin account password",
       adminPasswordReq: "Passwords must be at least 8 characters.",
       teamHint:
@@ -989,7 +989,7 @@ const TRANSLATIONS = {
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
     username_description:
-      "Username must be 2-32 characters, start with a lowercase letter or underscore, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",

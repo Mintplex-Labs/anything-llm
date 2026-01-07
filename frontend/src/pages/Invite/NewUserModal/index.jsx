@@ -8,6 +8,7 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_PATTERN,
+  USERNAME_REQUIREMENTS_TEXT,
 } from "@/utils/username";
 
 export default function NewUserModal() {
@@ -65,9 +66,7 @@ export default function NewUserModal() {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-theme-text-secondary">
-                  Username must start with a lowercase letter or underscore, and
-                  only contain lowercase letters, numbers, underscores, hyphens,
-                  and periods (2-32 characters)
+                  {USERNAME_REQUIREMENTS_TEXT}
                 </p>
               </div>
               <div>

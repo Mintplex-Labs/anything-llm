@@ -3,18 +3,24 @@
  *
  * Requirements:
  * - 2-32 characters long
- * - Must start with a lowercase letter or underscore
+ * - Must start with a lowercase letter
  * - Can contain lowercase letters, digits, underscores, hyphens, and periods
  */
 
-export const USERNAME_REGEX = /^[a-z_][a-z0-9._-]*$/;
+export const USERNAME_REGEX = /^[a-z][a-z0-9._-]*$/;
 export const USERNAME_MIN_LENGTH = 2;
 export const USERNAME_MAX_LENGTH = 32;
 
 /**
  * HTML5 pattern attribute for username inputs (without ^ and $)
  */
-export const USERNAME_PATTERN = "[a-z_][a-z0-9._-]*";
+export const USERNAME_PATTERN = "[a-z][a-z0-9._-]*";
+
+/**
+ * Human-readable description of username requirements
+ */
+export const USERNAME_REQUIREMENTS_TEXT =
+  "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.";
 
 /**
  * Validates a username string
@@ -44,10 +50,9 @@ export function validateUsername(username) {
     return {
       valid: false,
       error:
-        "Username must start with a lowercase letter or underscore, and only contain lowercase letters, numbers, underscores, hyphens, and periods",
+        "Username must start with a lowercase letter and only contain lowercase letters, numbers, underscores, hyphens, and periods",
     };
   }
 
   return { valid: true, error: null };
 }
-
