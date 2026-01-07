@@ -1022,6 +1022,7 @@ const TRANSLATIONS = {
           "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
         username: "Brugernavn til admin-konto",
         password: "Adgangskode til admin-konto",
+        username_requirements: null,
       },
     },
     password: {
@@ -1037,6 +1038,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
     goToWorkspace: 'Gå til "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

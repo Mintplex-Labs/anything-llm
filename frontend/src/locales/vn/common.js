@@ -977,6 +977,7 @@ const TRANSLATIONS = {
           "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
         username: "Quản trị viên account username",
         password: "Quản trị viên account password",
+        username_requirements: null,
       },
     },
     password: {
@@ -992,6 +993,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Bạn hiện không được giao việc nào.\nLiên hệ với quản trị viên của bạn để yêu cầu truy cập vào khu vực làm việc.",
     goToWorkspace: 'Chuyển đến khu vực làm việc "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

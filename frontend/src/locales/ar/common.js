@@ -983,6 +983,7 @@ const TRANSLATIONS = {
           "افتراضيًا، ستكون أنت المشرف الوحيد. وبصفتك مشرفا ستحتاج إلى إنشاء حسابات لجميع المستعملين أو المشرفين الجدد. لا تفقد كلمة مرورك، حيث يمكن فقط للمستعمل المشرف إعادة تعيين كلمات المرور.",
         username: "اسم المستعمل لحساب المشرف",
         password: "كلمة مرور حساب المشرف",
+        username_requirements: null,
       },
     },
     password: {
@@ -998,6 +999,14 @@ const TRANSLATIONS = {
     notAssigned:
       "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
     goToWorkspace: 'الذهاب إلى "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

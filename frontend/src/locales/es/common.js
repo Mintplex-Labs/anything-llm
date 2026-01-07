@@ -1090,6 +1090,7 @@ const TRANSLATIONS = {
           "Por defecto, serás el único administrador. Como administrador, deberás crear cuentas para todos los nuevos usuarios o administradores. No pierdas tu contraseña, ya que solo un usuario administrador puede restablecer las contraseñas.",
         username: "Nombre de usuario de la cuenta de administrador",
         password: "Contraseña de la cuenta de administrador",
+        username_requirements: null,
       },
     },
     password: {
@@ -1105,6 +1106,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Actualmente no estás asignado a ningún espacio de trabajo.\nPor favor, contacta a tu administrador para solicitar acceso a un espacio de trabajo.",
     goToWorkspace: 'Ir a "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

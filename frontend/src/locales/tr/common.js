@@ -978,6 +978,7 @@ const TRANSLATIONS = {
           "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
         username: "Yönetici hesap kullanıcı adı",
         password: "Yönetici hesap şifresi",
+        username_requirements: null,
       },
     },
     password: {
@@ -993,6 +994,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
     goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

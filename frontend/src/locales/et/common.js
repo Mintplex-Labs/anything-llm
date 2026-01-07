@@ -1015,6 +1015,7 @@ const TRANSLATIONS = {
           "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
         username: "Admini kasutajanimi",
         password: "Admini parool",
+        username_requirements: null,
       },
     },
     password: {
@@ -1030,6 +1031,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
     goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 

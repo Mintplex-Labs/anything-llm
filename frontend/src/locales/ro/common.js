@@ -1067,6 +1067,7 @@ const TRANSLATIONS = {
           "Implicit, vei fi singurul administrator. Ca administrator, va trebui să creezi conturi pentru toți utilizatorii sau administratorii noi. Nu pierde parola, deoarece doar un utilizator administrator poate reseta parolele.",
         username: "Numele contului de administrator",
         password: "Parola contului de administrator",
+        username_requirements: null,
       },
     },
     password: {
@@ -1082,6 +1083,14 @@ const TRANSLATIONS = {
     notAssigned:
       "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
     goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
+  },
+  invite: {
+    username_requirements: null,
+  },
+  admin: {
+    users: {
+      username_requirements: null,
+    },
   },
 };
 
