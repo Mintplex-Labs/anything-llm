@@ -7,6 +7,7 @@ import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Workspace from "@/models/workspace";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
   if (import.meta.env.DEV) {
@@ -53,7 +54,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
 
   function handleForward() {
     if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
-      navigate(paths.onboarding.createWorkspace());
+      navigate(paths.home());
       return;
     }
 
@@ -78,7 +79,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   function skipSurvey() {
-    navigate(paths.onboarding.createWorkspace());
+    navigate(paths.home());
   }
 
   function handleBack() {
@@ -89,6 +90,14 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
+
+    async function createDefaultWorkspace() {
+      const workspaces = await Workspace.all();
+      if (workspaces.length === 0) {
+        await Workspace.new({ name: "My Workspace", onboardingComplete: true });
+      }
+    }
+    createDefaultWorkspace();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -102,7 +111,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
       comment: formData.get("comment") || null,
     });
 
-    navigate(paths.onboarding.createWorkspace());
+    navigate(paths.home());
   };
 
   if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {

@@ -45,9 +45,6 @@ export default {
     dataHandling: () => {
       return "/onboarding/data-handling";
     },
-    createWorkspace: () => {
-      return "/onboarding/create-workspace";
-    },
   },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
