@@ -259,28 +259,87 @@ class AnthropicProvider extends Provider {
           result.functionCall.arguments,
           {}
         );
-        messages.push({
-          role: "assistant",
-          content: [
-            { type: "text", text: result.textResponse },
-            {
-              type: "tool_use",
-              id: result.functionCall.id,
-              name: result.functionCall.name,
-              input: result.functionCall.arguments,
-            },
-          ],
-        });
-        return {
-          textResponse: result.textResponse,
-          functionCall: {
-            name: result.functionCall.name,
-            arguments: result.functionCall.arguments,
-          },
-          cost: 0,
+        const toolCall = {
+          name: result.functionCall.name,
+          arguments: result.functionCall.arguments,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCall.name,
+          toolCall.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCall.name} again because ${reason}.`
+          );
+          eventHandler?.("reportStreamEvent", {
+            type: "removeStatusResponse",
+            uuid: `${result.functionCall.id}:duplicate`,
+            content:
+              "The model tried to call a function with the same arguments as a previous call - it was ignored.",
+          });
+
+          // Filter out the tools on cooldown
+          const availableFunctions = functions.filter(
+            (fn) => fn.name !== toolCall.name
+          );
+
+          return await this.stream(
+            [
+              ...messages,
+              {
+                role: "assistant",
+                content: [
+                  {
+                    type: "tool_use",
+                    id: result.functionCall.id,
+                    name: result.functionCall.name,
+                    input: result.functionCall.arguments,
+                  },
+                ],
+              },
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: result.functionCall.id,
+                    content: `Tool unavailable. continue with your response and do not call this tool again.`,
+                  },
+                ],
+              },
+            ],
+            availableFunctions,
+            eventHandler
+          );
+        } else {
+          messages.push({
+            role: "assistant",
+            content: [
+              { type: "text", text: result.textResponse },
+              {
+                type: "tool_use",
+                id: result.functionCall.id,
+                name: result.functionCall.name,
+                input: result.functionCall.arguments,
+              },
+            ],
+          });
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
+          });
+          return {
+            textResponse: result.textResponse,
+            functionCall: {
+              name: result.functionCall.name,
+              arguments: result.functionCall.arguments,
+            },
+            cost: 0,
+          };
+        }
       }
 
+      this.deduplicator.reset("runs");
       return {
         textResponse: result.textResponse,
         functionCall: null,
@@ -367,15 +426,56 @@ class AnthropicProvider extends Provider {
         messages.push(thought);
 
         const functionArgs = toolCall.input;
-        return {
-          result: null,
-          functionCall: {
-            name: toolCall.name,
-            arguments: functionArgs,
-          },
-          cost: 0,
-        };
+        const toolCallObj = { name: toolCall.name, arguments: functionArgs };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCallObj.name,
+          toolCallObj.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCallObj.name} again because ${reason}.`
+          );
+
+          // Filter out the tool on cooldown so Anthropic can't see it
+          const availableFunctions = functions.filter(
+            (fn) => fn.name !== toolCallObj.name
+          );
+
+          // Tell Anthropic the tool call failed so it continues
+          return await this.complete(
+            [
+              ...messages,
+              thought,
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: toolCall.id,
+                    content: `Tool unavailable. Please continue with your response or use a different tool.`,
+                  },
+                ],
+              },
+            ],
+            availableFunctions
+          );
+        } else {
+          this.deduplicator.trackRun(toolCallObj.name, toolCallObj.arguments, {
+            cooldown: this.isMCPTool(toolCallObj, functions),
+            cooldownInMs: this.getMCPCooldown(toolCallObj, functions),
+          });
+          return {
+            result: null,
+            functionCall: {
+              name: toolCall.name,
+              arguments: functionArgs,
+            },
+            cost: 0,
+          };
+        }
       }
+
+      this.deduplicator.reset("runs");
 
       const completion = response.content.find((msg) => msg.type === "text");
       return {

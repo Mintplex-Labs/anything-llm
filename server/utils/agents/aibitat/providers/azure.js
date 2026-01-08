@@ -67,16 +67,35 @@ class AzureOpenAiProvider extends Provider {
         }
 
         // console.log(completion, { functionArgs })
-        return {
-          textResponse: null,
-          functionCall: {
-            name: completion.function_call.name,
-            arguments: functionArgs,
-          },
-          cost,
+        const toolCall = {
+          name: completion.function_call.name,
+          arguments: functionArgs,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCall.name,
+          toolCall.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCall.name} again because ${reason}.`
+          );
+        } else {
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
+          });
+          return {
+            textResponse: null,
+            functionCall: {
+              name: completion.function_call.name,
+              arguments: functionArgs,
+            },
+            cost,
+          };
+        }
       }
 
+      this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
         cost,

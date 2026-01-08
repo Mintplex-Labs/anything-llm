@@ -185,17 +185,49 @@ class OpenAIProvider extends Provider {
           completion.functionCall.arguments,
           {}
         );
-        return {
-          textResponse: completion.content,
-          functionCall: {
-            id: completion.functionCall.call_id,
-            name: completion.functionCall.name,
-            arguments: completion.functionCall.arguments,
-          },
-          cost: this.getCost(),
+        const toolCall = {
+          name: completion.functionCall.name,
+          arguments: completion.functionCall.arguments,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCall.name,
+          toolCall.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCall.name} again because ${reason}.`
+          );
+          eventHandler?.("reportStreamEvent", {
+            type: "removeStatusResponse",
+            uuid: `${completion.functionCall.call_id}:duplicate`,
+            content:
+              "The model tried to call a function with the same arguments as a previous call - it was ignored.",
+          });
+
+          // Remove tool on cooldown from being called again to prevent
+          // infinte loops
+          const filteredFunctions = functions.filter(
+            (fn) => fn.name !== toolCall.name
+          );
+          return await this.stream(messages, filteredFunctions, eventHandler);
+        } else {
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
+          });
+          return {
+            textResponse: completion.content,
+            functionCall: {
+              id: completion.functionCall.call_id,
+              name: completion.functionCall.name,
+              arguments: completion.functionCall.arguments,
+            },
+            cost: this.getCost(),
+          };
+        }
       }
 
+      this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
         functionCall: null,
@@ -270,19 +302,45 @@ class OpenAIProvider extends Provider {
           completion.functionCall.arguments,
           {}
         );
-        return {
-          textResponse: completion.content,
-          functionCall: {
-            // For OpenAI, the id is the call_id and we need it in followup requests
-            // so we can match the function call output to its invocation in the message history.
-            id: completion.functionCall.call_id,
-            name: completion.functionCall.name,
-            arguments: completion.functionCall.arguments,
-          },
-          cost: this.getCost(),
+        const toolCall = {
+          name: completion.functionCall.name,
+          arguments: completion.functionCall.arguments,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCall.name,
+          toolCall.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCall.name} again because ${reason}.`
+          );
+
+          // Remove tool on cooldown from being called again to prevent
+          // infinte loops
+          const filteredFunctions = functions.filter(
+            (fn) => fn.name !== toolCall.name
+          );
+          return await this.complete(messages, filteredFunctions);
+        } else {
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
+          });
+          return {
+            textResponse: completion.content,
+            functionCall: {
+              // For OpenAI, the id is the call_id and we need it in followup requests
+              // so we can match the function call output to its invocation in the message history.
+              id: completion.functionCall.call_id,
+              name: completion.functionCall.name,
+              arguments: completion.functionCall.arguments,
+            },
+            cost: this.getCost(),
+          };
+        }
       }
 
+      this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
         functionCall: null,

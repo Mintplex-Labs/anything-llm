@@ -1,12 +1,13 @@
 const { safeJsonParse } = require("../../../../http");
-const { Deduplicator, DEFAULT_COOLDOWN_MS } = require("../../utils/dedupe");
+const { Deduplicator } = require("../../utils/dedupe");
 const { v4 } = require("uuid");
-
 // Useful inheritance class for a model which supports OpenAi schema for API requests
 // but does not have tool-calling or JSON output support.
 class UnTooled {
   constructor() {
-    this.deduplicator = new Deduplicator();
+    if (!this.deduplicator) {
+      this.deduplicator = new Deduplicator();
+    }
   }
 
   cleanMsgs(messages) {
@@ -43,45 +44,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       output += `${shotExample}-----------\n`;
     });
     return output;
-  }
-
-  /**
-   * Check if a function call is an MCP tool.
-   * We do this because some MCP tools dont return values and will cause infinite loops in calling for Untooled to call the same function over and over again.
-   * Any MCP tool is automatically marked with a cooldown to prevent infinite loops of the same function over and over again.
-   *
-   * This can lead to unexpected behavior if you want a model using Untooled to call a repeat action multiple times.
-   * eg: Create 3 Jira tickets about x, y, and z. -> will skip y and z if you don't disable the cooldown.
-   *
-   * You can disable this check by setting the `MCP_NO_COOLDOWN` flag to any value in the ENV.
-   *
-   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
-   * @param {Object[]} functions - The list of functions definitions to check against.
-   * @return {boolean} - True if the function call is an MCP tool, false otherwise.
-   */
-  isMCPTool(functionCall = {}, functions = []) {
-    if (process.env.MCP_NO_COOLDOWN) return false;
-
-    const foundFunc = functions.find(
-      (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
-    );
-    if (!foundFunc) return false;
-    return foundFunc?.isMCPTool || false;
-  }
-
-  /**
-   * Get the cooldown time for an MCP tool.
-   * Returns the cooldown from the MCP config or default 30 seconds.
-   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
-   * @param {Object[]} functions - List of functions definitions to check against.
-   * @return {number} - Cooldown time in milliseconds or 0 if not an MCP tool.
-   */
-  getMCPCooldown(functionCall = {}, functions = []) {
-    const foundFunc = functions.find(
-      (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
-    );
-    if (!foundFunc || !foundFunc.isMCPTool) return 0;
-    return foundFunc.mcpCooldownMs || DEFAULT_COOLDOWN_MS;
   }
 
   /**
