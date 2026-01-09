@@ -48,7 +48,7 @@ async function asXlsx({
         const content = convertToCSV(data);
 
         if (!content?.length) {
-          console.log(`Sheet "${name}" is empty. Skipping.`);
+          console.warn(`Sheet "${name}" is empty. Skipping.`);
           continue;
         }
 
@@ -147,13 +147,13 @@ async function asXlsx({
             `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`
           );
         } catch (err) {
-          console.log(`Error processing sheet "${name}":`, err);
+          console.error(`Error processing sheet "${name}":`, err);
           continue;
         }
       }
     }
   } catch (err) {
-    console.log("Could not process xlsx file!", err);
+    console.error("Could not process xlsx file!", err);
     return {
       success: false,
       reason: `Error processing ${filename}: ${err.message}`,
@@ -164,7 +164,7 @@ async function asXlsx({
   }
 
   if (documents.length === 0) {
-    console.log(`No valid sheets found in ${filename}.`);
+    console.error(`No valid sheets found in ${filename}.`);
     return {
       success: false,
       reason: `No valid sheets found in ${filename}.`,
