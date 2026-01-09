@@ -202,17 +202,42 @@ class GeminiProvider extends Provider {
           completion.functionCall.arguments,
           {}
         );
-        return {
-          textResponse: completion.content,
-          functionCall: {
-            id: completion.functionCall.call_id,
-            name: completion.functionCall.name,
-            arguments: completion.functionCall.arguments,
-          },
-          cost: this.getCost(),
+        const toolCall = {
+          name: completion.functionCall.name,
+          arguments: completion.functionCall.arguments,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCall.name,
+          toolCall.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCall.name} again because ${reason}.`
+          );
+          eventHandler?.("reportStreamEvent", {
+            type: "removeStatusResponse",
+            uuid: `${completion.functionCall.call_id}:duplicate`,
+            content:
+              "The model tried to call a function with the same arguments as a previous call - it was ignored.",
+          });
+        } else {
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
+            cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
+          });
+          return {
+            textResponse: completion.content,
+            functionCall: {
+              id: completion.functionCall.call_id,
+              name: completion.functionCall.name,
+              arguments: completion.functionCall.arguments,
+            },
+            cost: this.getCost(),
+          };
+        }
       }
 
+      this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
         functionCall: null,
@@ -259,16 +284,36 @@ class GeminiProvider extends Provider {
       if (completion?.tool_calls?.length > 0) {
         const toolCall = completion.tool_calls[0];
         let functionArgs = safeJsonParse(toolCall.function.arguments, {});
-        return {
-          textResponse: null,
-          functionCall: {
-            name: this.prefixToolCall(toolCall.function.name, "strip"),
-            arguments: functionArgs,
-            id: toolCall.id,
-          },
-          cost,
+        const toolCallObj = {
+          name: this.prefixToolCall(toolCall.function.name, "strip"),
+          arguments: functionArgs,
         };
+        const { isDuplicate, reason } = this.deduplicator.isDuplicate(
+          toolCallObj.name,
+          toolCallObj.arguments
+        );
+        if (isDuplicate) {
+          this.providerLog(
+            `Cannot call ${toolCallObj.name} again because ${reason}.`
+          );
+        } else {
+          this.deduplicator.trackRun(toolCallObj.name, toolCallObj.arguments, {
+            cooldown: this.isMCPTool(toolCallObj, functions),
+            cooldownInMs: this.getMCPCooldown(toolCallObj, functions),
+          });
+          return {
+            textResponse: null,
+            functionCall: {
+              name: this.prefixToolCall(toolCall.function.name, "strip"),
+              arguments: functionArgs,
+              id: toolCall.id,
+            },
+            cost,
+          };
+        }
       }
+
+      this.deduplicator.reset("runs");
 
       return {
         textResponse: completion.content,

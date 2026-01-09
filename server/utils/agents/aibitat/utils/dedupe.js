@@ -150,3 +150,4 @@ class Deduplicator {
 }
 
 module.exports.Deduplicator = Deduplicator;
+module.exports.DEFAULT_COOLDOWN_MS = DEFAULT_COOLDOWN_MS;

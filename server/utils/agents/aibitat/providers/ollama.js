@@ -201,6 +201,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
           });
           return {
             result: null,
@@ -320,6 +321,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
+            cooldownInMs: this.getMCPCooldown(toolCall, functions),
           });
           return {
             result: null,
