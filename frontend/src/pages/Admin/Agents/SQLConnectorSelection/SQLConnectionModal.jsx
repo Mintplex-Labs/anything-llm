@@ -57,6 +57,7 @@ export default function SQLConnectionModal({
   onSubmit,
   setHasChanges,
   existingConnection = null, // { database_id, engine } for edit mode
+  connections = [], // List of all existing connections for duplicate detection
 }) {
   const [engine, setEngine] = useState(DEFAULT_ENGINE);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
@@ -129,11 +130,46 @@ export default function SQLConnectionModal({
     });
   }
 
+  /**
+   * Checks if a connection name (slugified) already exists in the connections list.
+   * For edit mode, excludes the original connection being edited.
+   * @param {string} slugifiedName - The slugified name to check
+   * @returns {boolean} - True if duplicate exists, false otherwise
+   */
+  function isDuplicateConnectionName(slugifiedName) {
+    // Get active connections (not marked for removal)
+    const activeConnections = connections.filter(
+      (conn) => conn.action !== "remove"
+    );
+
+    // Check for duplicates, excluding the original connection in edit mode
+    return activeConnections.some((conn) => {
+      // In edit mode, skip the original connection being edited
+      if (isEditMode && conn.database_id === originalDatabaseId) {
+        return false;
+      }
+      return conn.database_id === slugifiedName;
+    });
+  }
+
   async function handleUpdate(e) {
     e.preventDefault();
     e.stopPropagation();
     const form = new FormData(e.target);
     const connectionString = assembleConnectionString({ engine, ...config });
+
+    // Slugify the database_id immediately to match backend behavior
+    const slugifiedDatabaseId = slugify(form.get("name"));
+
+    // Check for duplicate connection names before validation
+    if (isDuplicateConnectionName(slugifiedDatabaseId)) {
+      showToast(
+        `A connection with the name "${slugifiedDatabaseId}" already exists. Please choose a different name.`,
+        "error",
+        { clear: true }
+      );
+      return;
+    }
 
     setIsValidating(true);
     try {
@@ -151,9 +187,6 @@ export default function SQLConnectionModal({
         setIsValidating(false);
         return;
       }
-
-      // Slugify the database_id immediately to match backend behavior
-      const slugifiedDatabaseId = slugify(form.get("name"));
 
       const connectionData = {
         engine,

@@ -16,6 +16,7 @@ export default function DBConnection({
   onRemove,
   onUpdate,
   setHasChanges,
+  connections = [],
 }) {
   const { database_id, engine } = connection;
   const { isOpen, openModal, closeModal } = useModal();
@@ -65,6 +66,7 @@ export default function DBConnection({
         existingConnection={{ database_id, engine }}
         onSubmit={onUpdate}
         setHasChanges={setHasChanges}
+        connections={connections}
       />
     </div>
   );

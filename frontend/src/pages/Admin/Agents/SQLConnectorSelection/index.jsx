@@ -103,7 +103,7 @@ export default function AgentSQLConnectorSelection({
                   Your database connections
                 </p>
                 <div className="flex flex-col gap-y-3">
-                  {connections
+                    {connections
                     .filter((connection) => connection.action !== "remove")
                     .map((connection) => (
                       <DBConnection
@@ -112,6 +112,7 @@ export default function AgentSQLConnectorSelection({
                         onRemove={handleRemoveConnection}
                         onUpdate={handleUpdateConnection}
                         setHasChanges={setHasChanges}
+                        connections={connections}
                       />
                     ))}
                   <button
@@ -143,6 +144,7 @@ export default function AgentSQLConnectorSelection({
         closeModal={closeModal}
         setHasChanges={setHasChanges}
         onSubmit={handleAddConnection}
+        connections={connections}
       />
     </>
   );
