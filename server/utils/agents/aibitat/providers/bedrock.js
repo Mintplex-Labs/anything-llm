@@ -148,13 +148,20 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
-    );
+    return await UnTooled.prototype.stream
+      .call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      )
+      .catch((e) => {
+        AWSBedrockLLM.errorToHumanReadable(e, {
+          method: "stream",
+          model: this.model,
+        });
+      });
   }
 
   /**
@@ -165,12 +172,14 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    return await UnTooled.prototype.complete
+      .call(this, messages, functions, this.#handleFunctionCallChat.bind(this))
+      .catch((e) => {
+        AWSBedrockLLM.errorToHumanReadable(e, {
+          method: "complete",
+          model: this.model,
+        });
+      });
   }
 
   /**
