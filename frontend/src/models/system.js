@@ -250,8 +250,13 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  uploadLogo: async function (formData) {
-    return await fetch(`${API_BASE}/system/upload-logo`, {
+  uploadLogo: async function (formData, theme = null) {
+    const url = new URL(`${API_BASE}/system/upload-logo`);
+    if (theme) {
+      // Append theme as query parameter or add to form data
+      formData.append('theme', theme);
+    }
+    return await fetch(url.toString(), {
       method: "POST",
       body: formData,
       headers: baseHeaders(),
@@ -451,8 +456,12 @@ const System = {
       });
   },
 
-  isDefaultLogo: async function () {
-    return await fetch(`${API_BASE}/system/is-default-logo`, {
+  isDefaultLogo: async function (theme = null) {
+    const url = new URL(`${API_BASE}/system/is-default-logo`);
+    if (theme) {
+      url.searchParams.append('theme', theme);
+    }
+    return await fetch(url.toString(), {
       method: "GET",
       cache: "no-cache",
     })
@@ -466,8 +475,12 @@ const System = {
         return null;
       });
   },
-  removeCustomLogo: async function () {
-    return await fetch(`${API_BASE}/system/remove-logo`, {
+  removeCustomLogo: async function (theme = null) {
+    const url = new URL(`${API_BASE}/system/remove-logo`);
+    if (theme) {
+      url.searchParams.append('theme', theme);
+    }
+    return await fetch(url.toString(), {
       headers: baseHeaders(),
     })
       .then((res) => {
