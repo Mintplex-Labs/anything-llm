@@ -146,10 +146,13 @@ class AWSBedrockLLM {
   }
 
   /**
-   * Indicates if the provider supports streaming responses.
-   * @returns {boolean} True.
+   * Some Bedrock models (Titan, Cohere) don't support streaming.
+   * Set AWS_BEDROCK_STREAMING_DISABLED to any value to disable streaming for those models.
+   * Since this can be any model even custom models we leave it to the user to disable streaming if needed.
+   * @returns {boolean} True if streaming is supported, false otherwise.
    */
   streamingEnabled() {
+    if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return "streamGetChatCompletion" in this;
   }
 
