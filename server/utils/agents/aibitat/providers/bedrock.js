@@ -3,6 +3,7 @@ const {
   getBedrockAuthMethod,
   createBedrockChatClient,
 } = require("../../../AiProviders/bedrock/utils.js");
+const { AWSBedrockLLM } = require("../../../AiProviders/bedrock/index.js");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -31,6 +32,10 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
+  }
+
+  get supportsAgentStreaming() {
+    return false;
   }
 
   /**
@@ -136,7 +141,10 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
         cost: 0,
       };
     } catch (error) {
-      throw error;
+      AWSBedrockLLM.errorToHumanReadable(error, {
+        method: "complete",
+        model: this.model,
+      });
     }
   }
 
