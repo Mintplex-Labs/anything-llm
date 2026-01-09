@@ -1,7 +1,9 @@
 import PostgreSQLLogo from "./icons/postgresql.png";
 import MySQLLogo from "./icons/mysql.png";
 import MSSQLLogo from "./icons/mssql.png";
-import { X } from "@phosphor-icons/react";
+import { PencilSimple, X } from "@phosphor-icons/react";
+import { useModal } from "@/hooks/useModal";
+import EditSQLConnection from "./SQLConnectionModal";
 
 export const DB_LOGOS = {
   postgresql: PostgreSQLLogo,
@@ -9,8 +11,15 @@ export const DB_LOGOS = {
   "sql-server": MSSQLLogo,
 };
 
-export default function DBConnection({ connection, onRemove }) {
+export default function DBConnection({
+  connection,
+  onRemove,
+  onUpdate,
+  setHasChanges,
+}) {
   const { database_id, engine } = connection;
+  const { isOpen, openModal, closeModal } = useModal();
+
   function removeConfirmation() {
     if (
       !window.confirm(
@@ -33,14 +42,30 @@ export default function DBConnection({ connection, onRemove }) {
           <div className="text-sm font-semibold text-white">{database_id}</div>
           <div className="mt-1 text-xs text-description">{engine}</div>
         </div>
-        <button
-          type="button"
-          onClick={removeConfirmation}
-          className="border-none text-white hover:text-red-500"
-        >
-          <X size={24} />
-        </button>
+        <div className="flex gap-x-2">
+          <button
+            type="button"
+            className="border-none text-white hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
+            onClick={openModal}
+          >
+            <PencilSimple size={24} />
+          </button>
+          <button
+            type="button"
+            onClick={removeConfirmation}
+            className="border-none text-white hover:text-red-500"
+          >
+            <X size={24} />
+          </button>
+        </div>
       </div>
+      <EditSQLConnection
+        isOpen={isOpen}
+        closeModal={closeModal}
+        existingConnection={{ database_id, engine }}
+        onSubmit={onUpdate}
+        setHasChanges={setHasChanges}
+      />
     </div>
   );
 }

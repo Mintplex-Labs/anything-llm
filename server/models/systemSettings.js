@@ -712,7 +712,6 @@ const SystemSettings = {
 
 function mergeConnections(existingConnections = [], updates = []) {
   let updatedConnections = [...existingConnections];
-  const existingDbIds = existingConnections.map((conn) => conn.database_id);
 
   // First remove all 'action:remove' candidates from existing connections.
   const toRemove = updates
@@ -722,6 +721,35 @@ function mergeConnections(existingConnections = [], updates = []) {
     (conn) => !toRemove.includes(conn.database_id)
   );
 
+  // Handle 'action:update' candidates - update existing connections
+  updates
+    .filter((conn) => conn.action === "update")
+    .forEach((update) => {
+      if (!update.connectionString) return; // invalid connection string
+
+      const originalId = update.originalDatabaseId;
+      const newId = slugify(update.database_id);
+
+      // Remove the old connection
+      updatedConnections = updatedConnections.filter(
+        (conn) => conn.database_id !== originalId
+      );
+
+      // Check if new database_id conflicts with existing ones (excluding the original)
+      const otherDbIds = updatedConnections.map((conn) => conn.database_id);
+      let finalDatabaseId = newId;
+      if (otherDbIds.includes(newId) && originalId !== newId) {
+        finalDatabaseId = slugify(`${newId}-${v4().slice(0, 4)}`);
+      }
+
+      // Add the updated connection
+      updatedConnections.push({
+        engine: update.engine,
+        database_id: finalDatabaseId,
+        connectionString: update.connectionString,
+      });
+    });
+
   // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
   // but we do validate their database_id is unique.
   updates
@@ -729,18 +757,18 @@ function mergeConnections(existingConnections = [], updates = []) {
     .forEach((update) => {
       if (!update.connectionString) return; // invalid connection string
 
-      // Remap name to be unique to entire set.
-      if (existingDbIds.includes(update.database_id)) {
-        update.database_id = slugify(
-          `${update.database_id}-${v4().slice(0, 4)}`
-        );
-      } else {
-        update.database_id = slugify(update.database_id);
+      const slugifiedId = slugify(update.database_id);
+
+      // Check against current updatedConnections (includes existing + already added in this batch)
+      const currentDbIds = updatedConnections.map((conn) => conn.database_id);
+      let finalDatabaseId = slugifiedId;
+      if (currentDbIds.includes(slugifiedId)) {
+        finalDatabaseId = slugify(`${slugifiedId}-${v4().slice(0, 4)}`);
       }
 
       updatedConnections.push({
         engine: update.engine,
-        database_id: update.database_id,
+        database_id: finalDatabaseId,
         connectionString: update.connectionString,
       });
     });
