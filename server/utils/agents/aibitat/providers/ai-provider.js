@@ -63,6 +63,20 @@ class Provider {
     );
   }
 
+ /**
+   * Check if a function call is an MCP tool.
+   * We do this because some MCP tools dont return values and will cause infinite loops in calling for Untooled to call the same function over and over again.
+   * Any MCP tool is automatically marked with a cooldown to prevent infinite loops of the same function over and over again.
+   *
+   * This can lead to unexpected behavior if you want a model using Untooled to call a repeat action multiple times.
+   * eg: Create 3 Jira tickets about x, y, and z. -> will skip y and z if you don't disable the cooldown.
+   *
+   * You can disable this check by setting the `MCP_NO_COOLDOWN` flag to any value in the ENV.
+   *
+   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
+   * @param {Object[]} functions - The list of functions definitions to check against.
+   * @return {boolean} - True if the function call is an MCP tool, false otherwise.
+   */
   isMCPTool(functionCall = {}, functions = []) {
     if (process.env.MCP_NO_COOLDOWN) return false;
     const foundFunc = functions.find(
@@ -72,6 +86,12 @@ class Provider {
     return foundFunc?.isMCPTool || false;
   }
 
+  /**
+   * Get cooldown for MCP tool
+   * @param {{name: string, arguments: Object}} functionCall - The function call to check.
+   * @param {Object[]} functions - The list of functions definitions to check against.
+   * @return {number} - The cooldown for the MCP tool in milliseconds.
+   */
   getMCPCooldown(functionCall = {}, functions = []) {
     const foundFunc = functions.find(
       (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
