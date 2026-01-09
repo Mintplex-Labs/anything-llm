@@ -81,8 +81,7 @@ async function asXlsx({
         description:
           metadata.description ||
           `Spreadsheet data from ${filename} containing ${sheetNames.length} sheet(s)`,
-        docSource:
-          metadata.docSource || "an xlsx file uploaded by the user.",
+        docSource: metadata.docSource || "an xlsx file uploaded by the user.",
         chunkSource: metadata.chunkSource || "",
         published: createdDate(fullFilePath),
         wordCount: totalWordCount,
@@ -97,9 +96,7 @@ async function asXlsx({
         options: { parseOnly: true },
       });
       documents.push(document);
-      console.log(
-        `[SUCCESS]: ${filename} converted & ready for embedding.`
-      );
+      console.log(`[SUCCESS]: ${filename} converted & ready for embedding.`);
     } else {
       const folderName = slugify(
         `${path.basename(filename)}-${v4().slice(0, 4)}`,
