@@ -1251,6 +1251,9 @@ function dumpENV() {
 
     // Allow disabling of MCP tool cooldown
     "MCP_NO_COOLDOWN",
+
+    // Allow disabling of streaming for AWS Bedrock
+    "AWS_BEDROCK_STREAMING_DISABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
