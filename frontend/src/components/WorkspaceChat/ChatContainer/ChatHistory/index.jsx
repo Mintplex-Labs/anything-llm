@@ -157,13 +157,7 @@ export default function ChatHistory({
         forkThread,
         getMessageAlignment,
       }),
-    [
-      workspace,
-      history,
-      regenerateAssistantMessage,
-      saveEditedMessage,
-      forkThread,
-    ]
+    [workspace, history, getMessageAlignment]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
   const renderStatusResponse = useCallback(

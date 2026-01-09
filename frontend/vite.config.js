@@ -4,6 +4,7 @@ import postcss from "./postcss.config.js"
 import react from "@vitejs/plugin-react"
 import dns from "dns"
 import { visualizer } from "rollup-plugin-visualizer"
+import svgr from "vite-plugin-svgr"
 
 dns.setDefaultResultOrder("verbatim")
 
@@ -28,6 +29,7 @@ export default defineConfig({
     postcss
   },
   plugins: [
+    svgr(),
     react(),
     visualizer({
       template: "treemap", // or sunburst
