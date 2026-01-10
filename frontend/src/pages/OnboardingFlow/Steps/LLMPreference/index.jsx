@@ -31,6 +31,7 @@ import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -63,6 +64,7 @@ import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
+import FlowiseAiOptions from "@/components/LLMSelection/FlowiseAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -298,6 +300,13 @@ const LLMS = [
     logo: GiteeAILogo,
     options: (settings) => <GiteeAiOptions settings={settings} />,
     description: "Run GiteeAI's powerful LLMs.",
+  },
+  {
+    name: "FlowiseAi",
+    value: "flowiseai",
+    logo: FlowiseAiLogo,
+    options: (settings) => <FlowiseAiOptions settings={settings} />,
+    description: "Run flows and LLMs using FlowiseAi's powerful platform.",
   },
 ];
 
