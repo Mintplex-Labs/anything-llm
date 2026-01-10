@@ -106,7 +106,7 @@ export default function SQLConnectionModal({
     }
 
     fetchConnectionDetails();
-  }, [isEditMode, isOpen, existingConnection]);
+  }, [isEditMode, isOpen, existingConnection?.database_id]);
 
   if (!isOpen) return null;
 
