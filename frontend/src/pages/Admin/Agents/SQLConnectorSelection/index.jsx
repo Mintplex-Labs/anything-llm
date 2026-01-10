@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DBConnection from "./DBConnection";
 import { Plus, Database } from "@phosphor-icons/react";
-import NewSQLConnection from "./NewConnectionModal";
+import NewSQLConnection from "./SQLConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
 import Admin from "@/models/admin";
@@ -12,14 +12,31 @@ export default function AgentSQLConnectorSelection({
   toggleSkill,
   enabled = false,
   setHasChanges,
+  hasChanges = false,
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState([]);
+  const prevHasChanges = useRef(hasChanges);
+
+  // Load connections on mount
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_sql_connections"])
       .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
       .catch(() => setConnections([]));
   }, []);
+
+  // Refresh connections from backend when save completes (hasChanges: true -> false)
+  // This ensures we get clean data without stale action properties
+  useEffect(() => {
+    if (prevHasChanges.current === true && hasChanges === false) {
+      Admin.systemPreferencesByFields(["agent_sql_connections"])
+        .then((res) =>
+          setConnections(res?.settings?.agent_sql_connections ?? [])
+        )
+        .catch(() => {});
+    }
+    prevHasChanges.current = hasChanges;
+  }, [hasChanges]);
 
   function handleRemoveConnection(databaseId) {
     setHasChanges(true);
@@ -30,6 +47,23 @@ export default function AgentSQLConnectorSelection({
         return conn;
       })
     );
+  }
+
+  function handleUpdateConnection(updatedConnection) {
+    setHasChanges(true);
+    setConnections((prev) => {
+      // Remove the old connection with the original database_id
+      const filtered = prev.filter(
+        (conn) => conn.database_id !== updatedConnection.originalDatabaseId
+      );
+      // Add the updated connection
+      return [...filtered, updatedConnection];
+    });
+  }
+
+  function handleAddConnection(newConnection) {
+    setHasChanges(true);
+    setConnections((prev) => [...prev, newConnection]);
   }
 
   return (
@@ -93,6 +127,9 @@ export default function AgentSQLConnectorSelection({
                         key={connection.database_id}
                         connection={connection}
                         onRemove={handleRemoveConnection}
+                        onUpdate={handleUpdateConnection}
+                        setHasChanges={setHasChanges}
+                        connections={connections}
                       />
                     ))}
                   <button
@@ -123,9 +160,8 @@ export default function AgentSQLConnectorSelection({
         isOpen={isOpen}
         closeModal={closeModal}
         setHasChanges={setHasChanges}
-        onSubmit={(newDb) =>
-          setConnections((prev) => [...prev, { action: "add", ...newDb }])
-        }
+        onSubmit={handleAddConnection}
+        connections={connections}
       />
     </>
   );
