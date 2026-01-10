@@ -23,7 +23,7 @@ const TRANSLATIONS = {
 
       adminUsername: "Admin account username",
       adminUsernameReq:
-        "Username must be at least 6 characters long and only contain lowercase letters, numbers, underscores, and hyphens with no spaces.",
+        "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
       adminPassword: "Admin account password",
       adminPasswordReq: "Passwords must be at least 8 characters.",
       teamHint:
@@ -137,6 +137,11 @@ const TRANSLATIONS = {
       "recovery-code": "Recovery Code {{index}}",
       "back-to-login": "Back to Login",
     },
+  },
+
+  invite: {
+    username_requirements:
+      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
   },
 
   "main-page": {
@@ -686,6 +691,8 @@ const TRANSLATIONS = {
         description:
           "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
         username: "Admin account username",
+        username_requirements:
+          "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
         password: "Admin account password",
       },
     },
@@ -694,6 +701,13 @@ const TRANSLATIONS = {
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
       "password-label": "Instance Password",
+    },
+  },
+
+  admin: {
+    users: {
+      username_requirements:
+        "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     },
   },
 
@@ -989,7 +1003,7 @@ const TRANSLATIONS = {
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
     username_description:
-      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",
