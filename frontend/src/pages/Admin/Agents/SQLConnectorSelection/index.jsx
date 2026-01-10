@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DBConnection from "./DBConnection";
 import { Plus, Database } from "@phosphor-icons/react";
 import NewSQLConnection from "./SQLConnectionModal";
@@ -12,14 +12,31 @@ export default function AgentSQLConnectorSelection({
   toggleSkill,
   enabled = false,
   setHasChanges,
+  hasChanges = false,
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState([]);
+  const prevHasChanges = useRef(hasChanges);
+
+  // Load connections on mount
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_sql_connections"])
       .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
       .catch(() => setConnections([]));
   }, []);
+
+  // Refresh connections from backend when save completes (hasChanges: true -> false)
+  // This ensures we get clean data without stale action properties
+  useEffect(() => {
+    if (prevHasChanges.current === true && hasChanges === false) {
+      Admin.systemPreferencesByFields(["agent_sql_connections"])
+        .then((res) =>
+          setConnections(res?.settings?.agent_sql_connections ?? [])
+        )
+        .catch(() => {});
+    }
+    prevHasChanges.current = hasChanges;
+  }, [hasChanges]);
 
   function handleRemoveConnection(databaseId) {
     setHasChanges(true);

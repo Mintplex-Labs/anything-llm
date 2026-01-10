@@ -730,28 +730,40 @@ function mergeConnections(existingConnections = [], updates = []) {
       const originalId = update.originalDatabaseId;
       const newId = slugify(update.database_id);
 
+      // Check if the original connection exists - if not, this update may have already been applied
+      const originalExists = updatedConnections.some(
+        (conn) => conn.database_id === originalId
+      );
+      if (!originalExists) {
+        return; // Skip - original connection doesn't exist, update may have already been applied
+      }
+
+      // Check if new database_id conflicts with existing ones (excluding the original)
+      const otherDbIds = updatedConnections
+        .filter((conn) => conn.database_id !== originalId)
+        .map((conn) => conn.database_id);
+      if (otherDbIds.includes(newId)) {
+        return; // Skip - new name conflicts with existing connection, reject rather than auto-rename
+      }
+
       // Remove the old connection
       updatedConnections = updatedConnections.filter(
         (conn) => conn.database_id !== originalId
       );
 
-      // Check if new database_id conflicts with existing ones (excluding the original)
-      const otherDbIds = updatedConnections.map((conn) => conn.database_id);
-      let finalDatabaseId = newId;
-      if (otherDbIds.includes(newId) && originalId !== newId) {
-        finalDatabaseId = slugify(`${newId}-${v4().slice(0, 4)}`);
-      }
-
       // Add the updated connection
       updatedConnections.push({
         engine: update.engine,
-        database_id: finalDatabaseId,
+        database_id: newId,
         connectionString: update.connectionString,
       });
     });
 
   // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
   // but we do validate their database_id is unique.
+  // Get the list of database_ids that already exist in the backend (before any modifications in this batch)
+  const existingDbIds = existingConnections.map((conn) => conn.database_id);
+
   updates
     .filter((conn) => conn.action === "add")
     .forEach((update) => {
@@ -759,16 +771,22 @@ function mergeConnections(existingConnections = [], updates = []) {
 
       const slugifiedId = slugify(update.database_id);
 
-      // Check against current updatedConnections (includes existing + already added in this batch)
+      // If this connection already exists in the backend, skip it entirely.
+      // This handles the case where the frontend re-sends previously saved connections
+      // that still have action: "add" in their local state.
+      if (existingDbIds.includes(slugifiedId)) {
+        return; // Skip - already exists in backend
+      }
+
+      // Check against current updatedConnections for duplicates within this batch
       const currentDbIds = updatedConnections.map((conn) => conn.database_id);
-      let finalDatabaseId = slugifiedId;
       if (currentDbIds.includes(slugifiedId)) {
-        finalDatabaseId = slugify(`${slugifiedId}-${v4().slice(0, 4)}`);
+        return; // Skip - duplicate within same batch, reject rather than auto-rename
       }
 
       updatedConnections.push({
         engine: update.engine,
-        database_id: finalDatabaseId,
+        database_id: slugifiedId,
         connectionString: update.connectionString,
       });
     });
