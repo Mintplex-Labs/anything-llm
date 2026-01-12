@@ -7,7 +7,6 @@ const {
   trashFile,
   writeToServerDocuments,
   documentsFolder,
-  directUploadsFolder,
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -44,18 +43,13 @@ async function asXlsx({
       const sheetNames = [];
 
       for (const sheet of workSheetsFromFile) {
-        const { name, data } = sheet;
-        const content = convertToCSV(data);
+        const processed = processSheet(sheet);
+        if (!processed) continue;
 
-        if (!content?.length) {
-          console.warn(`Sheet "${name}" is empty. Skipping.`);
-          continue;
-        }
-
-        console.log(`-- Processing sheet: ${name} --`);
+        const { name, content, wordCount } = processed;
         sheetNames.push(name);
         allSheetContents.push(`\n\n=== Sheet: ${name} ===\n\n${content}`);
-        totalWordCount += content.split(/\s+/).length;
+        totalWordCount += wordCount;
       }
 
       if (allSheetContents.length === 0) {
@@ -110,46 +104,35 @@ async function asXlsx({
         fs.mkdirSync(outFolderPath, { recursive: true });
 
       for (const sheet of workSheetsFromFile) {
-        try {
-          const { name, data } = sheet;
-          const content = convertToCSV(data);
+        const processed = processSheet(sheet);
+        if (!processed) continue;
 
-          if (!content?.length) {
-            console.log(`Sheet "${name}" is empty. Skipping.`);
-            continue;
-          }
+        const { name, content, wordCount } = processed;
+        const sheetData = {
+          id: v4(),
+          url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
+          title: metadata.title || `${filename} - Sheet:${name}`,
+          docAuthor: metadata.docAuthor || "Unknown",
+          description:
+            metadata.description || `Spreadsheet data from sheet: ${name}`,
+          docSource: metadata.docSource || "an xlsx file uploaded by the user.",
+          chunkSource: metadata.chunkSource || "",
+          published: createdDate(fullFilePath),
+          wordCount: wordCount,
+          pageContent: content,
+          token_count_estimate: tokenizeString(content),
+        };
 
-          console.log(`-- Processing sheet: ${name} --`);
-          const sheetData = {
-            id: v4(),
-            url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
-            title: metadata.title || `${filename} - Sheet:${name}`,
-            docAuthor: metadata.docAuthor || "Unknown",
-            description:
-              metadata.description || `Spreadsheet data from sheet: ${name}`,
-            docSource:
-              metadata.docSource || "an xlsx file uploaded by the user.",
-            chunkSource: metadata.chunkSource || "",
-            published: createdDate(fullFilePath),
-            wordCount: content.split(/\s+/).length,
-            pageContent: content,
-            token_count_estimate: tokenizeString(content),
-          };
-
-          const document = writeToServerDocuments({
-            data: sheetData,
-            filename: `sheet-${slugify(name)}`,
-            destinationOverride: outFolderPath,
-            options: { parseOnly: options.parseOnly },
-          });
-          documents.push(document);
-          console.log(
-            `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`
-          );
-        } catch (err) {
-          console.error(`Error processing sheet "${name}":`, err);
-          continue;
-        }
+        const document = writeToServerDocuments({
+          data: sheetData,
+          filename: `sheet-${slugify(name)}`,
+          destinationOverride: outFolderPath,
+          options: { parseOnly: options.parseOnly },
+        });
+        documents.push(document);
+        console.log(
+          `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`
+        );
       }
     }
   } catch (err) {
@@ -176,6 +159,33 @@ async function asXlsx({
     `[SUCCESS]: ${filename} fully processed. Created ${documents.length} document(s).\n`
   );
   return { success: true, reason: null, documents };
+}
+
+/**
+ * Processes a single sheet and returns its content and metadata
+ * @param {Object} sheet - The sheet object
+ * @returns {Object|null} - Object with { name, content, wordCount } or null if sheet is empty
+ */
+function processSheet(sheet) {
+  try {
+    const { name, data } = sheet;
+    const content = convertToCSV(data);
+
+    if (!content?.length) {
+      console.log(`Sheet "${name}" is empty. Skipping.`);
+      return null;
+    }
+
+    console.log(`-- Processing sheet: ${name} --`);
+    return {
+      name,
+      content,
+      wordCount: content.split(/\s+/).length,
+    };
+  } catch (err) {
+    console.error(`Error processing sheet "${sheet.name}":`, err);
+    return null;
+  }
 }
 
 module.exports = asXlsx;
