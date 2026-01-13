@@ -113,11 +113,14 @@ export default function handleChat(
         emitAssistantMessageCompleteEvent(chatId);
         setLoadingResponse(false);
 
-        window.dispatchEvent(
-          new CustomEvent(THREAD_ACTIVITY_EVENT, {
-            detail: { threadSlug },
-          })
-        );
+        // Move thread to top
+        if (threadSlug) {
+          window.dispatchEvent(
+            new CustomEvent(THREAD_ACTIVITY_EVENT, {
+              detail: { threadSlug },
+            })
+          );
+        }
       } else {
         updatedHistory = {
           ...existingHistory,
@@ -171,6 +174,15 @@ export default function handleChat(
   if (action === "reset_chat") {
     // Chat was reset, keep reset message and clear everything else.
     setChatHistory([_chatHistory.pop()]);
+
+    // Move thread to top
+    if (threadSlug) {
+      window.dispatchEvent(
+        new CustomEvent(THREAD_ACTIVITY_EVENT, {
+          detail: { threadSlug },
+        })
+      );
+    }
   }
 
   // If thread was updated automatically based on chat prompt
