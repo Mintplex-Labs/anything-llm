@@ -146,10 +146,13 @@ class AWSBedrockLLM {
   }
 
   /**
-   * Indicates if the provider supports streaming responses.
-   * @returns {boolean} True.
+   * Some Bedrock models (Titan, Cohere) don't support streaming.
+   * Set AWS_BEDROCK_STREAMING_DISABLED to any value to disable streaming for those models.
+   * Since this can be any model even custom models we leave it to the user to disable streaming if needed.
+   * @returns {boolean} True if streaming is supported, false otherwise.
    */
   streamingEnabled() {
+    if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return "streamGetChatCompletion" in this;
   }
 
@@ -414,15 +417,11 @@ class AWSBedrockLLM {
             `Bedrock Converse API Error (getChatCompletion): ${e.message}`,
             e
           );
-          if (
-            e.name === "ValidationException" &&
-            e.message.includes("maximum tokens")
-          ) {
-            throw new Error(
-              `AWSBedrock::getChatCompletion failed. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`
-            );
-          }
-          throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
+          AWSBedrockLLM.errorToHumanReadable(e, {
+            model: this.model,
+            maxTokens: maxTokensToSend,
+            method: "getChatCompletion",
+          });
         })
     );
 
@@ -502,18 +501,11 @@ class AWSBedrockLLM {
         `Bedrock Converse API Error (streamGetChatCompletion setup): ${e.message}`,
         e
       );
-      if (
-        e.name === "ValidationException" &&
-        e.message.includes("maximum tokens")
-      ) {
-        throw new Error(
-          `AWSBedrock::streamGetChatCompletion failed during setup. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`
-        );
-      }
-
-      throw new Error(
-        `AWSBedrock::streamGetChatCompletion failed during setup. ${e.message}`
-      );
+      AWSBedrockLLM.errorToHumanReadable(e, {
+        model: this.model,
+        maxTokens: maxTokensToSend,
+        method: "streamGetChatCompletion",
+      });
     }
   }
 
@@ -732,6 +724,34 @@ class AWSBedrockLLM {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
+
+  static errorToHumanReadable(
+    error,
+    options = { method: "chat", model: "unknown", maxTokens: "unknown" }
+  ) {
+    if (
+      error.name === "ValidationException" &&
+      error.message.includes("maximum tokens")
+    ) {
+      throw new Error(
+        `AWSBedrock::${options.method} failed during setup. Model ${options.model} rejected maxTokens value of ${options.maxTokens}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${error.message}`
+      );
+    }
+
+    if (
+      error.name === "CredentialsProviderError" &&
+      error.message.includes("Could not load credentials from any providers")
+    ) {
+      throw new Error(
+        `AWSBedrock::${options.method} authentication failed. AWS Bedrock requires a discoverable IAM credentials to be available in the environment (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY) or by resolving credentials from ~/.aws/credentials or ~/.aws/config files. Original error: ${error.message}`
+      );
+    }
+
+    // Generic error
+    throw new Error(
+      `AWSBedrock::${options.method} failed during setup. ${error.message}`
+    );
   }
 }
 
