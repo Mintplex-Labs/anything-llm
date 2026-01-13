@@ -163,8 +163,8 @@ async function asXlsx({
 
 /**
  * Processes a single sheet and returns its content and metadata
- * @param {Object} sheet - The sheet object
- * @returns {Object|null} - Object with { name, content, wordCount } or null if sheet is empty
+ * @param {{name: string, data: Array<Array<string|number|null|undefined>>}} sheet - Parsed sheet with name and 2D array of cell values
+ * @returns {{name: string, content: string, wordCount: number}|null} - Object with name, CSV content, and word count, or null if sheet is empty
  */
 function processSheet(sheet) {
   try {
