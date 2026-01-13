@@ -48,7 +48,7 @@ async function asXlsx({
 
         const { name, content, wordCount } = processed;
         sheetNames.push(name);
-        allSheetContents.push(`\n\n=== Sheet: ${name} ===\n\n${content}`);
+        allSheetContents.push(`\nSheet: ${name}\n${content}`);
         totalWordCount += wordCount;
       }
 
