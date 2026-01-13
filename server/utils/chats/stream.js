@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
@@ -289,8 +288,6 @@ async function streamChatWithWorkspace(
       threadId: thread?.id || null,
       user,
     });
-
-    if (thread?.id) await WorkspaceThread.touchActivity(thread.id);
 
     writeResponseChunk(response, {
       uuid,

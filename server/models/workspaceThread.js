@@ -129,7 +129,7 @@ const WorkspaceThread = {
         data: { lastUpdatedAt: new Date() },
       });
     } catch (error) {
-      console.error("Failed to touch thread activity:", error.message);
+      console.error(error.message);
     }
   },
 
