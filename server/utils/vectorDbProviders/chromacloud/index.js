@@ -9,7 +9,10 @@ const { toChunks } = require("../../helpers");
 class ChromaCloud extends Chroma {
   constructor() {
     super();
-    this.name = "ChromaCloud";
+  }
+
+  get name() {
+    return "ChromaCloud";
   }
 
   /**
@@ -82,8 +85,8 @@ class ChromaCloud extends Chroma {
       return true;
     }
 
-    console.log(
-      `ChromaCloud::Upsert Payload is too large (max is ${this.limits.maxRecordsPerWrite} records). Splitting into chunks of ${this.limits.maxRecordsPerWrite} records.`
+    this.logger(
+      `Upsert Payload is too large (max is ${this.limits.maxRecordsPerWrite} records). Splitting into chunks of ${this.limits.maxRecordsPerWrite} records.`
     );
     const chunks = [];
     let chunkedSubmission = {
@@ -98,7 +101,7 @@ class ChromaCloud extends Chroma {
       chunkedSubmission.metadatas.push(submission.metadatas[i]);
       chunkedSubmission.documents.push(submission.documents[i]);
       if (chunkedSubmission.ids.length === this.limits.maxRecordsPerWrite) {
-        console.log(
+        this.logger(
           `ChromaCloud::Adding chunk payload ${chunks.length + 1} of ${Math.ceil(submission.ids.length / this.limits.maxRecordsPerWrite)}`
         );
         chunks.push(chunkedSubmission);
@@ -137,13 +140,13 @@ class ChromaCloud extends Chroma {
     if (vectorIds.length <= this.limits.maxRecordsPerWrite)
       return await collection.delete({ ids: vectorIds });
 
-    console.log(
-      `ChromaCloud::Delete Payload is too large (max is ${this.limits.maxRecordsPerWrite} records). Splitting into chunks of ${this.limits.maxRecordsPerWrite} records.`
+    this.logger(
+      `Delete Payload is too large (max is ${this.limits.maxRecordsPerWrite} records). Splitting into chunks of ${this.limits.maxRecordsPerWrite} records.`
     );
     const chunks = toChunks(vectorIds, this.limits.maxRecordsPerWrite);
     let counter = 1;
     for (const chunk of chunks) {
-      console.log(`ChromaCloud::Deleting chunk ${counter} of ${chunks.length}`);
+      this.logger(`Deleting chunk ${counter} of ${chunks.length}`);
       await collection.delete({ ids: chunk });
       counter++;
     }

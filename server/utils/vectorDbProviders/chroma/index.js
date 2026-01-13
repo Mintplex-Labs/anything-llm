@@ -14,7 +14,10 @@ const COLLECTION_REGEX = new RegExp(
 class Chroma extends VectorDatabase {
   constructor() {
     super();
-    this.name = "Chroma";
+  }
+
+  get name() {
+    return "Chroma";
   }
 
   // Chroma DB has specific requirements for collection names:
@@ -148,8 +151,8 @@ class Chroma extends VectorDatabase {
       if (
         filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
       ) {
-        console.log(
-          "Chroma: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -186,7 +189,7 @@ class Chroma extends VectorDatabase {
     const collection = await client
       .getCollection({ name: this.normalize(namespace) })
       .catch((e) => {
-        console.error("ChromaDB::namespaceExists", e.message);
+        this.logger("namespaceExists", e.message);
         return null;
       });
     return !!collection;
@@ -208,7 +211,7 @@ class Chroma extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -270,7 +273,7 @@ class Chroma extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -314,16 +317,16 @@ class Chroma extends VectorDatabase {
 
       if (vectors.length > 0) {
         const chunks = [];
-        console.log("Inserting vectorized chunks into Chroma collection.");
+        this.logger("Inserting vectorized chunks into Chroma collection.");
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         try {
           await this.smartAdd(collection, submission);
-          console.log(
+          this.logger(
             `Successfully added ${submission.ids.length} vectors to collection ${this.normalize(namespace)}`
           );
         } catch (error) {
-          console.error("Error adding to ChromaDB:", error);
+          this.logger("Error adding to ChromaDB:", error);
           throw new Error(`Error embedding into ChromaDB: ${error.message}`);
         }
 
@@ -333,7 +336,7 @@ class Chroma extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }

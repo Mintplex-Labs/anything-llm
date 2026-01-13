@@ -15,7 +15,10 @@ const { VectorDatabase } = require("../base");
 class Milvus extends VectorDatabase {
   constructor() {
     super();
-    this.name = "Milvus";
+  }
+
+  get name() {
+    return "Milvus";
   }
 
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
@@ -161,7 +164,7 @@ class Milvus extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -223,7 +226,7 @@ class Milvus extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -253,7 +256,7 @@ class Milvus extends VectorDatabase {
         const { client } = await this.connect();
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
-        console.log(`Inserting vectorized chunks into ${this.name}.`);
+        this.logger(`Inserting vectorized chunks into ${this.name}.`);
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           const insertResult = await client.insert({
@@ -280,7 +283,7 @@ class Milvus extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }
@@ -371,7 +374,7 @@ class Milvus extends VectorDatabase {
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
-        console.log(
+        this.logger(
           `${this.name}: A source was filtered from context as its parent document is pinned.`
         );
         return;

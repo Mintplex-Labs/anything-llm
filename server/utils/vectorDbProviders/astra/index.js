@@ -23,7 +23,7 @@ const collectionExists = async function (client, namespace) {
       return collections.includes(namespace);
     }
   } catch (error) {
-    console.log("Astra::collectionExists check error", error?.message || error);
+    this.logger("collectionExists check error", error?.message || error);
     return false; // Return false for any error to allow creation attempt
   }
 };
@@ -31,7 +31,10 @@ const collectionExists = async function (client, namespace) {
 class AstraDB extends VectorDatabase {
   constructor() {
     super();
-    this.name = "AstraDB";
+  }
+
+  get name() {
+    return "AstraDB";
   }
 
   async connect() {
@@ -87,7 +90,7 @@ class AstraDB extends VectorDatabase {
     if (!(await this.isRealCollection(collection))) return null;
 
     const count = await collection.countDocuments().catch((e) => {
-      console.error("Astra::namespaceExists", e.message);
+      this.logger("namespaceExists", e.message);
       return null;
     });
 
@@ -146,10 +149,7 @@ class AstraDB extends VectorDatabase {
 
       return await client.collection(sanitizedNamespace);
     } catch (error) {
-      console.error(
-        "Astra::getOrCreateCollection error",
-        error?.message || error
-      );
+      this.logger("getOrCreateCollection", error?.message || error);
       throw error;
     }
   }
@@ -166,7 +166,7 @@ class AstraDB extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -225,7 +225,7 @@ class AstraDB extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -261,7 +261,7 @@ class AstraDB extends VectorDatabase {
       if (vectors.length > 0) {
         const chunks = [];
 
-        console.log("Inserting vectorized chunks into Astra DB.");
+        this.logger("Inserting vectorized chunks into Astra DB.");
 
         // AstraDB has maximum upsert size of 20 records per-request so we have to use a lower chunk size here
         // in order to do the queries - this takes a lot more time than other providers but there
@@ -281,7 +281,7 @@ class AstraDB extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }
@@ -385,8 +385,8 @@ class AstraDB extends VectorDatabase {
     responses.forEach((response) => {
       if (response.$similarity < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
-        console.log(
-          "AstraDB: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -422,7 +422,7 @@ class AstraDB extends VectorDatabase {
       const collections = resp ? JSON.parse(resp)?.status?.collections : [];
       return collections;
     } catch (e) {
-      console.error("Astra::AllNamespace", e);
+      this.logger("AllNamespace", e);
       return [];
     }
   }

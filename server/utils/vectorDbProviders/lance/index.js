@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
 const { VectorDatabase } = require("../base");
+const path = require("path");
 
 /**
  * LancedDB Client connection object
@@ -16,10 +17,17 @@ const { VectorDatabase } = require("../base");
 class LanceDb extends VectorDatabase {
   constructor() {
     super();
-    this.uri = `${
-      !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-    }lancedb`;
-    this.name = "LanceDb";
+  }
+
+  get uri() {
+    const basePath = !!process.env.STORAGE_DIR
+      ? process.env.STORAGE_DIR
+      : path.resolve(__dirname, "../../../storage");
+    return path.resolve(basePath, "lancedb");
+  }
+
+  get name() {
+    return "LanceDb";
   }
 
   /** @returns {Promise<{client: LanceClient}>} */
@@ -126,8 +134,8 @@ class LanceDb extends VectorDatabase {
             return;
           const { vector: _, ...rest } = item;
           if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-            console.log(
-              "LanceDB: A source was filtered from context as it's parent document is pinned."
+            this.logger(
+              "A source was filtered from context as it's parent document is pinned."
             );
             return;
           }
@@ -143,8 +151,8 @@ class LanceDb extends VectorDatabase {
         });
       })
       .catch((e) => {
-        console.error(e);
-        console.error("LanceDB::rerankedSimilarityResponse", e.message);
+        this.logger(e);
+        this.logger("rerankedSimilarityResponse", e.message);
       });
 
     return result;
@@ -187,8 +195,8 @@ class LanceDb extends VectorDatabase {
         return;
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-        console.log(
-          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -273,8 +281,8 @@ class LanceDb extends VectorDatabase {
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, namespace);
     if (!exists) {
-      console.error(
-        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
+      this.logger(
+        `deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
       );
       return;
     }
@@ -301,7 +309,7 @@ class LanceDb extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -346,7 +354,7 @@ class LanceDb extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
@@ -381,7 +389,7 @@ class LanceDb extends VectorDatabase {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into LanceDB collection.");
+        this.logger("Inserting vectorized chunks into LanceDB collection.");
         const { client } = await this.connect();
         await this.updateOrCreateCollection(client, submissions, namespace);
         await storeVectorResult(chunks, fullFilePath);
@@ -390,7 +398,7 @@ class LanceDb extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }

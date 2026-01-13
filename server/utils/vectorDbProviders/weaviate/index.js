@@ -11,7 +11,10 @@ const { VectorDatabase } = require("../base");
 class Weaviate extends VectorDatabase {
   constructor() {
     super();
-    this.name = "Weaviate";
+  }
+
+  get name() {
+    return "Weaviate";
   }
 
   async connect() {
@@ -61,7 +64,7 @@ class Weaviate extends VectorDatabase {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      this.logger(`namespaceCountWithClient`, e.message);
       return 0;
     }
   }
@@ -79,7 +82,7 @@ class Weaviate extends VectorDatabase {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      this.logger(`namespaceCountWithClient`, e.message);
       return 0;
     }
   }
@@ -119,8 +122,8 @@ class Weaviate extends VectorDatabase {
       } = response;
       if (certainty < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-        console.log(
-          "Weaviate: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -137,7 +140,7 @@ class Weaviate extends VectorDatabase {
       const { classes = [] } = await client.schema.getter().do();
       return classes.map((classObj) => classObj.class);
     } catch (e) {
-      console.error("Weaviate::AllNamespace", e);
+      this.logger("AllNamespace", e);
       return [];
     }
   }
@@ -209,7 +212,7 @@ class Weaviate extends VectorDatabase {
       } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -253,7 +256,7 @@ class Weaviate extends VectorDatabase {
             const { success: additionResult, errors = [] } =
               await this.addVectors(client, vectors);
             if (!additionResult) {
-              console.error("Weaviate::addVectors failed to insert", errors);
+              this.logger("addVectors failed to insert", errors);
               throw new Error("Error embedding into Weaviate");
             }
           }
@@ -284,7 +287,7 @@ class Weaviate extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -339,13 +342,13 @@ class Weaviate extends VectorDatabase {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into Weaviate collection.");
+        this.logger("Inserting vectorized chunks into Weaviate collection.");
         const { success: additionResult, errors = [] } = await this.addVectors(
           client,
           vectors
         );
         if (!additionResult) {
-          console.error("Weaviate::addVectors failed to insert", errors);
+          this.logger("addVectors failed to insert", errors);
           throw new Error("Error embedding into Weaviate");
         }
         await storeVectorResult(chunks, fullFilePath);
@@ -354,7 +357,7 @@ class Weaviate extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }

@@ -3,6 +3,10 @@
  * All vector database providers should extend this class and implement/override the necessary methods.
  */
 class VectorDatabase {
+  get name() {
+    return "VectorDatabase";
+  }
+
   constructor() {
     if (this.constructor === VectorDatabase) {
       throw new Error("VectorDatabase cannot be instantiated directly");
@@ -187,6 +191,10 @@ class VectorDatabase {
    */
   curateSources(sources = []) {
     throw new Error("Must be implemented by provider");
+  }
+
+  logger(message = null, ...args) {
+    console.log(`\x1b[36m[VectorDB::${this.name}]\x1b[0m ${message}`, ...args);
   }
 }
 

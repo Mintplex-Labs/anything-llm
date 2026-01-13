@@ -10,7 +10,10 @@ const { VectorDatabase } = require("../base");
 class PineconeDB extends VectorDatabase {
   constructor() {
     super();
-    this.name = "Pinecone";
+  }
+
+  get name() {
+    return "Pinecone";
   }
 
   async connect() {
@@ -68,7 +71,7 @@ class PineconeDB extends VectorDatabase {
     response.matches.forEach((match) => {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
-        console.log(
+        this.logger(
           "Pinecone: A source was filtered from context as it's parent document is pinned."
         );
         return;
@@ -120,7 +123,7 @@ class PineconeDB extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -167,7 +170,7 @@ class PineconeDB extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -196,7 +199,7 @@ class PineconeDB extends VectorDatabase {
         const chunks = [];
         const { pineconeIndex } = await this.connect();
         const pineconeNamespace = pineconeIndex.namespace(namespace);
-        console.log("Inserting vectorized chunks into Pinecone.");
+        this.logger("Inserting vectorized chunks into Pinecone.");
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           await pineconeNamespace.upsert([...chunk]);
@@ -207,7 +210,7 @@ class PineconeDB extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }

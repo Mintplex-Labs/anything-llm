@@ -17,7 +17,10 @@ const { VectorDatabase } = require("../base");
 class PGVector extends VectorDatabase {
   constructor() {
     super();
-    this.name = "PGVector";
+  }
+
+  get name() {
+    return "PGVector";
   }
 
   connectionTimeout = 30_000;
@@ -57,10 +60,6 @@ class PGVector extends VectorDatabase {
 
   createTableSql(dimensions) {
     return `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
-  }
-
-  log(message = null, ...args) {
-    console.log(`\x1b[35m[PGVectorDb]\x1b[0m ${message}`, ...args);
   }
 
   /**
@@ -189,7 +188,7 @@ class PGVector extends VectorDatabase {
         );
     }
 
-    this.log(
+    this.logger(
       `✅ The pgvector table '${tableName}' was found and meets the minimum expected schema for an embedding table.`
     );
     return true;
@@ -248,7 +247,7 @@ class PGVector extends VectorDatabase {
       const result = await Promise.race([connectionPromise, timeoutPromise]);
       return result;
     } catch (err) {
-      instance.log("Validation Error:", err.message);
+      instance.logger("Validation Error:", err.message);
       let readableError = err.message;
       switch (true) {
         case err.message.includes("ECONNREFUSED"):
@@ -396,7 +395,7 @@ class PGVector extends VectorDatabase {
       if (this.distanceToSimilarity(item._distance) < similarityThreshold)
         return;
       if (filterIdentifiers.includes(sourceIdentifier(item.metadata))) {
-        this.log(
+        this.logger(
           "A source was filtered from context as it's parent document is pinned."
         );
         return;
@@ -437,7 +436,7 @@ class PGVector extends VectorDatabase {
     dimensions = 384,
   }) {
     await this.createTableIfNotExists(connection, dimensions);
-    this.log(`Updating or creating collection ${namespace}`);
+    this.logger(`Updating or creating collection ${namespace}`);
 
     try {
       // Create a transaction of all inserts
@@ -450,10 +449,10 @@ class PGVector extends VectorDatabase {
           [submission.id, namespace, embedding, sanitizedMetadata]
         );
       }
-      this.log(`Committing ${submissions.length} vectors to ${namespace}`);
+      this.logger(`Committing ${submissions.length} vectors to ${namespace}`);
       await connection.query(`COMMIT`);
     } catch (err) {
-      this.log(
+      this.logger(
         `Rolling back ${submissions.length} vectors to ${namespace}`,
         err
       );
@@ -469,7 +468,7 @@ class PGVector extends VectorDatabase {
    * @returns
    */
   async createTableIfNotExists(connection, dimensions = 384) {
-    this.log(`Creating embedding table with ${dimensions} dimensions`);
+    this.logger(`Creating embedding table with ${dimensions} dimensions`);
     await connection.query(this.createExtensionSql);
     await connection.query(this.createTableSql(dimensions));
     return true;
@@ -556,7 +555,7 @@ class PGVector extends VectorDatabase {
       if (!pageContent || pageContent.length == 0) return false;
       connection = await this.connect();
 
-      this.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         let vectorDimensions;
@@ -606,7 +605,7 @@ class PGVector extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      this.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
@@ -640,7 +639,7 @@ class PGVector extends VectorDatabase {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        this.log("Inserting vectorized chunks into PGVector collection.");
+        this.logger("Inserting vectorized chunks into PGVector collection.");
         await this.updateOrCreateCollection({
           connection,
           submissions,
@@ -653,7 +652,7 @@ class PGVector extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (err) {
-      this.log("addDocumentToNamespace", err.message);
+      this.logger("addDocumentToNamespace", err.message);
       return { vectorized: false, error: err.message };
     } finally {
       if (connection) await connection.end();
@@ -698,12 +697,12 @@ class PGVector extends VectorDatabase {
         throw err;
       }
 
-      this.log(
+      this.logger(
         `Deleted ${vectorIds.length} vectors from namespace ${namespace}`
       );
       return true;
     } catch (err) {
-      this.log(
+      this.logger(
         `Error deleting document from namespace ${namespace}: ${err.message}`
       );
       return false;
@@ -728,7 +727,7 @@ class PGVector extends VectorDatabase {
       connection = await this.connect();
       const exists = await this.namespaceExists(connection, namespace);
       if (!exists) {
-        this.log(
+        this.logger(
           `The namespace ${namespace} does not exist or has no vectors. Returning empty results.`
         );
         return {

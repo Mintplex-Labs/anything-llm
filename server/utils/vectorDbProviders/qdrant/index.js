@@ -10,7 +10,10 @@ const { VectorDatabase } = require("../base");
 class QDrant extends VectorDatabase {
   constructor() {
     super();
-    this.name = "QDrant";
+  }
+
+  get name() {
+    return "QDrant";
   }
 
   async connect() {
@@ -79,7 +82,7 @@ class QDrant extends VectorDatabase {
     responses.forEach((response) => {
       if (response.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
-        console.log(
+        this.logger(
           "QDrant: A source was filtered from context as it's parent document is pinned."
         );
         return;
@@ -118,7 +121,7 @@ class QDrant extends VectorDatabase {
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch((e) => {
-      console.error("QDrant::namespaceExists", e.message);
+      this.logger("namespaceExists", e.message);
       return null;
     });
     return !!collection;
@@ -161,7 +164,7 @@ class QDrant extends VectorDatabase {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -242,7 +245,7 @@ class QDrant extends VectorDatabase {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -291,7 +294,7 @@ class QDrant extends VectorDatabase {
       if (vectors.length > 0) {
         const chunks = [];
 
-        console.log("Inserting vectorized chunks into QDrant collection.");
+        this.logger("Inserting vectorized chunks into QDrant collection.");
         for (const chunk of toChunks(vectors, 500)) {
           const batchIds = [],
             batchVectors = [],
@@ -321,7 +324,7 @@ class QDrant extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   }

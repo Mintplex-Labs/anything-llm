@@ -8,7 +8,10 @@ const { Milvus } = require("../milvus");
 class Zilliz extends Milvus {
   constructor() {
     super();
-    this.name = "Zilliz";
+  }
+
+  get name() {
+    return "Zilliz";
   }
 
   async connect() {
