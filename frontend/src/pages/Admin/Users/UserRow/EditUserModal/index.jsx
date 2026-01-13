@@ -89,7 +89,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {t("admin.users.username_requirements")}
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>

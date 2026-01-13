@@ -67,7 +67,7 @@ export default function NewUserModal() {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-theme-text-secondary">
-                  {t("invite.username_requirements")}
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>

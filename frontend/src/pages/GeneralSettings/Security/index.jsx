@@ -178,7 +178,7 @@ function MultiUserMode() {
                         defaultValue={multiUserModeEnabled ? "********" : ""}
                       />
                       <p className="text-white text-opacity-60 text-xs mt-2">
-                        {t("security.multiuser.enable.username_requirements")}
+                        {t("common.username_requirements")}
                       </p>
                     </div>
                     <div className="mt-4 w-80">
