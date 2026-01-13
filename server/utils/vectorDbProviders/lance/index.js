@@ -6,38 +6,54 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
+const { VectorDatabase } = require("../base");
+const path = require("path");
 
 /**
  * LancedDB Client connection object
  * @typedef {import('@lancedb/lancedb').Connection} LanceClient
  */
 
-const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
-  name: "LanceDb",
+class LanceDb extends VectorDatabase {
+  constructor() {
+    super();
+  }
+
+  get uri() {
+    const basePath = !!process.env.STORAGE_DIR
+      ? process.env.STORAGE_DIR
+      : path.resolve(__dirname, "../../../storage");
+    return path.resolve(basePath, "lancedb");
+  }
+
+  get name() {
+    return "LanceDb";
+  }
 
   /** @returns {Promise<{client: LanceClient}>} */
-  connect: async function () {
+  async connect() {
     const client = await lancedb.connect(this.uri);
     return { client };
-  },
-  distanceToSimilarity: function (distance = null) {
+  }
+
+  distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
-  },
-  tables: async function () {
+  }
+
+  async tables() {
     const { client } = await this.connect();
     return await client.tableNames();
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const tables = await client.tableNames();
     let count = 0;
@@ -46,15 +62,17 @@ const LanceDb = {
       count += await table.countRows();
     }
     return count;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, _namespace);
     if (!exists) return 0;
 
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
-  },
+  }
+
   /**
    * Performs a SimilaritySearch + Reranking on a namespace.
    * @param {Object} params - The parameters for the rerankedSimilarityResponse.
@@ -67,7 +85,7 @@ const LanceDb = {
    * @param {string[]} params.filterIdentifiers - The identifiers of the documents to filter out.
    * @returns
    */
-  rerankedSimilarityResponse: async function ({
+  async rerankedSimilarityResponse({
     client,
     namespace,
     query,
@@ -116,8 +134,8 @@ const LanceDb = {
             return;
           const { vector: _, ...rest } = item;
           if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-            console.log(
-              "LanceDB: A source was filtered from context as it's parent document is pinned."
+            this.logger(
+              "A source was filtered from context as it's parent document is pinned."
             );
             return;
           }
@@ -133,12 +151,12 @@ const LanceDb = {
         });
       })
       .catch((e) => {
-        console.error(e);
-        console.error("LanceDB::rerankedSimilarityResponse", e.message);
+        this.logger(e);
+        this.logger("rerankedSimilarityResponse", e.message);
       });
 
     return result;
-  },
+  }
 
   /**
    * Performs a SimilaritySearch on a give LanceDB namespace.
@@ -151,7 +169,7 @@ const LanceDb = {
    * @param {string[]} params.filterIdentifiers
    * @returns
    */
-  similarityResponse: async function ({
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -177,8 +195,8 @@ const LanceDb = {
         return;
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-        console.log(
-          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -192,14 +210,15 @@ const LanceDb = {
     });
 
     return result;
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  namespace: async function (client, namespace = null) {
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.openTable(namespace).catch(() => false);
     if (!collection) return null;
@@ -207,7 +226,8 @@ const LanceDb = {
     return {
       ...collection,
     };
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
@@ -215,7 +235,7 @@ const LanceDb = {
    * @param {string} namespace
    * @returns
    */
-  updateOrCreateCollection: async function (client, data = [], namespace) {
+  async updateOrCreateCollection(client, data = [], namespace) {
     const hasNamespace = await this.hasNamespace(namespace);
     if (hasNamespace) {
       const collection = await client.openTable(namespace);
@@ -225,40 +245,44 @@ const LanceDb = {
 
     await client.createTable(namespace, data);
     return true;
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, namespace);
     return exists;
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  namespaceExists: async function (client, namespace = null) {
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collections = await client.tableNames();
     return collections.includes(namespace);
-  },
+  }
+
   /**
    *
    * @param {LanceClient} client
    * @param {string} namespace
    * @returns
    */
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.dropTable(namespace);
     return true;
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, namespace);
     if (!exists) {
-      console.error(
-        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
+      this.logger(
+        `deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
       );
       return;
     }
@@ -272,8 +296,9 @@ const LanceDb = {
     if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
     return true;
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -284,7 +309,7 @@ const LanceDb = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -329,7 +354,7 @@ const LanceDb = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
@@ -364,7 +389,7 @@ const LanceDb = {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into LanceDB collection.");
+        this.logger("Inserting vectorized chunks into LanceDB collection.");
         const { client } = await this.connect();
         await this.updateOrCreateCollection(client, submissions, namespace);
         await storeVectorResult(chunks, fullFilePath);
@@ -373,11 +398,12 @@ const LanceDb = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -427,8 +453,9 @@ const LanceDb = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -438,8 +465,9 @@ const LanceDb = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -449,14 +477,16 @@ const LanceDb = {
     return {
       message: `Namespace ${namespace} was deleted.`,
     };
-  },
-  reset: async function () {
+  }
+
+  async reset() {
     const { client } = await this.connect();
     const fs = require("fs");
     fs.rm(`${client.uri}`, { recursive: true }, () => null);
     return { reset: true };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       const { text, vector: _v, _distance: _d, ...rest } = source;
@@ -470,7 +500,7 @@ const LanceDb = {
     }
 
     return documents;
-  },
-};
+  }
+}
 
 module.exports.LanceDb = LanceDb;
