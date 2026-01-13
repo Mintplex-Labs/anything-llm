@@ -196,17 +196,17 @@ class NvidiaNimLLM {
         `NVIDIA NIM chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.nvidiaNim.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.nvidiaNim.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
       messages,
-      true,
-      this.model
-    );
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 

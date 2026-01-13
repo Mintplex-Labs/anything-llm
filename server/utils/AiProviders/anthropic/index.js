@@ -183,8 +183,8 @@ class AnthropicLLM {
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const systemContent = messages[0].content;
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.anthropic.messages.stream({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.anthropic.messages.stream({
         model: this.model,
         max_tokens: 4096,
         system: this.#buildSystemPrompt(systemContent),
@@ -192,9 +192,9 @@ class AnthropicLLM {
         temperature: Number(temperature ?? this.defaultTemp),
       }),
       messages,
-      false,
-      this.model
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

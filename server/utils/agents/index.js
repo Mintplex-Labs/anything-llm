@@ -139,14 +139,7 @@ class AgentHandler {
           );
         break;
       case "bedrock":
-        if (
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
-          !process.env.AWS_BEDROCK_LLM_REGION
-        )
-          throw new Error(
-            "AWS Bedrock Access Keys and region must be provided to use agents."
-          );
+        // No validations since there are many possible authentication methods
         break;
       case "fireworksai":
         if (!process.env.FIREWORKS_AI_LLM_API_KEY)
