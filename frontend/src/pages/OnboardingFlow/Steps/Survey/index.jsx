@@ -90,11 +90,16 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
+  }, []);
 
+  useEffect(() => {
     async function createDefaultWorkspace() {
       const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
-        await Workspace.new({ name: "My Workspace", onboardingComplete: true });
+        await Workspace.new({
+          name: t("new-workspace.placeholder"),
+          onboardingComplete: true,
+        });
       }
     }
     createDefaultWorkspace();
