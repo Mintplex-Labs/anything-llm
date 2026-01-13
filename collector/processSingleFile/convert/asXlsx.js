@@ -74,7 +74,9 @@ async function asXlsx({
         docAuthor: metadata.docAuthor || "Unknown",
         description:
           metadata.description ||
-          `Spreadsheet data from ${filename} containing ${sheetNames.length} sheet(s)`,
+          `Spreadsheet data from ${filename} containing ${sheetNames.length} ${
+            sheetNames.length === 1 ? "sheet" : "sheets"
+          }`,
         docSource: metadata.docSource || "an xlsx file uploaded by the user.",
         chunkSource: metadata.chunkSource || "",
         published: createdDate(fullFilePath),
