@@ -85,7 +85,7 @@ async function asXlsx({
 
       const document = writeToServerDocuments({
         data: combinedData,
-        filename: slugify(path.basename(filename)),
+        filename: `${slugify(path.basename(filename))}-${combinedData.id}`,
         destinationOverride: null,
         options: { parseOnly: true },
       });
