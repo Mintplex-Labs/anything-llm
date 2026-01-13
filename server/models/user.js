@@ -13,12 +13,6 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  /**
-   * Unix-style username regex:
-   * - Must start with a lowercase letter
-   * - Can contain lowercase letters, digits, underscores, hyphens, and periods
-   * - 2-32 characters long
-   */
   usernameRegex: new RegExp(/^[a-z][a-z0-9._-]*$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
@@ -31,6 +25,12 @@ const User = {
     "bio",
   ],
   validations: {
+    /**
+     * Unix-style username regex:
+     * - Must start with a lowercase letter
+     * - Can contain lowercase letters, digits, underscores, hyphens, and periods
+     * - 2-32 characters long
+     */
     username: (newValue = "") => {
       try {
         const username = String(newValue);
@@ -174,9 +174,6 @@ const User = {
         const bcrypt = require("bcryptjs");
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
-
-      // Username validation is handled by the validations.username function
-      // which is called earlier in the update flow
 
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },
