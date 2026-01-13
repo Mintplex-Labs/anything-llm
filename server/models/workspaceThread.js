@@ -120,6 +120,19 @@ const WorkspaceThread = {
     }
   },
 
+  // Updates timestamp for thread when activity occurs
+  touchActivity: async function (threadId) {
+    if (!threadId) return;
+    try {
+      await prisma.workspace_threads.update({
+        where: { id: threadId },
+        data: { lastUpdatedAt: new Date() },
+      });
+    } catch (error) {
+      console.error("Failed to touch thread activity:", error.message);
+    }
+  },
+
   // Will fire on first message (included or not) for a thread and rename the thread with the newName prop.
   autoRenameThread: async function ({
     workspace = null,

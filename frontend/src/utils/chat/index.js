@@ -1,4 +1,7 @@
-import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import {
+  THREAD_RENAME_EVENT,
+  THREAD_ACTIVITY_EVENT,
+} from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
@@ -9,7 +12,8 @@ export default function handleChat(
   setChatHistory,
   remHistory,
   _chatHistory,
-  setWebsocket
+  setWebsocket,
+  threadSlug = null
 ) {
   const {
     uuid,
@@ -108,6 +112,12 @@ export default function handleChat(
 
         emitAssistantMessageCompleteEvent(chatId);
         setLoadingResponse(false);
+
+        window.dispatchEvent(
+          new CustomEvent(THREAD_ACTIVITY_EVENT, {
+            detail: { threadSlug },
+          })
+        );
       } else {
         updatedHistory = {
           ...existingHistory,

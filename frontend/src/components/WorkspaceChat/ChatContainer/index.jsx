@@ -217,7 +217,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             setChatHistory,
             remHistory,
             _chatHistory,
-            setSocketId
+            setSocketId,
+            threadSlug
           ),
         attachments,
       });

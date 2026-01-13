@@ -69,10 +69,14 @@ function workspaceThreadEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
-        const threads = await WorkspaceThread.where({
-          workspace_id: workspace.id,
-          user_id: user?.id || null,
-        });
+        const threads = await WorkspaceThread.where(
+          {
+            workspace_id: workspace.id,
+            user_id: user?.id || null,
+          },
+          null,
+          { lastUpdatedAt: "desc" }
+        );
         response.status(200).json({ threads });
       } catch (e) {
         console.error(e.message, e);
