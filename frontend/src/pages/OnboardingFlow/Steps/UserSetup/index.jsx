@@ -6,11 +6,7 @@ import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
-import {
-  USERNAME_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  validateUsername,
-} from "@/utils/username";
+import { USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH } from "@/utils/username";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -272,8 +268,9 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
   const handlePasswordChange = debounce(setNewPassword, 500);
 
   useEffect(() => {
-    const { valid } = validateUsername(username);
-    if (valid && password.length >= 8) {
+    // Enable button if there's any input, allowing users to attempt submission
+    // Validation errors will be shown via toast in handleSubmit
+    if (username.trim().length > 0 && password.length > 0) {
       setMultiUserLoginValid(true);
     } else {
       setMultiUserLoginValid(false);

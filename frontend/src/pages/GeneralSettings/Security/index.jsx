@@ -12,7 +12,6 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_PATTERN,
-  validateUsername,
 } from "@/utils/username";
 
 export default function GeneralSecurity() {
@@ -54,15 +53,6 @@ function MultiUserMode() {
         username: form.get("username"),
         password: form.get("password"),
       };
-
-      // Validate username before submitting
-      const validation = validateUsername(data.username);
-      if (!validation.valid) {
-        showToast(validation.error, "error");
-        setSaving(false);
-        setHasChanges(true);
-        return;
-      }
 
       const { success, error } = await System.setupMultiUser(data);
       if (success) {
