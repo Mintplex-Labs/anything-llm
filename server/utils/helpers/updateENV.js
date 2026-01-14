@@ -789,6 +789,20 @@ const KEY_MAPPING = {
     envKey: "GITEE_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+
+  // Docker Model Runner Options
+  DockerModelRunnerBasePath: {
+    envKey: "DOCKER_MODEL_RUNNER_BASE_PATH",
+    checks: [isValidURL],
+  },
+  DockerModelRunnerModelPref: {
+    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  DockerModelRunnerModelTokenLimit: {
+    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -902,6 +916,7 @@ function supportedLLM(input = "") {
     "foundry",
     "zai",
     "giteeai",
+    "docker-model-runner",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

@@ -646,6 +646,13 @@ const SystemSettings = {
       GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
+
+      // Docker Model Runner Keys
+      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      DockerModelRunnerModelPref:
+        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
+      DockerModelRunnerModelTokenLimit:
+        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 
