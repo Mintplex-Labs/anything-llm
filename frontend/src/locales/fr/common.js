@@ -36,8 +36,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Conservez ce mot de passe, il n'y a pas de récupération possible.",
       adminUsername: "Nom d'utilisateur administrateur",
-      adminUsernameReq:
-        "Le nom d'utilisateur doit contenir au moins 6 caractères.",
       adminPassword: "Mot de passe administrateur",
       adminPasswordReq: "Le mot de passe doit contenir au moins 8 caractères.",
       teamHint:
@@ -70,6 +68,7 @@ const TRANSLATIONS = {
     yes: "Oui",
     no: "Non",
     search: "Rechercher",
+    username_requirements: null,
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -738,8 +737,6 @@ const TRANSLATIONS = {
     profile_picture: "Photo de profil",
     remove_profile_picture: "Supprimer la photo de profil",
     username: "Nom d'utilisateur",
-    username_description:
-      "Le nom d'utilisateur doit contenir uniquement des lettres minuscules, des chiffres, des tirets bas et des tirets, sans espaces.",
     new_password: "Nouveau mot de passe",
     password_description:
       "Le mot de passe doit contenir au moins 8 caractères.",

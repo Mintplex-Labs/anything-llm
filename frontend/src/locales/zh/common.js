@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "密码必须至少包含 8 个字符。",
       passwordWarn: "保存此密码很重要，因为没有恢复方法。",
       adminUsername: "管理员账户用户名",
-      adminUsernameReq:
-        "用户名必须至少为 6 个字符，并且只能包含小写字母、数字、下划线和连字符，不含空格。",
       adminPassword: "管理员账户密码",
       adminPasswordReq: "密码必须至少包含 8 个字符。",
       teamHint:
@@ -66,6 +64,7 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜索",
+    username_requirements: null,
   },
   settings: {
     title: "设置",
@@ -856,8 +855,6 @@ const TRANSLATIONS = {
     profile_picture: "头像",
     remove_profile_picture: "移除头像",
     username: "用户名",
-    username_description:
-      "用户名必须仅包含小写字母、数字、下划线和连字符，且不能包含空格",
     new_password: "新密码",
     password_description: "密码长度必须至少为 8 个字符",
     cancel: "取消",

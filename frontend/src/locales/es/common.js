@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Es importante guardar esta contraseña porque no hay método de recuperación.",
       adminUsername: "Nombre de usuario del administrador",
-      adminUsernameReq:
-        "El nombre de usuario debe tener al menos 6 caracteres y solo puede contener letras minúsculas, números, guiones bajos y guiones sin espacios.",
       adminPassword: "Contraseña de la cuenta de administrador",
       adminPasswordReq: "Las contraseñas deben tener al menos 8 caracteres.",
       teamHint:
@@ -71,6 +69,7 @@ const TRANSLATIONS = {
     yes: "Sí",
     no: "No",
     search: "Buscar",
+    username_requirements: null,
   },
   settings: {
     title: "Ajustes de la instancia",
@@ -940,8 +939,6 @@ const TRANSLATIONS = {
     profile_picture: "Foto de perfil",
     remove_profile_picture: "Eliminar foto de perfil",
     username: "Nombre de usuario",
-    username_description:
-      "El nombre de usuario solo debe contener letras minúsculas, números, guiones bajos y guiones sin espacios",
     new_password: "Nueva contraseña",
     password_description: "La contraseña debe tener al menos 8 caracteres",
     cancel: "Cancelar",

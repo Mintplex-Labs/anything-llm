@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "يجب أن تحتوي كلمة المرور على ثمانية حروف على الأقل",
       passwordWarn: "من المهم حفظ كلمة المرور هذه لأنه لا يمكن استردادها.",
       adminUsername: "اسم مستعمل حساب المشرف",
-      adminUsernameReq:
-        "يجب أن يكون اسم المستعمل بطول 6 أحرف على الأقل وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية وواصلات بدون مسافات.",
       adminPassword: "كلمة مرور حساب المشرف",
       adminPasswordReq: "يجب أن تكون كلمات المرور 8 أحرف على الأقل.",
       teamHint:
@@ -69,6 +67,7 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     search: null,
+    username_requirements: null,
   },
   settings: {
     title: "إعدادات المثيل",
@@ -683,7 +682,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

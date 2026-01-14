@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "סיסמאות חייבות להכיל לפחות 8 תווים.",
       passwordWarn: "חשוב לשמור סיסמה זו מכיוון שאין שיטת שחזור.",
       adminUsername: "שם משתמש של חשבון מנהל",
-      adminUsernameReq:
-        "שם המשתמש חייב להכיל לפחות 6 תווים ויכול לכלול רק אותיות קטנות, מספרים, קווים תחתונים ומקפים, ללא רווחים.",
       adminPassword: "סיסמת חשבון מנהל",
       adminPasswordReq: "סיסמאות חייבות להכיל לפחות 8 תווים.",
       teamHint:
@@ -68,6 +66,7 @@ const TRANSLATIONS = {
     yes: "כן",
     no: "לא",
     search: "חיפוש",
+    username_requirements: null,
   },
   settings: {
     title: "הגדרות מופע",
@@ -888,8 +887,6 @@ const TRANSLATIONS = {
     profile_picture: "תמונת פרופיל",
     remove_profile_picture: "הסר תמונת פרופיל",
     username: "שם משתמש",
-    username_description:
-      "שם המשתמש חייב להכיל רק אותיות קטנות, מספרים, קווים תחתונים ומקפים, ללא רווחים",
     new_password: "סיסמה חדשה",
     password_description: "הסיסמה חייבת להכיל לפחות 8 תווים",
     cancel: "בטל",

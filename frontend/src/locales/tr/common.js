@@ -33,7 +33,6 @@ const TRANSLATIONS = {
       passwordReq: null,
       passwordWarn: null,
       adminUsername: null,
-      adminUsernameReq: null,
       adminPassword: null,
       adminPasswordReq: null,
       teamHint: null,
@@ -62,6 +61,7 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    username_requirements: null,
   },
   settings: {
     title: "Instance Ayarları",
@@ -678,7 +678,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

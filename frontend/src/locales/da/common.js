@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Det er vigtigt at gemme denne adgangskode, da der ikke findes nogen metode til genoprettelse.",
       adminUsername: "Brugernavn til admin-konto",
-      adminUsernameReq:
-        "Brugernavnet skal være mindst 6 tegn langt og må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum.",
       adminPassword: "Adgangskode til admin-konto",
       adminPasswordReq: "Adgangskoder skal være på mindst 8 tegn.",
       teamHint:
@@ -71,6 +69,7 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nej",
     search: null,
+    username_requirements: null,
   },
   settings: {
     title: "Instansindstillinger",
@@ -721,8 +720,6 @@ const TRANSLATIONS = {
     profile_picture: "Profilbillede",
     remove_profile_picture: "Fjern profilbillede",
     username: "Brugernavn",
-    username_description:
-      "Brugernavnet må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum",
     new_password: "Ny adgangskode",
     password_description: "Adgangskoden skal være mindst 8 tegn lang",
     cancel: "Annuller",

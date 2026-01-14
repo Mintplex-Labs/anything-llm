@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Ważne jest, aby zapisać to hasło, ponieważ nie ma metody jego odzyskania.",
       adminUsername: "Nazwa użytkownika konta administratora",
-      adminUsernameReq:
-        "Nazwa użytkownika musi składać się z co najmniej 6 znaków i zawierać wyłącznie małe litery, cyfry, podkreślenia i myślniki bez spacji.",
       adminPassword: "Hasło konta administratora",
       adminPasswordReq: "Hasła muszą składać się z co najmniej 8 znaków.",
       teamHint:
@@ -71,6 +69,7 @@ const TRANSLATIONS = {
     yes: "Tak",
     no: "Nie",
     search: null,
+    username_requirements: null,
   },
   settings: {
     title: "Ustawienia instancji",
@@ -918,8 +917,6 @@ const TRANSLATIONS = {
     profile_picture: "Zdjęcie profilowe",
     remove_profile_picture: "Usuń zdjęcie profilowe",
     username: "Nazwa użytkownika",
-    username_description:
-      "Nazwa użytkownika musi zawierać tylko małe litery, cyfry, podkreślenia i myślniki bez spacji.",
     new_password: "Nowe hasło",
     password_description: null,
     cancel: "Anuluj",
