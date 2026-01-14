@@ -10,6 +10,9 @@ const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
+const {
+  ConnectionStringParser,
+} = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -649,18 +652,32 @@ const SystemSettings = {
     };
   },
 
-  // For special retrieval of a key setting that does not expose any credential information
-  brief: {
-    agent_sql_connections: async function () {
-      const setting = await SystemSettings.get({
-        label: "agent_sql_connections",
-      });
-      if (!setting) return [];
-      return safeJsonParse(setting.value, []).map((dbConfig) => {
-        const { connectionString, ...rest } = dbConfig;
-        return rest;
-      });
-    },
+  agent_sql_connections: async function () {
+    const setting = await SystemSettings.get({
+      label: "agent_sql_connections",
+    });
+    if (!setting) return [];
+
+    const connections = safeJsonParse(setting.value, []).map((conn) => {
+      let scheme = conn.engine;
+      if (scheme === "sql-server") scheme = "mssql";
+      if (scheme === "postgresql") scheme = "postgres";
+      const parser = new ConnectionStringParser({ scheme });
+
+      const parsed = parser.parse(conn.connectionString);
+      console.log(parsed);
+      return {
+        ...conn,
+        username: parsed.username,
+        password: parsed.password,
+        host: parsed.hosts?.[0]?.host,
+        port: parsed.hosts?.[0]?.port,
+        database: parsed.endpoint,
+        scheme: parsed.scheme,
+      };
+    });
+
+    return connections;
   },
   getFeatureFlags: async function () {
     return {
@@ -710,48 +727,85 @@ const SystemSettings = {
   },
 };
 
+/**
+ * Merges SQL connection updates from the frontend with existing backend connections.
+ * Processes three types of actions: "remove", "update", and "add".
+ *
+ * Process order:
+ * 1. Remove connections marked with action: "remove"
+ * 2. Update connections marked with action: "update" (rename allowed if no conflicts)
+ * 3. Add new connections marked with action: "add" (skip if duplicate)
+ *
+ * @param {Array<Object>} existingConnections - Current connections stored in the database
+ * @param {Array<Object>} updates - Connection updates from frontend, each with an action property
+ * @returns {Array<Object>} - The merged connections array
+ *
+ * @example
+ * // Update a connection's name from "old-db" to "new-db"
+ * mergeConnections(
+ *   [{ database_id: "old-db", engine: "postgresql", connectionString: "..." }],
+ *   [{ action: "update", originalDatabaseId: "old-db", database_id: "new-db", engine: "postgresql", connectionString: "..." }]
+ * )
+ */
 function mergeConnections(existingConnections = [], updates = []) {
   let updatedConnections = [...existingConnections];
 
-  // First remove all 'action:remove' candidates from existing connections.
+  // ===================================================================
+  // STEP 1: Process all deletions (action: "remove")
+  // ===================================================================
   const toRemove = updates
     .filter((conn) => conn.action === "remove")
     .map((conn) => conn.database_id);
+
   updatedConnections = updatedConnections.filter(
     (conn) => !toRemove.includes(conn.database_id)
   );
 
-  // Handle 'action:update' candidates - update existing connections
+  // ===================================================================
+  // STEP 2: Process all updates (action: "update")
+  // ===================================================================
+  // Updates allow renaming a connection. We replace the old connection
+  // with the new one, but only if:
+  // - The original connection exists
+  // - The new name doesn't conflict with other existing connections
   updates
     .filter((conn) => conn.action === "update")
     .forEach((update) => {
-      if (!update.connectionString) return; // invalid connection string
+      if (!update.connectionString) return; // Skip invalid connections
 
-      const originalId = update.originalDatabaseId;
-      const newId = slugify(update.database_id);
+      const originalId = update.originalDatabaseId; // The old database_id we're updating
+      const newId = slugify(update.database_id); // The new database_id (slugified)
 
-      // Check if the original connection exists - if not, this update may have already been applied
+      // Verify the original connection still exists
+      // (It might have been removed in a previous operation)
       const originalExists = updatedConnections.some(
         (conn) => conn.database_id === originalId
       );
       if (!originalExists) {
-        return; // Skip - original connection doesn't exist, update may have already been applied
+        console.warn(
+          `[mergeConnections] Update skipped: Original connection "${originalId}" not found`
+        );
+        return;
       }
 
-      // Check if new database_id conflicts with existing ones (excluding the original)
-      const otherDbIds = updatedConnections
-        .filter((conn) => conn.database_id !== originalId)
-        .map((conn) => conn.database_id);
-      if (otherDbIds.includes(newId)) {
-        return; // Skip - new name conflicts with existing connection, reject rather than auto-rename
+      // Check if the new name conflicts with OTHER existing connections
+      // (excluding the one we're updating)
+      const conflictExists = updatedConnections.some(
+        (conn) => conn.database_id === newId && conn.database_id !== originalId
+      );
+
+      if (conflictExists) {
+        console.warn(
+          `[mergeConnections] Update skipped: New name "${newId}" conflicts with existing connection`
+        );
+        return;
       }
 
-      // Remove the old connection
+      // Update is valid - remove old connection and add updated one
       updatedConnections = updatedConnections.filter(
         (conn) => conn.database_id !== originalId
       );
 
-      // Add the updated connection
       updatedConnections.push({
         engine: update.engine,
         database_id: newId,
@@ -759,29 +813,40 @@ function mergeConnections(existingConnections = [], updates = []) {
       });
     });
 
-  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
-  // but we do validate their database_id is unique.
-  // Get the list of database_ids that already exist in the backend (before any modifications in this batch)
+  // ===================================================================
+  // STEP 3: Process all additions (action: "add")
+  // ===================================================================
+  // We skip additions if:
+  // - The connection already existed in the backend (prevents re-adding saved connections)
+  // - A duplicate was already added in this batch
   const existingDbIds = existingConnections.map((conn) => conn.database_id);
 
   updates
     .filter((conn) => conn.action === "add")
     .forEach((update) => {
-      if (!update.connectionString) return; // invalid connection string
+      if (!update.connectionString) return; // Skip invalid connections
 
       const slugifiedId = slugify(update.database_id);
 
-      // If this connection already exists in the backend, skip it entirely.
-      // This handles the case where the frontend re-sends previously saved connections
-      // that still have action: "add" in their local state.
+      // Check if this was already saved to the backend previously
+      // (Handles case where frontend re-sends with action: "add" still set)
       if (existingDbIds.includes(slugifiedId)) {
-        return; // Skip - already exists in backend
+        console.warn(
+          `[mergeConnections] Add skipped: Connection "${slugifiedId}" already exists in backend`
+        );
+        return;
       }
 
-      // Check against current updatedConnections for duplicates within this batch
-      const currentDbIds = updatedConnections.map((conn) => conn.database_id);
-      if (currentDbIds.includes(slugifiedId)) {
-        return; // Skip - duplicate within same batch, reject rather than auto-rename
+      // Check for duplicates within this batch of updates
+      const isDuplicateInBatch = updatedConnections.some(
+        (conn) => conn.database_id === slugifiedId
+      );
+
+      if (isDuplicateInBatch) {
+        console.warn(
+          `[mergeConnections] Add skipped: Duplicate "${slugifiedId}" in same batch`
+        );
+        return;
       }
 
       updatedConnections.push({

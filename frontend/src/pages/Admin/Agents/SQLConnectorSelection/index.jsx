@@ -38,6 +38,11 @@ export default function AgentSQLConnectorSelection({
     prevHasChanges.current = hasChanges;
   }, [hasChanges]);
 
+  /**
+   * Marks a connection for removal by adding action: "remove".
+   * The connection stays in the array (for undo capability) until saved.
+   * @param {string} databaseId - The database_id of the connection to remove
+   */
   function handleRemoveConnection(databaseId) {
     setHasChanges(true);
     setConnections((prev) =>
@@ -49,6 +54,18 @@ export default function AgentSQLConnectorSelection({
     );
   }
 
+  /**
+   * Updates an existing connection by replacing it in the local state.
+   * This removes the old connection (by originalDatabaseId) and adds the updated version.
+   *
+   * Note: The old connection is removed from local state immediately, but the backend
+   * handles the actual update logic when saved. See mergeConnections in server/models/systemSettings.js
+   *
+   * @param {Object} updatedConnection - The updated connection data
+   * @param {string} updatedConnection.originalDatabaseId - The original database_id before the update
+   * @param {string} updatedConnection.database_id - The new database_id
+   * @param {string} updatedConnection.action - Should be "update"
+   */
   function handleUpdateConnection(updatedConnection) {
     setHasChanges(true);
     setConnections((prev) => {
@@ -56,11 +73,16 @@ export default function AgentSQLConnectorSelection({
       const filtered = prev.filter(
         (conn) => conn.database_id !== updatedConnection.originalDatabaseId
       );
-      // Add the updated connection
+      // Add the updated connection with action: "update"
       return [...filtered, updatedConnection];
     });
   }
 
+  /**
+   * Adds a new connection to the local state with action: "add".
+   * The backend will validate and deduplicate when saved.
+   * @param {Object} newConnection - The new connection data with action: "add"
+   */
   function handleAddConnection(newConnection) {
     setHasChanges(true);
     setConnections((prev) => [...prev, newConnection]);

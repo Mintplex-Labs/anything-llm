@@ -63,7 +63,7 @@ export default function DBConnection({
       <EditSQLConnection
         isOpen={isOpen}
         closeModal={closeModal}
-        existingConnection={{ database_id, engine }}
+        existingConnection={connection}
         onSubmit={onUpdate}
         setHasChanges={setHasChanges}
         connections={connections}

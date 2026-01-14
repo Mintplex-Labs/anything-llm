@@ -841,21 +841,6 @@ const System = {
       });
   },
 
-  getSQLConnectionDetails: async function (database_id) {
-    return fetch(`${API_BASE}/system/sql-connection/${database_id}`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch SQL connection details.");
-        return res.json();
-      })
-      .catch((e) => {
-        console.error("Failed to get SQL connection details:", e);
-        return { success: false, error: e.message };
-      });
-  },
-
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,

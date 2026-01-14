@@ -1479,63 +1479,6 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get(
-    "/system/sql-connection/:database_id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (request, response) => {
-      try {
-        const { database_id } = request.params;
-        const connections = safeJsonParse(
-          (await SystemSettings.get({ label: "agent_sql_connections" }))?.value,
-          []
-        );
-
-        const connection = connections.find(
-          (conn) => conn.database_id === database_id
-        );
-
-        if (!connection) {
-          return response.status(404).json({
-            success: false,
-            error: "Connection not found.",
-          });
-        }
-
-        const {
-          ConnectionStringParser,
-        } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
-
-        // Parse the connection string to extract individual fields
-        let scheme = connection.engine;
-        if (scheme === "sql-server") scheme = "mssql";
-        if (scheme === "postgresql") scheme = "postgres";
-
-        const parser = new ConnectionStringParser({ scheme });
-        const parsed = parser.parse(connection.connectionString);
-
-        return response.status(200).json({
-          success: true,
-          connection: {
-            database_id: connection.database_id,
-            engine: connection.engine,
-            username: parsed.username || "",
-            password: parsed.password || "",
-            host: parsed.hosts?.[0]?.host || "",
-            port: parsed.hosts?.[0]?.port || "",
-            database: parsed.endpoint || "",
-            encrypt: parsed.options?.encrypt === "true",
-          },
-        });
-      } catch (error) {
-        console.error("Failed to get SQL connection details:", error);
-        return response.status(500).json({
-          success: false,
-          error: error.message,
-        });
-      }
-    }
-  );
-
   app.post(
     "/system/validate-sql-connection",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
