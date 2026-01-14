@@ -87,6 +87,15 @@ export default function handleChat(
       metrics,
     });
     emitAssistantMessageCompleteEvent(chatId);
+
+    // Move thread to top
+    if (threadSlug) {
+      window.dispatchEvent(
+        new CustomEvent(THREAD_ACTIVITY_EVENT, {
+          detail: { threadSlug },
+        })
+      );
+    }
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
