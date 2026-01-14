@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import PreLoader from "@/components/Preloader";
-import { DOCKER_MODEL_RUNNER_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import * as Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-import ModelTable from "./ModelTable";
 import {
   ArrowClockwise,
   CircleNotch,
@@ -14,8 +9,12 @@ import {
 } from "@phosphor-icons/react";
 import strDistance from "js-levenshtein";
 import { LLM_PREFERENCE_CHANGED_EVENT } from "@/pages/GeneralSettings/LLMPreference";
+import { DOCKER_MODEL_RUNNER_COMMON_URLS } from "@/utils/constants";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
+import ModelTable from "./ModelTable";
+import * as Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export default function DockerModelRunnerOptions({ settings }) {
   const {
