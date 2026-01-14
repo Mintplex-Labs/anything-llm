@@ -302,7 +302,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 />
               </div>
               <p className=" text-white text-opacity-80 text-xs font-base">
-                {t("onboarding.userSetup.adminUsernameReq")}
+                {t("common.username_requirements")}
               </p>
               <div className="mt-4">
                 <label

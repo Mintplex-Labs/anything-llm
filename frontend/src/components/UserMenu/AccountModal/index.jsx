@@ -156,7 +156,7 @@ export default function AccountModal({ user, hideModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {t("profile_settings.username_description")}
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>
