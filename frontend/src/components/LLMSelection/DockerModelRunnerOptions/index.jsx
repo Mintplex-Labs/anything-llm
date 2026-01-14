@@ -38,12 +38,12 @@ export default function DockerModelRunnerOptions({ settings }) {
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
         <div className="flex flex-col w-60">
           <div className="flex items-center gap-1 mb-3">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-x-2">
               <label className="text-white text-sm font-semibold">
                 Base URL
               </label>
               {loading ? (
-                <PreLoader size="6" />
+                <CircleNotch className="w-4 h-4 text-theme-text-secondary animate-spin" />
               ) : (
                 <>
                   {!basePathValue.value && (
@@ -121,7 +121,7 @@ export default function DockerModelRunnerOptions({ settings }) {
               clickable={true}
               className="tooltip !text-xs !opacity-100 z-99"
               style={{
-                maxWidth: "250px",
+                maxWidth: "350px",
                 whiteSpace: "normal",
                 wordWrap: "break-word",
               }}
@@ -240,10 +240,9 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
 
   function downloadModel(modelId, _fileSize, progressCallback) {
     const [name, tag] = modelId.split(":");
-    window.open(
-      `https://open.docker.com/dashboard/docker-hub/image?name=${name}&type=image&tag=${tag}`,
-      "_blank"
-    );
+
+    // Open the model in the Docker Hub (via browser since they may not be installed locally)
+    window.open(`https://hub.docker.com/layers/${name}/${tag}`, "_blank");
     progressCallback(100);
   }
 

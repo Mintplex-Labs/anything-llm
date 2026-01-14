@@ -253,6 +253,10 @@ function parseDockerModelRunnerEndpoint(basePath = null, to = "openai") {
  * @property {string} config?.gguf['*.context_length'] - The context length of the model. will be something like qwen3.context_length
  */
 
+/**
+ * Fetch the remote models from the Docker Hub and cache the results.
+ * @returns {Promise<Record<string, {id: string, name: string, size: string, organization: string}[]>>}
+ */
 async function fetchRemoteModels() {
   const cachePath = path.resolve(
     DockerModelRunnerLLM.cacheFolder,
