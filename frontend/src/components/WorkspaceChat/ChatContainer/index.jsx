@@ -22,6 +22,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import { THREAD_ACTIVITY_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -276,6 +277,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
         setWebsocket(socket);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+
+        // Move thread to top
+        if (threadSlug) {
+          window.dispatchEvent(
+            new CustomEvent(THREAD_ACTIVITY_EVENT, {
+              detail: { threadSlug },
+            })
+          );
+        }
+
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
         setChatHistory((prev) => [
