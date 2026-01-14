@@ -1224,7 +1224,9 @@ function systemEndpoints(app) {
       response.status(200).json({ success, error });
     } catch (e) {
       console.error(e);
-      response.sendStatus(500).end();
+      response
+        .status(500)
+        .json({ success: false, error: e.message || "Internal server error" });
     }
   });
 
