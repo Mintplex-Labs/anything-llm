@@ -2,7 +2,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 export const THREAD_RENAME_EVENT = "renameThread";
@@ -14,6 +14,7 @@ export default function ThreadContainer({ workspace }) {
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
   const [bumpedThreadSlug, setBumpedThreadSlug] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -51,10 +52,19 @@ export default function ThreadContainer({ workspace }) {
           ...prevThreads.slice(0, idx),
           ...prevThreads.slice(idx + 1),
         ];
+
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+
         setBumpedThreadSlug(activeSlug);
 
         // Wait for animation before resetting
-        setTimeout(() => setBumpedThreadSlug(null), 800);
+        timeoutRef.current = setTimeout(() => {
+          setBumpedThreadSlug(null);
+          timeoutRef.current = null;
+        }, 800);
+
         return reordered;
       });
     };
@@ -62,6 +72,11 @@ export default function ThreadContainer({ workspace }) {
     window.addEventListener(THREAD_ACTIVITY_EVENT, activityHandler);
     return () => {
       window.removeEventListener(THREAD_ACTIVITY_EVENT, activityHandler);
+
+      // Cleanup timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, []);
 
