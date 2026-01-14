@@ -1,6 +1,6 @@
 import {
   THREAD_RENAME_EVENT,
-  THREAD_ACTIVITY_EVENT,
+  dispatchThreadActivityEvent,
 } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
@@ -89,13 +89,7 @@ export default function handleChat(
     emitAssistantMessageCompleteEvent(chatId);
 
     // Move thread to top
-    if (threadSlug) {
-      window.dispatchEvent(
-        new CustomEvent(THREAD_ACTIVITY_EVENT, {
-          detail: { threadSlug },
-        })
-      );
-    }
+    dispatchThreadActivityEvent(threadSlug);
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
@@ -123,13 +117,7 @@ export default function handleChat(
         setLoadingResponse(false);
 
         // Move thread to top
-        if (threadSlug) {
-          window.dispatchEvent(
-            new CustomEvent(THREAD_ACTIVITY_EVENT, {
-              detail: { threadSlug },
-            })
-          );
-        }
+        dispatchThreadActivityEvent(threadSlug);
       } else {
         updatedHistory = {
           ...existingHistory,
@@ -185,13 +173,7 @@ export default function handleChat(
     setChatHistory([_chatHistory.pop()]);
 
     // Move thread to top
-    if (threadSlug) {
-      window.dispatchEvent(
-        new CustomEvent(THREAD_ACTIVITY_EVENT, {
-          detail: { threadSlug },
-        })
-      );
-    }
+    dispatchThreadActivityEvent(threadSlug);
   }
 
   // If thread was updated automatically based on chat prompt

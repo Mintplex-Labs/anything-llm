@@ -279,3 +279,12 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
     </button>
   );
 }
+
+export function dispatchThreadActivityEvent(threadSlug) {
+  if (!threadSlug) return;
+  window.dispatchEvent(
+    new CustomEvent(THREAD_ACTIVITY_EVENT, {
+      detail: { threadSlug },
+    })
+  );
+}

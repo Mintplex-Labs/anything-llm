@@ -16,13 +16,13 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
+import { dispatchThreadActivityEvent } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
-import { THREAD_ACTIVITY_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -279,13 +279,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
 
         // Move thread to top
-        if (threadSlug) {
-          window.dispatchEvent(
-            new CustomEvent(THREAD_ACTIVITY_EVENT, {
-              detail: { threadSlug },
-            })
-          );
-        }
+        dispatchThreadActivityEvent(threadSlug);
 
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
