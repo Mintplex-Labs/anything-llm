@@ -68,16 +68,14 @@ export default function AgentSQLConnectorSelection({
    */
   function handleUpdateConnection(updatedConnection) {
     setHasChanges(true);
-    setConnections((prev) => {
-      // Remove the old connection with the original database_id
-      const filtered = prev.filter(
-        (conn) => conn.database_id !== updatedConnection.originalDatabaseId
-      );
-      // Add the updated connection with action: "update"
-      return [...filtered, updatedConnection];
-    });
+    setConnections((prev) =>
+      prev.map((conn) =>
+        conn.database_id === updatedConnection.originalDatabaseId
+          ? updatedConnection
+          : conn
+      )
+    );
   }
-
   /**
    * Adds a new connection to the local state with action: "add".
    * The backend will validate and deduplicate when saved.
