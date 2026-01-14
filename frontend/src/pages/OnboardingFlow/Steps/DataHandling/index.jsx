@@ -3,6 +3,7 @@ import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProviderPrivacy from "@/components/ProviderPrivacy";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();

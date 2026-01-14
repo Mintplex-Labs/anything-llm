@@ -37,6 +37,7 @@ const ENABLED_PROVIDERS = [
   "zai",
   "giteeai",
   "cohere",
+  "flowiseai",
   // TODO: More agent support.
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];

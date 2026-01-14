@@ -37,6 +37,7 @@ import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -75,6 +76,7 @@ import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import FlowiseAiOptions from "@/components/LLMSelection/FlowiseAiOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -367,6 +369,18 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiModelPref",
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
+    ],
+  },
+  {
+    name: "FlowiseAi",
+    value: "flowiseai",
+    logo: FlowiseAiLogo,
+    options: (settings) => <FlowiseAiOptions settings={settings} />,
+    description: "Run flows and LLMs using FlowiseAi's powerful platform.",
+    requiredConfig: [
+      "FlowiseLLMBasePath",
+      "FlowiseLLMChatflowId",
+      "FlowiseLLMTokenLimit",
     ],
   },
 ];
