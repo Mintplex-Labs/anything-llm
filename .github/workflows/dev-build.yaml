@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['4841-aws-bedrock-api-key'] # put your current branch to create a build. Core team only.
+    branches: ['4822-feat-remove-workspace-creation-onboarding-page'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
