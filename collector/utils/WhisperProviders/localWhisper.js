@@ -71,7 +71,7 @@ class LocalWhisper {
         fs.mkdirSync(outFolder, { recursive: true });
 
       const outputFile = path.resolve(outFolder, `${v4()}.wav`);
-      const success = ffmpeg.convertAudioToWav(sourcePath, outputFile);
+      const success = await ffmpeg.convertAudioToWav(sourcePath, outputFile);
       if (!success)
         throw new Error(
           "[Conversion Failed]: Could not convert file to .wav format!"
