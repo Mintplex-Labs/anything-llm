@@ -27,7 +27,9 @@ export default function DockerModelRunnerOptions({ settings }) {
     initialBasePath: settings?.DockerModelRunnerBasePath,
     ENDPOINTS: DOCKER_MODEL_RUNNER_COMMON_URLS,
   });
-
+  const [selectedModelId, setSelectedModelId] = useState(
+    settings?.DockerModelRunnerModelPref
+  );
   const [maxTokens, setMaxTokens] = useState(
     settings?.DockerModelRunnerModelTokenLimit || 4096
   );
@@ -135,7 +137,8 @@ export default function DockerModelRunnerOptions({ settings }) {
               <br />
               <br />
               <code>
-                docker model configure --context-size 8192 ai/qwen3:latest
+                docker model configure --context-size {maxTokens || 8192}{" "}
+                {selectedModelId ?? "ai/qwen3:latest"}
               </code>
               <br />
               <br />
@@ -170,7 +173,8 @@ export default function DockerModelRunnerOptions({ settings }) {
           />
         </div>
         <DockerModelRunnerModelSelection
-          settings={settings}
+          selectedModelId={selectedModelId}
+          setSelectedModelId={setSelectedModelId}
           basePath={basePathValue.value}
         />
       </div>
@@ -178,10 +182,11 @@ export default function DockerModelRunnerOptions({ settings }) {
   );
 }
 
-function DockerModelRunnerModelSelection({ settings, basePath = null }) {
-  const [selectedModelId, setSelectedModelId] = useState(
-    settings?.DockerModelRunnerModelPref
-  );
+function DockerModelRunnerModelSelection({
+  selectedModelId,
+  setSelectedModelId,
+  basePath = null,
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [filteredModels, setFilteredModels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -304,6 +309,11 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
       setSearchQuery={setSearchQuery}
       loading={loading}
     >
+      <Tooltip
+        id="docker-model-runner-install-model-tooltip"
+        place="top"
+        className="tooltip !text-xs !opacity-100 z-99"
+      />
       <input
         type="hidden"
         name="DockerModelRunnerModelPref"
@@ -361,9 +371,9 @@ function Layout({
         </label>
       </div>
       <div className="flex w-full items-center gap-x-[16px]">
-        <div className="relative flex-1 max-w-[640px]">
+        <div className="relative flex-1 flex-grow">
           <MagnifyingGlass
-            size={14}
+            size={16}
             weight="bold"
             color="var(--theme-text-primary)"
             className="absolute left-[9px] top-[10px] text-theme-settings-input-placeholder peer-focus:invisible"
@@ -386,7 +396,7 @@ function Layout({
             type="button"
             onClick={refreshModels}
             disabled={isRefreshing || loading}
-            className="border-none text-theme-text-secondary text-sm font-medium hover:underline flex items-center gap-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-none text-theme-text-secondary text-sm font-medium hover:bg-white/10 light:hover:bg-black/5 rounded-lg px-2 h-full flex items-center gap-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isRefreshing ? (
               <CircleNotch className="w-4 h-4 text-theme-text-secondary animate-spin" />

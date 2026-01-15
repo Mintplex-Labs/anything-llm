@@ -3,12 +3,7 @@ import {
   CaretDown,
   CaretRight,
   Cpu,
-  DownloadSimple,
-  CircleNotch,
-  CheckCircle,
-  Dot,
   Circle,
-  DotsThreeCircleVertical,
   DotsThreeVertical,
   CloudArrowDown,
 } from "@phosphor-icons/react";
@@ -297,15 +292,18 @@ function ModelRow({
         {!model.downloaded ? (
           <button
             type="button"
-            className="border-none hover:bg-white/20 rounded-lg p-1 flex items-center gap-x-1"
+            data-tooltip-id="docker-model-runner-install-model-tooltip"
+            data-tooltip-place="top"
+            data-tooltip-delay-show={300}
+            data-tooltip-content={`Install ${model.organization}:${model.name}`}
+            className="border-none hover:bg-white/20 light:hover:bg-black/5 rounded-lg p-2 flex items-center gap-x-1 cursor-pointer"
             onClick={handleSetActiveModel}
           >
             <CloudArrowDown
-              size={16}
+              size={20}
               weight="bold"
-              className="text-blue-300 cursor-pointer"
+              className="text-theme-text-primary"
             />
-            <p className="text-sm text-blue-300">Install</p>
           </button>
         ) : null}
       </div>
