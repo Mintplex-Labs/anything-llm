@@ -665,7 +665,6 @@ const SystemSettings = {
       const parser = new ConnectionStringParser({ scheme });
 
       const parsed = parser.parse(conn.connectionString);
-      console.log(parsed);
       return {
         ...conn,
         username: parsed.username,
