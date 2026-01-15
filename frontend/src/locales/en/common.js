@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    "mobile-app": "AnythingLLM Mobile",
   },
 
   // Page Definitions
