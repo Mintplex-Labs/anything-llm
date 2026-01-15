@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -17,14 +25,17 @@ import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-export default function ChatHistory({
-  history = [],
-  workspace,
-  sendCommand,
-  updateHistory,
-  regenerateAssistantMessage,
-  hasAttachments = false,
-}) {
+const ChatHistory = forwardRef(function ChatHistory(
+  {
+    history = [],
+    workspace,
+    sendCommand,
+    updateHistory,
+    regenerateAssistantMessage,
+    hasAttachments = false,
+  },
+  ref
+) {
   const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
   const { user } = useUser();
@@ -33,12 +44,15 @@ export default function ChatHistory({
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const isProgrammaticScroll = useRef(false);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
   const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
+    // Skip auto-scroll if we're in the middle of a programmatic scroll (e.g., keyboard shortcut)
+    if (isProgrammaticScroll.current) return;
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
       scrollToBottom(false); // Use instant scroll for auto-scrolling
     }
@@ -48,8 +62,11 @@ export default function ChatHistory({
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const isBottom = scrollHeight - scrollTop === clientHeight;
 
-    // Detect if this is a user-initiated scroll
-    if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
+    // Detect if this is a user-initiated scroll (skip if programmatic)
+    if (
+      !isProgrammaticScroll.current &&
+      Math.abs(scrollTop - lastScrollTopRef.current) > 10
+    ) {
       setIsUserScrolling(!isBottom);
     }
 
@@ -80,6 +97,37 @@ export default function ChatHistory({
       });
     }
   };
+
+  const scrollToTop = (smooth = false) => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTo({
+        top: 0,
+        ...(smooth ? { behavior: "smooth" } : {}),
+      });
+    }
+  };
+
+  // Expose scroll methods to parent component for keyboard shortcuts
+  useImperativeHandle(ref, () => ({
+    scrollToTop: (smooth = true) => {
+      isProgrammaticScroll.current = true;
+      scrollToTop(smooth);
+      // Reset flag after scroll animation completes
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, smooth ? 500 : 50);
+    },
+    scrollToBottom: (smooth = true) => {
+      isProgrammaticScroll.current = true;
+      scrollToBottom(smooth);
+      setIsUserScrolling(false);
+      // Reset flag after scroll animation completes
+      // isAtBottom will be set naturally by the scroll handler
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, smooth ? 500 : 50);
+    },
+  }));
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
@@ -250,7 +298,9 @@ export default function ChatHistory({
       )}
     </div>
   );
-}
+});
+
+export default ChatHistory;
 
 const getLastMessageInfo = (history) => {
   const lastMessage = history?.[history.length - 1] || {};

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -31,6 +31,28 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
+  const chatHistoryRef = useRef(null);
+
+  // Keyboard shortcuts for scrolling chat history (Ctrl/Cmd + Up/Down)
+  useEffect(() => {
+    function handleScrollShortcuts(event) {
+      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+      const modifierPressed = isMac ? event.metaKey : event.ctrlKey;
+
+      if (!modifierPressed || !chatHistoryRef.current) return;
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        chatHistoryRef.current.scrollToTop(true);
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        chatHistoryRef.current.scrollToBottom(true);
+      }
+    }
+
+    window.addEventListener("keydown", handleScrollShortcuts);
+    return () => window.removeEventListener("keydown", handleScrollShortcuts);
+  }, []);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -308,6 +330,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       <DnDFileUploaderWrapper>
         <MetricsProvider>
           <ChatHistory
+            ref={chatHistoryRef}
             history={chatHistory}
             workspace={workspace}
             sendCommand={sendCommand}
