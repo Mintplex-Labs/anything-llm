@@ -731,132 +731,84 @@ const SystemSettings = {
  * Merges SQL connection updates from the frontend with existing backend connections.
  * Processes three types of actions: "remove", "update", and "add".
  *
- * Process order:
- * 1. Remove connections marked with action: "remove"
- * 2. Update connections marked with action: "update" (rename allowed if no conflicts)
- * 3. Add new connections marked with action: "add" (skip if duplicate)
- *
  * @param {Array<Object>} existingConnections - Current connections stored in the database
  * @param {Array<Object>} updates - Connection updates from frontend, each with an action property
  * @returns {Array<Object>} - The merged connections array
- *
- * @example
- * // Update a connection's name from "old-db" to "new-db"
- * mergeConnections(
- *   [{ database_id: "old-db", engine: "postgresql", connectionString: "..." }],
- *   [{ action: "update", originalDatabaseId: "old-db", database_id: "new-db", engine: "postgresql", connectionString: "..." }]
- * )
  */
 function mergeConnections(existingConnections = [], updates = []) {
-  let updatedConnections = [...existingConnections];
-
-  // ===================================================================
-  // STEP 1: Process all deletions (action: "remove")
-  // ===================================================================
-  const toRemove = updates
-    .filter((conn) => conn.action === "remove")
-    .map((conn) => conn.database_id);
-
-  updatedConnections = updatedConnections.filter(
-    (conn) => !toRemove.includes(conn.database_id)
+  const connectionsMap = new Map(
+    existingConnections.map((conn) => [conn.database_id, conn])
   );
 
-  // ===================================================================
-  // STEP 2: Process all updates (action: "update")
-  // ===================================================================
-  // Updates allow renaming a connection. We replace the old connection
-  // with the new one, but only if:
-  // - The original connection exists
-  // - The new name doesn't conflict with other existing connections
-  updates
-    .filter((conn) => conn.action === "update")
-    .forEach((update) => {
-      if (!update.connectionString) return; // Skip invalid connections
+  for (const update of updates) {
+    const {
+      action,
+      database_id,
+      originalDatabaseId,
+      connectionString,
+      engine,
+    } = update;
 
-      const originalId = update.originalDatabaseId; // The old database_id we're updating
-      const newId = slugify(update.database_id); // The new database_id (slugified)
+    // Skip invalid connections
+    if ((action === "update" || action === "add") && !connectionString)
+      continue;
 
-      // Verify the original connection still exists
-      // (It might have been removed in a previous operation)
-      const originalExists = updatedConnections.some(
-        (conn) => conn.database_id === originalId
-      );
-      if (!originalExists) {
-        console.warn(
-          `[mergeConnections] Update skipped: Original connection "${originalId}" not found`
-        );
-        return;
+    switch (action) {
+      case "remove":
+        connectionsMap.delete(database_id);
+        break;
+
+      case "update": {
+        const newId = slugify(database_id);
+
+        // Verify original connection exists
+        if (!connectionsMap.has(originalDatabaseId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: Original connection "${originalDatabaseId}" not found`
+          );
+          break;
+        }
+
+        // Check for name conflict (excluding the one being updated)
+        if (newId !== originalDatabaseId && connectionsMap.has(newId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: New name "${newId}" conflicts with existing connection`
+          );
+          break;
+        }
+
+        // Remove old and add updated connection
+        connectionsMap.delete(originalDatabaseId);
+        connectionsMap.set(newId, {
+          engine,
+          database_id: newId,
+          connectionString,
+        });
+        break;
       }
 
-      // Check if the new name conflicts with OTHER existing connections
-      // (excluding the one we're updating)
-      const conflictExists = updatedConnections.some(
-        (conn) => conn.database_id === newId && conn.database_id !== originalId
-      );
+      case "add": {
+        const slugifiedId = slugify(database_id);
 
-      if (conflictExists) {
-        console.warn(
-          `[mergeConnections] Update skipped: New name "${newId}" conflicts with existing connection`
-        );
-        return;
+        // Skip if already exists
+        if (connectionsMap.has(slugifiedId)) {
+          console.warn(
+            `[mergeConnections] Add skipped: Connection "${slugifiedId}" already exists`
+          );
+          break;
+        }
+
+        connectionsMap.set(slugifiedId, {
+          engine,
+          database_id: slugifiedId,
+          connectionString,
+        });
+        break;
       }
+    }
+  }
 
-      // Update is valid - remove old connection and add updated one
-      updatedConnections = updatedConnections.filter(
-        (conn) => conn.database_id !== originalId
-      );
-
-      updatedConnections.push({
-        engine: update.engine,
-        database_id: newId,
-        connectionString: update.connectionString,
-      });
-    });
-
-  // ===================================================================
-  // STEP 3: Process all additions (action: "add")
-  // ===================================================================
-  // We skip additions if:
-  // - The connection already existed in the backend (prevents re-adding saved connections)
-  // - A duplicate was already added in this batch
-  const existingDbIds = existingConnections.map((conn) => conn.database_id);
-
-  updates
-    .filter((conn) => conn.action === "add")
-    .forEach((update) => {
-      if (!update.connectionString) return; // Skip invalid connections
-
-      const slugifiedId = slugify(update.database_id);
-
-      // Check if this was already saved to the backend previously
-      // (Handles case where frontend re-sends with action: "add" still set)
-      if (existingDbIds.includes(slugifiedId)) {
-        console.warn(
-          `[mergeConnections] Add skipped: Connection "${slugifiedId}" already exists in backend`
-        );
-        return;
-      }
-
-      // Check for duplicates within this batch of updates
-      const isDuplicateInBatch = updatedConnections.some(
-        (conn) => conn.database_id === slugifiedId
-      );
-
-      if (isDuplicateInBatch) {
-        console.warn(
-          `[mergeConnections] Add skipped: Duplicate "${slugifiedId}" in same batch`
-        );
-        return;
-      }
-
-      updatedConnections.push({
-        engine: update.engine,
-        database_id: slugifiedId,
-        connectionString: update.connectionString,
-      });
-    });
-
-  return updatedConnections;
+  return Array.from(connectionsMap.values());
 }
 
 module.exports.SystemSettings = SystemSettings;
