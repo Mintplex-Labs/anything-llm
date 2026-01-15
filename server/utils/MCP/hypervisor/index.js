@@ -239,13 +239,13 @@ class MCPHypervisor {
   async #loadShellEnvironment() {
     try {
       if (process.platform === "win32") return process.env;
+
+      // In the main repo we are on Node v18. This is not compatible with fix-path v5.
+      // So we need to use the ESM-style import() to import the fix-path module + add the strip-ansi call to patch the PATH, which is the only change between v4 and v5.
+      // https://github.com/sindresorhus/fix-path/issues/6
       const { default: fixPath } = await import("fix-path");
       const { default: stripAnsi } = await import("strip-ansi");
       fixPath();
-
-      // Due to node v20 requirement to have a minimum version of fix-path v5, we need to strip ANSI codes manually
-      // which was the only patch between v4 and v5. Here we just apply manually.
-      // https://github.com/sindresorhus/fix-path/issues/6
       if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
       return process.env;
     } catch (error) {

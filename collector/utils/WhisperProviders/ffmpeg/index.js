@@ -35,8 +35,13 @@ class FFMPEGWrapper {
 
     if (process.platform !== "win32") {
       try {
+        // In the main repo we are on Node v18. This is not compatible with fix-path v5.
+        // So we need to use the ESM-style import() to import the fix-path module + add the strip-ansi call to patch the PATH, which is the only change between v4 and v5.
+        // https://github.com/sindresorhus/fix-path/issues/6
         const { default: fixPath } = await import("fix-path");
+        const { default: stripAnsi } = await import("strip-ansi");
         fixPath();
+        if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
       } catch (error) {
         this.log("Could not load fix-path, using system PATH");
       }
