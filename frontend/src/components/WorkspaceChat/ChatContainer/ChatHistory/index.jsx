@@ -113,9 +113,12 @@ const ChatHistory = forwardRef(function ChatHistory(
       isProgrammaticScroll.current = true;
       scrollToTop(smooth);
       // Reset flag after scroll animation completes
-      setTimeout(() => {
-        isProgrammaticScroll.current = false;
-      }, smooth ? 500 : 50);
+      setTimeout(
+        () => {
+          isProgrammaticScroll.current = false;
+        },
+        smooth ? 500 : 50
+      );
     },
     scrollToBottom: (smooth = true) => {
       isProgrammaticScroll.current = true;
@@ -123,9 +126,12 @@ const ChatHistory = forwardRef(function ChatHistory(
       setIsUserScrolling(false);
       // Reset flag after scroll animation completes
       // isAtBottom will be set naturally by the scroll handler
-      setTimeout(() => {
-        isProgrammaticScroll.current = false;
-      }, smooth ? 500 : 50);
+      setTimeout(
+        () => {
+          isProgrammaticScroll.current = false;
+        },
+        smooth ? 500 : 50
+      );
     },
   }));
 
