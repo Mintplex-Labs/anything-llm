@@ -106,6 +106,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
 - [CometAPI (chat models)](https://api.cometapi.com/)
+- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 
 **Embedder models:**
 

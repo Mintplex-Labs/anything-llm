@@ -29,6 +29,7 @@ const CometApiProvider = require("./cometapi.js");
 const FoundryProvider = require("./foundry.js");
 const GiteeAIProvider = require("./giteeai.js");
 const CohereProvider = require("./cohere.js");
+const DockerModelRunnerProvider = require("./dockerModelRunner.js");
 
 module.exports = {
   OpenAIProvider,
@@ -62,4 +63,5 @@ module.exports = {
   FoundryProvider,
   GiteeAIProvider,
   CohereProvider,
+  DockerModelRunnerProvider,
 };

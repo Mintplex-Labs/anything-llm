@@ -229,6 +229,11 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return new GiteeAILLM(embedder, model);
+    case "docker-model-runner":
+      const {
+        DockerModelRunnerLLM,
+      } = require("../AiProviders/dockerModelRunner");
+      return new DockerModelRunnerLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -394,6 +399,11 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return GiteeAILLM;
+    case "docker-model-runner":
+      const {
+        DockerModelRunnerLLM,
+      } = require("../AiProviders/dockerModelRunner");
+      return DockerModelRunnerLLM;
     default:
       return null;
   }
@@ -470,6 +480,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.ZAI_MODEL_PREF;
     case "giteeai":
       return process.env.GITEE_AI_MODEL_PREF;
+    case "docker-model-runner":
+      return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
     default:
       return null;
   }
@@ -495,6 +507,30 @@ function toChunks(arr, size) {
   );
 }
 
+function humanFileSize(bytes, si = false, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+
+  const units = si
+    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + " " + units[u];
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -503,4 +539,5 @@ module.exports = {
   getBaseLLMProviderModel,
   getLLMProvider,
   toChunks,
+  humanFileSize,
 };

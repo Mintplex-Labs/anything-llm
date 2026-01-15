@@ -154,6 +154,9 @@ function getModelTag() {
     case "cohere":
       model = process.env.COHERE_MODEL_PREF;
       break;
+    case "docker-model-runner":
+      model = process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
