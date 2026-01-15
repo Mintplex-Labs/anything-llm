@@ -161,6 +161,9 @@ export default {
     browserExtension: () => {
       return `/settings/browser-extension`;
     },
+    mobile: () => {
+      return `/settings/mobile-connections`;
+    },
     experimental: () => {
       return `/settings/beta-features`;
     },
