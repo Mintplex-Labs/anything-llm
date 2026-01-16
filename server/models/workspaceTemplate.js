@@ -142,7 +142,15 @@ const WorkspaceTemplate = {
 
         // validate through workspace validation
         const validatedConfig = Workspace.validateFields(filteredConfig);
-        updateData.config = JSON.stringify(validatedConfig);
+
+        // remove invalid values
+        const cleanedConfig = {};
+        for (const [key, value] of Object.entries(validatedConfig)) {
+          if (value !== null && value !== undefined) {
+            cleanedConfig[key] = value;
+          }
+        }
+        updateData.config = JSON.stringify(cleanedConfig);
       }
 
       const template = await prisma.workspace_templates.update({
