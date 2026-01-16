@@ -25,7 +25,7 @@ import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-const ChatHistory = forwardRef(function (
+const ChatHistory = forwardRef(function(
   {
     history = [],
     workspace,
@@ -96,6 +96,7 @@ const ChatHistory = forwardRef(function (
     return {
       scrollToTop() {
         if (chatHistoryRef.current) {
+          setIsUserScrolling(true)
           chatHistoryRef.current.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -103,7 +104,8 @@ const ChatHistory = forwardRef(function (
         }
       },
       scrollToBottom() {
-        scrollToBottom(true);
+        setIsUserScrolling(true)
+        scrollToBottom(false);
       },
     };
   }, []);
