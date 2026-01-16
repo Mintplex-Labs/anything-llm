@@ -79,6 +79,8 @@ class AzureOpenAiProvider extends Provider {
           this.providerLog(
             `Cannot call ${toolCall.name} again because ${reason}.`
           );
+
+          return await this.complete(messages, []);
         } else {
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),

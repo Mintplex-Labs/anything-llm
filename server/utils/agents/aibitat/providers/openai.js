@@ -204,12 +204,7 @@ class OpenAIProvider extends Provider {
               "The model tried to call a function with the same arguments as a previous call - it was ignored.",
           });
 
-          // Remove tool on cooldown from being called again to prevent
-          // infinte loops
-          const filteredFunctions = functions.filter(
-            (fn) => fn.name !== toolCall.name
-          );
-          return await this.stream(messages, filteredFunctions, eventHandler);
+          return await this.stream(messages, [], eventHandler);
         } else {
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
@@ -315,12 +310,7 @@ class OpenAIProvider extends Provider {
             `Cannot call ${toolCall.name} again because ${reason}.`
           );
 
-          // Remove tool on cooldown from being called again to prevent
-          // infinte loops
-          const filteredFunctions = functions.filter(
-            (fn) => fn.name !== toolCall.name
-          );
-          return await this.complete(messages, filteredFunctions);
+          return await this.complete(messages, []);
         } else {
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),

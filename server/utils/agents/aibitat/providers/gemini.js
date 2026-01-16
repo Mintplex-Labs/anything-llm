@@ -220,6 +220,8 @@ class GeminiProvider extends Provider {
             content:
               "The model tried to call a function with the same arguments as a previous call - it was ignored.",
           });
+
+          return await this.stream(messages, [], eventHandler);
         } else {
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments, {
             cooldown: this.isMCPTool(toolCall, functions),
@@ -296,6 +298,8 @@ class GeminiProvider extends Provider {
           this.providerLog(
             `Cannot call ${toolCallObj.name} again because ${reason}.`
           );
+
+          return await this.complete(messages, []);
         } else {
           this.deduplicator.trackRun(toolCallObj.name, toolCallObj.arguments, {
             cooldown: this.isMCPTool(toolCallObj, functions),

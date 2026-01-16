@@ -278,39 +278,7 @@ class AnthropicProvider extends Provider {
               "The model tried to call a function with the same arguments as a previous call - it was ignored.",
           });
 
-          // Filter out the tools on cooldown
-          const availableFunctions = functions.filter(
-            (fn) => fn.name !== toolCall.name
-          );
-
-          return await this.stream(
-            [
-              ...messages,
-              {
-                role: "assistant",
-                content: [
-                  {
-                    type: "tool_use",
-                    id: result.functionCall.id,
-                    name: result.functionCall.name,
-                    input: result.functionCall.arguments,
-                  },
-                ],
-              },
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "tool_result",
-                    tool_use_id: result.functionCall.id,
-                    content: `Tool unavailable. continue with your response and do not call this tool again.`,
-                  },
-                ],
-              },
-            ],
-            availableFunctions,
-            eventHandler
-          );
+          return await this.stream(messages, [], eventHandler);
         } else {
           messages.push({
             role: "assistant",
@@ -436,29 +404,7 @@ class AnthropicProvider extends Provider {
             `Cannot call ${toolCallObj.name} again because ${reason}.`
           );
 
-          // Filter out the tool on cooldown so Anthropic can't see it
-          const availableFunctions = functions.filter(
-            (fn) => fn.name !== toolCallObj.name
-          );
-
-          // Tell Anthropic the tool call failed so it continues
-          return await this.complete(
-            [
-              ...messages,
-              thought,
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "tool_result",
-                    tool_use_id: toolCall.id,
-                    content: `Tool unavailable. Please continue with your response or use a different tool.`,
-                  },
-                ],
-              },
-            ],
-            availableFunctions
-          );
+          return await this.complete(messages, []);
         } else {
           this.deduplicator.trackRun(toolCallObj.name, toolCallObj.arguments, {
             cooldown: this.isMCPTool(toolCallObj, functions),
