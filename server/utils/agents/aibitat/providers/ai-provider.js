@@ -18,6 +18,9 @@ const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const {
+  parseDockerModelRunnerEndpoint,
+} = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const {
   SystemPromptVariables,
@@ -313,6 +316,16 @@ class Provider {
           ...config,
         });
       }
+      case "docker-model-runner":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseDockerModelRunnerEndpoint(
+              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
+            ),
+          },
+          apiKey: null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

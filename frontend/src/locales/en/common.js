@@ -113,6 +113,7 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "workspace-templates": "Workspace Templates",
+    "mobile-app": "AnythingLLM Mobile",
   },
 
   // Page Definitions

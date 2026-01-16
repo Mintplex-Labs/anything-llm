@@ -73,8 +73,8 @@ export default function SettingsSidebar() {
         >
           <div
             className={`${showBgOverlay
-                ? "transition-all opacity-1"
-                : "transition-none opacity-0"
+              ? "transition-all opacity-1"
+              : "transition-none opacity-0"
               }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
             onClick={() => setShowSidebar(false)}
           />
@@ -390,6 +390,12 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.workspaceTemplates(),
               flex: true,
               roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.mobile-app"),
+              href: paths.settings.mobile(),
+              flex: true,
+              roles: ["admin"],
             },
           ]}
         />
