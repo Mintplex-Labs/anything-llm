@@ -12,8 +12,8 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
+const FoundrySDK = require("../AiProviders/foundry/sdk");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -772,28 +772,15 @@ async function getMoonshotAiModels(_apiKey = null) {
 
 async function getFoundryModels(basePath = null) {
   try {
-    const { OpenAI: OpenAIApi } = require("openai");
-    const openai = new OpenAIApi({
-      baseURL: parseFoundryBasePath(basePath || process.env.FOUNDRY_BASE_PATH),
-      apiKey: null,
-    });
-    const models = await openai.models
-      .list()
-      .then((results) =>
-        results.data.map((model) => ({
-          ...model,
-          name: model.id,
-        }))
-      )
-      .catch((e) => {
-        console.error(`Foundry:listModels`, e.message);
-        return [];
-      });
-
+    const foundry = new FoundrySDK(basePath);
+    const models = await foundry.listModels();
     return { models, error: null };
   } catch (e) {
     console.error(`Foundry:getFoundryModels`, e.message);
-    return { models: [], error: "Could not fetch Foundry Models" };
+    return {
+      models: [],
+      error: "Could not fetch Foundry Models",
+    };
   }
 }
 

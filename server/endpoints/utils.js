@@ -1,4 +1,5 @@
 const { SystemSettings } = require("../models/systemSettings");
+const { foundryUtilsEndpoints } = require("./utils/foundry");
 
 function utilEndpoints(app) {
   if (!app) return;
@@ -21,6 +22,8 @@ function utilEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+  // Extend with Foundry utils endpoints
+  foundryUtilsEndpoints(app);
 }
 
 function getGitVersion() {
