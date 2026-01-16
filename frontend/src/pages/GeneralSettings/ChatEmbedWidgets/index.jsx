@@ -67,8 +67,8 @@ export default function ChatEmbedWidgets() {
 
   return (
     <WidgetLayout>
-      <div className="flex-1 flex gap-x-6 p-4 mt-10">
-        <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
+      <div className="flex-1 flex gap-x-4 p-4 mt-10 overflow-hidden">
+        <div className="flex flex-col w-[180px] min-w-[160px] max-w-[200px] shrink-0 h-[calc(100vh-90px)]">
           <div className="flex-none mb-4">
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <p className="text-lg font-medium">Chat Embed</p>
@@ -84,8 +84,8 @@ export default function ChatEmbedWidgets() {
             </div>
           </div>
         </div>
-        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+        <div className="flex-1 flex flex-col gap-y-[18px] mt-10 min-w-0 mr-4">
+          <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl flex-1 p-4 overflow-auto no-scroll">
             {selectedView === "configs" ? (
               <EmbedConfigsView />
             ) : (
@@ -127,7 +127,7 @@ function WidgetList({ selectedView, handleClick }) {
 
   return (
     <div
-      className={`bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
+      className={`bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl ${isMobile ? "w-full" : "w-full"}`}
     >
       {Object.entries(views).map(([view, settings], index) => (
         <div

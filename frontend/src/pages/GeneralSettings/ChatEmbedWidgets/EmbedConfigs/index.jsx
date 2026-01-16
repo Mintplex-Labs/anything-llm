@@ -54,7 +54,7 @@ export default function EmbedConfigsView() {
           </p>
 
           <div>
-            <CTAButton onClick={openModal} className="text-theme-bg-chat">
+            <CTAButton onClick={openModal}>
               <CodeBlock className="h-4 w-4" weight="bold" />{" "}
               {t("embeddable.create")}
             </CTAButton>
@@ -62,7 +62,7 @@ export default function EmbedConfigsView() {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+        <table className="w-full text-xs text-left rounded-lg border-spacing-0">
           <thead className="text-theme-text-secondary text-xs leading-[18px] uppercase border-white/10 border-b">
             <tr>
               <th scope="col" className="px-6 py-3">

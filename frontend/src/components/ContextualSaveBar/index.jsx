@@ -21,7 +21,7 @@ export default function ContextualSaveBar({
           Cancel
         </button>
         <button
-          className="border-none text-theme-text-primary font-medium text-sm px-[10px] py-[6px] rounded-md bg-primary-button hover:bg-primary-button-hover"
+          className="border-none text-white font-medium text-sm px-[10px] py-[6px] rounded-md bg-primary-button hover:bg-primary-button-hover"
           onClick={onSave}
         >
           Save

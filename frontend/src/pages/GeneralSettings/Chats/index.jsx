@@ -133,7 +133,7 @@ export default function WorkspaceChats() {
                   <button
                     ref={openMenuButton}
                     onClick={toggleMenu}
-                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button text-white hover:bg-secondary hover:text-white light:hover:text-theme-text-primary text-xs font-semibold shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Download size={18} weight="bold" />
                     {t("recorded.export")}
@@ -153,7 +153,7 @@ export default function WorkspaceChats() {
                             handleDumpChats(key);
                             setShowMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-white light:text-theme-text-primary text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                          className="w-full text-left px-4 py-2 text-theme-text-primary text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                         >
                           {data.name}
                         </button>

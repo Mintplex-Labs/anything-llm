@@ -2,11 +2,14 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import {
   BookOpen,
+  Buildings,
+  Cloud,
   DiscordLogo,
   GithubLogo,
   Briefcase,
   Envelope,
   Globe,
+  GraduationCap,
   HouseLine,
   Info,
   LinkSimple,
@@ -20,9 +23,13 @@ import { Link } from "react-router-dom";
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
   BookOpen: BookOpen,
+  Buildings: Buildings,
+  Building2: Buildings, // Lucide alias
+  Cloud: Cloud,
   DiscordLogo: DiscordLogo,
   GithubLogo: GithubLogo,
   Envelope: Envelope,
+  GraduationCap: GraduationCap,
   LinkSimple: LinkSimple,
   HouseLine: HouseLine,
   Globe: Globe,

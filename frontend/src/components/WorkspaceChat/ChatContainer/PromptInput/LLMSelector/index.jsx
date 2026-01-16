@@ -100,18 +100,24 @@ export default function LLMSelectorModal() {
     );
   }
 
+  // Hide provider panel if there's only the system-configured provider
+  // This simplifies the UI for single-provider deployments (e.g., Cortex gateway)
+  const showProviderPanel = availableProviders.length > 1;
+
   return (
     <div
       id="llm-selector-modal"
-      className="w-full h-[500px] p-0 overflow-y-scroll flex"
+      className={`w-full h-[500px] p-0 overflow-y-scroll flex`}
     >
-      <LLMSelectorSidePanel
-        availableProviders={availableProviders}
-        selectedLLMProvider={selectedLLMProvider}
-        onSearchChange={handleSearch}
-        onProviderClick={handleProviderSelection}
-      />
-      <div className="w-[60%] h-full px-2 flex flex-col gap-y-2">
+      {showProviderPanel && (
+        <LLMSelectorSidePanel
+          availableProviders={availableProviders}
+          selectedLLMProvider={selectedLLMProvider}
+          onSearchChange={handleSearch}
+          onProviderClick={handleProviderSelection}
+        />
+      )}
+      <div className={`${showProviderPanel ? "w-[60%]" : "w-full"} h-full px-2 flex flex-col gap-y-2`}>
         <NoSetupWarning
           showing={missingCredentials}
           onSetupClick={() => {
@@ -138,7 +144,7 @@ export default function LLMSelectorModal() {
             type="button"
             disabled={saving}
             onClick={handleSave}
-            className={`border-none text-xs px-4 py-1 font-semibold light:text-[#ffffff] rounded-lg bg-primary-button hover:bg-secondary hover:text-white light:hover:text-theme-text-primary h-[34px] whitespace-nowrap w-full`}
+            className={`border-none text-xs px-4 py-1 font-semibold text-white rounded-lg bg-primary-button hover:bg-secondary hover:text-white light:hover:text-theme-text-primary h-[34px] whitespace-nowrap w-full`}
           >
             {saving
               ? t("chat_window.workspace_llm_manager.saving")

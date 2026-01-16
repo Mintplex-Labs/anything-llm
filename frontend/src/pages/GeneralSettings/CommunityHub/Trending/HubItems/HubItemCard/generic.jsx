@@ -7,7 +7,7 @@ export default function GenericHubCard({ item }) {
   return (
     <div
       key={item.id}
-      className="bg-zinc-800 light:bg-slate-100 rounded-lg p-3 hover:bg-zinc-700 light:hover:bg-slate-200 light:hover:bg-slate-200 transition-all duration-200"
+      className="bg-zinc-800 light:bg-slate-200 rounded-lg p-3 hover:bg-zinc-700 light:hover:bg-slate-300 transition-all duration-200"
     >
       <p className="text-white light:text-theme-text-primary text-sm font-medium">{item.name}</p>
       <p className="text-white/60 light:text-theme-text-secondary text-xs mt-1">{item.description}</p>

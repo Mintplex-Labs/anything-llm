@@ -62,7 +62,7 @@ export default function EditingChatBubble({
           ) : (
             tempMessage && (
               <div
-                className="markdown font-[500] md:font-semibold text-sm md:text-base break-words light:invert"
+                className="markdown font-[500] md:font-semibold text-sm md:text-base break-words text-white"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(renderMarkdown(tempMessage)),
                 }}

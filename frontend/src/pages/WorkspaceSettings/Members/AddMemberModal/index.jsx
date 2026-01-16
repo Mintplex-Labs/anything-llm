@@ -83,7 +83,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             type="button"
             className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-white light:text-theme-text-primary text-lg" />
+            <X className="text-theme-text-primary text-lg" />
           </button>
         </div>
         <form onSubmit={handleUpdate}>
@@ -151,7 +151,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             </div>
             <button
               type="submit"
-              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white light:hover:text-theme-text-primary h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+              className="transition-all duration-300 text-xs px-2 py-1 font-semibold text-white rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white light:hover:text-theme-text-primary h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
               Save
             </button>

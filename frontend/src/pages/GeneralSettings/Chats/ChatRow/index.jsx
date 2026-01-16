@@ -88,7 +88,7 @@ const TextPreview = ({ text, closeModal }) => {
             type="button"
             className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-white light:text-theme-text-primary text-lg" />
+            <X className="text-theme-text-primary text-lg" />
           </button>
         </div>
         <div className="w-full p-6">
