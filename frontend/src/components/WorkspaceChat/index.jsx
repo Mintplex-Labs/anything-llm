@@ -55,7 +55,7 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </div>
               </div>
               <div className="py-7 px-9 space-y-2 flex-col">
-                <p className="text-white text-sm">
+                <p className="text-white light:text-theme-text-primary text-sm">
                   The workspace you're looking for is not available. It may have
                   been deleted or you may not have access to it.
                 </p>

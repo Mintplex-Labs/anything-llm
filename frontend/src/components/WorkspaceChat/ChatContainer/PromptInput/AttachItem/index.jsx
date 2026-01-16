@@ -93,7 +93,7 @@ export default function AttachItem() {
         <div className="relative">
           <PaperclipHorizontal
             color="var(--theme-sidebar-footer-icon-fill)"
-            className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100"
+            className="w-[22px] h-[22px] pointer-events-none text-white light:text-theme-text-primary rotate-90 -scale-y-100"
           />
           {files.length > 0 && (
             <div className="absolute -top-2 right-[1%] bg-white text-black light:invert text-[8px] rounded-full px-1 flex items-center justify-center">

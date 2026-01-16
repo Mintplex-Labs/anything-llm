@@ -67,7 +67,7 @@ export default function SystemPrompt({ item, setStep }) {
             Provided system prompt:
           </p>
           <div className="w-full text-theme-text-primary text-md flex flex-col max-h-[calc(300px)] overflow-y-auto">
-            <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-slate-200 px-2 py-1 rounded-md text-sm whitespace-pre-line">
+            <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-slate-50 light:bg-slate-200 px-2 py-1 rounded-md text-sm whitespace-pre-line">
               {item.prompt}
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function SystemPrompt({ item, setStep }) {
             name="destinationWorkspaceSlug"
             required={true}
             onChange={(e) => setDestinationWorkspaceSlug(e.target.value)}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available workspaces">
               {workspaces.map((workspace) => (

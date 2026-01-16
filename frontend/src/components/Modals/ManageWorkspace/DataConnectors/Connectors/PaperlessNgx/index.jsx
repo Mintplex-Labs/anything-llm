@@ -51,7 +51,7 @@ export default function PaperlessNgxOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white light:text-theme-text-primary text-sm font-bold">
                     Base URL
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
@@ -62,7 +62,7 @@ export default function PaperlessNgxOptions() {
                 <input
                   type="url"
                   name="baseUrl"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="http://localhost:8000"
                   required={true}
                   autoComplete="off"
@@ -72,8 +72,8 @@ export default function PaperlessNgxOptions() {
 
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">API Token</p>
+                  <label className="text-white light:text-theme-text-primary text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-white light:text-theme-text-primary">API Token</p>
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
                     Your Paperless-ngx API token. You can find this under
@@ -83,7 +83,7 @@ export default function PaperlessNgxOptions() {
                 <input
                   type="password"
                   name="apiToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="Enter your API token"
                   required={true}
                   autoComplete="off"
@@ -94,7 +94,7 @@ export default function PaperlessNgxOptions() {
           </div>
 
           <div className="flex flex-col gap-y-2 w-full pr-10">
-            <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+            <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white light:text-theme-text-primary mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
               <div className="gap-x-2 flex items-center">
                 <Info className="shrink-0" size={25} />
                 <p className="text-sm">
@@ -111,7 +111,7 @@ export default function PaperlessNgxOptions() {
               {loading ? "Importing documents..." : "Submit"}
             </button>
             {loading && (
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-white/50 light:text-theme-text-secondary">
                 Once complete, all documents will be available for embedding
                 into workspaces.
               </p>

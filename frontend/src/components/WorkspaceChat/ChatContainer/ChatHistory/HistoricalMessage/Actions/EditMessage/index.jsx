@@ -53,7 +53,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
             ? t("chat_window.edit_prompt")
             : t("chat_window.edit_response")
         } `}
-        className="border-none text-zinc-300"
+        className="border-none text-zinc-300 light:text-theme-text-secondary"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
         <Pencil
@@ -105,7 +105,7 @@ export function EditMessageForm({
         ref={formRef}
         name="editedMessage"
         spellCheck={Appearance.get("enableSpellCheck")}
-        className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
+        className="text-white light:text-theme-text-primary w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
         defaultValue={message}
         onChange={adjustTextArea}
       />
@@ -118,7 +118,7 @@ export function EditMessageForm({
         </button>
         <button
           type="button"
-          className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="border-none px-2 py-1 bg-historical-msg-system text-white light:text-theme-text-primary font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white light:hover:text-theme-text-primary focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
           {t("chat_window.cancel")}

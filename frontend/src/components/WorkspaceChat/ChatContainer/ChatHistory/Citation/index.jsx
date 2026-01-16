@@ -53,7 +53,7 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none font-semibold text-white/50 light:text-black/50 font-medium italic ${textSizeClass} text-left ml-14 pt-2 ${
+        className={`border-none font-semibold text-white/50 light:text-theme-text-secondary light:text-black/50 font-medium italic ${textSizeClass} text-left ml-14 pt-2 ${
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
@@ -141,7 +141,7 @@ function CitationDetailModal({ source, onClose }) {
                 href={linkTo}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xl w-[90%] font-semibold text-white whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+                className="text-xl w-[90%] font-semibold text-white light:text-theme-text-primary whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
               >
                 <div className="flex items-center gap-x-1 max-w-full overflow-hidden">
                   <h3 className="truncate text-ellipsis whitespace-nowrap overflow-hidden w-full">
@@ -151,13 +151,13 @@ function CitationDetailModal({ source, onClose }) {
                 </div>
               </a>
             ) : (
-              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-white light:text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {truncate(title, 45)}
               </h3>
             )}
           </div>
           {references > 1 && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-gray-400 light:text-theme-text-secondary mt-2">
               Referenced {references} times.
             </p>
           )}
@@ -166,7 +166,7 @@ function CitationDetailModal({ source, onClose }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white light:text-theme-text-primary" />
           </button>
         </div>
         <div
@@ -176,14 +176,14 @@ function CitationDetailModal({ source, onClose }) {
           <div className="py-7 px-9 space-y-2 flex-col">
             {chunks.map(({ text, score }, idx) => (
               <>
-                <div key={idx} className="pt-6 text-white">
+                <div key={idx} className="pt-6 text-white light:text-theme-text-primary">
                   <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                    <p className="text-white whitespace-pre-line">
+                    <p className="text-white light:text-theme-text-primary whitespace-pre-line">
                       {HTMLDecode(omitChunkHeader(text))}
                     </p>
 
                     {!!score && (
-                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                      <div className="w-full flex items-center text-xs text-white/60 light:text-theme-text-secondary gap-x-2 cursor-default">
                         <div
                           data-tooltip-id="similarity-score"
                           data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}

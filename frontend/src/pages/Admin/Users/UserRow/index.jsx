@@ -57,7 +57,7 @@ export default function UserRow({ currUser, user }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
+        className="bg-transparent text-white light:text-theme-text-primary text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
       >
         <th scope="row" className="px-6 whitespace-nowrap">
           {user.username}
@@ -68,7 +68,7 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="text-xs font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
+              className="text-xs font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white light:hover:text-theme-text-primary hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
               Edit
             </button>

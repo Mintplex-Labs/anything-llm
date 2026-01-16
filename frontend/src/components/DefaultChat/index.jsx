@@ -79,7 +79,7 @@ export default function DefaultChatContainer() {
           alt="Custom Logo"
           className=" w-[200px] h-fit mb-5 rounded-lg"
         />
-        <h1 className="text-white text-2xl font-semibold">
+        <h1 className="text-white light:text-theme-text-primary text-2xl font-semibold">
           {t("home.welcome")}, {user.username}!
         </h1>
         <p className="text-theme-home-text-secondary text-base text-center whitespace-pre-line">

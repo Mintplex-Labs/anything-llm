@@ -155,12 +155,12 @@ export default function DefaultSystemPrompt() {
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <label
                     htmlFor="default-system-prompt"
-                    className=" text-base font-bold text-white"
+                    className=" text-base font-bold text-white light:text-theme-text-primary"
                   >
                     System Prompt
                   </label>
                   <div className="space-y-1">
-                    <p className="text-white text-opacity-60 text-xs font-medium">
+                    <p className="text-white light:text-theme-text-primary text-opacity-60 text-xs font-medium">
                       A system prompt provides instructions that shape the AI’s
                       responses and behavior. This prompt will be automatically
                       applied to all newly created workspaces. To change the
@@ -171,7 +171,7 @@ export default function DefaultSystemPrompt() {
                       restore the system prompt to our sane default, leave this
                       field empty and save changes.
                     </p>
-                    <p className="text-white text-opacity-60 text-xs font-medium mb-2">
+                    <p className="text-white light:text-theme-text-primary text-opacity-60 text-xs font-medium mb-2">
                       You can insert{" "}
                       <Link
                         to={paths.settings.systemPromptVariables()}
@@ -221,7 +221,7 @@ export default function DefaultSystemPrompt() {
                         overflowY: "scroll",
                         minHeight: "150px",
                       }}
-                      className="w-full border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5"
+                      className="w-full border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white light:text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5"
                     />
                   ) : (
                     <div
@@ -236,7 +236,7 @@ export default function DefaultSystemPrompt() {
                         overflowY: "scroll",
                         minHeight: "150px",
                       }}
-                      className="w-full border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 cursor-text"
+                      className="w-full border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 cursor-text"
                     >
                       <Highlighter
                         className="whitespace-pre-wrap"
@@ -254,7 +254,7 @@ export default function DefaultSystemPrompt() {
                     disabled={
                       !systemPromptForm.isDirty || systemPromptForm.isSubmitting
                     }
-                    className={`enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed`}
+                    className={`enabled:hover:bg-secondary enabled:hover:text-white light:hover:text-theme-text-primary rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed`}
                     type="submit"
                   >
                     Save Changes

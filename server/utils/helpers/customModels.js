@@ -45,6 +45,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "zai",
   "giteeai",
   "docker-model-runner",
+  "generic-openai", // PDI: Enable workspace-level model selection
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -120,6 +121,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGiteeAIModels(apiKey);
     case "docker-model-runner":
       return await getDockerModelRunnerModels(basePath);
+    case "generic-openai":
+      return await getGenericOpenAiModels(basePath, apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -877,6 +880,39 @@ async function getDockerModelRunnerModels(basePath = null) {
     return {
       models: [],
       error: "Could not fetch Docker Model Runner Models",
+    };
+  }
+}
+
+// PDI: Fetch models from Generic OpenAI compatible endpoints
+async function getGenericOpenAiModels(basePath = null, apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  try {
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.GENERIC_OPEN_AI_BASE_PATH,
+      apiKey: apiKey || process.env.GENERIC_OPEN_AI_API_KEY || "not-needed",
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          name: model.id,
+          organization: model.owned_by || "generic",
+        }))
+      )
+      .catch((e) => {
+        console.error(`GenericOpenAI:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`GenericOpenAI:getGenericOpenAiModels`, e.message);
+    return {
+      models: [],
+      error: "Could not fetch Generic OpenAI Models",
     };
   }
 }

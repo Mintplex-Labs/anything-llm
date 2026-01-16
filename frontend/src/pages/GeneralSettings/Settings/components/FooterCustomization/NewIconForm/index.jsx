@@ -89,7 +89,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
         value={selectedUrl}
         onChange={handleUrlChange}
         placeholder="https://example.com"
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
+        className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
         required
       />
       {selectedIcon !== "Plus" && (
@@ -105,7 +105,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
             <button
               type="button"
               onClick={handleRemove}
-              className="hover:text-red-500 text-white/80 px-2 py-2 rounded-md text-sm font-bold"
+              className="hover:text-red-500 text-white/80 light:text-theme-text-primary px-2 py-2 rounded-md text-sm font-bold"
             >
               <X size={20} />
             </button>

@@ -15,9 +15,9 @@ export default function ConnectorOption({
     >
       <img src={image} alt={name} className="w-[40px] h-[40px] rounded-md" />
       <div className="flex flex-col">
-        <div className="text-white font-bold text-[14px]">{name}</div>
+        <div className="text-white light:text-theme-text-primary font-bold text-[14px]">{name}</div>
         <div>
-          <p className="text-[12px] text-white/60">{description}</p>
+          <p className="text-[12px] text-white/60 light:text-theme-text-secondary">{description}</p>
         </div>
       </div>
     </button>

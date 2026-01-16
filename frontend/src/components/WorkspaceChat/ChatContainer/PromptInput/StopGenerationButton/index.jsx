@@ -13,7 +13,7 @@ export default function StopGenerationButton() {
         onClick={emitHaltEvent}
         data-tooltip-id="stop-generation-button"
         data-tooltip-content="Stop generating response"
-        className="border-none text-white/60 cursor-pointer group -mr-1.5 mt-1.5"
+        className="border-none text-white/60 light:text-theme-text-secondary cursor-pointer group -mr-1.5 mt-1.5"
         aria-label="Stop generating"
       >
         <svg

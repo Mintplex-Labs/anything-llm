@@ -8,13 +8,13 @@ export default function MistralOptions({ settings }) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Mistral API Key
         </label>
         <input
           type="password"
           name="MistralApiKey"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -56,13 +56,13 @@ function MistralModelSelection({ apiKey, settings }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="MistralModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!apiKey
@@ -76,13 +76,13 @@ function MistralModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-3">
+      <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="MistralModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Available Mistral Models">

@@ -8,13 +8,13 @@ export default function TogetherAiOptions({ settings }) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Together AI API Key
         </label>
         <input
           type="password"
           name="TogetherAiApiKey"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Together AI API Key"
           defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -67,13 +67,13 @@ function TogetherAiModelSelection({ settings, apiKey }) {
   if (loading || Object.keys(groupedModels).length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="TogetherAiModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -85,13 +85,13 @@ function TogetherAiModelSelection({ settings, apiKey }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-3">
+      <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="TogetherAiModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()

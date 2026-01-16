@@ -8,7 +8,7 @@ import { CircleNotch, PauseCircle, PlayCircle } from "@phosphor-icons/react";
 export default function PiperTTSOptions({ settings }) {
   return (
     <>
-      <p className="text-sm font-base text-white text-opacity-60 mb-4">
+      <p className="text-sm font-base text-white light:text-theme-text-primary text-opacity-60 mb-4">
         All PiperTTS models will run in your browser locally. This can be
         resource intensive on lower-end devices.
       </p>
@@ -68,14 +68,14 @@ function PiperTTSModelSelection({ settings }) {
   if (loading) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Voice Model Selection
         </label>
         <select
           name="TTSPiperTTSVoiceModel"
           value=""
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
         >
           <option value="" disabled={true}>
             -- loading available models --
@@ -88,7 +88,7 @@ function PiperTTSModelSelection({ settings }) {
   return (
     <div className="flex flex-col w-fit">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Voice Model Selection
         </label>
         <div className="flex items-center w-fit gap-x-4 mb-2">
@@ -97,7 +97,7 @@ function PiperTTSModelSelection({ settings }) {
             required={true}
             onChange={(e) => setSelectedVoice(e.target.value)}
             value={selectedVoice}
-            className="border-none flex-shrink-0 bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none flex-shrink-0 bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
           >
             {voicesByLanguage(voices).map(([lang, voices]) => {
               return (
@@ -113,7 +113,7 @@ function PiperTTSModelSelection({ settings }) {
           </select>
           <DemoVoiceSample voiceId={selectedVoice} />
         </div>
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-white/40 light:text-theme-text-secondary">
           The "✔" indicates this model is already stored locally and does not
           need to be downloaded when run.
         </p>
@@ -122,7 +122,7 @@ function PiperTTSModelSelection({ settings }) {
         <button
           type="button"
           onClick={flushVoices}
-          className="w-fit border-none hover:text-white hover:underline text-white/40 text-sm my-4"
+          className="w-fit border-none hover:text-white light:hover:text-theme-text-primary hover:underline text-white/40 light:text-theme-text-secondary text-sm my-4"
         >
           Flush voice cache
         </button>
@@ -186,7 +186,7 @@ function DemoVoiceSample({ voiceId }) {
       type="button"
       onClick={speakMessage}
       disabled={loading}
-      className="border-none text-zinc-300 flex items-center gap-x-1"
+      className="border-none text-zinc-300 light:text-theme-text-secondary flex items-center gap-x-1"
     >
       {speaking ? (
         <>
@@ -202,8 +202,8 @@ function DemoVoiceSample({ voiceId }) {
             </>
           ) : (
             <>
-              <PlayCircle size={20} className="flex-shrink-0 text-white" />
-              <p className="text-white text-sm flex-shrink-0">Play sample</p>
+              <PlayCircle size={20} className="flex-shrink-0 text-white light:text-theme-text-primary" />
+              <p className="text-white light:text-theme-text-primary text-sm flex-shrink-0">Play sample</p>
             </>
           )}
         </>

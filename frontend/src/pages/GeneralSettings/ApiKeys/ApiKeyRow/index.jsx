@@ -41,7 +41,7 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
 
   return (
     <>
-      <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
+      <tr className="bg-transparent text-white light:text-theme-text-primary text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
         <td scope="row" className="px-6 whitespace-nowrap">
           {apiKey.secret}
         </td>
@@ -51,7 +51,7 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="text-xs font-medium text-blue-300 rounded-lg hover:text-white hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
+            className="text-xs font-medium text-blue-300 rounded-lg hover:text-white light:hover:text-theme-text-primary hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>

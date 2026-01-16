@@ -343,7 +343,7 @@ export default function AdminAgents() {
                       setShowSkillModal(false);
                       setSelectedSkill("");
                     }}
-                    className="text-white/60 hover:text-white transition-colors duration-200"
+                    className="text-white/60 light:text-theme-text-secondary hover:text-white light:hover:text-theme-text-primary transition-colors duration-200"
                   >
                     <div className="flex items-center text-sky-400">
                       <CaretLeft size={24} />
@@ -352,7 +352,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className=" bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl p-4 overflow-y-scroll no-scroll">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedMcpServer ? (
@@ -543,7 +543,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -646,7 +646,7 @@ function SkillList({
   return (
     <>
       <div
-        className={`bg-theme-bg-secondary text-white rounded-xl ${
+        className={`bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl ${
           isMobile ? "w-full" : "min-w-[360px] w-fit"
         }`}
       >
@@ -658,7 +658,7 @@ function SkillList({
             } ${
               index === Object.keys(skills).length - 1
                 ? "rounded-b-xl"
-                : "border-b border-white/10"
+                : "border-b border-white/10 light:border-gray-200"
             } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
               selectedSkill === skill
                 ? "bg-white/10 light:bg-theme-bg-sidebar"

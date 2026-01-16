@@ -120,7 +120,7 @@ export function MCPServersList({
   }
 
   return (
-    <div className="bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px]">
+    <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl w-full md:min-w-[360px]">
       {servers.map((server, index) => (
         <div
           key={server.name}
@@ -129,7 +129,7 @@ export function MCPServersList({
           } ${
             index === servers.length - 1
               ? "rounded-b-xl"
-              : "border-b border-white/10"
+              : "border-b border-white/10 light:border-gray-200"
           } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
             selectedServer?.name === server.name
               ? "bg-white/10 light:bg-theme-bg-sidebar"

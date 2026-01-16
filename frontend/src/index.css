@@ -677,7 +677,7 @@ dialog::backdrop {
 }
 
 .tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+  @apply !bg-black !text-white light:!text-black light:!bg-white !py-2 !px-3 !rounded-md;
 }
 
 .Toastify__toast-body {
@@ -701,7 +701,7 @@ dialog::backdrop {
 }
 
 .input-label {
-  @apply text-[14px] font-bold text-white;
+  @apply text-[14px] font-bold text-white light:text-theme-text-primary;
 }
 
 /**
@@ -1069,7 +1069,7 @@ does not extend the close button beyond the viewport. */
 }
 
 .rti--container {
-  @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+  @apply !bg-theme-settings-input-bg !text-white light:!text-theme-text-primary !placeholder-white light:!placeholder-theme-text-secondary !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
 }
 
 @keyframes fadeUpIn {

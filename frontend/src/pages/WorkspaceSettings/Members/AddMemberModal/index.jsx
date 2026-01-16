@@ -64,17 +64,17 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
           <div className="flex items-center gap-x-4">
-            <h3 className="text-base font-semibold text-white">Users</h3>
+            <h3 className="text-base font-semibold text-white light:text-theme-text-primary">Users</h3>
             <div className="relative">
               <input
                 onChange={handleSearch}
-                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white placeholder:text-theme-text-secondary text-sm px-10 pl-10"
+                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white light:text-theme-text-primary placeholder:text-theme-text-secondary text-sm px-10 pl-10"
                 placeholder="Search for a user"
               />
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="text-white text-lg absolute left-3 top-1/2 transform -translate-y-1/2"
+                className="text-white light:text-theme-text-primary text-lg absolute left-3 top-1/2 transform -translate-y-1/2"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             type="button"
             className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-white text-lg" />
+            <X className="text-white light:text-theme-text-primary text-lg" />
           </button>
         </div>
         <form onSubmit={handleUpdate}>
@@ -118,7 +118,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
               )}
             </table>
           </div>
-          <div className="flex w-full justify-between items-center p-3 space-x-2 border-t rounded-b border-gray-500/50">
+          <div className="flex w-full justify-between items-center p-3 space-x-2 border-t rounded-b border-gray-500/50 light:border-gray-300/50">
             <div className="flex items-center gap-x-2">
               <button
                 type="button"
@@ -126,7 +126,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                 className="flex items-center gap-x-2 ml-2"
               >
                 <div
-                  className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+                  className="shrink-0 w-3 h-3 rounded border-[1px] border-white light:border-theme-modal-border flex justify-center items-center cursor-pointer"
                   role="checkbox"
                   aria-checked={selectedUsers.length === filteredUsers.length}
                   tabIndex={0}
@@ -135,7 +135,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                     <div className="w-2 h-2 bg-white rounded-[2px]" />
                   )}
                 </div>
-                <p className="text-white text-sm font-medium">Select All</p>
+                <p className="text-white light:text-theme-text-primary text-sm font-medium">Select All</p>
               </button>
               {selectedUsers.length > 0 && (
                 <button
@@ -151,7 +151,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             </div>
             <button
               type="submit"
-              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white light:hover:text-theme-text-primary h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
               Save
             </button>

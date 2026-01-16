@@ -19,7 +19,7 @@ export default function ChatBubble({ message, type, popMsg }) {
           />
 
           <div
-            className={`markdown whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            className={`markdown whitespace-pre-line text-white light:text-theme-text-primary font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(renderMarkdown(message)),
             }}

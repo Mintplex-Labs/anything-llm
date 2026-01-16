@@ -112,7 +112,7 @@ export default function ThreadContainer({ workspace }) {
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
-        <p className="text-xs text-white animate-pulse">loading threads....</p>
+        <p className="text-xs text-white light:text-theme-text-primary animate-pulse">loading threads....</p>
       </div>
     );
   }
@@ -221,7 +221,7 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
           <Trash
             weight="bold"
             size={14}
-            className="shrink-0 text-white light:text-red-500/50 group-hover:text-red-400"
+            className="shrink-0 text-white light:text-theme-text-primary light:text-red-500/50 group-hover:text-red-400"
           />
         </div>
         <p className="text-white light:text-theme-text-secondary text-left text-sm group-hover:text-red-400">

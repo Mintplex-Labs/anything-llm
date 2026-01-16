@@ -80,7 +80,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <ArrowCounterClockwise
-                  className="text-zinc-300 hover:text-white light:text-theme-text-secondary hover:light:text-theme-text-primary"
+                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white light:hover:text-theme-text-primary light:text-theme-text-secondary hover:light:text-theme-text-primary"
                   size={18}
                 />
               </button>
@@ -98,7 +98,7 @@ export default function ThreadItem({
           >
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
-                isActive ? "font-medium text-white" : "text-theme-text-primary"
+                isActive ? "font-medium text-white light:text-theme-text-primary" : "text-theme-text-primary"
               }`}
             >
               {thread.name}
@@ -116,7 +116,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
-                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white light:hover:text-theme-text-primary hover:light:text-theme-text-primary"
                   weight="bold"
                   size={18}
                 />
@@ -130,7 +130,7 @@ export default function ThreadItem({
                   aria-label="Thread options"
                 >
                   <DotsThree
-                    className="text-slate-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                    className="text-slate-300 light:text-theme-text-secondary hover:text-white light:hover:text-theme-text-primary hover:light:text-theme-text-primary"
                     size={25}
                   />
                 </button>
@@ -247,12 +247,12 @@ function OptionsMenu({
   return (
     <div
       ref={menuRef}
-      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 light:bg-theme-bg-sidebar light:border-[1px] light:border-theme-sidebar-border rounded-lg p-1"
+      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 light:bg-slate-50 light:bg-theme-bg-sidebar light:border-[1px] light:border-theme-sidebar-border rounded-lg p-1"
     >
       <button
         onClick={renameThread}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-secondary light:text-theme-text-primary"
       >
         <PencilSimple size={18} />
         <p className="text-sm">Rename</p>
@@ -260,7 +260,7 @@ function OptionsMenu({
       <button
         onClick={handleDelete}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-secondary light:text-theme-text-primary hover:text-red-100"
       >
         <Trash size={18} />
         <p className="text-sm">Delete Thread</p>

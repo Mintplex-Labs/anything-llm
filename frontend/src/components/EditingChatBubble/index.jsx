@@ -31,7 +31,7 @@ export default function EditingChatBubble({
         }`}
       >
         <button
-          className={`transition-all duration-300 absolute z-10 text-white rounded-full hover:bg-neutral-700 light:hover:invert hover:border-white border-transparent border shadow-lg ${
+          className={`transition-all duration-300 absolute z-10 text-white light:text-theme-text-primary rounded-full hover:bg-neutral-700 light:hover:invert hover:border-white light:border-theme-modal-border border-transparent border shadow-lg ${
             isUser ? "right-0 mr-2" : "ml-2"
           }`}
           style={{ top: "6px", [isUser ? "right" : "left"]: "290px" }}
@@ -41,7 +41,7 @@ export default function EditingChatBubble({
         </button>
         <div
           className={`p-2 max-w-full md:w-[290px] text-black rounded-[8px] ${
-            isUser ? "bg-[#41444C] text-white" : "bg-[#2E3036] text-white"
+            isUser ? "bg-[#41444C] text-white light:text-theme-text-primary" : "bg-[#2E3036] text-white light:text-theme-text-primary"
           }
         }`}
           onDoubleClick={() => setIsEditing(true)}
@@ -56,7 +56,7 @@ export default function EditingChatBubble({
               }}
               autoFocus
               className={`w-full light:text-white ${
-                isUser ? "bg-[#41444C] text-white" : "bg-[#2E3036] text-white"
+                isUser ? "bg-[#41444C] text-white light:text-theme-text-primary" : "bg-[#2E3036] text-white light:text-theme-text-primary"
               }`}
             />
           ) : (

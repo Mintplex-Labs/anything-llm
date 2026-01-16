@@ -142,7 +142,7 @@ export default function EmbedChatsView() {
             <button
               ref={openMenuButton}
               onClick={toggleMenu}
-              className="flex items-center gap-x-2 px-4 py-1 rounded-lg text-theme-bg-chat bg-primary-button hover:bg-secondary hover:text-white text-xs font-semibold h-[34px] w-fit"
+              className="flex items-center gap-x-2 px-4 py-1 rounded-lg text-theme-bg-chat bg-primary-button hover:bg-secondary hover:text-white light:hover:text-theme-text-primary text-xs font-semibold h-[34px] w-fit"
             >
               <Download size={18} weight="bold" />
               {t("embed-chats.export")}
@@ -162,7 +162,7 @@ export default function EmbedChatsView() {
                       handleDumpChats(key);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                    className="w-full text-left px-4 py-2 text-white light:text-theme-text-primary text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                   >
                     {data.name}
                   </button>

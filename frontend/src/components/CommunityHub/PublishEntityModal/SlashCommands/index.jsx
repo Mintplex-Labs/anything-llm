@@ -125,7 +125,7 @@ export default function SlashCommands({ entity }) {
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
               {t("community_hub.publish.slash_command.description_label")}
             </label>
-            <div className="text-xs text-white/60 mb-2">
+            <div className="text-xs text-white/60 light:text-theme-text-secondary mb-2">
               {t("community_hub.publish.slash_command.description_description")}
             </div>
             <textarea
@@ -137,14 +137,14 @@ export default function SlashCommands({ entity }) {
               placeholder={t(
                 "community_hub.publish.slash_command.description_description"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white light:text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <label className="block text-sm font-semibold text-white light:text-theme-text-primary mb-1">
               {t("community_hub.publish.slash_command.tags_label")}
             </label>
-            <div className="text-xs text-white/60 mb-2">
+            <div className="text-xs text-white/60 light:text-theme-text-secondary mb-2">
               {t("community_hub.publish.slash_command.tags_description")}
             </div>
             <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
@@ -177,10 +177,10 @@ export default function SlashCommands({ entity }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <label className="block text-sm font-semibold text-white light:text-theme-text-primary mb-1">
               {t("community_hub.publish.slash_command.visibility_label")}
             </label>
-            <div className="text-xs text-white/60 mb-2">
+            <div className="text-xs text-white/60 light:text-theme-text-secondary mb-2">
               {visibility === "public"
                 ? t("community_hub.publish.slash_command.public_description")
                 : t("community_hub.publish.slash_command.private_description")}
@@ -223,10 +223,10 @@ export default function SlashCommands({ entity }) {
 
         <div className="w-1/2 p-6 pt-0 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <label className="block text-sm font-semibold text-white light:text-theme-text-primary mb-1">
               {t("community_hub.publish.slash_command.prompt_label")}
             </label>
-            <div className="text-xs text-white/60 mb-2">
+            <div className="text-xs text-white/60 light:text-theme-text-secondary mb-2">
               {t("community_hub.publish.slash_command.prompt_description")}
             </div>
             <textarea
@@ -237,7 +237,7 @@ export default function SlashCommands({ entity }) {
               placeholder={t(
                 "community_hub.publish.slash_command.prompt_placeholder"
               )}
-              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white light:text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
             />
           </div>
 

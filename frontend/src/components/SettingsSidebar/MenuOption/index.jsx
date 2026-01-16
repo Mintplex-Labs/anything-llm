@@ -75,7 +75,7 @@ export default function MenuOption({
         <Link
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
-            isChild ? "hover:text-white" : "text-white light:text-black"
+            isChild ? "hover:text-white light:hover:text-theme-text-primary" : "text-white light:text-black"
           }`}
           onClick={hasChildren ? handleClick : undefined}
         >
@@ -85,7 +85,7 @@ export default function MenuOption({
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
               isActive
-                ? "text-white font-semibold"
+                ? "text-white light:text-theme-text-primary font-semibold"
                 : "text-white light:text-black"
             } ${!icon && "pl-5"}`}
           >
@@ -93,7 +93,7 @@ export default function MenuOption({
           </p>
         </Link>
         {hasChildren && (
-          <button onClick={handleClick} className="p-2 text-white">
+          <button onClick={handleClick} className="p-2 text-white light:text-theme-text-primary">
             <CaretRight
               size={16}
               weight="bold"

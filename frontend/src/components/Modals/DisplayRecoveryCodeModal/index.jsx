@@ -37,8 +37,8 @@ export default function RecoveryCodeModal({
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <Key size={24} className="text-white" weight="bold" />
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <Key size={24} className="text-white light:text-theme-text-primary" weight="bold" />
+            <h3 className="text-xl font-semibold text-white light:text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
               Recovery Codes
             </h3>
           </div>
@@ -48,14 +48,14 @@ export default function RecoveryCodeModal({
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="py-7 px-9 space-y-2 flex-col">
-            <p className="text-sm text-white flex flex-col">
+            <p className="text-sm text-white light:text-theme-text-primary flex flex-col">
               In order to reset your password in the future, you will need these
               recovery codes. Download or copy your recovery codes to save them.{" "}
               <br />
               <b className="mt-4">These recovery codes are only shown once!</b>
             </p>
             <div
-              className="border-none bg-theme-settings-input-bg text-white hover:text-primary-button
+              className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary hover:text-primary-button
                    flex items-center justify-center rounded-md mt-6 cursor-pointer"
               onClick={handleCopyToClipboard}
             >

@@ -7,7 +7,7 @@ export default function ChatHistorySettings({ workspace, setHasChanges }) {
         <label htmlFor="name" className="block mb-2 input-label">
           {t("chat.history.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium">
+        <p className="text-white light:text-theme-text-primary text-opacity-60 text-xs font-medium">
           {t("chat.history.desc-start")}
           <i> {t("chat.history.recommend")} </i>
           {t("chat.history.desc-end")}
@@ -21,7 +21,7 @@ export default function ChatHistorySettings({ workspace, setHasChanges }) {
         step={1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.openAiHistory ?? 20}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="20"
         required={true}
         autoComplete="off"

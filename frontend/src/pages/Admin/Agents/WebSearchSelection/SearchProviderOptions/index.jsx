@@ -1,7 +1,7 @@
 export function GoogleSearchOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get a free search engine & API key{" "}
         <a
           href="https://programmablesearchengine.google.com/controlpanel/create"
@@ -14,13 +14,13 @@ export function GoogleSearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Search engine ID
           </label>
           <input
             type="text"
             name="env::AgentGoogleSearchEngineId"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Search Engine Id"
             defaultValue={settings?.AgentGoogleSearchEngineId}
             required={true}
@@ -29,13 +29,13 @@ export function GoogleSearchOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Programmatic Access API Key
           </label>
           <input
             type="password"
             name="env::AgentGoogleSearchEngineKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Search Engine API Key"
             defaultValue={
               settings?.AgentGoogleSearchEngineKey ? "*".repeat(20) : ""
@@ -65,7 +65,7 @@ const SerpApiEngines = [
 export function SerpApiOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         Get a free API key{" "}
         <a
           href="https://serpapi.com/"
@@ -78,13 +78,13 @@ export function SerpApiOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentSerpApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SerpApi API Key"
             defaultValue={settings?.AgentSerpApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -93,13 +93,13 @@ export function SerpApiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Engine
           </label>
           <select
             name="env::AgentSerpApiEngine"
             required={true}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             defaultValue={settings?.AgentSerpApiEngine || "google"}
           >
             {SerpApiEngines.map(({ name, value }) => (
@@ -111,7 +111,7 @@ export function SerpApiOptions({ settings }) {
           {/* <input
             type="text"
             name="env::AgentSerpApiEngine"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SerpApi engine (Google, Amazon...)"
             defaultValue={settings?.AgentSerpApiEngine || "google"}
             required={true}
@@ -142,7 +142,7 @@ const SearchApiEngines = [
 export function SearchApiOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get a free API key{" "}
         <a
           href="https://www.searchapi.io/"
@@ -155,13 +155,13 @@ export function SearchApiOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentSearchApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SearchApi API Key"
             defaultValue={settings?.AgentSearchApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -170,13 +170,13 @@ export function SearchApiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Engine
           </label>
           <select
             name="env::AgentSearchApiEngine"
             required={true}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             defaultValue={settings?.AgentSearchApiEngine || "google"}
           >
             {SearchApiEngines.map(({ name, value }) => (
@@ -188,7 +188,7 @@ export function SearchApiOptions({ settings }) {
           {/* <input
             type="text"
             name="env::AgentSearchApiEngine"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SearchApi engine (Google, Bing...)"
             defaultValue={settings?.AgentSearchApiEngine || "google"}
             required={true}
@@ -204,7 +204,7 @@ export function SearchApiOptions({ settings }) {
 export function SerperDotDevOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get a free API key{" "}
         <a
           href="https://serper.dev"
@@ -217,13 +217,13 @@ export function SerperDotDevOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentSerperApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Serper.dev API Key"
             defaultValue={settings?.AgentSerperApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -239,7 +239,7 @@ export function SerperDotDevOptions({ settings }) {
 export function BingSearchOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get a Bing Web Search API subscription key{" "}
         <a
           href="https://portal.azure.com/"
@@ -252,13 +252,13 @@ export function BingSearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentBingSearchApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Bing Web Search API Key"
             defaultValue={settings?.AgentBingSearchApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -267,10 +267,10 @@ export function BingSearchOptions({ settings }) {
           />
         </div>
       </div>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         To set up a Bing Web Search API subscription:
       </p>
-      <ol className="list-decimal text-sm text-white/60 ml-6">
+      <ol className="list-decimal text-sm text-white/60 light:text-theme-text-secondary ml-6">
         <li>
           Go to the Azure portal:{" "}
           <a
@@ -303,7 +303,7 @@ export function BingSearchOptions({ settings }) {
 export function SerplySearchOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get a free API key{" "}
         <a
           href="https://serply.io"
@@ -316,13 +316,13 @@ export function SerplySearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentSerplyApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Serply API Key"
             defaultValue={settings?.AgentSerplyApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -339,13 +339,13 @@ export function SearXNGOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           SearXNG API Base URL
         </label>
         <input
           type="url"
           name="env::AgentSearXNGApiUrl"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="SearXNG API Base URL"
           defaultValue={settings?.AgentSearXNGApiUrl}
           required={true}
@@ -360,7 +360,7 @@ export function SearXNGOptions({ settings }) {
 export function TavilySearchOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get an API key{" "}
         <a
           href="https://tavily.com/"
@@ -373,13 +373,13 @@ export function TavilySearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentTavilyApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Tavily API Key"
             defaultValue={settings?.AgentTavilyApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -395,7 +395,7 @@ export function TavilySearchOptions({ settings }) {
 export function DuckDuckGoOptions() {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         DuckDuckGo is ready to use without any additional configuration.
       </p>
     </>
@@ -405,7 +405,7 @@ export function DuckDuckGoOptions() {
 export function ExaSearchOptions({ settings }) {
   return (
     <>
-      <p className="text-sm text-white/60 my-2">
+      <p className="text-sm text-white/60 light:text-theme-text-secondary my-2">
         You can get an API key{" "}
         <a
           href="https://exa.ai"
@@ -418,13 +418,13 @@ export function ExaSearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
             type="password"
             name="env::AgentExaApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Exa API Key"
             defaultValue={settings?.AgentExaApiKey ? "*".repeat(20) : ""}
             required={true}

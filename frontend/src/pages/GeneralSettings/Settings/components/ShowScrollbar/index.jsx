@@ -30,10 +30,10 @@ export default function ShowScrollbar() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white light:text-theme-text-primary">
         {t("customization.items.show-scrollbar.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-white/60 light:text-theme-text-secondary">
         {t("customization.items.show-scrollbar.description")}
       </p>
       <div className="flex items-center gap-x-4">
@@ -48,7 +48,7 @@ export default function ShowScrollbar() {
             disabled={saving}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
     </div>

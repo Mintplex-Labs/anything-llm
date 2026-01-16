@@ -47,12 +47,12 @@ export default function ExperimentalFeatures() {
       <div className="flex-1 flex gap-x-6 p-4 mt-10">
         {/* Feature settings nav */}
         <div className="flex flex-col gap-y-[18px]">
-          <div className="text-white flex items-center gap-x-2">
+          <div className="text-white light:text-theme-text-primary flex items-center gap-x-2">
             <Flask size={24} />
             <p className="text-lg font-medium">Experimental Features</p>
           </div>
           {/* Feature list */}
-          <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
+          <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl min-w-[360px] w-fit">
             {Object.values(configurableFeatures).map((feature, index) => {
               const isFirst = index === 0;
               const isLast =
@@ -68,7 +68,7 @@ export default function ExperimentalFeatures() {
                     ...(isFirst ? ["rounded-t-xl"] : []),
                     ...(isLast
                       ? ["rounded-b-xl"]
-                      : ["border-b border-white/10"]),
+                      : ["border-b border-white/10 light:border-gray-200"]),
                   ].join(" ")}
                 />
               );
@@ -79,7 +79,7 @@ export default function ExperimentalFeatures() {
         {/* Selected feature setting panel */}
         <FeatureVerification>
           <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+            <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl flex-1 p-4">
               {selectedFeature ? (
                 <SelectedFeatureComponent
                   feature={configurableFeatures[selectedFeature]}
@@ -87,7 +87,7 @@ export default function ExperimentalFeatures() {
                   refresh={refresh}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
+                <div className="flex flex-col items-center justify-center h-full text-white/60 light:text-theme-text-secondary">
                   <Flask size={40} />
                   <p className="font-medium">Select an experimental feature</p>
                 </div>
@@ -122,7 +122,7 @@ function FeatureItem({
   isSelected = false,
   isActive = false,
   handleClick = () => {},
-  borderClass = "border-b border-white/10",
+  borderClass = "border-b border-white/10 light:border-gray-200",
 }) {
   return (
     <div
@@ -200,14 +200,14 @@ function FeatureVerification({ children }) {
             <div className="relative p-6 border-b rounded-t border-theme-modal-border">
               <div className="flex items-center gap-2">
                 <Flask size={24} className="text-theme-text-primary" />
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-xl font-semibold text-white light:text-theme-text-primary">
                   Terms of use for experimental features
                 </h3>
               </div>
             </div>
             <form onSubmit={acceptTos}>
               <div className="py-7 px-9 space-y-4 flex-col">
-                <div className="w-full text-white text-md flex flex-col gap-y-4">
+                <div className="w-full text-white light:text-theme-text-primary text-md flex flex-col gap-y-4">
                   <p>
                     Experimental features of AnythingLLM are features that we
                     are piloting and are <b>opt-in</b>. We proactively will
@@ -275,7 +275,7 @@ function FeatureVerification({ children }) {
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
                 <a
                   href={paths.home()}
-                  className="transition-all duration-300 bg-transparent text-white hover:bg-red-500/50 light:hover:bg-red-300/50 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
+                  className="transition-all duration-300 bg-transparent text-white light:text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 px-4 py-2 rounded-lg text-sm border border-theme-modal-border"
                 >
                   Reject & close
                 </a>

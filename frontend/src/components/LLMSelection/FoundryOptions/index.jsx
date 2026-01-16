@@ -37,13 +37,13 @@ export default function FoundryOptions({ settings }) {
     <div className="flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Base URL
           </label>
           <input
             type="url"
             name="FoundryBasePath"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="eg: http://127.0.0.1:8080"
             defaultValue={settings?.FoundryBasePath}
             required={true}
@@ -53,7 +53,7 @@ export default function FoundryOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Chat Model
           </label>
           {loading ? (
@@ -61,7 +61,7 @@ export default function FoundryOptions({ settings }) {
               name="FoundryModelPref"
               required={true}
               disabled={true}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             >
               <option>---- Loading ----</option>
             </select>
@@ -71,7 +71,7 @@ export default function FoundryOptions({ settings }) {
               value={model}
               onChange={(e) => setModel(e.target.value)}
               required={true}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             >
               {models.length > 0 ? (
                 <>
@@ -91,13 +91,13 @@ export default function FoundryOptions({ settings }) {
           )}
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             Model context window
           </label>
           <input
             type="number"
             name="FoundryModelTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultValue={settings?.FoundryModelTokenLimit}
             autoComplete="off"

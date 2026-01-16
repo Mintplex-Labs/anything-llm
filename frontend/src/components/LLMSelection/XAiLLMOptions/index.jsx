@@ -8,7 +8,7 @@ export default function XAILLMOptions({ settings }) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           xAI API Key
         </label>
         <input

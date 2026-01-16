@@ -74,7 +74,7 @@ export default function AccountModal({ user, hideModal }) {
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white light:text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
               {t("profile_settings.edit_account")}
             </h3>
           </div>
@@ -83,7 +83,7 @@ export default function AccountModal({ user, hideModal }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white light:text-theme-text-primary" />
           </button>
         </div>
         <div
@@ -93,7 +93,7 @@ export default function AccountModal({ user, hideModal }) {
           <form onSubmit={handleUpdate} className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div className="flex flex-col items-center">
-                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60">
+                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-theme-modal-border light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60">
                   <input
                     id="logo-upload"
                     type="file"
@@ -141,45 +141,45 @@ export default function AccountModal({ user, hideModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
                   minLength={2}
                   defaultValue={user.username}
                   required
                   autoComplete="off"
                 />
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-white/60 light:text-theme-text-secondary">
                   {t("profile_settings.username_description")}
                 </p>
               </div>
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-white light:text-theme-text-primary"
                 >
                   {t("profile_settings.new_password")}
                 </label>
                 <input
                   name="password"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   minLength={8}
                 />
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-white/60 light:text-theme-text-secondary">
                   {t("profile_settings.password_description")}
                 </p>
               </div>
               <div>
                 <label
                   htmlFor="bio"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-white light:text-theme-text-primary"
                 >
                   Bio
                 </label>
                 <textarea
                   name="bio"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
                   placeholder="Tell us about yourself..."
                   defaultValue={user.bio}
                 />
@@ -199,7 +199,7 @@ export default function AccountModal({ user, hideModal }) {
               <button
                 onClick={hideModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white light:text-theme-text-primary hover:bg-zinc-700 light:hover:bg-slate-200 px-4 py-2 rounded-lg text-sm"
               >
                 {t("profile_settings.cancel")}
               </button>
@@ -229,13 +229,13 @@ function LanguagePreference() {
     <div>
       <label
         htmlFor="userLang"
-        className="block mb-2 text-sm font-medium text-white"
+        className="block mb-2 text-sm font-medium text-white light:text-theme-text-primary"
       >
         {t("profile_settings.language")}
       </label>
       <select
         name="userLang"
-        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white light:text-theme-text-primary text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -258,7 +258,7 @@ function ThemePreference() {
     <div>
       <label
         htmlFor="theme"
-        className="block mb-2 text-sm font-medium text-white"
+        className="block mb-2 text-sm font-medium text-white light:text-theme-text-primary"
       >
         {t("profile_settings.theme")}
       </label>
@@ -266,7 +266,7 @@ function ThemePreference() {
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white light:text-theme-text-primary text-sm rounded-lg block py-2"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>
@@ -298,7 +298,7 @@ function AutoSubmitPreference() {
       <div className="flex items-center gap-x-1 mb-2">
         <label
           htmlFor="autoSubmit"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white light:text-theme-text-primary"
         >
           {t("customization.chat.auto_submit.title")}
         </label>
@@ -307,7 +307,7 @@ function AutoSubmitPreference() {
           data-tooltip-content={t("customization.chat.auto_submit.description")}
           className="cursor-pointer h-fit"
         >
-          <Info size={16} weight="bold" className="text-white" />
+          <Info size={16} weight="bold" className="text-white light:text-theme-text-primary" />
         </div>
       </div>
       <div className="flex items-center gap-x-4">
@@ -320,7 +320,7 @@ function AutoSubmitPreference() {
             onChange={handleChange}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
       <Tooltip
@@ -356,7 +356,7 @@ function AutoSpeakPreference() {
       <div className="flex items-center gap-x-1 mb-2">
         <label
           htmlFor="autoSpeak"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white light:text-theme-text-primary"
         >
           {t("customization.chat.auto_speak.title")}
         </label>
@@ -365,7 +365,7 @@ function AutoSpeakPreference() {
           data-tooltip-content={t("customization.chat.auto_speak.description")}
           className="cursor-pointer h-fit"
         >
-          <Info size={16} weight="bold" className="text-white" />
+          <Info size={16} weight="bold" className="text-white light:text-theme-text-primary" />
         </div>
       </div>
       <div className="flex items-center gap-x-4">
@@ -378,7 +378,7 @@ function AutoSpeakPreference() {
             onChange={handleChange}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
       <Tooltip

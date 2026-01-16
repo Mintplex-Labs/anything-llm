@@ -11,14 +11,14 @@ export default function NativeTranscriptionOptions({ settings }) {
       <LocalWarning model={model} />
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
             {t("common.selection")}
           </label>
           <select
             name="WhisperModelPref"
             defaultValue={model}
             onChange={(e) => setModel(e.target.value)}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
           >
             {["Xenova/whisper-small", "Xenova/whisper-large"].map(
               (value, i) => {
@@ -51,7 +51,7 @@ function WhisperSmall() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white light:text-theme-text-primary mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
       <div className="gap-x-2 flex items-center">
         <Gauge size={25} />
         <p className="text-sm">
@@ -71,7 +71,7 @@ function WhisperLarge() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white light:text-theme-text-primary mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
       <div className="gap-x-2 flex items-center">
         <Gauge size={25} />
         <p className="text-sm">

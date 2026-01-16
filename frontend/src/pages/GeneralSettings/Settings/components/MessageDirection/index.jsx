@@ -8,10 +8,10 @@ export function MessageDirection() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white light:text-theme-text-primary">
         {t("customization.items.chat-message-alignment.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-white/60 light:text-theme-text-secondary">
         {t("customization.items.chat-message-alignment.description")}
       </p>
       <div className="flex flex-row flex-wrap gap-x-4 pt-1 gap-y-4 md:gap-y-0">

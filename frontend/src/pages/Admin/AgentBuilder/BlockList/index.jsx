@@ -172,7 +172,7 @@ export default function BlockList({
       return (
         <div className="space-y-4">
           {renderBlockConfigContent(block, props)}
-          <div className="flex justify-between items-center pt-4 border-t border-white/10">
+          <div className="flex justify-between items-center pt-4 border-t border-white/10 light:border-gray-200">
             <div>
               <label className="block text-sm font-medium text-theme-text-primary">
                 Direct Output
@@ -196,7 +196,7 @@ export default function BlockList({
                 className="peer sr-only"
                 aria-label="Toggle direct output"
               />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
             </label>
           </div>
         </div>
@@ -247,15 +247,15 @@ export default function BlockList({
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-lg bg-white/10 light:bg-white flex items-center justify-center">
                   {React.cloneElement(BLOCK_INFO[block.type].icon, {
-                    className: "w-4 h-4 text-white",
+                    className: "w-4 h-4 text-white light:text-theme-text-primary",
                   })}
                 </div>
                 <div className="flex-1 text-left min-w-0 max-w-[115px]">
-                  <span className="text-sm font-medium text-white block">
+                  <span className="text-sm font-medium text-white light:text-theme-text-primary block">
                     {BLOCK_INFO[block.type].label}
                   </span>
                   {!block.isExpanded && (
-                    <p className="text-xs text-white/60 truncate">
+                    <p className="text-xs text-white/60 light:text-theme-text-secondary truncate">
                       {BLOCK_INFO[block.type].getSummary(block.config)}
                     </p>
                   )}
@@ -272,7 +272,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index - 1);
                           }}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white light:text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block up"
                         >
@@ -285,7 +285,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index + 1);
                           }}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white light:text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block down"
                         >
@@ -327,7 +327,7 @@ export default function BlockList({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-white/40 light:invert"
+                className="text-white/40 light:text-theme-text-secondary light:invert"
               >
                 <path
                   d="M12 4L12 20M12 20L6 14M12 20L18 14"

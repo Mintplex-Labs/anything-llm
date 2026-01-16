@@ -219,7 +219,7 @@ function PresetItem({ preset, onUse, onEdit, onPublish }) {
         >
           <button
             type="button"
-            className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-sidebar-item-hover rounded-t-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
+            className="px-[10px] py-[6px] text-sm text-white light:text-theme-text-primary hover:bg-theme-sidebar-item-hover rounded-t-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
               setShowMenu(false);
@@ -230,7 +230,7 @@ function PresetItem({ preset, onUse, onEdit, onPublish }) {
           </button>
           <button
             type="button"
-            className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-sidebar-item-hover rounded-b-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
+            className="px-[10px] py-[6px] text-sm text-white light:text-theme-text-primary hover:bg-theme-sidebar-item-hover rounded-b-lg cursor-pointer border-none w-full text-left whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
               setShowMenu(false);

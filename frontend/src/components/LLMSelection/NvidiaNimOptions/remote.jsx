@@ -25,7 +25,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-white text-sm font-semibold">
+          <label className="text-white light:text-theme-text-primary text-sm font-semibold">
             NVIDIA Nim Base URL
           </label>
           {loading ? (
@@ -35,7 +35,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
               {!basePathValue.value && (
                 <button
                   onClick={handleAutoDetectClick}
-                  className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                  className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white light:hover:text-theme-text-primary shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                 >
                   Auto-Detect
                 </button>
@@ -46,7 +46,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
         <input
           type="url"
           name="NvidiaNimLLMBasePath"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="http://localhost:8000/v1"
           value={basePathValue.value}
           required={true}
@@ -55,7 +55,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
           onChange={basePath.onChange}
           onBlur={basePath.onBlur}
         />
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-white light:text-theme-text-primary text-opacity-60 mt-2">
           Enter the URL where NVIDIA NIM is running.
         </p>
       </div>
@@ -89,13 +89,13 @@ function NvidiaNimModelSelection({ settings, basePath }) {
   if (loading || models.length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="NvidiaNimLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -107,13 +107,13 @@ function NvidiaNimModelSelection({ settings, basePath }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-3">
+      <label className="text-white light:text-theme-text-primary text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="NvidiaNimLLMModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 light:border-gray-300 text-white light:text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
       >
         {models.map((model) => (
           <option

@@ -42,7 +42,7 @@ export default function InviteRow({ invite }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
+        className="bg-transparent text-white light:text-theme-text-primary text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
       >
         <td scope="row" className="px-6 whitespace-nowrap">
           {titleCase(status)}

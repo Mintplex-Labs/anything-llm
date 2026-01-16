@@ -117,7 +117,7 @@ export default function HeaderMenu({
           <div className="flex items-center gap-x-[15px]">
             <button
               onClick={onNewFlow}
-              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
+              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-white light:border-theme-modal-border bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
             >
               <Plus className="w-4 h-4" />
               New Flow

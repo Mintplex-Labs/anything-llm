@@ -94,7 +94,7 @@ export default function AgentSkill({ item, settings, setStep }) {
         <p>
           Agent skills unlock new capabilities for your AnythingLLM workspace
           via{" "}
-          <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm">
+          <code className="font-mono bg-zinc-900 light:bg-slate-50 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm">
             @agent
           </code>{" "}
           skills that can do specific tasks when invoked.

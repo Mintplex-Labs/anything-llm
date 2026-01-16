@@ -437,7 +437,7 @@ export default function DnDFileUploaderWrapper({ children }) {
     >
       <div
         hidden={!dragging}
-        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-white z-[9999]"
+        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-white light:border-theme-modal-border z-[9999]"
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
@@ -447,8 +447,8 @@ export default function DnDFileUploaderWrapper({ children }) {
               height={69}
               alt="Drag and drop icon"
             />
-            <p className="text-white text-[24px] font-semibold">Add anything</p>
-            <p className="text-white text-[16px] text-center">
+            <p className="text-white light:text-theme-text-primary text-[24px] font-semibold">Add anything</p>
+            <p className="text-white light:text-theme-text-primary text-[16px] text-center">
               Drop a file or image here to attach it to your <br />
               workspace auto-magically.
             </p>

@@ -189,7 +189,7 @@ export default function AgentWebSearchSelection({
               checked={enabled}
               onChange={() => toggleSkill(skill)}
             />
-            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
             <span className="ml-3 text-sm font-medium"></span>
           </label>
         </div>
@@ -240,7 +240,7 @@ export default function AgentWebSearchSelection({
                     <X
                       size={20}
                       weight="bold"
-                      className="cursor-pointer text-white hover:text-x-button"
+                      className="cursor-pointer text-white light:text-theme-text-primary hover:text-x-button"
                       onClick={handleXButton}
                     />
                   </div>
@@ -271,7 +271,7 @@ export default function AgentWebSearchSelection({
                     className="w-10 h-10 rounded-md"
                   />
                   <div className="flex flex-col text-left">
-                    <div className="text-sm font-semibold text-white">
+                    <div className="text-sm font-semibold text-white light:text-theme-text-primary">
                       {selectedSearchProviderObject.name}
                     </div>
                     <div className="mt-1 text-xs text-description">
@@ -279,7 +279,7 @@ export default function AgentWebSearchSelection({
                     </div>
                   </div>
                 </div>
-                <CaretUpDown size={24} weight="bold" className="text-white" />
+                <CaretUpDown size={24} weight="bold" className="text-white light:text-theme-text-primary" />
               </button>
             )}
           </div>

@@ -51,13 +51,13 @@ export default function FooterCustomization() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white light:text-theme-text-primary">
         {t("customization.items.sidebar-footer.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-white/60 light:text-theme-text-secondary">
         {t("customization.items.sidebar-footer.description")}
       </p>
-      <div className="mt-2 flex gap-x-3 font-medium text-white text-sm">
+      <div className="mt-2 flex gap-x-3 font-medium text-white light:text-theme-text-primary text-sm">
         <div>{t("customization.items.sidebar-footer.icon")}</div>
         <div>{t("customization.items.sidebar-footer.link")}</div>
       </div>

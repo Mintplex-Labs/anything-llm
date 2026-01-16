@@ -40,7 +40,7 @@ export default function ChatEmbedWidgets() {
                       setShowViewModal(false);
                       setSelectedView("");
                     }}
-                    className="text-white/60 hover:text-white transition-colors duration-200"
+                    className="text-white/60 light:text-theme-text-secondary hover:text-white light:hover:text-theme-text-primary transition-colors duration-200"
                   >
                     <div className="flex items-center text-sky-400">
                       <CaretLeft size={24} />
@@ -49,7 +49,7 @@ export default function ChatEmbedWidgets() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className="bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl p-4 overflow-y-scroll no-scroll">
                     {selectedView === "configs" ? (
                       <EmbedConfigsView />
                     ) : (
@@ -85,7 +85,7 @@ export default function ChatEmbedWidgets() {
           </div>
         </div>
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
             {selectedView === "configs" ? (
               <EmbedConfigsView />
             ) : (
@@ -127,7 +127,7 @@ function WidgetList({ selectedView, handleClick }) {
 
   return (
     <div
-      className={`bg-theme-bg-secondary text-white rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
+      className={`bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
     >
       {Object.entries(views).map(([view, settings], index) => (
         <div
@@ -137,7 +137,7 @@ function WidgetList({ selectedView, handleClick }) {
           } ${
             index === Object.keys(views).length - 1
               ? "rounded-b-xl"
-              : "border-b border-white/10"
+              : "border-b border-white/10 light:border-gray-200"
           } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
             selectedView === view ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
           }`}

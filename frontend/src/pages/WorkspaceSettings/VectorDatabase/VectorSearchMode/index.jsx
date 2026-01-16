@@ -33,7 +33,7 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
       <select
         name="vectorSearchMode"
         value={selection}
-        className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         onChange={(e) => {
           setSelection(e.target.value);
           setHasChanges(true);
@@ -43,7 +43,7 @@ export default function VectorSearchMode({ workspace, setHasChanges }) {
         <option value="default">Default</option>
         <option value="rerank">Accuracy Optimized</option>
       </select>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+      <p className="text-white light:text-theme-text-primary text-opacity-60 text-xs font-medium py-1.5">
         {hint[selection]?.description}
       </p>
     </div>

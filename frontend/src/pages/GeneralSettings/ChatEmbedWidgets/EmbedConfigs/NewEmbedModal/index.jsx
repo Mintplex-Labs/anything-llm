@@ -42,7 +42,7 @@ export default function NewEmbedModal({ closeModal }) {
       <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white light:text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
               Create new embed for workspace
             </h3>
           </div>
@@ -51,7 +51,7 @@ export default function NewEmbedModal({ closeModal }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white light:text-theme-text-primary" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -93,10 +93,10 @@ export default function NewEmbedModal({ closeModal }) {
               />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-              <p className="text-white text-opacity-60 text-xs md:text-sm">
+              <p className="text-white light:text-theme-text-primary text-opacity-60 text-xs md:text-sm">
                 After creating an embed you will be provided a link that you can
                 publish on your website with a simple
-                <code className="light:bg-stone-300 bg-stone-900 text-white mx-1 px-1 rounded-sm">
+                <code className="light:bg-stone-300 bg-stone-900 text-white light:text-theme-text-primary mx-1 px-1 rounded-sm">
                   &lt;script&gt;
                 </code>{" "}
                 tag.
@@ -106,7 +106,7 @@ export default function NewEmbedModal({ closeModal }) {
               <button
                 onClick={closeModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white light:text-theme-text-primary hover:bg-zinc-700 light:hover:bg-slate-200 px-4 py-2 rounded-lg text-sm"
               >
                 Cancel
               </button>
@@ -139,7 +139,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
       <div className="flex flex-col mb-2">
         <label
           htmlFor="workspace_id"
-          className="block  text-sm font-medium text-white"
+          className="block  text-sm font-medium text-white light:text-theme-text-primary"
         >
           Workspace
         </label>
@@ -152,7 +152,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         name="workspace_id"
         required={true}
         defaultValue={defaultValue}
-        className="min-w-[15rem] rounded-lg bg-theme-settings-input-bg px-4 py-2 text-sm text-white focus:ring-blue-500 focus:border-blue-500"
+        className="min-w-[15rem] rounded-lg bg-theme-settings-input-bg px-4 py-2 text-sm text-white light:text-theme-text-primary focus:ring-blue-500 focus:border-blue-500"
       >
         {workspaces.map((workspace) => {
           return (
@@ -177,7 +177,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
     <div>
       <div className="flex flex-col mb-2">
         <label
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white light:text-theme-text-primary"
           htmlFor="chat_mode"
         >
           Allowed chat method
@@ -291,7 +291,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
       <div className="flex flex-col mb-2">
         <label
           htmlFor="allowlist_domains"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white light:text-theme-text-primary"
         >
           Restrict requests from domains
         </label>
@@ -311,7 +311,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         classNames={{
           tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
           input:
-            "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+            "flex p-1 !bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
         }}
       />
     </div>
@@ -322,7 +322,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
+        <label htmlFor={name} className="block text-sm font-medium text-white light:text-theme-text-primary">
           {title}
         </label>
         <p className="text-theme-text-secondary text-xs">{hint}</p>
@@ -330,7 +330,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
       <input
         type="number"
         name={name}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
         min={0}
         defaultValue={defaultValue}
         onScroll={(e) => e.target.blur()}
@@ -345,7 +345,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
+        <label htmlFor={name} className="block text-sm font-medium text-white light:text-theme-text-primary">
           {title}
         </label>
         <p className="text-theme-text-secondary text-xs">{hint}</p>
@@ -358,7 +358,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
           checked={status}
           className="peer sr-only pointer-events-none"
         />
-        <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+        <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white light:border-theme-modal-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
       </label>
     </div>
   );

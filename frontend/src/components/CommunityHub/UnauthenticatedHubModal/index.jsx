@@ -17,13 +17,13 @@ export default function UnauthenticatedHubModal({ show, onClose }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={18} weight="bold" className="text-white" />
+            <X size={18} weight="bold" className="text-white light:text-theme-text-primary" />
           </button>
           <div className="flex flex-col items-center justify-center gap-y-4">
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-white light:text-theme-text-primary">
               {t("community_hub.publish.generic.unauthenticated.title")}
             </h3>
-            <p className="text-lg text-white text-center max-w-[300px]">
+            <p className="text-lg text-white light:text-theme-text-primary text-center max-w-[300px]">
               {t("community_hub.publish.generic.unauthenticated.description")}
             </p>
             <Link

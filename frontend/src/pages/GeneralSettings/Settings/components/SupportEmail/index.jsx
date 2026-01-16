@@ -58,17 +58,17 @@ export default function SupportEmail() {
       className="flex flex-col gap-y-0.5 mt-4"
       onSubmit={updateSupportEmail}
     >
-      <p className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white light:text-theme-text-primary">
         {t("customization.items.support-email.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-white/60 light:text-theme-text-secondary">
         {t("customization.items.support-email.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <input
           name="supportEmail"
           type="email"
-          className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+          className="border-none bg-theme-settings-input-bg mt-2 text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
           placeholder="support@mycompany.com"
           required={true}
           autoComplete="off"
@@ -79,7 +79,7 @@ export default function SupportEmail() {
           <button
             type="button"
             onClick={(e) => updateSupportEmail(e, "")}
-            className="text-white text-base font-medium hover:text-opacity-60"
+            className="text-white light:text-theme-text-primary text-base font-medium hover:text-opacity-60"
           >
             Clear
           </button>
@@ -88,7 +88,7 @@ export default function SupportEmail() {
       {hasChanges && (
         <button
           type="submit"
-          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
         >
           Save
         </button>

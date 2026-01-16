@@ -27,12 +27,12 @@ export default function FileUploadWarningModal({
       <ModalWrapper isOpen={show}>
         <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
           <div className="p-6 flex flex-col items-center justify-center">
-            <p className="text-white text-lg font-semibold mb-4">
+            <p className="text-white light:text-theme-text-primary text-lg font-semibold mb-4">
               Embedding {embedProgress + 1} of {fileCount}{" "}
               {pluralize("file", fileCount)}
             </p>
-            <CircleNotch size={32} className="animate-spin text-white" />
-            <p className="text-white/60 text-sm mt-2">
+            <CircleNotch size={32} className="animate-spin text-white light:text-theme-text-primary" />
+            <p className="text-white/60 light:text-theme-text-secondary text-sm mt-2">
               Please wait while we embed your files...
             </p>
           </div>
@@ -46,7 +46,7 @@ export default function FileUploadWarningModal({
       <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="relative p-6 border-b border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white light:text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
               Context Window Warning
             </h3>
           </div>
@@ -76,7 +76,7 @@ export default function FileUploadWarningModal({
           <button
             onClick={onClose}
             type="button"
-            className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="border-none transition-all duration-300 bg-theme-modal-border text-white light:text-theme-text-primary hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             Cancel
           </button>
@@ -84,7 +84,7 @@ export default function FileUploadWarningModal({
             <button
               onClick={onContinue}
               type="button"
-              className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+              className="border-none transition-all duration-300 bg-theme-modal-border text-white light:text-theme-text-primary hover:opacity-60 px-4 py-2 rounded-lg text-sm"
             >
               Continue Anyway
             </button>

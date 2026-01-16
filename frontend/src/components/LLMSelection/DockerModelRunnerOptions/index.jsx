@@ -40,7 +40,7 @@ export default function DockerModelRunnerOptions({ settings }) {
         <div className="flex flex-col w-60">
           <div className="flex items-center gap-1 mb-3">
             <div className="flex justify-between items-center gap-x-2">
-              <label className="text-white text-sm font-semibold">
+              <label className="text-white light:text-theme-text-primary text-sm font-semibold">
                 Base URL
               </label>
               {loading ? (
@@ -50,7 +50,7 @@ export default function DockerModelRunnerOptions({ settings }) {
                   {!basePathValue.value && (
                     <button
                       onClick={handleAutoDetectClick}
-                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white light:hover:text-theme-text-primary shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
                       Auto-Detect
                     </button>
@@ -99,7 +99,7 @@ export default function DockerModelRunnerOptions({ settings }) {
           <input
             type="url"
             name="DockerModelRunnerBasePath"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:12434/engines/llama.cpp/v1"
             value={basePathValue.value}
             required={true}
@@ -111,7 +111,7 @@ export default function DockerModelRunnerOptions({ settings }) {
         </div>
         <div className="flex flex-col w-60">
           <div className="flex items-center gap-1 mb-3">
-            <label className="text-white text-sm font-semibold block">
+            <label className="text-white light:text-theme-text-primary text-sm font-semibold block">
               Model context window
             </label>
             <Tooltip
@@ -162,7 +162,7 @@ export default function DockerModelRunnerOptions({ settings }) {
           <input
             type="number"
             name="DockerModelRunnerModelTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             min={1}
             value={maxTokens}
@@ -383,7 +383,7 @@ function Layout({
             placeholder="Search models"
             value={searchQuery}
             disabled={loading}
-            className="min-h-[32px] border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pl-[30px] py-2 search-input disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-[32px] border-none bg-theme-settings-input-bg text-white light:text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pl-[30px] py-2 search-input disabled:opacity-50 disabled:cursor-not-allowed"
             onChange={(e) => {
               e.preventDefault();
               e.stopPropagation();
