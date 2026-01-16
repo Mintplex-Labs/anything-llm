@@ -2,9 +2,10 @@ import { useState } from "react";
 import { X, PencilSimple } from "@phosphor-icons/react";
 import WorkspaceTemplate from "@/models/workspaceTemplate";
 import showToast from "@/utils/toast";
+import ProviderSelect from "./ProviderSelect";
+import ModelSelect from "./ModelSelect";
 
 // Map internal field names to user friendly labels
-// Should match templateFields in server/models/workspaceTemplate.js
 const FIELD_LABELS = {
     openAiPrompt: "System Prompt",
     openAiTemp: "Temperature",
@@ -20,23 +21,7 @@ const FIELD_LABELS = {
     vectorSearchMode: "Vector Search Mode",
 };
 
-// Field types for form inputs
-const FIELD_TYPES = {
-    openAiPrompt: "textarea",
-    openAiTemp: "number",
-    openAiHistory: "number",
-    similarityThreshold: "number",
-    chatProvider: "text",
-    chatModel: "text",
-    topN: "number",
-    chatMode: "select",
-    agentProvider: "text",
-    agentModel: "text",
-    queryRefusalResponse: "textarea",
-    vectorSearchMode: "select",
-};
-
-// Options for select fields
+// Options for simple select fields
 const FIELD_OPTIONS = {
     chatMode: [
         { value: "", label: "System default" },
@@ -50,13 +35,20 @@ const FIELD_OPTIONS = {
     ],
 };
 
-// Group fields by category
+// Group fields by category - provider/model fields are handled specially
 const FIELD_GROUPS = {
     "Chat Settings": ["chatProvider", "chatModel", "chatMode", "openAiTemp", "openAiHistory"],
     "RAG Settings": ["topN", "similarityThreshold", "vectorSearchMode", "queryRefusalResponse"],
     "Agent Settings": ["agentProvider", "agentModel"],
     "System Prompt": ["openAiPrompt"],
 };
+
+// Fields that use special components
+const PROVIDER_FIELDS = ["chatProvider", "agentProvider"];
+const MODEL_FIELDS = ["chatModel", "agentModel"];
+const SELECT_FIELDS = ["chatMode", "vectorSearchMode"];
+const TEXTAREA_FIELDS = ["queryRefusalResponse", "openAiPrompt"];
+const NUMBER_FIELDS = ["openAiTemp", "openAiHistory", "topN", "similarityThreshold"];
 
 function formatValue(key, value) {
     if (value === null || value === undefined || value === "") {
@@ -114,18 +106,159 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
 
     const config = parseConfig(template);
 
+    const renderField = (key) => {
+        const value = formatValue(key, config[key]);
+
+        // Provider fields
+        if (PROVIDER_FIELDS.includes(key)) {
+            const type = key === "agentProvider" ? "agent" : "chat";
+            if (isEditing) {
+                return (
+                    <div className="w-1/2">
+                        <ProviderSelect
+                            value={editConfig[key]}
+                            onChange={(val) => updateConfigField(key, val)}
+                            type={type}
+                        />
+                    </div>
+                );
+            }
+            return value ? (
+                <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+            ) : (
+                <span className="text-sm text-theme-text-secondary italic">System default</span>
+            );
+        }
+
+        // Model fields
+        if (MODEL_FIELDS.includes(key)) {
+            const providerKey = key === "agentModel" ? "agentProvider" : "chatProvider";
+            const provider = isEditing ? editConfig[providerKey] : config[providerKey];
+            const type = key === "agentModel" ? "agent" : "chat";
+
+            if (isEditing) {
+                return (
+                    <div className="w-1/2">
+                        <ModelSelect
+                            provider={provider}
+                            value={editConfig[key]}
+                            onChange={(val) => updateConfigField(key, val)}
+                            type={type}
+                        />
+                    </div>
+                );
+            }
+            return value ? (
+                <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+            ) : (
+                <span className="text-sm text-theme-text-secondary italic">System default</span>
+            );
+        }
+
+        // Select fields
+        if (SELECT_FIELDS.includes(key)) {
+            if (isEditing) {
+                return (
+                    <div className="w-1/2">
+                        <select
+                            value={editConfig[key] || ""}
+                            onChange={(e) => updateConfigField(key, e.target.value)}
+                            className="w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button border border-theme-modal-border h-8"
+                        >
+                            {FIELD_OPTIONS[key]?.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                );
+            }
+            return value ? (
+                <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+            ) : (
+                <span className="text-sm text-theme-text-secondary italic">System default</span>
+            );
+        }
+
+        // Textarea fields (in row context - queryRefusalResponse)
+        if (TEXTAREA_FIELDS.includes(key) && key !== "openAiPrompt") {
+            if (isEditing) {
+                return (
+                    <div className="w-1/2">
+                        <textarea
+                            value={editConfig[key] || ""}
+                            onChange={(e) => updateConfigField(key, e.target.value)}
+                            className="w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button resize-none border border-theme-modal-border"
+                            placeholder="System default"
+                            rows={2}
+                        />
+                    </div>
+                );
+            }
+            return value ? (
+                <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+            ) : (
+                <span className="text-sm text-theme-text-secondary italic">System default</span>
+            );
+        }
+
+        // Number fields
+        if (NUMBER_FIELDS.includes(key)) {
+            if (isEditing) {
+                return (
+                    <div className="w-1/2">
+                        <input
+                            type="number"
+                            value={editConfig[key] ?? ""}
+                            onChange={(e) => updateConfigField(key, e.target.value)}
+                            className="w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button text-right border border-theme-modal-border h-8"
+                            placeholder="System default"
+                            step="any"
+                        />
+                    </div>
+                );
+            }
+            return value !== null ? (
+                <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+            ) : (
+                <span className="text-sm text-theme-text-secondary italic">System default</span>
+            );
+        }
+
+        // Fallback text
+        if (isEditing) {
+            return (
+                <div className="w-1/2">
+                    <input
+                        type="text"
+                        value={editConfig[key] ?? ""}
+                        onChange={(e) => updateConfigField(key, e.target.value)}
+                        className="w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button text-right border border-theme-modal-border h-8"
+                        placeholder="System default"
+                    />
+                </div>
+            );
+        }
+        return value ? (
+            <span className="text-sm text-theme-text-primary font-medium">{value}</span>
+        ) : (
+            <span className="text-sm text-theme-text-secondary italic">System default</span>
+        );
+    };
+
     return (
         <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
             <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
-                {/* Header - Static, no editing */}
+                {/* Header */}
                 <div className="relative p-6 border-b rounded-t border-theme-modal-border">
                     <div className="w-full flex gap-x-2 items-center">
-                        <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        <h3 className="text-xl font-semibold text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
                             {template.name}
                         </h3>
                     </div>
                     {template.description && (
-                        <p className="text-white text-opacity-60 text-xs md:text-sm mt-2">
+                        <p className="text-theme-text-secondary text-xs md:text-sm mt-2">
                             {template.description}
                         </p>
                     )}
@@ -134,7 +267,7 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                         type="button"
                         className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
                     >
-                        <X size={24} weight="bold" className="text-white" />
+                        <X size={24} weight="bold" className="text-theme-text-primary" />
                     </button>
                 </div>
 
@@ -146,7 +279,7 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
 
                             return (
                                 <div key={groupName}>
-                                    <h4 className="text-sm font-semibold text-white text-opacity-60 uppercase tracking-wide mb-3">
+                                    <h4 className="text-sm font-semibold text-theme-text-secondary uppercase tracking-wide mb-3">
                                         {groupName}
                                     </h4>
                                     {isSystemPromptGroup ? (
@@ -154,18 +287,18 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                                             <textarea
                                                 value={editConfig.openAiPrompt || ""}
                                                 onChange={(e) => updateConfigField("openAiPrompt", e.target.value)}
-                                                className="w-full bg-theme-bg-primary text-white rounded-lg p-4 outline-none focus:outline-primary-button resize-none text-sm border border-white/20"
+                                                className="w-full bg-theme-settings-input-bg text-theme-text-primary rounded-lg p-4 outline-none focus:ring-1 focus:ring-primary-button resize-none text-sm border border-theme-modal-border"
                                                 placeholder="Enter system prompt or leave blank for system default"
                                                 rows={6}
                                             />
                                         ) : (
                                             <div className="bg-theme-settings-input-bg rounded-lg p-4">
                                                 {config.openAiPrompt ? (
-                                                    <p className="text-sm text-white whitespace-pre-wrap break-words">
+                                                    <p className="text-sm text-theme-text-primary whitespace-pre-wrap break-words">
                                                         {config.openAiPrompt}
                                                     </p>
                                                 ) : (
-                                                    <p className="text-sm text-white text-opacity-60 italic">
+                                                    <p className="text-sm text-theme-text-secondary italic">
                                                         Uses system default
                                                     </p>
                                                 )}
@@ -173,62 +306,17 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                                         )
                                     ) : (
                                         <div className="bg-theme-settings-input-bg rounded-lg divide-y divide-theme-modal-border">
-                                            {fields.map((key) => {
-                                                const value = formatValue(key, config[key]);
-                                                const fieldType = FIELD_TYPES[key];
-
-                                                return (
-                                                    <div
-                                                        key={key}
-                                                        className="flex items-center justify-between px-4 py-2 min-h-[48px]">
-                                                        <span className="text-sm text-white text-opacity-60">
-                                                            {FIELD_LABELS[key]}
-                                                        </span>
-                                                        {isEditing ? (
-                                                            <div className="w-1/2">
-                                                                {fieldType === "select" ? (
-                                                                    <select
-                                                                        value={editConfig[key] || ""}
-                                                                        onChange={(e) => updateConfigField(key, e.target.value)}
-                                                                        className="w-full bg-theme-bg-primary text-white text-sm rounded px-2 py-1 outline-none focus:outline-primary-button border border-white/20 h-8"
-                                                                    >
-                                                                        {FIELD_OPTIONS[key]?.map((opt) => (
-                                                                            <option key={opt.value} value={opt.value}>
-                                                                                {opt.label}
-                                                                            </option>
-                                                                        ))}
-                                                                    </select>
-                                                                ) : fieldType === "textarea" ? (
-                                                                    <textarea
-                                                                        value={editConfig[key] || ""}
-                                                                        onChange={(e) => updateConfigField(key, e.target.value)}
-                                                                        className="w-full bg-theme-bg-primary text-white text-sm rounded px-2 py-1 outline-none focus:outline-primary-button resize-none border border-white/20"
-                                                                        placeholder="System default"
-                                                                        rows={2}
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type={fieldType}
-                                                                        value={editConfig[key] ?? ""}
-                                                                        onChange={(e) => updateConfigField(key, e.target.value)}
-                                                                        className="w-full bg-theme-bg-primary text-white text-sm rounded px-2 py-1 outline-none focus:outline-primary-button text-right border border-white/20 h-8"
-                                                                        placeholder="System default"
-                                                                        step={fieldType === "number" ? "any" : undefined}
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                        ) : value !== null ? (
-                                                            <span className="text-sm text-white font-medium">
-                                                                {value}
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-sm text-white text-opacity-60 italic">
-                                                                System default
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
+                                            {fields.map((key) => (
+                                                <div
+                                                    key={key}
+                                                    className="flex items-center justify-between px-4 py-2 min-h-[48px]"
+                                                >
+                                                    <span className="text-sm text-theme-text-secondary">
+                                                        {FIELD_LABELS[key]}
+                                                    </span>
+                                                    {renderField(key)}
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>
@@ -243,7 +331,7 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                                 <button
                                     onClick={cancelEdit}
                                     type="button"
-                                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                                    className="transition-all duration-300 text-theme-text-primary hover:bg-theme-sidebar-item-hover px-4 py-2 rounded-lg text-sm"
                                 >
                                     Cancel
                                 </button>
@@ -261,7 +349,7 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                                 <button
                                     onClick={() => setIsEditing(true)}
                                     type="button"
-                                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm flex items-center gap-x-2"
+                                    className="transition-all duration-300 text-theme-text-primary hover:bg-theme-sidebar-item-hover px-4 py-2 rounded-lg text-sm flex items-center gap-x-2"
                                 >
                                     <PencilSimple size={16} weight="bold" />
                                     Edit Settings
@@ -269,7 +357,7 @@ export default function TemplatePreviewModal({ template, onClose, onUpdate }) {
                                 <button
                                     onClick={onClose}
                                     type="button"
-                                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                                    className="transition-all duration-300 text-theme-text-primary hover:bg-theme-sidebar-item-hover px-4 py-2 rounded-lg text-sm"
                                 >
                                     Close
                                 </button>
