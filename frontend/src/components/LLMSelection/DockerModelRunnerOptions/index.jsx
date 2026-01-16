@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import {
-  ArrowClockwise,
-  CircleNotch,
-  MagnifyingGlass,
-  Info,
-} from "@phosphor-icons/react";
+import { CircleNotch, Info } from "@phosphor-icons/react";
 import strDistance from "js-levenshtein";
 import { LLM_PREFERENCE_CHANGED_EVENT } from "@/pages/GeneralSettings/LLMPreference";
 import { DOCKER_MODEL_RUNNER_COMMON_URLS } from "@/utils/constants";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
-import ModelTable from "./ModelTable";
-import * as Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import ModelTable from "@/components/lib/ModelTable";
+import ModelTableLayout from "@/components/lib/ModelTable/layout";
+import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
 
 export default function DockerModelRunnerOptions({ settings }) {
   const {
@@ -280,11 +275,12 @@ function DockerModelRunnerModelSelection({
     });
 
     const orderedMap = new Map();
+    const installedMap = new Map();
     mapping
       .get("installed")
       .entries()
       .forEach(([organization, models]) =>
-        orderedMap.set(organization, models)
+        installedMap.set(organization, models)
       );
     mapping
       .get("not installed")
@@ -292,7 +288,17 @@ function DockerModelRunnerModelSelection({
       .forEach(([organization, models]) =>
         orderedMap.set(organization, models)
       );
-    return Object.fromEntries(orderedMap);
+    
+    // Sort the models by organization/creator name alphabetically but keep the installed models at the top
+    return Object.fromEntries(
+      Array.from(installedMap.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .concat(
+          Array.from(orderedMap.entries()).sort((a, b) =>
+            a[0].localeCompare(b[0])
+          )
+        )
+    );
   }
 
   function handleSetActiveModel(modelId) {
@@ -303,7 +309,7 @@ function DockerModelRunnerModelSelection({
 
   const groupedModels = groupModelsByAlias(filteredModels);
   return (
-    <Layout
+    <ModelTableLayout
       fetchModels={fetchModels}
       searchQuery={searchQuery}
       setSearchQuery={setSearchQuery}
@@ -321,7 +327,7 @@ function DockerModelRunnerModelSelection({
         value={selectedModelId}
       />
       {loading ? (
-        <LoadingSkeleton />
+        <ModelTableLoadingSkeleton />
       ) : filteredModels.length === 0 ? (
         <div className="flex flex-col w-full gap-y-2 mt-4">
           <p className="text-theme-text-secondary text-sm">No models found!</p>
@@ -341,96 +347,6 @@ function DockerModelRunnerModelSelection({
           />
         ))
       )}
-    </Layout>
-  );
-}
-
-function Layout({
-  children,
-  fetchModels = null,
-  searchQuery = "",
-  setSearchQuery = () => {},
-  loading = false,
-}) {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  async function refreshModels() {
-    setIsRefreshing(true);
-    try {
-      await fetchModels?.();
-    } catch {
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-
-  return (
-    <div className="flex flex-col w-full">
-      <div className="flex gap-x-2 items-center pb-[8px]">
-        <label className="text-theme-text-primary text-base font-semibold">
-          Available Models
-        </label>
-      </div>
-      <div className="flex w-full items-center gap-x-[16px]">
-        <div className="relative flex-1 flex-grow">
-          <MagnifyingGlass
-            size={16}
-            weight="bold"
-            color="var(--theme-text-primary)"
-            className="absolute left-[9px] top-[10px] text-theme-settings-input-placeholder peer-focus:invisible"
-          />
-          <input
-            type="search"
-            placeholder="Search models"
-            value={searchQuery}
-            disabled={loading}
-            className="min-h-[32px] border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pl-[30px] py-2 search-input disabled:opacity-50 disabled:cursor-not-allowed"
-            onChange={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setSearchQuery(e.target.value);
-            }}
-          />
-        </div>
-        {!!fetchModels && (
-          <button
-            type="button"
-            onClick={refreshModels}
-            disabled={isRefreshing || loading}
-            className="border-none text-theme-text-secondary text-sm font-medium hover:bg-white/10 light:hover:bg-black/5 rounded-lg px-2 h-full flex items-center gap-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isRefreshing ? (
-              <CircleNotch className="w-4 h-4 text-theme-text-secondary animate-spin" />
-            ) : (
-              <ArrowClockwise
-                weight="bold"
-                className="w-4 h-4 text-theme-text-secondary"
-              />
-            )}
-            <span
-              className={`text-sm font-medium ${isRefreshing ? "hidden" : "text-theme-text-secondary"}`}
-            >
-              Refresh Models
-            </span>
-          </button>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="flex flex-col w-full gap-y-4">
-      <Skeleton.default
-        height={100}
-        width="100%"
-        count={7}
-        highlightColor="var(--theme-settings-input-active)"
-        baseColor="var(--theme-settings-input-bg)"
-        enableAnimation={true}
-        containerClassName="w-fill flex gap-[8px] flex-col p-0"
-      />
-    </div>
+    </ModelTableLayout>
   );
 }
