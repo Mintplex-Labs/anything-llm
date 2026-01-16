@@ -91,24 +91,32 @@ export default function SQLConnectionModal({
   connections = [], // List of all existing connections for duplicate detection
 }) {
   const isEditMode = !!existingConnection;
-  const [engine, setEngine] = useState(
-    isEditMode ? existingConnection.engine : DEFAULT_ENGINE
-  );
-  const [config, setConfig] = useState(
-    isEditMode
-      ? {
-          name: existingConnection.database_id,
-          username: existingConnection.username,
-          password: existingConnection.password,
-          host: existingConnection.host,
-          port: existingConnection.port,
-          database: existingConnection.database,
-          scheme: existingConnection.scheme,
-          encrypt: existingConnection?.encrypt,
-        }
-      : DEFAULT_CONFIG
-  );
+  const [engine, setEngine] = useState(DEFAULT_ENGINE);
+  const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [isValidating, setIsValidating] = useState(false);
+
+  // Sync state when modal opens - useState initial values only run once on mount,
+  // so we need this effect to update state when the modal is reopened
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (existingConnection) {
+      setEngine(existingConnection.engine);
+      setConfig({
+        name: existingConnection.database_id,
+        username: existingConnection.username,
+        password: existingConnection.password,
+        host: existingConnection.host,
+        port: existingConnection.port,
+        database: existingConnection.database,
+        scheme: existingConnection.scheme,
+        encrypt: existingConnection?.encrypt,
+      });
+    } else {
+      setEngine(DEFAULT_ENGINE);
+      setConfig(DEFAULT_CONFIG);
+    }
+  }, [isOpen, existingConnection]);
 
   // Track original database ID to send to server for updating if in edit mode
   const originalDatabaseId = isEditMode ? existingConnection.database_id : null;
@@ -196,7 +204,7 @@ export default function SQLConnectionModal({
       if (!success) {
         showToast(
           error ||
-            "Failed to establish database connection. Please check your connection details.",
+          "Failed to establish database connection. Please check your connection details.",
           "error",
           { clear: true }
         );
@@ -234,7 +242,7 @@ export default function SQLConnectionModal({
       console.error("Error validating connection:", error);
       showToast(
         error?.message ||
-          "Failed to validate connection. Please check your connection details.",
+        "Failed to validate connection. Please check your connection details.",
         "error",
         { clear: true }
       );
@@ -492,9 +500,8 @@ function DBEngine({ provider, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${
-        active ? "!bg-blue-500/50" : ""
-      }`}
+      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${active ? "!bg-blue-500/50" : ""
+        }`}
     >
       <img
         src={DB_LOGOS[provider]}
