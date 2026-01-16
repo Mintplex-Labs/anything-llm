@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import DBConnection from "./DBConnection";
-import { Plus, Database } from "@phosphor-icons/react";
+import { Plus, Database, CircleNotch } from "@phosphor-icons/react";
 import NewSQLConnection from "./SQLConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
@@ -16,13 +16,16 @@ export default function AgentSQLConnectorSelection({
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
   const prevHasChanges = useRef(hasChanges);
 
   // Load connections on mount
   useEffect(() => {
+    setLoading(true);
     Admin.systemPreferencesByFields(["agent_sql_connections"])
       .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
-      .catch(() => setConnections([]));
+      .catch(() => setConnections([]))
+      .finally(() => setLoading(false));
   }, []);
 
   // Refresh connections from backend when save completes (hasChanges: true -> false)
@@ -33,7 +36,7 @@ export default function AgentSQLConnectorSelection({
         .then((res) =>
           setConnections(res?.settings?.agent_sql_connections ?? [])
         )
-        .catch(() => {});
+        .catch(() => { });
     }
     prevHasChanges.current = hasChanges;
   }, [hasChanges]);
@@ -140,18 +143,27 @@ export default function AgentSQLConnectorSelection({
                   Your database connections
                 </p>
                 <div className="flex flex-col gap-y-3">
-                  {connections
-                    .filter((connection) => connection.action !== "remove")
-                    .map((connection) => (
-                      <DBConnection
-                        key={connection.database_id}
-                        connection={connection}
-                        onRemove={handleRemoveConnection}
-                        onUpdate={handleUpdateConnection}
-                        setHasChanges={setHasChanges}
-                        connections={connections}
+                  {loading ? (
+                    <div className="flex items-center justify-center py-4">
+                      <CircleNotch
+                        size={24}
+                        className="animate-spin text-theme-text-primary"
                       />
-                    ))}
+                    </div>
+                  ) : (
+                    connections
+                      .filter((connection) => connection.action !== "remove")
+                      .map((connection) => (
+                        <DBConnection
+                          key={connection.database_id}
+                          connection={connection}
+                          onRemove={handleRemoveConnection}
+                          onUpdate={handleUpdateConnection}
+                          setHasChanges={setHasChanges}
+                          connections={connections}
+                        />
+                      ))
+                  )}
                   <button
                     type="button"
                     onClick={openModal}
