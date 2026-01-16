@@ -2,7 +2,7 @@ import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 
 const WorkspaceTemplate = {
-  create: async function ({ name, description, workspaceSlug }) {
+  create: async function ({ name, description, workspaceSlug = null }) {
     const { template, message } = await fetch(
       `${API_BASE}/workspace-templates`,
       {

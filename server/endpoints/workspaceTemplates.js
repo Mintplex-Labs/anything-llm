@@ -17,30 +17,36 @@ function workspaceTemplateEndpoints(app) {
       try {
         const { name, description, workspaceSlug } = reqBody(request);
 
-        if (!name || !workspaceSlug) {
+        if (!name) {
           return response
             .status(400)
             .json({
               template: null,
-              message: "Name and workspaceSlug are required",
+              message: "Name is required",
             });
         }
 
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug: workspaceSlug })
-          : await Workspace.get({ slug: workspaceSlug });
+        let workspaceId = null;
 
-        if (!workspace) {
-          return response
-            .status(404)
-            .json({ template: null, message: "Workspace not found" });
+        // copy settings from workspace if workspaceSlug is provided
+        if (workspaceSlug) {
+          const user = await userFromSession(request, response);
+          const workspace = multiUserMode(response)
+            ? await Workspace.getWithUser(user, { slug: workspaceSlug })
+            : await Workspace.get({ slug: workspaceSlug });
+
+          if (!workspace) {
+            return response
+              .status(404)
+              .json({ template: null, message: "Workspace not found" });
+          }
+          workspaceId = workspace.id;
         }
 
         const { template, message } = await WorkspaceTemplate.create({
           name,
           description,
-          workspaceId: workspace.id,
+          workspaceId, // null for blank template
         });
 
         return response

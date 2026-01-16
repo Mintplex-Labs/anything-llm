@@ -5,10 +5,12 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import WorkspaceTemplate from "@/models/workspaceTemplate";
 import TemplateRow from "./TemplateRow";
+import showToast from "@/utils/toast";
 
 export default function WorkspaceTemplates() {
     const [loading, setLoading] = useState(true);
     const [templates, setTemplates] = useState([]);
+    const [creating, setCreating] = useState(false);
 
     const fetchTemplates = async () => {
         const foundTemplates = await WorkspaceTemplate.all();
@@ -24,6 +26,20 @@ export default function WorkspaceTemplates() {
         setTemplates((prev) => prev.filter((template) => template.id !== id));
     };
 
+    const createBlankTemplate = async () => {
+        setCreating(true);
+        const name = `New Template ${new Date().toLocaleString()}`;
+        const { template, message } = await WorkspaceTemplate.create({ name });
+        if (template) {
+            setTemplates((prev) => [template, ...prev]);
+            showToast("Template created successfully", "success");
+        } else {
+            showToast(message || "Failed to create template", "error");
+        }
+        setCreating(false);
+    };
+
+
     return (
         <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
             <Sidebar />
@@ -33,10 +49,17 @@ export default function WorkspaceTemplates() {
             >
                 <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
                     <div className="w-full flex flex-col gap-y-1 pb-6 border-theme-modal-border border-b-2">
-                        <div className="items-center flex gap-x-4">
+                        <div className="items-center flex gap-x-4 justify-between">
                             <p className="text-lg leading-6 font-bold text-theme-text-primary">
                                 Workspace Templates
                             </p>
+                            <button
+                                onClick={createBlankTemplate}
+                                disabled={creating}
+                                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-primary-button hover:bg-secondary hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold shadow-[0_4px_14px_rgba(0,0,0,0.25)] disabled:opacity-50"
+                            >
+                                {creating ? "Creating..." : "+ New Template"}
+                            </button>
                         </div>
                         <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
                             Manage reusable workspace templates. Templates allow you to quickly create

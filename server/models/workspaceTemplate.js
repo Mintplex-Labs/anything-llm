@@ -44,14 +44,19 @@ const WorkspaceTemplate = {
     }
   },
 
-  create: async function ({ name, description = null, workspaceId }) {
+  create: async function ({ name, description = null, workspaceId = null }) {
     try {
-      const workspace = await Workspace.get({ id: Number(workspaceId) });
-      if (!workspace) {
-        return { template: null, message: "Workspace not found" };
+      let settings = {};
+
+      // copy settings from workspace if workspaceId is provided
+      if (workspaceId) {
+        const workspace = await Workspace.get({ id: Number(workspaceId) });
+        if (!workspace) {
+          return { template: null, message: "Workspace not found" };
+        }
+        settings = this.extractSettings(workspace);
       }
 
-      const settings = this.extractSettings(workspace);
       const template = await prisma.workspace_templates.create({
         data: {
           name: String(name).slice(0, 255),
