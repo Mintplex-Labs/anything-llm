@@ -253,6 +253,12 @@ const SystemSettings = {
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
       ...this.llmPreferenceKeys(),
 
+      // Optional allowlist for workspace LLM provider selection
+      // Comma-separated list of provider values to show (e.g., "generic-openai,openai")
+      // If empty or unset, all providers are shown
+      WorkspaceAllowedLLMProviders:
+        process.env.WORKSPACE_LLM_ALLOWED_PROVIDERS || null,
+
       // --------------------------------------------------------
       // Whisper (Audio transcription) Selection Settings & Configs
       // - Currently the only 3rd party is OpenAI, so is OPEN_AI_KEY is set

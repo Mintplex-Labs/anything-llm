@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import PreLoader from "@/components/Preloader";
 import ChatModelSelection from "./ChatModelSelection";
 import { useTranslation } from "react-i18next";
 import { PROVIDER_SETUP_EVENT, SAVE_LLM_SELECTOR_EVENT } from "./action";
 import {
-  WORKSPACE_LLM_PROVIDERS,
   autoScrollToSelectedLLMProvider,
   hasMissingCredentials,
   validatedModelSelection,
+  getFilteredWorkspaceProviders,
 } from "./utils";
 import LLMSelectorSidePanel from "./LLMSelector";
 import { NoSetupWarning } from "./SetupProvider";
@@ -23,23 +23,30 @@ export default function LLMSelectorModal() {
   const [settings, setSettings] = useState(null);
   const [selectedLLMProvider, setSelectedLLMProvider] = useState(null);
   const [selectedLLMModel, setSelectedLLMModel] = useState("");
-  const [availableProviders, setAvailableProviders] = useState(
-    WORKSPACE_LLM_PROVIDERS
-  );
+  const [availableProviders, setAvailableProviders] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [missingCredentials, setMissingCredentials] = useState(false);
+
+  // Compute the base filtered provider list based on system settings allowlist
+  const baseProviders = useMemo(() => {
+    return getFilteredWorkspaceProviders(settings?.WorkspaceAllowedLLMProviders);
+  }, [settings?.WorkspaceAllowedLLMProviders]);
 
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
     Promise.all([Workspace.bySlug(slug), System.keys()])
       .then(([workspace, systemSettings]) => {
+        const filteredProviders = getFilteredWorkspaceProviders(
+          systemSettings.WorkspaceAllowedLLMProviders
+        );
         const selectedLLMProvider =
           workspace.chatProvider ?? systemSettings.LLMProvider;
         const selectedLLMModel = workspace.chatModel ?? systemSettings.LLMModel;
 
         setSettings(systemSettings);
+        setAvailableProviders(filteredProviders);
         setSelectedLLMProvider(selectedLLMProvider);
         autoScrollToSelectedLLMProvider(selectedLLMProvider);
         setSelectedLLMModel(selectedLLMModel);
@@ -49,7 +56,7 @@ export default function LLMSelectorModal() {
 
   function handleSearch(e) {
     const searchTerm = e.target.value.toLowerCase();
-    const filteredProviders = WORKSPACE_LLM_PROVIDERS.filter((provider) =>
+    const filteredProviders = baseProviders.filter((provider) =>
       provider.name.toLowerCase().includes(searchTerm)
     );
     setAvailableProviders(filteredProviders);
@@ -57,7 +64,7 @@ export default function LLMSelectorModal() {
 
   function handleProviderSelection(provider) {
     setSelectedLLMProvider(provider);
-    setAvailableProviders(WORKSPACE_LLM_PROVIDERS);
+    setAvailableProviders(baseProviders);
     autoScrollToSelectedLLMProvider(provider, 50);
     document.getElementById("llm-search-input").value = "";
     setHasChanges(true);
@@ -124,7 +131,7 @@ export default function LLMSelectorModal() {
             window.dispatchEvent(
               new CustomEvent(PROVIDER_SETUP_EVENT, {
                 detail: {
-                  provider: WORKSPACE_LLM_PROVIDERS.find(
+                  provider: baseProviders.find(
                     (p) => p.value === selectedLLMProvider
                   ),
                   settings,

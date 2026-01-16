@@ -59,3 +59,23 @@ export function hasMissingCredentials(settings, provider) {
 export const WORKSPACE_LLM_PROVIDERS = AVAILABLE_LLM_PROVIDERS.filter(
   (provider) => !DISABLED_PROVIDERS.includes(provider.value)
 );
+
+/**
+ * Filters workspace LLM providers based on an optional allowlist.
+ * Useful for deployments that want to limit visible providers in the UI.
+ * @param {string|null} allowedList - Comma-separated provider values (e.g., "generic-openai,openai")
+ * @returns {Array} - Filtered provider list, or all providers if allowlist is empty/null
+ */
+export function getFilteredWorkspaceProviders(allowedList) {
+  if (!allowedList || allowedList.trim() === "") {
+    return WORKSPACE_LLM_PROVIDERS;
+  }
+
+  const allowedProviders = allowedList
+    .split(",")
+    .map((p) => p.trim().toLowerCase());
+
+  return WORKSPACE_LLM_PROVIDERS.filter((provider) =>
+    allowedProviders.includes(provider.value.toLowerCase())
+  );
+}
