@@ -284,11 +284,11 @@ export default function MultiUserAuth() {
         <div className="flex flex-col justify-center items-center relative rounded-2xl bg-theme-bg-secondary md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-4 md:mt-0">
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
-              <div className="flex gap-x-1">
-                <h3 className="text-md md:text-2xl font-bold text-white light:text-theme-text-primary text-center white-space-nowrap hidden md:block">
+              <div className="flex flex-nowrap items-baseline justify-center gap-x-2">
+                <h3 className="text-md md:text-2xl font-bold text-white light:text-theme-text-primary text-center whitespace-nowrap hidden md:block">
                   {t("login.multi-user.welcome")}
                 </h3>
-                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] light:via-[#75D6FF] to-[#FFFFFF] light:to-[#75D6FF] bg-clip-text text-transparent">
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] light:via-[#75D6FF] to-[#FFFFFF] light:to-[#75D6FF] bg-clip-text text-transparent whitespace-nowrap">
                   {customAppName || "AnythingLLM"}
                 </p>
               </div>

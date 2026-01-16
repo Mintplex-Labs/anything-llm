@@ -2,7 +2,7 @@ import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 import { useState, useEffect } from "react";
 
 const availableThemes = {
-  default: "Default",
+  default: "Dark",
   light: "Light",
 };
 
