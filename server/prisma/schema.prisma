@@ -392,3 +392,12 @@ model workspace_parsed_files {
   @@index([workspaceId])
   @@index([userId])
 }
+
+model workspace_templates {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String?
+  config        String
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
