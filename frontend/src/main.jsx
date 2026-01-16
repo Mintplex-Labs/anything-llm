@@ -364,6 +364,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/workspace-templates",
+        lazy: async () => {
+          const { default: WorkspaceTemplates } = await import(
+            "@/pages/GeneralSettings/WorkspaceTemplates"
+          );
+          return { element: <ManagerRoute Component={WorkspaceTemplates} /> };
+        },
+      },
+      {
         path: "/settings/mobile-connections",
         lazy: async () => {
           const { default: MobileConnections } = await import(

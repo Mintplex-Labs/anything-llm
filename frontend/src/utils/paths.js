@@ -170,6 +170,9 @@ export default {
     mobileConnections: () => {
       return `/settings/mobile-connections`;
     },
+    workspaceTemplates: () => {
+      return `/settings/workspace-templates`;
+    },
   },
   agents: {
     builder: () => {
