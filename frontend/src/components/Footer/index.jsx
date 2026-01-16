@@ -21,6 +21,7 @@ import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
 
 export const MAX_ICONS = 3;
+export const REFETCH_FOOTER_EVENT = "refetch-footer-icons";
 export const ICON_COMPONENTS = {
   BookOpen: BookOpen,
   Buildings: Buildings,
@@ -45,7 +46,14 @@ export default function Footer() {
       const { footerData } = await System.fetchCustomFooterIcons();
       setFooterData(footerData);
     }
+
     fetchFooterData();
+
+    // Listen for refetch events from FooterCustomization settings
+    window.addEventListener(REFETCH_FOOTER_EVENT, fetchFooterData);
+    return () => {
+      window.removeEventListener(REFETCH_FOOTER_EVENT, fetchFooterData);
+    };
   }, []);
 
   // wait for some kind of non-false response from footer data first

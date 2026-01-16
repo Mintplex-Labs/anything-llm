@@ -5,6 +5,7 @@ import NewIconForm from "./NewIconForm";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import { useTranslation } from "react-i18next";
+import { REFETCH_FOOTER_EVENT } from "@/components/Footer";
 
 export default function FooterCustomization() {
   const [footerIcons, setFooterIcons] = useState(Array(3).fill(null));
@@ -41,6 +42,9 @@ export default function FooterCustomization() {
     window.localStorage.removeItem(System.cacheKeys.footerIcons);
     setFooterIcons(updatedIcons);
     showToast("Successfully updated footer icons.", "success", { clear: true });
+
+    // Notify Footer component to refetch
+    window.dispatchEvent(new Event(REFETCH_FOOTER_EVENT));
   };
 
   const handleRemoveIcon = (index) => {
