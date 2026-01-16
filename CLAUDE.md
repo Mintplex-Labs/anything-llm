@@ -2,6 +2,43 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Upstream-First Development
+
+This fork exists to contribute improvements back to the AnythingLLM community. Every code change should be written as if it will be submitted as a pull request to the upstream repository.
+
+**Why upstream-first matters:**
+- Changes benefit all AnythingLLM users, not just our deployment
+- Upstream maintainers review and improve the code
+- We avoid maintaining divergent patches long-term
+- The community gains features they might not have built themselves
+
+**How to write upstream-compatible code:**
+
+1. **Design generically** - Frame features so any AnythingLLM user would find them valuable
+2. **Know the upstream rules** - CONTRIBUTING.md requires a corresponding issue before PRs, and unit tests for all changes
+3. **Frame comments for the community** - Explain the "why" in terms that benefit all users (e.g., "single-provider deployments" not "Cortex gateway")
+4. **Verify no internal references** - Before committing, run the following and ensure zero matches:
+   ```bash
+   grep -r "PDI\|Cortex" --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" --include="*.json" --exclude="CLAUDE.md"
+   ```
+
+**What belongs in code vs. this CLAUDE.md:**
+
+| In Code | In CLAUDE.md |
+|---------|--------------|
+| Generic feature implementations | PDI-specific deployment context |
+| Comments explaining community value | Internal URLs, service names |
+| Environment variable patterns | Our configuration choices |
+| Test coverage | Fork-specific customization notes |
+
+**Avoid fork-only fixes:**
+- Do not add quick fixes or hacks that only solve our specific problem
+- Do not add conditional logic that only activates for PDI deployments
+- Do not hardcode values specific to Cortex or our infrastructure
+- If a change cannot be framed as beneficial to all users, reconsider the approach
+
+**This CLAUDE.md is the exception** - it documents our fork-specific context and is excluded from upstream PRs.
+
 ## Development Commands
 
 ```bash
@@ -123,6 +160,31 @@ Provider selection via env vars in `server/.env.development`:
 - `VECTOR_DB` - lancedb (default), pinecone, chroma, pgvector, etc.
 
 Each provider has its own env vars for API keys and model preferences.
+
+## PDI Fork Customizations
+
+This is the PDI Technologies fork of AnythingLLM, used as a Cortex gateway frontend.
+
+**Historical changes** (written with upstream compatibility in mind):
+
+**Generic OpenAI workspace model selection:**
+- Added `generic-openai` to `SUPPORT_CUSTOM_MODELS` in `server/utils/helpers/customModels.js`
+- Added `getGenericOpenAiModels()` function to fetch models from OpenAI-compatible endpoints
+- Removed `generic-openai` from `DISABLED_PROVIDERS` in `frontend/src/hooks/useGetProvidersModels.js`
+- This enables per-workspace model selection when using Generic OpenAI provider
+
+**Single-provider UI simplification:**
+- `frontend/src/components/WorkspaceChat/ChatContainer/PromptInput/LLMSelector/index.jsx` hides the provider panel when only one provider is available
+- Streamlines the UI for deployments using a single LLM gateway
+
+**Theme system:**
+- Three-option theme selector: System, Light, Dark
+- All UI fixes applied directly in fork components
+
+**Future changes:**
+New features and fixes should follow the upstream-first workflow. Write code as if it will eventually be contributed upstream, even if that contribution happens later.
+
+When preparing upstream PRs, exclude this CLAUDE.md file and ensure no PDI/Cortex references remain in code comments.
 
 ## Git Commits
 
