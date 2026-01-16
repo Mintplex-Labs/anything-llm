@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['4391-dmr-support'] # put your current branch to create a build. Core team only.
+    branches: ['fix-path-patch'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
