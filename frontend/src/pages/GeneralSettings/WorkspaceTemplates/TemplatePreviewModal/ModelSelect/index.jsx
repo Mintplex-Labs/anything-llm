@@ -23,7 +23,7 @@ export default function ModelSelect({
       <CustomSelect
         value=""
         options={[{ value: "", label: "Uses system model" }]}
-        onChange={() => { }}
+        onChange={() => {}}
         disabled
         className={className}
       />
@@ -36,7 +36,9 @@ export default function ModelSelect({
       <input
         type="text"
         value={value || ""}
-        onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
+        onChange={(e) =>
+          onChange(e.target.value === "" ? null : e.target.value)
+        }
         placeholder="Enter model name"
         className={`w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button border border-theme-modal-border h-8 text-right ${className}`}
       />
@@ -48,7 +50,7 @@ export default function ModelSelect({
       <CustomSelect
         value=""
         options={[{ value: "", label: "Loading models..." }]}
-        onChange={() => { }}
+        onChange={() => {}}
         disabled
         className={className}
       />
@@ -84,7 +86,9 @@ export default function ModelSelect({
       <input
         type="text"
         value={value || ""}
-        onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
+        onChange={(e) =>
+          onChange(e.target.value === "" ? null : e.target.value)
+        }
         placeholder="Enter model name"
         className={`w-full bg-theme-settings-input-bg text-theme-text-primary text-sm rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-button border border-theme-modal-border h-8 text-right ${className}`}
       />

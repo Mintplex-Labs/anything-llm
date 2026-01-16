@@ -8,9 +8,12 @@ export default function ProviderSelect({
   type = "chat", // "chat" or "agent"
   className = "",
 }) {
-  const providers = type === "agent"
-    ? AVAILABLE_LLM_PROVIDERS.filter((p) => AGENT_ENABLED_PROVIDERS.includes(p.value))
-    : AVAILABLE_LLM_PROVIDERS;
+  const providers =
+    type === "agent"
+      ? AVAILABLE_LLM_PROVIDERS.filter((p) =>
+          AGENT_ENABLED_PROVIDERS.includes(p.value)
+        )
+      : AVAILABLE_LLM_PROVIDERS;
 
   const defaultLabel = type === "agent" ? "System Default" : "System default";
 

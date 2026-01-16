@@ -18,12 +18,10 @@ function workspaceTemplateEndpoints(app) {
         const { name, description, workspaceSlug } = reqBody(request);
 
         if (!name) {
-          return response
-            .status(400)
-            .json({
-              template: null,
-              message: "Name is required",
-            });
+          return response.status(400).json({
+            template: null,
+            message: "Name is required",
+          });
         }
 
         let workspaceId = null;
@@ -118,7 +116,10 @@ function workspaceTemplateEndpoints(app) {
         if (!template) {
           return response
             .status(400)
-            .json({ template: null, message: message || "Failed to update template" });
+            .json({
+              template: null,
+              message: message || "Failed to update template",
+            });
         }
 
         return response.status(200).json({ template, message: null });
