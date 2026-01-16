@@ -45,7 +45,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "zai",
   "giteeai",
   "docker-model-runner",
-  "generic-openai", // PDI: Enable workspace-level model selection
+  "generic-openai", // Enable workspace-level model selection for OpenAI-compatible endpoints
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -884,7 +884,7 @@ async function getDockerModelRunnerModels(basePath = null) {
   }
 }
 
-// PDI: Fetch models from Generic OpenAI compatible endpoints
+// Fetch models from Generic OpenAI compatible endpoints
 async function getGenericOpenAiModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   try {

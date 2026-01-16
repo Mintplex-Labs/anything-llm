@@ -101,7 +101,7 @@ export default function LLMSelectorModal() {
   }
 
   // Hide provider panel if there's only the system-configured provider
-  // This simplifies the UI for single-provider deployments (e.g., Cortex gateway)
+  // This simplifies the UI for single-provider deployments
   const showProviderPanel = availableProviders.length > 1;
 
   return (

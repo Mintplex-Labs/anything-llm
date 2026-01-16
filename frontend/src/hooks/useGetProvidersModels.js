@@ -2,7 +2,7 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-// PDI: Removed "generic-openai" to enable workspace-level model selection for Cortex
+// Note: "generic-openai" intentionally omitted to allow per-workspace model selection
 export const DISABLED_PROVIDERS = [
   "azure",
   "textgenwebui",
