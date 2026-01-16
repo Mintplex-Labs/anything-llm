@@ -527,6 +527,27 @@ a {
   animation: none !important;
 }
 
+/* Light mode scrollbar - manual toggle support */
+.light .show-scrollbar,
+[data-theme="light"] .show-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .show-scrollbar::-webkit-scrollbar-track,
+[data-theme="light"] .show-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .show-scrollbar::-webkit-scrollbar-thumb,
+[data-theme="light"] .show-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.light .show-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .show-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+}
+
 #chat-container::-webkit-scrollbar,
 .no-scroll::-webkit-scrollbar {
   display: none !important;
@@ -962,6 +983,33 @@ does not extend the close button beyond the viewport. */
 
 .white-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #cccccc;
+}
+
+/* Light mode white-scrollbar */
+.light .white-scrollbar,
+[data-theme="light"] .white-scrollbar {
+  scrollbar-color: #374151 #f3f4f6;
+}
+
+.light .white-scrollbar::-webkit-scrollbar,
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar {
+  background-color: #f3f4f6;
+}
+
+.light .white-scrollbar::-webkit-scrollbar-track,
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+.light .white-scrollbar::-webkit-scrollbar-thumb,
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border: 2px solid #f3f4f6;
+}
+
+.light .white-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
 }
 
 /* Recharts rendering styles */
