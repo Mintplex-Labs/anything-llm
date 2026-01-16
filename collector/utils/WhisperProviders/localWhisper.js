@@ -136,7 +136,7 @@ class LocalWhisper {
               progress_callback: (data) => {
                 if (!data.hasOwnProperty("progress")) return;
                 console.log(
-                  `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
+                  `\x1b[34m[ONNXWhisper - Downloading Model Files]\x1b[0m ${
                     data.file
                   } ${~~data?.progress}%`
                 );
