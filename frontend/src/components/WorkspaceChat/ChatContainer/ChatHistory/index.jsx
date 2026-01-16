@@ -46,11 +46,17 @@ export default function ChatHistory({
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop === clientHeight;
+    // Use tolerance for "at bottom" check due to sub-pixel rendering
+    const isBottom = scrollHeight - scrollTop - clientHeight < 5;
 
     // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
       setIsUserScrolling(!isBottom);
+    }
+
+    // Reset isUserScrolling when user scrolls back to bottom
+    if (isBottom) {
+      setIsUserScrolling(false);
     }
 
     setIsAtBottom(isBottom);

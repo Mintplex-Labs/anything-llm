@@ -31,7 +31,7 @@ export default function EditingChatBubble({
         }`}
       >
         <button
-          className={`transition-all duration-300 absolute z-10 text-white light:text-theme-text-primary rounded-full hover:bg-neutral-700 light:hover:invert hover:border-white light:border-theme-modal-border border-transparent border shadow-lg ${
+          className={`transition-all duration-300 absolute z-10 text-theme-text-primary rounded-full hover:bg-neutral-700 light:hover:bg-slate-300 hover:border-white light:border-theme-modal-border border-transparent border shadow-lg ${
             isUser ? "right-0 mr-2" : "ml-2"
           }`}
           style={{ top: "6px", [isUser ? "right" : "left"]: "290px" }}
