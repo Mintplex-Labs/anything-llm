@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -17,21 +25,24 @@ import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-export default function ChatHistory({
-  history = [],
-  workspace,
-  sendCommand,
-  updateHistory,
-  regenerateAssistantMessage,
-  hasAttachments = false,
-}) {
+const ChatHistory = forwardRef(function (
+  {
+    history = [],
+    workspace,
+    sendCommand,
+    updateHistory,
+    regenerateAssistantMessage,
+    hasAttachments = false,
+  },
+  ref
+) {
   const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
+  const chatHistoryRef = useRef(null);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const chatHistoryRef = useRef(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
@@ -80,6 +91,22 @@ export default function ChatHistory({
       });
     }
   };
+
+  useImperativeHandle(ref, () => {
+    return {
+      scrollToTop() {
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
+      },
+      scrollToBottom() {
+        scrollToBottom(true);
+      },
+    };
+  }, []);
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
@@ -250,7 +277,9 @@ export default function ChatHistory({
       )}
     </div>
   );
-}
+});
+
+export default ChatHistory;
 
 const getLastMessageInfo = (history) => {
   const lastMessage = history?.[history.length - 1] || {};
