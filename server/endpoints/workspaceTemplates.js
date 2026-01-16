@@ -94,6 +94,36 @@ function workspaceTemplateEndpoints(app) {
       }
     }
   );
+
+  app.put(
+    "/workspace-templates/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { name, description, config } = reqBody(request);
+
+        const { template, message } = await WorkspaceTemplate.update(id, {
+          name,
+          description,
+          config,
+        });
+
+        if (!template) {
+          return response
+            .status(400)
+            .json({ template: null, message: message || "Failed to update template" });
+        }
+
+        return response.status(200).json({ template, message: null });
+      } catch (error) {
+        console.error("Error updating workspace template:", error);
+        return response
+          .status(500)
+          .json({ template: null, message: error.message });
+      }
+    }
+  );
 }
 
 module.exports = { workspaceTemplateEndpoints };

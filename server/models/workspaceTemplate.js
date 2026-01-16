@@ -102,6 +102,55 @@ const WorkspaceTemplate = {
       return false;
     }
   },
+
+  update: async function (id, { name, description, config }) {
+    try {
+      const existingTemplate = await this.get({ id: Number(id) });
+      if (!existingTemplate) {
+        return { template: null, message: "Template not found" };
+      }
+
+      const updateData = {};
+
+      if (name !== undefined) {
+        updateData.name = String(name).slice(0, 255);
+      }
+
+      if (description !== undefined) {
+        updateData.description = description
+          ? String(description).slice(0, 1000)
+          : null;
+      }
+
+      // update config if provided - validate through Workspace.validateFields
+      if (config !== undefined) {
+        const parsedConfig =
+          typeof config === "string" ? JSON.parse(config) : config;
+
+        // filter to only template fields
+        const filteredConfig = {};
+        for (const field of this.templateFields) {
+          if (parsedConfig[field] !== undefined) {
+            filteredConfig[field] = parsedConfig[field];
+          }
+        }
+
+        // validate through workspace validation
+        const validatedConfig = Workspace.validateFields(filteredConfig);
+        updateData.config = JSON.stringify(validatedConfig);
+      }
+
+      const template = await prisma.workspace_templates.update({
+        where: { id: Number(id) },
+        data: updateData,
+      });
+
+      return { template, message: null };
+    } catch (error) {
+      console.error("Error updating workspace template:", error.message);
+      return { template: null, message: error.message };
+    }
+  },
 };
 
 module.exports = { WorkspaceTemplate };

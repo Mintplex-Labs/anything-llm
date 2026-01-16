@@ -41,6 +41,23 @@ const WorkspaceTemplate = {
 
     return result;
   },
+
+  update: async function (id, { name, description, config }) {
+    const { template, message } = await fetch(
+      `${API_BASE}/workspace-templates/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ name, description, config }),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        return { template: null, message: e.message };
+      });
+
+    return { template, message };
+  },
 };
 
 export default WorkspaceTemplate;
