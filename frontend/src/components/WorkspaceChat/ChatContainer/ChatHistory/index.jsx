@@ -104,11 +104,12 @@ const ChatHistory = forwardRef(function(
         }
       },
       scrollToBottom() {
+
         setIsUserScrolling(true)
-        scrollToBottom(false);
+        scrollToBottom(isStreaming ? false : true);
       },
     };
-  }, []);
+  }, [isStreaming]);
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
@@ -268,7 +269,7 @@ const ChatHistory = forwardRef(function(
             <div
               className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
               onClick={() => {
-                scrollToBottom(true);
+                scrollToBottom(isStreaming ? false : true);
                 setIsUserScrolling(false);
               }}
             >
