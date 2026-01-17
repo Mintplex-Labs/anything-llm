@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
 import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";
 import {
@@ -16,7 +16,7 @@ import {
 import useUser from "@/hooks/useUser";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
@@ -30,6 +30,7 @@ export default function SettingsSidebar() {
   const { t } = useTranslation();
   const { logo } = useLogo();
   const { user } = useUser();
+  const location = useLocation();
   const sidebarRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -48,13 +49,13 @@ export default function SettingsSidebar() {
     handleBg();
   }, [showSidebar]);
 
-  // Restore scroll position on mount
-  useEffect(() => {
+  // Restore scroll position on route change (useLayoutEffect runs before paint)
+  useLayoutEffect(() => {
     const savedPosition = sessionStorage.getItem(SCROLL_STORAGE_KEY);
     if (savedPosition && scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = parseInt(savedPosition, 10);
     }
-  }, []);
+  }, [location.pathname]);
 
   // Save scroll position on scroll (debounced)
   const handleScroll = useCallback(() => {
