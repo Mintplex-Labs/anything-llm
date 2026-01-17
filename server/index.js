@@ -20,6 +20,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
 const { bootHTTP, bootSSL } = require("./utils/boot");
+const { validateOAuthConfig } = require("./utils/boot/validateOAuthConfig");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
@@ -30,6 +31,10 @@ const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { httpLogger } = require("./middleware/httpLogger");
+
+// Validate OAuth configuration if impersonation mode is enabled
+validateOAuthConfig();
+
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";

@@ -4,6 +4,8 @@ import {
   AUTH_TOKEN,
   AUTH_USER,
   USER_PROMPT_INPUT_MAP,
+  OIDC_ID_TOKEN,
+  OAUTH_ENABLED,
 } from "@/utils/constants";
 import System from "./models/system";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +35,24 @@ export function AuthProvider(props) {
       setStore({ user, authToken });
     },
     unsetUser: () => {
+      // Check if OAuth was used for login
+      const oauthEnabled = localStorage.getItem(OAUTH_ENABLED) === "true";
+      const idTokenHint = localStorage.getItem(OIDC_ID_TOKEN);
+
+      // Clear all auth data
       localStorage.removeItem(AUTH_USER);
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(AUTH_TIMESTAMP);
       localStorage.removeItem(USER_PROMPT_INPUT_MAP);
+      localStorage.removeItem(OIDC_ID_TOKEN);
+      localStorage.removeItem(OAUTH_ENABLED);
       setStore({ user: null, authToken: null });
+
+      // If OAuth was enabled, redirect to OIDC logout endpoint
+      if (oauthEnabled && idTokenHint) {
+        window.location.href = `/api/system/oauth/logout?id_token_hint=${encodeURIComponent(idTokenHint)}`;
+        return;
+      }
     },
   });
 

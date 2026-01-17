@@ -5,6 +5,8 @@ import { Navigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import useSimpleSSO from "@/hooks/useSimpleSSO";
+import useOIDCAuth from "@/hooks/useOIDCAuth";
+import OIDCLogin from "@/components/OIDCLogin";
 
 /**
  * Login page that handles both single and multi-user login.
@@ -12,14 +14,17 @@ import useSimpleSSO from "@/hooks/useSimpleSSO";
  * If Simple SSO is enabled and no login is allowed, the user will be redirected to the SSO login page
  * which may not have a token so the login will fail.
  *
+ * If OAuth/OIDC impersonation mode is enabled, the user will see the SSO login button.
+ *
  * @returns {JSX.Element}
  */
 export default function Login() {
   const query = useQuery();
   const { loading: ssoLoading, ssoConfig } = useSimpleSSO();
+  const { loading: oauthLoading, oauthConfig } = useOIDCAuth();
   const { loading, requiresAuth, mode } = usePasswordModal(!!query.get("nt"));
 
-  if (loading || ssoLoading) return <FullScreenLoader />;
+  if (loading || ssoLoading || oauthLoading) return <FullScreenLoader />;
 
   // If simple SSO is enabled and no login is allowed, redirect to the SSO login page.
   if (ssoConfig.enabled && ssoConfig.noLogin) {
@@ -31,6 +36,11 @@ export default function Login() {
   }
 
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
+
+  // If OAuth/OIDC impersonation mode is enabled, show the SSO login page
+  if (oauthConfig.enabled && oauthConfig.loginUrl) {
+    return <OIDCLogin loginUrl={oauthConfig.loginUrl} />;
+  }
 
   return <PasswordModal mode={mode} />;
 }

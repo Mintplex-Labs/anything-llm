@@ -1513,6 +1513,263 @@ function systemEndpoints(app) {
       }
     }
   );
+
+  // --------------------------------------------------------
+  // OAuth/OIDC Impersonation Endpoints
+  // --------------------------------------------------------
+
+  /**
+   * Initiates OAuth login flow with PKCE
+   * Generates state and code_verifier, stores in cache, redirects to OIDC provider
+   */
+  app.get("/system/oauth/login", async (request, response) => {
+    try {
+      if (process.env.MCP_AUTH_MODE !== "impersonation") {
+        return response.status(404).json({ error: "OAuth not enabled" });
+      }
+
+      const crypto = require("crypto");
+      const { CacheData } = require("../models/cacheData");
+
+      // Generate PKCE values
+      const state = crypto.randomBytes(32).toString("hex");
+      const codeVerifier = crypto.randomBytes(32).toString("base64url");
+      const codeChallenge = crypto
+        .createHash("sha256")
+        .update(codeVerifier)
+        .digest("base64url");
+
+      // Store state and code_verifier in cache with 10 minute TTL
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      await CacheData.new({
+        name: `oauth_state_${state}`,
+        data: JSON.stringify({ codeVerifier, createdAt: Date.now() }),
+        expiresAt,
+      });
+
+      // Build authorization URL
+      const authUrl = new URL(process.env.OAUTH_AUTHORIZATION_ENDPOINT);
+      authUrl.searchParams.set("client_id", process.env.OAUTH_CLIENT_ID);
+      authUrl.searchParams.set("response_type", "code");
+      authUrl.searchParams.set("redirect_uri", process.env.OAUTH_LOGIN_REDIRECT_URI);
+      authUrl.searchParams.set("scope", process.env.OAUTH_SCOPE || "openid email profile");
+      authUrl.searchParams.set("state", state);
+      authUrl.searchParams.set("code_challenge", codeChallenge);
+      authUrl.searchParams.set("code_challenge_method", "S256");
+
+      response.redirect(authUrl.toString());
+    } catch (error) {
+      console.error("OAuth login error:", error);
+      response.status(500).json({ error: "Failed to initiate OAuth login" });
+    }
+  });
+
+  /**
+   * OAuth callback handler
+   * Validates state, exchanges code for tokens, JIT provisions user, issues ALLM JWT
+   */
+  app.get("/system/oauth/callback", async (request, response) => {
+    try {
+      if (process.env.MCP_AUTH_MODE !== "impersonation") {
+        return response.status(404).json({ error: "OAuth not enabled" });
+      }
+
+      const { code, state, error: oauthError, error_description } = request.query;
+
+      if (oauthError) {
+        console.error("OAuth error from provider:", oauthError, error_description);
+        return response.redirect(`/login?error=${encodeURIComponent(error_description || oauthError)}`);
+      }
+
+      if (!code || !state) {
+        return response.redirect("/login?error=missing_code_or_state");
+      }
+
+      const { CacheData } = require("../models/cacheData");
+
+      // Validate state and retrieve code_verifier
+      const cacheKey = `oauth_state_${state}`;
+      const cachedData = await CacheData.get({ name: cacheKey });
+
+      if (!cachedData) {
+        console.error("OAuth callback: Invalid or expired state");
+        return response.redirect("/login?error=invalid_state");
+      }
+
+      const { codeVerifier } = JSON.parse(cachedData.data);
+
+      // Delete the used state
+      await CacheData.delete({ name: cacheKey });
+
+      // Exchange code for tokens
+      // Build token request params - client_secret is optional with PKCE
+      const tokenParams = {
+        grant_type: "authorization_code",
+        client_id: process.env.OAUTH_CLIENT_ID,
+        code,
+        redirect_uri: process.env.OAUTH_LOGIN_REDIRECT_URI,
+        code_verifier: codeVerifier,
+      };
+      if (process.env.OAUTH_CLIENT_SECRET) {
+        tokenParams.client_secret = process.env.OAUTH_CLIENT_SECRET;
+      }
+
+      const tokenResponse = await fetch(process.env.OAUTH_TOKEN_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(tokenParams),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error("OAuth token exchange failed:", errorText);
+        return response.redirect("/login?error=token_exchange_failed");
+      }
+
+      const tokens = await tokenResponse.json();
+      const { access_token, refresh_token, id_token, expires_in } = tokens;
+
+      if (!id_token) {
+        console.error("OAuth callback: No id_token in response");
+        return response.redirect("/login?error=no_id_token");
+      }
+
+      // Decode id_token claims (JWT without verification since we trust the token endpoint)
+      const idTokenPayload = JSON.parse(
+        Buffer.from(id_token.split(".")[1], "base64").toString()
+      );
+
+      const { sub, email, name, preferred_username } = idTokenPayload;
+
+      if (!sub) {
+        console.error("OAuth callback: No sub claim in id_token");
+        return response.redirect("/login?error=no_sub_claim");
+      }
+
+      // JIT user provisioning - find or create user
+      let user = await User._get({ oidc_sub: sub });
+
+      if (!user && email) {
+        // Try to find by email if no oidc_sub match
+        user = await User._get({ username: email });
+        if (user) {
+          // Link existing user to OIDC
+          const { message: updateError } = await User._update(user.id, { oidc_sub: sub });
+          if (updateError) {
+            console.error("Failed to link user to OIDC:", updateError);
+            return response.redirect("/login?error=account_linking_failed");
+          }
+          user = await User._get({ id: user.id });
+        }
+      }
+
+      if (!user) {
+        // Create new user via JIT provisioning
+        const bcrypt = require("bcryptjs");
+        const randomPassword = require("crypto").randomBytes(32).toString("hex");
+        const hashedPassword = bcrypt.hashSync(randomPassword, 10);
+
+        const username = email || preferred_username || `oauth_${sub.substring(0, 8)}`;
+
+        const prisma = require("../utils/prisma");
+        user = await prisma.users.create({
+          data: {
+            username,
+            password: hashedPassword,
+            role: "default",
+            oidc_sub: sub,
+          },
+        });
+
+        await EventLogs.logEvent(
+          "oauth_user_provisioned",
+          { username, oidc_sub: sub },
+          user.id
+        );
+      }
+
+      if (user.suspended) {
+        return response.redirect("/login?error=account_suspended");
+      }
+
+      // Store OAuth tokens on user record
+      const tokenExpiresAt = expires_in
+        ? new Date(Date.now() + expires_in * 1000)
+        : null;
+
+      const { message: tokenUpdateError } = await User._update(user.id, {
+        oauth_access_token: access_token,
+        oauth_refresh_token: refresh_token || null,
+        oauth_token_expires_at: tokenExpiresAt,
+      });
+
+      if (tokenUpdateError) {
+        console.error("Failed to store OAuth tokens:", tokenUpdateError);
+        return response.redirect("/login?error=token_storage_failed");
+      }
+
+      // Issue ALLM JWT
+      const sessionToken = makeJWT(
+        { id: user.id, username: user.username },
+        process.env.JWT_EXPIRY
+      );
+
+      await EventLogs.logEvent(
+        "oauth_login",
+        { username: user.username, oidc_sub: sub },
+        user.id
+      );
+
+      // Redirect to frontend callback with token
+      const callbackUrl = `/login/oauth/callback?token=${encodeURIComponent(sessionToken)}&id_token=${encodeURIComponent(id_token)}`;
+      response.redirect(callbackUrl);
+    } catch (error) {
+      console.error("OAuth callback error:", error);
+      response.redirect("/login?error=callback_failed");
+    }
+  });
+
+  /**
+   * OAuth logout handler
+   * Builds OIDC logout URL and redirects to provider
+   */
+  app.get("/system/oauth/logout", async (request, response) => {
+    try {
+      if (process.env.MCP_AUTH_MODE !== "impersonation") {
+        return response.status(404).json({ error: "OAuth not enabled" });
+      }
+
+      const { id_token_hint } = request.query;
+
+      // If no logout endpoint configured, just redirect to login
+      if (!process.env.OAUTH_LOGOUT_ENDPOINT) {
+        return response.redirect("/login");
+      }
+
+      // Build logout URL
+      const logoutUrl = new URL(process.env.OAUTH_LOGOUT_ENDPOINT);
+      if (id_token_hint) {
+        logoutUrl.searchParams.set("id_token_hint", id_token_hint);
+      }
+
+      // Add state parameter (required by some OIDC providers like Cognito)
+      const crypto = require("crypto");
+      logoutUrl.searchParams.set("state", crypto.randomUUID());
+
+      // Post-logout redirect
+      const postLogoutRedirect =
+        process.env.OAUTH_LOGOUT_REDIRECT_URI ||
+        `${process.env.OAUTH_LOGIN_REDIRECT_URI.replace("/api/system/oauth/callback", "/login")}`;
+      logoutUrl.searchParams.set("post_logout_redirect_uri", postLogoutRedirect);
+
+      response.redirect(logoutUrl.toString());
+    } catch (error) {
+      console.error("OAuth logout error:", error);
+      response.redirect("/login");
+    }
+  });
 }
 
 module.exports = { systemEndpoints };

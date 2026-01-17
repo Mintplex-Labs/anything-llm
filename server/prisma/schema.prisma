@@ -69,6 +69,10 @@ model users {
   lastUpdatedAt               DateTime                      @default(now())
   dailyMessageLimit           Int?
   bio                         String?                       @default("")
+  oidc_sub                    String?                       @unique
+  oauth_access_token          String?
+  oauth_refresh_token         String?
+  oauth_token_expires_at      DateTime?
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
   embed_configs               embed_configs[]

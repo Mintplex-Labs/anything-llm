@@ -23,6 +23,10 @@ const User = {
     "suspended",
     "dailyMessageLimit",
     "bio",
+    "oidc_sub",
+    "oauth_access_token",
+    "oauth_refresh_token",
+    "oauth_token_expires_at",
   ],
   validations: {
     username: (newValue = "") => {
@@ -69,6 +73,8 @@ const User = {
         return Number(Boolean(value));
       case "dailyMessageLimit":
         return value === null ? null : Number(value);
+      case "oauth_token_expires_at":
+        return value === null ? null : new Date(value);
       default:
         return String(value);
     }

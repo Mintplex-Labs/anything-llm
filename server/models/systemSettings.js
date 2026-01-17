@@ -318,6 +318,15 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // OAuth/OIDC Impersonation Settings
+      // --------------------------------------------------------
+      OAuthEnabled: process.env.MCP_AUTH_MODE === "impersonation",
+      OAuthLoginUrl:
+        process.env.MCP_AUTH_MODE === "impersonation"
+          ? "/api/system/oauth/login"
+          : null,
     };
   },
 

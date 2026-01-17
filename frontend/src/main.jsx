@@ -31,6 +31,15 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
+        path: "/login/oauth/callback",
+        lazy: async () => {
+          const { default: OAuthCallback } = await import(
+            "@/pages/Login/OAuth/callback"
+          );
+          return { element: <OAuthCallback /> };
+        },
+      },
+      {
         path: "/sso/simple",
         element: <SimpleSSOPassthrough />,
       },
