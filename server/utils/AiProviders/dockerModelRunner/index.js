@@ -253,11 +253,29 @@ function parseDockerModelRunnerEndpoint(basePath = null, to = "openai") {
  * @property {string} config?.gguf['*.context_length'] - The context length of the model. will be something like qwen3.context_length
  */
 
+function filterByTask(task = "chat", models = {}) {
+  const possibleEmbed = [{ pattern: /^all-mini/i }, { pattern: /embed/i }];
+  const isEmbedModel = (strTag) =>
+    possibleEmbed.some((p) => p.pattern.test(strTag));
+  const filteredModels = {};
+  for (const [modelName, tags] of Object.entries(models)) {
+    if (task === "chat") {
+      if (isEmbedModel(modelName)) continue;
+      filteredModels[modelName] = tags;
+    } else if (task === "embedding") {
+      if (!isEmbedModel(modelName)) continue;
+      filteredModels[modelName] = tags;
+    }
+  }
+  return filteredModels;
+}
+
 /**
  * Fetch the remote models from the Docker Hub and cache the results.
+ * @param {'chat' | 'embedding'} task - The task to fetch the models for.
  * @returns {Promise<Record<string, {id: string, name: string, size: string, organization: string}[]>>}
  */
-async function fetchRemoteModels() {
+async function fetchRemoteModels(task = "chat") {
   const cachePath = path.resolve(
     DockerModelRunnerLLM.cacheFolder,
     "models.json"
@@ -271,7 +289,10 @@ async function fetchRemoteModels() {
   if (fs.existsSync(cachePath) && fs.existsSync(cachedAtPath)) {
     cacheTime = Number(fs.readFileSync(cachedAtPath, "utf8"));
     if (Date.now() - cacheTime < DockerModelRunnerLLM.cacheTime)
-      return safeJsonParse(fs.readFileSync(cachePath, "utf8"));
+      return filterByTask(
+        task,
+        safeJsonParse(fs.readFileSync(cachePath, "utf8"))
+      );
   }
 
   DockerModelRunnerLLM.slog(`Refreshing remote models from Docker Hub`);
@@ -367,15 +388,16 @@ async function fetchRemoteModels() {
   fs.writeFileSync(cachedAtPath, String(Number(new Date())), {
     encoding: "utf8",
   });
-  return availableRemoteModels;
+  return filterByTask(task, availableRemoteModels);
 }
 
 /**
  * This function will fetch the remote models from the Docker Hub as well
  * as the local models installed on the system.
  * @param {string} basePath - The base path of the Docker Model Runner endpoint.
+ * @param {'chat' | 'embedding'} task - The task to fetch the models for.
  */
-async function getDockerModels(basePath = null) {
+async function getDockerModels(basePath = null, task = "chat") {
   let availableModels = {};
   /** @type {Array<DockerRunnerInstalledModel>} */
   let installedModels = {};
@@ -393,7 +415,7 @@ async function getDockerModels(basePath = null) {
     await fetch(dmrUrl.toString())
       .then((res) => res.json())
       .then((data) => {
-        data?.map((model) => {
+        data?.forEach((model) => {
           const id = model.tags.at(0);
           // eg: ai/qwen3:latest -> qwen3
           const tag =
@@ -411,7 +433,7 @@ async function getDockerModels(basePath = null) {
       });
 
     // Now hit the Docker Hub API to get the remote model namespace and root tags
-    const remoteModels = await fetchRemoteModels();
+    const remoteModels = await fetchRemoteModels(task);
     for (const [modelName, tags] of Object.entries(remoteModels)) {
       availableModels[modelName] = { tags: [] };
       for (const tag of tags) {
