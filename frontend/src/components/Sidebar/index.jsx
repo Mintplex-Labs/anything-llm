@@ -59,8 +59,8 @@ export default function Sidebar() {
         >
           <div className="flex flex-col h-full overflow-x-hidden">
             <div className="flex-grow flex flex-col min-w-[235px]">
-              <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-                <div className="flex flex-col gap-y-2 pb-[60px] gap-y-[14px] overflow-y-scroll no-scroll">
+              <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-auto">
+                <div className="flex flex-col gap-y-2 pb-[60px] gap-y-[14px] overflow-y-auto">
                   <SearchBox user={user} showNewWsModal={showNewWsModal} />
                   <ActiveWorkspaces />
                 </div>
@@ -166,7 +166,7 @@ export function SidebarMobileHeader() {
             {/* Primary Body */}
             <div className="h-full flex flex-col w-full justify-between pt-4 ">
               <div className="h-auto md:sidebar-items">
-                <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[60px]">
+                <div className=" flex flex-col gap-y-4 overflow-y-auto pb-[60px]">
                   <NewWorkspaceButton
                     user={user}
                     showNewWsModal={showNewWsModal}

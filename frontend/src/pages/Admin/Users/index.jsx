@@ -23,25 +23,20 @@ export default function AdminUsers() {
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
-            <div className="items-center flex gap-x-4">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 light:border-theme-sidebar-border border-b-2">
+            <div className="flex items-center justify-between gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
                 Users
               </p>
+              <CTAButton onClick={openModal}>
+                <UserPlus className="h-4 w-4" weight="bold" /> Add user
+              </CTAButton>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
               These are all the accounts which have an account on this instance.
               Removing an account will instantly remove their access to this
               instance.
             </p>
-          </div>
-          <div className="w-full justify-end flex">
-            <CTAButton
-              onClick={openModal}
-              className="mt-3 mr-0 mb-4 md:-mb-6 z-10"
-            >
-              <UserPlus className="h-4 w-4" weight="bold" /> Add user
-            </CTAButton>
           </div>
           <div className="overflow-x-auto">
             <UsersContainer />

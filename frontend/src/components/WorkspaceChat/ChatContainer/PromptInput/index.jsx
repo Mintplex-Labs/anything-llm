@@ -311,7 +311,7 @@ export default function PromptInput({
                   >
                     <PaperPlaneRight
                       color="var(--theme-sidebar-footer-icon-fill)"
-                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
+                      className="w-[22px] h-[22px] pointer-events-none group-disabled:opacity-[25%]"
                       weight="fill"
                     />
                     <span className="sr-only">Send message</span>

@@ -562,6 +562,30 @@ a {
   /* Firefox */
 }
 
+/* Light mode scrollbar colors for default scrollbars */
+.light ::-webkit-scrollbar,
+[data-theme="light"] ::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.light ::-webkit-scrollbar-track,
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb,
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
 .z-99 {
   z-index: 99;
 }

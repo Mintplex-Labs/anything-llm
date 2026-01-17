@@ -105,9 +105,9 @@ export default function SettingsSidebar() {
               </div>
 
               {/* Primary Body */}
-              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
+              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-auto">
                 <div className="h-auto md:sidebar-items">
-                  <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-auto">
                     <SidebarOptions user={user} t={t} />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                     <SupportEmail />
@@ -156,9 +156,9 @@ export default function SettingsSidebar() {
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
-            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-auto">
               <div className="h-auto sidebar-items">
-                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-auto">
                   <SidebarOptions user={user} t={t} />
                   <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                   <SupportEmail />
