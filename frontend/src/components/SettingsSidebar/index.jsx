@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";
 import {
@@ -24,11 +24,14 @@ import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
 import useAppVersion from "@/hooks/useAppVersion";
 
+const SCROLL_STORAGE_KEY = "settings_sidebar_scroll_position";
+
 export default function SettingsSidebar() {
   const { t } = useTranslation();
   const { logo } = useLogo();
   const { user } = useUser();
   const sidebarRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
 
@@ -44,6 +47,41 @@ export default function SettingsSidebar() {
     }
     handleBg();
   }, [showSidebar]);
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    const savedPosition = sessionStorage.getItem(SCROLL_STORAGE_KEY);
+    if (savedPosition && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = parseInt(savedPosition, 10);
+    }
+  }, []);
+
+  // Save scroll position on scroll (debounced)
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      sessionStorage.setItem(
+        SCROLL_STORAGE_KEY,
+        scrollContainerRef.current.scrollTop.toString()
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let timeoutId;
+    const debouncedScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 100);
+    };
+
+    container.addEventListener("scroll", debouncedScroll);
+    return () => {
+      container.removeEventListener("scroll", debouncedScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [handleScroll]);
 
   if (isMobile) {
     return (
@@ -156,7 +194,10 @@ export default function SettingsSidebar() {
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
-            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-auto">
+            <div
+              ref={scrollContainerRef}
+              className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-auto"
+            >
               <div className="h-auto sidebar-items">
                 <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-auto">
                   <SidebarOptions user={user} t={t} />

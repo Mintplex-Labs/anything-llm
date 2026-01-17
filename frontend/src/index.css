@@ -1197,3 +1197,17 @@ does not extend the close button beyond the viewport. */
   -webkit-animation: fadein 0.3s linear forwards;
   animation: fadein 0.3s linear forwards;
 }
+
+/* ===========================================
+   CHAT INPUT FOCUS STYLES
+   Remove browser default blue focus outline/ring
+   Tailwind's focus:outline-none can be overridden by browser defaults
+   =========================================== */
+#primary-prompt-input,
+#primary-prompt-input:focus,
+#primary-prompt-input:focus-visible,
+#primary-prompt-input:active {
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+}
