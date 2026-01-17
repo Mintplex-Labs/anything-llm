@@ -288,7 +288,7 @@ function DockerModelRunnerModelSelection({
       .forEach(([organization, models]) =>
         orderedMap.set(organization, models)
       );
-    
+
     // Sort the models by organization/creator name alphabetically but keep the installed models at the top
     return Object.fromEntries(
       Array.from(installedMap.entries())

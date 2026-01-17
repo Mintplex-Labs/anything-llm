@@ -200,7 +200,6 @@ function ModelRow({
         if (!downloadModel) return;
         setProcessing(true);
         await downloadModel(model.id, fileSize, (percentage) => {
-          console.log("percentage", percentage);
           setDownloadPercentage(percentage);
         });
       } catch {
