@@ -97,7 +97,7 @@ class Provider {
       (def) => def?.name?.toLowerCase() === functionCall.name?.toLowerCase()
     );
     if (!foundFunc || !foundFunc.isMCPTool) return 0;
-    return foundFunc.mcpCooldownMs || DEFAULT_COOLDOWN_MS;
+    return foundFunc.mcpCooldownMs ?? DEFAULT_COOLDOWN_MS;
   }
 
   /**

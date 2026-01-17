@@ -278,7 +278,39 @@ class AnthropicProvider extends Provider {
               "The model tried to call a function with the same arguments as a previous call - it was ignored.",
           });
 
-          return await this.stream(messages, [], eventHandler);
+          // Strip out all tool calling to prevent Anthropic from trying to call the tool again
+          const cleanMessages = [];
+          for (const msg of messages) {
+            if (msg.role === "system") {
+              cleanMessages.push({ role: "system", content: msg.content });
+            } else if (msg.role === "user") {
+              cleanMessages.push({ role: "user", content: msg.content });
+            } else if (msg.role === "assistant") {
+              // Extract text content only from assistant messages
+              const text =
+                typeof msg.content === "string"
+                  ? msg.content
+                  : Array.isArray(msg.content)
+                    ? msg.content.find((c) => c.type === "text")?.text || ""
+                    : "";
+              if (text)
+                cleanMessages.push({ role: "assistant", content: text });
+            } else if (msg.role === "function") {
+              // Convert function results to user messages so Anthropic sees them
+              cleanMessages.push({
+                role: "user",
+                content: `Tool result: ${msg.content}`,
+              });
+            }
+          }
+
+          cleanMessages.push({
+            role: "user",
+            content:
+              "Please provide your final response based on the information above.",
+          });
+
+          return await this.stream(cleanMessages, [], eventHandler);
         } else {
           messages.push({
             role: "assistant",
@@ -404,7 +436,12 @@ class AnthropicProvider extends Provider {
             `Cannot call ${toolCallObj.name} again because ${reason}.`
           );
 
-          return await this.complete(messages, []);
+          this.deduplicator.reset("runs");
+          return {
+            textResponse: "",
+            functionCall: null,
+            cost: 0,
+          };
         } else {
           this.deduplicator.trackRun(toolCallObj.name, toolCallObj.arguments, {
             cooldown: this.isMCPTool(toolCallObj, functions),

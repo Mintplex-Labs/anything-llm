@@ -40,7 +40,7 @@ class Deduplicator {
       .update(JSON.stringify({ key, params }))
       .digest("hex");
     this.#hashes[hash] = Number(new Date());
-    if (options.cooldown)
+    if (options.cooldown && options.cooldownInMs > 0)
       this.startCooldown(key, { cooldownInMs: options.cooldownInMs });
     if (options.markUnique) this.markUnique(key);
   }
@@ -108,7 +108,7 @@ class Deduplicator {
       cooldownInMs: DEFAULT_COOLDOWN_MS,
     }
   ) {
-    const cooldownDelay = parameters.cooldownInMs || DEFAULT_COOLDOWN_MS;
+    const cooldownDelay = parameters.cooldownInMs ?? DEFAULT_COOLDOWN_MS;
     this.log(`Starting cooldown for ${key} for ${cooldownDelay}ms`);
     this.#cooldowns[key] = Number(new Date()) + Number(cooldownDelay);
   }
