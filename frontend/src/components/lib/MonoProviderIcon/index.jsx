@@ -13,7 +13,7 @@ import DeepSeek from "@lobehub/icons/es/DeepSeek/components/Mono";
 import HuggingFace from "@lobehub/icons/es/HuggingFace/components/Mono";
 import Qwen from "@lobehub/icons/es/Qwen/components/Mono";
 import IBM from "@lobehub/icons/es/IBM/components/Mono";
-import Bytedance from "@lobehub/icons/es/Bytedance/components/Mono";
+import Bytedance from "@lobehub/icons/es/ByteDance/components/Mono";
 import Kimi from "@lobehub/icons/es/Kimi/components/Mono";
 import Snowflake from "@lobehub/icons/es/Snowflake/components/Mono";
 
