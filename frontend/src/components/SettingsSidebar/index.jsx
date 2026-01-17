@@ -49,11 +49,16 @@ export default function SettingsSidebar() {
     handleBg();
   }, [showSidebar]);
 
-  // Restore scroll position on route change (useLayoutEffect runs before paint)
+  // Restore scroll position on route change
   useLayoutEffect(() => {
     const savedPosition = sessionStorage.getItem(SCROLL_STORAGE_KEY);
     if (savedPosition && scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = parseInt(savedPosition, 10);
+      // Use requestAnimationFrame to ensure DOM layout is complete
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = parseInt(savedPosition, 10);
+        }
+      });
     }
   }, [location.pathname]);
 
@@ -200,7 +205,7 @@ export default function SettingsSidebar() {
               className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-auto"
             >
               <div className="h-auto sidebar-items">
-                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-auto">
+                <div className="flex flex-col gap-y-2 pb-[60px]">
                   <SidebarOptions user={user} t={t} />
                   <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                   <SupportEmail />
