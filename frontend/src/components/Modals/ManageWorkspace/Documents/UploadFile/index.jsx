@@ -111,7 +111,7 @@ export default function UploadFile({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1">
             {files.map((file) => (
               <FileUploadProgress
                 key={file.uid}

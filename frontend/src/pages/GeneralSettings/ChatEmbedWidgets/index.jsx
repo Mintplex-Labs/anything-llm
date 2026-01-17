@@ -17,7 +17,7 @@ export default function ChatEmbedWidgets() {
         <div className="flex flex-col w-full p-4 mt-10">
           <div
             hidden={showViewModal}
-            className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
+            className="flex flex-col gap-y-[18px] overflow-y-auto"
           >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <p className="text-lg font-medium">Chat Embed</p>
@@ -49,7 +49,7 @@ export default function ChatEmbedWidgets() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className="bg-theme-bg-secondary text-white light:text-theme-text-primary rounded-xl p-4 overflow-y-auto">
                     {selectedView === "configs" ? (
                       <EmbedConfigsView />
                     ) : (
