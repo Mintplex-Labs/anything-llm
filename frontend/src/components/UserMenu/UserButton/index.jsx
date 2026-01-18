@@ -13,6 +13,8 @@ import {
   AUTH_USER,
   LAST_VISITED_WORKSPACE,
   USER_PROMPT_INPUT_MAP,
+  OIDC_ID_TOKEN,
+  OAUTH_ENABLED,
 } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 
@@ -94,11 +96,25 @@ export default function UserButton() {
             </a>
             <button
               onClick={() => {
+                // Check if OAuth was used for login
+                const oauthEnabled = window.localStorage.getItem(OAUTH_ENABLED) === "true";
+                const idTokenHint = window.localStorage.getItem(OIDC_ID_TOKEN);
+
+                // Clear all auth data
                 window.localStorage.removeItem(AUTH_USER);
                 window.localStorage.removeItem(AUTH_TOKEN);
                 window.localStorage.removeItem(AUTH_TIMESTAMP);
                 window.localStorage.removeItem(LAST_VISITED_WORKSPACE);
                 window.localStorage.removeItem(USER_PROMPT_INPUT_MAP);
+                window.localStorage.removeItem(OIDC_ID_TOKEN);
+                window.localStorage.removeItem(OAUTH_ENABLED);
+
+                // If OAuth was enabled, redirect to OIDC logout endpoint
+                if (oauthEnabled && idTokenHint) {
+                  window.location.href = `/api/system/oauth/logout?id_token_hint=${encodeURIComponent(idTokenHint)}`;
+                  return;
+                }
+
                 window.location.replace(paths.home());
               }}
               type="button"

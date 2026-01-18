@@ -1,5 +1,6 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
+import useOIDCAuth from "@/hooks/useOIDCAuth";
 import System from "@/models/system";
 import Appearance from "@/models/appearance";
 import { AUTH_USER } from "@/utils/constants";
@@ -14,6 +15,7 @@ import { safeJsonParse } from "@/utils/request";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+  const { oauthConfig } = useOIDCAuth();
   const { t } = useTranslation();
 
   const handleFileUpload = async (event) => {
@@ -168,6 +170,11 @@ export default function AccountModal({ user, hideModal }) {
                 />
                 <p className="mt-2 text-xs text-white/60 light:text-theme-text-secondary">
                   {t("profile_settings.password_description")}
+                  {oauthConfig.enabled && (
+                    <span className="block mt-1 text-yellow-500/80 light:text-yellow-600">
+                      {t("profile_settings.password_sso_notice")}
+                    </span>
+                  )}
                 </p>
               </div>
               <div>

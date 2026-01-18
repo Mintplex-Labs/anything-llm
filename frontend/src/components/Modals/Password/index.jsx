@@ -10,7 +10,7 @@ import {
 import useLogo from "../../../hooks/useLogo";
 import illustration from "@/media/illustrations/login-illustration.svg";
 
-export default function PasswordModal({ mode = "single" }) {
+export default function PasswordModal({ mode = "single", oauthConfig = null }) {
   const { loginLogo } = useLogo();
   return (
     <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-theme-bg-primary flex flex-col md:flex-row items-center justify-center">
@@ -42,7 +42,7 @@ export default function PasswordModal({ mode = "single" }) {
           } absolute max-h-[65px]`}
           style={{ objectFit: "contain" }}
         />
-        {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
+        {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth oauthConfig={oauthConfig} />}
       </div>
     </div>
   );

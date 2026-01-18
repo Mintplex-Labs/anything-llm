@@ -60,9 +60,10 @@ export default function OAuthCallback() {
 
         // Fetch and store user info
         const userInfo = await System.refreshUser();
-        if (userInfo?.user) {
-          window.localStorage.setItem(AUTH_USER, JSON.stringify(userInfo.user));
+        if (!userInfo?.user) {
+          throw new Error("Failed to fetch user information. Please try again.");
         }
+        window.localStorage.setItem(AUTH_USER, JSON.stringify(userInfo.user));
 
         setReady(true);
       } catch (e) {

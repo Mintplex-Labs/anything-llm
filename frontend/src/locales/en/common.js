@@ -993,6 +993,8 @@ const TRANSLATIONS = {
       "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
+    password_sso_notice:
+      "This password is stored locally but will not override your SSO credentials while single sign-on is active.",
     cancel: "Cancel",
     update_account: "Update Account",
     theme: "Theme Preference",

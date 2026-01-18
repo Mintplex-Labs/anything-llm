@@ -8,6 +8,7 @@ import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import useQuery from "@/hooks/useQuery";
 
 const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   const [username, setUsername] = useState("");
@@ -165,8 +166,12 @@ const ResetPasswordForm = ({ onSubmit }) => {
   );
 };
 
-export default function MultiUserAuth() {
+export default function MultiUserAuth({ oauthConfig = null }) {
   const { t } = useTranslation();
+  const query = useQuery();
+  const oauthError = query?.get("error");
+  const isOAuthMode = oauthConfig?.enabled && oauthConfig?.loginUrl;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
@@ -293,55 +298,94 @@ export default function MultiUserAuth() {
                 </p>
               </div>
               <p className="text-sm text-theme-text-secondary text-center">
-                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
-                {t("login.sign-in.end")}
+                {isOAuthMode
+                  ? "Sign in with your organization account"
+                  : <>{t("login.sign-in.start")} {customAppName || "AnythingLLM"} {t("login.sign-in.end")}</>
+                }
               </p>
             </div>
           </div>
-          <div className="w-full px-4 md:px-12">
-            <div className="w-full flex flex-col gap-y-4">
-              <div className="w-screen md:w-full md:px-0 px-6">
-                <input
-                  name="username"
-                  type="text"
-                  placeholder={t("login.multi-user.placeholder-username")}
-                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
-                  required={true}
-                  autoComplete="off"
-                />
+          {oauthError && (
+            <div className="w-full px-4 md:px-12 mt-4">
+              <div className="bg-red-500/10 border border-red-500 rounded-lg p-3">
+                <p className="text-red-500 text-sm text-center">
+                  {decodeURIComponent(oauthError).replace(/_/g, " ")}
+                </p>
               </div>
-              <div className="w-screen md:w-full md:px-0 px-6">
-                <input
-                  name="password"
-                  type="password"
-                  placeholder={t("login.multi-user.placeholder-password")}
-                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
-                  required={true}
-                  autoComplete="off"
-                />
-              </div>
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
-          </div>
-          <div className="flex items-center md:p-12 px-10 mt-12 md:mt-0 space-x-2 border-gray-600 light:border-gray-300 w-full flex-col gap-y-8">
-            <button
-              disabled={loading}
-              type="submit"
-              className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white light:hover:text-theme-text-primary md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
-            >
-              {loading
-                ? t("login.multi-user.validating")
-                : t("login.multi-user.login")}
-            </button>
-            <button
-              type="button"
-              className="text-white light:text-theme-text-primary text-sm flex gap-x-1 hover:text-primary-button hover:underline"
-              onClick={handleResetPassword}
-            >
-              {t("login.multi-user.forgot-pass")}?
-              <b>{t("login.multi-user.reset")}</b>
-            </button>
-          </div>
+          )}
+          {isOAuthMode ? (
+            <div className="w-full flex justify-center px-4 md:px-12 mt-4">
+              <button
+                type="button"
+                onClick={() => window.location.href = oauthConfig.loginUrl}
+                className="w-full md:w-[300px] py-3 px-4 bg-primary-button text-white font-semibold rounded-lg hover:bg-primary-button/90 transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Sign in with SSO
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="w-full px-4 md:px-12">
+                <div className="w-full flex flex-col gap-y-4">
+                  <div className="w-screen md:w-full md:px-0 px-6">
+                    <input
+                      name="username"
+                      type="text"
+                      placeholder={t("login.multi-user.placeholder-username")}
+                      className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                      required={true}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="w-screen md:w-full md:px-0 px-6">
+                    <input
+                      name="password"
+                      type="password"
+                      placeholder={t("login.multi-user.placeholder-password")}
+                      className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                      required={true}
+                      autoComplete="off"
+                    />
+                  </div>
+                  {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+                </div>
+              </div>
+              <div className="flex items-center md:p-12 px-10 mt-12 md:mt-0 space-x-2 border-gray-600 light:border-gray-300 w-full flex-col gap-y-8">
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white light:hover:text-theme-text-primary md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+                >
+                  {loading
+                    ? t("login.multi-user.validating")
+                    : t("login.multi-user.login")}
+                </button>
+                <button
+                  type="button"
+                  className="text-white light:text-theme-text-primary text-sm flex gap-x-1 hover:text-primary-button hover:underline"
+                  onClick={handleResetPassword}
+                >
+                  {t("login.multi-user.forgot-pass")}?
+                  <b>{t("login.multi-user.reset")}</b>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </form>
 

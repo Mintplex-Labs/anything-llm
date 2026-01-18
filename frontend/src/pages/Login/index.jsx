@@ -6,7 +6,6 @@ import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import useSimpleSSO from "@/hooks/useSimpleSSO";
 import useOIDCAuth from "@/hooks/useOIDCAuth";
-import OIDCLogin from "@/components/OIDCLogin";
 
 /**
  * Login page that handles both single and multi-user login.
@@ -14,7 +13,8 @@ import OIDCLogin from "@/components/OIDCLogin";
  * If Simple SSO is enabled and no login is allowed, the user will be redirected to the SSO login page
  * which may not have a token so the login will fail.
  *
- * If OAuth/OIDC impersonation mode is enabled, the user will see the SSO login button.
+ * If OAuth/OIDC impersonation mode is enabled, the PasswordModal will display an SSO login button
+ * instead of username/password fields.
  *
  * @returns {JSX.Element}
  */
@@ -37,10 +37,5 @@ export default function Login() {
 
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
 
-  // If OAuth/OIDC impersonation mode is enabled, show the SSO login page
-  if (oauthConfig.enabled && oauthConfig.loginUrl) {
-    return <OIDCLogin loginUrl={oauthConfig.loginUrl} />;
-  }
-
-  return <PasswordModal mode={mode} />;
+  return <PasswordModal mode={mode} oauthConfig={oauthConfig} />;
 }
