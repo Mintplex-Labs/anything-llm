@@ -41,8 +41,11 @@ class ContextWindowFinder {
       fs.mkdirSync(this.cacheLocation, { recursive: true });
 
     // If the cache is stale or not found at all, pull the model map from remote
-    if (this.isCacheStale || !fs.existsSync(this.cacheFilePath))
-      this.#pullRemoteModelMap();
+    if (this.isCacheStale || !fs.existsSync(this.cacheFilePath)) {
+      this.#pullRemoteModelMap().catch((err) =>
+        this.log("Background model map pull failed:", err)
+      );
+    }
   }
 
   log(text, ...args) {
@@ -97,31 +100,24 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
   async #pullRemoteModelMap() {
     try {
       this.log("Pulling remote model map...");
-      const remoteContexWindowMap = await fetch(ContextWindowFinder.remoteUrl)
-        .then((res) => {
-          if (res.status !== 200)
-            throw new Error(
-              "Failed to fetch remote model map - non 200 status code"
-            );
-          return res.json();
-        })
-        .then((data) => {
-          fs.writeFileSync(this.cacheFilePath, JSON.stringify(data, null, 2));
-          fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
-          this.log("Remote model map synced and cached");
-          return data;
-        })
-        .catch((error) => {
-          this.log("Error syncing remote model map", error);
-          return null;
-        });
-      if (!remoteContexWindowMap) return null;
+      const response = await fetch(ContextWindowFinder.remoteUrl);
+      if (response.status !== 200) {
+        throw new Error(
+          "Failed to fetch remote model map - non 200 status code"
+        );
+      }
 
-      const modelMap = this.#validateModelMap(
-        this.#formatModelMap(remoteContexWindowMap)
-      );
-      fs.writeFileSync(this.cacheFilePath, JSON.stringify(modelMap, null, 2));
-      fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
+      const data = await response.json();
+      const modelMap = this.#validateModelMap(this.#formatModelMap(data));
+      await Promise.all([
+        fs.promises.writeFile(
+          this.cacheFilePath,
+          JSON.stringify(modelMap, null, 2)
+        ),
+        fs.promises.writeFile(this.cacheFileExpiryPath, Date.now().toString()),
+      ]);
+
+      this.log("Remote model map synced and cached");
       return modelMap;
     } catch (error) {
       this.log("Error syncing remote model map", error);
