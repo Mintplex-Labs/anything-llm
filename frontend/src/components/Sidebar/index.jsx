@@ -59,13 +59,13 @@ export default function Sidebar() {
         >
           <div className="flex flex-col h-full overflow-hidden">
             <div className="flex-grow flex flex-col min-w-[235px] min-h-0">
-              <div className="relative h-[calc(100%-80px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+              <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
                 <div className="flex flex-col gap-y-[14px]">
                   <SearchBox user={user} showNewWsModal={showNewWsModal} />
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+              <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
                 <Footer />
               </div>
             </div>
@@ -134,11 +134,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
-              ? "transition-all opacity-1"
-              : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
+          className={`${showBgOverlay
+            ? "transition-all opacity-1"
+            : "transition-none opacity-0"
+            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
