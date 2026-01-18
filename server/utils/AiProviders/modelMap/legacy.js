@@ -142,5 +142,13 @@ const LEGACY_MODEL_MAP = {
     "DeepSeek-V3": 32_768,
     "DeepSeek-R1": 32_768,
   },
+  n1n: {
+    "gpt-4o": 128000,
+    "gpt-4o-mini": 128000,
+    "deepseek-chat": 128000,
+    "deepseek-reasoner": 128000,
+    "claude-3-5-sonnet-latest": 200000,
+    "claude-3-opus-latest": 200000,
+  },
 };
 module.exports = LEGACY_MODEL_MAP;

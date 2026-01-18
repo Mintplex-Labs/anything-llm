@@ -25,6 +25,7 @@ const ENABLED_PROVIDERS = [
   "bedrock",
   "fireworksai",
   "deepseek",
+  "n1n",
   "ppio",
   "litellm",
   "apipie",

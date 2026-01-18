@@ -214,6 +214,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return new MoonshotAiLLM(embedder, model);
+    case "n1n":
+      const { N1nLLM } = require("../AiProviders/n1n");
+      return new N1nLLM(embedder, model);
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
@@ -387,6 +390,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
+    case "n1n":
+      const { N1nLLM } = require("../AiProviders/n1n");
+      return N1nLLM;
     case "cometapi":
       const { CometApiLLM } = require("../AiProviders/cometapi");
       return CometApiLLM;
@@ -472,6 +478,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
+    case "n1n":
+      return process.env.N1N_MODEL_PREF;
     case "cometapi":
       return process.env.COMETAPI_LLM_MODEL_PREF;
     case "foundry":

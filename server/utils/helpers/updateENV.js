@@ -666,6 +666,15 @@ const KEY_MAPPING = {
     envKey: "DEEPSEEK_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  // n1n Options
+  N1nApiKey: {
+    envKey: "N1N_API_KEY",
+    checks: [isNotEmpty],
+  },
+  N1nModelPref: {
+    envKey: "N1N_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 
   // APIPie Options
   ApipieLLMApiKey: {
@@ -912,6 +921,7 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "n1n",
     "cometapi",
     "foundry",
     "zai",

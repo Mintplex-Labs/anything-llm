@@ -610,6 +610,10 @@ const SystemSettings = {
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
 
+      // n1n API Keys
+      N1nApiKey: !!process.env.N1N_API_KEY,
+      N1nModelPref: process.env.N1N_MODEL_PREF,
+
       // APIPie LLM API Keys
       ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
       ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
@@ -709,7 +713,7 @@ const SystemSettings = {
       try {
         let url = new URL(process.env.SIMPLE_SSO_NO_LOGIN_REDIRECT);
         return url.toString();
-      } catch {}
+      } catch { }
 
       // if the no login redirect is not a valid URL or is not set, return null
       return null;

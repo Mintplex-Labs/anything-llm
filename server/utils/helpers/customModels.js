@@ -40,6 +40,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ppio",
   "dpais",
   "moonshotai",
+  "n1n",
   "foundry",
   "cohere",
   "zai",
@@ -104,6 +105,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDellProAiStudioModels(basePath);
     case "moonshotai":
       return await getMoonshotAiModels(apiKey);
+    case "n1n":
+      return await getN1nModels(apiKey);
     case "foundry":
       return await getFoundryModels(basePath);
     case "cohere":
@@ -767,6 +770,31 @@ async function getMoonshotAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getN1nModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.N1N_API_KEY,
+    baseURL: "https://api.n1n.ai/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      }))
+    )
+    .catch((e) => {
+      console.error(`n1n:listModels`, e.message);
+      return [];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.N1N_API_KEY = apiKey;
   return { models, error: null };
 }
 
