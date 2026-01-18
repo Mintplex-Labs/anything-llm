@@ -12,11 +12,36 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   /**
    * Get all of the active MCP servers as plugins we can load into agents.
    * This will also boot all MCP servers if they have not been started yet.
+   *
+   * In impersonation mode, also includes HTTP/SSE servers that failed to boot
+   * due to missing auth - these can be connected on-demand with user's OAuth token.
+   *
    * @returns {Promise<string[]>} Array of flow names in @@mcp_{name} format
    */
   async activeMCPServers() {
     await this.bootMCPServers();
-    return Object.keys(this.mcps).flatMap((name) => `@@mcp_${name}`);
+
+    // Get successfully booted servers
+    const activeServers = Object.keys(this.mcps);
+
+    // In impersonation mode, also include HTTP/SSE servers that failed to boot
+    // These can be connected on-demand when a user with OAuth token uses them
+    if (process.env.MCP_AUTH_MODE === "impersonation") {
+      for (const config of this.mcpServerConfigs) {
+        const name = config.name;
+        // Skip if already in active servers
+        if (activeServers.includes(name)) continue;
+
+        // Only include HTTP/SSE servers (they support user-context auth)
+        const isHttpServer = config.server.url && !config.server.command;
+        if (isHttpServer) {
+          activeServers.push(name);
+          this.log(`Including ${name} for on-demand OAuth connection (impersonation mode)`);
+        }
+      }
+    }
+
+    return activeServers.flatMap((name) => `@@mcp_${name}`);
   }
 
   /**
@@ -26,7 +51,30 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
   async convertServerToolsToPlugins(name, _aibitat = null) {
-    const mcp = this.mcps[name];
+    let mcp = this.mcps[name];
+    let onDemandClient = null;
+
+    // If server not booted but we're in impersonation mode, try on-demand connection
+    if (!mcp && process.env.MCP_AUTH_MODE === "impersonation") {
+      const config = this.mcpServerConfigs.find((s) => s.name === name);
+      const isHttpServer = config?.server?.url && !config?.server?.command;
+      const userId = _aibitat?.handlerProps?.invocation?.user_id;
+
+      if (isHttpServer && userId) {
+        this.log(`Creating on-demand OAuth connection for ${name} (user: ${userId})`);
+        try {
+          onDemandClient = await this.createHttpTransportWithUserContext(
+            config.server,
+            userId
+          );
+          mcp = onDemandClient;
+        } catch (error) {
+          this.log(`Failed to create on-demand client for ${name}:`, error.message);
+          return null;
+        }
+      }
+    }
+
     if (!mcp) return null;
 
     let tools;
@@ -35,9 +83,24 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       tools = response.tools;
     } catch (error) {
       this.log(`Failed to list tools for MCP server ${name}:`, error);
+      // Clean up on-demand client if it was created
+      if (onDemandClient) {
+        try { onDemandClient.close(); } catch {}
+      }
       return null;
     }
-    if (!tools || !tools.length) return null;
+    if (!tools || !tools.length) {
+      // Clean up on-demand client if no tools
+      if (onDemandClient) {
+        try { onDemandClient.close(); } catch {}
+      }
+      return null;
+    }
+
+    // Clean up on-demand client - actual tool calls will create fresh connections
+    if (onDemandClient) {
+      try { onDemandClient.close(); } catch {}
+    }
 
     const plugins = [];
     for (const tool of tools) {
@@ -163,14 +226,34 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       const config = this.mcpServerConfigs.find((s) => s.name === name);
 
       if (result.status === "failed") {
-        servers.push({
-          name,
-          config: config?.server || null,
-          running: false,
-          tools: [],
-          error: result.message,
-          process: null,
-        });
+        // In impersonation mode, HTTP servers that fail with 401 are actually
+        // available for on-demand use - they just need user OAuth tokens
+        const isImpersonationMode = process.env.MCP_AUTH_MODE === "impersonation";
+        const isHttpServer = config?.server?.url && !config?.server?.command;
+        const is401Error = result.message?.includes("401") ||
+                          result.message?.includes("Unauthorized") ||
+                          result.message?.includes("Missing Authorization");
+
+        if (isImpersonationMode && isHttpServer && is401Error) {
+          servers.push({
+            name,
+            config: config?.server || null,
+            running: false,
+            tools: [],
+            error: "Available for authenticated users (OAuth impersonation mode)",
+            process: null,
+            oauthRequired: true, // Flag for UI to show differently
+          });
+        } else {
+          servers.push({
+            name,
+            config: config?.server || null,
+            running: false,
+            tools: [],
+            error: result.message,
+            process: null,
+          });
+        }
         continue;
       }
 
@@ -202,9 +285,10 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   /**
    * Toggle the MCP server (start or stop)
    * @param {string} name - The name of the MCP server to toggle
+   * @param {number|null} userId - Optional user ID for OAuth impersonation mode
    * @returns {Promise<{success: boolean, error: string | null}>}
    */
-  async toggleServerStatus(name) {
+  async toggleServerStatus(name, userId = null) {
     const server = this.mcpServerConfigs.find((s) => s.name === name);
     if (!server)
       return {
@@ -221,6 +305,47 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: killed ? null : `Failed to kill MCP server: ${name}`,
       };
     } else {
+      // In impersonation mode, HTTP servers need user's OAuth token
+      const isImpersonationMode = process.env.MCP_AUTH_MODE === "impersonation";
+      const isHttpServer = server.server.url && !server.server.command;
+
+      if (isImpersonationMode && isHttpServer) {
+        if (!userId) {
+          return {
+            success: false,
+            error: "OAuth impersonation mode requires authenticated user. Please log in first.",
+          };
+        }
+
+        try {
+          this.log(`Starting ${name} with user OAuth token (impersonation mode)`);
+          const client = await this.createHttpTransportWithUserContext(
+            server.server,
+            userId
+          );
+
+          // Store the client
+          this.mcps[name] = client;
+          this.mcpLoadingResults[name] = { status: "success" };
+
+          // Verify it's working
+          const tools = await client.listTools();
+          this.log(`${name} started successfully with ${tools.tools?.length || 0} tools`);
+
+          return { success: true, error: null };
+        } catch (error) {
+          this.log(`Failed to start ${name} with user OAuth:`, error.message);
+          this.mcpLoadingResults[name] = {
+            status: "failed",
+            message: error.message,
+          };
+          return {
+            success: false,
+            error: error.message,
+          };
+        }
+      }
+
       const startupResult = await this.startMCPServer(name);
       return { success: startupResult.success, error: startupResult.error };
     }

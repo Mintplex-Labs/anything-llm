@@ -58,8 +58,11 @@ function mcpServersEndpoints(app) {
     async (request, response) => {
       try {
         const { name } = reqBody(request);
+        // Pass user ID for OAuth impersonation mode
+        const userId = response.locals.user?.id || null;
         const result = await new MCPCompatibilityLayer().toggleServerStatus(
-          name
+          name,
+          userId
         );
         return response.status(200).json({
           success: result.success,
