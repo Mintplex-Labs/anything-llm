@@ -39,18 +39,23 @@ const DMRUtils = {
             for (const line of lines) {
               if (line.startsWith("data:")) {
                 const data = safeJsonParse(line.slice(5));
-                if (data?.type === "success") {
-                  done = true;
-                  resolve({ success: true });
-                } else if (data?.type === "error" || data?.error) {
-                  done = true;
-                  resolve({
-                    success: false,
-                    error: data?.error || data?.message,
-                  });
-                } else if (data?.type === "progress") {
-                  console.log({ data });
-                  progressCallback(data?.percentage);
+                switch (data?.type) {
+                  case "success":
+                    done = true;
+                    resolve({ success: true });
+                    break;
+                  case "error":
+                    done = true;
+                    resolve({
+                      success: false,
+                      error: data?.error || data?.message,
+                    });
+                    break;
+                  case "progress":
+                    progressCallback(data?.percentage);
+                    break;
+                  default:
+                    break;
                 }
               }
             }

@@ -71,7 +71,6 @@ function dockerModelRunnerUtilsEndpoints(app) {
             if (!line.trim()) continue;
             const decodedLine = decodeHtmlEntities(line);
             const data = safeJsonParse(decodedLine);
-            console.log({ data });
             if (!data) continue;
 
             if (data.type === "error") {
