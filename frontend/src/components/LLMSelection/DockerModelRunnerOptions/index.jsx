@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import ModelTable from "@/components/lib/ModelTable";
 import ModelTableLayout from "@/components/lib/ModelTable/layout";
 import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
+import DMRUtils from "@/models/utils/dmrUtils";
+import showToast from "@/utils/toast";
 
 export default function DockerModelRunnerOptions({ settings }) {
   const {
@@ -237,12 +239,44 @@ function DockerModelRunnerModelSelection({
     setFilteredModels(Array.from(filteredModels.values()));
   }, [searchQuery]);
 
-  function downloadModel(modelId, _fileSize, progressCallback) {
-    const [name, tag] = modelId.split(":");
+  async function downloadModel(modelId, fileSize, progressCallback) {
+    try {
+      if (
+        !window.confirm(
+          `Are you sure you want to download this model? It is ${fileSize} in size and may take a while to download.`
+        )
+      )
+        return;
+      const { success, error } = await DMRUtils.downloadModel(
+        modelId,
+        basePath,
+        progressCallback
+      );
+      if (!success)
+        throw new Error(
+          error || "An error occurred while downloading the model"
+        );
+      progressCallback(100);
+      handleSetActiveModel(modelId);
 
-    // Open the model in the Docker Hub (via browser since they may not be installed locally)
-    window.open(`https://hub.docker.com/layers/${name}/${tag}`, "_blank");
-    progressCallback(100);
+      const existingModels = [...customModels];
+      const newModel = existingModels.find((model) => model.id === modelId);
+      if (newModel) {
+        newModel.downloaded = true;
+        setCustomModels(existingModels);
+        setFilteredModels(existingModels);
+        setSearchQuery("");
+      }
+    } catch (e) {
+      console.error("Error downloading model:", e);
+      showToast(
+        e.message || "An error occurred while downloading the model",
+        "error",
+        { clear: true }
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   function groupModelsByAlias(models) {
