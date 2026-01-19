@@ -21,6 +21,11 @@ function utilEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  const {
+    dockerModelRunnerUtilsEndpoints,
+  } = require("./utils/dockerModelRunnerUtils");
+  dockerModelRunnerUtilsEndpoints(app);
 }
 
 function getGitVersion() {
