@@ -30,14 +30,14 @@ function chatEndpoints(app) {
         const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
 
-        if (!message?.length) {
+        if (typeof message !== "string" || message.trim().length === 0) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: !message?.length ? "Message is empty." : null,
+            error: "Message is empty.",
           });
           return;
         }
@@ -117,14 +117,14 @@ function chatEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        if (!message?.length) {
+        if (typeof message !== "string" || message.trim().length === 0) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: !message?.length ? "Message is empty." : null,
+            error: "Message is empty.",
           });
           return;
         }

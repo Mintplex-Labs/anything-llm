@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync, spawnSync } = require("child_process");
-
+const { patchShellEnvironmentPath } = require("../../shell");
 /**
  * Custom FFMPEG wrapper class for audio file conversion.
  * Replaces deprecated fluent-ffmpeg package.
@@ -27,20 +27,12 @@ class FFMPEGWrapper {
    * Locates ffmpeg binary.
    * Uses fix-path on non-Windows platforms to ensure we can find ffmpeg.
    *
-   * @returns {string} Path to ffmpeg binary
+   * @returns {Promise<string>} Path to ffmpeg binary
    * @throws {Error}
    */
-  get ffmpegPath() {
+  async ffmpegPath() {
     if (this._ffmpegPath) return this._ffmpegPath;
-
-    if (process.platform !== "win32") {
-      try {
-        const fixPath = require("fix-path");
-        fixPath();
-      } catch (error) {
-        this.log("Could not load fix-path, using system PATH");
-      }
-    }
+    await patchShellEnvironmentPath();
 
     try {
       const which = process.platform === "win32" ? "where" : "which";
@@ -83,10 +75,10 @@ class FFMPEGWrapper {
    *
    * @param {string} inputPath - Input path for audio file (any format supported by ffmpeg)
    * @param {string} outputPath - Output path for converted file
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    * @throws {Error} If ffmpeg binary cannot be found or conversion fails
    */
-  convertAudioToWav(inputPath, outputPath) {
+  async convertAudioToWav(inputPath, outputPath) {
     if (!fs.existsSync(inputPath))
       throw new Error(`Input file ${inputPath} does not exist.`);
     const outputDir = path.dirname(outputPath);
@@ -95,7 +87,7 @@ class FFMPEGWrapper {
     this.log(`Converting ${path.basename(inputPath)} to WAV format...`);
     // Convert to 16k hz mono 32f
     const result = spawnSync(
-      this.ffmpegPath,
+      await this.ffmpegPath(),
       [
         "-i",
         inputPath,
