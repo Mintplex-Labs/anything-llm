@@ -22,6 +22,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import { isMac } from "@/utils/keyboardShortcuts";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -37,7 +38,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   // Keyboard shortcuts for scrolling chat history (Ctrl/Cmd + Up/Down)
   useEffect(() => {
     function handleScrollShortcuts(event) {
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
       const modifierPressed = isMac ? event.metaKey : event.ctrlKey;
 
       if (!modifierPressed || !chatHistoryRef.current) return;
