@@ -60,16 +60,6 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
-  async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
-    );
-  }
-
   async streamingFunctionCall(
     messages,
     functions,
