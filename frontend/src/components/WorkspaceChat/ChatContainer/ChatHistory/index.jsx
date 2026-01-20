@@ -25,7 +25,7 @@ import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-const ChatHistory = forwardRef(function(
+export default forwardRef(function(
   {
     history = [],
     workspace,
@@ -281,8 +281,6 @@ const ChatHistory = forwardRef(function(
     </div>
   );
 });
-
-export default ChatHistory;
 
 const getLastMessageInfo = (history) => {
   const lastMessage = history?.[history.length - 1] || {};
