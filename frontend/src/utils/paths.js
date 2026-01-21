@@ -229,4 +229,10 @@ export default {
       manage: () => `/settings/beta-features/live-document-sync/manage`,
     },
   },
+
+  automations: {
+    category: (categorySlug) => {
+      return `/automations/${categorySlug}`;
+    },
+  },
 };

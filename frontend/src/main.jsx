@@ -62,6 +62,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/automations/:categorySlug",
+        lazy: async () => {
+          const { default: AutomationDashboard } = await import(
+            "@/pages/AutomationDashboard"
+          );
+          return { element: <PrivateRoute Component={AutomationDashboard} /> };
+        },
+      },
+      {
         path: "/accept-invite/:code",
         lazy: async () => {
           const { default: InvitePage } = await import("@/pages/Invite");
