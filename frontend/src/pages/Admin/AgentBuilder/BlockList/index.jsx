@@ -11,6 +11,7 @@ import {
   BracketsCurly,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import Toggle from "@/components/lib/Toggle";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
 import WebsiteNode from "../nodes/WebsiteNode";
@@ -183,21 +184,16 @@ export default function BlockList({
                 This will prevent any further tool calls from being executed.
               </p>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
-              <input
-                type="checkbox"
-                checked={props.config.directOutput || false}
-                onChange={(e) =>
-                  props.onConfigChange({
-                    ...props.config,
-                    directOutput: e.target.checked,
-                  })
-                }
-                className="peer sr-only"
-                aria-label="Toggle direct output"
-              />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-            </label>
+            <Toggle
+              size="lg"
+              enabled={props.config.directOutput || false}
+              onChange={(checked) =>
+                props.onConfigChange({
+                  ...props.config,
+                  directOutput: checked,
+                })
+              }
+            />
           </div>
         </div>
       );

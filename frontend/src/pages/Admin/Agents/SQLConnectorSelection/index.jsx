@@ -5,6 +5,7 @@ import NewSQLConnection from "./NewConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
 import Admin from "@/models/admin";
+import Toggle from "@/components/lib/Toggle";
 
 export default function AgentSQLConnectorSelection({
   skill,
@@ -36,28 +37,25 @@ export default function AgentSQLConnectorSelection({
     <>
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
-          <div className="flex items-center gap-x-2">
-            <Database
-              size={24}
-              color="var(--theme-text-primary)"
-              weight="bold"
-            />
-            <label
-              htmlFor="name"
-              className="text-theme-text-primary text-md font-bold"
-            >
-              SQL Agent
-            </label>
-            <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
-              <input
-                type="checkbox"
-                className="peer sr-only"
-                checked={enabled}
-                onChange={() => toggleSkill(skill)}
+          <div className="flex w-full justify-between items-center">
+            <div className="flex items-center gap-x-2">
+              <Database
+                size={24}
+                color="var(--theme-text-primary)"
+                weight="bold"
               />
-              <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-              <span className="ml-3 text-sm font-medium"></span>
-            </label>
+              <label
+                htmlFor="name"
+                className="text-theme-text-primary text-md font-bold"
+              >
+                SQL Agent
+              </label>
+            </div>
+            <Toggle
+              size="lg"
+              enabled={enabled}
+              onChange={() => toggleSkill(skill)}
+            />
           </div>
           <img
             src={SQLAgentImage}

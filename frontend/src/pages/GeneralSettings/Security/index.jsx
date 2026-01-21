@@ -8,6 +8,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import Toggle from "@/components/lib/Toggle";
 
 export default function GeneralSecurity() {
   const { t } = useTranslation();
@@ -126,19 +127,13 @@ function MultiUserMode() {
                       ? t("security.multiuser.enable.is-enable")
                       : t("security.multiuser.enable.enable")}
                   </label>
-
-                  <label className="relative inline-flex cursor-pointer items-center">
-                    <input
-                      type="checkbox"
-                      onClick={() => setUseMultiUserMode(!useMultiUserMode)}
-                      defaultChecked={useMultiUserMode}
-                      className="peer sr-only pointer-events-none"
+                  {!multiUserModeEnabled && (
+                    <Toggle
+                      size="lg"
+                      enabled={useMultiUserMode}
+                      onChange={() => setUseMultiUserMode(!useMultiUserMode)}
                     />
-                    <div
-                      hidden={multiUserModeEnabled}
-                      className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"
-                    />
-                  </label>
+                  )}
                 </div>
                 {useMultiUserMode && (
                   <div className="w-full flex flex-col gap-y-2 my-5">
@@ -301,16 +296,11 @@ function PasswordProtection() {
                   <label className="text-white text-sm font-semibold block mb-3">
                     {t("security.password.title")}
                   </label>
-
-                  <label className="relative inline-flex cursor-pointer items-center">
-                    <input
-                      type="checkbox"
-                      onClick={() => setUsePassword(!usePassword)}
-                      defaultChecked={usePassword}
-                      className="peer sr-only pointer-events-none"
-                    />
-                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent" />
-                  </label>
+                  <Toggle
+                    size="lg"
+                    enabled={usePassword}
+                    onChange={() => setUsePassword(!usePassword)}
+                  />
                 </div>
                 {usePassword && (
                   <div className="w-full flex flex-col gap-y-2 my-5">

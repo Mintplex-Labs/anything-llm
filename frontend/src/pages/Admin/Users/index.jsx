@@ -11,6 +11,7 @@ import NewUserModal from "./NewUserModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import Toggle from "@/components/lib/Toggle";
 
 export default function AdminUsers() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -152,20 +153,16 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
           <h2 className="text-base leading-6 font-bold text-white">
             Limit messages per day
           </h2>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              checked={enabled}
-              onChange={(e) => {
-                updateState((prev) => ({
-                  ...prev,
-                  enabled: e.target.checked,
-                }));
-              }}
-              className="peer sr-only"
-            />
-            <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-          </label>
+          <Toggle
+            size="lg"
+            enabled={enabled}
+            onChange={(checked) => {
+              updateState((prev) => ({
+                ...prev,
+                enabled: checked,
+              }));
+            }}
+          />
         </div>
         <p className="text-xs leading-[18px] font-base text-white/60">
           Restrict this user to a number of successful queries or chats within a
