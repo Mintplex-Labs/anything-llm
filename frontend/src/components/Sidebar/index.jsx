@@ -4,6 +4,7 @@ import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
+import ActiveAutomations from "./ActiveAutomations";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import Footer from "../Footer";
@@ -63,6 +64,16 @@ export default function Sidebar() {
                 <div className="flex flex-col gap-y-2 pb-[60px] gap-y-[14px] overflow-y-scroll no-scroll">
                   <SearchBox user={user} showNewWsModal={showNewWsModal} />
                   <ActiveWorkspaces />
+
+                  {/* Automations Section */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2 px-2">
+                      <h3 className="text-xs font-semibold text-theme-text-secondary uppercase tracking-wider">
+                        Automations
+                      </h3>
+                    </div>
+                    <ActiveAutomations />
+                  </div>
                 </div>
               </div>
               <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
@@ -172,6 +183,16 @@ export function SidebarMobileHeader() {
                     showNewWsModal={showNewWsModal}
                   />
                   <ActiveWorkspaces />
+
+                  {/* Automations Section */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2 px-2">
+                      <h3 className="text-xs font-semibold text-theme-text-secondary uppercase tracking-wider">
+                        Automations
+                      </h3>
+                    </div>
+                    <ActiveAutomations />
+                  </div>
                 </div>
               </div>
               <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
@@ -216,6 +237,12 @@ function WorkspaceAndThreadTooltips() {
       />
       <Tooltip
         id="workspace-thread-name"
+        place="right"
+        delayShow={800}
+        className="tooltip !text-xs z-99"
+      />
+      <Tooltip
+        id="category-name"
         place="right"
         delayShow={800}
         className="tooltip !text-xs z-99"
