@@ -46,7 +46,8 @@ const modelPatterns = [
   { pattern: /^claude-/i, icon: Anthropic },
   { pattern: /^gemini-/i, icon: Gemini },
   { pattern: /gemma/i, icon: Gemma },
-  { pattern: /^llama/i, icon: Meta },
+  { pattern: /llama/i, icon: Meta },
+  { pattern: /^meta/i, icon: Meta },
   {
     pattern: /^(mistral|devstral|mixtral|magistral|codestral|ministral)/i,
     icon: Mistral,
@@ -80,6 +81,8 @@ function findIconByModelName(modelName) {
  * @param {string} props.provider - The provider key (for exact match) or model name (for pattern match).
  * @param {('exact'|'pattern')} props.match - Match mode: 'exact' for provider key, 'pattern' for model name matching.
  * @param {number} props.size - The size of the icon.
+ * @param {string} props.className - The class name of the icon.
+ * @param {string} props.fallbackIconKey - The key of the fallback icon to use if no icon is found.
  * @returns {React.ReactNode}
  */
 export default function MonoProviderIcon({
@@ -87,11 +90,14 @@ export default function MonoProviderIcon({
   match = "exact",
   size = 24,
   className = "",
+  fallbackIconKey = null,
 }) {
   let Icon = null;
 
   if (match === "exact") Icon = providerIcons[provider?.toLowerCase()];
   else if (match === "pattern") Icon = findIconByModelName(provider);
+  if (!Icon && fallbackIconKey && providerIcons[fallbackIconKey])
+    Icon = providerIcons[fallbackIconKey];
   if (!Icon) return null;
   return <Icon size={size} className={className} />;
 }
