@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
+import { safeJsonParse } from "@/utils/request";
 
 export default function MenuOption({
   btnText,
@@ -130,7 +131,7 @@ function useIsExpanded({
     if (hasVisibleChildren) {
       const storedValue = localStorage.getItem(storageKey);
       if (storedValue !== null) {
-        return JSON.parse(storedValue);
+        return safeJsonParse(storedValue, false);
       }
       return childOptions.some((child) => child.href === location);
     }

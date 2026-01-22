@@ -71,7 +71,6 @@ export default function ExploreFeatures() {
           )}
           onPrimaryAction={chatWithAgent}
           onSecondaryAction={buildAgentFlow}
-          isNew={true}
         />
         <FeatureCard
           title={t("main-page.exploreMore.features.slashCommands.title")}
@@ -101,7 +100,6 @@ export default function ExploreFeatures() {
           )}
           onPrimaryAction={setSystemPrompt}
           onSecondaryAction={managePromptVariables}
-          isNew={true}
         />
       </div>
     </div>

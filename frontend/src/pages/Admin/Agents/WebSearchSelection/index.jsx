@@ -53,8 +53,7 @@ const SEARCH_PROVIDERS = [
     value: "google-search-engine",
     logo: GoogleSearchIcon,
     options: (settings) => <GoogleSearchOptions settings={settings} />,
-    description:
-      "Web search powered by a custom Google Search Engine. Free for 100 queries per day.",
+    description: "Web search powered by a custom Google Search Engine.",
   },
   {
     name: "SerpApi",

@@ -305,13 +305,15 @@ class OllamaAILLM {
         outputTps:
           result.output.usage.completion_tokens / result.output.usage.duration,
         duration: result.output.usage.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.client.chat({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
@@ -326,8 +328,9 @@ class OllamaAILLM {
         },
       }),
       messages,
-      false
-    ).catch((e) => {
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    }).catch((e) => {
       throw this.#errorHandler(e);
     });
     return measuredStreamRequest;

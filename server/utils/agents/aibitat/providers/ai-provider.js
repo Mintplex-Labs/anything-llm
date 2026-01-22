@@ -13,10 +13,14 @@
 const { v4 } = require("uuid");
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
+const { ChatCohere } = require("@langchain/cohere");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const {
+  parseDockerModelRunnerEndpoint,
+} = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const {
   SystemPromptVariables,
@@ -239,6 +243,11 @@ class Provider {
           apiKey: process.env.GITEE_AI_API_KEY ?? null,
           ...config,
         });
+      case "cohere":
+        return new ChatCohere({
+          apiKey: process.env.COHERE_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -307,7 +316,16 @@ class Provider {
           ...config,
         });
       }
-
+      case "docker-model-runner":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseDockerModelRunnerEndpoint(
+              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
+            ),
+          },
+          apiKey: null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }
