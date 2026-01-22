@@ -1,6 +1,7 @@
 **/server/utils/agents/aibitat/example/**
 **/server/storage/documents/**
 **/server/storage/vector-cache/**
+**/server/storage/models/**
 **/server/storage/*.db
 **/server/storage/lancedb
 **/collector/hotdir/**

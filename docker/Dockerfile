@@ -177,6 +177,23 @@ ENV DEPLOYMENT_VERSION=1.10.0
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
+# Install ollama (CPU-only mode) so we can use it in the container
+USER root
+COPY ./docker/ollama.sh /usr/local/bin/ollama.sh
+RUN apt-get update && \
+    apt-get install -yq --no-install-recommends zstd && \
+    chmod +x /usr/local/bin/ollama.sh && \
+    /usr/local/bin/ollama.sh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Ollama user needs write access to the models directory
+    # ref: https://docs.ollama.com/faq#where-are-models-stored
+    # sudo chown -R ollama:ollama
+    mkdir -p /app/server/storage/models && \
+    chown -R ollama:ollama /app/server/storage/models && \
+    rm -rf /root/.local/share/ollama/models
+
+USER anythingllm
 # Run the server
 # CMD ["sh", "-c", "tail -f /dev/null"] # For development: keep container open
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]

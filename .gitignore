@@ -10,3 +10,6 @@ aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
 .idea
+
+**/server/storage/models/blobs
+**/server/storage/models/manifests

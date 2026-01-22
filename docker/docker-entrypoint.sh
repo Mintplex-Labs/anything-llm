@@ -16,6 +16,14 @@ if [ -z "$STORAGE_DIR" ]; then
     echo "================================================================"
 fi
 
+# Run ollama server as background process
+# Use a non-standard port to avoid conflicts with the host system
+# Bind to 0.0.0.0 to allow access via Docker port forwarding
+# todo: bind to 127.100.0.1:7132 to avoid conflicts with the host system
+OLLAMA_MODELS="/app/server/storage/models" \
+OLLAMA_HOST="0.0.0.0:7132" \
+ollama serve &
+
 {
   cd /app/server/ &&
     # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)
