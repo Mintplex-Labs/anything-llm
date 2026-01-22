@@ -173,19 +173,12 @@ export default function BlockList({
       return (
         <div className="space-y-4">
           {renderBlockConfigContent(block, props)}
-          <div className="flex justify-between items-center pt-4 border-t border-white/10">
-            <div>
-              <label className="block text-sm font-medium text-theme-text-primary">
-                Direct Output
-              </label>
-              <p className="text-xs text-theme-text-secondary">
-                The output of this block will be returned directly to the chat.
-                <br />
-                This will prevent any further tool calls from being executed.
-              </p>
-            </div>
+          <div className="pt-4 border-t border-white/10">
             <Toggle
-              size="lg"
+              size="md"
+              variant="horizontal"
+              label="Direct Output"
+              description="The output of this block will be returned directly to the chat. This will prevent any further tool calls from being executed."
               enabled={props.config.directOutput || false}
               onChange={(checked) =>
                 props.onConfigChange({

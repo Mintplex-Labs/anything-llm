@@ -29,18 +29,15 @@ export default function AutoSubmit() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.chat.auto_submit.title")}
-      </p>
-      <p className="text-xs text-white/60">
-        {t("customization.chat.auto_submit.description")}
-      </p>
+    <div className="my-4">
       <Toggle
-        size="lg"
+        size="md"
+        variant="horizontal"
         enabled={autoSubmitSttInput}
         onChange={handleChange}
         disabled={saving}
+        label={t("customization.chat.auto_submit.title")}
+        description={t("customization.chat.auto_submit.description")}
       />
     </div>
   );

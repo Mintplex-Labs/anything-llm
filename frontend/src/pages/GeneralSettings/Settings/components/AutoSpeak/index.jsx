@@ -32,18 +32,15 @@ export default function AutoSpeak() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.chat.auto_speak.title")}
-      </p>
-      <p className="text-xs text-white/60">
-        {t("customization.chat.auto_speak.description")}
-      </p>
+    <div className="my-4">
       <Toggle
-        size="lg"
+        size="md"
+        variant="horizontal"
         enabled={autoPlayAssistantTtsResponse}
         onChange={handleChange}
         disabled={saving}
+        label={t("customization.chat.auto_speak.title")}
+        description={t("customization.chat.auto_speak.description")}
       />
     </div>
   );

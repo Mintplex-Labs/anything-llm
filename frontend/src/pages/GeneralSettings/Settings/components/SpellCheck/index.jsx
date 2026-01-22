@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
 import Toggle from "@/components/lib/Toggle";
@@ -23,18 +23,15 @@ export default function SpellCheck() {
   };
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.chat.spellcheck.title")}
-      </p>
-      <p className="text-xs text-white/60">
-        {t("customization.chat.spellcheck.description")}
-      </p>
+    <div className="my-4">
       <Toggle
-        size="lg"
+        size="md"
+        variant="horizontal"
         enabled={enableSpellCheck}
         onChange={handleChange}
         disabled={saving}
+        label={t("customization.chat.spellcheck.title")}
+        description={t("customization.chat.spellcheck.description")}
       />
     </div>
   );

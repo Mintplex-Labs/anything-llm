@@ -129,16 +129,18 @@ export default function GitlabOptions() {
                   </p>
                 </div>
                 <div className="flex items-center gap-x-2 mb-3">
-                  <Toggle name="fetchIssues" size="md" />
-                  <span className="text-sm font-medium text-white">
-                    {t("connectors.gitlab.fetch_issues")}
-                  </span>
+                  <Toggle
+                    name="fetchIssues"
+                    size="md"
+                    label={t("connectors.gitlab.fetch_issues")}
+                  />
                 </div>
                 <div className="flex items-center gap-x-2">
-                  <Toggle name="fetchWikis" size="md" />
-                  <span className="text-sm font-medium text-white">
-                    Fetch Wikis as Documents
-                  </span>
+                  <Toggle
+                    name="fetchWikis"
+                    size="md"
+                    label="Fetch Wikis as Documents"
+                  />
                 </div>
               </div>
               <GitLabBranchSelection

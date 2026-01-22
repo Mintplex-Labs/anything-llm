@@ -29,21 +29,16 @@ export default function ChatRenderHTML() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.items.render-html.title")}
-      </p>
-      <p className="text-xs text-white/60 w-1/2 whitespace-pre-line">
-        {t("customization.items.render-html.description")}
-      </p>
-      <div className="pt-1">
-        <Toggle
-          size="lg"
-          enabled={renderHTML}
-          onChange={handleChange}
-          disabled={saving}
-        />
-      </div>
+    <div className="my-4">
+      <Toggle
+        size="md"
+        variant="horizontal"
+        enabled={renderHTML}
+        onChange={handleChange}
+        disabled={saving}
+        label={t("customization.items.render-html.title")}
+        description={t("customization.items.render-html.description")}
+      />
     </div>
   );
 }

@@ -344,19 +344,14 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
   const [status, setStatus] = useState(defaultValue ?? false);
 
   return (
-    <div>
-      <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
-          {title}
-        </label>
-        <p className="text-theme-text-secondary text-xs">{hint}</p>
-      </div>
-      <Toggle
-        name={name}
-        size="lg"
-        enabled={status}
-        onChange={() => setStatus(!status)}
-      />
-    </div>
+    <Toggle
+      name={name}
+      size="md"
+      variant="horizontal"
+      label={title}
+      description={hint}
+      enabled={status}
+      onChange={() => setStatus(!status)}
+    />
   );
 };

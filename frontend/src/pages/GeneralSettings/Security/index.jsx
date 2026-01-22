@@ -121,20 +121,19 @@ function MultiUserMode() {
             <div className="flex items-start justify-between px-6 py-4"></div>
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
-                <div className="">
-                  <label className="text-white text-sm font-semibold block mb-3">
-                    {multiUserModeEnabled
-                      ? t("security.multiuser.enable.is-enable")
-                      : t("security.multiuser.enable.enable")}
-                  </label>
-                  {!multiUserModeEnabled && (
-                    <Toggle
-                      size="lg"
-                      enabled={useMultiUserMode}
-                      onChange={() => setUseMultiUserMode(!useMultiUserMode)}
-                    />
-                  )}
-                </div>
+                {multiUserModeEnabled ? (
+                  <p className="text-white text-sm font-semibold">
+                    {t("security.multiuser.enable.is-enable")}
+                  </p>
+                ) : (
+                  <Toggle
+                    size="lg"
+                    className="mb-4"
+                    label={t("security.multiuser.enable.enable")}
+                    enabled={useMultiUserMode}
+                    onChange={() => setUseMultiUserMode(!useMultiUserMode)}
+                  />
+                )}
                 {useMultiUserMode && (
                   <div className="w-full flex flex-col gap-y-2 my-5">
                     <div className="w-80">
@@ -292,16 +291,13 @@ function PasswordProtection() {
             <div className="flex items-start justify-between px-6 py-4"></div>
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
-                <div className="">
-                  <label className="text-white text-sm font-semibold block mb-3">
-                    {t("security.password.title")}
-                  </label>
-                  <Toggle
-                    size="lg"
-                    enabled={usePassword}
-                    onChange={() => setUsePassword(!usePassword)}
-                  />
-                </div>
+                <Toggle
+                  size="lg"
+                  className="mb-4"
+                  label={t("security.password.title")}
+                  enabled={usePassword}
+                  onChange={() => setUsePassword(!usePassword)}
+                />
                 {usePassword && (
                   <div className="w-full flex flex-col gap-y-2 my-5">
                     <div className="mt-4 w-80">

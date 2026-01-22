@@ -148,27 +148,19 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
   if (role === "admin") return null;
   return (
     <div className="mt-4 mb-8">
-      <div className="flex flex-col gap-y-1">
-        <div className="flex items-center gap-x-2">
-          <h2 className="text-base leading-6 font-bold text-white">
-            Limit messages per day
-          </h2>
-          <Toggle
-            size="lg"
-            enabled={enabled}
-            onChange={(checked) => {
-              updateState((prev) => ({
-                ...prev,
-                enabled: checked,
-              }));
-            }}
-          />
-        </div>
-        <p className="text-xs leading-[18px] font-base text-white/60">
-          Restrict this user to a number of successful queries or chats within a
-          24 hour window.
-        </p>
-      </div>
+      <Toggle
+        size="md"
+        variant="horizontal"
+        label="Limit messages per day"
+        description="Restrict this user to a number of successful queries or chats within a 24 hour window."
+        enabled={enabled}
+        onChange={(checked) => {
+          updateState((prev) => ({
+            ...prev,
+            enabled: checked,
+          }));
+        }}
+      />
       {enabled && (
         <div className="mt-4">
           <label className="text-white text-sm font-semibold block mb-4">

@@ -81,11 +81,10 @@ function TelemetryLogs({ settings }) {
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
-              <label className="mb-2.5 block font-medium text-theme-text-primary">
-                {t("privacy.anonymous")}
-              </label>
               <Toggle
                 size="lg"
+                className="mb-4"
+                label={t("privacy.anonymous")}
                 enabled={telemetry}
                 onChange={toggleTelemetry}
               />
