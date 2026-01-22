@@ -102,6 +102,7 @@ const TRANSLATIONS = {
     interface: "Interface",
     branding: "Personnalisation",
     chat: "Chat",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

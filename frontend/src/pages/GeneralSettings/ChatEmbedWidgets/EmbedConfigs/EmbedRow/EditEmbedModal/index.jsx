@@ -10,6 +10,7 @@ import {
 } from "../../NewEmbedModal";
 import Embed from "@/models/embed";
 import showToast from "@/utils/toast";
+import { safeJsonParse } from "@/utils/request";
 
 export default function EditEmbedModal({ embed, closeModal }) {
   const [error, setError] = useState(null);
@@ -53,9 +54,7 @@ export default function EditEmbedModal({ embed, closeModal }) {
               <ChatModeSelection defaultValue={embed.chat_mode} />
               <PermittedDomains
                 defaultValue={
-                  embed.allowlist_domains
-                    ? JSON.parse(embed.allowlist_domains)
-                    : []
+                  safeJsonParse(embed.allowlist_domains, null) || []
                 }
               />
               <NumberInput

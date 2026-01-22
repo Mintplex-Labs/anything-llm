@@ -17,7 +17,7 @@ export function ChecklistItem({ id, title, action, onAction, icon: Icon }) {
       const shouldComplete = await onAction();
       if (shouldComplete) {
         const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-        const completedItems = stored ? JSON.parse(stored) : {};
+        const completedItems = safeJsonParse(stored, {});
         completedItems[id] = true;
         window.localStorage.setItem(
           CHECKLIST_STORAGE_KEY,

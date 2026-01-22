@@ -25,17 +25,9 @@ class FoundryLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    FoundryLLM.cacheContextWindows(true).then(() => {
-      this.limits = {
-        history: this.promptWindowLimit() * 0.15,
-        system: this.promptWindowLimit() * 0.15,
-        user: this.promptWindowLimit() * 0.7,
-      };
-
-      this.#log(
-        `Loaded with model: ${this.model} with context window: ${this.promptWindowLimit()}`
-      );
-    });
+    this.limits = null;
+    FoundryLLM.cacheContextWindows(true);
+    this.#log(`Loaded with model: ${this.model}`);
   }
 
   static #slog(text, ...args) {
@@ -44,6 +36,16 @@ class FoundryLLM {
 
   #log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await FoundryLLM.cacheContextWindows();
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
   #appendContext(contextTexts = []) {
@@ -116,6 +118,13 @@ class FoundryLLM {
   }
 
   static promptWindowLimit(modelName) {
+    if (Object.keys(FoundryLLM.modelContextWindows).length === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return process.env.FOUNDRY_MODEL_TOKEN_LIMIT || 4096;
+    }
+
     let userDefinedLimit = null;
     const systemDefinedLimit =
       Number(this.modelContextWindows[modelName]) || 4096;
@@ -224,6 +233,8 @@ class FoundryLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -234,16 +245,18 @@ class FoundryLLM {
         `Foundry chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
         max_completion_tokens: this.promptWindowLimit(),
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
     return measuredStreamRequest;
   }
 
@@ -260,6 +273,7 @@ class FoundryLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

@@ -101,6 +101,7 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentaalsed funktsioonid",
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

@@ -7,10 +7,4 @@ export const configurableFeatures = {
     component: LiveSyncToggle,
     key: "experimental_live_file_sync",
   },
-  experimental_mobile_connections: {
-    title: "AnythingLLM Mobile",
-    href: paths.settings.mobileConnections(),
-    key: "experimental_mobile_connections",
-    autoEnabled: true,
-  },
 };

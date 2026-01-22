@@ -3,6 +3,7 @@ const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { TextSplitter } = require("../../TextSplitter");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
 /*
  Embedding Table Schema (table name defined by user)
@@ -13,15 +14,40 @@ const { sourceIdentifier } = require("../../chats");
  - created_at: TIMESTAMP
 */
 
-const PGVector = {
-  name: "PGVector",
-  connectionTimeout: 30_000,
+class PGVector extends VectorDatabase {
+  constructor() {
+    super();
+  }
+
+  get name() {
+    return "PGVector";
+  }
+
+  connectionTimeout = 30_000;
+  // Possible for this to be a user-configurable option in the future.
+  // Will require a handler per operator to ensure scores are normalized.
+  operator = {
+    l2: "<->",
+    innerProduct: "<#>",
+    cosine: "<=>",
+    l1: "<+>",
+    hamming: "<~>",
+    jaccard: "<%>",
+  };
+  getTablesSql =
+    "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'";
+  getEmbeddingTableSchemaSql =
+    "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1";
+  createExtensionSql = "CREATE EXTENSION IF NOT EXISTS vector;";
+
   /**
    * Get the table name for the PGVector database.
    * - Defaults to "anythingllm_vectors" if no table name is provided.
    * @returns {string}
    */
-  tableName: () => process.env.PGVECTOR_TABLE_NAME || "anythingllm_vectors",
+  static tableName() {
+    return process.env.PGVECTOR_TABLE_NAME || "anythingllm_vectors";
+  }
 
   /**
    * Get the connection string for the PGVector database.
@@ -30,30 +56,13 @@ const PGVector = {
    * the user likely wants to store everything in the same database.
    * @returns {string | null}
    */
-  connectionString: () =>
-    process.env.DATABASE_URL || process.env.PGVECTOR_CONNECTION_STRING,
+  static connectionString() {
+    return process.env.PGVECTOR_CONNECTION_STRING;
+  }
 
-  // Possible for this to be a user-configurable option in the future.
-  // Will require a handler per operator to ensure scores are normalized.
-  operator: {
-    l2: "<->",
-    innerProduct: "<#>",
-    cosine: "<=>",
-    l1: "<+>",
-    hamming: "<~>",
-    jaccard: "<%>",
-  },
-  getTablesSql:
-    "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'",
-  getEmbeddingTableSchemaSql:
-    "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1",
-  createExtensionSql: "CREATE EXTENSION IF NOT EXISTS vector;",
-  createTableSql: (dimensions) =>
-    `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
-
-  log: function (message = null, ...args) {
-    console.log(`\x1b[35m[PGVectorDb]\x1b[0m ${message}`, ...args);
-  },
+  createTableSql(dimensions) {
+    return `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
+  }
 
   /**
    * Recursively sanitize values intended for JSONB to prevent Postgres errors
@@ -63,7 +72,7 @@ const PGVector = {
    * @param {any} value
    * @returns {any}
    */
-  sanitizeForJsonb: function (value) {
+  sanitizeForJsonb(value) {
     // Fast path for null/undefined and primitives that do not need changes
     if (value === null || value === undefined) return value;
 
@@ -102,13 +111,13 @@ const PGVector = {
 
     // Numbers, booleans, etc.
     return value;
-  },
+  }
 
-  client: function (connectionString = null) {
+  client(connectionString = null) {
     return new pgsql.Client({
       connectionString: connectionString || PGVector.connectionString(),
     });
-  },
+  }
 
   /**
    * Validate the existing embedding table schema.
@@ -116,7 +125,7 @@ const PGVector = {
    * @param {string} tableName
    * @returns {Promise<boolean>}
    */
-  validateExistingEmbeddingTableSchema: async function (pgClient, tableName) {
+  async validateExistingEmbeddingTableSchema(pgClient, tableName) {
     const result = await pgClient.query(this.getEmbeddingTableSchemaSql, [
       tableName,
     ]);
@@ -181,11 +190,11 @@ const PGVector = {
         );
     }
 
-    this.log(
+    this.logger(
       `✅ The pgvector table '${tableName}' was found and meets the minimum expected schema for an embedding table.`
     );
     return true;
-  },
+  }
 
   /**
    * Validate the connection to the database and verify that the table does not already exist.
@@ -194,35 +203,36 @@ const PGVector = {
    * @param {{connectionString: string | null, tableName: string | null}} params
    * @returns {Promise<{error: string | null, success: boolean}>}
    */
-  validateConnection: async function ({
+  static async validateConnection({
     connectionString = null,
     tableName = null,
   }) {
     if (!connectionString) throw new Error("No connection string provided");
+    const instance = new PGVector();
 
     try {
       const timeoutPromise = new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            error: `Connection timeout (${(PGVector.connectionTimeout / 1000).toFixed(0)}s). Please check your connection string and try again.`,
+            error: `Connection timeout (${(instance.connectionTimeout / 1000).toFixed(0)}s). Please check your connection string and try again.`,
             success: false,
           });
-        }, PGVector.connectionTimeout);
+        }, instance.connectionTimeout);
       });
 
       const connectionPromise = new Promise(async (resolve) => {
         let pgClient = null;
         try {
-          pgClient = this.client(connectionString);
+          pgClient = instance.client(connectionString);
           await pgClient.connect();
-          const result = await pgClient.query(this.getTablesSql);
+          const result = await pgClient.query(instance.getTablesSql);
 
           if (result.rows.length !== 0 && !!tableName) {
             const tableExists = result.rows.some(
               (row) => row.tablename === tableName
             );
             if (tableExists)
-              await this.validateExistingEmbeddingTableSchema(
+              await instance.validateExistingEmbeddingTableSchema(
                 pgClient,
                 tableName
               );
@@ -239,7 +249,7 @@ const PGVector = {
       const result = await Promise.race([connectionPromise, timeoutPromise]);
       return result;
     } catch (err) {
-      this.log("Validation Error:", err.message);
+      instance.logger("Validation Error:", err.message);
       let readableError = err.message;
       switch (true) {
         case err.message.includes("ECONNREFUSED"):
@@ -251,13 +261,13 @@ const PGVector = {
       }
       return { error: readableError, success: false };
     }
-  },
+  }
 
   /**
    * Test the connection to the database directly.
    * @returns {{error: string | null, success: boolean}}
    */
-  testConnectionToDB: async function () {
+  async testConnectionToDB() {
     try {
       const pgClient = await this.connect();
       await pgClient.query(this.getTablesSql);
@@ -266,14 +276,14 @@ const PGVector = {
     } catch (err) {
       return { error: err.message, success: false };
     }
-  },
+  }
 
   /**
    * Connect to the database.
    * - Throws an error if the connection string or table name is not provided.
    * @returns {Promise<pgsql.Client>}
    */
-  connect: async function () {
+  async connect() {
     if (!PGVector.connectionString())
       throw new Error("No connection string provided");
     if (!PGVector.tableName()) throw new Error("No table name provided");
@@ -281,21 +291,21 @@ const PGVector = {
     const client = this.client();
     await client.connect();
     return client;
-  },
+  }
 
   /**
    * Test the connection to the database with already set credentials via ENV
    * @returns {{error: string | null, success: boolean}}
    */
-  heartbeat: async function () {
+  async heartbeat() {
     return this.testConnectionToDB();
-  },
+  }
 
   /**
    * Check if the anythingllm embedding table exists in the database
    * @returns {Promise<boolean>}
    */
-  dbTableExists: async function () {
+  async dbTableExists() {
     let connection = null;
     try {
       connection = await this.connect();
@@ -310,9 +320,9 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
-  totalVectors: async function () {
+  async totalVectors() {
     if (!(await this.dbTableExists())) return 0;
     let connection = null;
     try {
@@ -326,17 +336,17 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
   // Distance for cosine is just the distance for pgvector.
-  distanceToSimilarity: function (distance = null) {
+  distanceToSimilarity(distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
     if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
-  },
+  }
 
-  namespaceCount: async function (namespace = null) {
+  async namespaceCount(namespace = null) {
     if (!(await this.dbTableExists())) return 0;
     let connection = null;
     try {
@@ -351,7 +361,7 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
   /**
    * Performs a SimilaritySearch on a given PGVector namespace.
@@ -364,7 +374,7 @@ const PGVector = {
    * @param {string[]} params.filterIdentifiers
    * @returns
    */
-  similarityResponse: async function ({
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -387,7 +397,7 @@ const PGVector = {
       if (this.distanceToSimilarity(item._distance) < similarityThreshold)
         return;
       if (filterIdentifiers.includes(sourceIdentifier(item.metadata))) {
-        this.log(
+        this.logger(
           "A source was filtered from context as it's parent document is pinned."
         );
         return;
@@ -402,15 +412,15 @@ const PGVector = {
     });
 
     return result;
-  },
+  }
 
-  normalizeVector: function (vector) {
+  normalizeVector(vector) {
     const magnitude = Math.sqrt(
       vector.reduce((sum, val) => sum + val * val, 0)
     );
     if (magnitude === 0) return vector; // Avoid division by zero
     return vector.map((val) => val / magnitude);
-  },
+  }
 
   /**
    * Update or create a collection in the database
@@ -421,14 +431,14 @@ const PGVector = {
    * @param {number} params.dimensions
    * @returns {Promise<boolean>}
    */
-  updateOrCreateCollection: async function ({
+  async updateOrCreateCollection({
     connection,
     submissions,
     namespace,
     dimensions = 384,
   }) {
     await this.createTableIfNotExists(connection, dimensions);
-    this.log(`Updating or creating collection ${namespace}`);
+    this.logger(`Updating or creating collection ${namespace}`);
 
     try {
       // Create a transaction of all inserts
@@ -441,17 +451,17 @@ const PGVector = {
           [submission.id, namespace, embedding, sanitizedMetadata]
         );
       }
-      this.log(`Committing ${submissions.length} vectors to ${namespace}`);
+      this.logger(`Committing ${submissions.length} vectors to ${namespace}`);
       await connection.query(`COMMIT`);
     } catch (err) {
-      this.log(
+      this.logger(
         `Rolling back ${submissions.length} vectors to ${namespace}`,
         err
       );
       await connection.query(`ROLLBACK`);
     }
     return true;
-  },
+  }
 
   /**
    * create a table if it doesn't exist
@@ -459,12 +469,12 @@ const PGVector = {
    * @param {number} dimensions
    * @returns
    */
-  createTableIfNotExists: async function (connection, dimensions = 384) {
-    this.log(`Creating embedding table with ${dimensions} dimensions`);
+  async createTableIfNotExists(connection, dimensions = 384) {
+    this.logger(`Creating embedding table with ${dimensions} dimensions`);
     await connection.query(this.createExtensionSql);
     await connection.query(this.createTableSql(dimensions));
     return true;
-  },
+  }
 
   /**
    * Get the namespace from the database
@@ -472,21 +482,21 @@ const PGVector = {
    * @param {string} namespace
    * @returns {Promise<{name: string, vectorCount: number}>}
    */
-  namespace: async function (connection, namespace = null) {
+  async namespace(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     const result = await connection.query(
       `SELECT COUNT(id) FROM "${PGVector.tableName()}" WHERE namespace = $1`,
       [namespace]
     );
     return { name: namespace, vectorCount: result.rows[0].count };
-  },
+  }
 
   /**
    * Check if the namespace exists in the database
    * @param {string} namespace
    * @returns {Promise<boolean>}
    */
-  hasNamespace: async function (namespace = null) {
+  async hasNamespace(namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     let connection = null;
     try {
@@ -497,7 +507,7 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
   /**
    * Check if the namespace exists in the database
@@ -505,14 +515,14 @@ const PGVector = {
    * @param {string} namespace
    * @returns {Promise<boolean>}
    */
-  namespaceExists: async function (connection, namespace = null) {
+  async namespaceExists(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     const result = await connection.query(
       `SELECT COUNT(id) FROM "${PGVector.tableName()}" WHERE namespace = $1 LIMIT 1`,
       [namespace]
     );
     return result.rows[0].count > 0;
-  },
+  }
 
   /**
    * Delete all vectors in the namespace
@@ -520,16 +530,16 @@ const PGVector = {
    * @param {string} namespace
    * @returns {Promise<boolean>}
    */
-  deleteVectorsInNamespace: async function (connection, namespace = null) {
+  async deleteVectorsInNamespace(connection, namespace = null) {
     if (!namespace) throw new Error("No namespace provided");
     await connection.query(
       `DELETE FROM "${PGVector.tableName()}" WHERE namespace = $1`,
       [namespace]
     );
     return true;
-  },
+  }
 
-  addDocumentToNamespace: async function (
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -547,7 +557,7 @@ const PGVector = {
       if (!pageContent || pageContent.length == 0) return false;
       connection = await this.connect();
 
-      this.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         let vectorDimensions;
@@ -597,7 +607,7 @@ const PGVector = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      this.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
@@ -631,7 +641,7 @@ const PGVector = {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        this.log("Inserting vectorized chunks into PGVector collection.");
+        this.logger("Inserting vectorized chunks into PGVector collection.");
         await this.updateOrCreateCollection({
           connection,
           submissions,
@@ -644,12 +654,12 @@ const PGVector = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (err) {
-      this.log("addDocumentToNamespace", err.message);
+      this.logger("addDocumentToNamespace", err.message);
       return { vectorized: false, error: err.message };
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
   /**
    * Delete a document from the namespace
@@ -657,7 +667,7 @@ const PGVector = {
    * @param {string} docId
    * @returns {Promise<boolean>}
    */
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  async deleteDocumentFromNamespace(namespace, docId) {
     if (!namespace) throw new Error("No namespace provided");
     if (!docId) throw new Error("No docId provided");
 
@@ -689,21 +699,21 @@ const PGVector = {
         throw err;
       }
 
-      this.log(
+      this.logger(
         `Deleted ${vectorIds.length} vectors from namespace ${namespace}`
       );
       return true;
     } catch (err) {
-      this.log(
+      this.logger(
         `Error deleting document from namespace ${namespace}: ${err.message}`
       );
       return false;
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
-  performSimilaritySearch: async function ({
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -719,7 +729,7 @@ const PGVector = {
       connection = await this.connect();
       const exists = await this.namespaceExists(connection, namespace);
       if (!exists) {
-        this.log(
+        this.logger(
           `The namespace ${namespace} does not exist or has no vectors. Returning empty results.`
         );
         return {
@@ -753,9 +763,9 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
-  "namespace-stats": async function (reqBody = {}) {
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     if (!(await this.dbTableExists()))
@@ -777,9 +787,9 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
-  "delete-namespace": async function (reqBody = {}) {
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("No namespace provided");
 
@@ -803,13 +813,13 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
   /**
    * Reset the entire vector database table associated with anythingllm
    * @returns {Promise<{reset: boolean}>}
    */
-  reset: async function () {
+  async reset() {
     let connection = null;
     try {
       connection = await this.connect();
@@ -820,9 +830,9 @@ const PGVector = {
     } finally {
       if (connection) await connection.end();
     }
-  },
+  }
 
-  curateSources: function (sources = []) {
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       const { text, vector: _v, _distance: _d, ...rest } = source;
@@ -836,7 +846,7 @@ const PGVector = {
     }
 
     return documents;
-  },
-};
+  }
+}
 
 module.exports.PGVector = PGVector;

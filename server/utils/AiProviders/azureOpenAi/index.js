@@ -174,6 +174,8 @@ class AzureOpenAiLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -184,16 +186,18 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      await this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: await this.openai.chat.completions.create({
         messages,
         model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
         stream: true,
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

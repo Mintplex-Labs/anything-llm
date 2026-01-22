@@ -13,6 +13,7 @@ const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
+const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -43,6 +44,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere",
   "zai",
   "giteeai",
+  "docker-model-runner",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -116,6 +118,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getOpenRouterEmbeddingModels();
     case "giteeai":
       return await getGiteeAIModels(apiKey);
+    case "docker-model-runner":
+      return await getDockerModelRunnerModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -814,7 +818,7 @@ async function getCohereModels(_apiKey = null, type = "chat") {
     .then((results) => results.models)
     .then((models) =>
       models.map((model) => ({
-        id: model.id,
+        id: model.name,
         name: model.name,
       }))
     )
@@ -862,6 +866,19 @@ async function getOpenRouterEmbeddingModels() {
     };
   });
   return { models, error: null };
+}
+
+async function getDockerModelRunnerModels(basePath = null) {
+  try {
+    const models = await getDockerModels(basePath);
+    return { models, error: null };
+  } catch (e) {
+    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
+    return {
+      models: [],
+      error: "Could not fetch Docker Model Runner Models",
+    };
+  }
 }
 
 module.exports = {
