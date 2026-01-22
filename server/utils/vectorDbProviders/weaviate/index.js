@@ -6,10 +6,18 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-const Weaviate = {
-  name: "Weaviate",
-  connect: async function () {
+class Weaviate extends VectorDatabase {
+  constructor() {
+    super();
+  }
+
+  get name() {
+    return "Weaviate";
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "weaviate")
       throw new Error("Weaviate::Invalid ENV settings");
 
@@ -28,12 +36,14 @@ const Weaviate = {
         "Weaviate::Invalid Alive signal received - is the service online?"
       );
     return { client };
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const collectionNames = await this.allNamespaces(client);
     var totalVectors = 0;
@@ -41,8 +51,9 @@ const Weaviate = {
       totalVectors += await this.namespaceCountWithClient(client, name);
     }
     return totalVectors;
-  },
-  namespaceCountWithClient: async function (client, namespace) {
+  }
+
+  async namespaceCountWithClient(client, namespace) {
     try {
       const response = await client.graphql
         .aggregate()
@@ -53,11 +64,12 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      this.logger(`namespaceCountWithClient`, e.message);
       return 0;
     }
-  },
-  namespaceCount: async function (namespace = null) {
+  }
+
+  async namespaceCount(namespace = null) {
     try {
       const { client } = await this.connect();
       const response = await client.graphql
@@ -70,11 +82,12 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      this.logger(`namespaceCountWithClient`, e.message);
       return 0;
     }
-  },
-  similarityResponse: async function ({
+  }
+
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -109,8 +122,8 @@ const Weaviate = {
       } = response;
       if (certainty < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-        console.log(
-          "Weaviate: A source was filtered from context as it's parent document is pinned."
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
@@ -120,17 +133,19 @@ const Weaviate = {
     });
 
     return result;
-  },
-  allNamespaces: async function (client) {
+  }
+
+  async allNamespaces(client) {
     try {
       const { classes = [] } = await client.schema.getter().do();
       return classes.map((classObj) => classObj.class);
     } catch (e) {
-      console.error("Weaviate::AllNamespace", e);
+      this.logger("AllNamespace", e);
       return [];
     }
-  },
-  namespace: async function (client, namespace = null) {
+  }
+
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     if (!(await this.namespaceExists(client, namespace))) return null;
 
@@ -143,8 +158,9 @@ const Weaviate = {
       ...weaviateClass,
       vectorCount: await this.namespaceCount(namespace),
     };
-  },
-  addVectors: async function (client, vectors = []) {
+  }
+
+  async addVectors(client, vectors = []) {
     const response = { success: true, errors: new Set([]) };
     const results = await client.batch
       .objectsBatcher()
@@ -160,23 +176,27 @@ const Weaviate = {
 
     response.errors = [...response.errors];
     return response;
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     const weaviateClasses = await this.allNamespaces(client);
     return weaviateClasses.includes(camelCase(namespace));
-  },
-  namespaceExists: async function (client, namespace = null) {
+  }
+
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const weaviateClasses = await this.allNamespaces(client);
     return weaviateClasses.includes(camelCase(namespace));
-  },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  }
+
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.schema.classDeleter().withClassName(camelCase(namespace)).do();
     return true;
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -192,7 +212,7 @@ const Weaviate = {
       } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -236,7 +256,7 @@ const Weaviate = {
             const { success: additionResult, errors = [] } =
               await this.addVectors(client, vectors);
             if (!additionResult) {
-              console.error("Weaviate::addVectors failed to insert", errors);
+              this.logger("addVectors failed to insert", errors);
               throw new Error("Error embedding into Weaviate");
             }
           }
@@ -267,7 +287,7 @@ const Weaviate = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -322,13 +342,13 @@ const Weaviate = {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into Weaviate collection.");
+        this.logger("Inserting vectorized chunks into Weaviate collection.");
         const { success: additionResult, errors = [] } = await this.addVectors(
           client,
           vectors
         );
         if (!additionResult) {
-          console.error("Weaviate::addVectors failed to insert", errors);
+          this.logger("addVectors failed to insert", errors);
           throw new Error("Error embedding into Weaviate");
         }
         await storeVectorResult(chunks, fullFilePath);
@@ -337,11 +357,12 @@ const Weaviate = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -360,8 +381,9 @@ const Weaviate = {
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
     return true;
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -399,8 +421,9 @@ const Weaviate = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -408,8 +431,9 @@ const Weaviate = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     const details = await this.namespace(client, namespace);
@@ -419,16 +443,18 @@ const Weaviate = {
         details?.vectorCount
       } vectors.`,
     };
-  },
-  reset: async function () {
+  }
+
+  async reset() {
     const { client } = await this.connect();
     const weaviateClasses = await this.allNamespaces(client);
     for (const weaviateClass of weaviateClasses) {
       await client.schema.classDeleter().withClassName(weaviateClass).do();
     }
     return { reset: true };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
@@ -440,8 +466,9 @@ const Weaviate = {
     }
 
     return documents;
-  },
-  flattenObjectForWeaviate: function (obj = {}) {
+  }
+
+  flattenObjectForWeaviate(obj = {}) {
     // Note this function is not generic, it is designed specifically for Weaviate
     // https://weaviate.io/developers/weaviate/config-refs/datatypes#introduction
     // Credit to LangchainJS
@@ -478,7 +505,7 @@ const Weaviate = {
     }
 
     return flattenedObject;
-  },
-};
+  }
+}
 
 module.exports.Weaviate = Weaviate;

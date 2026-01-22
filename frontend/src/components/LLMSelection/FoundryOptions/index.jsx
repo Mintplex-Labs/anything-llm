@@ -92,7 +92,7 @@ export default function FoundryOptions({ settings }) {
         </div>
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Token Context Window
+            Model context window
           </label>
           <input
             type="number"

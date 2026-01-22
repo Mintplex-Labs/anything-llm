@@ -38,7 +38,7 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
-  const bcrypt = require("bcrypt");
+  const bcrypt = require("bcryptjs");
   const { p } = decodeJWT(token);
 
   if (p === null || !/\w{32}:\w{32}/.test(p)) {

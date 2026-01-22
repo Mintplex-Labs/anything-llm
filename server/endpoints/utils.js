@@ -21,6 +21,11 @@ function utilEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  const {
+    dockerModelRunnerUtilsEndpoints,
+  } = require("./utils/dockerModelRunnerUtils");
+  dockerModelRunnerUtilsEndpoints(app);
 }
 
 function getGitVersion() {
@@ -150,6 +155,12 @@ function getModelTag() {
       break;
     case "giteeai":
       model = process.env.GITEE_AI_MODEL_PREF;
+      break;
+    case "cohere":
+      model = process.env.COHERE_MODEL_PREF;
+      break;
+    case "docker-model-runner":
+      model = process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
       break;
     default:
       model = "--";

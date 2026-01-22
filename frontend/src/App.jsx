@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { AuthProvider } from "@/AuthContext";
 import { ToastContainer } from "react-toastify";
@@ -12,25 +12,34 @@ import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
 
 export default function App() {
+  const location = useLocation();
   return (
-    <ThemeProvider>
-      <PWAModeProvider>
-        <Suspense fallback={<FullScreenLoader />}>
-          <AuthProvider>
-            <LogoProvider>
-              <PfpProvider>
-                <I18nextProvider i18n={i18n}>
-                  <Outlet />
-                  <ToastContainer />
-                  <KeyboardShortcutsHelp />
-                </I18nextProvider>
-              </PfpProvider>
-            </LogoProvider>
-          </AuthProvider>
-        </Suspense>
-      </PWAModeProvider>
-    </ThemeProvider>
+    <ErrorBoundary
+      FallbackComponent={ErrorBoundaryFallback}
+      onError={console.error}
+      resetKeys={[location.pathname]}
+    >
+      <ThemeProvider>
+        <PWAModeProvider>
+          <Suspense fallback={<FullScreenLoader />}>
+            <AuthProvider>
+              <LogoProvider>
+                <PfpProvider>
+                  <I18nextProvider i18n={i18n}>
+                    <Outlet />
+                    <ToastContainer />
+                    <KeyboardShortcutsHelp />
+                  </I18nextProvider>
+                </PfpProvider>
+              </LogoProvider>
+            </AuthProvider>
+          </Suspense>
+        </PWAModeProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

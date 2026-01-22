@@ -114,9 +114,55 @@ function systemEndpoints(app) {
     }
   );
 
+  /**
+   * Refreshes the user object from the session from a provided token.
+   * This does not refresh the token itself - if that is expired or invalid, the user will be logged out.
+   * This simply keeps the user object in sync with the database over the course of the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
+  app.get(
+    "/system/refresh-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (!multiUserMode(response))
+          return response
+            .status(200)
+            .json({ success: true, user: null, message: null });
+
+        const user = await userFromSession(request, response);
+        if (!user)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "Session expired or invalid.",
+          });
+
+        if (user.suspended)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "User is suspended.",
+          });
+
+        return response.status(200).json({
+          success: true,
+          user: User.filterFields(user),
+          message: null,
+        });
+      } catch (e) {
+        return response.status(500).json({
+          success: false,
+          user: null,
+          message: e.message,
+        });
+      }
+    }
+  );
+
   app.post("/request-token", async (request, response) => {
     try {
-      const bcrypt = require("bcrypt");
+      const bcrypt = require("bcryptjs");
 
       if (await SystemSettings.isMultiUserMode()) {
         if (simpleSSOLoginDisabled()) {

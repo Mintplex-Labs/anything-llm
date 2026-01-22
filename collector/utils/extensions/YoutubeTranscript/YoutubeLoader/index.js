@@ -54,13 +54,15 @@ class YoutubeLoader {
       source: this.#videoId,
     };
     try {
-      const { YoutubeTranscript } = require("./youtube-transcript");
-      transcript = await YoutubeTranscript.fetchTranscript(this.#videoId, {
+      const fetchTranscript = await import("youtube-transcript-plus").then(
+        (module) => module.fetchTranscript
+      );
+      const transcriptSegments = await fetchTranscript(this.#videoId, {
         lang: this.#language,
       });
-      if (!transcript) {
+      if (!transcriptSegments || transcriptSegments.length === 0)
         throw new Error("Transcription not found");
-      }
+      transcript = this.#convertTranscriptSegmentsToText(transcriptSegments);
       if (this.#addVideoInfo) {
         const { Innertube } = require("youtubei.js");
         const youtube = await Innertube.create();
@@ -81,6 +83,16 @@ class YoutubeLoader {
         metadata,
       },
     ];
+  }
+
+  #convertTranscriptSegmentsToText(transcriptSegments) {
+    return transcriptSegments
+      .map((segment) =>
+        typeof segment === "string" ? segment : segment.text || ""
+      )
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 }
 
