@@ -1,0 +1,25 @@
+[
+  {
+    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/meeting-assistant.png",
+    "title": "Meeting Assistant",
+    "short_description": "Transcribe meetings and generate meeting notes entirely on device.",
+    "goto": "https://docs.anythingllm.com/meeting-assistant/introduction",
+    "author": "AnythingLLM",
+    "date": "January 21, 2026"
+  },
+  {
+    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/mobile.png",
+    "title": "AnythingLLM Mobile",
+    "short_description": "AnythingLLM Mobile is now available on the Google Play Store.",
+    "goto": "https://play.google.com/store/apps/details?id=com.anythingllm",
+    "author": "AnythingLLM",
+    "date": "January 5, 2026"
+  },
+  {
+    "title": "50K Stars on Github",
+    "short_description": "AnythingLLM broke 50K stars on Github!",
+    "goto": "https://github.com/mintplex-labs/anything-llm",
+    "author": "AnythingLLM",
+    "date": "October 21, 2025"
+  }
+]

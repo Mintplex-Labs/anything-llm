@@ -8,6 +8,7 @@ import MobileConnection from "@/models/mobile";
 import PreLoader from "@/components/Preloader";
 import Logo from "@/media/logo/anything-llm-infinity.png";
 import paths from "@/utils/paths";
+import GetOnGooglePlay from "./gplay-badge.svg";
 
 export default function MobileConnectModal({ isOpen, onClose }) {
   return (
@@ -37,13 +38,23 @@ export default function MobileConnectModal({ isOpen, onClose }) {
               Go mobile. Stay local. AnythingLLM Mobile.
             </p>
             <p className="text-[#FFF] text-lg">
-              AnythingLLM for mobile allows you to connect or clone your
-              workspace's chats, threads and documents for you to use on the go.
+              AnythingLLM for mobile allows you to connect to your workspace's
+              chats, threads, tools, and documents for you to use on the go.
               <br />
               <br />
               Run with local models on your phone privately or relay chats
               directly to this instance seamlessly.
             </p>
+            <Link
+              to="https://play.google.com/store/apps/details?id=com.anythingllm"
+              target="_blank"
+            >
+              <img
+                src={GetOnGooglePlay}
+                alt="Get on Google Play"
+                className="w-[150px] h-auto"
+              />
+            </Link>
           </div>
 
           {/* right column */}

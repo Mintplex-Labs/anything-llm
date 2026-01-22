@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { v4, validate } = require("uuid");
 const { User } = require("../../models/user");
 const {
@@ -38,7 +38,7 @@ async function recoverAccount(username = "", recoveryCodes = []) {
   // because this is a user who has not logged out and back in since upgrade.
   const allUserHashes = await RecoveryCode.hashesForUser(user.id);
   if (allUserHashes.length < 4)
-    return { success: false, error: "Invalid recovery codes" };
+    return { success: false, error: "Invalid recovery codes." };
 
   // If they tried to send more than two unique codes, we only take the first two
   const uniqueRecoveryCodes = [...new Set(recoveryCodes)]
@@ -55,7 +55,7 @@ async function recoverAccount(username = "", recoveryCodes = []) {
     });
     return valid;
   });
-  if (!validCodes) return { success: false, error: "Invalid recovery codes" };
+  if (!validCodes) return { success: false, error: "Invalid recovery codes." };
 
   const { passwordResetToken, error } = await PasswordResetToken.create(
     user.id

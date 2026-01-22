@@ -203,6 +203,8 @@ class GroqLLM {
           result.output.usage.completion_tokens /
           result.output.usage.completion_time,
         duration: result.output.usage.total_time,
+        model: this.model,
+        timestamp: new Date(),
       },
     };
   }
@@ -213,16 +215,17 @@ class GroqLLM {
         `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+    });
 
     return measuredStreamRequest;
   }

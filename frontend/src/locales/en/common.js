@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    "mobile-app": "AnythingLLM Mobile",
   },
 
   // Page Definitions
@@ -715,7 +716,7 @@ const TRANSLATIONS = {
     title: "Privacy & Data-Handling",
     description:
       "This is your configuration for how connected third party providers and AnythingLLM handle your data.",
-    llm: "LLM Selection",
+    llm: "LLM Provider",
     embedding: "Embedding Preference",
     vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",

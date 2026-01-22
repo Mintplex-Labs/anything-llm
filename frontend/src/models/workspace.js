@@ -185,10 +185,8 @@ const Workspace = {
         }
       },
       async onmessage(msg) {
-        try {
-          const chatResult = JSON.parse(msg.data);
-          handleChat(chatResult);
-        } catch {}
+        const chatResult = safeJsonParse(msg.data, null);
+        if (chatResult) handleChat(chatResult);
       },
       onerror(err) {
         handleChat({

@@ -104,7 +104,7 @@ export default function SuggestedChatMessages({ slug }) {
       </div>
     );
   return (
-    <div className="w-screen mt-6">
+    <div className="w-full mt-6">
       <div className="flex flex-col">
         <label className="block input-label">
           {t("general.message.title")}
