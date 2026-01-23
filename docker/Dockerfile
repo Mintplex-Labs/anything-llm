@@ -14,7 +14,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3013
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-        unzip curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd \
+        unzip curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd wget \
         libasound2t64 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
@@ -83,7 +83,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3013
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-        curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd \
+        curl gnupg libgfortran5 libgbm1 tzdata netcat-openbsd wget \
         libasound2t64 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
@@ -105,6 +105,22 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         echo "Installed uvx! $(uv --version)" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install NVIDIA CUDA Toolkit (minimal packages for compiling node-llama-cpp)
+# hadolint ignore=DL3008
+RUN wget -qO /tmp/cuda-keyring.deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i /tmp/cuda-keyring.deb && \
+    rm /tmp/cuda-keyring.deb && \
+    apt-get update && \
+    apt-get install -yq --no-install-recommends \
+        cuda-nvcc-13-0 \
+        cuda-cudart-dev-13-0 \
+        libcublas-dev-13-0 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/usr/local/cuda-13.0/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda-13.0/lib64:${LD_LIBRARY_PATH}"
 
 # Create a group and user with specific UID and GID
 # First, remove any existing user/group with the target UID/GID to avoid conflicts
@@ -167,6 +183,9 @@ USER anythingllm
 FROM backend-build AS production-build
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
+
+# Pre-compile node-llama-cpp for CUDA support so it doesnt need to be done at runtime
+RUN cd /app/server && npx node-llama-cpp source download --gpu cuda --nu
 
 # Setup the environment
 ENV NODE_ENV=production

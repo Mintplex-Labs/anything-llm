@@ -6,6 +6,13 @@ networks:
 
 services:
   anything-llm:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     container_name: anythingllm
     build:
       context: ../.

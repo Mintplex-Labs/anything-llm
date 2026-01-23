@@ -5,8 +5,8 @@ import { routeConfig, formatPrompt, testCases } from "./tests.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const CONTEXT_SIZE = 4096;
-const THREADS = 16; // Reduce from 16 to limit CPU usage
+const CONTEXT_SIZE = 8192;
+const THREADS = 24; // Reduce from 16 to limit CPU usage
 
 /**
  * Parse the model's response to extract the route name
@@ -15,13 +15,13 @@ function parseRouteFromResponse(response) {
   try {
     // Try to parse as JSON first
     const cleaned = response.trim();
-    
+
     // Handle various JSON formats the model might return
     const jsonMatch = cleaned.match(/\{[^}]*"route"\s*:\s*"([^"]+)"[^}]*\}/);
     if (jsonMatch) {
       return jsonMatch[1].toLowerCase();
     }
-    
+
     // Try direct JSON parse
     const parsed = JSON.parse(cleaned);
     if (parsed.route) {
@@ -34,7 +34,7 @@ function parseRouteFromResponse(response) {
       return match[1].toLowerCase();
     }
   }
-  
+
   return response.trim().toLowerCase();
 }
 
@@ -78,7 +78,7 @@ async function runBenchmark() {
     const context = await model.createContext({
       contextSize: CONTEXT_SIZE,
       sequences: 1,
-      threads: THREADS,
+      // threads: THREADS,
     });
 
     const sequence = context.getSequence();
