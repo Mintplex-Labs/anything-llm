@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['maint/upgrade-docker-base-image'] # put your current branch to create a build. Core team only.
+    branches: ['docker-model-runner-download-from-ui'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

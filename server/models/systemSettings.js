@@ -455,11 +455,11 @@ const SystemSettings = {
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+      WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-      QdrantApiKey: process.env.QDRANT_API_KEY,
+      QdrantApiKey: !!process.env.QDRANT_API_KEY,
 
       // Milvus DB Keys
       MilvusAddress: process.env.MILVUS_ADDRESS,
@@ -468,10 +468,10 @@ const SystemSettings = {
 
       // Zilliz DB Keys
       ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+      ZillizApiToken: !!process.env.ZILLIZ_API_TOKEN,
 
       // AstraDB Keys
-      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBApplicationToken: !!process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
 
       // PGVector Keys
