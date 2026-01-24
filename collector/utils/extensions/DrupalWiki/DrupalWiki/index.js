@@ -314,9 +314,15 @@ class DrupalWiki {
         }
 
         const buffer = await attachmentResponse.arrayBuffer();
-        const localFilePath = normalizePath(sanitizeFileName(path.resolve(WATCH_DIRECTORY, fileName)));
+        const localFilePath = normalizePath(
+          sanitizeFileName(path.resolve(WATCH_DIRECTORY, fileName))
+        );
         if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
-          console.error(`[DrupalWiki Loader]: File name ${localFilePath} is not within the storage path ${path.resolve(WATCH_DIRECTORY)}`);
+          console.error(
+            `[DrupalWiki Loader]: File name ${localFilePath} is not within the storage path ${path.resolve(
+              WATCH_DIRECTORY
+            )}`
+          );
           continue;
         }
 
