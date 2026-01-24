@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['1.10.0-repub'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
       - '.gitmodules'
@@ -79,10 +79,8 @@ jobs:
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
+            type=semver,pattern=1.10.0
+            type=semver,pattern=1.10
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
