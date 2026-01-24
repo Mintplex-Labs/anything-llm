@@ -463,10 +463,10 @@ const SystemSettings = {
 
       // Zilliz DB Keys
       ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+      ZillizApiToken: !!process.env.ZILLIZ_API_TOKEN,
 
       // AstraDB Keys
-      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBApplicationToken: !!process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
 
       // PGVector Keys
