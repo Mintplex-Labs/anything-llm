@@ -450,11 +450,11 @@ const SystemSettings = {
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+      WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-      QdrantApiKey: process.env.QDRANT_API_KEY,
+      QdrantApiKey: !!process.env.QDRANT_API_KEY,
 
       // Milvus DB Keys
       MilvusAddress: process.env.MILVUS_ADDRESS,
