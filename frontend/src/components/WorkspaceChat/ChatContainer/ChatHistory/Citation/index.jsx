@@ -1,5 +1,4 @@
-import { memo, useState } from "react";
-import { v4 } from "uuid";
+import { Fragment, memo, useMemo, useState } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -42,12 +41,22 @@ function combineLikeSources(sources) {
   return Object.values(combined);
 }
 
-export default function Citations({ sources = [] }) {
+function getCombinedSourceKey(source) {
+  const title = source?.title ?? "";
+  const firstChunk = source?.chunks?.[0];
+  const firstChunkId = firstChunk?.id ?? "";
+  const firstChunkSource = firstChunk?.chunkSource ?? "";
+  const key = `${title}::${firstChunkId || firstChunkSource}`;
+  return key === "::" ? "" : key;
+}
+
+function Citations({ sources = [] }) {
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
   const { t } = useTranslation();
   const { textSizeClass } = useTextSize();
+  const combinedSources = useMemo(() => combineLikeSources(sources), [sources]);
 
   return (
     <div className="flex flex-col mt-4 justify-left">
@@ -70,9 +79,9 @@ export default function Citations({ sources = [] }) {
       </button>
       {open && (
         <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
-          {combineLikeSources(sources).map((source) => (
+          {combinedSources.map((source, idx) => (
             <Citation
-              key={v4()}
+              key={getCombinedSourceKey(source) || idx}
               source={source}
               onClick={() => setSelectedSource(source)}
               textSizeClass={textSizeClass}
@@ -89,6 +98,8 @@ export default function Citations({ sources = [] }) {
     </div>
   );
 }
+
+export default memo(Citations);
 
 const Citation = memo(({ source, onClick, textSizeClass }) => {
   const { title, references = 1 } = source;
@@ -132,7 +143,7 @@ function CitationDetailModal({ source, onClose }) {
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
-    <ModalWrapper isOpen={source}>
+    <ModalWrapper isOpen={Boolean(source)}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
@@ -175,8 +186,8 @@ function CitationDetailModal({ source, onClose }) {
         >
           <div className="py-7 px-9 space-y-2 flex-col">
             {chunks.map(({ text, score }, idx) => (
-              <>
-                <div key={idx} className="pt-6 text-white">
+              <Fragment key={idx}>
+                <div className="pt-6 text-white">
                   <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
                     <p className="text-white whitespace-pre-line">
                       {HTMLDecode(omitChunkHeader(text))}
@@ -199,7 +210,7 @@ function CitationDetailModal({ source, onClose }) {
                 {idx !== chunks.length - 1 && (
                   <hr className="border-theme-modal-border" />
                 )}
-              </>
+              </Fragment>
             ))}
             <div className="mb-6"></div>
           </div>
