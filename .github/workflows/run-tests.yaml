@@ -17,15 +17,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: '18'
 
       - name: Cache root dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-yarn-root-
 
       - name: Cache server dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: |
             server/node_modules
@@ -45,7 +45,7 @@ jobs:
             ${{ runner.os }}-yarn-server-
 
       - name: Cache collector dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: |
             collector/node_modules

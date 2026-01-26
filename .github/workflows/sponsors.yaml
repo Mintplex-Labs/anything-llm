@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       - name: Generate All Sponsors README
         id: generate-all-sponsors
@@ -24,14 +24,14 @@ jobs:
           marker: 'all-sponsors'
 
       - name: Commit and Push 🚀
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         id: auto-commit-action
         with:
           commit_message: 'Update Sponsors README'
           file_pattern: 'README.md'
 
       - name: Generate PR if changes detected
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         if: steps.auto-commit-action.outputs.files_changed == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
