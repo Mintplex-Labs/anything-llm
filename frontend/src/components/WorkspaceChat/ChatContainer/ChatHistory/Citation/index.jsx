@@ -1,4 +1,4 @@
-import { Fragment, memo, useMemo, useState } from "react";
+import { Fragment, memo, useState } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -41,22 +41,12 @@ function combineLikeSources(sources) {
   return Object.values(combined);
 }
 
-function getCombinedSourceKey(source) {
-  const title = source?.title ?? "";
-  const firstChunk = source?.chunks?.[0];
-  const firstChunkId = firstChunk?.id ?? "";
-  const firstChunkSource = firstChunk?.chunkSource ?? "";
-  const key = `${title}::${firstChunkId || firstChunkSource}`;
-  return key === "::" ? "" : key;
-}
-
-function Citations({ sources = [] }) {
+export default function Citations({ sources = [] }) {
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
   const { t } = useTranslation();
   const { textSizeClass } = useTextSize();
-  const combinedSources = useMemo(() => combineLikeSources(sources), [sources]);
 
   return (
     <div className="flex flex-col mt-4 justify-left">
@@ -79,9 +69,9 @@ function Citations({ sources = [] }) {
       </button>
       {open && (
         <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
-          {combinedSources.map((source, idx) => (
+          {combineLikeSources(sources).map((source, idx) => (
             <Citation
-              key={getCombinedSourceKey(source) || idx}
+              key={source.title || `_idx_${idx}`}
               source={source}
               onClick={() => setSelectedSource(source)}
               textSizeClass={textSizeClass}
@@ -98,8 +88,6 @@ function Citations({ sources = [] }) {
     </div>
   );
 }
-
-export default memo(Citations);
 
 const Citation = memo(({ source, onClick, textSizeClass }) => {
   const { title, references = 1 } = source;
