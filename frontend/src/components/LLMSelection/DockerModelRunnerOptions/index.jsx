@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
-import {
-  ArrowClockwise,
-  CircleNotch,
-  MagnifyingGlass,
-  Info,
-} from "@phosphor-icons/react";
+import { CircleNotch, Info } from "@phosphor-icons/react";
 import strDistance from "js-levenshtein";
 import { LLM_PREFERENCE_CHANGED_EVENT } from "@/pages/GeneralSettings/LLMPreference";
 import { DOCKER_MODEL_RUNNER_COMMON_URLS } from "@/utils/constants";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
-import ModelTable from "./ModelTable";
-import * as Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import ModelTable from "@/components/lib/ModelTable";
+import ModelTableLayout from "@/components/lib/ModelTable/layout";
+import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
+import DMRUtils from "@/models/utils/dmrUtils";
+import showToast from "@/utils/toast";
 
 export default function DockerModelRunnerOptions({ settings }) {
   const {
@@ -27,7 +24,9 @@ export default function DockerModelRunnerOptions({ settings }) {
     initialBasePath: settings?.DockerModelRunnerBasePath,
     ENDPOINTS: DOCKER_MODEL_RUNNER_COMMON_URLS,
   });
-
+  const [selectedModelId, setSelectedModelId] = useState(
+    settings?.DockerModelRunnerModelPref
+  );
   const [maxTokens, setMaxTokens] = useState(
     settings?.DockerModelRunnerModelTokenLimit || 4096
   );
@@ -135,7 +134,8 @@ export default function DockerModelRunnerOptions({ settings }) {
               <br />
               <br />
               <code>
-                docker model configure --context-size 8192 ai/qwen3:latest
+                docker model configure --context-size {maxTokens || 8192}{" "}
+                {selectedModelId ?? "ai/qwen3:latest"}
               </code>
               <br />
               <br />
@@ -170,7 +170,8 @@ export default function DockerModelRunnerOptions({ settings }) {
           />
         </div>
         <DockerModelRunnerModelSelection
-          settings={settings}
+          selectedModelId={selectedModelId}
+          setSelectedModelId={setSelectedModelId}
           basePath={basePathValue.value}
         />
       </div>
@@ -178,10 +179,11 @@ export default function DockerModelRunnerOptions({ settings }) {
   );
 }
 
-function DockerModelRunnerModelSelection({ settings, basePath = null }) {
-  const [selectedModelId, setSelectedModelId] = useState(
-    settings?.DockerModelRunnerModelPref
-  );
+function DockerModelRunnerModelSelection({
+  selectedModelId,
+  setSelectedModelId,
+  basePath = null,
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [filteredModels, setFilteredModels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -237,12 +239,44 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
     setFilteredModels(Array.from(filteredModels.values()));
   }, [searchQuery]);
 
-  function downloadModel(modelId, _fileSize, progressCallback) {
-    const [name, tag] = modelId.split(":");
+  async function downloadModel(modelId, fileSize, progressCallback) {
+    try {
+      if (
+        !window.confirm(
+          `Are you sure you want to download this model? It is ${fileSize} in size and may take a while to download.`
+        )
+      )
+        return;
+      const { success, error } = await DMRUtils.downloadModel(
+        modelId,
+        basePath,
+        progressCallback
+      );
+      if (!success)
+        throw new Error(
+          error || "An error occurred while downloading the model"
+        );
+      progressCallback(100);
+      handleSetActiveModel(modelId);
 
-    // Open the model in the Docker Hub (via browser since they may not be installed locally)
-    window.open(`https://hub.docker.com/layers/${name}/${tag}`, "_blank");
-    progressCallback(100);
+      const existingModels = [...customModels];
+      const newModel = existingModels.find((model) => model.id === modelId);
+      if (newModel) {
+        newModel.downloaded = true;
+        setCustomModels(existingModels);
+        setFilteredModels(existingModels);
+        setSearchQuery("");
+      }
+    } catch (e) {
+      console.error("Error downloading model:", e);
+      showToast(
+        e.message || "An error occurred while downloading the model",
+        "error",
+        { clear: true }
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   function groupModelsByAlias(models) {
@@ -275,11 +309,12 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
     });
 
     const orderedMap = new Map();
+    const installedMap = new Map();
     mapping
       .get("installed")
       .entries()
       .forEach(([organization, models]) =>
-        orderedMap.set(organization, models)
+        installedMap.set(organization, models)
       );
     mapping
       .get("not installed")
@@ -287,7 +322,17 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
       .forEach(([organization, models]) =>
         orderedMap.set(organization, models)
       );
-    return Object.fromEntries(orderedMap);
+
+    // Sort the models by organization/creator name alphabetically but keep the installed models at the top
+    return Object.fromEntries(
+      Array.from(installedMap.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .concat(
+          Array.from(orderedMap.entries()).sort((a, b) =>
+            a[0].localeCompare(b[0])
+          )
+        )
+    );
   }
 
   function handleSetActiveModel(modelId) {
@@ -298,12 +343,17 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
 
   const groupedModels = groupModelsByAlias(filteredModels);
   return (
-    <Layout
+    <ModelTableLayout
       fetchModels={fetchModels}
       searchQuery={searchQuery}
       setSearchQuery={setSearchQuery}
       loading={loading}
     >
+      <Tooltip
+        id="docker-model-runner-install-model-tooltip"
+        place="top"
+        className="tooltip !text-xs !opacity-100 z-99"
+      />
       <input
         type="hidden"
         name="DockerModelRunnerModelPref"
@@ -311,7 +361,7 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
         value={selectedModelId}
       />
       {loading ? (
-        <LoadingSkeleton />
+        <ModelTableLoadingSkeleton />
       ) : filteredModels.length === 0 ? (
         <div className="flex flex-col w-full gap-y-2 mt-4">
           <p className="text-theme-text-secondary text-sm">No models found!</p>
@@ -331,96 +381,6 @@ function DockerModelRunnerModelSelection({ settings, basePath = null }) {
           />
         ))
       )}
-    </Layout>
-  );
-}
-
-function Layout({
-  children,
-  fetchModels = null,
-  searchQuery = "",
-  setSearchQuery = () => {},
-  loading = false,
-}) {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  async function refreshModels() {
-    setIsRefreshing(true);
-    try {
-      await fetchModels?.();
-    } catch {
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-
-  return (
-    <div className="flex flex-col w-full">
-      <div className="flex gap-x-2 items-center pb-[8px]">
-        <label className="text-theme-text-primary text-base font-semibold">
-          Available Models
-        </label>
-      </div>
-      <div className="flex w-full items-center gap-x-[16px]">
-        <div className="relative flex-1 max-w-[640px]">
-          <MagnifyingGlass
-            size={14}
-            weight="bold"
-            color="var(--theme-text-primary)"
-            className="absolute left-[9px] top-[10px] text-theme-settings-input-placeholder peer-focus:invisible"
-          />
-          <input
-            type="search"
-            placeholder="Search models"
-            value={searchQuery}
-            disabled={loading}
-            className="min-h-[32px] border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pl-[30px] py-2 search-input disabled:opacity-50 disabled:cursor-not-allowed"
-            onChange={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setSearchQuery(e.target.value);
-            }}
-          />
-        </div>
-        {!!fetchModels && (
-          <button
-            type="button"
-            onClick={refreshModels}
-            disabled={isRefreshing || loading}
-            className="border-none text-theme-text-secondary text-sm font-medium hover:underline flex items-center gap-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isRefreshing ? (
-              <CircleNotch className="w-4 h-4 text-theme-text-secondary animate-spin" />
-            ) : (
-              <ArrowClockwise
-                weight="bold"
-                className="w-4 h-4 text-theme-text-secondary"
-              />
-            )}
-            <span
-              className={`text-sm font-medium ${isRefreshing ? "hidden" : "text-theme-text-secondary"}`}
-            >
-              Refresh Models
-            </span>
-          </button>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="flex flex-col w-full gap-y-4">
-      <Skeleton.default
-        height={100}
-        width="100%"
-        count={7}
-        highlightColor="var(--theme-settings-input-active)"
-        baseColor="var(--theme-settings-input-bg)"
-        enableAnimation={true}
-        containerClassName="w-fill flex gap-[8px] flex-col p-0"
-      />
-    </div>
+    </ModelTableLayout>
   );
 }

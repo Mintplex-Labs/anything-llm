@@ -3,18 +3,15 @@ import {
   CaretDown,
   CaretRight,
   Cpu,
-  DownloadSimple,
-  CircleNotch,
-  CheckCircle,
-  Dot,
   Circle,
-  DotsThreeCircleVertical,
   DotsThreeVertical,
   CloudArrowDown,
+  CircleNotch,
 } from "@phosphor-icons/react";
 import pluralize from "pluralize";
 import { titleCase } from "text-case";
 import { humanFileSize } from "@/utils/numbers";
+import MonoProviderIcon from "../MonoProviderIcon";
 
 /**
  * @typedef {Object} ModelDefinition
@@ -72,18 +69,27 @@ export default function ModelTable({
             className="text-theme-text-secondary"
           />
         )}
-        <h3 className="flex items-center gap-x-1 text-theme-text-primary text-base font-bold">
-          {titleCase(alias)}
-          <span className="text-theme-text-secondary font-normal text-sm">
-            ({totalModels} {pluralize("Model", totalModels)})
-          </span>
-        </h3>
+        <div className="flex items-center gap-x-[4px]">
+          <MonoProviderIcon
+            provider={alias}
+            match="pattern"
+            size={16}
+            className="text-theme-text-primary"
+          />
+          <p className="flex items-center gap-x-1 text-theme-text-primary text-base font-bold">
+            {titleCase(alias)}
+            <span className="text-theme-text-secondary font-normal text-sm">
+              ({totalModels} {pluralize("Model", totalModels)})
+            </span>
+          </p>
+        </div>
       </button>
       <div hidden={!showAll} className="mt-[16px]">
         <div className="w-full flex flex-col gap-y-[8px]">
           {models.map((model) => (
             <ModelRow
               key={model.id}
+              alias={alias}
               model={model}
               downloadModel={downloadModel}
               uninstallModel={uninstallModel}
@@ -110,7 +116,7 @@ function DeviceTypeTag({ deviceType }) {
           bgClass + " px-1.5 py-1 rounded-full flex items-center gap-x-1 w-fit"
         }
       >
-        <Cpu size={16} weight="bold" className={textClass} />
+        <Cpu size={14} weight="bold" className={textClass} />
         <p className={textClass + " text-xs"}>{text}</p>
       </div>
     );
@@ -121,32 +127,32 @@ function DeviceTypeTag({ deviceType }) {
       return (
         <Wrapper
           text="CPU"
-          bgClass="bg-blue-600/20"
-          textClass="text-blue-300"
+          bgClass="bg-zinc-800 light:bg-zinc-200"
+          textClass="text-theme-text-primary"
         />
       );
     case "gpu":
       return (
         <Wrapper
           text="GPU"
-          bgClass="bg-green-600/20"
-          textClass="text-green-300"
+          bgClass="bg-green-800 light:bg-green-200"
+          textClass="text-theme-text-primary"
         />
       );
     case "npu":
       return (
         <Wrapper
           text="NPU"
-          bgClass="bg-indigo-600/20"
-          textClass="text-indigo-300"
+          bgClass="bg-indigo-800 light:bg-indigo-200"
+          textClass="text-theme-text-primary"
         />
       );
     default:
       return (
         <Wrapper
           text="CPU"
-          bgClass="bg-blue-600/20"
-          textClass="text-blue-300"
+          bgClass="bg-zinc-800 light:bg-zinc-200"
+          textClass="text-theme-text-primary"
         />
       );
   }
@@ -164,6 +170,7 @@ function DeviceTypeTag({ deviceType }) {
  * @returns {React.ReactNode}
  */
 function ModelRow({
+  alias,
   model,
   downloadModel = null,
   uninstallModel = null,
@@ -176,7 +183,7 @@ function ModelRow({
   const modelRowRef = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [_downloadPercentage, setDownloadPercentage] = useState(0);
+  const [downloadPercentage, setDownloadPercentage] = useState(0);
   const fileSize =
     typeof model.size === "number"
       ? humanFileSize(model.size * 1e6, true, 2)
@@ -192,9 +199,9 @@ function ModelRow({
       try {
         if (!downloadModel) return;
         setProcessing(true);
-        await downloadModel(model.id, fileSize, (percentage) =>
-          setDownloadPercentage(percentage)
-        );
+        await downloadModel(model.id, fileSize, (percentage) => {
+          setDownloadPercentage(percentage);
+        });
       } catch {
       } finally {
         setProcessing(false);
@@ -238,31 +245,24 @@ function ModelRow({
         onClick={handleSetActiveModel}
       >
         {ui.showRuntime && <DeviceTypeTag deviceType={model.deviceType} />}
-        <p className="text-theme-text-primary text-base px-2">{model.name}</p>
+        {!ui.showRuntime &&
+          model.downloaded &&
+          alias === "Downloaded Models" && (
+            <MonoProviderIcon
+              provider={model.organization}
+              match="pattern"
+              size={16}
+              className="text-theme-text-primary"
+            />
+          )}
+        <p className="text-theme-text-primary text-base">{model.name}</p>
         <p className="text-theme-text-secondary opacity-70 text-base">
           {fileSize}
         </p>
       </button>
 
       <div className="justify-self-start">
-        {isActiveModel && (
-          <div className="flex items-center justify-center gap-x-[10px] whitespace-nowrap">
-            <Circle size={8} weight="fill" className="text-green-500" />
-            <p className="text-theme-text-primary text-sm">Active</p>
-          </div>
-        )}
-
-        {!isActiveModel && model.downloaded && !uninstallModel && (
-          <p className="text-theme-text-secondary text-sm italic whitespace-nowrap">
-            Installed
-          </p>
-        )}
-
-        {!model.downloaded && (
-          <p className="text-theme-text-secondary text-sm italic whitespace-nowrap">
-            Not Installed
-          </p>
-        )}
+        <RenderStatus model={model} isActiveModel={isActiveModel} />
       </div>
 
       <div className="relative justify-self-end">
@@ -294,21 +294,66 @@ function ModelRow({
             )}
           </>
         ) : null}
-        {!model.downloaded ? (
+        {!model.downloaded && !processing && (
           <button
             type="button"
-            className="border-none hover:bg-white/20 rounded-lg p-1 flex items-center gap-x-1"
+            data-tooltip-id="docker-model-runner-install-model-tooltip"
+            data-tooltip-place="top"
+            data-tooltip-delay-show={300}
+            data-tooltip-content={`Install ${model.organization}:${model.name}`}
+            className="border-none hover:bg-white/20 light:hover:bg-black/5 rounded-lg p-2 flex items-center gap-x-1 cursor-pointer"
             onClick={handleSetActiveModel}
           >
             <CloudArrowDown
-              size={16}
+              size={20}
               weight="bold"
-              className="text-blue-300 cursor-pointer"
+              className="text-theme-text-primary"
             />
-            <p className="text-sm text-blue-300">Install</p>
           </button>
-        ) : null}
+        )}
+        {!model.downloaded && processing && (
+          <div className="flex items-center justify-center gap-x-[10px] whitespace-nowrap">
+            {!downloadPercentage && (
+              <CircleNotch
+                size={16}
+                weight="bold"
+                className="text-theme-text-primary animate-spin"
+              />
+            )}
+            <p className="text-theme-text-secondary text-sm">
+              {downloadPercentage}%
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function RenderStatus({ model, isActiveModel }) {
+  if (isActiveModel) {
+    return (
+      <div className="flex items-center justify-center gap-x-[10px] whitespace-nowrap">
+        <Circle size={8} weight="fill" className="text-green-500" />
+        <p className="text-theme-text-primary text-sm">Active</p>
+      </div>
+    );
+  }
+
+  if (!isActiveModel && model.downloaded) {
+    return (
+      <p className="text-theme-text-secondary text-sm italic whitespace-nowrap">
+        Installed
+      </p>
+    );
+  }
+
+  if (!model.downloaded) {
+    return (
+      <p className="text-theme-text-secondary text-sm italic whitespace-nowrap">
+        Not Installed
+      </p>
+    );
+  }
+  return null;
 }
