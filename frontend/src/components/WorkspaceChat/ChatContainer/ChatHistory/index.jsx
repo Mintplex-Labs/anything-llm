@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  forwardRef,
+} from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -13,25 +20,29 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
+import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-export default function ChatHistory({
-  history = [],
-  workspace,
-  sendCommand,
-  updateHistory,
-  regenerateAssistantMessage,
-  hasAttachments = false,
-}) {
+export default forwardRef(function (
+  {
+    history = [],
+    workspace,
+    sendCommand,
+    updateHistory,
+    regenerateAssistantMessage,
+    hasAttachments = false,
+  },
+  ref
+) {
   const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
+  const chatHistoryRef = useRef(null);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const chatHistoryRef = useRef(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
@@ -80,6 +91,12 @@ export default function ChatHistory({
       });
     }
   };
+
+  useChatHistoryScrollHandle(ref, chatHistoryRef, {
+    setIsUserScrolling,
+    isStreaming,
+    scrollToBottom,
+  });
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
@@ -239,7 +256,7 @@ export default function ChatHistory({
             <div
               className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
               onClick={() => {
-                scrollToBottom(true);
+                scrollToBottom(isStreaming ? false : true);
                 setIsUserScrolling(false);
               }}
             >
@@ -250,7 +267,7 @@ export default function ChatHistory({
       )}
     </div>
   );
-}
+});
 
 const getLastMessageInfo = (history) => {
   const lastMessage = history?.[history.length - 1] || {};
