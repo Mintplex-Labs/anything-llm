@@ -94,6 +94,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [Z.AI (チャットモデル)](https://z.ai/model-api)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [CometAPI (チャットモデル)](https://api.cometapi.com/)
+- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 
 **埋め込みモデル：**
 

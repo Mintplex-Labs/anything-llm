@@ -33,7 +33,7 @@ export default function DellProAIStudioOptions({
             />
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-2">
-                Token context window
+                Model context window
               </label>
               <input
                 type="number"

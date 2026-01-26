@@ -3,7 +3,8 @@ const fs = require("fs");
 const path = require("path");
 
 // Mock fix-path as a noop to prevent SIGSEGV (segfault)
-jest.mock("fix-path", () => jest.fn());
+// Returns ESM-style default export for dynamic import()
+jest.mock("fix-path", () => ({ default: jest.fn() }));
 
 const { FFMPEGWrapper } = require("../../../../utils/WhisperProviders/ffmpeg");
 
@@ -26,14 +27,14 @@ describeRunner("FFMPEGWrapper", () => {
   });
 
   it("should find ffmpeg executable", async () => {
-    const knownPath = ffmpeg.ffmpegPath;
+    const knownPath = await ffmpeg.ffmpegPath();
     expect(knownPath).toBeDefined();
     expect(typeof knownPath).toBe("string");
     expect(knownPath.length).toBeGreaterThan(0);
   });
 
   it("should validate ffmpeg executable", async () => {
-    const knownPath = ffmpeg.ffmpegPath;
+    const knownPath = await ffmpeg.ffmpegPath();
     expect(ffmpeg.isValidFFMPEG(knownPath)).toBe(true);
   });
 
@@ -56,7 +57,7 @@ describeRunner("FFMPEGWrapper", () => {
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(inputPath, Buffer.from(buffer));
 
-    const result = ffmpeg.convertAudioToWav(inputPath, outputPath);
+    const result = await ffmpeg.convertAudioToWav(inputPath, outputPath);
 
     expect(result).toBe(true);
     expect(fs.existsSync(outputPath)).toBe(true);
@@ -69,8 +70,8 @@ describeRunner("FFMPEGWrapper", () => {
     const nonExistentFile = path.resolve(testDir, "non-existent-file.wav");
     const outputPath = path.resolve(testDir, "test-output-fail.wav");
 
-    expect(() => {
-      ffmpeg.convertAudioToWav(nonExistentFile, outputPath)
-    }).toThrow(`Input file ${nonExistentFile} does not exist.`);
+    expect(async () => {
+      return await ffmpeg.convertAudioToWav(nonExistentFile, outputPath);
+    }).rejects.toThrow(`Input file ${nonExistentFile} does not exist.`);
   });
 });
