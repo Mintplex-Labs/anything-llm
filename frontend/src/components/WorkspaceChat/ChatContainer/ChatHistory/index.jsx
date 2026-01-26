@@ -5,7 +5,6 @@ import {
   useMemo,
   useCallback,
   forwardRef,
-  useImperativeHandle,
 } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
@@ -21,11 +20,12 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
+import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { v4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
-export default forwardRef(function(
+export default forwardRef(function (
   {
     history = [],
     workspace,
@@ -92,24 +92,11 @@ export default forwardRef(function(
     }
   };
 
-  useImperativeHandle(ref, () => {
-    return {
-      scrollToTop() {
-        if (chatHistoryRef.current) {
-          setIsUserScrolling(true)
-          chatHistoryRef.current.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }
-      },
-      scrollToBottom() {
-
-        setIsUserScrolling(true)
-        scrollToBottom(isStreaming ? false : true);
-      },
-    };
-  }, [isStreaming]);
+  useChatHistoryScrollHandle(ref, chatHistoryRef, {
+    setIsUserScrolling,
+    isStreaming,
+    scrollToBottom,
+  });
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand({ text: `${heading} ${message}`, autoSubmit: true });

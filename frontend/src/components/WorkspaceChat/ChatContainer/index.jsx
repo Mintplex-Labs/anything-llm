@@ -22,7 +22,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
-import { isMac } from "@/utils/keyboardShortcuts";
+import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -32,28 +32,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
-
-  const chatHistoryRef = useRef(null);
-
-  // Keyboard shortcuts for scrolling chat history (Ctrl/Cmd + Up/Down)
-  useEffect(() => {
-    function handleScrollShortcuts(event) {
-      const modifierPressed = isMac ? event.metaKey : event.ctrlKey;
-
-      if (!modifierPressed || !chatHistoryRef.current) return;
-
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        chatHistoryRef.current.scrollToTop();
-      } else if (event.key === "ArrowDown") {
-        event.preventDefault();
-        chatHistoryRef.current.scrollToBottom();
-      }
-    }
-
-    window.addEventListener("keydown", handleScrollShortcuts);
-    return () => window.removeEventListener("keydown", handleScrollShortcuts);
-  }, []);
+  const { chatHistoryRef } = useChatContainerQuickScroll();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
