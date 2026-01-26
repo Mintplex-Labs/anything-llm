@@ -68,7 +68,8 @@ const TRANSLATIONS = {
     yes: "Oui",
     no: "Non",
     search: "Rechercher",
-    username_requirements: null,
+    username_requirements:
+      "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
   },
   settings: {
     title: "Paramètres de l'instance",

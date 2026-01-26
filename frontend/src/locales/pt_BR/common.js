@@ -67,7 +67,8 @@ const TRANSLATIONS = {
     yes: "Sim",
     no: "Não",
     search: "Pesquisar",
-    username_requirements: null,
+    username_requirements:
+      "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
   },
   settings: {
     title: "Configurações da Instância",

@@ -68,7 +68,8 @@ const TRANSLATIONS = {
     yes: "はい",
     no: "いいえ",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
   },
   settings: {
     title: "インスタンス設定",

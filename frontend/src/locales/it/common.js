@@ -61,7 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Il nome utente deve essere compreso tra 2 e 32 caratteri, iniziare con una lettera minuscola e contenere solo lettere minuscole, numeri, trattini bassi, trattini e punti.",
   },
   settings: {
     title: "Impostazioni istanza",

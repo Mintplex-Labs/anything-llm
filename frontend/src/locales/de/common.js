@@ -69,7 +69,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nein",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
   },
   settings: {
     title: "Instanzeinstellungen",

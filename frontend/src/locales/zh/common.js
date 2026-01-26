@@ -64,7 +64,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜索",
-    username_requirements: null,
+    username_requirements:
+      "用户名必须为 2-32 个字符，以小写字母开头，只能包含小写字母、数字、下划线、连字符和句点。",
   },
   settings: {
     title: "设置",

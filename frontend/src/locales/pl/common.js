@@ -69,7 +69,8 @@ const TRANSLATIONS = {
     yes: "Tak",
     no: "Nie",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Nazwa użytkownika musi mieć od 2 do 32 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
   },
   settings: {
     title: "Ustawienia instancji",

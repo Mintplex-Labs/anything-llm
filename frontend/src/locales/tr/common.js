@@ -61,7 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
   },
   settings: {
     title: "Instance Ayarları",

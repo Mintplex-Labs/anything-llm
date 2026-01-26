@@ -61,7 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
   },
   settings: {
     title: "Cài đặt hệ thống",

@@ -69,7 +69,8 @@ const TRANSLATIONS = {
     yes: "Da",
     no: "Nu",
     search: "Caută",
-    username_requirements: null,
+    username_requirements:
+      "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
   },
   settings: {
     title: "Setările instanței",

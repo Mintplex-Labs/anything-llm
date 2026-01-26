@@ -67,7 +67,8 @@ const TRANSLATIONS = {
     yes: "예",
     no: "아니오",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
   },
   settings: {
     title: "인스턴스 설정",

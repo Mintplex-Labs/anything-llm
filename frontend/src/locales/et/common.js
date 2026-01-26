@@ -67,7 +67,8 @@ const TRANSLATIONS = {
     yes: "Jah",
     no: "Ei",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
   },
   settings: {
     title: "Instantsi seaded",

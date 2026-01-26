@@ -69,7 +69,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nej",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Brugernavnet skal være på 2-32 tegn, starte med et lille bogstav og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
   },
   settings: {
     title: "Instansindstillinger",

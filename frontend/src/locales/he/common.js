@@ -66,7 +66,8 @@ const TRANSLATIONS = {
     yes: "כן",
     no: "לא",
     search: "חיפוש",
-    username_requirements: null,
+    username_requirements:
+      "שם המשתמש חייב להיות באורך 2-32 תווים, להתחיל באות קטנה ולהכיל רק אותיות קטנות, מספרים, קווים תחתונים, מקפים ונקודות.",
   },
   settings: {
     title: "הגדרות מופע",

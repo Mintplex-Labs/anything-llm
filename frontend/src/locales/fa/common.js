@@ -61,7 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "نام کاربری باید 2 تا 32 کاراکتر باشد، با حرف کوچک شروع شود و فقط شامل حروف کوچک، اعداد، زیرخط، خط تیره و نقطه باشد.",
   },
   settings: {
     title: "تنظیمات سامانه",

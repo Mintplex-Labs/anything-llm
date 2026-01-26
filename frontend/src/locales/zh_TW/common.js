@@ -64,7 +64,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜尋",
-    username_requirements: null,
+    username_requirements:
+      "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
   },
   settings: {
     title: "系統設定",

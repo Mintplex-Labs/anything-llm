@@ -67,7 +67,8 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "يجب أن يتكون اسم المستخدم من 2-32 حرفًا، وأن يبدأ بحرف صغير، وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية وشرطات ونقاط.",
   },
   settings: {
     title: "إعدادات المثيل",

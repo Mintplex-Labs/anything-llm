@@ -68,7 +68,8 @@ const TRANSLATIONS = {
     yes: "Jā",
     no: "Nē",
     search: null,
-    username_requirements: null,
+    username_requirements:
+      "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
   },
   settings: {
     title: "Instances iestatījumi",
