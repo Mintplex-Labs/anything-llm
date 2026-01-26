@@ -22,6 +22,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -31,6 +32,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
+  const { chatHistoryRef } = useChatContainerQuickScroll();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -308,6 +310,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       <DnDFileUploaderWrapper>
         <MetricsProvider>
           <ChatHistory
+            ref={chatHistoryRef}
             history={chatHistory}
             workspace={workspace}
             sendCommand={sendCommand}
