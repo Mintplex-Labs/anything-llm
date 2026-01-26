@@ -70,11 +70,15 @@ function createBedrockRuntimeClient(authMethod, credentials) {
   const clientOpts = {
     region: process.env.AWS_BEDROCK_LLM_REGION,
   };
-  if (authMethod === "apiKey") {
-    clientOpts.token = credentials;
-    clientOpts.authSchemePreference = ["httpBearerAuth"];
-  } else {
-    clientOpts.credentials = credentials;
+
+  switch (authMethod) {
+    case "apiKey":
+      clientOpts.token = credentials;
+      clientOpts.authSchemePreference = ["httpBearerAuth"];
+      break;
+    default:
+      clientOpts.credentials = credentials;
+      break;
   }
   return new BedrockRuntimeClient(clientOpts);
 }

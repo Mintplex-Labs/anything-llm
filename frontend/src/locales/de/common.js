@@ -102,6 +102,7 @@ const TRANSLATIONS = {
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Extension",
     "system-prompt-variables": "Systempromptvariablen",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

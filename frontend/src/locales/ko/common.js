@@ -100,6 +100,7 @@ const TRANSLATIONS = {
     interface: "UI 환경 설정",
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

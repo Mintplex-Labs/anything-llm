@@ -97,6 +97,7 @@ const TRANSLATIONS = {
     interface: "使用者介面偏好設定",
     branding: "品牌與白標設定",
     chat: "聊天室",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

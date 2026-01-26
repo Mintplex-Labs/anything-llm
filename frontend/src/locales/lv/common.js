@@ -101,6 +101,7 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentālās funkcijas",
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

@@ -8,7 +8,7 @@ initContainers: []
 image:
   repository: mintplexlabs/anythingllm
   pullPolicy: IfNotPresent
-  tag: "1.9.1"
+  tag: "1.10.0"
 
 imagePullSecrets: []
 nameOverride: ""

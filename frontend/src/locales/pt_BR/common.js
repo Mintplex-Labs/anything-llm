@@ -100,6 +100,7 @@ const TRANSLATIONS = {
     "experimental-features": "Recursos Experimentais",
     contact: "Suporte",
     "browser-extension": "Extensão de Navegador",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

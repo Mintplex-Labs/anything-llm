@@ -97,6 +97,7 @@ const TRANSLATIONS = {
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
+    "mobile-app": null,
   },
   login: {
     "multi-user": {

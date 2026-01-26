@@ -102,6 +102,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 - [Z.AI (chat models)](https://z.ai/model-api)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
+- [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 
 **Embedder modelleri:**
 
