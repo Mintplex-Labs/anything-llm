@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "비밀번호는 최소 8자 이상이어야 합니다.",
       passwordWarn: "이 비밀번호는 복구 방법이 없으니 꼭 안전하게 보관하세요.",
       adminUsername: "관리자 계정 사용자명",
-      adminUsernameReq:
-        "사용자명은 6자 이상이어야 하며, 소문자, 숫자, 밑줄(_), 하이픈(-)만 사용할 수 있습니다. 공백은 허용되지 않습니다.",
       adminPassword: "관리자 계정 비밀번호",
       adminPasswordReq: "비밀번호는 최소 8자 이상이어야 합니다.",
       teamHint:
@@ -69,6 +67,8 @@ const TRANSLATIONS = {
     yes: "예",
     no: "아니오",
     search: null,
+    username_requirements:
+      "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
   },
   settings: {
     title: "인스턴스 설정",
@@ -899,8 +899,6 @@ const TRANSLATIONS = {
     profile_picture: "프로필 사진",
     remove_profile_picture: "프로필 사진 삭제",
     username: "사용자명",
-    username_description:
-      "사용자명은 소문자, 숫자, 밑줄(_), 하이픈(-)만 사용할 수 있으며, 공백은 허용되지 않습니다.",
     new_password: "새 비밀번호",
     password_description: "비밀번호는 최소 8자 이상이어야 합니다.",
     cancel: "취소",

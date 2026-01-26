@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Dieses Passwort sollte sicher aufbewahrt werden, da Wiederherstellung nicht möglich ist.",
       adminUsername: "Benutzername des Admin-Accounts",
-      adminUsernameReq:
-        "Der Benutzername muss aus mindestens 6 Zeichen bestehen und darf ausschließlich Kleinbuchstaben, Ziffern, Unter- und Bindestriche enthalten – keine Leerzeichen",
       adminPassword: "Passwort des Admin-Accounts",
       adminPasswordReq: "Das Passwort muss mindestens 8 Zeichen enthalten.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nein",
     search: null,
+    username_requirements:
+      "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -922,8 +922,6 @@ const TRANSLATIONS = {
     profile_picture: "Profilbild",
     remove_profile_picture: "Profilbild entfernen",
     username: "Nutzername",
-    username_description:
-      "Der Nutzername darf nur kleine Buchstaben, Zahlen, Unterstriche und Bindestriche ohne Leerzeichen enthalten.",
     new_password: "Neues Passwort",
     password_description: "Das Passwort muss mindestens 8 Zeichen haben.",
     cancel: "Abbrechen",
