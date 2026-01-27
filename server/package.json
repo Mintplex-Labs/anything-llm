@@ -40,7 +40,7 @@
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "^2.3.5",
     "adm-zip": "^0.5.16",
-    "apache-arrow": "19.0.0",
+    "apache-arrow": "18.1.0",
     "bcryptjs": "^3.0.3",
     "body-parser": "^1.20.3",
     "chalk": "^4",
@@ -89,6 +89,14 @@
   "resolutions": {
     "**/graphql-request/form-data": "3.0.4",
     "form-data": "4.0.4"
+  },
+  "overrides": {
+    "@langchain/community": {
+      "@datastax/astra-db-ts": "$@datastax/astra-db-ts"
+    },
+    "@lancedb/lancedb": {
+      "apache-arrow": "$apache-arrow"
+    }
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",

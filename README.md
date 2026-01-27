@@ -120,6 +120,72 @@ This monorepo consists of six main sections:
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
+## Version Conflicts
+
+When running `npm install` in the frontend, server, or collector directories, you may encounter peer dependency conflicts. These have been resolved using npm `overrides` in each `package.json`.
+
+### Frontend
+
+**Issue:** `@lobehub/icons@^4.0.3` and its dependencies (`@lobehub/ui`, `@lobehub/fluent-emoji`) require React 19, but the project uses React 18.
+
+**Fix:** Added overrides in `frontend/package.json`:
+
+```json
+"overrides": {
+  "@lobehub/icons": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  },
+  "@lobehub/ui": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  },
+  "@lobehub/fluent-emoji": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  }
+}
+```
+
+### Server
+
+**Issue:**
+
+1. `@lancedb/lancedb@0.15.0` requires `apache-arrow@>=15.0.0 <=18.1.0`, but `apache-arrow@19.0.0` was specified.
+2. `@langchain/community@0.0.53` requires `@datastax/astra-db-ts@^1.0.0` as an optional peer, but `@datastax/astra-db-ts@^0.1.3` is used.
+
+**Fix:**
+
+1. Downgraded `apache-arrow` to `18.1.0`
+2. Added overrides in `server/package.json`:
+
+```json
+"overrides": {
+  "@langchain/community": {
+    "@datastax/astra-db-ts": "$@datastax/astra-db-ts"
+  },
+  "@lancedb/lancedb": {
+    "apache-arrow": "$apache-arrow"
+  }
+}
+```
+
+### Collector
+
+**Issue:** `langchain@0.1.36` requires `puppeteer@^19.7.2` as an optional peer, but `puppeteer@~21.5.2` is used.
+
+**Fix:** Added overrides in `collector/package.json`:
+
+```json
+"overrides": {
+  "langchain": {
+    "puppeteer": "$puppeteer"
+  }
+}
+```
+
+> **Note:** The `$package-name` syntax in overrides tells npm to use the version of that package defined in the project's own dependencies.
+
 ## External Apps & Integrations
 
 - [Midori AI Subsystem Manager](https://io.midori-ai.xyz/subsystem/anythingllm/) - A streamlined and efficient way to deploy AI systems using Docker container technology.

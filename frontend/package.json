@@ -48,9 +48,24 @@
     "react-tooltip": "^5.25.2",
     "recharts": "^2.12.5",
     "recharts-to-png": "^2.3.1",
+    "regenerator-runtime": "^0.14.1",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"
+  },
+  "overrides": {
+    "@lobehub/icons": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@lobehub/ui": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@lobehub/fluent-emoji": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
