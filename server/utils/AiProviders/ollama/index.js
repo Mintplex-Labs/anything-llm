@@ -42,7 +42,7 @@ class OllamaAILLM {
     this.limits = null;
 
     OllamaAILLM.cacheContextWindows(true);
-    this.#log(`initialized with\nmodel: ${this.model}`);
+    this.#log(`initialized with model: ${this.model}`);
   }
 
   #log(text, ...args) {
