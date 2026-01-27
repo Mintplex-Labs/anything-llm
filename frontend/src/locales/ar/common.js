@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "يجب أن تحتوي كلمة المرور على ثمانية حروف على الأقل",
       passwordWarn: "من المهم حفظ كلمة المرور هذه لأنه لا يمكن استردادها.",
       adminUsername: "اسم مستعمل حساب المشرف",
-      adminUsernameReq:
-        "يجب أن يكون اسم المستعمل بطول 6 أحرف على الأقل وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية وواصلات بدون مسافات.",
       adminPassword: "كلمة مرور حساب المشرف",
       adminPasswordReq: "يجب أن تكون كلمات المرور 8 أحرف على الأقل.",
       teamHint:
@@ -69,6 +67,8 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     search: null,
+    username_requirements:
+      "يجب أن يتكون اسم المستخدم من 2-32 حرفًا، وأن يبدأ بحرف صغير، وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية وشرطات ونقاط.",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "هل نسيت كلمة المرور",
       reset: "إعادة الضبط",
     },
-    "sign-in": {
-      start: "تسجيل الدخول إلى",
-      end: "حساب.",
-    },
+    "sign-in": "تسجيل الدخول إلى حساب {{appName}}.",
     "password-reset": {
       title: "إعادة تعيين كلمة المرور",
       description:
@@ -684,7 +681,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

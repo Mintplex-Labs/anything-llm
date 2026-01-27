@@ -22,8 +22,6 @@ const TRANSLATIONS = {
         "It's important to save this password because there is no recovery method.",
 
       adminUsername: "Admin account username",
-      adminUsernameReq:
-        "Username must be at least 6 characters long and only contain lowercase letters, numbers, underscores, and hyphens with no spaces.",
       adminPassword: "Admin account password",
       adminPasswordReq: "Passwords must be at least 8 characters.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Yes",
     no: "No",
     search: "Search",
+    username_requirements:
+      "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
   },
   home: {
     welcome: "Welcome",
@@ -118,7 +118,7 @@ const TRANSLATIONS = {
   // Page Definitions
   login: {
     "multi-user": {
-      welcome: "Welcome to",
+      welcome: "Welcome",
       "placeholder-username": "Username",
       "placeholder-password": "Password",
       login: "Login",
@@ -126,10 +126,8 @@ const TRANSLATIONS = {
       "forgot-pass": "Forgot password",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Sign in to your",
-      end: "account.",
-    },
+    "sign-in":
+      "Enter your username and password to access your {{appName}} instance.",
     "password-reset": {
       title: "Password Reset",
       description:
@@ -989,8 +987,6 @@ const TRANSLATIONS = {
     profile_picture: "Profile Picture",
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
-    username_description:
-      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",

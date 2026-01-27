@@ -37,8 +37,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Het is belangrijk om dit wachtwoord te bewaren, omdat er geen herstelmethode is.",
       adminUsername: "Gebruikersnaam van het beheerdersaccount",
-      adminUsernameReq:
-        "De gebruikersnaam moet minimaal 6 tekens lang zijn en mag alleen kleine letters, cijfers, underscores en koppeltekens bevatten, zonder spaties.",
       adminPassword: "Wachtwoord van het beheerdersaccount",
       adminPasswordReq: "Wachtwoorden moeten minimaal 8 tekens lang zijn.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nee",
     search: "Zoeken",
+    username_requirements:
+      "De gebruikersnaam moet 2-32 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
   },
   settings: {
     title: "Instelling Instanties",
@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Wachtwoord vergeten",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Meld je aan bij je",
-      end: "account.",
-    },
+    "sign-in": "Meld je aan bij je {{appName}} account.",
     "password-reset": {
       title: "Wachtwoord Resetten",
       description:
@@ -736,8 +733,6 @@ const TRANSLATIONS = {
     profile_picture: "Profielafbeelding",
     remove_profile_picture: "Profielafbeelding verwijderen",
     username: "Gebruikersnaam",
-    username_description:
-      "Gebruikersnaam mag alleen kleine letters, cijfers, underscores en koppeltekens bevatten, zonder spaties",
     new_password: "Nieuw wachtwoord",
     password_description: "Wachtwoord moet minimaal 8 tekens lang zijn",
     cancel: "Annuleren",
