@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Esqueci a senha",
       reset: "Redefinir",
     },
-    "sign-in": {
-      start: "Acesse sua",
-      end: "conta.",
-    },
+    "sign-in": "Acesse sua {{appName}} conta.",
     "password-reset": {
       title: "Redefinição de Senha",
       description:

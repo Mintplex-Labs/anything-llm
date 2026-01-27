@@ -122,10 +122,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Zapomněli jste heslo",
       reset: "Resetovat",
     },
-    "sign-in": {
-      start: "Přihlaste se do svého",
-      end: "účtu.",
-    },
+    "sign-in": "Přihlaste se do svého {{appName}} účtu.",
     "password-reset": {
       title: "Reset hesla",
       description: "Níže uveďte potřebné informace pro resetování hesla.",

@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Wachtwoord vergeten",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Meld je aan bij je",
-      end: "account.",
-    },
+    "sign-in": "Meld je aan bij je {{appName}} account.",
     "password-reset": {
       title: "Wachtwoord Resetten",
       description:

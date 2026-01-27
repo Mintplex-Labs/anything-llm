@@ -112,10 +112,7 @@ const TRANSLATIONS = {
       "forgot-pass": "שכחת סיסמה",
       reset: "איפוס",
     },
-    "sign-in": {
-      start: "התחבר ל",
-      end: "חשבונך.",
-    },
+    "sign-in": "התחבר לחשבון {{appName}} שלך.",
     "password-reset": {
       title: "איפוס סיסמה",
       description: "ספק את המידע הדרוש למטה כדי לאפס את סיסמתך.",

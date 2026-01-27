@@ -110,10 +110,7 @@ const TRANSLATIONS = {
       "forgot-pass": "忘記密碼",
       reset: "重設",
     },
-    "sign-in": {
-      start: "登入您的",
-      end: "帳號。",
-    },
+    "sign-in": "登入您的 {{appName}} 帳號。",
     "password-reset": {
       title: "重設密碼",
       description: "請在下方提供必要資訊以重設您的密碼。",

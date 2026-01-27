@@ -118,7 +118,7 @@ const TRANSLATIONS = {
   // Page Definitions
   login: {
     "multi-user": {
-      welcome: "Welcome to",
+      welcome: "Welcome",
       "placeholder-username": "Username",
       "placeholder-password": "Password",
       login: "Login",
@@ -126,10 +126,8 @@ const TRANSLATIONS = {
       "forgot-pass": "Forgot password",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Sign in to your",
-      end: "account.",
-    },
+    "sign-in":
+      "Enter your username and password to access your {{appName}} instance.",
     "password-reset": {
       title: "Password Reset",
       description:

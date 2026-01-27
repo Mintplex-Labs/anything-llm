@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "パスワードを忘れた",
       reset: "リセット",
     },
-    "sign-in": {
-      start: "サインインして",
-      end: "アカウントにアクセスします。",
-    },
+    "sign-in": "{{appName}} アカウントにサインインします。",
     "password-reset": {
       title: "パスワードリセット",
       description:

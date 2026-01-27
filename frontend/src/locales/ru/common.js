@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Забыли пароль",
       reset: "Сбросить",
     },
-    "sign-in": {
-      start: "Войти в ваш",
-      end: "аккаунт.",
-    },
+    "sign-in": "Войти в ваш {{appName}} аккаунт.",
     "password-reset": {
       title: "Сброс пароля",
       description:
