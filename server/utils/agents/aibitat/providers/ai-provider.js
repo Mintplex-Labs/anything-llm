@@ -464,16 +464,10 @@ class OllamaLangchainChatModel {
     });
   }
 
-  static performanceMode() {
-    return process.env.OLLAMA_PERFORMANCE_MODE || "base";
-  }
-
   static queryOptions(config = {}) {
     const model = config?.model || process.env.OLLAMA_MODEL_PREF;
     return {
-      ...(this.performanceMode() === "base"
-        ? {}
-        : { num_ctx: OllamaAILLM.promptWindowLimit(model) }),
+      num_ctx: OllamaAILLM.promptWindowLimit(model),
     };
   }
 }
