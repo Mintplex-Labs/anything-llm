@@ -131,7 +131,7 @@ function CitationDetailModal({ source, onClose }) {
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
-    <ModalWrapper isOpen={Boolean(source)}>
+    <ModalWrapper isOpen={!!source}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
