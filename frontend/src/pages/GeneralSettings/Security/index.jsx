@@ -131,7 +131,7 @@ function MultiUserMode() {
                     className="mb-4"
                     label={t("security.multiuser.enable.enable")}
                     enabled={useMultiUserMode}
-                    onChange={() => setUseMultiUserMode(!useMultiUserMode)}
+                    onChange={(checked) => setUseMultiUserMode(checked)}
                   />
                 )}
                 {useMultiUserMode && (
@@ -296,7 +296,7 @@ function PasswordProtection() {
                   className="mb-4"
                   label={t("security.password.title")}
                   enabled={usePassword}
-                  onChange={() => setUsePassword(!usePassword)}
+                  onChange={(checked) => setUsePassword(checked)}
                 />
                 {usePassword && (
                   <div className="w-full flex flex-col gap-y-2 my-5">

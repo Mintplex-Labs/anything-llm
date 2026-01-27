@@ -351,7 +351,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
       label={title}
       description={hint}
       enabled={status}
-      onChange={() => setStatus(!status)}
+      onChange={(checked) => setStatus(checked)}
     />
   );
 };
