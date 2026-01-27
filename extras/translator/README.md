@@ -25,5 +25,5 @@ All translations are based on english dictionary. So the English dictionary must
 ## Gotchas
 
 - Sometimes translations go on for a while until the token window is exceeded - you can see this by the massive lines extending beyond the page.
-- Some languages operate different with single words or special symbols like "@" and will go off the rails. If the English text is one word and the translated text is
-100 words, you dont need to be linguist to know that it is probably wrong.
+- Some languages operate different with single words or special symbols like "@" and will go off the rails. If the English text is one word and the translated text is 100 words, you dont need to be linguist to know that it is probably wrong.
+- You should always review every line for discrepencies or removal of `{{}}` inputs or brand name hallunications eg: `AnyLLM` instead of `AnythingLLM`

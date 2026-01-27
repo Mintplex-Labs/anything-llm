@@ -441,7 +441,9 @@ async function getDockerModels(basePath = null, task = "chat") {
           availableModels[modelName].tags.push({ ...tag, downloaded: false });
         else {
           availableModels[modelName].tags.push({ ...tag, downloaded: true });
-          delete installedModels[tag.id]; // remove the model from the installed models list so we dont append it to the available models list
+          // remove the model from the installed models list so we dont double append it to the available models list
+          // when checking for custom models
+          delete installedModels[tag.id];
         }
       }
     }

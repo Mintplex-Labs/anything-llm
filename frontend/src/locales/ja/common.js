@@ -747,7 +747,7 @@ const TRANSLATIONS = {
     branding: {
       title: "ブランディングとホワイトレーベル化",
       description:
-        "AnyLLMインスタンスを、独自のブランドでカスタマイズしてください。",
+        "AnythingLLMインスタンスを、独自のブランドでカスタマイズしてください。",
     },
     chat: {
       title: "チャット",
