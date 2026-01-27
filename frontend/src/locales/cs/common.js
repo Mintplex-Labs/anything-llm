@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Je důležité toto heslo uložit, protože neexistuje způsob obnovení.",
       adminUsername: "Uživatelské jméno správce",
-      adminUsernameReq:
-        "Uživatelské jméno musí mít alespoň 6 znaků a obsahovat pouze malá písmena, číslice, podtržítka a pomlčky bez mezer.",
       adminPassword: "Heslo správce",
       adminPasswordReq: "Hesla musí mít alespoň 8 znaků.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Ano",
     no: "Ne",
     search: "Hledat",
+    username_requirements:
+      "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
   },
   home: {
     welcome: "Vítejte",
@@ -949,8 +949,6 @@ const TRANSLATIONS = {
     profile_picture: "Profilový obrázek",
     remove_profile_picture: "Odebrat profilový obrázek",
     username: "Uživatelské jméno",
-    username_description:
-      "Uživatelské jméno musí obsahovat pouze malá písmena, číslice, podtržítka a pomlčky bez mezer",
     new_password: "Nové heslo",
     password_description: "Heslo musí mít délku alespoň 8 znaků",
     cancel: "Zrušit",

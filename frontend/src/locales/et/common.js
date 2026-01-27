@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Salvesta see parool hoolikalt, sest taastamisvõimalust ei ole.",
       adminUsername: "Admini kasutajanimi",
-      adminUsernameReq:
-        "Kasutajanimi peab olema vähemalt 6 märki ning võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse.",
       adminPassword: "Admini parool",
       adminPasswordReq: "Parool peab olema vähemalt 8 märki.",
       teamHint:
@@ -69,6 +67,8 @@ const TRANSLATIONS = {
     yes: "Jah",
     no: "Ei",
     search: null,
+    username_requirements:
+      "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
   },
   settings: {
     title: "Instantsi seaded",
@@ -881,8 +881,6 @@ const TRANSLATIONS = {
     profile_picture: "Profiilipilt",
     remove_profile_picture: "Eemalda profiilipilt",
     username: "Kasutajanimi",
-    username_description:
-      "Kasutajanimi võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse, ilma tühikuteta",
     new_password: "Uus parool",
     password_description: "Parool peab olema vähemalt 8 märki",
     cancel: "Tühista",

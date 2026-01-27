@@ -11,6 +11,11 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -143,13 +148,15 @@ export default function AccountModal({ user, hideModal }) {
                   type="text"
                   className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
-                  minLength={2}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  pattern={USERNAME_PATTERN}
                   defaultValue={user.username}
                   required
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {t("profile_settings.username_description")}
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>
