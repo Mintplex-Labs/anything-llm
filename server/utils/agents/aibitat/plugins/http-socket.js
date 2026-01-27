@@ -1,5 +1,4 @@
 const chalk = require("chalk");
-const { Telemetry } = require("../../../../models/telemetry");
 
 /**
  * HTTP Interface plugin for Aibitat to emulate a websocket interface in the agent
@@ -62,8 +61,6 @@ const httpSocket = {
         // We can only receive one message response with HTTP
         // so we end on first response.
         aibitat.onMessage((message) => {
-          if (message.from !== "USER")
-            Telemetry.sendTelemetry("agent_chat_sent");
           if (message.from === "USER" && muteUserReply) return;
           handler.send(JSON.stringify(message));
           handler.close();

@@ -1,4 +1,3 @@
-const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
@@ -130,7 +129,6 @@ function apiDocumentEndpoints(app) {
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent("api_document_uploaded", {
           documentName: originalname,
         });
@@ -310,7 +308,6 @@ function apiDocumentEndpoints(app) {
           `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
         );
 
-        await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent("api_document_uploaded", {
           documentName: originalname,
           folder,
@@ -435,7 +432,6 @@ function apiDocumentEndpoints(app) {
         Collector.log(
           `Link ${link} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("link_uploaded");
         await EventLogs.logEvent("api_link_uploaded", {
           link,
         });
@@ -581,7 +577,6 @@ function apiDocumentEndpoints(app) {
         Collector.log(
           `Document created successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("raw_document_uploaded");
         await EventLogs.logEvent("api_raw_document_uploaded");
 
         if (!!addToWorkspaces)

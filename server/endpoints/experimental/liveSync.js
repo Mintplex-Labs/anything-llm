@@ -2,7 +2,6 @@ const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const { Document } = require("../../models/documents");
 const { EventLogs } = require("../../models/eventLogs");
 const { SystemSettings } = require("../../models/systemSettings");
-const { Telemetry } = require("../../models/telemetry");
 const { reqBody } = require("../../utils/http");
 const {
   featureFlagEnabled,
@@ -38,9 +37,6 @@ function liveSyncEndpoints(app) {
           experimental_live_file_sync: newStatus,
         });
         if (newStatus === "enabled") {
-          await Telemetry.sendTelemetry("experimental_feature_enabled", {
-            feature: "live_file_sync",
-          });
           await EventLogs.logEvent("experimental_feature_enabled", {
             feature: "live_file_sync",
           });

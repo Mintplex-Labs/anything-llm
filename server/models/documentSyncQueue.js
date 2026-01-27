@@ -1,7 +1,6 @@
 const { BackgroundService } = require("../utils/BackgroundWorkers");
 const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
-const { Telemetry } = require("./telemetry");
 
 /**
  * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
@@ -241,13 +240,11 @@ const DocumentSyncQueue = {
    */
   toggleWatchStatus: async function (documentRecord, watchStatus = false) {
     if (!watchStatus) {
-      await Telemetry.sendTelemetry("document_unwatched");
       await this.unwatch(documentRecord);
       return;
     }
 
     await this.watch(documentRecord);
-    await Telemetry.sendTelemetry("document_watched");
     return;
   },
 };

@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { Telemetry } = require("../models/telemetry");
 const { streamChatWithWorkspace } = require("../utils/chats/stream");
 const {
   ROLES,
@@ -69,15 +68,6 @@ function chatEndpoints(app) {
           null,
           attachments
         );
-        await Telemetry.sendTelemetry("sent_chat", {
-          multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
-          TTSSelection: process.env.TTS_PROVIDER || "native",
-          LLMModel: getModelTag(),
-        });
 
         await EventLogs.logEvent(
           "sent_chat",
@@ -172,16 +162,6 @@ function chatEndpoints(app) {
               },
             });
           },
-        });
-
-        await Telemetry.sendTelemetry("sent_chat", {
-          multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
-          TTSSelection: process.env.TTS_PROVIDER || "native",
-          LLMModel: getModelTag(),
         });
 
         await EventLogs.logEvent(

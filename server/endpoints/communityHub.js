@@ -7,7 +7,6 @@ const {
   communityHubItem,
 } = require("../utils/middleware/communityHubDownloadsEnabled");
 const { EventLogs } = require("../models/eventLogs");
-const { Telemetry } = require("../models/telemetry");
 const {
   flexUserRoleValid,
   ROLES,
@@ -101,10 +100,6 @@ function communityHubEndpoints(app) {
         });
         if (applyError) throw new Error(applyError);
 
-        await Telemetry.sendTelemetry("community_hub_import", {
-          itemType: response.locals.bundleItem.itemType,
-          visibility: response.locals.bundleItem.visibility,
-        });
         await EventLogs.logEvent(
           "community_hub_import",
           {
@@ -143,10 +138,6 @@ function communityHubEndpoints(app) {
         });
         if (importError) throw new Error(importError);
 
-        await Telemetry.sendTelemetry("community_hub_import", {
-          itemType: response.locals.bundleItem.itemType,
-          visibility: response.locals.bundleItem.visibility,
-        });
         await EventLogs.logEvent(
           "community_hub_import",
           {

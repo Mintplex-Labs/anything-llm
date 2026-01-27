@@ -14,7 +14,6 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { Telemetry } = require("../models/telemetry");
 const {
   flexUserRoleValid,
   ROLES,
@@ -35,7 +34,6 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
-const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 
@@ -51,18 +49,6 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const { name = null, onboardingComplete = false } = reqBody(request);
         const { workspace, message } = await Workspace.new(name, user?.id);
-        await Telemetry.sendTelemetry(
-          "workspace_created",
-          {
-            multiUserMode: multiUserMode(response),
-            LLMSelection: process.env.LLM_PROVIDER || "openai",
-            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-            VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-            TTSSelection: process.env.TTS_PROVIDER || "native",
-            LLMModel: getModelTag(),
-          },
-          user?.id
-        );
 
         await EventLogs.logEvent(
           "workspace_created",
@@ -71,8 +57,6 @@ function workspaceEndpoints(app) {
           },
           user?.id
         );
-        if (onboardingComplete === true)
-          await Telemetry.sendTelemetry("onboarding_complete");
 
         response.status(200).json({ workspace, message });
       } catch (e) {
@@ -146,7 +130,6 @@ function workspaceEndpoints(app) {
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent(
           "document_uploaded",
           {
@@ -191,7 +174,6 @@ function workspaceEndpoints(app) {
         Collector.log(
           `Link ${link} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("link_uploaded");
         await EventLogs.logEvent(
           "link_uploaded",
           { link },
@@ -917,7 +899,6 @@ function workspaceEndpoints(app) {
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent(
           "document_uploaded",
           {

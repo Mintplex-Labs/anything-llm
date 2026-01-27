@@ -11,7 +11,6 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
-const { Telemetry } = require("../models/telemetry");
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -116,7 +115,6 @@ function browserExtensionEndpoints(app) {
           return;
         }
 
-        await Telemetry.sendTelemetry("browser_extension_embed_content");
         response.status(200).json({ success: true });
       } catch (error) {
         console.error(error);
@@ -142,7 +140,6 @@ function browserExtensionEndpoints(app) {
           return;
         }
 
-        await Telemetry.sendTelemetry("browser_extension_upload_content");
         response.status(200).json({ success: true });
       } catch (error) {
         console.error(error);

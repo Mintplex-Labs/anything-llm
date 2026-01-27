@@ -2,7 +2,6 @@ const { FLOW_TYPES } = require("./flowTypes");
 const executeApiCall = require("./executors/api-call");
 const executeLLMInstruction = require("./executors/llm-instruction");
 const executeWebScraping = require("./executors/web-scraping");
-const { Telemetry } = require("../../models/telemetry");
 const { safeJsonParse } = require("../http");
 
 class FlowExecutor {
@@ -186,8 +185,6 @@ class FlowExecutor {
    * @param {Object} aibitat - The aibitat instance from the agent handler
    */
   async executeFlow(flow, initialVariables = {}, aibitat) {
-    await Telemetry.sendTelemetry("agent_flow_execution_started");
-
     // Initialize variables with both initial values and any passed-in values
     this.variables = {
       ...(
