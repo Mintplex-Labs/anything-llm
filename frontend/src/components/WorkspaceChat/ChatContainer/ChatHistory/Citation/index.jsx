@@ -1,4 +1,4 @@
-import { Fragment, memo, useState } from "react";
+import { Fragment, useState } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -89,7 +89,7 @@ export default function Citations({ sources = [] }) {
   );
 }
 
-const Citation = memo(({ source, onClick, textSizeClass }) => {
+const Citation = ({ source, onClick, textSizeClass }) => {
   const { title, references = 1 } = source;
   if (!title) return null;
   const chunkSourceInfo = parseChunkSource(source);
@@ -119,7 +119,7 @@ const Citation = memo(({ source, onClick, textSizeClass }) => {
       </div>
     </button>
   );
-});
+};
 
 function omitChunkHeader(text) {
   if (!text.includes("<document_metadata>")) return text;
