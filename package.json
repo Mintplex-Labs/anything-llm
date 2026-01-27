@@ -13,7 +13,7 @@
     "test": "jest",
     "lint": "cd server && npm run lint && cd ../frontend && npm run lint && cd ../collector && npm run lint",
     "setup": "cd server && npm install && cd ../collector && npm install && cd ../frontend && npm install && cd .. && npm run setup:envs && npm run prisma:setup && echo \"Please run npm run dev:server, npm run dev:collector, and npm run dev:frontend in separate terminal tabs.\"",
-    "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env && cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
+    "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env && cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && npm run dev",
     "dev:collector": "cd collector && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
@@ -25,8 +25,6 @@
     "prisma:reset": "truncate -s 0 server/storage/anythingllm.db && npm run prisma:migrate",
     "prod:server": "cd server && npm run start",
     "prod:frontend": "cd frontend && npm run build",
-    "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
-    "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs",
     "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && npm run lint && npm run verify:translations"
   },
