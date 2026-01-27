@@ -98,7 +98,7 @@ const TRANSLATIONS = {
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM 移动版",
   },
   login: {
     "multi-user": {
@@ -488,8 +488,9 @@ const TRANSLATIONS = {
         link: "链接",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "在聊天中渲染 HTML",
+        description:
+          "在助手回复中呈现 HTML 响应。\n这可以显著提高回复的质量，但也可能带来潜在的安全风险。",
       },
     },
   },
@@ -518,7 +519,8 @@ const TRANSLATIONS = {
         model_type: "模型类型",
         default: "预设",
         reasoning: "推理",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "如果您的部署使用了推理模型（例如 o1、o1-mini、o3-mini 等），请将此选项设置为“推理”。否则，您的聊天请求可能会失败。",
       },
     },
   },
@@ -714,8 +716,9 @@ const TRANSLATIONS = {
       pat_token: "Confluence 个人访问令牌",
       pat_token_explained: "您的 Confluence 个人访问令牌。",
       task_explained: "完成后，页面内容将可用于在文档选择器中嵌入至工作区。",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "绕过 SSL 证书验证",
+      bypass_ssl_explained:
+        "启用此选项以绕过对自托管 Confluence 实例的 SSL 证书验证，特别是使用自签名证书的情况。",
     },
     manage: {
       documents: "文档",
@@ -823,7 +826,7 @@ const TRANSLATIONS = {
     cancel: "取消",
     edit_prompt: "编辑问题",
     edit_response: "编辑回应",
-    at_agent: "代理",
+    at_agent: "@agent",
     default_agent_description: " - 此工作区的预设代理。",
     custom_agents_coming_soon: "自定义代理功能即将推出！",
     slash_reset: "/reset",
