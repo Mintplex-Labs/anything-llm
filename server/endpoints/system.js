@@ -1208,7 +1208,9 @@ function systemEndpoints(app) {
       }
 
       const updates = {};
-      if (username)
+      // If the username is being changed, validate it.
+      // Otherwise, do not attempt to validate it to allow existing users to keep their username if not changing it.
+      if (username !== sessionUser.username)
         updates.username = User.validations.username(String(username));
       if (password) updates.password = String(password);
       if (bio) updates.bio = String(bio);
@@ -1224,7 +1226,9 @@ function systemEndpoints(app) {
       response.status(200).json({ success, error });
     } catch (e) {
       console.error(e);
-      response.sendStatus(500).end();
+      response
+        .status(500)
+        .json({ success: false, error: e.message || "Internal server error" });
     }
   });
 

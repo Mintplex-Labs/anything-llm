@@ -33,7 +33,6 @@ const TRANSLATIONS = {
       passwordReq: null,
       passwordWarn: null,
       adminUsername: null,
-      adminUsernameReq: null,
       adminPassword: null,
       adminPasswordReq: null,
       teamHint: null,
@@ -62,6 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    username_requirements:
+      "نام کاربری باید 2 تا 32 کاراکتر باشد، با حرف کوچک شروع شود و فقط شامل حروف کوچک، اعداد، زیرخط، خط تیره و نقطه باشد.",
   },
   settings: {
     title: "تنظیمات سامانه",
@@ -106,10 +107,7 @@ const TRANSLATIONS = {
       "forgot-pass": "فراموشی رمز عبور",
       reset: "بازنشانی",
     },
-    "sign-in": {
-      start: "ورود به حساب",
-      end: "کاربری شما.",
-    },
+    "sign-in": "ورود به حساب {{appName}} کاربری شما.",
     "password-reset": {
       title: "بازنشانی رمز عبور",
       description: "برای بازنشانی رمز عبور خود، اطلاعات لازم را وارد کنید.",
@@ -676,7 +674,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

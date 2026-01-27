@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "このパスワードを保存することが重要です。回復方法はありません。",
       adminUsername: "管理者アカウントのユーザー名",
-      adminUsernameReq:
-        "ユーザー名は6文字以上で、小文字の英字、数字、アンダースコア、ハイフンのみを含む必要があります。スペースは使用できません。",
       adminPassword: "管理者アカウントのパスワード",
       adminPasswordReq: "パスワードは8文字以上である必要があります。",
       teamHint:
@@ -70,6 +68,8 @@ const TRANSLATIONS = {
     yes: "はい",
     no: "いいえ",
     search: null,
+    username_requirements:
+      "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
   },
   settings: {
     title: "インスタンス設定",
@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "パスワードを忘れた",
       reset: "リセット",
     },
-    "sign-in": {
-      start: "サインインして",
-      end: "アカウントにアクセスします。",
-    },
+    "sign-in": "{{appName}} アカウントにサインインします。",
     "password-reset": {
       title: "パスワードリセット",
       description:
@@ -714,8 +711,6 @@ const TRANSLATIONS = {
     profile_picture: "プロフィール画像",
     remove_profile_picture: "プロフィール画像を削除",
     username: "ユーザー名",
-    username_description:
-      "ユーザー名は小文字の英字、数字、アンダースコア、ハイフンのみ使用でき、スペースは使えません",
     new_password: "新しいパスワード",
     password_description: "パスワードは8文字以上である必要があります",
     cancel: "キャンセル",

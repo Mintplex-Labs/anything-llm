@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "Parolēm jābūt vismaz 8 rakstzīmes garām.",
       passwordWarn: "Svarīgi saglabāt šo paroli, jo nav atjaunošanas metodes.",
       adminUsername: "Administratora konta lietotājvārds",
-      adminUsernameReq:
-        "Lietotājvārdam jābūt vismaz 6 rakstzīmes garam un jāsatur tikai mazie burti, cipari, pasvītrojumi un domuzīmes bez atstarpēm.",
       adminPassword: "Administratora konta parole",
       adminPasswordReq: "Parolēm jābūt vismaz 8 rakstzīmes garām.",
       teamHint:
@@ -70,6 +68,8 @@ const TRANSLATIONS = {
     yes: "Jā",
     no: "Nē",
     search: null,
+    username_requirements:
+      "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Aizmirsi paroli",
       reset: "Atiestatīt",
     },
-    "sign-in": {
-      start: "Piesakieties savā",
-      end: "kontā.",
-    },
+    "sign-in": "Piesakieties savā {{appName}} kontā.",
     "password-reset": {
       title: "Paroles atiestatīšana",
       description:
@@ -913,8 +910,6 @@ const TRANSLATIONS = {
     profile_picture: "Profila attēls",
     remove_profile_picture: "Noņemt profila attēlu",
     username: "Lietotājvārds",
-    username_description:
-      "Lietotājvārdam jāsatur tikai mazie burti, cipari, pasvītrojumi un defises bez atstarpēm",
     new_password: "Jauna parole",
     password_description: "Parolei jābūt vismaz 8 rakstzīmes garai",
     cancel: "Atcelt",

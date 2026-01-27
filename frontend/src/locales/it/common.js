@@ -33,7 +33,6 @@ const TRANSLATIONS = {
       passwordReq: null,
       passwordWarn: null,
       adminUsername: null,
-      adminUsernameReq: null,
       adminPassword: null,
       adminPasswordReq: null,
       teamHint: null,
@@ -62,6 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    username_requirements:
+      "Il nome utente deve essere compreso tra 2 e 32 caratteri, iniziare con una lettera minuscola e contenere solo lettere minuscole, numeri, trattini bassi, trattini e punti.",
   },
   settings: {
     title: "Impostazioni istanza",
@@ -106,10 +107,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Password dimenticata",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Accedi al tuo",
-      end: "account.",
-    },
+    "sign-in": "Accedi al tuo {{appName}} account.",
     "password-reset": {
       title: "Password Reset",
       description:
@@ -682,7 +680,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,
