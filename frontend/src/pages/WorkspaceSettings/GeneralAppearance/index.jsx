@@ -6,6 +6,7 @@ import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
+import SaveAsTemplate from "./SaveAsTemplate";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralInfo({ slug }) {
@@ -66,6 +67,7 @@ export default function GeneralInfo({ slug }) {
       </form>
       <SuggestedChatMessages slug={workspace.slug} />
       <WorkspacePfp workspace={workspace} slug={slug} />
+      <SaveAsTemplate workspace={workspace} />
       <DeleteWorkspace workspace={workspace} />
     </div>
   );

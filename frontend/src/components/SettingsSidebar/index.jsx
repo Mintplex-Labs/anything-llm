@@ -387,6 +387,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin", "manager"],
             },
             {
+              btnText: t("settings.workspace-templates"),
+              href: paths.settings.workspaceTemplates(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
               btnText: t("settings.mobile-app"),
               href: paths.settings.mobile(),
               flex: true,

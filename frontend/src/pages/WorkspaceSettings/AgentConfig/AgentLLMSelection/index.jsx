@@ -6,7 +6,7 @@ import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
 
-const ENABLED_PROVIDERS = [
+export const ENABLED_PROVIDERS = [
   "openai",
   "anthropic",
   "lmstudio",
