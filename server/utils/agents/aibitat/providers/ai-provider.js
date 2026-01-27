@@ -28,6 +28,7 @@ const {
 const {
   createBedrockChatClient,
 } = require("../../../AiProviders/bedrock/utils");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -255,10 +256,7 @@ class Provider {
       //     ...config,
       //   });
       case "ollama":
-        return new ChatOllama({
-          baseUrl: process.env.OLLAMA_BASE_PATH,
-          ...config,
-        });
+        return OllamaLangchainChatModel.create(config);
       case "lmstudio":
         return new ChatOpenAI({
           configuration: {
@@ -446,6 +444,41 @@ class Provider {
     return {
       textResponse: result.textResponse,
       functionCall: result.functionCall,
+    };
+  }
+}
+
+// Langchain Wrappers
+
+/**
+ * Ollama Langchain Chat Model that supports passing in context window options
+ * so that context window preferences are respected between Ollama chat/agent and in
+ * Langchain tooling.
+ */
+class OllamaLangchainChatModel {
+  static create(config = {}) {
+    console.log("OllamaLangchainChatModel.create params", {
+      baseUrl: process.env.OLLAMA_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+    return new ChatOllama({
+      baseUrl: process.env.OLLAMA_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static performanceMode() {
+    return process.env.OLLAMA_PERFORMANCE_MODE || "base";
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.OLLAMA_MODEL_PREF;
+    return {
+      ...(this.performanceMode() === "base"
+        ? {}
+        : { num_ctx: OllamaAILLM.promptWindowLimit(model) }),
     };
   }
 }
