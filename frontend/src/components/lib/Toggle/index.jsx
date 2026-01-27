@@ -25,17 +25,18 @@ const LABEL_STYLES = {
 };
 
 /**
- * @param {string} className - Additional CSS classes
- * @param {boolean} enabled - Controlled checked state
- * @param {function} onChange - Change handler receiving new checked state
- * @param {boolean} disabled - Whether toggle is disabled
- * @param {"sm" | "md" | "lg"} size - Toggle size
- * @param {string} name - Input name for form submission
- * @param {string} label - Label text next to toggle
- * @param {string} description - Description text below label
- * @param {"default" | "horizontal"} variant - Layout variant
- * @param {string} hint - Tooltip ID for info icon hint next to label
- * @param {string} value - Input value for form submission
+ * @param {Object} props - Component props
+ * @param {string} [props.className] - Additional CSS classes
+ * @param {boolean} [props.enabled] - Controlled checked state
+ * @param {(checked: boolean) => void} [props.onChange] - Change handler receiving new checked state
+ * @param {boolean} [props.disabled=false] - Whether toggle is disabled
+ * @param {"sm" | "md" | "lg"} [props.size="sm"] - Toggle size
+ * @param {string} [props.name] - Input name for form submission
+ * @param {string} [props.label] - Label text next to toggle
+ * @param {string} [props.description] - Description text below label
+ * @param {"default" | "horizontal"} [props.variant="default"] - Layout variant
+ * @param {string} [props.hint] - Tooltip ID for info icon hint next to label
+ * @param {string} [props.value] - Input value for form submission
  */
 export default function Toggle({
   className,
