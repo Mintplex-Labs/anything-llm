@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "密碼必須至少包含 8 個字元。",
       passwordWarn: "保存此密碼很重要，因為沒有恢復方法。",
       adminUsername: "管理員帳號使用者名稱",
-      adminUsernameReq:
-        "使用者名稱必須至少為 6 個字元，並且只能包含小寫字母、數字、底線和連字號，不含空格。",
       adminPassword: "管理員帳號密碼",
       adminPasswordReq: "密碼必須至少包含 8 個字元。",
       teamHint:
@@ -66,6 +64,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜尋",
+    username_requirements:
+      "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
   },
   settings: {
     title: "系統設定",
@@ -683,8 +683,6 @@ const TRANSLATIONS = {
     profile_picture: "個人資料圖片",
     remove_profile_picture: "移除個人資料圖片",
     username: "使用者名稱",
-    username_description:
-      "使用者名稱必須只包含小寫字母、數字、底線和連字號，且沒有空格",
     new_password: "新密碼",
     password_description: "密碼長度必須至少為 8 個字元",
     cancel: "取消",

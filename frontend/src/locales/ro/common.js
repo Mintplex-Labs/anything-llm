@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Este important să salvezi această parolă deoarece nu există metodă de recuperare.",
       adminUsername: "Numele contului de administrator",
-      adminUsernameReq:
-        "Numele de utilizator trebuie să aibă cel puțin 6 caractere și să conțină numai litere mici, cifre, underscore și liniuțe fără spații.",
       adminPassword: "Parola contului de administrator",
       adminPasswordReq: "Parolele trebuie să aibă cel puțin 8 caractere.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Da",
     no: "Nu",
     search: "Caută",
+    username_requirements:
+      "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
   },
   settings: {
     title: "Setările instanței",
@@ -653,8 +653,6 @@ const TRANSLATIONS = {
     profile_picture: "Poză profil",
     remove_profile_picture: "Șterge poza profil",
     username: "Nume utilizator",
-    username_description:
-      "Numele de utilizator trebuie să conțină doar litere mici, cifre, underscore și liniuțe fără spații",
     new_password: "Parolă nouă",
     password_description: "Parola trebuie să aibă cel puțin 8 caractere",
     cancel: "Anulează",
