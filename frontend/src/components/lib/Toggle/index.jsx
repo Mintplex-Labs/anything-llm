@@ -1,3 +1,5 @@
+import { Info } from "@phosphor-icons/react";
+
 const TOGGLE_STYLES = {
   sm: "h-[12px] w-[20px] after:h-[8px] after:w-[8px] after:top-[2px] after:left-[2px] peer-checked:after:translate-x-full",
   md: "h-[16px] w-[28px] after:h-[12px] after:w-[12px] after:top-[2px] after:left-[2px] peer-checked:after:translate-x-full",
@@ -32,6 +34,8 @@ const LABEL_STYLES = {
  * @param {string} label - Label text next to toggle
  * @param {string} description - Description text below label
  * @param {"default" | "horizontal"} variant - Layout variant
+ * @param {string} hint - Tooltip ID for info icon hint next to label
+ * @param {string} value - Input value for form submission
  */
 export default function Toggle({
   className,
@@ -43,8 +47,9 @@ export default function Toggle({
   label,
   description,
   variant = "default",
+  hint,
+  value,
 }) {
-  // Support both controlled (enabled + onChange) and uncontrolled (name) modes
   const inputProps =
     enabled !== undefined
       ? { checked: enabled, onChange: (e) => onChange?.(e.target.checked) }
@@ -61,6 +66,7 @@ export default function Toggle({
           label={label}
           description={description}
           labelStyles={labelStyles}
+          hint={hint}
         />
         <div className="shrink-0 ml-4">
           <ToggleSwitch
@@ -68,6 +74,7 @@ export default function Toggle({
             disabled={disabled}
             size={size}
             inputProps={inputProps}
+            value={value}
           />
         </div>
       </label>
@@ -83,6 +90,7 @@ export default function Toggle({
         disabled={disabled}
         size={size}
         inputProps={inputProps}
+        value={value}
       />
       {(label || description) && (
         <div className="ml-3">
@@ -90,6 +98,7 @@ export default function Toggle({
             label={label}
             description={description}
             labelStyles={labelStyles}
+            hint={hint}
           />
         </div>
       )}
@@ -97,7 +106,7 @@ export default function Toggle({
   );
 }
 
-function ToggleSwitch({ name, disabled, size, inputProps }) {
+function ToggleSwitch({ name, disabled, size, inputProps, value }) {
   return (
     <>
       <input
@@ -105,6 +114,7 @@ function ToggleSwitch({ name, disabled, size, inputProps }) {
         name={name}
         disabled={disabled}
         className="peer sr-only"
+        value={value}
         {...inputProps}
       />
       <div
@@ -122,15 +132,22 @@ function ToggleSwitch({ name, disabled, size, inputProps }) {
   );
 }
 
-function TextContent({ label, description, labelStyles = {} }) {
+function TextContent({ label, description, labelStyles = {}, hint }) {
   if (!label && !description) return null;
   return (
     <div className={`flex flex-col ${labelStyles.gap}`}>
       {label && (
         <span
-          className={`text-white light:text-slate-950 ${labelStyles.label}`}
+          className={`flex items-center gap-x-1 text-white light:text-slate-950 ${labelStyles.label}`}
         >
           {label}
+          {hint && (
+            <Info
+              size={14}
+              className="text-theme-text-secondary cursor-pointer"
+              data-tooltip-id={hint}
+            />
+          )}
         </span>
       )}
       {description && (
