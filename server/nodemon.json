@@ -1,6 +1,6 @@
 {
   "events": {
-    "start": "yarn swagger",
-    "restart": "yarn swagger"
+    "start": "npm run swagger",
+    "restart": "npm run swagger"
   }
 }

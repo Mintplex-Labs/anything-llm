@@ -10,7 +10,7 @@
 // to a specific language file as this will break the other languages. Any new keys should be added to english
 // and the language file you are working on.
 
-// Contributor Notice: If you are adding a translation you MUST locally run `yarn verify:translations` from the root prior to PR.
+// Contributor Notice: If you are adding a translation you MUST locally run `npm run verify:translations` from the root prior to PR.
 // please do not submit PR's without first verifying this test passes as it will tell you about missing keys or values
 // from the primary dictionary.
 

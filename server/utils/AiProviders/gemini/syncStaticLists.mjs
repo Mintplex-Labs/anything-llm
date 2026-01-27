@@ -1,7 +1,7 @@
 /**
  * This is a script that syncs the static lists of models from the Gemini API
  * so that maintainers can keep the fallback lists up to date.
- * 
+ *
  * To run, cd into this directory and run:
  * node syncStaticLists.mjs
  */
@@ -43,6 +43,6 @@ function updateDefaultModelsFile(models) {
   );
 
   fs.writeFileSync(path.join("./defaultModels.js"), defaultModelFileContents);
-  console.log("Updated defaultModels.js. Dont forget to `yarn lint` and commit!");
+  console.log("Updated defaultModels.js. Dont forget to `npm run lint` and commit!");
 }
 updateDefaultModelsFile(models);

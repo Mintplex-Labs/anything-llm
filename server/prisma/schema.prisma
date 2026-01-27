@@ -4,7 +4,7 @@ generator client {
 
 // Uncomment the following lines and comment out the SQLite datasource block above to use PostgreSQL
 // Make sure to set the correct DATABASE_URL in your .env file
-// After swapping run `yarn prisma:setup` from the root directory to migrate the database
+// After swapping run `npm run prisma:setup` from the root directory to migrate the database
 //
 // datasource db {
 //   provider = "postgresql"
