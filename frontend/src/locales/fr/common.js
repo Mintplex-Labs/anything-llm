@@ -102,7 +102,7 @@ const TRANSLATIONS = {
     interface: "Interface",
     branding: "Personnalisation",
     chat: "Chat",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM Mobile",
   },
   login: {
     "multi-user": {
@@ -369,7 +369,8 @@ const TRANSLATIONS = {
         model_type: "Type de modèle",
         default: "Par défaut",
         reasoning: "Raisonnement",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "Si votre déploiement utilise un modèle de raisonnement (o1, o1-mini, o3-mini, etc.), veuillez définir cette option sur « Raisonnement ». Sinon, vos requêtes de conversation pourraient échouer.",
       },
     },
   },
@@ -700,11 +701,10 @@ const TRANSLATIONS = {
     cancel: "Annuler",
     edit_prompt: "Modifier le prompt",
     edit_response: "Modifier la réponse",
-    at_agent:
-      "Sélectionnez une compétence d'agent, un flux d'agent ou un serveur MCP",
+    at_agent: "@agent",
     default_agent_description: "l'agent par défaut de cet espace de travail",
     custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
-    slash_reset: "Effacer l'historique du chat",
+    slash_reset: "/reset",
     preset_reset_description:
       "Efface l'historique du chat actuel et commence une nouvelle conversation.",
     add_new_preset: "Ajouter une nouvelle commande preset",

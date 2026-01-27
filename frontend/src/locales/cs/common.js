@@ -913,7 +913,7 @@ const TRANSLATIONS = {
     cancel: "Zrušit",
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
-    at_agent: "@agenta",
+    at_agent: "@agent",
     default_agent_description: " - výchozí agent pro tento pracovní prostor.",
     custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
     slash_reset: "/reset",

@@ -98,7 +98,7 @@ const TRANSLATIONS = {
     interface: "使用者介面偏好設定",
     branding: "品牌與白標設定",
     chat: "聊天室",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM 應用程式",
   },
   login: {
     "multi-user": {
@@ -346,7 +346,8 @@ const TRANSLATIONS = {
         model_type: "模型類型",
         default: "預設",
         reasoning: "推理",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "如果您的部署使用推理模型（例如 o1、o1-mini、o3-mini 等），請將此設定設為「推理」。否則，您的對話請求可能會失敗。",
       },
     },
   },
@@ -543,8 +544,9 @@ const TRANSLATIONS = {
       pat_token: "Confluence 個人存取權杖",
       pat_token_explained: "您的 Confluence 個人存取權杖。",
       task_explained: "完成後，頁面內容將可供嵌入到工作區中的檔案選擇器。",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "跳過 SSL 憑證驗證",
+      bypass_ssl_explained:
+        "啟用此選項，以繞過自簽憑證的 SSL 憑證驗證，適用於您自行託管的 Confluence 實例。",
     },
     manage: {
       documents: "文件",
@@ -652,7 +654,7 @@ const TRANSLATIONS = {
     cancel: "取消",
     edit_prompt: "編輯問題",
     edit_response: "編輯回應",
-    at_agent: "代理",
+    at_agent: "@agent",
     default_agent_description: " - 此工作區的預設代理。",
     custom_agents_coming_soon: "自訂代理功能即將推出！",
     slash_reset: "/reset",
@@ -786,8 +788,9 @@ const TRANSLATIONS = {
         link: "連結",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "將 HTML 內容轉換為聊天格式",
+        description:
+          "將 HTML 格式的回應嵌入到助理的回應中。\n這可以顯著提高回應品質，但也可能帶來潛在的安全風險。",
       },
     },
   },
