@@ -106,10 +106,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Quên mật khẩu",
       reset: "Đặt lại",
     },
-    "sign-in": {
-      start: "Đăng nhập vào",
-      end: "tài khoản của bạn.",
-    },
+    "sign-in": "Đăng nhập vào {{appName}} tài khoản của bạn.",
     "password-reset": {
       title: "Mật khẩu Đặt lại",
       description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",

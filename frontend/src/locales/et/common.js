@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Unustasid parooli",
       reset: "Lähtesta",
     },
-    "sign-in": {
-      start: "Logi sisse oma",
-      end: "kontosse.",
-    },
+    "sign-in": "Logi sisse oma {{appName}} kontosse.",
     "password-reset": {
       title: "Parooli lähtestamine",
       description: "Sisesta all vajalik info, et parool lähtestada.",

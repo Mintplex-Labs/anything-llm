@@ -126,10 +126,8 @@ const TRANSLATIONS = {
       "forgot-pass": "Forgot password",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Enter your username and password to access your",
-      end: "instance.",
-    },
+    "sign-in":
+      "Enter your username and password to access your {{appName}} instance.",
     "password-reset": {
       title: "Password Reset",
       description:

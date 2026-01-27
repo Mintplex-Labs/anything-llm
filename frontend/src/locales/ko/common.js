@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "비밀번호를 잊으셨나요",
       reset: "재설정",
     },
-    "sign-in": {
-      start: "사용자 계정으로 ",
-      end: "에 로그인하세요.",
-    },
+    "sign-in": "{{appName}}에 로그인하세요.",
     "password-reset": {
       title: "비밀번호 재설정",
       description: "비밀번호를 재설정하려면 아래에 필요한 정보를 입력하세요.",

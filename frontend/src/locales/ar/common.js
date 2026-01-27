@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "هل نسيت كلمة المرور",
       reset: "إعادة الضبط",
     },
-    "sign-in": {
-      start: "تسجيل الدخول إلى",
-      end: "حساب.",
-    },
+    "sign-in": "تسجيل الدخول إلى حساب {{appName}}.",
     "password-reset": {
       title: "إعادة تعيين كلمة المرور",
       description:

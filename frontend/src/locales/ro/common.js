@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Ai uitat parola",
       reset: "Resetează",
     },
-    "sign-in": {
-      start: "Autentifică-te în",
-      end: "cont.",
-    },
+    "sign-in": "Autentifică-te în {{appName}} cont.",
     "password-reset": {
       title: "Resetare parolă",
       description:

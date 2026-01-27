@@ -106,10 +106,7 @@ const TRANSLATIONS = {
       "forgot-pass": "فراموشی رمز عبور",
       reset: "بازنشانی",
     },
-    "sign-in": {
-      start: "ورود به حساب",
-      end: "کاربری شما.",
-    },
+    "sign-in": "ورود به حساب {{appName}} کاربری شما.",
     "password-reset": {
       title: "بازنشانی رمز عبور",
       description: "برای بازنشانی رمز عبور خود، اطلاعات لازم را وارد کنید.",

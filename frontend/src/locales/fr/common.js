@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Mot de passe oublié",
       reset: "Réinitialiser",
     },
-    "sign-in": {
-      start: "Connectez-vous à votre",
-      end: "compte.",
-    },
+    "sign-in": "Connectez-vous à votre compte {{appName}}.",
     "password-reset": {
       title: "Réinitialisation du mot de passe",
       description:

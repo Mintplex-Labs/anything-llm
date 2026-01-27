@@ -106,10 +106,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Şifremi Unuttum",
       reset: "Sıfırla",
     },
-    "sign-in": {
-      start: "Hesabınıza",
-      end: "giriş yapın.",
-    },
+    "sign-in": "{{appName}} hesabınıza giriş yapın.",
     "password-reset": {
       title: "Şifre Sıfırlama",
       description: "Şifrenizi sıfırlamak için gerekli bilgileri aşağıya girin.",

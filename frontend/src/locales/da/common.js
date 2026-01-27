@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Glemt adgangskode",
       reset: "Nulstil",
     },
-    "sign-in": {
-      start: "Log ind på din",
-      end: "konto.",
-    },
+    "sign-in": "Log ind på din {{appName}} konto.",
     "password-reset": {
       title: "Nulstilling af adgangskode",
       description:

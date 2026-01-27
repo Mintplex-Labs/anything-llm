@@ -114,10 +114,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Aizmirsi paroli",
       reset: "Atiestatīt",
     },
-    "sign-in": {
-      start: "Piesakieties savā",
-      end: "kontā.",
-    },
+    "sign-in": "Piesakieties savā {{appName}} kontā.",
     "password-reset": {
       title: "Paroles atiestatīšana",
       description:
