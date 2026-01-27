@@ -23,7 +23,7 @@ class DockerModelRunnerLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
       throw new Error("No Docker Model Runner API Base Path was set.");
-    if (!process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF)
+    if (!process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF && !modelPreference)
       throw new Error("No Docker Model Runner Model Pref was set.");
 
     this.dmr = new OpenAIApi({
@@ -439,8 +439,26 @@ async function getDockerModels(basePath = null, task = "chat") {
       for (const tag of tags) {
         if (!installedModels[tag.id])
           availableModels[modelName].tags.push({ ...tag, downloaded: false });
-        else availableModels[modelName].tags.push({ ...tag, downloaded: true });
+        else {
+          availableModels[modelName].tags.push({ ...tag, downloaded: true });
+          // remove the model from the installed models list so we dont double append it to the available models list
+          // when checking for custom models
+          delete installedModels[tag.id];
+        }
       }
+    }
+
+    // For any models that are still in the installed models list, we need to append them to the available models list as downloaded
+    for (const model of Object.values(installedModels)) {
+      const organization = model.id.split("/").pop();
+      const name = model.id.split("/").pop();
+      if (!availableModels[organization])
+        availableModels[organization] = { tags: [] };
+      availableModels[organization].tags.push({
+        ...model,
+        downloaded: true,
+        name: name,
+      });
     }
   } catch (e) {
     DockerModelRunnerLLM.slog(`Error getting Docker models`, e);
