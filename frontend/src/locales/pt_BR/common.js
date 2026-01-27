@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "É importante salvar esta senha pois não há método de recuperação.",
       adminUsername: "Nome de usuário admin",
-      adminUsernameReq:
-        "O nome deve ter pelo menos 6 caracteres e conter apenas letras minúsculas, números, sublinhados e hífens, sem espaços.",
       adminPassword: "Senha de admin",
       adminPasswordReq: "Senhas devem ter pelo menos 8 caracteres.",
       teamHint:
@@ -69,6 +67,8 @@ const TRANSLATIONS = {
     yes: "Sim",
     no: "Não",
     search: "Pesquisar",
+    username_requirements:
+      "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
   },
   settings: {
     title: "Configurações da Instância",
@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Esqueci a senha",
       reset: "Redefinir",
     },
-    "sign-in": {
-      start: "Acesse sua",
-      end: "conta.",
-    },
+    "sign-in": "Acesse sua {{appName}} conta.",
     "password-reset": {
       title: "Redefinição de Senha",
       description:
@@ -897,8 +894,6 @@ const TRANSLATIONS = {
     profile_picture: "Foto de perfil",
     remove_profile_picture: "Remover foto de perfil",
     username: "Nome de usuário",
-    username_description:
-      "Somente letras minúsculas, números, sublinhados e hífens. Sem espaços.",
     new_password: "Nova senha",
     password_description: "A senha deve ter no mínimo 8 caracteres",
     cancel: "Cancelar",

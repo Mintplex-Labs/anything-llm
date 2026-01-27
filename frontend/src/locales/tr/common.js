@@ -33,7 +33,6 @@ const TRANSLATIONS = {
       passwordReq: null,
       passwordWarn: null,
       adminUsername: null,
-      adminUsernameReq: null,
       adminPassword: null,
       adminPasswordReq: null,
       teamHint: null,
@@ -62,6 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    username_requirements:
+      "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
   },
   settings: {
     title: "Instance Ayarları",
@@ -106,10 +107,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Şifremi Unuttum",
       reset: "Sıfırla",
     },
-    "sign-in": {
-      start: "Hesabınıza",
-      end: "giriş yapın.",
-    },
+    "sign-in": "{{appName}} hesabınıza giriş yapın.",
     "password-reset": {
       title: "Şifre Sıfırlama",
       description: "Şifrenizi sıfırlamak için gerekli bilgileri aşağıya girin.",
@@ -679,7 +677,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

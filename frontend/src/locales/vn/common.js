@@ -33,7 +33,6 @@ const TRANSLATIONS = {
       passwordReq: null,
       passwordWarn: null,
       adminUsername: null,
-      adminUsernameReq: null,
       adminPassword: null,
       adminPasswordReq: null,
       teamHint: null,
@@ -62,6 +61,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    username_requirements:
+      "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
   },
   settings: {
     title: "Cài đặt hệ thống",
@@ -106,10 +107,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Quên mật khẩu",
       reset: "Đặt lại",
     },
-    "sign-in": {
-      start: "Đăng nhập vào",
-      end: "tài khoản của bạn.",
-    },
+    "sign-in": "Đăng nhập vào {{appName}} tài khoản của bạn.",
     "password-reset": {
       title: "Mật khẩu Đặt lại",
       description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
@@ -678,7 +676,6 @@ const TRANSLATIONS = {
     profile_picture: null,
     remove_profile_picture: null,
     username: null,
-    username_description: null,
     new_password: null,
     password_description: null,
     cancel: null,

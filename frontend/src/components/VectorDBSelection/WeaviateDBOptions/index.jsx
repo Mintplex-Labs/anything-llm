@@ -27,7 +27,7 @@ export default function WeaviateDBOptions({ settings }) {
             name="WeaviateApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-123Abcweaviate"
-            defaultValue={settings?.WeaviateApiKey}
+            defaultValue={settings?.WeaviateApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
           />
