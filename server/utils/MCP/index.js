@@ -39,6 +39,11 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     }
     if (!tools || !tools.length) return null;
 
+    // Read MCP config cooldown settings
+    const serverConfig = this.mcpServerConfigs.find((s) => s.name === name);
+    const cooldownMs =
+      Number(serverConfig?.server?.anythingllm?.cooldown ?? 30) * 1000;
+
     const plugins = [];
     for (const tool of tools) {
       plugins.push({
@@ -54,6 +59,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 controller: new AbortController(),
                 description: tool.description,
                 isMCPTool: true,
+                mcpCooldownMs: cooldownMs,
                 examples: [],
                 parameters: {
                   $schema: "http://json-schema.org/draft-07/schema#",
