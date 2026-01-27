@@ -71,7 +71,7 @@ export default function Citations({ sources = [] }) {
         <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
           {combineLikeSources(sources).map((source, idx) => (
             <Citation
-              key={source.title || `_idx_${idx}`}
+              key={source.title || idx.toString()}
               source={source}
               onClick={() => setSelectedSource(source)}
               textSizeClass={textSizeClass}
