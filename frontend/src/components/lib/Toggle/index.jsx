@@ -22,6 +22,17 @@ const LABEL_STYLES = {
   },
 };
 
+/**
+ * @param {string} className - Additional CSS classes
+ * @param {boolean} enabled - Controlled checked state
+ * @param {function} onChange - Change handler receiving new checked state
+ * @param {boolean} disabled - Whether toggle is disabled
+ * @param {"sm" | "md" | "lg"} size - Toggle size
+ * @param {string} name - Input name for form submission
+ * @param {string} label - Label text next to toggle
+ * @param {string} description - Description text below label
+ * @param {"default" | "horizontal"} variant - Layout variant
+ */
 export default function Toggle({
   className,
   enabled,
@@ -40,9 +51,54 @@ export default function Toggle({
       : { defaultChecked: false };
 
   const labelStyles = LABEL_STYLES[size] || LABEL_STYLES.sm;
-  const hasText = label || description;
 
-  const toggleSwitch = (
+  if (variant === "horizontal") {
+    return (
+      <label
+        className={`flex items-start justify-between max-w-[700px] ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className ?? ""}`}
+      >
+        <TextContent
+          label={label}
+          description={description}
+          labelStyles={labelStyles}
+        />
+        <div className="shrink-0 ml-4">
+          <ToggleSwitch
+            name={name}
+            disabled={disabled}
+            size={size}
+            inputProps={inputProps}
+          />
+        </div>
+      </label>
+    );
+  }
+
+  return (
+    <label
+      className={`inline-flex items-start ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className ?? ""}`}
+    >
+      <ToggleSwitch
+        name={name}
+        disabled={disabled}
+        size={size}
+        inputProps={inputProps}
+      />
+      {(label || description) && (
+        <div className="ml-3">
+          <TextContent
+            label={label}
+            description={description}
+            labelStyles={labelStyles}
+          />
+        </div>
+      )}
+    </label>
+  );
+}
+
+function ToggleSwitch({ name, disabled, size, inputProps }) {
+  return (
     <>
       <input
         type="checkbox"
@@ -64,8 +120,11 @@ export default function Toggle({
       />
     </>
   );
+}
 
-  const textContent = hasText && (
+function TextContent({ label, description, labelStyles = {} }) {
+  if (!label && !description) return null;
+  return (
     <div className={`flex flex-col ${labelStyles.gap}`}>
       {label && (
         <span
@@ -82,25 +141,5 @@ export default function Toggle({
         </span>
       )}
     </div>
-  );
-
-  if (variant === "horizontal") {
-    return (
-      <label
-        className={`flex items-start justify-between max-w-[700px] ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className ?? ""}`}
-      >
-        {textContent}
-        <div className="shrink-0 ml-4">{toggleSwitch}</div>
-      </label>
-    );
-  }
-
-  return (
-    <label
-      className={`inline-flex items-start ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className ?? ""}`}
-    >
-      {toggleSwitch}
-      {hasText && <div className="ml-3">{textContent}</div>}
-    </label>
   );
 }
