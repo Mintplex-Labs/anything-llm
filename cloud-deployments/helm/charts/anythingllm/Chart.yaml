@@ -1,7 +1,0 @@
-apiVersion: v2
-name: anythingllm
-description: The all-in-one Desktop & Docker AI application with built-in RAG, AI agents, No-code agent builder, MCP compatibility, and more.
-type: application
-version: 1.0.0
-appVersion: "1.85.0"
-icon: https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/refs/heads/master/frontend/public/favicon.png
