@@ -457,11 +457,6 @@ class Provider {
  */
 class OllamaLangchainChatModel {
   static create(config = {}) {
-    console.log("OllamaLangchainChatModel.create params", {
-      baseUrl: process.env.OLLAMA_BASE_PATH,
-      ...this.queryOptions(config),
-      ...config,
-    });
     return new ChatOllama({
       baseUrl: process.env.OLLAMA_BASE_PATH,
       ...this.queryOptions(config),
