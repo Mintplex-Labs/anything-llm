@@ -2,16 +2,19 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 export const THREAD_RENAME_EVENT = "renameThread";
+export const THREAD_ACTIVITY_EVENT = "threadActivity";
 
 export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
+  const [bumpedThreadSlug, setBumpedThreadSlug] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -30,6 +33,50 @@ export default function ThreadContainer({ workspace }) {
 
     return () => {
       window.removeEventListener(THREAD_RENAME_EVENT, chatHandler);
+    };
+  }, []);
+
+  useEffect(() => {
+    const activityHandler = (event) => {
+      const { threadSlug: activeSlug } = event.detail;
+      if (!activeSlug) return;
+
+      setThreads((prevThreads) => {
+        const idx = prevThreads.findIndex((t) => t.slug === activeSlug);
+        if (idx <= 0) return prevThreads;
+
+        // Move thread to top
+        const thread = prevThreads[idx];
+        const reordered = [
+          thread,
+          ...prevThreads.slice(0, idx),
+          ...prevThreads.slice(idx + 1),
+        ];
+
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+
+        setBumpedThreadSlug(activeSlug);
+
+        // Wait for animation before resetting
+        timeoutRef.current = setTimeout(() => {
+          setBumpedThreadSlug(null);
+          timeoutRef.current = null;
+        }, 800);
+
+        return reordered;
+      });
+    };
+
+    window.addEventListener(THREAD_ACTIVITY_EVENT, activityHandler);
+    return () => {
+      window.removeEventListener(THREAD_ACTIVITY_EVENT, activityHandler);
+
+      // Cleanup timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, []);
 
@@ -144,6 +191,7 @@ export default function ThreadContainer({ workspace }) {
           onRemove={removeThread}
           thread={thread}
           hasNext={i !== threads.length - 1}
+          wasBumped={thread.slug === bumpedThreadSlug}
         />
       ))}
       <DeleteAllThreadButton
@@ -229,5 +277,14 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
         </p>
       </div>
     </button>
+  );
+}
+
+export function dispatchThreadActivityEvent(threadSlug) {
+  if (!threadSlug) return;
+  window.dispatchEvent(
+    new CustomEvent(THREAD_ACTIVITY_EVENT, {
+      detail: { threadSlug },
+    })
   );
 }

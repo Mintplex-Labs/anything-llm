@@ -22,6 +22,7 @@ export default function ThreadItem({
   toggleMarkForDeletion,
   hasNext,
   ctrlPressed = false,
+  wasBumped = false,
 }) {
   const { slug, threadSlug = null } = useParams();
   const optionsContainer = useRef(null);
@@ -32,7 +33,7 @@ export default function ThreadItem({
 
   return (
     <div
-      className="w-full relative flex h-[38px] items-center border-none rounded-lg"
+      className={`w-full relative flex h-[38px] items-center border-none rounded-lg ${wasBumped ? "thread-bump-animation" : ""}`}
       role="listitem"
     >
       {/* Curved line Element and leader if required */}
