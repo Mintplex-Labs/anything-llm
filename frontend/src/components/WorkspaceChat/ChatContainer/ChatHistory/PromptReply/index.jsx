@@ -17,7 +17,6 @@ const PromptReply = ({
   error,
   workspace,
   sources = [],
-  closed = true,
 }) => {
   const assistantBackgroundColor = "bg-theme-bg-chat";
 
