@@ -336,9 +336,7 @@ function PasswordProtection() {
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
                         placeholder="Your Instance Password"
-                        minLength={PASSWORD_MIN_LENGTH}
-                        maxLength={PASSWORD_MAX_LENGTH}
-                        pattern={PASSWORD_PATTERN}
+                        minLength={8}
                         required={true}
                         autoComplete="off"
                         defaultValue={usePassword ? "********" : ""}
