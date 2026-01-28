@@ -90,6 +90,16 @@ const User = {
     const { password, ...rest } = user;
     return { ...rest };
   },
+  _identifyErrorAndFormatMessage: function (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002 is the unique constraint violation error code
+      if (error.code === "P2002") {
+        const target = error.meta?.target;
+        return `A user with that ${target?.join(", ")} already exists`;
+      }
+    }
+    return error.message;
+  },
 
   create: async function ({
     username,
@@ -122,17 +132,7 @@ const User = {
       return { user: this.filterFields(user), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // P2002 is the unique constraint violation error code
-        if (error.code === "P2002") {
-          const target = error.meta?.target;
-          return {
-            user: null,
-            error: `A user with that ${target?.join(", ")} already exists`,
-          };
-        }
-      }
-      return { user: null, error: error.message };
+      return { user: null, error: this._identifyErrorAndFormatMessage(error) };
     }
   },
   // Log the changes to a user object, but omit sensitive fields
@@ -209,19 +209,11 @@ const User = {
       );
       return { success: true, error: null };
     } catch (error) {
-      console.error(error.message);
-
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // P2002 is the unique constraint violation error code
-        if (error.code === "P2002") {
-          const target = error.meta?.target;
-          return {
-            user: null,
-            error: `A user with that ${target?.join(", ")} already exists`,
-          };
-        }
-      }
-      return { success: false, error: error.message };
+      console.error("FAILED TO UPDATE USER.", error.message);
+      return {
+        success: false,
+        error: this._identifyErrorAndFormatMessage(error),
+      };
     }
   },
 
