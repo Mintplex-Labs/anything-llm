@@ -205,9 +205,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
-    const llmProvider = process.env.LLM_PROVIDER;
-    const vectorDB = process.env.VECTOR_DB;
-    const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
+    const { getStartupDefaults } = require("../utils/boot/defaults");
+    const defaults = getStartupDefaults();
+    const llmProvider = process.env.LLM_PROVIDER ?? defaults.llmProvider;
+    const vectorDB = process.env.VECTOR_DB ?? defaults.vectorDB;
+    const embeddingEngine = process.env.EMBEDDING_ENGINE ?? defaults.embeddingEngine;
     return {
       // --------------------------------------------------------
       // General Settings

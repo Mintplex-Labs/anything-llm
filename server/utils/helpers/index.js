@@ -487,6 +487,79 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
   }
 }
 
+function getProcessEnvValue(provider, defaultValue = null) {
+  switch (provider) {
+    case "openai":
+      return 'OPEN_MODEL_PREF';
+    case "azure":
+      return 'OPEN_MODEL_PREF';
+    case "anthropic":
+      return 'ANTHROPIC_MODEL_PREF';
+    case "gemini":
+      return 'GEMINI_LLM_MODEL_PREF';
+    case "lmstudio":
+      return 'LMSTUDIO_MODEL_PREF';
+    case "localai":
+      return 'LOCAL_AI_MODEL_PREF';
+    case "ollama":
+      return 'OLLAMA_MODEL_PREF';
+    case "togetherai":
+      return 'TOGETHER_AI_MODEL_PREF';
+    case "fireworksai":
+      return 'FIREWORKS_AI_LLM_MODEL_PREF';
+    case "perplexity":
+      return 'PERPLEXITY_MODEL_PREF';
+    case "openrouter":
+      return 'OPENROUTER_MODEL_PREF';
+    case "mistral":
+      return 'MISTRAL_MODEL_PREF';
+    case "huggingface":
+      return defaultValue;
+    case "groq":
+      return 'GROQ_MODEL_PREF';
+    case "koboldcpp":
+      return 'KOBOLD_CPP_MODEL_PREF';
+    case "textgenwebui":
+      return defaultValue;
+    case "cohere":
+      return 'COHERE_MODEL_PREF';
+    case "litellm":
+      return 'LITE_LLM_MODEL_PREF';
+    case "generic-openai":
+      return 'GENERIC_OPEN_AI_MODEL_PREF';
+    case "bedrock":
+      return 'AWS_BEDROCK_LLM_MODEL_PREFERENCE';
+    case "deepseek":
+      return 'DEEPSEEK_MODEL_PREF';
+    case "apipie":
+      return 'APIPIE_LLM_MODEL_PREF';
+    case "novita":
+      return 'NOVITA_LLM_MODEL_PREF';
+    case "xai":
+      return 'XAI_LLM_MODEL_PREF';
+    case "nvidia-nim":
+      return 'NVIDIA_NIM_LLM_MODEL_PREF';
+    case "ppio":
+      return 'PPIO_MODEL_PREF';
+    case "dpais":
+      return 'DPAIS_LLM_MODEL_PREF';
+    case "moonshotai":
+      return 'MOONSHOT_AI_MODEL_PREF';
+    case "cometapi":
+      return 'COMETAPI_LLM_MODEL_PREF';
+    case "foundry":
+      return 'FOUNDRY_MODEL_PREF';
+    case "zai":
+      return 'ZAI_MODEL_PREF';
+    case "giteeai":
+      return 'GITEE_AI_MODEL_PREF';
+    case "docker-model-runner":
+      return 'DOCKER_MODEL_RUNNER_LLM_MODEL_PREF';
+    default:
+      return defaultValue;
+  }
+}
+
 // Some models have lower restrictions on chars that can be encoded in a single pass
 // and by default we assume it can handle 1,000 chars, but some models use work with smaller
 // chars so here we can override that value when embedding information.
@@ -537,6 +610,7 @@ module.exports = {
   getVectorDbClass,
   getLLMProviderClass,
   getBaseLLMProviderModel,
+  getProcessEnvValue,
   getLLMProvider,
   toChunks,
   humanFileSize,

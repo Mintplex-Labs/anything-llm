@@ -1302,4 +1302,5 @@ function dumpENV() {
 module.exports = {
   dumpENV,
   updateENV,
+  supportedLLM,
 };
