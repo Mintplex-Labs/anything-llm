@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
 const { normalizePath } = require(".");
+const { VirusTotalScanner } = require("./virusTotal");
 
 /**
  * Handle File uploads for auto-uploading.
@@ -85,13 +86,14 @@ const pfpUploadStorage = multer.diskStorage({
 
 /**
  * Handle Generic file upload as documents from the GUI
+ * Includes virus scanning via VirusTotal API before processing
  * @param {Request} request
  * @param {Response} response
  * @param {NextFunction} next
  */
 function handleFileUpload(request, response, next) {
   const upload = multer({ storage: fileUploadStorage }).single("file");
-  upload(request, response, function (err) {
+  upload(request, response, async function (err) {
     if (err) {
       response
         .status(500)
@@ -102,6 +104,24 @@ function handleFileUpload(request, response, next) {
         .end();
       return;
     }
+
+    // Virus scan intercept - scan file before processing
+    if (request.file) {
+      const scanResult = await scanUploadedFile(request.file.path);
+      if (!scanResult.safe) {
+        return response.status(400).json({
+          success: false,
+          error: "File upload rejected: security threat detected",
+          details: {
+            reason: scanResult.reason,
+            stats: scanResult.stats,
+          },
+        });
+      }
+      // Attach scan result for logging/auditing
+      request.virusScanResult = scanResult;
+    }
+
     next();
   });
 }
@@ -109,13 +129,14 @@ function handleFileUpload(request, response, next) {
 /**
  * Handle API file upload as documents - this does not manipulate the filename
  * at all for encoding/charset reasons.
+ * Includes virus scanning via VirusTotal API before processing
  * @param {Request} request
  * @param {Response} response
  * @param {NextFunction} next
  */
 function handleAPIFileUpload(request, response, next) {
   const upload = multer({ storage: fileAPIUploadStorage }).single("file");
-  upload(request, response, function (err) {
+  upload(request, response, async function (err) {
     if (err) {
       response
         .status(500)
@@ -126,6 +147,24 @@ function handleAPIFileUpload(request, response, next) {
         .end();
       return;
     }
+
+    // Virus scan intercept - scan file before processing
+    if (request.file) {
+      const scanResult = await scanUploadedFile(request.file.path);
+      if (!scanResult.safe) {
+        return response.status(400).json({
+          success: false,
+          error: "File upload rejected: security threat detected",
+          details: {
+            reason: scanResult.reason,
+            stats: scanResult.stats,
+          },
+        });
+      }
+      // Attach scan result for logging/auditing
+      request.virusScanResult = scanResult;
+    }
+
     next();
   });
 }
@@ -168,6 +207,37 @@ function handlePfpUpload(request, response, next) {
     }
     next();
   });
+}
+
+/**
+ * Scan an uploaded file using VirusTotal API
+ * Deletes the file if a threat is detected
+ * @param {string} filePath - Path to the uploaded file
+ * @returns {Promise<Object>} - Scan result
+ */
+async function scanUploadedFile(filePath) {
+  const scanner = new VirusTotalScanner();
+  const result = await scanner.scanFile(filePath);
+
+  // Delete file if threat detected
+  if (!result.safe && fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+      console.log(`[VirusTotal] Deleted threat file: ${path.basename(filePath)}`);
+    } catch (deleteError) {
+      console.error(`[VirusTotal] Failed to delete threat file: ${deleteError.message}`);
+    }
+  }
+
+  // Log scan results for auditing
+  if (result.scanned) {
+    const status = result.safe ? "CLEAN" : "THREAT";
+    console.log(
+      `[VirusTotal] File scan result: ${status} - ${path.basename(filePath)} (${result.source})`
+    );
+  }
+
+  return result;
 }
 
 module.exports = {
