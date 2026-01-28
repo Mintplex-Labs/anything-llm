@@ -24,8 +24,7 @@ export default function SuggestedChatMessages({ slug }) {
 
   const handleSaveSuggestedMessages = async () => {
     const validMessages = suggestedMessages.filter(
-      (msg) =>
-        msg?.heading?.trim()?.length > 0 || msg?.message?.trim()?.length > 0
+      (msg) => msg?.message?.trim()?.length > 0
     );
     const { success, error } = await Workspace.setSuggestedMessages(
       slug,
@@ -46,8 +45,8 @@ export default function SuggestedChatMessages({ slug }) {
       return;
     }
     const defaultMessage = {
-      heading: t("general.message.heading"),
-      message: t("general.message.body"),
+      heading: "",
+      message: `${t("general.message.heading")} ${t("general.message.body")}`,
     };
     setNewMessage(defaultMessage);
     setSuggestedMessages([...suggestedMessages, { ...defaultMessage }]);
@@ -64,7 +63,22 @@ export default function SuggestedChatMessages({ slug }) {
   const startEditing = (e, index) => {
     e.preventDefault();
     setEditingIndex(index);
-    setNewMessage({ ...suggestedMessages[index] });
+    const suggestion = suggestedMessages[index];
+    // Legacy messages may have a separate heading field. Merge it into the message
+    // on edit so the user can manage everything in a single input going forward.
+    if (suggestion.heading) {
+      const merged = {
+        heading: "",
+        message: `${suggestion.heading} ${suggestion.message}`,
+      };
+      setNewMessage(merged);
+      setSuggestedMessages(
+        suggestedMessages.map((msg, i) => (i === index ? merged : msg))
+      );
+      setHasChanges(true);
+    } else {
+      setNewMessage({ ...suggestion });
+    }
   };
 
   const handleRemoveMessage = (index) => {
@@ -134,26 +148,18 @@ export default function SuggestedChatMessages({ slug }) {
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >
-              <p className="font-semibold">{suggestion.heading}</p>
-              <p>{suggestion.message}</p>
+              <p className="line-clamp-2">
+                {suggestion.heading && (
+                  <span className="font-semibold">{suggestion.heading} </span>
+                )}
+                {suggestion.message}
+              </p>
             </button>
           </div>
         ))}
       </div>
       {editingIndex >= 0 && (
         <div className="flex flex-col gap-y-4 mr-2 mt-8">
-          <div className="w-1/2">
-            <label className="text-white text-sm font-semibold block mb-2">
-              Heading
-            </label>
-            <input
-              placeholder="Message heading"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
-              value={newMessage.heading}
-              name="heading"
-              onChange={onEditChange}
-            />
-          </div>
           <div className="w-1/2">
             <label className="text-white text-sm font-semibold block mb-2">
               Message

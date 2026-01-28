@@ -99,7 +99,10 @@ export default forwardRef(function (
   });
 
   const handleSendSuggestedMessage = (heading, message) => {
-    sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
+    sendCommand({
+      text: heading ? `${heading} ${message}` : message,
+      autoSubmit: true,
+    });
   };
 
   const saveEditedMessage = async ({
@@ -287,8 +290,12 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
           className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
           onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
         >
-          <p className="font-semibold">{suggestion.heading}</p>
-          <p>{suggestion.message}</p>
+          <p className="line-clamp-3">
+            {suggestion.heading && (
+              <span className="font-semibold">{suggestion.heading} </span>
+            )}
+            {suggestion.message}
+          </p>
         </button>
       ))}
     </div>
