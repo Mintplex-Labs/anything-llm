@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
 
