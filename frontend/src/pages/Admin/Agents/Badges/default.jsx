@@ -1,4 +1,4 @@
-export function DefaultBadge({ title }) {
+export function DefaultBadge({ title: _title }) {
   return (
     <>
       <span

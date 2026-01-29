@@ -38,7 +38,7 @@ const markdown = markdownIt({
           hljs.highlight(code, { language: lang, ignoreIllegals: true }).value +
           "</pre></div>"
         );
-      } catch (__) {}
+      } catch {}
     }
 
     return (

@@ -247,7 +247,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           setLoadingResponse(true);
           try {
             handleSocketResponse(socket, event, setChatHistory);
-          } catch (e) {
+          } catch {
             console.error("Failed to parse data");
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();

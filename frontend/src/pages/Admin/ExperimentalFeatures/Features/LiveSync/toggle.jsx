@@ -62,6 +62,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
               href="https://docs.anythingllm.com/beta-preview/active-features/live-document-sync"
               target="_blank"
               className="text-sm text-blue-400 light:text-blue-500 hover:underline flex items-center gap-x-1"
+              rel="noreferrer"
             >
               <ArrowSquareOut size={14} />
               <span>Feature Documentation and Warnings</span>

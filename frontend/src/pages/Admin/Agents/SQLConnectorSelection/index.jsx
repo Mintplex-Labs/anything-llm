@@ -9,7 +9,6 @@ import Toggle from "@/components/lib/Toggle";
 
 export default function AgentSQLConnectorSelection({
   skill,
-  settings, // unused.
   toggleSkill,
   enabled = false,
   setHasChanges,

@@ -3,7 +3,7 @@ import Admin from "@/models/admin";
 import paths from "@/utils/paths";
 import { LinkSimple, Trash } from "@phosphor-icons/react";
 
-export default function WorkspaceRow({ workspace, users }) {
+export default function WorkspaceRow({ workspace, users: _users }) {
   const rowRef = useRef(null);
   const handleDelete = async () => {
     if (

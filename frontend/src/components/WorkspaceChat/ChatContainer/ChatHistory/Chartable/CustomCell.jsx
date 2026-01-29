@@ -1,17 +1,5 @@
 export default function CustomCell({ ...props }) {
-  const {
-    root,
-    depth,
-    x,
-    y,
-    width,
-    height,
-    index,
-    payload,
-    colors,
-    rank,
-    name,
-  } = props;
+  const { root, depth, x, y, width, height, index, colors, name } = props;
   return (
     <g>
       <rect

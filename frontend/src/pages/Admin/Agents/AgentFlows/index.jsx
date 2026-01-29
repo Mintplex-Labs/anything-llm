@@ -14,6 +14,7 @@ export default function AgentFlowsList({
           href="https://docs.anythingllm.com/agent-flows/getting-started"
           target="_blank"
           className="text-theme-text-secondary underline hover:text-cta-button"
+          rel="noreferrer"
         >
           Learn more about Agent Flows.
         </a>
