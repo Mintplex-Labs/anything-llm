@@ -6,6 +6,7 @@ import { TagsInput } from "react-tag-input-component";
 import { Info, Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
+import Toggle from "@/components/lib/Toggle";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GitlabOptions() {
@@ -128,32 +129,18 @@ export default function GitlabOptions() {
                   </p>
                 </div>
                 <div className="flex items-center gap-x-2 mb-3">
-                  <label className="relative inline-flex cursor-pointer items-center">
-                    <input
-                      type="checkbox"
-                      name="fetchIssues"
-                      value={true}
-                      className="peer sr-only"
-                    />
-                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-                    <span className="ml-3 text-sm font-medium text-white">
-                      {t("connectors.gitlab.fetch_issues")}
-                    </span>
-                  </label>
+                  <Toggle
+                    name="fetchIssues"
+                    size="md"
+                    label={t("connectors.gitlab.fetch_issues")}
+                  />
                 </div>
                 <div className="flex items-center gap-x-2">
-                  <label className="relative inline-flex cursor-pointer items-center">
-                    <input
-                      type="checkbox"
-                      name="fetchWikis"
-                      value={true}
-                      className="peer sr-only"
-                    />
-                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-                    <span className="ml-3 text-sm font-medium text-white">
-                      Fetch Wikis as Documents
-                    </span>
-                  </label>
+                  <Toggle
+                    name="fetchWikis"
+                    size="md"
+                    label="Fetch Wikis as Documents"
+                  />
                 </div>
               </div>
               <GitLabBranchSelection
