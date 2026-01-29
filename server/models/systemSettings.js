@@ -830,6 +830,10 @@ function mergeConnections(existingConnections = [], updates = []) {
         });
         break;
       }
+
+      default: {
+        throw new Error("SQL connection update contains an invalid action.");
+      }
     }
   }
 
