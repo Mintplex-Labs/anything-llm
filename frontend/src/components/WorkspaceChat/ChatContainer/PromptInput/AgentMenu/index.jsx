@@ -47,6 +47,7 @@ export function AvailableAgents({
   setShowing,
   sendCommand,
   promptRef,
+  centered = false,
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
@@ -88,7 +89,13 @@ export function AvailableAgents({
   return (
     <>
       <div hidden={!showing}>
-        <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
+        <div
+          className={
+            centered
+              ? "w-full flex justify-center absolute bottom-full mb-2 left-0 z-10 px-4"
+              : "w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4"
+          }
+        >
           <div
             ref={formRef}
             className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"

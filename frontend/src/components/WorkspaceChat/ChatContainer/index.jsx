@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -23,6 +23,8 @@ import SpeechRecognition, {
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { safeJsonParse } from "@/utils/request";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -33,6 +35,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
+  const pendingMessageChecked = useRef(false);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -180,6 +183,19 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessageEmit("");
     setLoadingResponse(true);
   };
+
+  useEffect(() => {
+    if (pendingMessageChecked.current || !workspace?.slug) return;
+    pendingMessageChecked.current = true;
+
+    const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
+    if (pending?.message) {
+      sessionStorage.removeItem(PENDING_HOME_MESSAGE);
+      setTimeout(() => {
+        sendCommand({ text: pending.message, autoSubmit: true });
+      }, 100);
+    }
+  }, [workspace?.slug]);
 
   useEffect(() => {
     async function fetchReply() {
