@@ -6,6 +6,7 @@ import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
 import Admin from "@/models/admin";
 import Toggle from "@/components/lib/Toggle";
+import { Tooltip } from "react-tooltip";
 
 export default function AgentSQLConnectorSelection({
   skill,
@@ -37,7 +38,7 @@ export default function AgentSQLConnectorSelection({
         .then((res) =>
           setConnections(res?.settings?.agent_sql_connections ?? [])
         )
-        .catch(() => { });
+        .catch(() => {});
     }
     prevHasChanges.current = hasChanges;
   }, [hasChanges]);
@@ -192,6 +193,30 @@ export default function AgentSQLConnectorSelection({
         setHasChanges={setHasChanges}
         onSubmit={handleAddConnection}
         connections={connections}
+      />
+      <Tooltip
+        id="edit-sql-connection-tooltip"
+        content="Edit SQL connection"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs !opacity-100"
+        style={{
+          maxWidth: "250px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        }}
+      />
+      <Tooltip
+        id="delete-sql-connection-tooltip"
+        content="Delete SQL connection"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs !opacity-100"
+        style={{
+          maxWidth: "250px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        }}
       />
     </>
   );

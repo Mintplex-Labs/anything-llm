@@ -205,7 +205,7 @@ export default function SQLConnectionModal({
       if (!success) {
         showToast(
           error ||
-          "Failed to establish database connection. Please check your connection details.",
+            "Failed to establish database connection. Please check your connection details.",
           "error",
           { clear: true }
         );
@@ -243,7 +243,7 @@ export default function SQLConnectionModal({
       console.error("Error validating connection:", error);
       showToast(
         error?.message ||
-        "Failed to validate connection. Please check your connection details.",
+          "Failed to validate connection. Please check your connection details.",
         "error",
         { clear: true }
       );
@@ -490,8 +490,9 @@ function DBEngine({ provider, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${active ? "!bg-blue-500/50" : ""
-        }`}
+      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${
+        active ? "!bg-blue-500/50" : ""
+      }`}
     >
       <img
         src={DB_LOGOS[provider]}

@@ -46,17 +46,19 @@ export default function DBConnection({
         <div className="flex gap-x-2">
           <button
             type="button"
-            className="border-none text-white hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
+            data-tooltip-id="edit-sql-connection-tooltip"
+            className="border-none text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 p-1 rounded"
             onClick={openModal}
           >
-            <PencilSimple size={24} />
+            <PencilSimple size={18} />
           </button>
           <button
             type="button"
+            data-tooltip-id="delete-sql-connection-tooltip"
             onClick={removeConfirmation}
-            className="border-none text-white hover:text-red-500"
+            className="border-none text-theme-text-secondary hover:text-red-500"
           >
-            <X size={24} />
+            <X size={18} />
           </button>
         </div>
       </div>
