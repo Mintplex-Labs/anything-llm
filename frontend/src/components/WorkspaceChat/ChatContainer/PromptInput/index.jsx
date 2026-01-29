@@ -13,6 +13,7 @@ import AvailableAgentsButton, {
 import TextSizeButton from "./TextSizeMenu";
 import LLMSelectorAction from "./LLMSelector/action";
 import SpeechToText from "./SpeechToText";
+import PasteTranscription from "./PasteTranscription";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
@@ -340,6 +341,7 @@ export default function PromptInput({
                 <LLMSelectorAction />
               </div>
               <div className="flex gap-x-2">
+                <PasteTranscription sendCommand={sendCommand} />
                 <SpeechToText sendCommand={sendCommand} />
               </div>
             </div>

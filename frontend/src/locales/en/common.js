@@ -938,6 +938,15 @@ const TRANSLATIONS = {
     agents: "View all available agents you can use for chatting.",
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
+    paste_transcription: "Paste meeting transcription",
+    paste_transcription_title: "Paste Meeting Transcription",
+    paste_transcription_label: "Meeting Transcription",
+    paste_transcription_description:
+      "Paste your meeting transcription text here. This is useful when meetings are in languages not supported by the transcription model or when you've processed speech-to-text externally.",
+    paste_transcription_placeholder:
+      "Paste your meeting transcription here...",
+    paste_transcription_cancel: "Cancel",
+    paste_transcription_insert: "Insert into Chat",
     send: "Send prompt message to workspace",
     tts_speak_message: "TTS Speak message",
     copy: "Copy",
