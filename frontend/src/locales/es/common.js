@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Es importante guardar esta contraseña porque no hay método de recuperación.",
       adminUsername: "Nombre de usuario del administrador",
-      adminUsernameReq:
-        "El nombre de usuario debe tener al menos 6 caracteres y solo puede contener letras minúsculas, números, guiones bajos y guiones sin espacios.",
       adminPassword: "Contraseña de la cuenta de administrador",
       adminPasswordReq: "Las contraseñas deben tener al menos 8 caracteres.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Sí",
     no: "No",
     search: "Buscar",
+    username_requirements:
+      "El nombre de usuario debe tener entre 2 y 32 caracteres, comenzar con una letra minúscula y solo contener letras minúsculas, números, guiones bajos, guiones y puntos.",
   },
   settings: {
     title: "Ajustes de la instancia",
@@ -103,7 +103,7 @@ const TRANSLATIONS = {
     "experimental-features": "Funciones experimentales",
     contact: "Contactar con soporte",
     "browser-extension": "Extensión del navegador",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM Móvil",
   },
   login: {
     "multi-user": {
@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Olvidé mi contraseña",
       reset: "Restablecer",
     },
-    "sign-in": {
-      start: "Inicia sesión en tu",
-      end: "cuenta.",
-    },
+    "sign-in": "Inicia sesión en tu cuenta de {{appName}}.",
     "password-reset": {
       title: "Restablecimiento de contraseña",
       description:
@@ -538,8 +535,9 @@ const TRANSLATIONS = {
         link: "Enlace",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Renderizar HTML en el chat",
+        description:
+          "Generar respuestas en HTML en las respuestas del asistente.\nEsto puede resultar en una mayor calidad de las respuestas, pero también puede generar posibles riesgos de seguridad.",
       },
     },
   },
@@ -569,7 +567,8 @@ const TRANSLATIONS = {
         model_type: "Tipo de modelo",
         default: "Predeterminado",
         reasoning: "Razonamiento",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          'Si su implementación utiliza un modelo de razonamiento (o1, o1-mini, o3-mini, etc.), configure esto como "Razonamiento". De lo contrario, sus solicitudes de chat podrían fallar.',
       },
     },
   },
@@ -803,8 +802,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Tu token de acceso personal de Confluence.",
       task_explained:
         "Una vez completado, el contenido de la página estará disponible para incrustar en los espacios de trabajo en el selector de documentos.",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "Omitir la validación del certificado SSL",
+      bypass_ssl_explained:
+        "Habilite esta opción para omitir la validación del certificado SSL para instancias de Confluence autohospedadas con certificados auto-firmados.",
     },
     manage: {
       documents: "Documentos",
@@ -907,7 +907,7 @@ const TRANSLATIONS = {
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
-    slash_reset: "/reiniciar",
+    slash_reset: "/reset",
     preset_reset_description:
       "Borra tu historial de chat y comienza un nuevo chat",
     add_new_preset: " Agregar nuevo preajuste",
@@ -941,8 +941,6 @@ const TRANSLATIONS = {
     profile_picture: "Foto de perfil",
     remove_profile_picture: "Eliminar foto de perfil",
     username: "Nombre de usuario",
-    username_description:
-      "El nombre de usuario solo debe contener letras minúsculas, números, guiones bajos y guiones sin espacios",
     new_password: "Nueva contraseña",
     password_description: "La contraseña debe tener al menos 8 caracteres",
     cancel: "Cancelar",

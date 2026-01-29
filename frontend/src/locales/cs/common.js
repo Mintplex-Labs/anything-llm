@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Je důležité toto heslo uložit, protože neexistuje způsob obnovení.",
       adminUsername: "Uživatelské jméno správce",
-      adminUsernameReq:
-        "Uživatelské jméno musí mít alespoň 6 znaků a obsahovat pouze malá písmena, číslice, podtržítka a pomlčky bez mezer.",
       adminPassword: "Heslo správce",
       adminPasswordReq: "Hesla musí mít alespoň 8 znaků.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Ano",
     no: "Ne",
     search: "Hledat",
+    username_requirements:
+      "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
   },
   home: {
     welcome: "Vítejte",
@@ -122,10 +122,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Zapomněli jste heslo",
       reset: "Resetovat",
     },
-    "sign-in": {
-      start: "Přihlaste se do svého",
-      end: "účtu.",
-    },
+    "sign-in": "Přihlaste se do svého {{appName}} účtu.",
     "password-reset": {
       title: "Reset hesla",
       description: "Níže uveďte potřebné informace pro resetování hesla.",
@@ -916,7 +913,7 @@ const TRANSLATIONS = {
     cancel: "Zrušit",
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
-    at_agent: "@agenta",
+    at_agent: "@agent",
     default_agent_description: " - výchozí agent pro tento pracovní prostor.",
     custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
     slash_reset: "/reset",
@@ -949,8 +946,6 @@ const TRANSLATIONS = {
     profile_picture: "Profilový obrázek",
     remove_profile_picture: "Odebrat profilový obrázek",
     username: "Uživatelské jméno",
-    username_description:
-      "Uživatelské jméno musí obsahovat pouze malá písmena, číslice, podtržítka a pomlčky bez mezer",
     new_password: "Nové heslo",
     password_description: "Heslo musí mít délku alespoň 8 znaků",
     cancel: "Zrušit",

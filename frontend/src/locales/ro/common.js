@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Este important să salvezi această parolă deoarece nu există metodă de recuperare.",
       adminUsername: "Numele contului de administrator",
-      adminUsernameReq:
-        "Numele de utilizator trebuie să aibă cel puțin 6 caractere și să conțină numai litere mici, cifre, underscore și liniuțe fără spații.",
       adminPassword: "Parola contului de administrator",
       adminPasswordReq: "Parolele trebuie să aibă cel puțin 8 caractere.",
       teamHint:
@@ -71,6 +69,8 @@ const TRANSLATIONS = {
     yes: "Da",
     no: "Nu",
     search: "Caută",
+    username_requirements:
+      "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
   },
   settings: {
     title: "Setările instanței",
@@ -103,7 +103,7 @@ const TRANSLATIONS = {
     "experimental-features": "Funcții experimentale",
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM Mobile",
   },
   login: {
     "multi-user": {
@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Ai uitat parola",
       reset: "Resetează",
     },
-    "sign-in": {
-      start: "Autentifică-te în",
-      end: "cont.",
-    },
+    "sign-in": "Autentifică-te în {{appName}} cont.",
     "password-reset": {
       title: "Resetare parolă",
       description:
@@ -521,8 +518,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Token-ul tău personal de acces Confluence.",
       task_explained:
         "Odată complet, conținutul paginii va fi disponibil pentru embedding în spații de lucru în selectorul de documente.",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "Ocolirea validării certificatului SSL",
+      bypass_ssl_explained:
+        "Activați această opțiune pentru a ocoli validarea certificatului SSL pentru instanțele Confluence găzduite de utilizator, cu un certificat semnat de utilizator.",
     },
     manage: {
       documents: "Documente",
@@ -656,8 +654,6 @@ const TRANSLATIONS = {
     profile_picture: "Poză profil",
     remove_profile_picture: "Șterge poza profil",
     username: "Nume utilizator",
-    username_description:
-      "Numele de utilizator trebuie să conțină doar litere mici, cifre, underscore și liniuțe fără spații",
     new_password: "Parolă nouă",
     password_description: "Parola trebuie să aibă cel puțin 8 caractere",
     cancel: "Anulează",
@@ -699,7 +695,7 @@ const TRANSLATIONS = {
         name_label: "Nume",
         name_description:
           "Acesta este numele afișat al System Prompt-ului tău.",
-        name_placeholder: "",
+        name_placeholder: "Asistentul meu",
         description_label: "Descriere",
         description_description: "Descrie scopul System Prompt-ului tău.",
         tags_label: "Etichete",
@@ -981,8 +977,9 @@ const TRANSLATIONS = {
         link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Redarea HTML în chat",
+        description:
+          "Afișarea răspunsurilor HTML în răspunsurile asistentului.\nAcest lucru poate duce la o calitate a răspunsurilor mult mai bună, dar poate și la riscuri potențiale de securitate.",
       },
     },
   },
@@ -1012,7 +1009,8 @@ const TRANSLATIONS = {
         model_type: "Tip model",
         default: "Implicit",
         reasoning: "Raționament",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "Dacă implementarea dvs. utilizează un model de raționament (o1, o1-mini, o3-mini, etc.), setați această opțiune la „Raționament”. În caz contrar, cererile dvs. de chat pot eșua.",
       },
     },
   },

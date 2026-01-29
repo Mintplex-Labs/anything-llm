@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "비밀번호는 최소 8자 이상이어야 합니다.",
       passwordWarn: "이 비밀번호는 복구 방법이 없으니 꼭 안전하게 보관하세요.",
       adminUsername: "관리자 계정 사용자명",
-      adminUsernameReq:
-        "사용자명은 6자 이상이어야 하며, 소문자, 숫자, 밑줄(_), 하이픈(-)만 사용할 수 있습니다. 공백은 허용되지 않습니다.",
       adminPassword: "관리자 계정 비밀번호",
       adminPasswordReq: "비밀번호는 최소 8자 이상이어야 합니다.",
       teamHint:
@@ -68,7 +66,9 @@ const TRANSLATIONS = {
     optional: "선택 사항",
     yes: "예",
     no: "아니오",
-    search: null,
+    search: "검색",
+    username_requirements:
+      "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
   },
   settings: {
     title: "인스턴스 설정",
@@ -101,7 +101,7 @@ const TRANSLATIONS = {
     interface: "UI 환경 설정",
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM 모바일",
   },
   login: {
     "multi-user": {
@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "비밀번호를 잊으셨나요",
       reset: "재설정",
     },
-    "sign-in": {
-      start: "사용자 계정으로 ",
-      end: "에 로그인하세요.",
-    },
+    "sign-in": "{{appName}}에 로그인하세요.",
     "password-reset": {
       title: "비밀번호 재설정",
       description: "비밀번호를 재설정하려면 아래에 필요한 정보를 입력하세요.",
@@ -514,8 +511,9 @@ const TRANSLATIONS = {
         link: "링크",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "채팅에서 HTML 렌더링",
+        description:
+          "어시스턴트 응답에 HTML 응답을 표시합니다.\n이는 응답 품질의 훨씬 더 높은 수준을 달성할 수 있지만, 잠재적인 보안 위험으로 이어질 수도 있습니다.",
       },
     },
   },
@@ -545,7 +543,8 @@ const TRANSLATIONS = {
         model_type: "모델 유형",
         default: "기본값",
         reasoning: "추론",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          '만약 귀하의 배포가 추론 모델(o1, o1-mini, o3-mini 등)을 사용한다면, 이 옵션을 "추론"으로 설정하십시오. 그렇지 않으면, 챗봇 요청이 실패할 수 있습니다.',
       },
     },
   },
@@ -664,7 +663,7 @@ const TRANSLATIONS = {
       token: "GitHub 액세스 토큰",
       optional: "선택 사항",
       token_explained: "요청 제한을 방지하기 위한 액세스 토큰입니다.",
-      token_explained_start: "",
+      token_explained_start: "무엇보다 중요한 것은,",
       token_explained_link1: "개인 액세스 토큰",
       token_explained_middle:
         "이 없으면 GitHub API의 요청 제한으로 인해 가져올 수 있는 파일 수가 제한될 수 있습니다. ",
@@ -693,7 +692,7 @@ const TRANSLATIONS = {
       optional: "선택 사항",
       token_explained: "요청 제한을 방지하기 위한 액세스 토큰입니다.",
       token_description: "GitLab API에서 추가로 가져올 엔터티를 선택하세요.",
-      token_explained_start: "",
+      token_explained_start: "무엇보다 중요한 것은,",
       token_explained_link1: "개인 액세스 토큰",
       token_explained_middle:
         "이 없으면 GitLab API의 요청 제한으로 인해 가져올 수 있는 파일 수가 제한될 수 있습니다. ",
@@ -768,8 +767,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Confluence 계정의 개인 액세스 토큰입니다.",
       task_explained:
         "가져오기가 완료되면 페이지 내용이 문서 선택기에서 워크스페이스에 임베딩할 수 있도록 제공됩니다.",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "SSL 인증서 유효성 검사 우회",
+      bypass_ssl_explained:
+        "자체 서명된 인증서를 사용하는 자체 호스팅 Confluence 인스턴스에 대해 SSL 인증서 유효성 검사를 우회하기 위해 이 옵션을 활성화합니다.",
     },
     manage: {
       documents: "문서 관리",
@@ -899,8 +899,6 @@ const TRANSLATIONS = {
     profile_picture: "프로필 사진",
     remove_profile_picture: "프로필 사진 삭제",
     username: "사용자명",
-    username_description:
-      "사용자명은 소문자, 숫자, 밑줄(_), 하이픈(-)만 사용할 수 있으며, 공백은 허용되지 않습니다.",
     new_password: "새 비밀번호",
     password_description: "비밀번호는 최소 8자 이상이어야 합니다.",
     cancel: "취소",

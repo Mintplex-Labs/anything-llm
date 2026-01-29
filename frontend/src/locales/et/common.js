@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Salvesta see parool hoolikalt, sest taastamisvõimalust ei ole.",
       adminUsername: "Admini kasutajanimi",
-      adminUsernameReq:
-        "Kasutajanimi peab olema vähemalt 6 märki ning võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse.",
       adminPassword: "Admini parool",
       adminPasswordReq: "Parool peab olema vähemalt 8 märki.",
       teamHint:
@@ -68,7 +66,9 @@ const TRANSLATIONS = {
     optional: "Valikuline",
     yes: "Jah",
     no: "Ei",
-    search: null,
+    search: "otsing",
+    username_requirements:
+      "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
   },
   settings: {
     title: "Instantsi seaded",
@@ -101,7 +101,7 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentaalsed funktsioonid",
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM mobiilversioon",
   },
   login: {
     "multi-user": {
@@ -113,10 +113,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Unustasid parooli",
       reset: "Lähtesta",
     },
-    "sign-in": {
-      start: "Logi sisse oma",
-      end: "kontosse.",
-    },
+    "sign-in": "Logi sisse oma {{appName}} kontosse.",
     "password-reset": {
       title: "Parooli lähtestamine",
       description: "Sisesta all vajalik info, et parool lähtestada.",
@@ -308,8 +305,9 @@ const TRANSLATIONS = {
       query: "päringu",
       "desc-end":
         "režiimis, võib määrata kohandatud vastuse, kui konteksti ei leita.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Miks ma seda näen?",
+      "tooltip-description":
+        "Olete küsimise režiimis, mis kasutab ainult teie dokumentidest saadavat teavet. Valige vestlemise režiim, et pidada paindlikumaid vestlusi, või klõpsake siin, et külastada meie dokumentatsiooni ja saada lisateavet vestlemise režiimide kohta.",
     },
     temperature: {
       title: "LLM-i temperatuur",
@@ -504,8 +502,9 @@ const TRANSLATIONS = {
         link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Renderi HTML-koodi veebisaidil",
+        description:
+          "HTML-vastuste kuvamine abivasside vastustes.\nSee võib viia suurema vastuste kvaliteedi, kuid võib ka põhjustada potentsiaalseid turvaohusid.",
       },
     },
   },
@@ -535,7 +534,8 @@ const TRANSLATIONS = {
         model_type: "Mudeli tüüp",
         default: "Vaikimisi",
         reasoning: "Põhjendus",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          'Kui teie rakendus kasutab loogika mudelit (o1, o1-mini, o3-mini jne), siis määrake see väärtuseks "Loogika". Muu korral võivad teie vestlussõnumid ebaõiglas.',
       },
     },
   },
@@ -752,8 +752,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Sinu isiklik juurdepääsuvõti.",
       task_explained:
         "Kui valmis, on lehe sisu dokumentide valijas tööruumidesse põimimiseks saadaval.",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "SSL-sertifikaadi valideerimise ümber",
+      bypass_ssl_explained:
+        "Selle valiku aktiveerimine võimaldab SSL sertifikaadi valideerimise ületada, kui kasutate enda hallatud Confluence instantsi, millel on enda välja antud sertifikaat.",
     },
     manage: {
       documents: "Dokumendid",
@@ -881,8 +882,6 @@ const TRANSLATIONS = {
     profile_picture: "Profiilipilt",
     remove_profile_picture: "Eemalda profiilipilt",
     username: "Kasutajanimi",
-    username_description:
-      "Kasutajanimi võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse, ilma tühikuteta",
     new_password: "Uus parool",
     password_description: "Parool peab olema vähemalt 8 märki",
     cancel: "Tühista",

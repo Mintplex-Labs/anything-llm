@@ -8,6 +8,11 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function GeneralSecurity() {
   const { t } = useTranslation();
@@ -154,12 +159,17 @@ function MultiUserMode() {
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin username"
-                        minLength={2}
+                        minLength={USERNAME_MIN_LENGTH}
+                        maxLength={USERNAME_MAX_LENGTH}
+                        pattern={USERNAME_PATTERN}
                         required={true}
                         autoComplete="off"
                         disabled={multiUserModeEnabled}
                         defaultValue={multiUserModeEnabled ? "********" : ""}
                       />
+                      <p className="text-white text-opacity-60 text-xs mt-2">
+                        {t("common.username_requirements")}
+                      </p>
                     </div>
                     <div className="mt-4 w-80">
                       <label

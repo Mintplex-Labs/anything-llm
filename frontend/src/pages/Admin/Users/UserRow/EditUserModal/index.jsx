@@ -3,6 +3,12 @@ import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
 import { AUTH_USER } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
@@ -11,6 +17,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     enabled: user.dailyMessageLimit !== null,
     limit: user.dailyMessageLimit || 10,
   });
+  const { t } = useTranslation();
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -75,13 +82,14 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
                   defaultValue={user.username}
-                  minLength={2}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  pattern={USERNAME_PATTERN}
                   required={true}
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must only contain lowercase letters, periods,
-                  numbers, underscores, and hyphens with no spaces
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>
