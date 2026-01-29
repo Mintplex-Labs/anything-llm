@@ -431,12 +431,11 @@ const System = {
         throw new Error("Failed to fetch pfp.");
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
-      .catch((e) => {
-        // console.log(e);
+      .catch(() => {
         return null;
       });
   },
-  removePfp: async function (id) {
+  removePfp: async function () {
     return await fetch(`${API_BASE}/system/remove-pfp`, {
       method: "DELETE",
       headers: baseHeaders(),

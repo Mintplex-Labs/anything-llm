@@ -8,7 +8,6 @@ import Admin from "@/models/admin";
 
 export default function AgentSQLConnectorSelection({
   skill,
-  settings, // unused.
   toggleSkill,
   enabled = false,
   setHasChanges,

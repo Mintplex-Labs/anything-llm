@@ -76,7 +76,7 @@ function compareStructures(lang, a, b, subdir = null) {
   }
 }
 
-function normalizeTranslations(lang, source, target, subdir = null) {
+function normalizeTranslations(lang, source, target, _subdir = null) {
   // Handle primitives - if target exists, keep it, otherwise set null
   if (!source || typeof source !== "object") {
     return target ?? null;

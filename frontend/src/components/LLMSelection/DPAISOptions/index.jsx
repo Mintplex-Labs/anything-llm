@@ -5,10 +5,7 @@ import PreLoader from "@/components/Preloader";
 import { DPAIS_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
-export default function DellProAIStudioOptions({
-  settings,
-  showAlert = false,
-}) {
+export default function DellProAIStudioOptions({ settings }) {
   const {
     autoDetecting: loading,
     basePath,
