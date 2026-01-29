@@ -105,6 +105,7 @@ function TelemetryLogs({ settings }) {
               href="https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code"
               className="underline text-blue-400"
               target="_blank"
+              rel="noreferrer"
             >
               GitHub here
             </a>
@@ -120,6 +121,7 @@ function TelemetryLogs({ settings }) {
               href="mailto:team@mintplexlabs.com"
               className="underline text-blue-400"
               target="_blank"
+              rel="noreferrer"
             >
               team@mintplexlabs.com
             </a>
