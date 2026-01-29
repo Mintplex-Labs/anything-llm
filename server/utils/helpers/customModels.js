@@ -45,6 +45,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "zai",
   "giteeai",
   "docker-model-runner",
+  "privatemode",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -120,6 +121,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGiteeAIModels(apiKey);
     case "docker-model-runner":
       return await getDockerModelRunnerModels(basePath);
+    case "privatemode":
+      return await getPrivatemodeModels(basePath, "generate");
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -878,6 +881,54 @@ async function getDockerModelRunnerModels(basePath = null) {
       models: [],
       error: "Could not fetch Docker Model Runner Models",
     };
+  }
+}
+
+/**
+ * Get Privatemode models
+ * @param {string} basePath - The base path of the Privatemode endpoint.
+ * @param {'any' | 'generate' | 'embed' | 'transcribe'} task - The task to fetch the models for.
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getPrivatemodeModels(basePath = null, task = "any") {
+  try {
+    const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: PrivatemodeLLM.parseBasePath(
+        basePath || process.env.PRIVATEMODE_LLM_BASE_PATH
+      ),
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then(
+        (models) =>
+          models
+            .filter((model) => !model.id.includes("/")) // remove legacy prefixed models
+            .filter((model) =>
+              task === "any" ? true : model.tasks.includes(task)
+            ) // filter by task or show all if task is any
+      )
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          organization: "Privatemode",
+          name: model.id
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+        }))
+      )
+      .catch((e) => {
+        console.error(`Privatemode:listModels`, e.message);
+        return [];
+      });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Privatemode:getPrivatemodeModels`, e.message);
+    return { models: [], error: "Could not fetch Privatemode Models" };
   }
 }
 

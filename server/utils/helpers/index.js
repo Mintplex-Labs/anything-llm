@@ -234,6 +234,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
         DockerModelRunnerLLM,
       } = require("../AiProviders/dockerModelRunner");
       return new DockerModelRunnerLLM(embedder, model);
+    case "privatemode":
+      const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+      return new PrivatemodeLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -404,6 +407,9 @@ function getLLMProviderClass({ provider = null } = {}) {
         DockerModelRunnerLLM,
       } = require("../AiProviders/dockerModelRunner");
       return DockerModelRunnerLLM;
+    case "privatemode":
+      const { PrivateModeLLM } = require("../AiProviders/privatemode");
+      return PrivateModeLLM;
     default:
       return null;
   }
@@ -482,6 +488,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.GITEE_AI_MODEL_PREF;
     case "docker-model-runner":
       return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF;
+    case "privatemode":
+      return process.env.PRIVATEMODE_LLM_MODEL_PREF;
     default:
       return null;
   }

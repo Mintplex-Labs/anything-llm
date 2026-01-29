@@ -223,6 +223,12 @@ class AgentHandler {
             "Docker Model Runner base path must be provided to use agents."
           );
         break;
+      case "privatemode":
+        if (!process.env.PRIVATEMODE_LLM_BASE_PATH)
+          throw new Error(
+            "Privatemode base path must be provided to use agents."
+          );
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -305,6 +311,8 @@ class AgentHandler {
         return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
       case "docker-model-runner":
         return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF ?? null;
+      case "privatemode":
+        return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       default:
         return null;
     }
