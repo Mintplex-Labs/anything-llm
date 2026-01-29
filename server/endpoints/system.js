@@ -92,7 +92,7 @@ function systemEndpoints(app) {
 
   app.post("/onboarding", [validatedRequest], async (_, response) => {
     try {
-      await SystemSettings._updateSettings({ onboarding_complete: true });
+      await SystemSettings.markOnboardingComplete();
       response.sendStatus(200).end();
     } catch (e) {
       console.error(e.message, e);
