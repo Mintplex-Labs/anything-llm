@@ -112,7 +112,7 @@ export default function handleChat(
         updatedHistory = {
           ...existingHistory,
           content: existingHistory.content + textResponse,
-          sources,
+          ...(sources && sources.length > 0 ? { sources } : {}),
           error,
           closed: close,
           animate: !close,
