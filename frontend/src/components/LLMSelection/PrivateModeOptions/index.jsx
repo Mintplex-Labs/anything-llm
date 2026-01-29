@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { Info } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import System from "@/models/system";
+import { Link } from "react-router-dom";
 
 export default function PrivateModeOptions({ settings }) {
   const [models, setModels] = useState([]);
@@ -37,9 +40,39 @@ export default function PrivateModeOptions({ settings }) {
     <div className="flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Base URL
-          </label>
+          <div className="flex items-center gap-1 mb-2">
+            <label className="text-white text-sm font-semibold">
+              Privatemode Proxy URL
+            </label>
+            <Info
+              size={18}
+              className="text-theme-text-secondary cursor-pointer"
+              data-tooltip-id="private-mode-base-url"
+            />
+            <Tooltip
+              id="private-mode-base-url"
+              place="top"
+              delayShow={300}
+              clickable={true}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            >
+              Enter the URL where Privatemode Proxy is running.
+              <br />
+              <br />
+              <Link
+                to="https://docs.privatemode.ai/quickstart#2-run-the-proxy"
+                target="_blank"
+                className="text-blue-500 hover:underline"
+              >
+                Learn more &rarr;
+              </Link>
+            </Tooltip>
+          </div>
           <input
             type="url"
             name="PrivateModeBasePath"
@@ -53,7 +86,7 @@ export default function PrivateModeOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-white text-sm font-semibold block mb-2">
             Chat Model
           </label>
           {loading ? (
