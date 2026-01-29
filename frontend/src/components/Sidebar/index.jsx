@@ -57,15 +57,15 @@ export default function Sidebar() {
           ref={sidebarRef}
           className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
-          <div className="flex flex-col h-full overflow-x-hidden">
-            <div className="flex-grow flex flex-col min-w-[235px]">
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex-grow flex flex-col min-w-[235px] min-h-0">
               <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-                <div className="flex flex-col gap-y-2 pb-[60px] gap-y-[14px] overflow-y-scroll no-scroll">
+                <div className="flex flex-col gap-y-[14px]">
                   <SearchBox user={user} showNewWsModal={showNewWsModal} />
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
+              <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
                 <Footer />
               </div>
             </div>
