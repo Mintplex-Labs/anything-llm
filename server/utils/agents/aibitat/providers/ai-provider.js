@@ -249,6 +249,14 @@ class Provider {
           apiKey: process.env.COHERE_API_KEY ?? null,
           ...config,
         });
+      case "privatemode":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.PRIVATEMODE_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({

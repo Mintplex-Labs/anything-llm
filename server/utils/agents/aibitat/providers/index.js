@@ -30,6 +30,7 @@ const FoundryProvider = require("./foundry.js");
 const GiteeAIProvider = require("./giteeai.js");
 const CohereProvider = require("./cohere.js");
 const DockerModelRunnerProvider = require("./dockerModelRunner.js");
+const PrivatemodeProvider = require("./privatemode.js");
 
 module.exports = {
   OpenAIProvider,
@@ -64,4 +65,5 @@ module.exports = {
   GiteeAIProvider,
   CohereProvider,
   DockerModelRunnerProvider,
+  PrivatemodeProvider,
 };
