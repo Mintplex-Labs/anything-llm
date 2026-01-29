@@ -32,6 +32,32 @@ const System = {
       .then((res) => res.vectorCount)
       .catch(() => 0);
   },
+
+  /**
+   * Checks if the onboarding is complete.
+   * @returns {Promise<boolean>}
+   */
+  isOnboardingComplete: async function () {
+    return await fetch(`${API_BASE}/onboarding`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not find onboarding information.");
+        return res.json();
+      })
+      .then((res) => res.onboardingComplete)
+      .catch(() => false);
+  },
+  /**
+   * Marks the onboarding as complete.
+   * @returns {Promise<boolean>}
+   */
+  markOnboardingComplete: async function () {
+    return await fetch(`${API_BASE}/onboarding`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   keys: async function () {
     return await fetch(`${API_BASE}/setup-complete`)
       .then((res) => {

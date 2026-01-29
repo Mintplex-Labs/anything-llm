@@ -70,6 +70,7 @@ const PromptReply = ({
           <RenderAssistantChatContent
             key={`${uuid}-prompt-reply-content`}
             message={reply}
+            messageId={uuid}
           />
         </div>
         <Citations sources={sources} />
@@ -94,7 +95,7 @@ export function WorkspaceProfileImage({ workspace }) {
   return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
 }
 
-function RenderAssistantChatContent({ message }) {
+function RenderAssistantChatContent({ message, messageId }) {
   const contentRef = useRef("");
   const thoughtChainRef = useRef(null);
 
@@ -121,7 +122,11 @@ function RenderAssistantChatContent({ message }) {
     message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
   if (thinking)
     return (
-      <ThoughtChainComponent ref={thoughtChainRef} content="" expanded={true} />
+      <ThoughtChainComponent
+        ref={thoughtChainRef}
+        content=""
+        messageId={messageId}
+      />
     );
 
   return (
@@ -130,7 +135,7 @@ function RenderAssistantChatContent({ message }) {
         <ThoughtChainComponent
           ref={thoughtChainRef}
           content=""
-          expanded={true}
+          messageId={messageId}
         />
       )}
       <span
