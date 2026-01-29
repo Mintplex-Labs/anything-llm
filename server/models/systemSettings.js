@@ -20,7 +20,7 @@ const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
-  protectedFields: ["multi_user_mode", "hub_api_key"],
+  protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
   publicFields: [
     "footer_data",
     "support_email",
@@ -405,6 +405,28 @@ const SystemSettings = {
     try {
       const setting = await this.get({ label: "multi_user_mode" });
       return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  isOnboardingComplete: async function () {
+    try {
+      const setting = await this.get({ label: "onboarding_complete" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  markOnboardingComplete: async function () {
+    try {
+      await this._updateSettings({ onboarding_complete: true });
+      const { Telemetry } = require("./telemetry");
+      await Telemetry.sendTelemetry("onboarding_complete");
+      return true;
     } catch (error) {
       console.error(error.message);
       return false;

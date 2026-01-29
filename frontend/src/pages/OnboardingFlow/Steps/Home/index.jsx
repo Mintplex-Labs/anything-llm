@@ -7,6 +7,7 @@ import AnythingLLMLogo from "@/media/logo/anything-llm.png";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
+import useRedirectToHomeOnOnboardingComplete from "@/hooks/useOnboardingComplete";
 
 const IMG_SRCSET = {
   light: {
@@ -21,6 +22,7 @@ const IMG_SRCSET = {
 
 export default function OnboardingHome() {
   const navigate = useNavigate();
+  useRedirectToHomeOnOnboardingComplete();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const srcSet = IMG_SRCSET?.[theme] || IMG_SRCSET.default;
