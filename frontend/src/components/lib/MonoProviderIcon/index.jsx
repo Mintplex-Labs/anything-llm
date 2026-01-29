@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 // https://lobehub.com/icons for all the icons
 import OpenAI from "@lobehub/icons/es/OpenAI/components/Mono";
 import Anthropic from "@lobehub/icons/es/Anthropic/components/Mono";
