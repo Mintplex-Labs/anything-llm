@@ -17,7 +17,7 @@ fi
 APPIMAGE_URL="https://cdn.anythingllm.com/latest/AnythingLLMDesktop.AppImage"
 APPIMAGE_FILE="AnythingLLMDesktop.AppImage"
 EXTRACTED_DIR="anythingllm-desktop"
-OUTDIR="$HOME/AnythingLLMDesktop"
+OUTDIR="${ANYTHING_LLM_INSTALL_DIR:-$HOME/AnythingLLMDesktop}"
 
 rm -rf $OUTDIR
 mkdir -p $OUTDIR
