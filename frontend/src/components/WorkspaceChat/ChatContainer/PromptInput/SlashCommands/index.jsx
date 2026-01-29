@@ -33,7 +33,13 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   );
 }
 
-export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
+export function SlashCommands({
+  showing,
+  setShowing,
+  sendCommand,
+  promptRef,
+  centered = false,
+}) {
   const cmdRef = useRef(null);
   useSlashCommandKeyboardNavigation({ showing });
 
@@ -54,7 +60,13 @@ export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
 
   return (
     <div hidden={!showing}>
-      <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
+      <div
+        className={
+          centered
+            ? "w-full flex justify-center absolute bottom-full mb-2 left-0 z-10 px-4"
+            : "w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4"
+        }
+      >
         <div
           ref={cmdRef}
           className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"

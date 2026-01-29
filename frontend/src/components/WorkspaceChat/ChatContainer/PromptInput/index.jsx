@@ -30,12 +30,21 @@ export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
 
+/**
+ * @param {function} props.submit - form submit handler
+ * @param {function} props.onChange - input change handler
+ * @param {boolean} props.isStreaming - disables input while streaming response
+ * @param {function} props.sendCommand - handler for slash commands and agent mentions
+ * @param {Array} [props.attachments] - file attachments array
+ * @param {boolean} [props.centered] - renders in centered layout mode (for home page)
+ */
 export default function PromptInput({
   submit,
   onChange,
   isStreaming,
   sendCommand,
   attachments = [],
+  centered = false,
 }) {
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
@@ -251,22 +260,34 @@ export default function PromptInput({
   }
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5">
+    <div
+      className={
+        centered
+          ? "w-full relative flex justify-center items-center"
+          : "w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5"
+      }
+    >
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
         promptRef={textareaRef}
+        centered={centered}
       />
       <AvailableAgents
         showing={showAgents}
         setShowing={setShowAgents}
         sendCommand={sendCommand}
         promptRef={textareaRef}
+        centered={centered}
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
+        className={
+          centered
+            ? "flex flex-col gap-y-1 rounded-t-lg w-full items-center"
+            : "flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
+        }
       >
         <div className="flex items-center rounded-lg md:mb-4 md:w-full">
           <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
