@@ -776,16 +776,13 @@ function mergeConnections(existingConnections = [], updates = []) {
       engine,
     } = update;
 
-    // Skip invalid connections
-    if ((action === "update" || action === "add") && !connectionString)
-      continue;
-
     switch (action) {
-      case "remove":
+      case "remove": {
         connectionsMap.delete(database_id);
         break;
-
+      }
       case "update": {
+        if (!connectionString) continue;
         const newId = slugify(database_id);
 
         // Verify original connection exists
@@ -815,6 +812,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       }
 
       case "add": {
+        if (!connectionString) continue;
         const slugifiedId = slugify(database_id);
 
         // Skip if already exists
