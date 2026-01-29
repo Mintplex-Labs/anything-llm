@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-document-collector",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "description": "Document collector server endpoints",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -39,6 +39,7 @@
     "puppeteer": "~21.5.2",
     "sharp": "^0.33.5",
     "slugify": "^1.6.6",
+    "strip-ansi": "^7.1.2",
     "tesseract.js": "^6.0.0",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
@@ -54,7 +55,6 @@
   },
   "resolutions": {
     "string-width": "^4.2.3",
-    "strip-ansi": "^6.0.1",
     "wrap-ansi": "^7.0.0"
   }
 }

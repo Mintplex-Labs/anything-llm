@@ -18,6 +18,9 @@ const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const {
+  parseDockerModelRunnerEndpoint,
+} = require("../../../AiProviders/dockerModelRunner");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const {
   SystemPromptVariables,
@@ -25,6 +28,7 @@ const {
 const {
   createBedrockChatClient,
 } = require("../../../AiProviders/bedrock/utils");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -252,10 +256,7 @@ class Provider {
       //     ...config,
       //   });
       case "ollama":
-        return new ChatOllama({
-          baseUrl: process.env.OLLAMA_BASE_PATH,
-          ...config,
-        });
+        return OllamaLangchainChatModel.create(config);
       case "lmstudio":
         return new ChatOpenAI({
           configuration: {
@@ -313,6 +314,16 @@ class Provider {
           ...config,
         });
       }
+      case "docker-model-runner":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseDockerModelRunnerEndpoint(
+              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
+            ),
+          },
+          apiKey: null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }
@@ -433,6 +444,30 @@ class Provider {
     return {
       textResponse: result.textResponse,
       functionCall: result.functionCall,
+    };
+  }
+}
+
+// Langchain Wrappers
+
+/**
+ * Ollama Langchain Chat Model that supports passing in context window options
+ * so that context window preferences are respected between Ollama chat/agent and in
+ * Langchain tooling.
+ */
+class OllamaLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.OLLAMA_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.OLLAMA_MODEL_PREF;
+    return {
+      num_ctx: OllamaAILLM.promptWindowLimit(model),
     };
   }
 }

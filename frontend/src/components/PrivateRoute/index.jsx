@@ -19,27 +19,18 @@ function useIsAuthenticated() {
 
   useEffect(() => {
     const validateSession = async () => {
-      const {
-        MultiUserMode,
-        RequiresAuth,
-        LLMProvider = null,
-        VectorDB = null,
-      } = await System.keys();
-
+      const onboardingComplete = await System.isOnboardingComplete();
+      const { MultiUserMode, RequiresAuth } = await System.keys();
       setMultiUserMode(MultiUserMode);
 
       // Check for the onboarding redirect condition
-      if (
-        !MultiUserMode &&
-        !RequiresAuth && // Not in Multi-user AND no password set.
-        !LLMProvider &&
-        !VectorDB
-      ) {
+      if (onboardingComplete === false) {
         setShouldRedirectToOnboarding(true);
         setIsAuthed(true);
         return;
       }
 
+      // Single User mode without password - no auth required
       if (!MultiUserMode && !RequiresAuth) {
         setIsAuthed(true);
         return;
@@ -58,6 +49,7 @@ function useIsAuthenticated() {
         return;
       }
 
+      // Multi-user mode checks
       const localUser = localStorage.getItem(AUTH_USER);
       const localAuthToken = localStorage.getItem(AUTH_TOKEN);
       if (!localUser || !localAuthToken) {

@@ -5,6 +5,7 @@ import { WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import Toggle from "@/components/lib/Toggle";
 
 /**
  * Converts a string to a URL-friendly slug format.
@@ -435,24 +436,13 @@ export default function SQLConnectionModal({
                 )}
 
                 {engine === "sql-server" && (
-                  <div className="flex items-center justify-between">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="encrypt"
-                        value="true"
-                        className="sr-only peer"
-                        checked={config.encrypt}
-                        onChange={(e) =>
-                          setConfig({ ...config, encrypt: e.target.checked })
-                        }
-                      />
-                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      <span className="ml-3 text-sm font-medium text-white">
-                        Enable Encryption
-                      </span>
-                    </label>
-                  </div>
+                  <Toggle
+                    name="encrypt"
+                    value="true"
+                    size="md"
+                    label="Enable Encryption"
+                    enabled={config.encrypt}
+                  />
                 )}
 
                 <p className="text-theme-text-secondary text-sm">

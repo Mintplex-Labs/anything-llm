@@ -11,6 +11,7 @@ const {
 const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
+const { patchShellEnvironmentPath } = require("../../helpers/shell");
 
 /**
  * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes
@@ -231,40 +232,13 @@ class MCPHypervisor {
   }
 
   /**
-   * Load shell environment for desktop applications.
-   * MacOS and Linux don't inherit login shell environment. So this function
-   * fixes the PATH and accessible commands when running AnythingLLM outside of Docker during development on Mac/Linux and in-container (Linux).
-   * @returns {Promise<{[key: string]: string}>} - Environment variables from shell
-   */
-  async #loadShellEnvironment() {
-    try {
-      if (process.platform === "win32") return process.env;
-      const { default: fixPath } = await import("fix-path");
-      const { default: stripAnsi } = await import("strip-ansi");
-      fixPath();
-
-      // Due to node v20 requirement to have a minimum version of fix-path v5, we need to strip ANSI codes manually
-      // which was the only patch between v4 and v5. Here we just apply manually.
-      // https://github.com/sindresorhus/fix-path/issues/6
-      if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
-      return process.env;
-    } catch (error) {
-      console.warn(
-        "Failed to load shell environment, using process.env:",
-        error.message
-      );
-      return process.env;
-    }
-  }
-
-  /**
    * Build the MCP server environment variables - ensures proper PATH and NODE_PATH
    * inheritance across all platforms and deployment scenarios.
    * @param {Object} server - The server definition
    * @returns {Promise<{env: { [key: string]: string } | {}}}> - The environment variables
    */
   async #buildMCPServerENV(server) {
-    const shellEnv = await this.#loadShellEnvironment();
+    const shellEnv = await patchShellEnvironmentPath();
     let baseEnv = {
       PATH:
         shellEnv.PATH ||

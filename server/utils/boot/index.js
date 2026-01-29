@@ -4,6 +4,7 @@ const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 const eagerLoadContextWindows = require("./eagerLoadContextWindows");
+const markOnboarded = require("./markOnboarded");
 
 // Testing SSL? You can make a self signed certificate and point the ENVs to that location
 // make a directory in server called 'sslcert' - cd into it
@@ -28,6 +29,7 @@ function bootSSL(app, port = 3001) {
 
     server
       .listen(port, async () => {
+        await markOnboarded();
         await setupTelemetry();
         new CommunicationKey(true);
         new EncryptionManager();
@@ -58,6 +60,7 @@ function bootHTTP(app, port = 3001) {
 
   app
     .listen(port, async () => {
+      await markOnboarded();
       await setupTelemetry();
       new CommunicationKey(true);
       new EncryptionManager();

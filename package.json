@@ -1,6 +1,6 @@
 {
   "name": "anything-llm",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
   "type": "module",
@@ -28,7 +28,7 @@
     "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs",
-    "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && yarn lint && yarn verify:translations"
+    "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && cd frontend && yarn lint && cd .. && yarn verify:translations"
   },
   "private": false,
   "devDependencies": {

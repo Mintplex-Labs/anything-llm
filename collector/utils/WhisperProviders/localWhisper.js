@@ -71,7 +71,7 @@ class LocalWhisper {
         fs.mkdirSync(outFolder, { recursive: true });
 
       const outputFile = path.resolve(outFolder, `${v4()}.wav`);
-      const success = ffmpeg.convertAudioToWav(sourcePath, outputFile);
+      const success = await ffmpeg.convertAudioToWav(sourcePath, outputFile);
       if (!success)
         throw new Error(
           "[Conversion Failed]: Could not convert file to .wav format!"
@@ -136,7 +136,7 @@ class LocalWhisper {
               progress_callback: (data) => {
                 if (!data.hasOwnProperty("progress")) return;
                 console.log(
-                  `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
+                  `\x1b[34m[ONNXWhisper - Downloading Model Files]\x1b[0m ${
                     data.file
                   } ${~~data?.progress}%`
                 );

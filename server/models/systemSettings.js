@@ -23,7 +23,7 @@ const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
-  protectedFields: ["multi_user_mode", "hub_api_key"],
+  protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
   publicFields: [
     "footer_data",
     "support_email",
@@ -414,6 +414,28 @@ const SystemSettings = {
     }
   },
 
+  isOnboardingComplete: async function () {
+    try {
+      const setting = await this.get({ label: "onboarding_complete" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  markOnboardingComplete: async function () {
+    try {
+      await this._updateSettings({ onboarding_complete: true });
+      const { Telemetry } = require("./telemetry");
+      await Telemetry.sendTelemetry("onboarding_complete");
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   currentLogoFilename: async function () {
     try {
       const setting = await this.get({ label: "logo_filename" });
@@ -453,11 +475,11 @@ const SystemSettings = {
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+      WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-      QdrantApiKey: process.env.QDRANT_API_KEY,
+      QdrantApiKey: !!process.env.QDRANT_API_KEY,
 
       // Milvus DB Keys
       MilvusAddress: process.env.MILVUS_ADDRESS,
@@ -466,10 +488,10 @@ const SystemSettings = {
 
       // Zilliz DB Keys
       ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+      ZillizApiToken: !!process.env.ZILLIZ_API_TOKEN,
 
       // AstraDB Keys
-      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBApplicationToken: !!process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
 
       // PGVector Keys
@@ -521,7 +543,6 @@ const SystemSettings = {
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT || null,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
-      OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
       // Novita LLM Keys
       NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
@@ -649,6 +670,13 @@ const SystemSettings = {
       GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
+
+      // Docker Model Runner Keys
+      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+      DockerModelRunnerModelPref:
+        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
+      DockerModelRunnerModelTokenLimit:
+        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 

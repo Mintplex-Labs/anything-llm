@@ -53,6 +53,14 @@ export const NVIDIA_NIM_COMMON_URLS = [
   "http://172.17.0.1:8000/v1/version",
 ];
 
+export const DOCKER_MODEL_RUNNER_COMMON_URLS = [
+  "http://localhost:12434/engines/llama.cpp/v1",
+  "http://127.0.0.1:12434/engines/llama.cpp/v1",
+  "http://model-runner.docker.internal/engines/llama.cpp/v1",
+  "http://host.docker.internal:12434/engines/llama.cpp/v1",
+  "http://172.17.0.1:12434/engines/llama.cpp/v1",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
