@@ -338,7 +338,7 @@ export default function AgentBuilder() {
         backgroundSize: "15px 15px",
         backgroundPosition: "-7.5px -7.5px",
       }}
-      className="relative w-screen h-screen flex flex-col bg-theme-bg-primary overflow-hidden"
+      className="relative w-screen h-screen flex flex-col bg-theme-bg-primary overflow-clip"
     >
       <PublishEntityModal
         show={showPublishModal}
