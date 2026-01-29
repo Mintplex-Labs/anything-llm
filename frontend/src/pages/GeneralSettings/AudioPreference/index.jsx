@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
