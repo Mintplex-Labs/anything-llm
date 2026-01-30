@@ -297,7 +297,7 @@ function ModelRow({
         {!model.downloaded && !processing && (
           <button
             type="button"
-            data-tooltip-id="docker-model-runner-install-model-tooltip"
+            data-tooltip-id="install-model-tooltip"
             data-tooltip-place="top"
             data-tooltip-delay-show={300}
             data-tooltip-content={`Install ${model.organization}:${model.name}`}

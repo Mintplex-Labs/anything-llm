@@ -677,6 +677,10 @@ const SystemSettings = {
         process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
       DockerModelRunnerModelTokenLimit:
         process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Privatemode Keys
+      PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
+      PrivateModeModelPref: process.env.PRIVATEMODE_LLM_MODEL_PREF,
     };
   },
 
