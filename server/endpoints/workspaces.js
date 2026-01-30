@@ -49,8 +49,28 @@ function workspaceEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name = null, onboardingComplete = false } = reqBody(request);
-        const { workspace, message } = await Workspace.new(name, user?.id);
+        const {
+          name = null,
+          onboardingComplete = false,
+          templateId = null,
+        } = reqBody(request);
+
+        let additionalFields = {};
+        if (templateId) {
+          const { WorkspaceTemplate } = require("../models/workspaceTemplate");
+          const template = await WorkspaceTemplate.get({
+            id: Number(templateId),
+          });
+          if (template) {
+            additionalFields = WorkspaceTemplate.applySettings(template.config);
+          }
+        }
+
+        const { workspace, message } = await Workspace.new(
+          name,
+          user?.id,
+          additionalFields
+        );
         await Telemetry.sendTelemetry(
           "workspace_created",
           {
