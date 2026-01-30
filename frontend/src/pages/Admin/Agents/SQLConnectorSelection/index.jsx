@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DBConnection from "./DBConnection";
-import { Plus, Database } from "@phosphor-icons/react";
-import NewSQLConnection from "./NewConnectionModal";
+import { Plus, Database, CircleNotch } from "@phosphor-icons/react";
+import NewSQLConnection from "./SQLConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
 import Admin from "@/models/admin";
 import Toggle from "@/components/lib/Toggle";
+import { Tooltip } from "react-tooltip";
 
 export default function AgentSQLConnectorSelection({
   skill,
@@ -13,15 +14,40 @@ export default function AgentSQLConnectorSelection({
   toggleSkill,
   enabled = false,
   setHasChanges,
+  hasChanges = false,
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const prevHasChanges = useRef(hasChanges);
+
+  // Load connections on mount
   useEffect(() => {
+    setLoading(true);
     Admin.systemPreferencesByFields(["agent_sql_connections"])
       .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
-      .catch(() => setConnections([]));
+      .catch(() => setConnections([]))
+      .finally(() => setLoading(false));
   }, []);
 
+  // Refresh connections from backend when save completes (hasChanges: true -> false)
+  // This ensures we get clean data without stale action properties
+  useEffect(() => {
+    if (prevHasChanges.current === true && hasChanges === false) {
+      Admin.systemPreferencesByFields(["agent_sql_connections"])
+        .then((res) =>
+          setConnections(res?.settings?.agent_sql_connections ?? [])
+        )
+        .catch(() => {});
+    }
+    prevHasChanges.current = hasChanges;
+  }, [hasChanges]);
+
+  /**
+   * Marks a connection for removal by adding action: "remove".
+   * The connection stays in the array (for undo capability) until saved.
+   * @param {string} databaseId - The database_id of the connection to remove
+   */
   function handleRemoveConnection(databaseId) {
     setHasChanges(true);
     setConnections((prev) =>
@@ -31,6 +57,38 @@ export default function AgentSQLConnectorSelection({
         return conn;
       })
     );
+  }
+
+  /**
+   * Updates an existing connection by replacing it in the local state.
+   * This removes the old connection (by originalDatabaseId) and adds the updated version.
+   *
+   * Note: The old connection is removed from local state immediately, but the backend
+   * handles the actual update logic when saved. See mergeConnections in server/models/systemSettings.js
+   *
+   * @param {Object} updatedConnection - The updated connection data
+   * @param {string} updatedConnection.originalDatabaseId - The original database_id before the update
+   * @param {string} updatedConnection.database_id - The new database_id
+   * @param {string} updatedConnection.action - Should be "update"
+   */
+  function handleUpdateConnection(updatedConnection) {
+    setHasChanges(true);
+    setConnections((prev) =>
+      prev.map((conn) =>
+        conn.database_id === updatedConnection.originalDatabaseId
+          ? updatedConnection
+          : conn
+      )
+    );
+  }
+  /**
+   * Adds a new connection to the local state with action: "add".
+   * The backend will validate and deduplicate when saved.
+   * @param {Object} newConnection - The new connection data with action: "add"
+   */
+  function handleAddConnection(newConnection) {
+    setHasChanges(true);
+    setConnections((prev) => [...prev, newConnection]);
   }
 
   return (
@@ -84,15 +142,27 @@ export default function AgentSQLConnectorSelection({
                   Your database connections
                 </p>
                 <div className="flex flex-col gap-y-3">
-                  {connections
-                    .filter((connection) => connection.action !== "remove")
-                    .map((connection) => (
-                      <DBConnection
-                        key={connection.database_id}
-                        connection={connection}
-                        onRemove={handleRemoveConnection}
+                  {loading ? (
+                    <div className="flex items-center justify-center py-4">
+                      <CircleNotch
+                        size={24}
+                        className="animate-spin text-theme-text-primary"
                       />
-                    ))}
+                    </div>
+                  ) : (
+                    connections
+                      .filter((connection) => connection.action !== "remove")
+                      .map((connection) => (
+                        <DBConnection
+                          key={connection.database_id}
+                          connection={connection}
+                          onRemove={handleRemoveConnection}
+                          onUpdate={handleUpdateConnection}
+                          setHasChanges={setHasChanges}
+                          connections={connections}
+                        />
+                      ))
+                  )}
                   <button
                     type="button"
                     onClick={openModal}
@@ -121,9 +191,32 @@ export default function AgentSQLConnectorSelection({
         isOpen={isOpen}
         closeModal={closeModal}
         setHasChanges={setHasChanges}
-        onSubmit={(newDb) =>
-          setConnections((prev) => [...prev, { action: "add", ...newDb }])
-        }
+        onSubmit={handleAddConnection}
+        connections={connections}
+      />
+      <Tooltip
+        id="edit-sql-connection-tooltip"
+        content="Edit SQL connection"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs !opacity-100"
+        style={{
+          maxWidth: "250px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        }}
+      />
+      <Tooltip
+        id="delete-sql-connection-tooltip"
+        content="Delete SQL connection"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs !opacity-100"
+        style={{
+          maxWidth: "250px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        }}
       />
     </>
   );
