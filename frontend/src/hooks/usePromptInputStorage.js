@@ -20,16 +20,11 @@ import { safeJsonParse } from "@/utils/request";
  * ```
  *
  * @param {Object} props
- * @param {Function} props.onChange - Callback invoked when restoring saved value, receives `{ target: { value: string } }`
  * @param {string} props.promptInput - Current prompt input value to sync
  * @param {Function} props.setPromptInput - State setter function for prompt input
  * @returns {void}
  */
-export default function usePromptInputStorage({
-  onChange,
-  promptInput,
-  setPromptInput,
-}) {
+export default function usePromptInputStorage({ promptInput, setPromptInput }) {
   const { threadSlug = null, slug: workspaceSlug } = useParams();
   useEffect(() => {
     const serializedPromptInputMap =
@@ -40,8 +35,6 @@ export default function usePromptInputStorage({
     const userPromptInputValue = promptInputMap[threadSlug ?? workspaceSlug];
     if (userPromptInputValue) {
       setPromptInput(userPromptInputValue);
-      // Notify parent component so message state is synchronized
-      onChange({ target: { value: userPromptInputValue } });
     }
   }, []);
 
