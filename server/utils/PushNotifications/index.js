@@ -168,7 +168,7 @@ class PushNotifications {
   /**
    * Send a push notification to all subscribed clients.
    * @param {Object} options - The options for the notification.
-   * @param {"all"|"primary"|number} [options.to] - The subscription to send the notification to. "all" sends to all subscriptions, "primary" sends to the primary user (single user mode only), a number sends subscription to specific user
+   * @param {"primary"|number} [options.to] - The subscription to send the notification to. "all" sends to all subscriptions, "primary" sends to the primary user (single user mode only), a number sends subscription to specific user
    * @param {PushNotificationPayload} [options.payload] - The payload to send to the clients.
    * @returns {void}
    */
