@@ -14,8 +14,11 @@ import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
+import useWebPushNotifications from "./hooks/useWebPushNotifications";
 
 export default function App() {
+  useWebPushNotifications(); // TODO, move this to a more appropriate place
+
   const location = useLocation();
   return (
     <ErrorBoundary

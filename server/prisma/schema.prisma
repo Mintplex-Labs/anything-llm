@@ -58,32 +58,33 @@ model system_settings {
 }
 
 model users {
-  id                          Int                           @id @default(autoincrement())
-  username                    String?                       @unique
-  password                    String
-  pfpFilename                 String?
-  role                        String                        @default("default")
-  suspended                   Int                           @default(0)
-  seen_recovery_codes         Boolean?                      @default(false)
-  createdAt                   DateTime                      @default(now())
-  lastUpdatedAt               DateTime                      @default(now())
-  dailyMessageLimit           Int?
-  bio                         String?                       @default("")
-  workspace_chats             workspace_chats[]
-  workspace_users             workspace_users[]
-  embed_configs               embed_configs[]
-  embed_chats                 embed_chats[]
-  threads                     workspace_threads[]
-  recovery_codes              recovery_codes[]
-  password_reset_tokens       password_reset_tokens[]
-  workspace_agent_invocations workspace_agent_invocations[]
-  slash_command_presets       slash_command_presets[]
-  browser_extension_api_keys  browser_extension_api_keys[]
-  temporary_auth_tokens       temporary_auth_tokens[]
-  system_prompt_variables     system_prompt_variables[]
-  prompt_history              prompt_history[]
-  desktop_mobile_devices      desktop_mobile_devices[]
-  workspace_parsed_files      workspace_parsed_files[]
+  id                           Int                           @id @default(autoincrement())
+  username                     String?                       @unique
+  password                     String
+  pfpFilename                  String?
+  role                         String                        @default("default")
+  suspended                    Int                           @default(0)
+  seen_recovery_codes          Boolean?                      @default(false)
+  createdAt                    DateTime                      @default(now())
+  lastUpdatedAt                DateTime                      @default(now())
+  dailyMessageLimit            Int?
+  bio                          String?                       @default("")
+  web_push_subscription_config String?
+  workspace_chats              workspace_chats[]
+  workspace_users              workspace_users[]
+  embed_configs                embed_configs[]
+  embed_chats                  embed_chats[]
+  threads                      workspace_threads[]
+  recovery_codes               recovery_codes[]
+  password_reset_tokens        password_reset_tokens[]
+  workspace_agent_invocations  workspace_agent_invocations[]
+  slash_command_presets        slash_command_presets[]
+  browser_extension_api_keys   browser_extension_api_keys[]
+  temporary_auth_tokens        temporary_auth_tokens[]
+  system_prompt_variables      system_prompt_variables[]
+  prompt_history               prompt_history[]
+  desktop_mobile_devices       desktop_mobile_devices[]
+  workspace_parsed_files       workspace_parsed_files[]
 }
 
 model recovery_codes {
