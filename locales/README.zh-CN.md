@@ -54,6 +54,7 @@ AnythingLLM是一个全栈应用程序，您可以使用现成的商业大语言
 AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工作区的功能类似于线程，同时增加了文档的容器化。工作区可以共享文档，但工作区之间的内容不会互相干扰或污染，因此您可以保持每个工作区的上下文清晰。
 
 ## AnythingLLM的一些酷炫特性
+
 - 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
@@ -103,6 +104,8 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 - [CometAPI (聊天模型)](https://api.cometapi.com/)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [PrivateModeAI (chat models)](https://privatemode.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 
 **支持的嵌入模型：**
 
@@ -161,8 +164,8 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 |----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
 
-| Railway  |  RepoCloud | Elestio |
-| --- | --- | --- |
+| Railway                                             | RepoCloud                                                 | Elestio                                             |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] |
 
 [其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
@@ -194,9 +197,6 @@ _以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex La
 <details>
 <summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
 
-
-
-
 ### 为什么收集信息？
 
 我们使用这些信息来帮助我们理解 AnythingLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 AnythingLLM 的性能和稳定性。
@@ -219,7 +219,7 @@ _以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex La
 
 我们非常重视隐私，且不用烦人的弹窗问卷来获取反馈，希望你能理解为什么我们想要知道该工具的使用情况，这样我们才能打造真正值得使用的产品。所有匿名数据 _绝不会_ 与任何第三方共享。
 
-[在源代码中查看所有信息收集活动](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[在源代码中查看所有信息收集活动](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
 </details>
 
