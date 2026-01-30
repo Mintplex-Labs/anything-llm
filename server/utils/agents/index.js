@@ -253,7 +253,7 @@ class AgentHandler {
       case "anthropic":
         return process.env.ANTHROPIC_MODEL_PREF ?? "claude-3-sonnet-20240229";
       case "lmstudio":
-        return process.env.LMSTUDIO_MODEL_PREF ?? "server-default";
+        return process.env.LMSTUDIO_MODEL_PREF ?? null;
       case "ollama":
         return process.env.OLLAMA_MODEL_PREF ?? "llama3:latest";
       case "groq":
