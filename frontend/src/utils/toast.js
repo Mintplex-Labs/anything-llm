@@ -1,10 +1,11 @@
 import { toast } from "react-toastify";
+import { getResolvedThemeFromStorage } from "@/utils/theme";
 
 // Additional Configs (opts)
 // You can also pass valid ReactToast params to override the defaults.
 // clear: false, // Will dismiss all visible toasts before rendering next toast
 const showToast = (message, type = "default", opts = {}) => {
-  const theme = localStorage?.getItem("theme") || "default";
+  const resolvedTheme = getResolvedThemeFromStorage();
   const options = {
     position: "bottom-center",
     autoClose: 5000,
@@ -12,7 +13,7 @@ const showToast = (message, type = "default", opts = {}) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    theme: theme === "default" ? "dark" : "light",
+    theme: resolvedTheme === "light" ? "light" : "dark",
     ...opts,
   };
 

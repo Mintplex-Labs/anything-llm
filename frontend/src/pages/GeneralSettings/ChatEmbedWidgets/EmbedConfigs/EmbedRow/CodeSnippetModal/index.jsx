@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import { getResolvedThemeFromStorage } from "@/utils/theme";
 import hljs from "highlight.js";
 import "@/utils/chat/themes/github-dark.css";
 import "@/utils/chat/themes/github.css";
@@ -68,7 +69,7 @@ const ScriptTag = ({ embed }) => {
     : window.location.origin;
   const snippet = createScriptTagSnippet(embed, scriptHost, serverHost);
   const theme =
-    window.localStorage.getItem("theme") === "light" ? "github" : "github-dark";
+    getResolvedThemeFromStorage() === "light" ? "github" : "github-dark";
 
   const handleClick = () => {
     window.navigator.clipboard.writeText(snippet);

@@ -6,6 +6,7 @@ import hljs from "highlight.js";
 import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
+import { getResolvedThemeFromStorage } from "@/utils/theme";
 
 // Register custom lanaguages
 import hljsDefineSvelte from "./hljs-libraries/svelte";
@@ -17,9 +18,7 @@ const markdown = markdownIt({
   highlight: function (code, lang) {
     const uuid = v4();
     const theme =
-      window.localStorage.getItem("theme") === "light"
-        ? "github"
-        : "github-dark";
+      getResolvedThemeFromStorage() === "light" ? "github" : "github-dark";
 
     if (lang && hljs.getLanguage(lang)) {
       try {

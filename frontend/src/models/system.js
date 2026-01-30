@@ -1,5 +1,6 @@
 import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
+import { getResolvedThemeFromStorage } from "@/utils/theme";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
@@ -423,10 +424,7 @@ const System = {
   },
   fetchLogo: async function () {
     const url = new URL(`${fullApiUrl()}/system/logo`);
-    url.searchParams.append(
-      "theme",
-      localStorage.getItem("theme") || "default"
-    );
+    url.searchParams.append("theme", getResolvedThemeFromStorage());
 
     return await fetch(url, {
       method: "GET",
