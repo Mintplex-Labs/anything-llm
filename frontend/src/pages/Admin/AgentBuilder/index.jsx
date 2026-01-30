@@ -354,7 +354,9 @@ export default function AgentBuilder() {
         onPublishFlow={handlePublishFlow}
       />
       <div className="flex-1 min-h-0 p-6 overflow-y-auto">
-        <div className="max-w-xl mx-auto mt-14">
+        <div
+          className={`max-w-xl mx-auto mt-14 ${showBlockMenu ? "pb-52" : ""}`}
+        >
           <BlockList
             blocks={blocks}
             updateBlockConfig={updateBlockConfig}
