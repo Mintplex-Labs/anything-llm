@@ -8,11 +8,12 @@ class LMStudioEmbedder {
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
 
+    const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
     this.className = "LMStudioEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
     this.lmstudio = new OpenAIApi({
       baseURL: parseLMStudioBasePath(process.env.EMBEDDING_BASE_PATH),
-      apiKey: null,
+      apiKey,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 

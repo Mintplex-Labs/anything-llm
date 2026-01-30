@@ -77,7 +77,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "openrouter":
       return await getOpenRouterModels();
     case "lmstudio":
-      return await getLMStudioModels(basePath);
+      return await getLMStudioModels(basePath, apiKey);
     case "koboldcpp":
       return await getKoboldCPPModels(basePath);
     case "litellm":
@@ -331,14 +331,19 @@ async function liteLLMModels(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
-async function getLMStudioModels(basePath = null) {
+async function getLMStudioModels(basePath = null, _apiKey = null) {
   try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.LMSTUDIO_AUTH_TOKEN
+        : _apiKey || process.env.LMSTUDIO_AUTH_TOKEN || null;
+
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
       baseURL: parseLMStudioBasePath(
         basePath || process.env.LMSTUDIO_BASE_PATH
       ),
-      apiKey: null,
+      apiKey: apiKey || null,
     });
     const models = await openai.models
       .list()

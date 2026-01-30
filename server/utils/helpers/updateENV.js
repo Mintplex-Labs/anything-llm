@@ -94,6 +94,10 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [],
   },
+  LMStudioAuthToken: {
+    envKey: "LMSTUDIO_AUTH_TOKEN",
+    checks: [],
+  },
 
   // LocalAI Settings
   LocalAiBasePath: {
