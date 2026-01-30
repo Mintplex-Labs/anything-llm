@@ -48,9 +48,7 @@ export default function AgentBuilder() {
   const [blocks, setBlocks] = useState(DEFAULT_BLOCKS);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
-  const [showLoadMenu, setShowLoadMenu] = useState(false);
   const [availableFlows, setAvailableFlows] = useState([]);
-  const [selectedFlowForDetails, setSelectedFlowForDetails] = useState(null);
   const nameRef = useRef(null);
   const descriptionRef = useRef(null);
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -122,7 +120,6 @@ export default function AgentBuilder() {
       setActive(flow.config.active ?? true);
       setCurrentFlowUuid(flow.uuid);
       setBlocks(flowBlocks);
-      setShowLoadMenu(false);
     } catch (error) {
       console.error(error);
       showToast("Failed to load flow", "error", { clear: true });

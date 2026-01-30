@@ -17,7 +17,7 @@ export default function useProviderEndpointAutoDiscovery({
   const [autoDetectAttempted, setAutoDetectAttempted] = useState(false);
   const [showAdvancedControls, setShowAdvancedControls] = useState(true);
 
-  async function autoDetect(isInitialAttempt = false) {
+  async function autoDetect() {
     setLoading(true);
     setAutoDetectAttempted(true);
     const possibleEndpoints = [];

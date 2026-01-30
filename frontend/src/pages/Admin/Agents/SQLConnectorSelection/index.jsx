@@ -10,7 +10,6 @@ import { Tooltip } from "react-tooltip";
 
 export default function AgentSQLConnectorSelection({
   skill,
-  settings, // unused.
   toggleSkill,
   enabled = false,
   setHasChanges,

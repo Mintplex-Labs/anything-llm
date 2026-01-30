@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 import { memo, useRef, useEffect } from "react";
 import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
@@ -17,7 +18,6 @@ const PromptReply = ({
   error,
   workspace,
   sources = [],
-  closed = true,
 }) => {
   const assistantBackgroundColor = "bg-theme-bg-chat";
 

@@ -42,11 +42,12 @@ function combineLikeSources(sources) {
 }
 
 export default function Citations({ sources = [] }) {
-  if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
   const { t } = useTranslation();
   const { textSizeClass } = useTextSize();
+
+  if (sources.length === 0) return null;
 
   return (
     <div className="flex flex-col mt-4 justify-left">
