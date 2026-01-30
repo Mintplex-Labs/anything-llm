@@ -77,7 +77,6 @@ export default function SuggestedChatMessages({ slug }) {
       setSuggestedMessages(
         suggestedMessages.map((msg, i) => (i === index ? merged : msg))
       );
-      setHasChanges(true);
     } else {
       setNewMessage({ ...suggestion });
     }
