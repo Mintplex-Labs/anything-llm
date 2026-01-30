@@ -229,6 +229,10 @@ class AgentHandler {
             "Privatemode base path must be provided to use agents."
           );
         break;
+      case "sambanova":
+        if (!process.env.SAMBANOVA_LLM_API_KEY)
+          throw new Error("SambaNova API key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -313,6 +317,8 @@ class AgentHandler {
         return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF ?? null;
       case "privatemode":
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
+      case "sambanova":
+        return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       default:
         return null;
     }

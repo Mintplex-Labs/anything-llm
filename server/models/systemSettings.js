@@ -681,6 +681,10 @@ const SystemSettings = {
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
       PrivateModeModelPref: process.env.PRIVATEMODE_LLM_MODEL_PREF,
+
+      // SambaNova Keys
+      SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
+      SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
     };
   },
 
