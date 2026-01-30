@@ -34,6 +34,8 @@ export default function SuggestedChatMessages({ slug }) {
       showToast(`Failed to update welcome messages: ${error}`, "error");
       return;
     }
+    setSuggestedMessages(validMessages);
+    setEditingIndex(-1);
     showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
