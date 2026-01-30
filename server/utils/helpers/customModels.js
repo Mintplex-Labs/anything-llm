@@ -936,9 +936,8 @@ async function getPrivatemodeModels(basePath = null, task = "any") {
 }
 
 /**
- * Get Privatemode models
- * @param {string} basePath - The base path of the Privatemode endpoint.
- * @param {'any' | 'generate' | 'embed' | 'transcribe'} task - The task to fetch the models for.
+ * Get SambaNova models
+ * @param {string} _apiKey - The API key to use
  * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
  */
 async function getSambaNovaModels(_apiKey = null) {
