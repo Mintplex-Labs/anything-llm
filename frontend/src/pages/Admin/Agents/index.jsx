@@ -400,6 +400,7 @@ export default function AdminAgents() {
                                   configurableSkills[selectedSkill]?.skill
                                 )}
                                 setHasChanges={setHasChanges}
+                                hasChanges={hasChanges}
                                 {...configurableSkills[selectedSkill]}
                               />
                             )}
@@ -591,6 +592,7 @@ export default function AdminAgents() {
                           configurableSkills[selectedSkill]?.skill
                         )}
                         setHasChanges={setHasChanges}
+                        hasChanges={hasChanges}
                         {...configurableSkills[selectedSkill]}
                       />
                     )}
