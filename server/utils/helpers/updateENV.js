@@ -799,6 +799,16 @@ const KEY_MAPPING = {
     envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+
+  // Privatemode Options
+  PrivateModeBasePath: {
+    envKey: "PRIVATEMODE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  PrivateModeModelPref: {
+    envKey: "PRIVATEMODE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -913,6 +923,7 @@ function supportedLLM(input = "") {
     "zai",
     "giteeai",
     "docker-model-runner",
+    "privatemode",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

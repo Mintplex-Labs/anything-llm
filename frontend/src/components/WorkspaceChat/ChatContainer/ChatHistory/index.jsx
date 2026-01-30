@@ -344,7 +344,7 @@ function buildMessages({
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
-          key={props.uuid || v4()}
+          key={`prompt-reply-${props.uuid || index}`}
           uuid={props.uuid}
           reply={props.content}
           pending={props.pending}

@@ -10,6 +10,9 @@ const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
+const {
+  ConnectionStringParser,
+} = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -674,21 +677,38 @@ const SystemSettings = {
         process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
       DockerModelRunnerModelTokenLimit:
         process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Privatemode Keys
+      PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
+      PrivateModeModelPref: process.env.PRIVATEMODE_LLM_MODEL_PREF,
     };
   },
 
-  // For special retrieval of a key setting that does not expose any credential information
-  brief: {
-    agent_sql_connections: async function () {
-      const setting = await SystemSettings.get({
-        label: "agent_sql_connections",
-      });
-      if (!setting) return [];
-      return safeJsonParse(setting.value, []).map((dbConfig) => {
-        const { connectionString, ...rest } = dbConfig;
-        return rest;
-      });
-    },
+  agent_sql_connections: async function () {
+    const setting = await SystemSettings.get({
+      label: "agent_sql_connections",
+    });
+    if (!setting) return [];
+
+    const connections = safeJsonParse(setting.value, []).map((conn) => {
+      let scheme = conn.engine;
+      if (scheme === "sql-server") scheme = "mssql";
+      if (scheme === "postgresql") scheme = "postgres";
+      const parser = new ConnectionStringParser({ scheme });
+
+      const parsed = parser.parse(conn.connectionString);
+      return {
+        ...conn,
+        username: parsed.username,
+        password: parsed.password,
+        host: parsed.hosts?.[0]?.host,
+        port: parsed.hosts?.[0]?.port,
+        database: parsed.endpoint,
+        scheme: parsed.scheme,
+      };
+    });
+
+    return connections;
   },
   getFeatureFlags: async function () {
     return {
@@ -738,42 +758,90 @@ const SystemSettings = {
   },
 };
 
+/**
+ * Merges SQL connection updates from the frontend with existing backend connections.
+ * Processes three types of actions: "remove", "update", and "add".
+ *
+ * @param {Array<Object>} existingConnections - Current connections stored in the database
+ * @param {Array<Object>} updates - Connection updates from frontend, each with an action property
+ * @returns {Array<Object>} - The merged connections array
+ */
 function mergeConnections(existingConnections = [], updates = []) {
-  let updatedConnections = [...existingConnections];
-  const existingDbIds = existingConnections.map((conn) => conn.database_id);
-
-  // First remove all 'action:remove' candidates from existing connections.
-  const toRemove = updates
-    .filter((conn) => conn.action === "remove")
-    .map((conn) => conn.database_id);
-  updatedConnections = updatedConnections.filter(
-    (conn) => !toRemove.includes(conn.database_id)
+  const connectionsMap = new Map(
+    existingConnections.map((conn) => [conn.database_id, conn])
   );
 
-  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
-  // but we do validate their database_id is unique.
-  updates
-    .filter((conn) => conn.action === "add")
-    .forEach((update) => {
-      if (!update.connectionString) return; // invalid connection string
+  for (const update of updates) {
+    const {
+      action,
+      database_id,
+      originalDatabaseId,
+      connectionString,
+      engine,
+    } = update;
 
-      // Remap name to be unique to entire set.
-      if (existingDbIds.includes(update.database_id)) {
-        update.database_id = slugify(
-          `${update.database_id}-${v4().slice(0, 4)}`
-        );
-      } else {
-        update.database_id = slugify(update.database_id);
+    switch (action) {
+      case "remove": {
+        connectionsMap.delete(database_id);
+        break;
+      }
+      case "update": {
+        if (!connectionString) continue;
+        const newId = slugify(database_id);
+
+        // Verify original connection exists
+        if (!connectionsMap.has(originalDatabaseId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: Original connection "${originalDatabaseId}" not found`
+          );
+          break;
+        }
+
+        // Check for name conflict (excluding the one being updated)
+        if (newId !== originalDatabaseId && connectionsMap.has(newId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: New name "${newId}" conflicts with existing connection`
+          );
+          break;
+        }
+
+        // Remove old and add updated connection
+        connectionsMap.delete(originalDatabaseId);
+        connectionsMap.set(newId, {
+          engine,
+          database_id: newId,
+          connectionString,
+        });
+        break;
       }
 
-      updatedConnections.push({
-        engine: update.engine,
-        database_id: update.database_id,
-        connectionString: update.connectionString,
-      });
-    });
+      case "add": {
+        if (!connectionString) continue;
+        const slugifiedId = slugify(database_id);
 
-  return updatedConnections;
+        // Skip if already exists
+        if (connectionsMap.has(slugifiedId)) {
+          console.warn(
+            `[mergeConnections] Add skipped: Connection "${slugifiedId}" already exists`
+          );
+          break;
+        }
+
+        connectionsMap.set(slugifiedId, {
+          engine,
+          database_id: slugifiedId,
+          connectionString,
+        });
+        break;
+      }
+
+      default: {
+        throw new Error("SQL connection update contains an invalid action.");
+      }
+    }
+  }
+
+  return Array.from(connectionsMap.values());
 }
 
 module.exports.SystemSettings = SystemSettings;

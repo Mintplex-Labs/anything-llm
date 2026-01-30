@@ -193,7 +193,7 @@ class CohereLLM {
 
             writeResponseChunk(response, {
               uuid,
-              sources,
+              sources: [],
               type: "textResponseChunk",
               textResponse: text,
               close: false,
