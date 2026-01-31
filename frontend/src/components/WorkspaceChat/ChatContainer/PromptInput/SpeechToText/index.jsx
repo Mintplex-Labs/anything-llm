@@ -130,9 +130,9 @@ export default function SpeechToText({ sendCommand }) {
       }`}
     >
       <Microphone
-        weight="fill"
+        weight="regular"
         color="var(--theme-sidebar-footer-icon-fill)"
-        className={`w-[22px] h-[22px] pointer-events-none text-theme-text-primary ${
+        className={`w-[20px] h-[20px] pointer-events-none text-theme-text-primary ${
           listening ? "animate-pulse-glow" : ""
         }`}
       />

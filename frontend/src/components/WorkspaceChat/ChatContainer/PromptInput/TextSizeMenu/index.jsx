@@ -28,7 +28,7 @@ export default function TextSizeButton() {
         <TextT
           color="var(--theme-sidebar-footer-icon-fill)"
           weight="fill"
-          className="w-[22px] h-[22px] pointer-events-none text-white"
+          className="w-[20px] h-[20px] pointer-events-none text-white"
         />
       </div>
       <Tooltip

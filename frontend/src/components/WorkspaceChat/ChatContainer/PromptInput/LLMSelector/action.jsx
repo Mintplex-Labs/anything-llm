@@ -97,9 +97,9 @@ export default function LLMSelectorAction() {
         className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
         {saved ? (
-          <CheckCircle className="w-[22px] h-[22px] pointer-events-none text-green-400" />
+          <CheckCircle className="w-[20px] h-[20px] pointer-events-none text-green-400" />
         ) : (
-          <Brain className="w-[22px] h-[22px] pointer-events-none text-[var(--theme-sidebar-footer-icon-fill)]" />
+          <Brain className="w-[20px] h-[20px] pointer-events-none text-[var(--theme-sidebar-footer-icon-fill)]" />
         )}
       </div>
       <Tooltip

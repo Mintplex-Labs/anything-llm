@@ -4,7 +4,7 @@ import SlashCommandsButton, {
   useSlashCommands,
 } from "./SlashCommands";
 import debounce from "lodash.debounce";
-import { PaperPlaneRight } from "@phosphor-icons/react";
+import { ArrowUp } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
 import AvailableAgentsButton, {
   AvailableAgents,
@@ -292,7 +292,7 @@ export default function PromptInput({
         <div className="flex items-center rounded-lg md:mb-4 md:w-full">
           <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center border-b border-theme-chat-input-border mx-3">
+            <div className="flex items-center mx-[7px]">
               <textarea
                 id={PROMPT_INPUT_ID}
                 ref={textareaRef}
@@ -313,41 +313,9 @@ export default function PromptInput({
                 className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow mb-1 pwa:!text-[16px] ${textSizeClass}`}
                 placeholder={t("chat_window.send_message")}
               />
-              {isStreaming ? (
-                <StopGenerationButton />
-              ) : (
-                <>
-                  <button
-                    ref={formRef}
-                    type="submit"
-                    disabled={isDisabled}
-                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4 disabled:cursor-not-allowed group"
-                    data-tooltip-id="send-prompt"
-                    data-tooltip-content={
-                      isDisabled
-                        ? t("chat_window.attachments_processing")
-                        : t("chat_window.send")
-                    }
-                    aria-label={t("chat_window.send")}
-                  >
-                    <PaperPlaneRight
-                      color="var(--theme-sidebar-footer-icon-fill)"
-                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
-                      weight="fill"
-                    />
-                    <span className="sr-only">Send message</span>
-                  </button>
-                  <Tooltip
-                    id="send-prompt"
-                    place="bottom"
-                    delayShow={300}
-                    className="tooltip !text-xs z-99"
-                  />
-                </>
-              )}
             </div>
-            <div className="flex justify-between py-3.5 mx-3 mb-1">
-              <div className="flex gap-x-2">
+            <div className="flex justify-between items-center pt-3.5 pb-3 mx-[7px]">
+              <div className="flex gap-x-2 items-center h-5 -ml-[4.5px]">
                 <AttachItem />
                 <SlashCommandsButton
                   showing={showSlashCommand}
@@ -360,8 +328,39 @@ export default function PromptInput({
                 <TextSizeButton />
                 <LLMSelectorAction />
               </div>
-              <div className="flex gap-x-2">
+              <div className="flex gap-x-2 items-center h-5">
                 <SpeechToText sendCommand={sendCommand} />
+                {isStreaming ? (
+                  <StopGenerationButton />
+                ) : (
+                  <>
+                    <button
+                      ref={formRef}
+                      type="submit"
+                      disabled={isDisabled}
+                      className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] bg-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 transition-opacity"
+                      data-tooltip-id="send-prompt"
+                      data-tooltip-content={
+                        isDisabled
+                          ? t("chat_window.attachments_processing")
+                          : t("chat_window.send")
+                      }
+                      aria-label={t("chat_window.send")}
+                    >
+                      <ArrowUp
+                        className="w-[12px] h-[12px] pointer-events-none text-black"
+                        weight="bold"
+                      />
+                      <span className="sr-only">Send message</span>
+                    </button>
+                    <Tooltip
+                      id="send-prompt"
+                      place="bottom"
+                      delayShow={300}
+                      className="tooltip !text-xs z-99"
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
