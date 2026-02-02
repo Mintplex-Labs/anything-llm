@@ -1,8 +1,6 @@
 import fs from 'fs';
 import {resources} from '../../frontend/src/locales/resources.js';
 import "../../server/node_modules/dotenv/lib/main.js";
-import DMRModule from '../../server/utils/AiProviders/dockerModelRunner/index.js';
-const { DockerModelRunnerLLM, getDockerModels } = DMRModule;
 
 function getNestedValue(obj, path) {
     const keys = path.split('.');
@@ -26,16 +24,8 @@ function setNestedValue(obj, path, value) {
 }
 
 class Translator {
-    static modelTag = 'mintplexlabs/translategemma4b:Q4_K_M'
-    constructor(provider = "dmr") {
-        switch (provider) {
-        case "dmr":
-            this.provider = new DockerModelRunnerLLM(null, Translator.modelTag);
-            break;
-        default:
-            throw new Error(`Unsupported provider: ${provider}`);
-        }
-
+    static modelTag = 'translategemma:4b'
+    constructor() {
         this.localeObj = new Intl.DisplayNames(Object.keys(resources), { type: 'language' });
     }
 
@@ -66,12 +56,6 @@ Produce only the ${targetLanguage} translation, without any additional explanati
 ${text}`
     }
 
-    async verifyReady() {
-        const models = await getDockerModels(process.env.DOCKER_MODEL_RUNNER_BASE_PATH);
-        if(!models.find(m => m.id.toLowerCase() === Translator.modelTag.toLowerCase())) throw new Error(`Model ${Translator.modelTag} not found. Pull with docker model pull ${Translator.modelTag}`);
-        return true;
-    }
-
     /**
      * Clean the output text from the model
      * Output text: `在助手回复中呈现 HTML 响应。这可以显著提高回复的质量，但也可能带来潜在的安全风险。<|im_end|>`
@@ -84,10 +68,24 @@ ${text}`
     }
 
     async translate(text, sourceLangCode, targetLangCode) {
-        await this.verifyReady();
         const prompt = this.buildPrompt(text, sourceLangCode, targetLangCode);
-        const response = await this.provider.getChatCompletion([{ role: 'user', content: prompt }], { temperature: 0.1 });
-        return this.cleanOutputText(response.textResponse);
+        return fetch(`http://localhost:11434/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: Translator.modelTag,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.1,
+                stream: false,
+            }),
+        })
+        .then((res) => {
+            if(!res.ok) throw new Error(`Failed to translate: ${res.statusText}`);
+            return res.json();
+        })
+        .then((data) => {
+            return this.cleanOutputText(data.message.content);
+        });
     }
 
     writeTranslations(langCode, translations) {
@@ -109,7 +107,7 @@ export default TRANSLATIONS;`
 
 
 // Deep traverse the english translations and get all the path to any all keys
-const translator = new Translator("dmr");
+const translator = new Translator();
 const englishTranslations = resources.en.common;
 const allKeys = [];
 function traverseTranslations(translations, parentKey = '') {
@@ -168,6 +166,7 @@ async function translateSingleLanguage(langCode) {
         totalTranslations++;
     }
 
+    if(totalTranslations === 0) return console.log('No translations performed!');
     console.log(`--------------------------------`);
     console.log(`Translated ${totalTranslations} translations for ${langCode}`);
     translator.writeTranslations(langCode, resources[langCode].common);
