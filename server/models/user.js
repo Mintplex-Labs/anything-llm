@@ -87,7 +87,7 @@ const User = {
   },
 
   filterFields: function (user = {}) {
-    const { password, ...rest } = user;
+    const { password, web_push_subscription_config, ...rest } = user;
     return { ...rest };
   },
   _identifyErrorAndFormatMessage: function (error) {
@@ -217,9 +217,14 @@ const User = {
     }
   },
 
-  // Explicit direct update of user object.
-  // Only use this method when directly setting a key value
-  // that takes no user input for the keys being modified.
+  /**
+   * Explicit direct update of user object.
+   * Only use this method when directly setting a key value
+   * that takes no user input for the keys being modified.
+   * @param {number} id - The id of the user to update.
+   * @param {Object} data - The data to update the user with.
+   * @returns {Promise<Object>} The updated user object.
+   */
   _update: async function (id = null, data = {}) {
     if (!id) throw new Error("No user id provided for update");
 
@@ -232,6 +237,26 @@ const User = {
     } catch (error) {
       console.error(error.message);
       return { user: null, message: error.message };
+    }
+  },
+
+  /**
+   * Get all users that match the given clause without filtering the fields.
+   * Internal use only - do not use this method for user-input flows
+   * @param {Object} clause - The clause to filter the users by.
+   * @param {number|null} limit - The maximum number of users to return.
+   * @returns {Promise<Array<User>>} The users that match the given clause.
+   */
+  _where: async function (clause = {}, limit = null) {
+    try {
+      const users = await prisma.users.findMany({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+      });
+      return users;
+    } catch (error) {
+      console.error(error.message);
+      return [];
     }
   },
 
