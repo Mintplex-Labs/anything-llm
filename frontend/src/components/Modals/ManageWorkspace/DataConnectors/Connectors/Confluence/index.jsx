@@ -4,6 +4,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import Toggle from "@/components/lib/Toggle";
 
 export default function ConfluenceOptions() {
   const { t } = useTranslation();
@@ -259,12 +260,7 @@ export default function ConfluenceOptions() {
                 <div className="flex flex-col pr-10">
                   <div className="flex flex-col gap-y-1 mb-4">
                     <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                      <input
-                        type="checkbox"
-                        name="bypassSSL"
-                        className="mr-2"
-                        defaultChecked={false}
-                      />
+                      <Toggle size="md" name="bypassSSL" value="true" />
                       <p className="font-bold text-theme-text-primary">
                         {t("connectors.confluence.bypass_ssl")}
                       </p>
