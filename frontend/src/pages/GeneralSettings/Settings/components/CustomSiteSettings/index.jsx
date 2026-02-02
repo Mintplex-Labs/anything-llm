@@ -15,10 +15,10 @@ export default function CustomSiteSettings() {
     Admin.systemPreferencesByFields([
       "meta_page_title",
       "meta_page_favicon",
-    ]).then((res) => {
+    ]).then(({ settings }) => {
       setSettings({
-        title: res?.settings?.meta_page_title,
-        faviconUrl: res?.settings?.meta_page_favicon,
+        title: settings?.meta_page_title,
+        faviconUrl: settings?.meta_page_favicon,
       });
     });
   }, []);
