@@ -12,10 +12,13 @@ export default function CustomSiteSettings() {
   });
 
   useEffect(() => {
-    Admin.systemPreferences().then(({ settings }) => {
+    Admin.systemPreferencesByFields([
+      "meta_page_title",
+      "meta_page_favicon",
+    ]).then((res) => {
       setSettings({
-        title: settings?.meta_page_title,
-        faviconUrl: settings?.meta_page_favicon,
+        title: res?.settings?.meta_page_title,
+        faviconUrl: res?.settings?.meta_page_favicon,
       });
     });
   }, []);

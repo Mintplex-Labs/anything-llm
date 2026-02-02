@@ -11,7 +11,9 @@ export default function FooterCustomization() {
   const { t } = useTranslation();
   useEffect(() => {
     async function fetchFooterIcons() {
-      const settings = (await Admin.systemPreferences())?.settings;
+      const settings = (
+        await Admin.systemPreferencesByFields(["footer_data"])
+      )?.settings;
       if (settings && settings.footer_data) {
         const parsedIcons = safeJsonParse(settings.footer_data, []);
         setFooterIcons((prevIcons) => {

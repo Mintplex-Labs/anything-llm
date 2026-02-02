@@ -156,20 +156,6 @@ const Admin = {
   },
 
   // System Preferences
-  // TODO: remove this in favor of systemPreferencesByFields
-  // DEPRECATED: use systemPreferencesByFields instead
-  systemPreferences: async () => {
-    return await fetch(`${API_BASE}/admin/system-preferences`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  },
-
   /**
    * Fetches system preferences by fields
    * @param {string[]} labels - Array of labels for settings
