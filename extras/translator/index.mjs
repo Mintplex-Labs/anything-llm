@@ -93,6 +93,7 @@ ${text}`
         // Special cases
         if(langCode === 'pt') langFilename = 'pt_BR';
         if(langCode === 'zh-tw') langFilename = 'zh_TW';
+        if(langCode === 'vi') langFilename = 'vn';
 
         fs.writeFileSync(
             `../../frontend/src/locales/${langFilename}/common.js`,
