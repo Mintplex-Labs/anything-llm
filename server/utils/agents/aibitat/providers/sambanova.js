@@ -2,30 +2,16 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const {
-  LMStudioLLM,
-  parseLMStudioBasePath,
-} = require("../../../AiProviders/lmStudio/index.js");
 
-/**
- * The agent provider for the LMStudio.
- */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class SambaNovaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  /**
-   *
-   * @param {{model?: string}} config
-   */
   constructor(config = {}) {
+    const { model = "Meta-Llama-3.1-8B-Instruct" } = config;
     super();
-    const model = config?.model || process.env.LMSTUDIO_MODEL_PREF;
-    if (!model) throw new Error("LMStudio must have a valid model set.");
-
-    const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
     const client = new OpenAI({
-      baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
-      apiKey,
+      baseURL: "https://api.sambanova.ai/v1",
+      apiKey: process.env.SAMBANOVA_LLM_API_KEY,
       maxRetries: 3,
     });
 
@@ -34,6 +20,13 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     this.verbose = true;
   }
 
+  /**
+   * Create a completion based on the received messages.
+   *
+   * @param messages A list of messages to send to the API.
+   * @param functions
+   * @returns The completion.
+   */
   get client() {
     return this._client;
   }
@@ -43,7 +36,6 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
-    await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -51,18 +43,14 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("SambaNova chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("SambaNova chat: No results length!");
         return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
       });
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await LMStudioLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
       stream: true,
@@ -89,16 +77,9 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     );
   }
 
-  /**
-   * Get the cost of the completion.
-   *
-   * @param _usage The completion to get the cost for.
-   * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
-   */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = SambaNovaProvider;

@@ -55,6 +55,7 @@
 AnythingLLM یک اپلیکیشن کامل است که در آن می‌توانید از LLM‌های تجاری آماده یا LLM‌های متن‌باز محبوب و راه‌حل‌های vectorDB برای ساخت یک ChatGPT خصوصی بدون محدودیت استفاده کنید که می‌توانید آن را به صورت محلی اجرا کنید یا از راه دور میزبانی کنید و با هر سندی که به آن ارائه می‌دهید، هوشمندانه گفتگو کنید.
 
 AnythingLLM اسناد شما را به اشیایی به نام `workspaces` تقسیم می‌کند. یک Workspace مانند یک رشته عمل می‌کند، اما با اضافه شدن کانتینرسازی اسناد شما. Workspaceها می‌توانند اسناد را به اشتراک بگذارند، اما با یکدیگر ارتباط برقرار نمی‌کنند تا بتوانید زمینه هر workspace را تمیز نگه دارید.
+
 </div>
 <div dir="rtl">
 
@@ -90,7 +91,7 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
-- [Fireworks AI  (chat models)](https://fireworks.ai/)
+- [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
@@ -106,6 +107,8 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [PrivateModeAI (chat models)](https://privatemode.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 
 <div dir="rtl">
 
@@ -166,14 +169,15 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 <div dir="rtl">
 
 Mintplex Labs و جامعه کاربران، روش‌ها، اسکریپت‌ها و قالب‌های متعددی را برای اجرای AnythingLLM به صورت محلی نگهداری می‌کنند. برای مطالعه نحوه استقرار در محیط مورد نظر خود یا استقرار خودکار، به جدول زیر مراجعه کنید.
+
 </div>
 
-| Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----|-----|---------------|------------|
+| Docker                                           | AWS                                     | GCP                                     | Digital Ocean                                  | Render.com                                           |
+| ------------------------------------------------ | --------------------------------------- | --------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway  |  RepoCloud | Elestio |
-| --- | --- | --- |
+| Railway                                             | RepoCloud                                                 | Elestio                                             |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
 <div dir="rtl">
@@ -224,7 +228,8 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 می‌توانید این ادعاها را با پیدا کردن تمام مکان‌هایی که `Telemetry.sendTelemetry` فراخوانی می‌شود، تأیید کنید. ارائه‌دهنده تله‌متری [PostHog](https://posthog.com/) است.
 
-[مشاهده همه رویدادهای تله‌متری در کد منبع](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[مشاهده همه رویدادهای تله‌متری در کد منبع](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
+
 </div>
 
 </details>
@@ -259,10 +264,12 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 </div>
 
 ---
+
 <div dir="ltr" align="left">
 
 Copyright © 2025 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](../LICENSE) licensed.
+
 </div>
 <!-- LINK GROUP -->
 

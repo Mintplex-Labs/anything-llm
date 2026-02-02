@@ -165,6 +165,9 @@ function getModelTag() {
     case "privatemode":
       model = process.env.PRIVATEMODE_LLM_MODEL_PREF;
       break;
+    case "sambanova":
+      model = process.env.SAMBANOVA_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

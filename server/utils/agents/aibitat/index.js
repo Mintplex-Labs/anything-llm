@@ -996,6 +996,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.DockerModelRunnerProvider({ model: config.model });
       case "privatemode":
         return new Providers.PrivatemodeProvider({ model: config.model });
+      case "sambanova":
+        return new Providers.SambaNovaProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
