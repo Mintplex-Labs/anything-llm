@@ -38,7 +38,7 @@ function SambaNovaModelSelection({ settings, apiKey }) {
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels("sambanova");
+      const { models } = await System.customModels("sambanova", apiKey);
       if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
           acc[model.organization] = acc[model.organization] || [];
@@ -51,7 +51,7 @@ function SambaNovaModelSelection({ settings, apiKey }) {
       setLoading(false);
     }
     findCustomModels();
-  }, []);
+  }, [apiKey]);
 
   if (loading || Object.keys(groupedModels).length === 0) {
     return (
