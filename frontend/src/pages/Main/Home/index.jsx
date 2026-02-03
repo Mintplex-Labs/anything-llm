@@ -74,6 +74,30 @@ export default function Home() {
     }
   }, [workspace, threadSlug]);
 
+  // Handle paste events when no thread exists yet
+  useEffect(() => {
+    if (threadSlug) return;
+
+    async function handlePaste(e) {
+      const files = e.detail?.files;
+      if (!files?.length) return;
+
+      pendingFilesRef.current = files;
+      let ws = workspace;
+      if (!ws) {
+        ws = await createDefaultWorkspace();
+        if (!ws) return;
+        setWorkspace(ws);
+      }
+      const { thread } = await Workspace.threads.new(ws.slug);
+      if (thread) setThreadSlug(thread.slug);
+    }
+
+    window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
+    return () =>
+      window.removeEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
+  }, [workspace, threadSlug]);
+
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
