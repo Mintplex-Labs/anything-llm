@@ -49,31 +49,46 @@ async function createDefaultWorkspace() {
 
 export default function Home() {
   const [workspace, setWorkspace] = useState(null);
+  const [threadSlug, setThreadSlug] = useState(null);
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
+  const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
 
   useEffect(() => {
-    getTargetWorkspace().then((ws) => {
-      setWorkspace(ws);
+    async function init() {
+      const ws = await getTargetWorkspace();
+      if (ws) setWorkspace(ws);
       setWorkspaceLoading(false);
-    });
+    }
+    init();
   }, []);
 
-  // When workspace becomes available and we have pending files, trigger upload
+  // When workspace/thread becomes available and we have pending files, trigger upload
   useEffect(() => {
-    if (workspace && pendingFilesRef.current.length > 0) {
+    if (workspace && threadSlug && pendingFilesRef.current.length > 0) {
       const files = pendingFilesRef.current;
       pendingFilesRef.current = [];
       window.dispatchEvent(
         new CustomEvent(PASTE_ATTACHMENT_EVENT, { detail: { files } })
       );
     }
-  }, [workspace]);
+  }, [workspace, threadSlug]);
 
   async function handleDropWithoutWorkspace(acceptedFiles) {
+    setDragging(false);
     pendingFilesRef.current = acceptedFiles;
     const ws = await createDefaultWorkspace();
-    if (ws) setWorkspace(ws);
+    if (!ws) return;
+    setWorkspace(ws);
+    const { thread } = await Workspace.threads.new(ws.slug);
+    if (thread) setThreadSlug(thread.slug);
+  }
+
+  async function handleDropWithWorkspace(acceptedFiles) {
+    setDragging(false);
+    pendingFilesRef.current = acceptedFiles;
+    const { thread } = await Workspace.threads.new(workspace.slug);
+    if (thread) setThreadSlug(thread.slug);
   }
 
   if (workspaceLoading) {
@@ -85,10 +100,15 @@ export default function Home() {
     );
   }
 
-  if (workspace) {
+  if (workspace && threadSlug) {
     return (
-      <DnDFileUploaderProvider workspace={workspace}>
-        <HomeContent workspace={workspace} setWorkspace={setWorkspace} />
+      <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
+        <HomeContent
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          threadSlug={threadSlug}
+          setThreadSlug={setThreadSlug}
+        />
       </DnDFileUploaderProvider>
     );
   }
@@ -98,18 +118,25 @@ export default function Home() {
       value={{
         files: [],
         ready: true,
-        dragging: false,
-        setDragging: () => {},
-        onDrop: handleDropWithoutWorkspace,
+        dragging,
+        setDragging,
+        onDrop: workspace
+          ? handleDropWithWorkspace
+          : handleDropWithoutWorkspace,
         parseAttachments: () => [],
       }}
     >
-      <HomeContent workspace={null} setWorkspace={setWorkspace} />
+      <HomeContent
+        workspace={workspace}
+        setWorkspace={setWorkspace}
+        threadSlug={null}
+        setThreadSlug={setThreadSlug}
+      />
     </DndUploaderContext.Provider>
   );
 }
 
-function HomeContent({ workspace, setWorkspace }) {
+function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -134,10 +161,9 @@ function HomeContent({ workspace, setWorkspace }) {
     setLoading(true);
     try {
       let targetWorkspace = workspace;
-
+      let targetThread = threadSlug;
       const attachments = parseAttachments();
 
-      // No workspace exists -> create one and navigate to default thread
       if (!targetWorkspace) {
         targetWorkspace = await createDefaultWorkspace();
         if (!targetWorkspace) {
@@ -145,29 +171,24 @@ function HomeContent({ workspace, setWorkspace }) {
           return;
         }
         setWorkspace(targetWorkspace);
-        sessionStorage.setItem(
-          PENDING_HOME_MESSAGE,
-          JSON.stringify({ message: message.trim(), attachments })
-        );
-        navigate(paths.workspace.chat(targetWorkspace.slug));
-        return;
       }
 
-      // Workspace exists -> create a new thread and navigate to it
-      const { thread, error } = await Workspace.threads.new(
-        targetWorkspace.slug
-      );
-      if (!thread) {
-        showToast(error || "Failed to create thread", "error");
-        setLoading(false);
-        return;
+      if (!targetThread) {
+        const { thread } = await Workspace.threads.new(targetWorkspace.slug);
+        targetThread = thread?.slug;
+        if (thread) setThreadSlug(thread.slug);
       }
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
         JSON.stringify({ message: message.trim(), attachments })
       );
-      navigate(paths.workspace.thread(targetWorkspace.slug, thread.slug));
+
+      if (targetThread) {
+        navigate(paths.workspace.thread(targetWorkspace.slug, targetThread));
+      } else {
+        navigate(paths.workspace.chat(targetWorkspace.slug));
+      }
     } catch (error) {
       console.error("Error submitting message:", error);
       showToast("Failed to send message", "error");
@@ -238,6 +259,8 @@ function HomeContent({ workspace, setWorkspace }) {
               sendCommand={sendCommand}
               attachments={files}
               centered
+              workspaceSlug={workspace?.slug}
+              threadSlug={threadSlug}
             />
             <div className="flex flex-wrap justify-center gap-2 mt-6">
               <QuickActionButton

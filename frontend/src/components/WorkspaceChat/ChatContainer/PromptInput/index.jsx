@@ -37,6 +37,8 @@ const MAX_EDIT_STACK_SIZE = 100;
  * @param {function} props.sendCommand - handler for slash commands and agent mentions
  * @param {Array} [props.attachments] - file attachments array
  * @param {boolean} [props.centered] - renders in centered layout mode (for home page)
+ * @param {string} [props.workspaceSlug] - workspace slug for home page context
+ * @param {string} [props.threadSlug] - thread slug for home page context
  */
 export default function PromptInput({
   submit,
@@ -45,6 +47,8 @@ export default function PromptInput({
   sendCommand,
   attachments = [],
   centered = false,
+  workspaceSlug = null,
+  threadSlug = null,
 }) {
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
@@ -316,7 +320,10 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between items-center pt-3.5 pb-3 mx-[7px]">
               <div className="flex gap-x-2 items-center h-5 -ml-[4.5px]">
-                <AttachItem />
+                <AttachItem
+                  workspaceSlug={workspaceSlug}
+                  workspaceThreadSlug={threadSlug}
+                />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}

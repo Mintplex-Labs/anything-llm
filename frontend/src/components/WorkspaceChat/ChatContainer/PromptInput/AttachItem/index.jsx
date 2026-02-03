@@ -15,10 +15,15 @@ import ParsedFilesMenu from "./ParsedFilesMenu";
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
  * @returns
  */
-export default function AttachItem() {
+export default function AttachItem({
+  workspaceSlug = null,
+  workspaceThreadSlug = null,
+}) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { slug, threadSlug = null } = useParams();
+  const params = useParams();
+  const slug = workspaceSlug || params.slug;
+  const threadSlug = workspaceThreadSlug ?? params.threadSlug ?? null;
   const tooltipRef = useRef(null);
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [files, setFiles] = useState([]);
