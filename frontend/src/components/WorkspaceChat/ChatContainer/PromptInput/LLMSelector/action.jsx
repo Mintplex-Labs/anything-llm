@@ -3,6 +3,7 @@ import { Brain, CheckCircle } from "@phosphor-icons/react";
 import LLMSelectorModal from "./index";
 import { useTheme } from "@/hooks/useTheme";
 import { useRef, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useUser from "@/hooks/useUser";
 import { useModal } from "@/hooks/useModal";
 import SetupProvider from "./SetupProvider";
@@ -12,6 +13,7 @@ export const SAVE_LLM_SELECTOR_EVENT = "save_llm_selector";
 export const PROVIDER_SETUP_EVENT = "provider_setup_requested";
 
 export default function LLMSelectorAction() {
+  const { slug } = useParams();
   const tooltipRef = useRef(null);
   const { theme } = useTheme();
   const { user } = useUser();
@@ -87,6 +89,7 @@ export default function LLMSelectorAction() {
   // This feature is disabled for multi-user instances where the user is not an admin
   // This is because of the limitations of model selection currently and other nuances in controls.
   if (!!user && user.role !== "admin") return null;
+  if (!slug) return null;
 
   return (
     <>
