@@ -82,6 +82,7 @@ class TogetherAiLLM {
     if (!process.env.TOGETHER_AI_API_KEY)
       throw new Error("No TogetherAI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
+    this.className = "TogetherAiLLM";
     this.openai = new OpenAIApi({
       baseURL: "https://api.together.xyz/v1",
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
@@ -210,6 +211,7 @@ class TogetherAiLLM {
         outputTps: result.output.usage?.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -231,6 +233,7 @@ class TogetherAiLLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }

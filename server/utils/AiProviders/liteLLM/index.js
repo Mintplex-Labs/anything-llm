@@ -155,6 +155,7 @@ class LiteLLM {
           (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -170,9 +171,9 @@ class LiteLLM {
         max_tokens: parseInt(this.maxTokens), // LiteLLM requires int
       }),
       messages,
-      // runPromptTokenCalculation: true - We manually count the tokens because they may or may not be provided in the stream
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;
