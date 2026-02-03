@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "@/components/Sidebar";
 import PromptInput, {
   PROMPT_INPUT_EVENT,
 } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
-import { DndUploaderContext } from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
+import DnDFileUploaderWrapper, {
+  DndUploaderContext,
+  DnDFileUploaderProvider,
+  PASTE_ATTACHMENT_EVENT,
+} from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "@/components/Modals/ManageWorkspace";
@@ -19,13 +23,100 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
 
+async function getTargetWorkspace() {
+  const lastVisited = safeJsonParse(
+    localStorage.getItem(LAST_VISITED_WORKSPACE)
+  );
+  if (lastVisited?.slug) {
+    const workspace = await Workspace.bySlug(lastVisited.slug);
+    if (workspace) return workspace;
+  }
+
+  const workspaces = await Workspace.all();
+  return workspaces.length > 0 ? workspaces[0] : null;
+}
+
+async function createDefaultWorkspace() {
+  const { workspace, message: errorMsg } = await Workspace.new({
+    name: "My Workspace",
+  });
+  if (!workspace) {
+    showToast(errorMsg || "Failed to create workspace", "error");
+    return null;
+  }
+  return workspace;
+}
+
 export default function Home() {
+  const [workspace, setWorkspace] = useState(null);
+  const [workspaceLoading, setWorkspaceLoading] = useState(true);
+  const pendingFilesRef = useRef([]);
+
+  useEffect(() => {
+    getTargetWorkspace().then((ws) => {
+      setWorkspace(ws);
+      setWorkspaceLoading(false);
+    });
+  }, []);
+
+  // When workspace becomes available and we have pending files, trigger upload
+  useEffect(() => {
+    if (workspace && pendingFilesRef.current.length > 0) {
+      const files = pendingFilesRef.current;
+      pendingFilesRef.current = [];
+      window.dispatchEvent(
+        new CustomEvent(PASTE_ATTACHMENT_EVENT, { detail: { files } })
+      );
+    }
+  }, [workspace]);
+
+  async function handleDropWithoutWorkspace(acceptedFiles) {
+    pendingFilesRef.current = acceptedFiles;
+    const ws = await createDefaultWorkspace();
+    if (ws) setWorkspace(ws);
+  }
+
+  if (workspaceLoading) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      />
+    );
+  }
+
+  if (workspace) {
+    return (
+      <DnDFileUploaderProvider workspace={workspace}>
+        <HomeContent workspace={workspace} setWorkspace={setWorkspace} />
+      </DnDFileUploaderProvider>
+    );
+  }
+
+  return (
+    <DndUploaderContext.Provider
+      value={{
+        files: [],
+        ready: true,
+        dragging: false,
+        setDragging: () => {},
+        onDrop: handleDropWithoutWorkspace,
+        parseAttachments: () => [],
+      }}
+    >
+      <HomeContent workspace={null} setWorkspace={setWorkspace} />
+    </DndUploaderContext.Provider>
+  );
+}
+
+function HomeContent({ workspace, setWorkspace }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedWorkspaceSlug, setSelectedWorkspaceSlug] = useState(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const { files, parseAttachments } = useContext(DndUploaderContext);
 
   useEffect(() => {
     sessionStorage.removeItem(PENDING_HOME_MESSAGE);
@@ -36,55 +127,36 @@ export default function Home() {
     );
   }, []);
 
-  async function getTargetWorkspace() {
-    const lastVisited = safeJsonParse(
-      localStorage.getItem(LAST_VISITED_WORKSPACE)
-    );
-    if (lastVisited?.slug) {
-      const workspace = await Workspace.bySlug(lastVisited.slug);
-      if (workspace) return workspace;
-    }
-
-    const workspaces = await Workspace.all();
-    return workspaces.length > 0 ? workspaces[0] : null;
-  }
-
-  async function createDefaultWorkspace() {
-    const { workspace, message: errorMsg } = await Workspace.new({
-      name: "My Workspace",
-    });
-    if (!workspace) {
-      showToast(errorMsg || "Failed to create workspace", "error");
-      return null;
-    }
-    return workspace;
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     if (!message.trim() || loading) return;
 
     setLoading(true);
     try {
-      let workspace = await getTargetWorkspace();
+      let targetWorkspace = workspace;
+
+      const attachments = parseAttachments();
 
       // No workspace exists -> create one and navigate to default thread
-      if (!workspace) {
-        workspace = await createDefaultWorkspace();
-        if (!workspace) {
+      if (!targetWorkspace) {
+        targetWorkspace = await createDefaultWorkspace();
+        if (!targetWorkspace) {
           setLoading(false);
           return;
         }
+        setWorkspace(targetWorkspace);
         sessionStorage.setItem(
           PENDING_HOME_MESSAGE,
-          JSON.stringify({ message: message.trim() })
+          JSON.stringify({ message: message.trim(), attachments })
         );
-        navigate(paths.workspace.chat(workspace.slug));
+        navigate(paths.workspace.chat(targetWorkspace.slug));
         return;
       }
 
       // Workspace exists -> create a new thread and navigate to it
-      const { thread, error } = await Workspace.threads.new(workspace.slug);
+      const { thread, error } = await Workspace.threads.new(
+        targetWorkspace.slug
+      );
       if (!thread) {
         showToast(error || "Failed to create thread", "error");
         setLoading(false);
@@ -93,9 +165,9 @@ export default function Home() {
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: message.trim() })
+        JSON.stringify({ message: message.trim(), attachments })
       );
-      navigate(paths.workspace.thread(workspace.slug, thread.slug));
+      navigate(paths.workspace.thread(targetWorkspace.slug, thread.slug));
     } catch (error) {
       console.error("Error submitting message:", error);
       showToast("Failed to send message", "error");
@@ -123,26 +195,28 @@ export default function Home() {
   }
 
   async function handleUploadDocument() {
-    let workspace = await getTargetWorkspace();
+    let targetWorkspace = workspace;
 
-    if (!workspace) {
-      workspace = await createDefaultWorkspace();
-      if (!workspace) return;
+    if (!targetWorkspace) {
+      targetWorkspace = await createDefaultWorkspace();
+      if (!targetWorkspace) return;
+      setWorkspace(targetWorkspace);
     }
 
-    setSelectedWorkspaceSlug(workspace.slug);
+    setSelectedWorkspaceSlug(targetWorkspace.slug);
     showModal();
   }
 
   async function handleEditWorkspace() {
-    let workspace = await getTargetWorkspace();
+    let targetWorkspace = workspace;
 
-    if (!workspace) {
-      workspace = await createDefaultWorkspace();
-      if (!workspace) return;
+    if (!targetWorkspace) {
+      targetWorkspace = await createDefaultWorkspace();
+      if (!targetWorkspace) return;
+      setWorkspace(targetWorkspace);
     }
 
-    navigate(paths.workspace.settings.generalAppearance(workspace.slug));
+    navigate(paths.workspace.settings.generalAppearance(targetWorkspace.slug));
   }
 
   return (
@@ -151,16 +225,7 @@ export default function Home() {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
     >
       {isMobile && <SidebarMobileHeader />}
-      <DndUploaderContext.Provider
-        value={{
-          files: [],
-          ready: false,
-          dragging: false,
-          setDragging: () => { },
-          onDrop: () => { },
-          parseAttachments: () => [],
-        }}
-      >
+      <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[650px] px-4">
             <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
@@ -171,7 +236,7 @@ export default function Home() {
               onChange={handleChange}
               isStreaming={loading}
               sendCommand={sendCommand}
-              attachments={[]}
+              attachments={files}
               centered
             />
             <div className="flex flex-wrap justify-center gap-2 mt-6">
@@ -190,7 +255,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </DndUploaderContext.Provider>
+      </DnDFileUploaderWrapper>
       {showing && (
         <ManageWorkspace
           hideModal={hideModal}

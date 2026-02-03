@@ -174,6 +174,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           role: "assistant",
           pending: true,
           userMessage: text,
+          attachments,
           animate: true,
         },
       ];
@@ -192,7 +193,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     if (pending?.message) {
       sessionStorage.removeItem(PENDING_HOME_MESSAGE);
       setTimeout(() => {
-        sendCommand({ text: pending.message, autoSubmit: true });
+        sendCommand({
+          text: pending.message,
+          attachments: pending.attachments || [],
+          autoSubmit: true,
+        });
       }, 100);
     }
   }, [workspace?.slug]);
