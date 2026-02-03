@@ -108,14 +108,17 @@ export default function Home() {
   }
 
   function sendCommand({ text = "", autoSubmit = false }) {
+    setMessage(text);
+    window.dispatchEvent(
+      new CustomEvent(PROMPT_INPUT_EVENT, {
+        detail: { messageContent: text, writeMode: "replace" },
+      })
+    );
     if (autoSubmit && text) {
-      setMessage(text);
       setTimeout(() => {
         const form = document.querySelector("form");
         if (form) form.requestSubmit();
       }, 0);
-    } else {
-      setMessage(text);
     }
   }
 
