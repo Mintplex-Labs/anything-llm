@@ -23,6 +23,7 @@ class GiteeAILLM {
       throw new Error("No Gitee AI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
 
+    this.className = "GiteeAILLM";
     this.openai = new OpenAIApi({
       apiKey: process.env.GITEE_AI_API_KEY,
       baseURL: "https://ai.gitee.com/v1",
@@ -46,27 +47,6 @@ class GiteeAILLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
-  }
-
-  // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
-  // from the current date. If it is, then we will refetch the API so that all the models are up
-  // to date.
-  #cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
-    if (!fs.existsSync(this.cacheAtPath)) return true;
-    const now = Number(new Date());
-    const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
-    return now - timestampMs > MAX_STALE;
-  }
-
-  // This function fetches the models from the GiteeAI API and caches them locally.
-  async #syncModels() {
-    if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
-      return false;
-
-    this.log("Model cache is not present or stale. Fetching from GiteeAI API.");
-    await giteeAiModels();
-    return;
   }
 
   models() {
@@ -171,6 +151,7 @@ class GiteeAILLM {
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -187,6 +168,7 @@ class GiteeAILLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;

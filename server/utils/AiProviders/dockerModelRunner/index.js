@@ -26,6 +26,7 @@ class DockerModelRunnerLLM {
     if (!process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF && !modelPreference)
       throw new Error("No Docker Model Runner Model Pref was set.");
 
+    this.className = "DockerModelRunnerLLM";
     this.dmr = new OpenAIApi({
       baseURL: parseDockerModelRunnerEndpoint(
         process.env.DOCKER_MODEL_RUNNER_BASE_PATH
@@ -173,6 +174,7 @@ class DockerModelRunnerLLM {
         outputTps: result.output.usage?.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -194,6 +196,7 @@ class DockerModelRunnerLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }

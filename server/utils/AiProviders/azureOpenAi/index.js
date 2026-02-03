@@ -15,6 +15,7 @@ class AzureOpenAiLLM {
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
+    this.className = "AzureOpenAiLLM";
     this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
@@ -175,6 +176,7 @@ class AzureOpenAiLLM {
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -197,6 +199,7 @@ class AzureOpenAiLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;

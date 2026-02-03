@@ -137,6 +137,7 @@ class SambaNovaLLM {
         outputTps: result.output.usage?.total_tokens_per_sec || 0,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -156,6 +157,7 @@ class SambaNovaLLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;

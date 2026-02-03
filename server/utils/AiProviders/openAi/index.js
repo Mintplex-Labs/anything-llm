@@ -176,6 +176,7 @@ class OpenAiLLM {
           : 0,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -198,6 +199,7 @@ class OpenAiLLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;
