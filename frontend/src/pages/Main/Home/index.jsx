@@ -42,18 +42,11 @@ export default function Home() {
     );
     if (lastVisited?.slug) {
       const workspace = await Workspace.bySlug(lastVisited.slug);
-      if (workspace) return { workspace, threadSlug: null };
+      if (workspace) return workspace;
     }
 
     const workspaces = await Workspace.all();
-    if (workspaces.length > 0) {
-      const workspace = workspaces[0];
-      const { threads } = await Workspace.threads.all(workspace.slug);
-      const threadSlug = threads.length > 0 ? threads[0].slug : null;
-      return { workspace, threadSlug };
-    }
-
-    return { workspace: null, threadSlug: null };
+    return workspaces.length > 0 ? workspaces[0] : null;
   }
 
   async function createDefaultWorkspace() {
@@ -73,26 +66,36 @@ export default function Home() {
 
     setLoading(true);
     try {
-      let { workspace, threadSlug } = await getTargetWorkspace();
+      let workspace = await getTargetWorkspace();
 
+      // No workspace exists -> create one and navigate to default thread
       if (!workspace) {
         workspace = await createDefaultWorkspace();
         if (!workspace) {
           setLoading(false);
           return;
         }
+        sessionStorage.setItem(
+          PENDING_HOME_MESSAGE,
+          JSON.stringify({ message: message.trim() })
+        );
+        navigate(paths.workspace.chat(workspace.slug));
+        return;
+      }
+
+      // Workspace exists -> create a new thread and navigate to it
+      const { thread, error } = await Workspace.threads.new(workspace.slug);
+      if (!thread) {
+        showToast(error || "Failed to create thread", "error");
+        setLoading(false);
+        return;
       }
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
         JSON.stringify({ message: message.trim() })
       );
-
-      const targetPath = threadSlug
-        ? paths.workspace.thread(workspace.slug, threadSlug)
-        : paths.workspace.chat(workspace.slug);
-
-      navigate(targetPath);
+      navigate(paths.workspace.thread(workspace.slug, thread.slug));
     } catch (error) {
       console.error("Error submitting message:", error);
       showToast("Failed to send message", "error");
@@ -117,7 +120,7 @@ export default function Home() {
   }
 
   async function handleUploadDocument() {
-    let { workspace } = await getTargetWorkspace();
+    let workspace = await getTargetWorkspace();
 
     if (!workspace) {
       workspace = await createDefaultWorkspace();
@@ -129,7 +132,7 @@ export default function Home() {
   }
 
   async function handleEditWorkspace() {
-    let { workspace } = await getTargetWorkspace();
+    let workspace = await getTargetWorkspace();
 
     if (!workspace) {
       workspace = await createDefaultWorkspace();
@@ -150,8 +153,8 @@ export default function Home() {
           files: [],
           ready: false,
           dragging: false,
-          setDragging: () => {},
-          onDrop: () => {},
+          setDragging: () => { },
+          onDrop: () => { },
           parseAttachments: () => [],
         }}
       >
