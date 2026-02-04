@@ -189,7 +189,7 @@ export const AWS_REGIONS = [
   },
   {
     name: "UAE",
-    full_name: "Middle East (Bahrain)",
+    full_name: "Middle East (UAE)",
     code: "me-central-1",
     public: true,
     zones: ["me-central-1a", "me-central-1b", "me-central-1c"],
