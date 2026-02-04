@@ -23,6 +23,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
+import useUser from "@/hooks/useUser";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -164,6 +165,7 @@ export default function Home() {
 function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedWorkspaceSlug, setSelectedWorkspaceSlug] = useState(null);
@@ -286,11 +288,13 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
-            <QuickActions
-              onCreateAgent={() => navigate(paths.settings.agentSkills())}
-              onEditWorkspace={handleEditWorkspace}
-              onUploadDocument={handleUploadDocument}
-            />
+            {(!user || user.role !== "default") && (
+              <QuickActions
+                onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                onEditWorkspace={handleEditWorkspace}
+                onUploadDocument={handleUploadDocument}
+              />
+            )}
           </div>
         </div>
       </DnDFileUploaderWrapper>

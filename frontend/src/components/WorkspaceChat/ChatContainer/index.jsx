@@ -31,10 +31,12 @@ import QuickActions from "@/components/lib/QuickActions";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "@/components/Modals/ManageWorkspace";
+import useUser from "@/hooks/useUser";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -355,15 +357,17 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                 attachments={files}
                 centered
               />
-              <QuickActions
-                onCreateAgent={() => navigate(paths.settings.agentSkills())}
-                onEditWorkspace={() =>
-                  navigate(
-                    paths.workspace.settings.generalAppearance(workspace.slug)
-                  )
-                }
-                onUploadDocument={showModal}
-              />
+              {(!user || user.role !== "default") && (
+                <QuickActions
+                  onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                  onEditWorkspace={() =>
+                    navigate(
+                      paths.workspace.settings.generalAppearance(workspace.slug)
+                    )
+                  }
+                  onUploadDocument={showModal}
+                />
+              )}
             </div>
             <SuggestedMessages
               suggestedMessages={workspace?.suggestedMessages}
@@ -428,8 +432,9 @@ function SuggestedMessages({ suggestedMessages = [], sendCommand }) {
             key={index}
             type="button"
             onClick={() => sendCommand({ text, autoSubmit: true })}
-            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${index > 0 ? "border-t border-zinc-800" : ""
-              }`}
+            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${
+              index > 0 ? "border-t border-zinc-800" : ""
+            }`}
           >
             {text}
           </button>
