@@ -193,8 +193,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
     const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
     if (pending?.message) {
-      sessionStorage.removeItem(PENDING_HOME_MESSAGE);
       setTimeout(() => {
+        sessionStorage.removeItem(PENDING_HOME_MESSAGE);
         sendCommand({
           text: pending.message,
           attachments: pending.attachments || [],
@@ -324,7 +324,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
-  if (chatHistory.length === 0) {
+  if (
+    chatHistory.length === 0 &&
+    !sessionStorage.getItem(PENDING_HOME_MESSAGE)
+  ) {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}

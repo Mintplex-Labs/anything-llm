@@ -170,7 +170,6 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
   useEffect(() => {
-    sessionStorage.removeItem(PENDING_HOME_MESSAGE);
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent: "", writeMode: "replace" },
