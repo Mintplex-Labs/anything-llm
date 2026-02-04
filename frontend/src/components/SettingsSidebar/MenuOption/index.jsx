@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import { safeJsonParse } from "@/utils/request";
