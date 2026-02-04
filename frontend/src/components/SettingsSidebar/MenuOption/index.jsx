@@ -32,7 +32,11 @@ export default function MenuOption({
       location.pathname === href
     : location.pathname === href;
 
-  const { ref } = useScrollActiveItemIntoView({ isActive });
+  const { ref } = useScrollActiveItemIntoView({
+    isActive,
+    behavior: "instant",
+    block: "center",
+  });
 
   if (hidden) return null;
 
