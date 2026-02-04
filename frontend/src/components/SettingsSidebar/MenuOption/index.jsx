@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import { safeJsonParse } from "@/utils/request";
+import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 
 export default function MenuOption({
   btnText,
@@ -31,16 +32,7 @@ export default function MenuOption({
       location.pathname === href
     : location.pathname === href;
 
-  const menuOptionRef = useRef(null);
-
-  useEffect(() => {
-    if (isActive) {
-      menuOptionRef.current.scrollIntoView({
-        behavior: "instant",
-        block: "center",
-      });
-    }
-  }, [isActive]);
+  const { ref } = useScrollActiveItemIntoView({ isActive });
 
   if (hidden) return null;
 
@@ -84,7 +76,7 @@ export default function MenuOption({
         `}
       >
         <Link
-          ref={menuOptionRef}
+          ref={ref}
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
             isChild ? "hover:text-white" : "text-white light:text-black"
