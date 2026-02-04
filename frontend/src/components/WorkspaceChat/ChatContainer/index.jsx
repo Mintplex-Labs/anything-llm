@@ -343,7 +343,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         {isMobile && <SidebarMobileHeader />}
         <DnDFileUploaderWrapper>
           <div className="flex flex-col h-full w-full items-center justify-center">
-            <div className="flex flex-col items-center w-full max-w-[650px] px-4">
+            <div className="flex flex-col items-center w-full max-w-[750px]">
               <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
                 {t("home.greeting", "How may I make your day easier today?")}
               </h1>
@@ -428,9 +428,8 @@ function SuggestedMessages({ suggestedMessages = [], sendCommand }) {
             key={index}
             type="button"
             onClick={() => sendCommand({ text, autoSubmit: true })}
-            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${
-              index > 0 ? "border-t border-zinc-800" : ""
-            }`}
+            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${index > 0 ? "border-t border-zinc-800" : ""
+              }`}
           >
             {text}
           </button>
