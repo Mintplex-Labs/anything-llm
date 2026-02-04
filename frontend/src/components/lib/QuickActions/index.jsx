@@ -24,7 +24,7 @@ function QuickActionButton({ label, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="px-4 py-2 rounded-full bg-theme-bg-chat-input text-white/80 text-sm font-normal leading-5 hover:bg-white/5 transition-colors"
+      className="px-4 py-2 rounded-full bg-theme-bg-chat-input text-white/80 text-sm font-normal leading-5 hover:bg-white/5 light:hover:bg-black/20 transition-colors light:text-theme-text-primary"
     >
       {label}
     </button>
