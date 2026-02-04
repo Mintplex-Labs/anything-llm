@@ -25,8 +25,10 @@ import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderM
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const { t } = useTranslation();
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -322,6 +324,35 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
+  if (chatHistory.length === 0) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      >
+        {isMobile && <SidebarMobileHeader />}
+        <DnDFileUploaderWrapper>
+          <div className="flex flex-col h-full w-full items-center justify-center">
+            <div className="flex flex-col items-center w-full max-w-[650px] px-4">
+              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                {t("home.greeting", "How may I make your day easier today?")}
+              </h1>
+              <PromptInput
+                submit={handleSubmit}
+                onChange={handleMessageChange}
+                isStreaming={loadingResponse}
+                sendCommand={sendCommand}
+                attachments={files}
+                centered
+              />
+            </div>
+          </div>
+        </DnDFileUploaderWrapper>
+        <ChatTooltips />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -337,7 +368,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             sendCommand={sendCommand}
             updateHistory={setChatHistory}
             regenerateAssistantMessage={regenerateAssistantMessage}
-            hasAttachments={files.length > 0}
           />
         </MetricsProvider>
         <PromptInput
