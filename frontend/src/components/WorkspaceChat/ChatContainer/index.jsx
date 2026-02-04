@@ -9,7 +9,7 @@ import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse, {
   websocketURI,
@@ -26,9 +26,15 @@ import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
+import QuickActions from "@/components/lib/QuickActions";
+import ManageWorkspace, {
+  useManageWorkspaceModal,
+} from "@/components/Modals/ManageWorkspace";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -38,6 +44,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
+  const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -348,9 +355,24 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                 attachments={files}
                 centered
               />
+              <QuickActions
+                onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                onEditWorkspace={() =>
+                  navigate(
+                    paths.workspace.settings.generalAppearance(workspace.slug)
+                  )
+                }
+                onUploadDocument={showModal}
+              />
             </div>
           </div>
         </DnDFileUploaderWrapper>
+        {showing && (
+          <ManageWorkspace
+            hideModal={hideModal}
+            providedSlug={workspace.slug}
+          />
+        )}
         <ChatTooltips />
       </div>
     );

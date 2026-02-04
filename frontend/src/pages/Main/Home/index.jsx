@@ -22,6 +22,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
+import QuickActions from "@/components/lib/QuickActions";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -285,20 +286,11 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
-            <div className="flex flex-wrap justify-center gap-2 mt-6">
-              <QuickActionButton
-                label="Create an Agent"
-                onClick={() => navigate(paths.settings.agentSkills())}
-              />
-              <QuickActionButton
-                label="Edit Workspace"
-                onClick={handleEditWorkspace}
-              />
-              <QuickActionButton
-                label="Upload a Document"
-                onClick={handleUploadDocument}
-              />
-            </div>
+            <QuickActions
+              onCreateAgent={() => navigate(paths.settings.agentSkills())}
+              onEditWorkspace={handleEditWorkspace}
+              onUploadDocument={handleUploadDocument}
+            />
           </div>
         </div>
       </DnDFileUploaderWrapper>
@@ -309,17 +301,5 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
         />
       )}
     </div>
-  );
-}
-
-function QuickActionButton({ label, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="px-4 py-2 rounded-full bg-theme-bg-chat-input text-white/80 text-sm font-normal leading-5 hover:bg-white/5 transition-colors"
-    >
-      {label}
-    </button>
   );
 }
