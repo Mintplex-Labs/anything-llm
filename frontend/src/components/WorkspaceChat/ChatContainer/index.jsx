@@ -365,6 +365,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                 onUploadDocument={showModal}
               />
             </div>
+            <SuggestedMessages
+              suggestedMessages={workspace?.suggestedMessages}
+              sendCommand={sendCommand}
+            />
           </div>
         </DnDFileUploaderWrapper>
         {showing && (
@@ -404,6 +408,34 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         />
       </DnDFileUploaderWrapper>
       <ChatTooltips />
+    </div>
+  );
+}
+
+function SuggestedMessages({ suggestedMessages = [], sendCommand }) {
+  if (!suggestedMessages?.length) return null;
+
+  return (
+    <div className="flex flex-col w-full max-w-[650px] mt-6 px-4">
+      {suggestedMessages.map((msg, index) => {
+        const text = msg.heading?.trim()
+          ? `${msg.heading.trim()} ${msg.message?.trim() || ""}`
+          : msg.message?.trim() || "";
+        if (!text) return null;
+
+        return (
+          <button
+            key={index}
+            type="button"
+            onClick={() => sendCommand({ text, autoSubmit: true })}
+            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${
+              index > 0 ? "border-t border-zinc-800" : ""
+            }`}
+          >
+            {text}
+          </button>
+        );
+      })}
     </div>
   );
 }
