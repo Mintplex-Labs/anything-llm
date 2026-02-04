@@ -1,3 +1,4 @@
+/* global process */
 // This script is used to normalize the translations files to ensure they are all the same.
 // This will take the en file and compare it to all other files and ensure they are all the same.
 // If a non-en file is missing a key, it will be added to the file and set to null
@@ -75,7 +76,7 @@ function compareStructures(lang, a, b, subdir = null) {
   }
 }
 
-function normalizeTranslations(lang, source, target, subdir = null) {
+function normalizeTranslations(lang, source, target, _subdir = null) {
   // Handle primitives - if target exists, keep it, otherwise set null
   if (!source || typeof source !== "object") {
     return target ?? null;

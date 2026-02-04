@@ -93,9 +93,9 @@ export default function HeaderMenu({
                 <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[350px] bg-theme-settings-input-bg border border-white/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
                   {availableFlows
                     .filter((flow) => flow.uuid !== flowId)
-                    .map((flow) => (
+                    .map((flow, index) => (
                       <button
-                        key={flow?.uuid || Math.random()}
+                        key={flow?.uuid || `flow-${index}`}
                         onClick={() => {
                           navigate(paths.agents.editAgent(flow.uuid));
                           setShowDropdown(false);

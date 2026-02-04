@@ -80,6 +80,26 @@ function systemEndpoints(app) {
     response.sendStatus(200).end();
   });
 
+  app.get("/onboarding", async (_, response) => {
+    try {
+      const results = await SystemSettings.isOnboardingComplete();
+      response.status(200).json({ onboardingComplete: results });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/onboarding", [validatedRequest], async (_, response) => {
+    try {
+      await SystemSettings.markOnboardingComplete();
+      response.sendStatus(200).end();
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
   app.get("/setup-complete", async (_, response) => {
     try {
       const results = await SystemSettings.currentSettings();

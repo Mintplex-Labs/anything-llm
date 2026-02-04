@@ -95,6 +95,8 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [CometAPI (チャットモデル)](https://api.cometapi.com/)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [PrivateModeAI (chat models)](https://privatemode.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 
 **埋め込みモデル：**
 
@@ -150,8 +152,8 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 |----------------------------------------|----|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
 
-| Railway                                             |
-| --------------------------------------------------- |
+| Railway                                               |
+| ----------------------------------------------------- |
 | [![Railway上でデプロイ][railway-btn]][railway-deploy] |
 
 [Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
@@ -201,7 +203,7 @@ Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用
 
 これらの主張を検証するには、`Telemetry.sendTelemetry`が呼び出されるすべての場所を見つけてください。また、これらのイベントは出力ログに書き込まれるため、送信された具体的なデータも確認できます。IPアドレスやその他の識別情報は収集されません。テレメトリープロバイダーは[PostHog](https://posthog.com/)です。
 
-[ソースコード内のすべてのテレメトリーイベントを表示](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[ソースコード内のすべてのテレメトリーイベントを表示](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
 </details>
 

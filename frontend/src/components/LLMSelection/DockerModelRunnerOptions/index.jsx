@@ -350,7 +350,7 @@ function DockerModelRunnerModelSelection({
       loading={loading}
     >
       <Tooltip
-        id="docker-model-runner-install-model-tooltip"
+        id="install-model-tooltip"
         place="top"
         className="tooltip !text-xs !opacity-100 z-99"
       />

@@ -48,9 +48,7 @@ export default function AgentBuilder() {
   const [blocks, setBlocks] = useState(DEFAULT_BLOCKS);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
-  const [showLoadMenu, setShowLoadMenu] = useState(false);
   const [availableFlows, setAvailableFlows] = useState([]);
-  const [selectedFlowForDetails, setSelectedFlowForDetails] = useState(null);
   const nameRef = useRef(null);
   const descriptionRef = useRef(null);
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -122,7 +120,6 @@ export default function AgentBuilder() {
       setActive(flow.config.active ?? true);
       setCurrentFlowUuid(flow.uuid);
       setBlocks(flowBlocks);
-      setShowLoadMenu(false);
     } catch (error) {
       console.error(error);
       showToast("Failed to load flow", "error", { clear: true });
@@ -338,7 +335,7 @@ export default function AgentBuilder() {
         backgroundSize: "15px 15px",
         backgroundPosition: "-7.5px -7.5px",
       }}
-      className="w-full h-screen flex bg-theme-bg-primary"
+      className="relative w-screen h-screen flex flex-col bg-theme-bg-primary overflow-clip"
     >
       <PublishEntityModal
         show={showPublishModal}
@@ -346,34 +343,34 @@ export default function AgentBuilder() {
         entityType="agent-flow"
         entity={flowEntity}
       />
-      <div className="w-full flex flex-col">
-        <HeaderMenu
-          agentName={agentName}
-          availableFlows={availableFlows}
-          onNewFlow={clearFlow}
-          onSaveFlow={saveFlow}
-          onPublishFlow={handlePublishFlow}
-        />
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-xl mx-auto mt-14">
-            <BlockList
-              blocks={blocks}
-              updateBlockConfig={updateBlockConfig}
-              removeBlock={removeBlock}
-              toggleBlockExpansion={toggleBlockExpansion}
-              renderVariableSelect={renderVariableSelect}
-              onDeleteVariable={deleteVariable}
-              moveBlock={moveBlock}
-              refs={{ nameRef, descriptionRef }}
-            />
+      <HeaderMenu
+        agentName={agentName}
+        availableFlows={availableFlows}
+        onNewFlow={clearFlow}
+        onSaveFlow={saveFlow}
+        onPublishFlow={handlePublishFlow}
+      />
+      <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+        <div
+          className={`max-w-xl mx-auto mt-14 ${showBlockMenu ? "pb-52" : ""}`}
+        >
+          <BlockList
+            blocks={blocks}
+            updateBlockConfig={updateBlockConfig}
+            removeBlock={removeBlock}
+            toggleBlockExpansion={toggleBlockExpansion}
+            renderVariableSelect={renderVariableSelect}
+            onDeleteVariable={deleteVariable}
+            moveBlock={moveBlock}
+            refs={{ nameRef, descriptionRef }}
+          />
 
-            <AddBlockMenu
-              blocks={blocks}
-              showBlockMenu={showBlockMenu}
-              setShowBlockMenu={setShowBlockMenu}
-              addBlock={addBlock}
-            />
-          </div>
+          <AddBlockMenu
+            blocks={blocks}
+            showBlockMenu={showBlockMenu}
+            setShowBlockMenu={setShowBlockMenu}
+            addBlock={addBlock}
+          />
         </div>
       </div>
       <Tooltip

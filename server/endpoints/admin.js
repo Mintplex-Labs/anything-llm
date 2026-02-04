@@ -376,7 +376,7 @@ function adminEndpoints(app) {
               break;
             case "agent_sql_connections":
               requestedSettings[label] =
-                await SystemSettings.brief.agent_sql_connections();
+                await SystemSettings.agent_sql_connections();
               break;
             case "default_agent_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
@@ -442,8 +442,7 @@ function adminEndpoints(app) {
           agent_search_provider:
             (await SystemSettings.get({ label: "agent_search_provider" }))
               ?.value || null,
-          agent_sql_connections:
-            await SystemSettings.brief.agent_sql_connections(),
+          agent_sql_connections: await SystemSettings.agent_sql_connections(),
           default_agent_skills:
             safeJsonParse(
               (await SystemSettings.get({ label: "default_agent_skills" }))

@@ -104,28 +104,28 @@ export default function ModelTable({
   );
 }
 
+function DeviceTypeTagWrapper({ text, bgClass, textClass }) {
+  return (
+    <div
+      className={
+        bgClass + " px-1.5 py-1 rounded-full flex items-center gap-x-1 w-fit"
+      }
+    >
+      <Cpu size={14} weight="bold" className={textClass} />
+      <p className={textClass + " text-xs"}>{text}</p>
+    </div>
+  );
+}
+
 /**
  * @param {{deviceType: ModelDefinition["deviceType"]}} deviceType
  * @returns {React.ReactNode}
  */
 function DeviceTypeTag({ deviceType }) {
-  const Wrapper = ({ text, bgClass, textClass }) => {
-    return (
-      <div
-        className={
-          bgClass + " px-1.5 py-1 rounded-full flex items-center gap-x-1 w-fit"
-        }
-      >
-        <Cpu size={14} weight="bold" className={textClass} />
-        <p className={textClass + " text-xs"}>{text}</p>
-      </div>
-    );
-  };
-
   switch (deviceType?.toLowerCase()) {
     case "cpu":
       return (
-        <Wrapper
+        <DeviceTypeTagWrapper
           text="CPU"
           bgClass="bg-zinc-800 light:bg-zinc-200"
           textClass="text-theme-text-primary"
@@ -133,7 +133,7 @@ function DeviceTypeTag({ deviceType }) {
       );
     case "gpu":
       return (
-        <Wrapper
+        <DeviceTypeTagWrapper
           text="GPU"
           bgClass="bg-green-800 light:bg-green-200"
           textClass="text-theme-text-primary"
@@ -141,7 +141,7 @@ function DeviceTypeTag({ deviceType }) {
       );
     case "npu":
       return (
-        <Wrapper
+        <DeviceTypeTagWrapper
           text="NPU"
           bgClass="bg-indigo-800 light:bg-indigo-200"
           textClass="text-theme-text-primary"
@@ -149,7 +149,7 @@ function DeviceTypeTag({ deviceType }) {
       );
     default:
       return (
-        <Wrapper
+        <DeviceTypeTagWrapper
           text="CPU"
           bgClass="bg-zinc-800 light:bg-zinc-200"
           textClass="text-theme-text-primary"
@@ -297,7 +297,7 @@ function ModelRow({
         {!model.downloaded && !processing && (
           <button
             type="button"
-            data-tooltip-id="docker-model-runner-install-model-tooltip"
+            data-tooltip-id="install-model-tooltip"
             data-tooltip-place="top"
             data-tooltip-delay-show={300}
             data-tooltip-content={`Install ${model.organization}:${model.name}`}

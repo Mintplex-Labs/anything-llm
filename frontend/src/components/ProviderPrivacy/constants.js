@@ -42,6 +42,8 @@ import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -231,6 +233,16 @@ const LLM_PROVIDER_PRIVACY_MAP = {
       "Your model and chats are only accessible on the machine running Docker Model Runner.",
     ],
     logo: DockerModelRunnerLogo,
+  },
+  privatemode: {
+    name: "Privatemode",
+    policyUrl: "https://docs.privatemode.ai/getting-started/faq#q2",
+    logo: PrivateModeLogo,
+  },
+  sambanova: {
+    name: "SambaNova",
+    policyUrl: "https://sambanova.ai/privacy-policy",
+    logo: SambaNovaLogo,
   },
 };
 
