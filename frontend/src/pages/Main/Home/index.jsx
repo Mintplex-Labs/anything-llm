@@ -10,9 +10,6 @@ import DnDFileUploaderWrapper, {
   DnDFileUploaderProvider,
   PASTE_ATTACHMENT_EVENT,
 } from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
-import ManageWorkspace, {
-  useManageWorkspaceModal,
-} from "@/components/Modals/ManageWorkspace";
 import { useTranslation } from "react-i18next";
 import {
   LAST_VISITED_WORKSPACE,
@@ -168,8 +165,6 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { user } = useUser();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedWorkspaceSlug, setSelectedWorkspaceSlug] = useState(null);
-  const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
   useEffect(() => {
@@ -241,19 +236,6 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     }
   }
 
-  async function handleUploadDocument() {
-    let targetWorkspace = workspace;
-
-    if (!targetWorkspace) {
-      targetWorkspace = await createDefaultWorkspace();
-      if (!targetWorkspace) return;
-      setWorkspace(targetWorkspace);
-    }
-
-    setSelectedWorkspaceSlug(targetWorkspace.slug);
-    showModal();
-  }
-
   async function handleEditWorkspace() {
     let targetWorkspace = workspace;
 
@@ -292,18 +274,14 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               <QuickActions
                 onCreateAgent={() => navigate(paths.settings.agentSkills())}
                 onEditWorkspace={handleEditWorkspace}
-                onUploadDocument={handleUploadDocument}
+                onUploadDocument={() =>
+                  document.getElementById("dnd-chat-file-uploader")?.click()
+                }
               />
             )}
           </div>
         </div>
       </DnDFileUploaderWrapper>
-      {showing && (
-        <ManageWorkspace
-          hideModal={hideModal}
-          providedSlug={selectedWorkspaceSlug}
-        />
-      )}
     </div>
   );
 }

@@ -28,9 +28,6 @@ import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
-import ManageWorkspace, {
-  useManageWorkspaceModal,
-} from "@/components/Modals/ManageWorkspace";
 import useUser from "@/hooks/useUser";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
@@ -46,7 +43,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-  const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -365,7 +361,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                       paths.workspace.settings.generalAppearance(workspace.slug)
                     )
                   }
-                  onUploadDocument={showModal}
+                  onUploadDocument={() =>
+                    document.getElementById("dnd-chat-file-uploader")?.click()
+                  }
                 />
               )}
             </div>
@@ -375,12 +373,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             />
           </div>
         </DnDFileUploaderWrapper>
-        {showing && (
-          <ManageWorkspace
-            hideModal={hideModal}
-            providedSlug={workspace.slug}
-          />
-        )}
         <ChatTooltips />
       </div>
     );
