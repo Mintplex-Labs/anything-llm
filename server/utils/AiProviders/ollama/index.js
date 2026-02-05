@@ -312,6 +312,7 @@ class OllamaAILLM {
           result.output.usage.completion_tokens / result.output.usage.duration,
         duration: result.output.usage.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -333,6 +334,7 @@ class OllamaAILLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     }).catch((e) => {
       throw this.#errorHandler(e);
     });

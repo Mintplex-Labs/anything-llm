@@ -4,9 +4,8 @@ The AnythingLLM Auto-translator is a way for us to translate our locales but at 
 
 ## Getting started
 
-- Install Docker [w/Docker Model Runner](https://docs.docker.com/ai/model-runner/)
-- `docker pull model mintplexlabs/translategemma4b:Q4_K_M`
-- Ensure TCP connections in for Docker Model Runner extension is live.
+- Install Ollama [w/Docker Model Runner](https://ollama.com)
+- `ollama pull translategemma:4b`
 - `cd extras/translator && cp .env.example .env`
 
 ## Run the script

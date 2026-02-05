@@ -194,6 +194,7 @@ class GenericOpenAiLLM {
           (result.output?.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -209,9 +210,9 @@ class GenericOpenAiLLM {
         max_tokens: this.maxTokens,
       }),
       messages,
-      // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }

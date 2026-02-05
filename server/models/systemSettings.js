@@ -530,6 +530,7 @@ const SystemSettings = {
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
       LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || null,
       LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+      LMStudioAuthToken: !!process.env.LMSTUDIO_AUTH_TOKEN,
 
       // LocalAI Keys
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
@@ -681,6 +682,10 @@ const SystemSettings = {
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
       PrivateModeModelPref: process.env.PRIVATEMODE_LLM_MODEL_PREF,
+
+      // SambaNova Keys
+      SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
+      SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
     };
   },
 

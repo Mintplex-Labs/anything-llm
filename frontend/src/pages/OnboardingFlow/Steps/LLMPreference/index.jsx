@@ -33,6 +33,7 @@ import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -67,6 +68,7 @@ import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -156,6 +158,13 @@ const LLMS = [
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run open source models from SambaNova.",
   },
   {
     name: "Novita AI",

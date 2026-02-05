@@ -17,9 +17,11 @@ class LMStudioLLM {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
+    this.className = "LMStudioLLM";
+    const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
     this.lmstudio = new OpenAIApi({
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
-      apiKey: null,
+      apiKey,
     });
 
     // Prior to LMStudio 0.2.17 the `model` param was not required and you could pass anything
@@ -28,10 +30,8 @@ class LMStudioLLM {
     // and any other value will crash inferencing. So until this is patched we will
     // try to fetch the `/models` and have the user set it, or just fallback to "Loaded from Chat UI"
     // which will not impact users with <v0.2.17 and should work as well once the bug is fixed.
-    this.model =
-      modelPreference ||
-      process.env.LMSTUDIO_MODEL_PREF ||
-      "Loaded from Chat UI";
+    this.model = modelPreference || process.env.LMSTUDIO_MODEL_PREF;
+    if (!this.model) throw new Error("LMStudio must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -76,11 +76,17 @@ class LMStudioLLM {
       if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
         return;
 
+      const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
       const endpoint = new URL(
         parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH)
       );
       endpoint.pathname = "/api/v0/models";
-      await fetch(endpoint.toString())
+      await fetch(endpoint.toString(), {
+        headers: {
+          "Content-Type": "application/json",
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+      })
         .then((res) => {
           if (!res.ok)
             throw new Error(`LMStudio:cacheContextWindows - ${res.statusText}`);
@@ -235,6 +241,7 @@ class LMStudioLLM {
         outputTps: result.output.usage?.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -256,6 +263,7 @@ class LMStudioLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }

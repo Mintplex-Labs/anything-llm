@@ -87,7 +87,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
-- [Fireworks AI  (chat models)](https://fireworks.ai/)
+- [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
@@ -107,6 +107,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
 - [CometAPI (chat models)](https://api.cometapi.com/)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [PrivateModeAI (chat models)](https://privatemode.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 
 **Embedder models:**
 
@@ -165,8 +167,8 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway | RepoCloud | Elestio | Northflank |
-| --- | --- | --- | --- |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
@@ -224,7 +226,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 We take privacy very seriously, and we hope you understand that we want to learn how our tool is used, without using annoying popup surveys, so we can build something worth using. The anonymous data is _never_ shared with third parties, ever.
 
-[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
 </details>
 

@@ -12,6 +12,7 @@ class LocalAiLLM {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
 
+    this.className = "LocalAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       baseURL: process.env.LOCAL_AI_BASE_PATH,
@@ -146,6 +147,7 @@ class LocalAiLLM {
         outputTps: completionTokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -167,6 +169,7 @@ class LocalAiLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }
