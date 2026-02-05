@@ -293,7 +293,9 @@ export default function PromptInput({
             : "flex flex-col gap-y-1 rounded-t-lg md:w-full w-full mx-auto max-w-[750px] items-center"
         }
       >
-        <div className="flex items-center rounded-lg md:mb-4 md:w-full">
+        <div
+          className={`flex items-center rounded-lg md:w-full ${centered ? "mb-0" : "mb-4"}`}
+        >
           <div className="w-[95vw] md:w-[750px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-[20px] pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
             <div className="flex items-center mx-[7px]">
