@@ -428,16 +428,18 @@ function SuggestedMessages({ suggestedMessages = [], sendCommand }) {
         if (!text) return null;
 
         return (
-          <button
-            key={index}
-            type="button"
-            onClick={() => sendCommand({ text, autoSubmit: true })}
-            className={`text-left py-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 ${
-              index > 0 ? "border-t border-zinc-800" : ""
-            }`}
-          >
-            {text}
-          </button>
+          <div key={index}>
+            {index > 0 && (
+              <div className="border-t border-zinc-800 light:border-theme-chat-input-border" />
+            )}
+            <button
+              type="button"
+              onClick={() => sendCommand({ text, autoSubmit: true })}
+              className="w-full text-left py-3 px-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 hover:bg-zinc-800 light:hover:bg-black/20 rounded-lg"
+            >
+              {text}
+            </button>
+          </div>
         );
       })}
     </div>
