@@ -221,14 +221,22 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     setMessage(e.target.value);
   }
 
-  function sendCommand({ text = "", autoSubmit = false }) {
-    setMessage(text);
+  function sendCommand({
+    text = "",
+    autoSubmit = false,
+    writeMode = "replace",
+  }) {
+    if (writeMode === "append") {
+      setMessage((prev) => prev + text);
+    } else {
+      setMessage(text);
+    }
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
-        detail: { messageContent: text, writeMode: "replace" },
+        detail: { messageContent: text, writeMode },
       })
     );
-    if (autoSubmit && text) {
+    if (autoSubmit) {
       setTimeout(() => {
         const form = document.querySelector("form");
         if (form) form.requestSubmit();
