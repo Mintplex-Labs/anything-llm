@@ -3,6 +3,7 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { TagsInput } from "react-tag-input-component";
 import Embed from "@/models/embed";
+import Toggle from "@/components/lib/Toggle";
 
 export function enforceSubmissionSchema(form) {
   const data = {};
@@ -343,23 +344,14 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
   const [status, setStatus] = useState(defaultValue ?? false);
 
   return (
-    <div>
-      <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
-          {title}
-        </label>
-        <p className="text-theme-text-secondary text-xs">{hint}</p>
-      </div>
-      <label className="relative inline-flex cursor-pointer items-center">
-        <input
-          name={name}
-          type="checkbox"
-          onClick={() => setStatus(!status)}
-          checked={status}
-          className="peer sr-only pointer-events-none"
-        />
-        <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-      </label>
-    </div>
+    <Toggle
+      name={name}
+      size="md"
+      variant="horizontal"
+      label={title}
+      description={hint}
+      enabled={status}
+      onChange={(checked) => setStatus(checked)}
+    />
   );
 };

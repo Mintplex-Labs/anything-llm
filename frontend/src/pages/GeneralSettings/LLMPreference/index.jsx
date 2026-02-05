@@ -38,6 +38,8 @@ import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -73,6 +75,8 @@ import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
+import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -176,6 +180,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     ],
   },
   {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run open source models from SambaNova.",
+    requiredConfig: ["SambaNovaLLMApiKey"],
+  },
+  {
     name: "Local AI",
     value: "localai",
     logo: LocalAiLogo,
@@ -191,6 +203,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description: "Run open source models from Together AI.",
     requiredConfig: ["TogetherAiApiKey"],
   },
+
   {
     name: "Fireworks AI",
     value: "fireworksai",
@@ -315,6 +328,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
     requiredConfig: ["MoonshotAiApiKey"],
+  },
+  {
+    name: "Privatemode",
+    value: "privatemode",
+    logo: PrivateModeLogo,
+    options: (settings) => <PrivateModeOptions settings={settings} />,
+    description: "Run LLMs with end-to-end encryption.",
+    requiredConfig: ["PrivateModeBasePath"],
   },
   {
     name: "Novita AI",

@@ -32,6 +32,8 @@ import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -65,6 +67,8 @@ import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
+import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -154,6 +158,13 @@ const LLMS = [
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run open source models from SambaNova.",
   },
   {
     name: "Novita AI",
@@ -274,6 +285,13 @@ const LLMS = [
     description: "Run powerful foundation models privately with AWS Bedrock.",
   },
   {
+    name: "Privatemode",
+    value: "privatemode",
+    logo: PrivateModeLogo,
+    options: (settings) => <PrivateModeOptions settings={settings} />,
+    description: "Run LLMs with end-to-end encryption.",
+  },
+  {
     name: "xAI",
     value: "xai",
     logo: XAILogo,
@@ -337,9 +355,16 @@ export default function LLMPreference({
     fetchKeys();
   }, []);
 
-  function handleForward() {
-    if (hiddenSubmitButtonRef.current) {
-      hiddenSubmitButtonRef.current.click();
+  async function handleForward() {
+    try {
+      await System.markOnboardingComplete();
+      console.log("Onboarding complete");
+    } catch (error) {
+      console.error("Onboarding complete failed", error);
+    } finally {
+      if (hiddenSubmitButtonRef.current) {
+        hiddenSubmitButtonRef.current.click();
+      }
     }
   }
 

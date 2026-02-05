@@ -67,7 +67,8 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     search: "بحث",
-    username_requirements: null,
+    username_requirements:
+      "يجب أن يتكون اسم المستخدم من 2 إلى 32 حرفًا، ويبدأ بحرف صغير، ويحتوي فقط على حروف وأرقام وعلامات التسطير والنقاط.",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -726,9 +727,9 @@ const TRANSLATIONS = {
     update_account: "تحديث الحساب",
     theme: "تفضيلات الموضوع",
     language: "اللغة المفضلة",
-    failed_upload: "فشل تحميل صورة الملف الشخصي: {{خطأ}}",
+    failed_upload: "فشل تحميل صورة الملف الشخصي: {{error}}",
     upload_success: "تم تحميل صورة الملف الشخصي.",
-    failed_remove: "فشل إزالة صورة الملف الشخصي: {{خطأ}}",
+    failed_remove: "فشل إزالة صورة الملف الشخصي: {{error}}",
     profile_updated: "تم تحديث الملف الشخصي.",
     failed_update_user: "فشل تحديث المستخدم: {{error}}",
     account: "حساب",

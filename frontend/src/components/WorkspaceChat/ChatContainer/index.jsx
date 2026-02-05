@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -9,7 +9,7 @@ import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse, {
   websocketURI,
@@ -23,8 +23,17 @@ import SpeechRecognition, {
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
+import QuickActions from "@/components/lib/QuickActions";
+import useUser from "@/hooks/useUser";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useUser();
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -33,6 +42,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
+  const pendingMessageChecked = useRef(false);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -171,6 +181,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           role: "assistant",
           pending: true,
           userMessage: text,
+          attachments,
           animate: true,
         },
       ];
@@ -180,6 +191,23 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessageEmit("");
     setLoadingResponse(true);
   };
+
+  useEffect(() => {
+    if (pendingMessageChecked.current || !workspace?.slug) return;
+    pendingMessageChecked.current = true;
+
+    const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
+    if (pending?.message) {
+      setTimeout(() => {
+        sessionStorage.removeItem(PENDING_HOME_MESSAGE);
+        sendCommand({
+          text: pending.message,
+          attachments: pending.attachments || [],
+          autoSubmit: true,
+        });
+      }, 100);
+    }
+  }, [workspace?.slug]);
 
   useEffect(() => {
     async function fetchReply() {
@@ -247,7 +275,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           setLoadingResponse(true);
           try {
             handleSocketResponse(socket, event, setChatHistory);
-          } catch (e) {
+          } catch {
             console.error("Failed to parse data");
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();
@@ -301,6 +329,55 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
+  if (
+    chatHistory.length === 0 &&
+    !sessionStorage.getItem(PENDING_HOME_MESSAGE)
+  ) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      >
+        {isMobile && <SidebarMobileHeader />}
+        <DnDFileUploaderWrapper>
+          <div className="flex flex-col h-full w-full items-center justify-center">
+            <div className="flex flex-col items-center w-full max-w-[750px]">
+              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                {t("home.greeting", "How may I make your day easier today?")}
+              </h1>
+              <PromptInput
+                submit={handleSubmit}
+                onChange={handleMessageChange}
+                isStreaming={loadingResponse}
+                sendCommand={sendCommand}
+                attachments={files}
+                centered
+              />
+              {(!user || user.role !== "default") && (
+                <QuickActions
+                  onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                  onEditWorkspace={() =>
+                    navigate(
+                      paths.workspace.settings.generalAppearance(workspace.slug)
+                    )
+                  }
+                  onUploadDocument={() =>
+                    document.getElementById("dnd-chat-file-uploader")?.click()
+                  }
+                />
+              )}
+            </div>
+            <SuggestedMessages
+              suggestedMessages={workspace?.suggestedMessages}
+              sendCommand={sendCommand}
+            />
+          </div>
+        </DnDFileUploaderWrapper>
+        <ChatTooltips />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -316,7 +393,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             sendCommand={sendCommand}
             updateHistory={setChatHistory}
             regenerateAssistantMessage={regenerateAssistantMessage}
-            hasAttachments={files.length > 0}
           />
         </MetricsProvider>
         <PromptInput
@@ -328,6 +404,36 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         />
       </DnDFileUploaderWrapper>
       <ChatTooltips />
+    </div>
+  );
+}
+
+function SuggestedMessages({ suggestedMessages = [], sendCommand }) {
+  if (!suggestedMessages?.length) return null;
+
+  return (
+    <div className="flex flex-col w-full max-w-[650px] mt-6 px-4">
+      {suggestedMessages.map((msg, index) => {
+        const text = msg.heading?.trim()
+          ? `${msg.heading.trim()} ${msg.message?.trim() || ""}`
+          : msg.message?.trim() || "";
+        if (!text) return null;
+
+        return (
+          <div key={index}>
+            {index > 0 && (
+              <div className="border-t border-zinc-800 light:border-theme-chat-input-border" />
+            )}
+            <button
+              type="button"
+              onClick={() => sendCommand({ text, autoSubmit: true })}
+              className="w-full text-left py-3 px-3 text-white/80 text-sm font-normal leading-5 hover:text-white transition-colors light:text-theme-text-primary light:hover:text-theme-text-primary/80 hover:bg-zinc-800 light:hover:bg-black/20 rounded-lg"
+            >
+              {text}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

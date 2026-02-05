@@ -63,7 +63,7 @@ export default function EmbeddingTextSplitterPreference() {
       setHasChanges(false);
       closeModal();
       showToast("Text chunking strategy settings saved.", "success");
-    } catch (error) {
+    } catch {
       showToast("Failed to save text chunking strategy settings.", "error");
     } finally {
       setSaving(false);

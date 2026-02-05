@@ -84,6 +84,12 @@ export function ChatTooltips() {
         delayShow={500}
         className="tooltip !text-xs max-w-[350px]"
       />
+      <Tooltip
+        id="attachment-status-tooltip"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
       <DocumentLevelTooltip />
     </>
   );

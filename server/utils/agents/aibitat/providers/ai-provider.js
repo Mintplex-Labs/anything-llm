@@ -249,6 +249,22 @@ class Provider {
           apiKey: process.env.COHERE_API_KEY ?? null,
           ...config,
         });
+      case "privatemode":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.PRIVATEMODE_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
+      case "sambanova":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.sambanova.ai/v1",
+          },
+          apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -257,14 +273,16 @@ class Provider {
       //   });
       case "ollama":
         return OllamaLangchainChatModel.create(config);
-      case "lmstudio":
+      case "lmstudio": {
+        const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
         return new ChatOpenAI({
           configuration: {
             baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
           },
-          apiKey: "not-used", // Needs to be specified or else will assume OpenAI
+          apiKey: apiKey || "not-used",
           ...config,
         });
+      }
       case "koboldcpp":
         return new ChatOpenAI({
           configuration: {

@@ -1,8 +1,6 @@
 import fs from 'fs';
 import {resources} from '../../frontend/src/locales/resources.js';
 import "../../server/node_modules/dotenv/lib/main.js";
-import DMRModule from '../../server/utils/AiProviders/dockerModelRunner/index.js';
-const { DockerModelRunnerLLM, getDockerModels } = DMRModule;
 
 function getNestedValue(obj, path) {
     const keys = path.split('.');
@@ -25,17 +23,50 @@ function setNestedValue(obj, path, value) {
     result[keys[keys.length - 1]] = value;
 }
 
-class Translator {
-    static modelTag = 'mintplexlabs/translategemma4b:Q4_K_M'
-    constructor(provider = "dmr") {
-        switch (provider) {
-        case "dmr":
-            this.provider = new DockerModelRunnerLLM(null, Translator.modelTag);
-            break;
-        default:
-            throw new Error(`Unsupported provider: ${provider}`);
-        }
+/**
+ * Extract {{variableName}} placeholders from text and replace with tokens.
+ * Returns the modified text and a map to restore the originals.
+ * @param {string} text
+ * @returns {{ text: string, placeholders: string[] }}
+ */
+function extractPlaceholders(text) {
+    const placeholders = [];
+    const modifiedText = text.replace(/\{\{([^}]+)\}\}/g, (match) => {
+        const index = placeholders.length;
+        placeholders.push(match);
+        return `__PLACEHOLDER_${index}__`;
+    });
+    return { text: modifiedText, placeholders };
+}
 
+/**
+ * Restore original {{variableName}} placeholders from tokens.
+ * @param {string} text
+ * @param {string[]} placeholders
+ * @returns {string}
+ */
+function restorePlaceholders(text, placeholders) {
+    return text.replace(/__PLACEHOLDER_(\d+)__/g, (_, index) => {
+        return placeholders[parseInt(index, 10)] || `__PLACEHOLDER_${index}__`;
+    });
+}
+
+/**
+ * Validate that all placeholders from source exist in translated text.
+ * @param {string} sourceText
+ * @param {string} translatedText
+ * @returns {{ valid: boolean, missing: string[] }}
+ */
+function validatePlaceholders(sourceText, translatedText) {
+    const sourceMatches = sourceText.match(/\{\{([^}]+)\}\}/g) || [];
+    const translatedMatches = translatedText.match(/\{\{([^}]+)\}\}/g) || [];
+    const missing = sourceMatches.filter(p => !translatedMatches.includes(p));
+    return { valid: missing.length === 0, missing };
+}
+
+class Translator {
+    static modelTag = 'translategemma:4b'
+    constructor() {
         this.localeObj = new Intl.DisplayNames(Object.keys(resources), { type: 'language' });
     }
 
@@ -56,20 +87,17 @@ class Translator {
         console.log(`\x1b[32m[Translator]\x1b[0m ${text}`, ...args);
     }
 
-    buildPrompt(text, sourceLangCode, targetLangCode) {
+    buildPrompt(text, sourceLangCode, targetLangCode, hasPlaceholders = false) {
         const sourceLanguage = this.getLanguageName(sourceLangCode);
         const targetLanguage = this.getLanguageName(targetLangCode);
-        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${sourceLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.
+        const placeholderInstruction = hasPlaceholders 
+            ? `\nIMPORTANT: The text contains placeholders like __PLACEHOLDER_0__, __PLACEHOLDER_1__, etc. You MUST keep these placeholders exactly as they are in the translation - do not translate, modify, or remove them.`
+            : '';
+        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${targetLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.${placeholderInstruction}
 Produce only the ${targetLanguage} translation, without any additional explanations or commentary. Please translate the following ${sourceLanguage} text into ${targetLanguage}:
 
 
 ${text}`
-    }
-
-    async verifyReady() {
-        const models = await getDockerModels(process.env.DOCKER_MODEL_RUNNER_BASE_PATH);
-        if(!models.find(m => m.id.toLowerCase() === Translator.modelTag.toLowerCase())) throw new Error(`Model ${Translator.modelTag} not found. Pull with docker model pull ${Translator.modelTag}`);
-        return true;
     }
 
     /**
@@ -84,10 +112,44 @@ ${text}`
     }
 
     async translate(text, sourceLangCode, targetLangCode) {
-        await this.verifyReady();
-        const prompt = this.buildPrompt(text, sourceLangCode, targetLangCode);
-        const response = await this.provider.getChatCompletion([{ role: 'user', content: prompt }], { temperature: 0.1 });
-        return this.cleanOutputText(response.textResponse);
+        // Extract placeholders like {{variableName}} and replace with tokens
+        const { text: textWithTokens, placeholders } = extractPlaceholders(text);
+        const hasPlaceholders = placeholders.length > 0;
+        
+        const prompt = this.buildPrompt(textWithTokens, sourceLangCode, targetLangCode, hasPlaceholders);
+        const response = await fetch(`http://localhost:11434/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: Translator.modelTag,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.1,
+                stream: false,
+            }),
+        });
+        
+        if(!response.ok) throw new Error(`Failed to translate: ${response.statusText}`);
+        const data = await response.json();
+        let translatedText = this.cleanOutputText(data.message.content);
+        
+        // Restore original placeholders
+        if (hasPlaceholders) {
+            translatedText = restorePlaceholders(translatedText, placeholders);
+            
+            // Validate all placeholders were preserved
+            const validation = validatePlaceholders(text, translatedText);
+            if (!validation.valid) {
+                console.warn(`Warning: Missing placeholders in translation: ${validation.missing.join(', ')}`);
+                // Attempt to fix by checking if tokens remain untranslated
+                for (let i = 0; i < placeholders.length; i++) {
+                    if (!translatedText.includes(placeholders[i])) {
+                        console.warn(`  Placeholder ${placeholders[i]} was lost in translation`);
+                    }
+                }
+            }
+        }
+        
+        return translatedText;
     }
 
     writeTranslations(langCode, translations) {
@@ -95,6 +157,7 @@ ${text}`
         // Special cases
         if(langCode === 'pt') langFilename = 'pt_BR';
         if(langCode === 'zh-tw') langFilename = 'zh_TW';
+        if(langCode === 'vi') langFilename = 'vn';
 
         fs.writeFileSync(
             `../../frontend/src/locales/${langFilename}/common.js`,
@@ -109,16 +172,16 @@ export default TRANSLATIONS;`
 
 
 // Deep traverse the english translations and get all the path to any all keys
-const translator = new Translator("dmr");
+const translator = new Translator();
 const englishTranslations = resources.en.common;
 const allKeys = [];
 function traverseTranslations(translations, parentKey = '') {
     for(const [key, value] of Object.entries(translations)) {
-        if(typeof value === 'object') {
-            const newKey = !parentKey ? key : `${parentKey}.${key}`;
-            traverseTranslations(value, newKey);
+        const fullKey = !parentKey ? key : `${parentKey}.${key}`;
+        if(typeof value === 'object' && value !== null) {
+            traverseTranslations(value, fullKey);
         } else {
-            allKeys.push(`${parentKey}.${key}`);
+            allKeys.push(fullKey);
         }
     }
 }
@@ -168,6 +231,7 @@ async function translateSingleLanguage(langCode) {
         totalTranslations++;
     }
 
+    if(totalTranslations === 0) return console.log('No translations performed!');
     console.log(`--------------------------------`);
     console.log(`Translated ${totalTranslations} translations for ${langCode}`);
     translator.writeTranslations(langCode, resources[langCode].common);
