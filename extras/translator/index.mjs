@@ -23,6 +23,47 @@ function setNestedValue(obj, path, value) {
     result[keys[keys.length - 1]] = value;
 }
 
+/**
+ * Extract {{variableName}} placeholders from text and replace with tokens.
+ * Returns the modified text and a map to restore the originals.
+ * @param {string} text
+ * @returns {{ text: string, placeholders: string[] }}
+ */
+function extractPlaceholders(text) {
+    const placeholders = [];
+    const modifiedText = text.replace(/\{\{([^}]+)\}\}/g, (match) => {
+        const index = placeholders.length;
+        placeholders.push(match);
+        return `__PLACEHOLDER_${index}__`;
+    });
+    return { text: modifiedText, placeholders };
+}
+
+/**
+ * Restore original {{variableName}} placeholders from tokens.
+ * @param {string} text
+ * @param {string[]} placeholders
+ * @returns {string}
+ */
+function restorePlaceholders(text, placeholders) {
+    return text.replace(/__PLACEHOLDER_(\d+)__/g, (_, index) => {
+        return placeholders[parseInt(index, 10)] || `__PLACEHOLDER_${index}__`;
+    });
+}
+
+/**
+ * Validate that all placeholders from source exist in translated text.
+ * @param {string} sourceText
+ * @param {string} translatedText
+ * @returns {{ valid: boolean, missing: string[] }}
+ */
+function validatePlaceholders(sourceText, translatedText) {
+    const sourceMatches = sourceText.match(/\{\{([^}]+)\}\}/g) || [];
+    const translatedMatches = translatedText.match(/\{\{([^}]+)\}\}/g) || [];
+    const missing = sourceMatches.filter(p => !translatedMatches.includes(p));
+    return { valid: missing.length === 0, missing };
+}
+
 class Translator {
     static modelTag = 'translategemma:4b'
     constructor() {
@@ -46,10 +87,13 @@ class Translator {
         console.log(`\x1b[32m[Translator]\x1b[0m ${text}`, ...args);
     }
 
-    buildPrompt(text, sourceLangCode, targetLangCode) {
+    buildPrompt(text, sourceLangCode, targetLangCode, hasPlaceholders = false) {
         const sourceLanguage = this.getLanguageName(sourceLangCode);
         const targetLanguage = this.getLanguageName(targetLangCode);
-        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${sourceLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.
+        const placeholderInstruction = hasPlaceholders 
+            ? `\nIMPORTANT: The text contains placeholders like __PLACEHOLDER_0__, __PLACEHOLDER_1__, etc. You MUST keep these placeholders exactly as they are in the translation - do not translate, modify, or remove them.`
+            : '';
+        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${targetLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.${placeholderInstruction}
 Produce only the ${targetLanguage} translation, without any additional explanations or commentary. Please translate the following ${sourceLanguage} text into ${targetLanguage}:
 
 
@@ -68,8 +112,12 @@ ${text}`
     }
 
     async translate(text, sourceLangCode, targetLangCode) {
-        const prompt = this.buildPrompt(text, sourceLangCode, targetLangCode);
-        return fetch(`http://localhost:11434/api/chat`, {
+        // Extract placeholders like {{variableName}} and replace with tokens
+        const { text: textWithTokens, placeholders } = extractPlaceholders(text);
+        const hasPlaceholders = placeholders.length > 0;
+        
+        const prompt = this.buildPrompt(textWithTokens, sourceLangCode, targetLangCode, hasPlaceholders);
+        const response = await fetch(`http://localhost:11434/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -78,14 +126,30 @@ ${text}`
                 temperature: 0.1,
                 stream: false,
             }),
-        })
-        .then((res) => {
-            if(!res.ok) throw new Error(`Failed to translate: ${res.statusText}`);
-            return res.json();
-        })
-        .then((data) => {
-            return this.cleanOutputText(data.message.content);
         });
+        
+        if(!response.ok) throw new Error(`Failed to translate: ${response.statusText}`);
+        const data = await response.json();
+        let translatedText = this.cleanOutputText(data.message.content);
+        
+        // Restore original placeholders
+        if (hasPlaceholders) {
+            translatedText = restorePlaceholders(translatedText, placeholders);
+            
+            // Validate all placeholders were preserved
+            const validation = validatePlaceholders(text, translatedText);
+            if (!validation.valid) {
+                console.warn(`Warning: Missing placeholders in translation: ${validation.missing.join(', ')}`);
+                // Attempt to fix by checking if tokens remain untranslated
+                for (let i = 0; i < placeholders.length; i++) {
+                    if (!translatedText.includes(placeholders[i])) {
+                        console.warn(`  Placeholder ${placeholders[i]} was lost in translation`);
+                    }
+                }
+            }
+        }
+        
+        return translatedText;
     }
 
     writeTranslations(langCode, translations) {
@@ -113,11 +177,11 @@ const englishTranslations = resources.en.common;
 const allKeys = [];
 function traverseTranslations(translations, parentKey = '') {
     for(const [key, value] of Object.entries(translations)) {
-        if(typeof value === 'object') {
-            const newKey = !parentKey ? key : `${parentKey}.${key}`;
-            traverseTranslations(value, newKey);
+        const fullKey = !parentKey ? key : `${parentKey}.${key}`;
+        if(typeof value === 'object' && value !== null) {
+            traverseTranslations(value, fullKey);
         } else {
-            allKeys.push(`${parentKey}.${key}`);
+            allKeys.push(fullKey);
         }
     }
 }
