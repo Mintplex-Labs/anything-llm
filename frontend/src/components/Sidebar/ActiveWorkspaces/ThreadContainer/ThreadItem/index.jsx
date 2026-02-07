@@ -1,3 +1,4 @@
+import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -30,6 +31,11 @@ export default function ThreadItem({
     ? paths.workspace.chat(slug)
     : paths.workspace.thread(slug, thread.slug);
 
+  const { ref } = useScrollActiveItemIntoView({
+    isActive,
+    behavior: "instant",
+    block: "center",
+  });
   return (
     <div
       className="w-full relative flex h-[38px] items-center border-none rounded-lg"
@@ -88,6 +94,7 @@ export default function ThreadItem({
           </div>
         ) : (
           <a
+            ref={ref}
             href={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }

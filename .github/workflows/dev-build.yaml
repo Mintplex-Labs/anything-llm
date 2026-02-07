@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ["web-push-notifications-bootstrap"] # put your current branch to create a build. Core team only.
+    branches: ["4963-sidebar-selection-srcoll-into-view"] # put your current branch to create a build. Core team only.
     paths-ignore:
       - "**.md"
       - "cloud-deployments/*"
