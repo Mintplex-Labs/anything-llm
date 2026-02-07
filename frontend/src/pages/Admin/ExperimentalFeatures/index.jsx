@@ -19,7 +19,9 @@ export default function ExperimentalFeatures() {
   useEffect(() => {
     async function fetchSettings() {
       setLoading(true);
-      const { settings } = await Admin.systemPreferences();
+      const { settings } = await Admin.systemPreferencesByFields([
+        "feature_flags",
+      ]);
       setFeatureFlags(settings?.feature_flags ?? {});
       setLoading(false);
     }
@@ -27,7 +29,9 @@ export default function ExperimentalFeatures() {
   }, []);
 
   const refresh = async () => {
-    const { settings } = await Admin.systemPreferences();
+    const { settings } = await Admin.systemPreferencesByFields([
+      "feature_flags",
+    ]);
     setFeatureFlags(settings?.feature_flags ?? {});
   };
 
