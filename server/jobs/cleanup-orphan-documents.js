@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const { default: slugify } = require("slugify");
-const { log, conclude } = require('./helpers/index.js');
-const { WorkspaceParsedFiles } = require('../models/workspaceParsedFiles.js');
-const { directUploadsPath } = require('../utils/files');
+const { log, conclude } = require("./helpers/index.js");
+const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles.js");
+const { directUploadsPath } = require("../utils/files");
 
 async function batchDeleteFiles(filesToDelete, batchSize = 500) {
   let deletedCount = 0;
@@ -13,10 +13,19 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
     const batch = filesToDelete.slice(i, i + batchSize);
 
     try {
-      await Promise.all(batch.map(filePath => fs.unlink(filePath)));
+      await Promise.all(
+        batch.map((filePath) => {
+          if (!fs.existsSync(filePath)) return;
+          if (fs.lstatSync(filePath).isDirectory())
+            fs.rmSync(filePath, { recursive: true });
+          else fs.unlinkSync(filePath);
+        })
+      );
       deletedCount += batch.length;
 
-      log(`Deleted batch ${Math.floor(i / batchSize) + 1}: ${batch.length} files`);
+      log(
+        `Deleted batch ${Math.floor(i / batchSize) + 1}: ${batch.length} files`
+      );
     } catch (err) {
       // If batch fails, try individual files sync
       for (const filePath of batch) {
@@ -37,14 +46,16 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
 (async () => {
   try {
     const filesToDelete = [];
-    const knownFiles = await WorkspaceParsedFiles
-      .where({}, null, null, { filename: true })
+    const knownFiles = await WorkspaceParsedFiles.where({}, null, null, {
+      filename: true,
+    })
       // Slugify the filename to match the direct uploads naming convention otherwise
       // files with spaces will not result in a match and will be pruned when attached to a thread.
       // This could then result in files showing "Attached" but the model not seeing them during chat.
-      .then(files => new Set(files.map(f => slugify(f.filename))));
+      .then((files) => new Set(files.map((f) => slugify(f.filename))));
 
-    if (!fs.existsSync(directUploadsPath)) return log('No direct uploads path found - exiting.');
+    if (!fs.existsSync(directUploadsPath))
+      return log("No direct uploads path found - exiting.");
     const filesInDirectUploadsPath = fs.readdirSync(directUploadsPath);
     if (filesInDirectUploadsPath.length === 0) return;
 
@@ -60,8 +71,8 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
     log(`Deleted ${deletedCount} orphaned files`);
     if (failedCount > 0) log(`Failed to delete ${failedCount} files`);
   } catch (e) {
-    console.error(e)
-    log(`errored with ${e.message}`)
+    console.error(e);
+    log(`errored with ${e.message}`);
   } finally {
     conclude();
   }
