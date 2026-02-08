@@ -1,9 +1,7 @@
 const { toChunks } = require("../../helpers");
 
 const MODEL_MAP = {
-  "embedding-001": 2048,
-  "text-embedding-004": 2048,
-  "gemini-embedding-exp-03-07": 8192,
+  "gemini-embedding-001": 2048,
 };
 
 class GeminiEmbedder {
@@ -13,7 +11,7 @@ class GeminiEmbedder {
 
     this.className = "GeminiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
-    this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
+    this.model = process.env.EMBEDDING_MODEL_PREF || "gemini-embedding-001";
     this.openai = new OpenAIApi({
       apiKey: process.env.GEMINI_EMBEDDING_API_KEY,
       // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
