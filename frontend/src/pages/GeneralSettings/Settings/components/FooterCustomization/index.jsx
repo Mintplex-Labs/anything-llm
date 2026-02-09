@@ -9,12 +9,16 @@ import { useTranslation } from "react-i18next";
 export default function FooterCustomization() {
   const [footerIcons, setFooterIcons] = useState(Array(3).fill(null));
   const { t } = useTranslation();
+
   useEffect(() => {
     async function fetchFooterIcons() {
-      const settings = (await Admin.systemPreferencesByFields(["footer_data"]))
-        ?.settings;
-      if (settings && settings.footer_data) {
-        const parsedIcons = safeJsonParse(settings.footer_data, []);
+      const { settings } = await Admin.systemPreferencesByFields([
+        "footer_data",
+      ]);
+
+      const footerData = settings?.footer_data;
+      if (footerData) {
+        const parsedIcons = safeJsonParse(footerData, []);
         setFooterIcons((prevIcons) => {
           const updatedIcons = [...prevIcons];
           parsedIcons.forEach((icon, index) => {
