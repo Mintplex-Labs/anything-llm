@@ -130,7 +130,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     // @note: `message` will not work here since it is not updated yet.
     // If text is still empty, after this, then we should just return.
     if (writeMode === "append") {
-      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value;
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
       text = currentText + text;
     }
 
