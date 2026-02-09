@@ -20,6 +20,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
+import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
 
 async function getTargetWorkspace() {
@@ -56,7 +57,11 @@ export default function Home() {
   useEffect(() => {
     async function init() {
       const ws = await getTargetWorkspace();
-      if (ws) setWorkspace(ws);
+      if (ws) {
+        const suggestedMessages =
+          await Workspace.getSuggestedMessages(ws.slug);
+        setWorkspace({ ...ws, suggestedMessages });
+      }
       setWorkspaceLoading(false);
     }
     init();
@@ -288,6 +293,10 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               />
             )}
           </div>
+          <SuggestedMessages
+            suggestedMessages={workspace?.suggestedMessages}
+            sendCommand={sendCommand}
+          />
         </div>
       </DnDFileUploaderWrapper>
     </div>
