@@ -341,7 +341,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               </h1>
               <PromptInput
                 submit={handleSubmit}
-                onChange={handleMessageChange}
                 isStreaming={loadingResponse}
                 sendCommand={sendCommand}
                 attachments={files}
