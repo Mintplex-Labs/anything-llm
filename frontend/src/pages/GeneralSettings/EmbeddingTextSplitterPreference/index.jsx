@@ -72,7 +72,13 @@ export default function EmbeddingTextSplitterPreference() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const _settings = (await Admin.systemPreferences())?.settings;
+      const _settings = (
+        await Admin.systemPreferencesByFields([
+          "text_splitter_chunk_size",
+          "text_splitter_chunk_overlap",
+          "max_embed_chunk_size",
+        ])
+      )?.settings;
       setSettings(_settings ?? {});
       setLoading(false);
     }

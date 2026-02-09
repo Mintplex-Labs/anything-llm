@@ -1,15 +1,7 @@
 const DEFAULT_MODELS = [
   {
-    id: "embedding-001",
-    name: "Embedding 001",
-  },
-  {
-    id: "text-embedding-004",
-    name: "Text Embedding 004",
-  },
-  {
-    id: "gemini-embedding-exp-03-07",
-    name: "Gemini Embedding Exp 03 07",
+    id: "gemini-embedding-001",
+    name: "Gemini Embedding 001",
   },
 ];
 

@@ -36,7 +36,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const navigate = useNavigate();
   const { user } = useUser();
   const { threadSlug = null } = useParams();
-  const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
@@ -44,11 +43,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-
-  // Maintain state of message from whatever is in PromptInput
-  const handleMessageChange = (event) => {
-    setMessage(event.target.value);
-  };
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -61,10 +55,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text (default: replace)
    */
   function setMessageEmit(messageContent = "", writeMode = "replace") {
-    if (writeMode === "append") setMessage((prev) => prev + messageContent);
-    else setMessage(messageContent ?? "");
-
-    // Push the update to the PromptInput component (same logic as above to keep in sync)
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent, writeMode },
@@ -74,11 +64,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!message || message === "") return false;
+    const currentMessage =
+      document.getElementById(PROMPT_INPUT_ID)?.value || "";
+    if (!currentMessage) return false;
+
     const prevChatHistory = [
       ...chatHistory,
       {
-        content: message,
+        content: currentMessage,
         role: "user",
         attachments: parseAttachments(),
       },
@@ -86,7 +79,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         content: "",
         role: "assistant",
         pending: true,
-        userMessage: message,
+        userMessage: currentMessage,
         animate: true,
       },
     ];
@@ -148,7 +141,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     // @note: `message` will not work here since it is not updated yet.
     // If text is still empty, after this, then we should just return.
     if (writeMode === "append") {
-      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value;
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
       text = currentText + text;
     }
 
@@ -398,7 +391,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         </MetricsProvider>
         <PromptInput
           submit={handleSubmit}
-          onChange={handleMessageChange}
           isStreaming={loadingResponse}
           sendCommand={sendCommand}
           attachments={files}

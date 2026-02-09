@@ -12,7 +12,10 @@ export default function CustomSiteSettings() {
   });
 
   useEffect(() => {
-    Admin.systemPreferences().then(({ settings }) => {
+    Admin.systemPreferencesByFields([
+      "meta_page_title",
+      "meta_page_favicon",
+    ]).then(({ settings }) => {
       setSettings({
         title: settings?.meta_page_title,
         faviconUrl: settings?.meta_page_favicon,

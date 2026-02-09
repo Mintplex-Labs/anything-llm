@@ -42,7 +42,6 @@ const MAX_EDIT_STACK_SIZE = 100;
  */
 export default function PromptInput({
   submit,
-  onChange,
   isStreaming,
   sendCommand,
   attachments = [],
@@ -64,7 +63,6 @@ export default function PromptInput({
 
   // Synchronizes prompt input value with localStorage, scoped to the current thread.
   usePromptInputStorage({
-    onChange,
     promptInput,
     setPromptInput,
   });
@@ -241,7 +239,6 @@ export default function PromptInput({
         pasteText +
         promptInput.substring(end);
       setPromptInput(newPromptInput);
-      onChange({ target: { value: newPromptInput } });
 
       // Set the cursor position after the pasted text
       // we need to use setTimeout to prevent the cursor from being set to the end of the text
@@ -256,7 +253,6 @@ export default function PromptInput({
 
   function handleChange(e) {
     debouncedSaveState(-1);
-    onChange(e);
     watchForSlash(e);
     watchForAt(e);
     adjustTextArea(e);
