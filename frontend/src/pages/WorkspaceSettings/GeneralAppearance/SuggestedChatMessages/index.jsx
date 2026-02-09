@@ -149,11 +149,9 @@ export default function SuggestedChatMessages({ slug }) {
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >
-              <p className="line-clamp-2">
-                {suggestion.heading && (
-                  <span className="font-semibold">{suggestion.heading} </span>
-                )}
-                {suggestion.message}
+              <p className="line-clamp-2 text-theme-text-primary">
+                {suggestion?.heading ? `${suggestion.heading} ` : ""}
+                {suggestion?.message ?? ""}
               </p>
             </button>
           </div>
