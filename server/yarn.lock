@@ -7181,10 +7181,17 @@ object.values@^1.1.6, object.values@^1.1.7:
     define-properties "^1.2.1"
     es-object-atoms "^1.0.0"
 
-ollama@^0.5.0, ollama@^0.5.10:
+ollama@^0.5.0:
   version "0.5.12"
   resolved "https://registry.npmjs.org/ollama/-/ollama-0.5.12.tgz"
   integrity sha512-flVH1fn1c9NF7VV3bW9kSu0E+bYc40b4DxL/gS2Debhao35osJFRDiPOj9sIWTMvcyj78Paw1OuhfIe7uhDWfQ==
+  dependencies:
+    whatwg-fetch "^3.6.20"
+
+ollama@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/ollama/-/ollama-0.6.3.tgz#b188573dd0ccb3b4759c1f8fa85067cb17f6673c"
+  integrity sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==
   dependencies:
     whatwg-fetch "^3.6.20"
 
