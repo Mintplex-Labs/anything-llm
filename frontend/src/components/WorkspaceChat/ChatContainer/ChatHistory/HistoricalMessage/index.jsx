@@ -179,13 +179,20 @@ const HistoricalMessage = ({
   );
 };
 
-export default memo(HistoricalMessage, (prevProps, nextProps) => {
-  return (
-    prevProps.message === nextProps.message &&
-    prevProps.isLastMessage === nextProps.isLastMessage &&
-    prevProps.chatId === nextProps.chatId
-  );
-});
+export default memo(
+  HistoricalMessage,
+  // Skip re-render the historical message:
+  // if the content is the exact same AND (not streaming)
+  // the lastMessage status is the same (regen icon)
+  // and the chatID matches between renders. (feedback icons)
+  (prevProps, nextProps) => {
+    return (
+      prevProps.message === nextProps.message &&
+      prevProps.isLastMessage === nextProps.isLastMessage &&
+      prevProps.chatId === nextProps.chatId
+    );
+  }
+);
 
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
@@ -204,6 +211,8 @@ function ChatAttachments({ attachments = [] }) {
 
 const RenderChatContent = memo(
   ({ role, message, messageId }) => {
+    // If the message is not from the assistant, we can render it directly
+    // as normal since the user cannot think (lol)
     if (role !== "assistant")
       return (
         <span
@@ -217,11 +226,16 @@ const RenderChatContent = memo(
     let msgToRender = message;
     if (!message) return null;
 
+    // If the message is a perfect thought chain, we can render it directly
+    // Complete == open and close tags match perfectly.
     if (message.match(THOUGHT_REGEX_COMPLETE)) {
       thoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
       msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
     }
 
+    // If the message is a thought chain but not a complete thought chain (matching opening tags but not closing tags),
+    // we can render it as a thought chain if we can at least find a closing tag
+    // This can occur when the assistant starts with <thinking> and then <response>'s later.
     if (
       message.match(THOUGHT_REGEX_OPEN) &&
       !message.match(THOUGHT_REGEX_CLOSE)

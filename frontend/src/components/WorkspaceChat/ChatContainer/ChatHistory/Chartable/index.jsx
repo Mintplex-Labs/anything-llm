@@ -40,7 +40,7 @@ const dataFormatter = (number) => {
   return Intl.NumberFormat("us").format(number).toString();
 };
 
-export function Chartable({ props, workspace: _workspace }) {
+export function Chartable({ props }) {
   const [getDivJpeg, { ref }] = useGenerateImage({
     quality: 1,
     type: "image/jpeg",

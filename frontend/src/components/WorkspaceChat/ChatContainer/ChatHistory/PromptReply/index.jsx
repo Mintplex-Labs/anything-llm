@@ -10,14 +10,7 @@ import {
   ThoughtChainComponent,
 } from "../ThoughtContainer";
 
-const PromptReply = ({
-  uuid,
-  reply,
-  pending,
-  error,
-  _workspace,
-  sources = [],
-}) => {
+const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
   if (!reply && sources.length === 0 && !pending && !error) return null;
 
   if (pending) {
