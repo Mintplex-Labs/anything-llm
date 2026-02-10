@@ -307,6 +307,10 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
   },
+  EmbeddingOutputDimensions: {
+    envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
+    checks: [],
+  },
   OllamaEmbeddingBatchSize: {
     envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
     checks: [nonZero],
