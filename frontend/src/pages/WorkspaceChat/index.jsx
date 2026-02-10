@@ -31,11 +31,9 @@ function ShowWorkspaceChat() {
       if (!_workspace) return setLoading(false);
 
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
-      const pfpUrl = await Workspace.fetchPfp(slug);
       setWorkspace({
         ..._workspace,
         suggestedMessages,
-        pfpUrl,
       });
       setLoading(false);
       localStorage.setItem(
