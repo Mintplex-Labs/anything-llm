@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 /**
  * Quick action buttons for home and empty workspace states.
  * @param {Object} props
@@ -10,11 +12,22 @@ export default function QuickActions({
   onEditWorkspace,
   onUploadDocument,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-wrap justify-center gap-2 mt-6">
-      <QuickActionButton label="Create an Agent" onClick={onCreateAgent} />
-      <QuickActionButton label="Edit Workspace" onClick={onEditWorkspace} />
-      <QuickActionButton label="Upload a Document" onClick={onUploadDocument} />
+      <QuickActionButton
+        label={t("main-page.quickActions.createAgent")}
+        onClick={onCreateAgent}
+      />
+      <QuickActionButton
+        label={t("main-page.quickActions.editWorkspace")}
+        onClick={onEditWorkspace}
+      />
+      <QuickActionButton
+        label={t("main-page.quickActions.uploadDocument")}
+        onClick={onUploadDocument}
+      />
     </div>
   );
 }

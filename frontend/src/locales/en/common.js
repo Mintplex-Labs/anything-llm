@@ -178,6 +178,11 @@ const TRANSLATIONS = {
         },
       },
     },
+    quickActions: {
+      createAgent: "Create an Agent",
+      editWorkspace: "Edit Workspace",
+      uploadDocument: "Upload a Document",
+    },
     quickLinks: {
       title: "Quick Links",
       sendChat: "Send Chat",
