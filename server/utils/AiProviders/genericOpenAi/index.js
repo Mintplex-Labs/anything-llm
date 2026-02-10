@@ -333,6 +333,19 @@ class GenericOpenAiLLM {
               error: false,
             });
             response.removeListener("close", handleAbort);
+
+            // llama.cpp server returns a `timings` object on the final chunk
+            // with accurate generation-only metrics. Use these over
+            // wall-clock duration which includes prompt evaluation time.
+            if (
+              chunk.timings &&
+              "predicted_n" in chunk.timings &&
+              "predicted_ms" in chunk.timings
+            ) {
+              usage.completion_tokens = chunk.timings.predicted_n;
+              usage.duration = chunk.timings.predicted_ms / 1000;
+            }
+
             stream?.endMeasurement(usage);
             resolve(fullText);
             break; // Break streaming when a valid finish_reason is first encountered
