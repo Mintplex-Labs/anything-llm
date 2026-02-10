@@ -51,6 +51,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repository owner
+        run: echo "REPO_OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -60,6 +63,6 @@ jobs:
           sbom: true
           provenance: mode=max
           platforms: linux/arm64
-          tags: ghcr.io/${{ github.repository_owner }}/anythingllm:pr-${{ github.event.pull_request.number }}
+          tags: ghcr.io/${{ env.REPO_OWNER_LC }}/${{ github.event.repository.name }}:pr-${{ github.event.pull_request.number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
