@@ -23,12 +23,25 @@ class GeminiEmbedder {
     // https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding-and-embedding
     this.embeddingMaxChunkLength = MODEL_MAP[this.model] || 2_048;
     this.log(
-      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}`
+      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}` +
+        (this.outputDimensions
+          ? ` - Output Dimensions: ${this.outputDimensions}`
+          : " Assuming default output dimensions")
     );
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  get outputDimensions() {
+    if (
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS &&
+      !isNaN(process.env.EMBEDDING_OUTPUT_DIMENSIONS) &&
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS > 0
+    )
+      return parseInt(process.env.EMBEDDING_OUTPUT_DIMENSIONS);
+    return null;
   }
 
   /**
@@ -62,6 +75,7 @@ class GeminiEmbedder {
             .create({
               model: this.model,
               input: chunk,
+              dimensions: this.outputDimensions,
             })
             .then((result) => {
               resolve({ data: result?.data, error: null });

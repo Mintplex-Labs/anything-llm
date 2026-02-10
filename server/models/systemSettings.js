@@ -233,6 +233,8 @@ const SystemSettings = {
         embeddingEngine === "native"
           ? NativeEmbedder._getEmbeddingModel()
           : process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingOutputDimensions:
+        process.env.EMBEDDING_OUTPUT_DIMENSIONS || null,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
