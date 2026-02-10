@@ -4,6 +4,7 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "@/components/Sidebar";
 import PromptInput, {
   PROMPT_INPUT_EVENT,
+  PROMPT_INPUT_ID,
 } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
 import DnDFileUploaderWrapper, {
   DndUploaderContext,
@@ -167,7 +168,6 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUser();
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
@@ -181,7 +181,9 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!message.trim() || loading) return;
+    const currentMessage =
+      document.getElementById(PROMPT_INPUT_ID)?.value?.trim() || "";
+    if (!currentMessage || loading) return;
 
     setLoading(true);
     try {
@@ -206,7 +208,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: message.trim(), attachments })
+        JSON.stringify({ message: currentMessage, attachments })
       );
 
       if (targetThread) {
@@ -221,20 +223,11 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     }
   }
 
-  function handleChange(e) {
-    setMessage(e.target.value);
-  }
-
   function sendCommand({
     text = "",
     autoSubmit = false,
     writeMode = "replace",
   }) {
-    if (writeMode === "append") {
-      setMessage((prev) => prev + text);
-    } else {
-      setMessage(text);
-    }
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent: text, writeMode },
@@ -274,7 +267,6 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
             </h1>
             <PromptInput
               submit={handleSubmit}
-              onChange={handleChange}
               isStreaming={loading}
               sendCommand={sendCommand}
               attachments={files}

@@ -32,7 +32,6 @@ const MAX_EDIT_STACK_SIZE = 100;
 
 /**
  * @param {function} props.submit - form submit handler
- * @param {function} props.onChange - input change handler
  * @param {boolean} props.isStreaming - disables input while streaming response
  * @param {function} props.sendCommand - handler for slash commands and agent mentions
  * @param {Array} [props.attachments] - file attachments array
