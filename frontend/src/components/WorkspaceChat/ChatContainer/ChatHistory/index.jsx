@@ -22,7 +22,6 @@ import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { useTranslation } from "react-i18next";
-import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 
 export default forwardRef(function (
@@ -47,7 +46,6 @@ export default forwardRef(function (
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -172,7 +170,6 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
-        getMessageAlignment,
       }),
     [
       workspace,
@@ -240,14 +237,16 @@ export default forwardRef(function (
   return (
     <ThoughtExpansionProvider>
       <div
-        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
         id="chat-history"
         ref={chatHistoryRef}
         onScroll={handleScroll}
       >
-        {compiledHistory.map((item, index) =>
-          Array.isArray(item) ? renderStatusResponse(item, index) : item
-        )}
+        <div className="w-full max-w-[750px]">
+          {compiledHistory.map((item, index) =>
+            Array.isArray(item) ? renderStatusResponse(item, index) : item
+          )}
+        </div>
         {showing && (
           <ManageWorkspace
             hideModal={hideModal}
@@ -312,7 +311,6 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
- * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -321,7 +319,6 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
-  getMessageAlignment,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -371,7 +368,6 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
-          alignmentCls={getMessageAlignment?.(props.role)}
         />
       );
     }

@@ -16,7 +16,7 @@ export default function StatusResponse({ messages = [], isThinking = false }) {
 
   return (
     <div className="flex justify-center w-full">
-      <div className="w-full max-w-[80%] flex flex-col">
+      <div className="w-full flex flex-col">
         <div className=" w-full max-w-[800px]">
           <div
             onClick={handleExpandClick}
