@@ -58,8 +58,7 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const suggestedMessages =
-          await Workspace.getSuggestedMessages(ws.slug);
+        const suggestedMessages = await Workspace.getSuggestedMessages(ws.slug);
         setWorkspace({ ...ws, suggestedMessages });
       }
       setWorkspaceLoading(false);
