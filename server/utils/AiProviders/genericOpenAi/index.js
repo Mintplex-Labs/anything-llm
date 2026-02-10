@@ -150,6 +150,24 @@ class GenericOpenAiLLM {
   }
 
   /**
+   * Extracts accurate generation-only timing and token count from a llama.cpp
+   * response or streaming chunk. Mutates the provided usage object in place
+   * so it can be used by both streaming and non-streaming code paths.
+   * @param {Object} response - the API response or final streaming chunk
+   * @param {Object} usage - the usage object to mutate
+   */
+  #extractTimings(response, usage) {
+    if (
+      response?.timings &&
+      "predicted_n" in response.timings &&
+      "predicted_ms" in response.timings
+    ) {
+      usage.completion_tokens = response.timings.predicted_n;
+      usage.duration = response.timings.predicted_ms / 1000;
+    }
+  }
+
+  /**
    * Parses and prepends reasoning from the response and returns the full text response.
    * @param {Object} response
    * @returns {string}
@@ -184,15 +202,19 @@ class GenericOpenAiLLM {
     )
       return null;
 
+    const usage = {
+      prompt_tokens: result.output?.usage?.prompt_tokens || 0,
+      completion_tokens: result.output?.usage?.completion_tokens || 0,
+      total_tokens: result.output?.usage?.total_tokens || 0,
+      duration: result.duration,
+    };
+    this.#extractTimings(result.output, usage);
+
     return {
       textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
-        prompt_tokens: result.output?.usage?.prompt_tokens || 0,
-        completion_tokens: result.output?.usage?.completion_tokens || 0,
-        total_tokens: result.output?.usage?.total_tokens || 0,
-        outputTps:
-          (result.output?.usage?.completion_tokens || 0) / result.duration,
-        duration: result.duration,
+        ...usage,
+        outputTps: usage.completion_tokens / usage.duration,
         model: this.model,
         provider: this.className,
         timestamp: new Date(),
@@ -334,18 +356,7 @@ class GenericOpenAiLLM {
             });
             response.removeListener("close", handleAbort);
 
-            // llama.cpp server returns a `timings` object on the final chunk
-            // with accurate generation-only metrics. Use these over
-            // wall-clock duration which includes prompt evaluation time.
-            if (
-              chunk.timings &&
-              "predicted_n" in chunk.timings &&
-              "predicted_ms" in chunk.timings
-            ) {
-              usage.completion_tokens = chunk.timings.predicted_n;
-              usage.duration = chunk.timings.predicted_ms / 1000;
-            }
-
+            this.#extractTimings(chunk, usage);
             stream?.endMeasurement(usage);
             resolve(fullText);
             break; // Break streaming when a valid finish_reason is first encountered
