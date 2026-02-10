@@ -9,9 +9,9 @@ jobs:
   cleanup:
     name: Delete QA image tag from GHCR
     runs-on: ubuntu-latest
-    if: |
-      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
-      (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA')
+    if: >-
+      ${{ (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
+      (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA') }}
     permissions:
       packages: write
     steps:
