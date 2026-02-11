@@ -960,9 +960,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Combinazioni di tasti",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Creare un agente",
+      editWorkspace: "Modifica l'area di lavoro",
+      uploadDocument: "Caricare un documento",
     },
   },
   "keyboard-shortcuts": {

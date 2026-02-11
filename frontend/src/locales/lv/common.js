@@ -208,9 +208,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Taustiņu atvieglojumi",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Izveidot aģentu",
+      editWorkspace: "Rediģēt darba telpu",
+      uploadDocument: "August failu",
     },
   },
   "new-workspace": {

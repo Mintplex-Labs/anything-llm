@@ -931,9 +931,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Phím tắt",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Tạo một đại lý",
+      editWorkspace: "Chỉnh sửa không gian làm việc",
+      uploadDocument: "Tải lên một tài liệu",
     },
   },
   "keyboard-shortcuts": {

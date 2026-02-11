@@ -211,9 +211,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Atajos de teclado",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Crear un agente",
+      editWorkspace: "Editar espacio de trabajo",
+      uploadDocument: "Cargar un documento",
     },
   },
   "new-workspace": {
@@ -908,7 +908,7 @@ const TRANSLATIONS = {
     cancel: "Cancelar",
     edit_prompt: "Editar prompt",
     edit_response: "Editar respuesta",
-    at_agent: "@agente",
+    at_agent: "@agent",
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",

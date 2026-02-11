@@ -875,9 +875,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "鍵盤快捷鍵",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "建立一個代理",
+      editWorkspace: "編輯工作區",
+      uploadDocument: "上傳文件",
     },
   },
   "keyboard-shortcuts": {

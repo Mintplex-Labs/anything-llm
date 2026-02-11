@@ -943,9 +943,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Tastaturgenveje",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Opret en agent",
+      editWorkspace: "Rediger arbejdsområdet",
+      uploadDocument: "Upload en fil",
     },
   },
   "keyboard-shortcuts": {

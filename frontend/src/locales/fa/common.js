@@ -933,9 +933,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "کلیدهای میانبر",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "ایجاد یک عامل",
+      editWorkspace: "ویرایش فضای کاری",
+      uploadDocument: "بارگذاری یک سند",
     },
   },
   "keyboard-shortcuts": {

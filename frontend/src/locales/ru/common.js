@@ -947,9 +947,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Сочетания клавиш",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Создать агента",
+      editWorkspace: "Редактировать рабочее пространство",
+      uploadDocument: "Загрузить документ",
     },
   },
   "keyboard-shortcuts": {

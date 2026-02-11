@@ -211,9 +211,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Tastaturkürzel",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Erstelle einen Agenten",
+      editWorkspace: "Arbeitsbereich bearbeiten",
+      uploadDocument: "Ein Dokument hochladen",
     },
   },
   "new-workspace": {

@@ -929,9 +929,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "キーボードショートカット",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "エージェントを作成する",
+      editWorkspace: "ワークスペースの編集",
+      uploadDocument: "ドキュメントをアップロードする",
     },
   },
   "keyboard-shortcuts": {

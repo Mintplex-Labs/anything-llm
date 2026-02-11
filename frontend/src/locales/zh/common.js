@@ -200,9 +200,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "键盘快捷键",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "创建代理",
+      editWorkspace: "编辑工作区",
+      uploadDocument: "上传文件",
     },
   },
   "new-workspace": {

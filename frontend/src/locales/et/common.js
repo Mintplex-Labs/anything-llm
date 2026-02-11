@@ -204,9 +204,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Klaviatuuri otseteed",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Loo agent",
+      editWorkspace: "Redige tööruum",
+      uploadDocument: "Lae fail üles",
     },
   },
   "new-workspace": {

@@ -938,9 +938,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Sneltoetsen",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Maak een agent",
+      editWorkspace: "Werkruimte bewerken",
+      uploadDocument: "Upload een document",
     },
   },
   "keyboard-shortcuts": {

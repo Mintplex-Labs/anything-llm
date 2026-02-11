@@ -943,9 +943,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Raccourcis clavier",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Créer un agent",
+      editWorkspace: "Modifier l'espace de travail",
+      uploadDocument: "Télécharger un document",
     },
   },
   "keyboard-shortcuts": {

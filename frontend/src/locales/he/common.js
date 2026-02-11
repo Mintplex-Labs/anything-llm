@@ -204,9 +204,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "קיצורי מקלדת",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "צור סוכן",
+      editWorkspace: "ערוך את סביבת העבודה",
+      uploadDocument: "העלה מסמך",
     },
   },
   "new-workspace": {

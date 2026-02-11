@@ -216,9 +216,9 @@ const TRANSLATIONS = {
       keyboardShortcuts: "Klávesové zkratky",
     },
     quickActions: {
-      createAgent: null,
-      editWorkspace: null,
-      uploadDocument: null,
+      createAgent: "Vytvořte agenta",
+      editWorkspace: "Upravit pracovní prostor",
+      uploadDocument: "Nahrajte dokument",
     },
   },
   "new-workspace": {
