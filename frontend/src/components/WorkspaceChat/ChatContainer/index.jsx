@@ -323,77 +323,74 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
-  if (
-    chatHistory.length === 0 &&
-    !sessionStorage.getItem(PENDING_HOME_MESSAGE)
-  ) {
-    return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
-      >
-        {isMobile && <SidebarMobileHeader />}
-        <DnDFileUploaderWrapper>
-          <div className="flex flex-col h-full w-full items-center justify-center">
-            <div className="flex flex-col items-center w-full max-w-[750px]">
-              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                {t("home.greeting", "How may I make your day easier today?")}
-              </h1>
-              <PromptInput
-                submit={handleSubmit}
-                isStreaming={loadingResponse}
-                sendCommand={sendCommand}
-                attachments={files}
-                centered
-              />
-              {(!user || user.role !== "default") && (
-                <QuickActions
-                  onCreateAgent={() => navigate(paths.settings.agentSkills())}
-                  onEditWorkspace={() =>
-                    navigate(
-                      paths.workspace.settings.generalAppearance(workspace.slug)
-                    )
-                  }
-                  onUploadDocument={() =>
-                    document.getElementById("dnd-chat-file-uploader")?.click()
-                  }
-                />
-              )}
-            </div>
-            <SuggestedMessages
-              suggestedMessages={workspace?.suggestedMessages}
-              sendCommand={sendCommand}
-            />
-          </div>
-        </DnDFileUploaderWrapper>
-        <ChatTooltips />
-      </div>
-    );
-  }
+  const isEmpty =
+    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
 
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
+      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full ${
+        isEmpty ? "overflow-hidden" : "overflow-y-scroll no-scroll z-[2]"
+      }`}
     >
       {isMobile && <SidebarMobileHeader />}
       <DnDFileUploaderWrapper>
-        <MetricsProvider>
-          <ChatHistory
-            ref={chatHistoryRef}
-            history={chatHistory}
-            workspace={workspace}
-            sendCommand={sendCommand}
-            updateHistory={setChatHistory}
-            regenerateAssistantMessage={regenerateAssistantMessage}
-          />
-        </MetricsProvider>
-        <PromptInput
-          submit={handleSubmit}
-          isStreaming={loadingResponse}
-          sendCommand={sendCommand}
-          attachments={files}
-        />
+        <div
+          className={`flex flex-col h-full w-full ${
+            isEmpty ? "items-center justify-center" : ""
+          }`}
+        >
+          <div
+            className={
+              isEmpty
+                ? "flex flex-col items-center w-full max-w-[750px]"
+                : "contents"
+            }
+          >
+            {isEmpty ? (
+              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                {t("home.greeting", "How may I make your day easier today?")}
+              </h1>
+            ) : (
+              <MetricsProvider>
+                <ChatHistory
+                  ref={chatHistoryRef}
+                  history={chatHistory}
+                  workspace={workspace}
+                  sendCommand={sendCommand}
+                  updateHistory={setChatHistory}
+                  regenerateAssistantMessage={regenerateAssistantMessage}
+                />
+              </MetricsProvider>
+            )}
+            <PromptInput
+              submit={handleSubmit}
+              isStreaming={loadingResponse}
+              sendCommand={sendCommand}
+              attachments={files}
+              centered={isEmpty}
+            />
+            {isEmpty && (!user || user.role !== "default") && (
+              <QuickActions
+                onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                onEditWorkspace={() =>
+                  navigate(
+                    paths.workspace.settings.generalAppearance(workspace.slug)
+                  )
+                }
+                onUploadDocument={() =>
+                  document.getElementById("dnd-chat-file-uploader")?.click()
+                }
+              />
+            )}
+          </div>
+          {isEmpty && (
+            <SuggestedMessages
+              suggestedMessages={workspace?.suggestedMessages}
+              sendCommand={sendCommand}
+            />
+          )}
+        </div>
       </DnDFileUploaderWrapper>
       <ChatTooltips />
     </div>

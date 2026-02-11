@@ -179,17 +179,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     );
   }, []);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const currentMessage =
-      document.getElementById(PROMPT_INPUT_ID)?.value?.trim() || "";
-    if (!currentMessage || loading) return;
-
+  async function submitMessage(message, attachments = []) {
+    if (!message || loading) return;
     setLoading(true);
     try {
       let targetWorkspace = workspace;
       let targetThread = threadSlug;
-      const attachments = parseAttachments();
 
       if (!targetWorkspace) {
         targetWorkspace = await createDefaultWorkspace();
@@ -208,7 +203,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
 
       sessionStorage.setItem(
         PENDING_HOME_MESSAGE,
-        JSON.stringify({ message: currentMessage, attachments })
+        JSON.stringify({ message, attachments })
       );
 
       if (targetThread) {
@@ -223,22 +218,27 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     }
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const currentMessage =
+      document.getElementById(PROMPT_INPUT_ID)?.value?.trim() || "";
+    await submitMessage(currentMessage, parseAttachments());
+  }
+
   function sendCommand({
     text = "",
     autoSubmit = false,
     writeMode = "replace",
   }) {
+    if (autoSubmit) {
+      submitMessage(text.trim());
+      return;
+    }
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent: text, writeMode },
       })
     );
-    if (autoSubmit) {
-      setTimeout(() => {
-        const form = document.querySelector("form");
-        if (form) form.requestSubmit();
-      }, 0);
-    }
   }
 
   async function handleEditWorkspace() {
