@@ -874,6 +874,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "鍵盤快捷鍵",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "鍵盤快捷鍵",

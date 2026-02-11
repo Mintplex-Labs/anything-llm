@@ -207,6 +207,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Taustiņu atvieglojumi",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "new-workspace": {
     title: "Jauna darba telpa",

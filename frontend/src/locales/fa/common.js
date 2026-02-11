@@ -932,6 +932,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "کلیدهای میانبر",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "کلیدهای میانبر",

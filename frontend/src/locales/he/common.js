@@ -203,6 +203,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "קיצורי מקלדת",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "new-workspace": {
     title: "סביבת עבודה חדשה",

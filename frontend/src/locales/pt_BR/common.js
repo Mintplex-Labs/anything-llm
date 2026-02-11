@@ -205,6 +205,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Atalhos de Teclado",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "new-workspace": {
     title: "Novo Workspace",

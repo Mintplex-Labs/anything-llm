@@ -937,6 +937,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Sneltoetsen",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",

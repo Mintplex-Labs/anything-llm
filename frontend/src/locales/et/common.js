@@ -203,6 +203,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Klaviatuuri otseteed",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "new-workspace": {
     title: "Uus tööruum",

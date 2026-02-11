@@ -209,6 +209,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Skróty klawiaturowe",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "new-workspace": {
     title: "Nowy obszar roboczy",

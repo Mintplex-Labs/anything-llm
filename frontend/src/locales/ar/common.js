@@ -917,6 +917,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "اختصارات لوحة المفاتيح",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "اختصارات لوحة المفاتيح",

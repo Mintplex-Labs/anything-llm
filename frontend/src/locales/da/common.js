@@ -942,6 +942,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Tastaturgenveje",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "Tastaturgenveje",

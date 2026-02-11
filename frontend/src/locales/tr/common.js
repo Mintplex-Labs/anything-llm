@@ -934,6 +934,11 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Klavye Kısayolları",
     },
+    quickActions: {
+      createAgent: null,
+      editWorkspace: null,
+      uploadDocument: null,
+    },
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",
