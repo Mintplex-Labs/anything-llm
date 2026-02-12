@@ -127,7 +127,13 @@ export default function ActiveWorkspaces() {
                               <SquaresFour
                                 size={20}
                                 className={`${isActive ? "text-theme-sidebar-active-text" : ""}`}
-                                weight={isActive || hoveredWsId === workspace.id || snapshot.isDragging ? "fill" : "regular"}
+                                weight={
+                                  isActive ||
+                                  hoveredWsId === workspace.id ||
+                                  snapshot.isDragging
+                                    ? "fill"
+                                    : "regular"
+                                }
                               />
                             </div>
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
