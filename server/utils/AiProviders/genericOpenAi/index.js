@@ -156,15 +156,14 @@ class GenericOpenAiLLM {
    * @param {Object} response - the API response or final streaming chunk
    * @param {Object} usage - the usage object to mutate
    */
-  #extractTimings(response, usage) {
-    if (
-      response?.timings &&
-      "predicted_n" in response.timings &&
-      "predicted_ms" in response.timings
-    ) {
-      usage.completion_tokens = response.timings.predicted_n;
-      usage.duration = response.timings.predicted_ms / 1000;
-    }
+  #extractLlamaCppTimings(response, usage) {
+    if (!response || !response.timings) return;
+
+    if (response.timings.hasOwnProperty("predicted_n"))
+      usage.completion_tokens = Number(response.timings.predicted_n);
+
+    if (response.timings.hasOwnProperty("predicted_ms"))
+      usage.duration = Number(response.timings.predicted_ms) / 1000;
   }
 
   /**
@@ -208,7 +207,7 @@ class GenericOpenAiLLM {
       total_tokens: result.output?.usage?.total_tokens || 0,
       duration: result.duration,
     };
-    this.#extractTimings(result.output, usage);
+    this.#extractLlamaCppTimings(result.output, usage);
 
     return {
       textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
@@ -354,9 +353,9 @@ class GenericOpenAiLLM {
               close: true,
               error: false,
             });
-            response.removeListener("close", handleAbort);
+            this.#extractLlamaCppTimings(chunk, usage);
 
-            this.#extractTimings(chunk, usage);
+            response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);
             resolve(fullText);
             break; // Break streaming when a valid finish_reason is first encountered
