@@ -81,11 +81,10 @@ function FeedbackButton({
         onClick={handleFeedback}
         data-tooltip-id="feedback-button"
         data-tooltip-content={tooltipContent}
-        className="text-zinc-300"
+        className="text-zinc-300 light:text-slate-500"
         aria-label={tooltipContent}
       >
         <IconComponent
-          color="var(--theme-sidebar-footer-icon-fill)"
           size={20}
           className="mb-1"
           weight={isSelected ? "fill" : "regular"}
@@ -106,21 +105,13 @@ function CopyMessage({ message }) {
           onClick={() => copyText(message)}
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content={t("chat_window.copy")}
-          className="text-zinc-300"
+          className="text-zinc-300 light:text-slate-500"
           aria-label={t("chat_window.copy")}
         >
           {copied ? (
-            <Check
-              color="var(--theme-sidebar-footer-icon-fill)"
-              size={20}
-              className="mb-1"
-            />
+            <Check size={20} className="mb-1" />
           ) : (
-            <Copy
-              color="var(--theme-sidebar-footer-icon-fill)"
-              size={20}
-              className="mb-1"
-            />
+            <Copy size={20} className="mb-1" />
           )}
         </button>
       </div>
@@ -137,15 +128,10 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         onClick={() => regenerateMessage(chatId)}
         data-tooltip-id="regenerate-assistant-text"
         data-tooltip-content={t("chat_window.regenerate_response")}
-        className="border-none text-zinc-300"
+        className="border-none text-zinc-300 light:text-slate-500"
         aria-label={t("chat_window.regenerate")}
       >
-        <ArrowsClockwise
-          color="var(--theme-sidebar-footer-icon-fill)"
-          size={20}
-          className="mb-1"
-          weight="fill"
-        />
+        <ArrowsClockwise size={20} className="mb-1" weight="fill" />
       </button>
     </div>
   );
