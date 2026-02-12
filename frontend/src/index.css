@@ -109,7 +109,7 @@
   --theme-loader: #000000;
   --theme-bg-primary: #ffffff;
   --theme-bg-secondary: #ffffff;
-  --theme-bg-sidebar: #edf2fa;
+  --theme-bg-sidebar: #e2e8f0;
   --theme-bg-container: #f9fbfd;
   --theme-popup-menu-bg: #c2e7fe;
 
@@ -119,7 +119,7 @@
   --theme-text-secondary: #7a7d7e;
   --theme-placeholder: #9ca3af;
   --theme-sidebar-item-default: #ffffff;
-  --theme-sidebar-item-selected: #ffffff;
+  --theme-sidebar-item-selected: #b2ddff;
   --theme-sidebar-item-hover: #c8efff;
 
   --theme-sidebar-item-text-inactive: #7a7d7e;
@@ -130,8 +130,8 @@
 
   --theme-sidebar-subitem-default: transparent;
   --theme-sidebar-subitem-selected: #e2e7ee;
-  --theme-sidebar-thread-selected: #ffffff;
-  --theme-sidebar-subitem-hover: #e2e7ee;
+  --theme-sidebar-thread-selected: #b2ddff;
+  --theme-sidebar-subitem-hover: #cbd5e1;
   --theme-sidebar-border: #d3d4d4;
 
   --theme-sidebar-footer-icon: #ffffff;

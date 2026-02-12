@@ -177,7 +177,7 @@ function NewThreadButton({ workspace }) {
       className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-white/20 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-[#27272A] light:bg-[#F8FAFC] p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           {loading ? (
             <CircleNotch
               weight="bold"
@@ -198,7 +198,7 @@ function NewThreadButton({ workspace }) {
             Starting Thread...
           </p>
         ) : (
-          <p className="text-left text-white light:text-theme-text-primary text-sm">
+          <p className="text-left text-white light:text-theme-text-primary text-sm font-semibold">
             New Thread
           </p>
         )}

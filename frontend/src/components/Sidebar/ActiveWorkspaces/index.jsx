@@ -7,7 +7,7 @@ import ManageWorkspace, {
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
 import { useParams, useNavigate } from "react-router-dom";
-import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
+import { GearSix, UploadSimple, SquaresFour } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
 import { useMatch } from "react-router-dom";
@@ -113,8 +113,8 @@ export default function ActiveWorkspaces() {
                             transition-all duration-[200ms]
                             flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
                             bg-theme-sidebar-item-default
-                            hover:bg-theme-sidebar-subitem-hover hover:font-bold
-                            ${isActive ? "bg-theme-sidebar-item-selected font-bold light:outline-2 light:outline light:outline-blue-400 light:outline-offset-[-2px]" : ""}
+                            ${!isActive ? "hover:bg-theme-sidebar-subitem-hover" : ""} hover:font-bold
+                            ${isActive ? "bg-theme-sidebar-item-selected font-bold" : ""}
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
@@ -122,19 +122,26 @@ export default function ActiveWorkspaces() {
                               {...provided.dragHandleProps}
                               className="cursor-grab mr-[3px]"
                             >
-                              <DotsSixVertical
+                              <SquaresFour
                                 size={20}
-                                color="var(--theme-sidebar-item-workspace-active)"
-                                weight="bold"
+                                className={`${isActive ? "light:text-[#1849A9]" : "group-hover:hidden"}`}
+                                weight={isActive ? "fill" : "regular"}
                               />
+                              {!isActive && (
+                                <SquaresFour
+                                  size={20}
+                                  className="hidden group-hover:block"
+                                  weight="fill"
+                                />
+                              )}
                             </div>
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
                               <div className="w-[130px] overflow-hidden">
                                 <p
                                   className={`
-                                  text-[14px] leading-loose whitespace-nowrap overflow-hidden text-white
-                                  ${isActive ? "font-bold" : "font-medium"} truncate
-                                  w-full group-hover:w-[130px] group-hover:font-bold group-hover:duration-200
+                                  text-[14px] leading-loose whitespace-nowrap overflow-hidden
+                                  ${isActive ? "font-bold light:text-[#1849A9]" : "font-medium"} truncate
+                                  w-full group-hover:w-[130px]  group-hover:duration-200
                                 `}
                                 >
                                   {workspace.name}
@@ -152,9 +159,11 @@ export default function ActiveWorkspaces() {
                                     setSelectedWs(workspace);
                                     showModal();
                                   }}
-                                  className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
+                                  className={`border-blue-400border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "light:hover:bg-[#0659864D]" : "light:hover:bg-[#94A3B8]"} hover:bg-[#646768]  text-[#A7A8A9] hover:text-white`}
                                 >
-                                  <UploadSimple className="h-[20px] w-[20px]" />
+                                  <UploadSimple
+                                    className={`h-[20px] w-[20px] ${isActive ? "light:text-[#026AA2] light:hover:text-[#0B4A6F]" : "light:text-[#475569] light:hover:text-[#020617]"} `}
+                                  />
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -168,7 +177,7 @@ export default function ActiveWorkspaces() {
                                           )
                                     );
                                   }}
-                                  className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
+                                  className={`rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] ${isActive ? "light:hover:bg-[#0659864D]" : "light:hover:bg-[#94A3B8]"} hover:bg-[#646768] light:hover:bg-[#94A3B8]`}
                                   aria-label="General appearance settings"
                                 >
                                   <GearSix
@@ -178,7 +187,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className="h-[20px] w-[20px]"
+                                    className={`h-[20px] w-[20px] ${isActive ? "light:text-[#026AA2] light:hover:text-[#0B4A6F]" : "light:text-[#475569] light:hover:text-[#020617]"} `}
                                   />
                                 </button>
                               </div>
