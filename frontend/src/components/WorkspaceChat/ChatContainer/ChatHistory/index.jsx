@@ -93,13 +93,6 @@ export default forwardRef(function (
     scrollToBottom,
   });
 
-  const handleSendSuggestedMessage = (heading, message) => {
-    sendCommand({
-      text: heading ? `${heading} ${message}` : message,
-      autoSubmit: true,
-    });
-  };
-
   const saveEditedMessage = async ({
     editedMessage,
     chatId,
