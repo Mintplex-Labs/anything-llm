@@ -113,8 +113,7 @@ export default function ActiveWorkspaces() {
                             transition-all duration-[200ms]
                             flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
                             bg-theme-sidebar-item-default
-                            ${!isActive ? "hover:bg-theme-sidebar-subitem-hover" : ""} hover:font-bold
-                            ${isActive ? "bg-theme-sidebar-item-selected font-bold" : ""}
+                            ${isActive ? "bg-theme-sidebar-item-selected font-bold" : "hover:bg-theme-sidebar-subitem-hover"}
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
@@ -140,7 +139,7 @@ export default function ActiveWorkspaces() {
                                 <p
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                                  ${isActive ? "font-bold text-theme-sidebar-active-text" : "font-medium"} truncate
+                                  ${isActive ? "font-bold text-theme-sidebar-active-text" : "font-medium group-hover:font-bold"} truncate
                                   w-full group-hover:w-[130px] group-hover:duration-200
                                 `}
                                 >
