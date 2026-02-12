@@ -1,9 +1,7 @@
 import React, { memo } from "react";
 import { Info, Warning } from "@phosphor-icons/react";
-import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
-import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { v4 } from "uuid";
 import DOMPurify from "@/utils/chat/purify";
@@ -36,7 +34,6 @@ const HistoricalMessage = ({
   saveEditedMessage,
   forkThread,
   metrics = {},
-  alignmentCls = "",
 }) => {
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
@@ -53,91 +50,55 @@ const HistoricalMessage = ({
   const isRefusalMessage =
     role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
+  if (completeDelete) return null;
+
   if (!!error) {
     return (
-      <div
-        key={uuid}
-        className={`flex justify-center items-end w-full bg-theme-bg-chat`}
-      >
-        <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className={`flex gap-x-5 ${alignmentCls}`}>
-            <ProfileImage role={role} workspace={workspace} />
-            <div className="p-2 rounded-lg bg-red-50 text-red-500">
-              <span className="inline-block">
-                <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                respond to message.
-              </span>
-              <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
-                {error}
-              </p>
-            </div>
+      <div key={uuid} className="flex justify-start w-full">
+        <div className="py-4 pl-0 pr-4 flex flex-col md:max-w-[80%]">
+          <div className="p-2 rounded-lg bg-red-50 text-red-500">
+            <span className="inline-block">
+              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
+              respond to message.
+            </span>
+            <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
+              {error}
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (completeDelete) return null;
-
-  return (
-    <div
-      key={uuid}
-      onAnimationEnd={onEndAnimation}
-      className={`${
-        isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group bg-theme-bg-chat`}
-    >
-      <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className={`flex gap-x-5 ${alignmentCls}`}>
-          <div className="flex flex-col items-center">
-            <ProfileImage role={role} workspace={workspace} />
-            <div className="mt-1 -mb-10">
-              {role === "assistant" && (
-                <TTSMessage
-                  slug={workspace?.slug}
-                  chatId={chatId}
-                  message={message}
-                />
-              )}
-            </div>
-          </div>
-          {isEditing ? (
-            <EditMessageForm
-              role={role}
-              chatId={chatId}
-              message={message}
-              attachments={attachments}
-              adjustTextArea={adjustTextArea}
-              saveChanges={saveEditedMessage}
-            />
-          ) : (
-            <div className="break-words">
-              <RenderChatContent
+  if (role === "user") {
+    return (
+      <div
+        key={uuid}
+        onAnimationEnd={onEndAnimation}
+        className={`${isDeleted ? "animate-remove" : ""} flex justify-end w-full group`}
+      >
+        <div className="py-4 px-4 flex flex-col items-end">
+          <div className="bg-zinc-800 light:bg-slate-100 rounded-[20px] rounded-br-none px-4 py-3.5 max-w-[600px] [&_p]:m-0">
+            {isEditing ? (
+              <EditMessageForm
                 role={role}
+                chatId={chatId}
                 message={message}
-                messageId={uuid}
+                attachments={attachments}
+                adjustTextArea={adjustTextArea}
+                saveChanges={saveEditedMessage}
               />
-              {isRefusalMessage && (
-                <Link
-                  data-tooltip-id="query-refusal-info"
-                  data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
-                  className="!no-underline group !flex w-fit"
-                  to={paths.chatModes()}
-                  target="_blank"
-                >
-                  <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
-                    <Info className="text-theme-text-secondary" />
-                    <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
-                      {t("chat.refusal.tooltip-title")}
-                    </p>
-                  </div>
-                </Link>
-              )}
-              <ChatAttachments attachments={attachments} />
-            </div>
-          )}
-        </div>
-        <div className="flex gap-x-5 ml-14">
+            ) : (
+              <>
+                <RenderChatContent
+                  role={role}
+                  message={message}
+                  messageId={uuid}
+                />
+                <ChatAttachments attachments={attachments} />
+              </>
+            )}
+          </div>
           <Actions
             message={message}
             feedbackScore={feedbackScore}
@@ -149,7 +110,67 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
-            alignmentCls={alignmentCls}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      key={uuid}
+      onAnimationEnd={onEndAnimation}
+      className={`${isDeleted ? "animate-remove" : ""} flex justify-start w-full group`}
+    >
+      <div className="py-4 pl-0 pr-4 flex flex-col md:max-w-[80%]">
+        {isEditing ? (
+          <EditMessageForm
+            role={role}
+            chatId={chatId}
+            message={message}
+            attachments={attachments}
+            adjustTextArea={adjustTextArea}
+            saveChanges={saveEditedMessage}
+          />
+        ) : (
+          <div className="break-words">
+            <RenderChatContent role={role} message={message} messageId={uuid} />
+            {isRefusalMessage && (
+              <Link
+                data-tooltip-id="query-refusal-info"
+                data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
+                className="!no-underline group !flex w-fit"
+                to={paths.chatModes()}
+                target="_blank"
+              >
+                <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
+                  <Info className="text-theme-text-secondary" />
+                  <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
+                    {t("chat.refusal.tooltip-title")}
+                  </p>
+                </div>
+              </Link>
+            )}
+            <ChatAttachments attachments={attachments} />
+          </div>
+        )}
+        <div className="flex items-center gap-x-1">
+          <TTSMessage
+            slug={workspace?.slug}
+            chatId={chatId}
+            message={message}
+          />
+          <Actions
+            message={message}
+            feedbackScore={feedbackScore}
+            chatId={chatId}
+            slug={workspace?.slug}
+            isLastMessage={isLastMessage}
+            regenerateMessage={regenerateMessage}
+            isEditing={isEditing}
+            role={role}
+            forkThread={forkThread}
+            metrics={metrics}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
@@ -157,29 +178,6 @@ const HistoricalMessage = ({
     </div>
   );
 };
-
-function ProfileImage({ role, workspace }) {
-  if (role === "assistant" && workspace.pfpUrl) {
-    return (
-      <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-        <img
-          src={workspace.pfpUrl}
-          alt="Workspace profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
-        />
-      </div>
-    );
-  }
-
-  return (
-    <UserIcon
-      user={{
-        uid: role === "user" ? userFromStorage()?.username : workspace.slug,
-      }}
-      role={role}
-    />
-  );
-}
 
 export default memo(
   HistoricalMessage,
@@ -218,7 +216,7 @@ const RenderChatContent = memo(
     if (role !== "assistant")
       return (
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 light:text-slate-900"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(message)),
           }}
@@ -252,7 +250,7 @@ const RenderChatContent = memo(
           <ThoughtChainComponent content={thoughtChain} messageId={messageId} />
         )}
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 light:text-slate-900"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
           }}
