@@ -124,7 +124,7 @@ export default function ActiveWorkspaces() {
                             >
                               <SquaresFour
                                 size={20}
-                                className={`${isActive ? "light:text-[#1849A9]" : "group-hover:hidden"}`}
+                                className={`${isActive ? "text-theme-sidebar-active-text" : "group-hover:hidden"}`}
                                 weight={isActive ? "fill" : "regular"}
                               />
                               {!isActive && (
@@ -140,8 +140,8 @@ export default function ActiveWorkspaces() {
                                 <p
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                                  ${isActive ? "font-bold light:text-[#1849A9]" : "font-medium"} truncate
-                                  w-full group-hover:w-[130px]  group-hover:duration-200
+                                  ${isActive ? "font-bold text-theme-sidebar-active-text" : "font-medium"} truncate
+                                  w-full group-hover:w-[130px] group-hover:duration-200
                                 `}
                                 >
                                   {workspace.name}
@@ -159,10 +159,10 @@ export default function ActiveWorkspaces() {
                                     setSelectedWs(workspace);
                                     showModal();
                                   }}
-                                  className={`border-blue-400border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "light:hover:bg-[#0659864D]" : "light:hover:bg-[#94A3B8]"} hover:bg-[#646768]  text-[#A7A8A9] hover:text-white`}
+                                  className={`border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-theme-sidebar-icon-active-hover-bg" : "hover:bg-theme-sidebar-icon-hover-bg"}`}
                                 >
                                   <UploadSimple
-                                    className={`h-[20px] w-[20px] ${isActive ? "light:text-[#026AA2] light:hover:text-[#0B4A6F]" : "light:text-[#475569] light:hover:text-[#020617]"} `}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-theme-sidebar-icon-active-color hover:text-theme-sidebar-icon-active-hover" : "text-theme-sidebar-icon-color hover:text-theme-sidebar-icon-hover"}`}
                                   />
                                 </button>
                                 <button
@@ -177,7 +177,7 @@ export default function ActiveWorkspaces() {
                                           )
                                     );
                                   }}
-                                  className={`rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] ${isActive ? "light:hover:bg-[#0659864D]" : "light:hover:bg-[#94A3B8]"} hover:bg-[#646768] light:hover:bg-[#94A3B8]`}
+                                  className={`rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-theme-sidebar-icon-active-hover-bg" : "hover:bg-theme-sidebar-icon-hover-bg"}`}
                                   aria-label="General appearance settings"
                                 >
                                   <GearSix
@@ -187,7 +187,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className={`h-[20px] w-[20px] ${isActive ? "light:text-[#026AA2] light:hover:text-[#0B4A6F]" : "light:text-[#475569] light:hover:text-[#020617]"} `}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-theme-sidebar-icon-active-color hover:text-theme-sidebar-icon-active-hover" : "text-theme-sidebar-icon-color hover:text-theme-sidebar-icon-hover"}`}
                                   />
                                 </button>
                               </div>

@@ -61,7 +61,7 @@ export default function SearchBox({ user, showNewWsModal }) {
           onChange={handleSearch}
           onReset={handleReset}
           onFocus={(e) => e.target.select()}
-          className="border-none w-full h-full rounded-lg bg-theme-sidebar-item-default light:bg-transparent pl-9 focus:pl-4 pr-1 light:placeholder:text-[#64748B] placeholder:font-semibold outline-none text-white light:text-theme-text-primary search-input peer text-sm"
+          className="border-none w-full h-full rounded-lg bg-theme-sidebar-search-bg pl-9 focus:pl-4 pr-1 placeholder:text-theme-sidebar-search-placeholder placeholder:font-semibold outline-none text-theme-text-primary search-input peer text-sm"
         />
         <MagnifyingGlass
           size={14}
@@ -198,12 +198,12 @@ function ShortWidthNewWorkspaceButton({ user, showNewWsModal }) {
         data-tooltip-id="new-workspace-tooltip"
         data-tooltip-content={t("new-workspace.title")}
         onClick={showNewWsModal}
-        className="border-none flex items-center justify-center bg-white light:bg-transparent rounded-lg p-[8px] hover:bg-white/80 transition-all duration-300"
+        className="border-none flex items-center justify-center bg-theme-sidebar-new-ws-bg rounded-lg p-[8px] hover:bg-white/80 light:hover:bg-transparent transition-all duration-300"
       >
         <Plus
           size={16}
           weight="bold"
-          className="text-black light:text-[#64748B]"
+          className="text-theme-sidebar-new-ws-icon"
         />
       </button>
       <Tooltip

@@ -30,6 +30,21 @@
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
   --theme-sidebar-item-workspace-active: #ffffff;
   --theme-sidebar-item-workspace-inactive: #ffffff;
+  --theme-sidebar-active-text: #ffffff;
+  --theme-sidebar-thread-border-active: #ffffff;
+  --theme-sidebar-thread-border-inactive: #6F6F71;
+  --theme-sidebar-thread-text-inactive: #52525B;
+  --theme-sidebar-new-thread-bg: #27272A;
+  --theme-sidebar-icon-color: #A7A8A9;
+  --theme-sidebar-icon-hover: #ffffff;
+  --theme-sidebar-icon-hover-bg: #646768;
+  --theme-sidebar-icon-active-color: #A7A8A9;
+  --theme-sidebar-icon-active-hover: #ffffff;
+  --theme-sidebar-icon-active-hover-bg: #646768;
+  --theme-sidebar-search-bg: var(--theme-sidebar-item-default);
+  --theme-sidebar-search-placeholder: rgba(255, 255, 255, 0.5);
+  --theme-sidebar-new-ws-bg: #ffffff;
+  --theme-sidebar-new-ws-icon: #000000;
 
   --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
   --theme-sidebar-footer-icon-fill: #ffffff;
@@ -133,6 +148,21 @@
   --theme-sidebar-thread-selected: #b2ddff;
   --theme-sidebar-subitem-hover: #cbd5e1;
   --theme-sidebar-border: #d3d4d4;
+  --theme-sidebar-active-text: #1849A9;
+  --theme-sidebar-thread-border-active: #1E40AF;
+  --theme-sidebar-thread-border-inactive: #94A3B8;
+  --theme-sidebar-thread-text-inactive: #94A3B8;
+  --theme-sidebar-new-thread-bg: #F8FAFC;
+  --theme-sidebar-icon-color: #475569;
+  --theme-sidebar-icon-hover: #020617;
+  --theme-sidebar-icon-hover-bg: #94A3B8;
+  --theme-sidebar-icon-active-color: #026AA2;
+  --theme-sidebar-icon-active-hover: #0B4A6F;
+  --theme-sidebar-icon-active-hover-bg: #0659864D;
+  --theme-sidebar-search-bg: transparent;
+  --theme-sidebar-search-placeholder: #64748B;
+  --theme-sidebar-new-ws-bg: transparent;
+  --theme-sidebar-new-ws-icon: #64748B;
 
   --theme-sidebar-footer-icon: #ffffff;
   --theme-sidebar-footer-icon-fill: #6e6f6f;

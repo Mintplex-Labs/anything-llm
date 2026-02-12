@@ -79,6 +79,29 @@ export default {
               'icon-hover': 'var(--theme-sidebar-footer-icon-hover)',
             },
             border: 'var(--theme-sidebar-border)',
+            'active-text': 'var(--theme-sidebar-active-text)',
+            thread: {
+              'border-active': 'var(--theme-sidebar-thread-border-active)',
+              'border-inactive': 'var(--theme-sidebar-thread-border-inactive)',
+              'text-inactive': 'var(--theme-sidebar-thread-text-inactive)',
+            },
+            'new-thread-bg': 'var(--theme-sidebar-new-thread-bg)',
+            icon: {
+              color: 'var(--theme-sidebar-icon-color)',
+              hover: 'var(--theme-sidebar-icon-hover)',
+              'hover-bg': 'var(--theme-sidebar-icon-hover-bg)',
+              'active-color': 'var(--theme-sidebar-icon-active-color)',
+              'active-hover': 'var(--theme-sidebar-icon-active-hover)',
+              'active-hover-bg': 'var(--theme-sidebar-icon-active-hover-bg)',
+            },
+            search: {
+              bg: 'var(--theme-sidebar-search-bg)',
+              placeholder: 'var(--theme-sidebar-search-placeholder)',
+            },
+            'new-ws': {
+              bg: 'var(--theme-sidebar-new-ws-bg)',
+              icon: 'var(--theme-sidebar-new-ws-icon)',
+            },
           },
           "chat-input": {
             border: 'var(--theme-chat-input-border)',
