@@ -20,6 +20,7 @@ export default function ActiveWorkspaces() {
   const [loading, setLoading] = useState(true);
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
+  const [hoveredWsId, setHoveredWsId] = useState(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
@@ -98,6 +99,8 @@ export default function ActiveWorkspaces() {
                         snapshot.isDragging ? "opacity-50" : ""
                       }`}
                       role="listitem"
+                      onMouseEnter={() => setHoveredWsId(workspace.id)}
+                      onMouseLeave={() => setHoveredWsId(null)}
                     >
                       <div className="flex gap-x-2 items-center justify-between">
                         <a
@@ -123,16 +126,9 @@ export default function ActiveWorkspaces() {
                             >
                               <SquaresFour
                                 size={20}
-                                className={`${isActive ? "text-theme-sidebar-active-text" : "group-hover:hidden"}`}
-                                weight={isActive ? "fill" : "regular"}
+                                className={`${isActive ? "text-theme-sidebar-active-text" : ""}`}
+                                weight={isActive || hoveredWsId === workspace.id || snapshot.isDragging ? "fill" : "regular"}
                               />
-                              {!isActive && (
-                                <SquaresFour
-                                  size={20}
-                                  className="hidden group-hover:block"
-                                  weight="fill"
-                                />
-                              )}
                             </div>
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
                               <div className="w-[130px] overflow-hidden">
