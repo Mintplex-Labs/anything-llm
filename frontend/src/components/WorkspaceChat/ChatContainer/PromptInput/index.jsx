@@ -330,7 +330,7 @@ export default function PromptInput({
                   setShowAgents={setShowAgents}
                 />
                 <TextSizeButton />
-                <LLMSelectorAction />
+                <LLMSelectorAction workspaceSlug={workspaceSlug} />
               </div>
               <div className="flex gap-x-2 items-center h-5">
                 <SpeechToText sendCommand={sendCommand} />
