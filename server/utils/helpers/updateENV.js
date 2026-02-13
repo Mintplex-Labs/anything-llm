@@ -1289,6 +1289,8 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+    // Custom headers for Generic OpenAI
+    "GENERIC_OPEN_AI_CUSTOM_HEADERS",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",

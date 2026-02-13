@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
+const { GenericOpenAiLLM } = require("../../../AiProviders/genericOpenAi");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -23,6 +24,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       maxRetries: 3,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
+        ...GenericOpenAiLLM.parseCustomHeaders(),
       },
     });
 
