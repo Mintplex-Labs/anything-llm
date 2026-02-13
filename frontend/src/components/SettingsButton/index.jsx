@@ -21,9 +21,8 @@ export default function SettingsButton() {
           data-tooltip-content="Back to workspaces"
         >
           <ArrowUUpLeft
-            className="h-5 w-5"
+            className="h-5 w-5 text-white light:text-slate-800"
             weight="fill"
-            color="var(--theme-sidebar-footer-icon-fill)"
           />
         </Link>
       </div>
@@ -39,9 +38,8 @@ export default function SettingsButton() {
         data-tooltip-content="Open settings"
       >
         <Wrench
-          className="h-5 w-5"
+          className="h-5 w-5 text-white light:text-slate-800"
           weight="fill"
-          color="var(--theme-sidebar-footer-icon-fill)"
         />
       </Link>
     </div>
