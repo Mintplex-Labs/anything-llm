@@ -59,8 +59,11 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const suggestedMessages = await Workspace.getSuggestedMessages(ws.slug);
-        setWorkspace({ ...ws, suggestedMessages });
+        const [suggestedMessages, pfpUrl] = await Promise.all([
+          Workspace.getSuggestedMessages(ws.slug),
+          Workspace.fetchPfp(ws.slug),
+        ]);
+        setWorkspace({ ...ws, suggestedMessages, pfpUrl });
       }
       setWorkspaceLoading(false);
     }
@@ -262,9 +265,10 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[750px]">
-            <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+            <h1 className="text-white text-xl md:text-2xl mb-4 text-center">
               {t("main-page.greeting")}
             </h1>
+            {workspace && <WorkspaceIndicator workspace={workspace} />}
             <PromptInput
               submit={handleSubmit}
               isStreaming={loading}
@@ -290,6 +294,21 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           />
         </div>
       </DnDFileUploaderWrapper>
+    </div>
+  );
+}
+
+function WorkspaceIndicator({ workspace }) {
+  return (
+    <div className="flex items-center gap-x-2 mb-7">
+      {workspace.pfpUrl && (
+        <img
+          src={workspace.pfpUrl}
+          alt={workspace.name}
+          className="w-6 h-6 rounded-full"
+        />
+      )}
+      <span className="text-white/60 text-sm">{workspace.name}</span>
     </div>
   );
 }
