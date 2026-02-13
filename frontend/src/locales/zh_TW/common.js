@@ -879,6 +879,7 @@ const TRANSLATIONS = {
       editWorkspace: "編輯工作區",
       uploadDocument: "上傳文件",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "鍵盤快捷鍵",

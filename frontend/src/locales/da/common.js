@@ -947,6 +947,7 @@ const TRANSLATIONS = {
       editWorkspace: "Rediger arbejdsområdet",
       uploadDocument: "Upload en fil",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "Tastaturgenveje",

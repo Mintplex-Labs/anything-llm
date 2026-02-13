@@ -212,6 +212,7 @@ const TRANSLATIONS = {
       editWorkspace: "Rediģēt darba telpu",
       uploadDocument: "August failu",
     },
+    greeting: null,
   },
   "new-workspace": {
     title: "Jauna darba telpa",

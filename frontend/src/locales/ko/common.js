@@ -209,6 +209,7 @@ const TRANSLATIONS = {
       editWorkspace: "워크스페이스 편집",
       uploadDocument: "문서 업로드",
     },
+    greeting: null,
   },
   "new-workspace": {
     title: "새 워크스페이스",

@@ -220,6 +220,7 @@ const TRANSLATIONS = {
       editWorkspace: "Upravit pracovní prostor",
       uploadDocument: "Nahrajte dokument",
     },
+    greeting: null,
   },
   "new-workspace": {
     title: "Nový pracovní prostor",

@@ -942,6 +942,7 @@ const TRANSLATIONS = {
       editWorkspace: "Werkruimte bewerken",
       uploadDocument: "Upload een document",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",

@@ -933,6 +933,7 @@ const TRANSLATIONS = {
       editWorkspace: "ワークスペースの編集",
       uploadDocument: "ドキュメントをアップロードする",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "キーボードショートカット",

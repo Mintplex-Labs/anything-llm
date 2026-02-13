@@ -204,6 +204,7 @@ const TRANSLATIONS = {
       editWorkspace: "编辑工作区",
       uploadDocument: "上传文件",
     },
+    greeting: null,
   },
   "new-workspace": {
     title: "新工作区",

@@ -935,6 +935,7 @@ const TRANSLATIONS = {
       editWorkspace: "Chỉnh sửa không gian làm việc",
       uploadDocument: "Tải lên một tài liệu",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",

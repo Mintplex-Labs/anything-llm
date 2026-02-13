@@ -939,6 +939,7 @@ const TRANSLATIONS = {
       editWorkspace: "Çalışma Alanını Düzenle",
       uploadDocument: "Bir belge yükleyin",
     },
+    greeting: null,
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",

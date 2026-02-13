@@ -208,6 +208,7 @@ const TRANSLATIONS = {
       editWorkspace: "Redige tööruum",
       uploadDocument: "Lae fail üles",
     },
+    greeting: null,
   },
   "new-workspace": {
     title: "Uus tööruum",
