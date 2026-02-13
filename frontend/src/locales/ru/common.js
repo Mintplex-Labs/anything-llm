@@ -951,7 +951,7 @@ const TRANSLATIONS = {
       editWorkspace: "Редактировать рабочее пространство",
       uploadDocument: "Загрузить документ",
     },
-    greeting: null,
+    greeting: "Чем я могу вам помочь сегодня, чтобы облегчить вашу жизнь?",
   },
   "keyboard-shortcuts": {
     title: "Сочетания клавиш",

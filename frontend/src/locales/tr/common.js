@@ -939,7 +939,7 @@ const TRANSLATIONS = {
       editWorkspace: "Çalışma Alanını Düzenle",
       uploadDocument: "Bir belge yükleyin",
     },
-    greeting: null,
+    greeting: "Bugün size nasıl yardımcı olabilirim?",
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",

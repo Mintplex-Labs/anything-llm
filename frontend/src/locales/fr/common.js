@@ -947,7 +947,8 @@ const TRANSLATIONS = {
       editWorkspace: "Modifier l'espace de travail",
       uploadDocument: "Télécharger un document",
     },
-    greeting: null,
+    greeting:
+      "Comment puis-je rendre votre journée plus agréable aujourd'hui ?",
   },
   "keyboard-shortcuts": {
     title: "Raccourcis clavier",

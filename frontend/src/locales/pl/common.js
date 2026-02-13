@@ -214,7 +214,7 @@ const TRANSLATIONS = {
       editWorkspace: "Edytuj przestrzeń roboczą",
       uploadDocument: "Załaduj dokument",
     },
-    greeting: null,
+    greeting: "W czym mogę dzisiaj pomóc, aby ułatwić Pański dzień?",
   },
   "new-workspace": {
     title: "Nowy obszar roboczy",

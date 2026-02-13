@@ -937,7 +937,8 @@ const TRANSLATIONS = {
       editWorkspace: "ویرایش فضای کاری",
       uploadDocument: "بارگذاری یک سند",
     },
-    greeting: null,
+    greeting:
+      "چگونه می‌توانم امروز به شما کمک کنم تا روزتان را آسان‌تر سپری کنید؟",
   },
   "keyboard-shortcuts": {
     title: "کلیدهای میانبر",
