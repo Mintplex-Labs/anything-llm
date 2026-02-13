@@ -7,7 +7,7 @@ import ManageWorkspace, {
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
 import { useParams, useNavigate } from "react-router-dom";
-import { GearSix, UploadSimple, SquaresFour } from "@phosphor-icons/react";
+import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
 import { useMatch } from "react-router-dom";
@@ -124,9 +124,9 @@ export default function ActiveWorkspaces() {
                               {...provided.dragHandleProps}
                               className="cursor-grab mr-[3px]"
                             >
-                              <SquaresFour
-                                size={20}
-                                className={`${isActive ? "text-theme-sidebar-active-text" : ""}`}
+                              <DotsSixVertical
+                                size={18}
+                                className={`${isActive ? "text-white light:text-blue-800" : ""}`}
                                 weight={
                                   isActive ||
                                   hoveredWsId === workspace.id ||
@@ -141,7 +141,7 @@ export default function ActiveWorkspaces() {
                                 <p
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                                  ${isActive ? "font-bold text-theme-sidebar-active-text" : "font-medium group-hover:font-bold"} truncate
+                                  ${isActive ? "font-bold text-white light:text-blue-800" : "font-medium group-hover:font-bold"} truncate
                                   w-full group-hover:w-[130px] group-hover:duration-200
                                 `}
                                 >
@@ -160,10 +160,10 @@ export default function ActiveWorkspaces() {
                                     setSelectedWs(workspace);
                                     showModal();
                                   }}
-                                  className={`border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-theme-sidebar-icon-active-hover-bg" : "hover:bg-theme-sidebar-icon-hover-bg"}`}
+                                  className={`border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                 >
                                   <UploadSimple
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-theme-sidebar-icon-active-color hover:text-theme-sidebar-icon-active-hover" : "text-theme-sidebar-icon-color hover:text-theme-sidebar-icon-hover"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-sky-700 light:hover:text-sky-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:hover:text-slate-950"}`}
                                   />
                                 </button>
                                 <button
@@ -178,7 +178,7 @@ export default function ActiveWorkspaces() {
                                           )
                                     );
                                   }}
-                                  className={`rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-theme-sidebar-icon-active-hover-bg" : "hover:bg-theme-sidebar-icon-hover-bg"}`}
+                                  className={`rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                   aria-label="General appearance settings"
                                 >
                                   <GearSix
@@ -188,7 +188,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-theme-sidebar-icon-active-color hover:text-theme-sidebar-icon-active-hover" : "text-theme-sidebar-icon-color hover:text-theme-sidebar-icon-hover"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-sky-700 light:hover:text-sky-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:hover:text-slate-950"}`}
                                   />
                                 </button>
                               </div>
