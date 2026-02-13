@@ -139,6 +139,7 @@ const TRANSLATIONS = {
   },
 
   "main-page": {
+    greeting: "How may I make your day easier today?",
     noWorkspaceError: "Please create a workspace before starting a chat.",
     checklist: {
       title: "Getting Started",

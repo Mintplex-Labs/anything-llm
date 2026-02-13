@@ -349,7 +349,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           >
             {isEmpty ? (
               <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                {t("home.greeting", "How may I make your day easier today?")}
+                {t("main-page.greeting")}
               </h1>
             ) : (
               <MetricsProvider>
