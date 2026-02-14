@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import useUser from "@/hooks/useUser";
 
 /**
  * Quick action buttons for home and empty workspace states.
@@ -13,17 +14,23 @@ export default function QuickActions({
   onUploadDocument,
 }) {
   const { t } = useTranslation();
+  const { user } = useUser();
+  const role = user?.role ?? "admin";
 
   return (
     <div className="flex flex-wrap justify-center gap-2 mt-6">
-      <QuickActionButton
-        label={t("main-page.quickActions.createAgent")}
-        onClick={onCreateAgent}
-      />
-      <QuickActionButton
-        label={t("main-page.quickActions.editWorkspace")}
-        onClick={onEditWorkspace}
-      />
+      {role === "admin" && (
+        <QuickActionButton
+          label={t("main-page.quickActions.createAgent")}
+          onClick={onCreateAgent}
+        />
+      )}
+      {role !== "default" && (
+        <QuickActionButton
+          label={t("main-page.quickActions.editWorkspace")}
+          onClick={onEditWorkspace}
+        />
+      )}
       <QuickActionButton
         label={t("main-page.quickActions.uploadDocument")}
         onClick={onUploadDocument}

@@ -49,6 +49,7 @@ async function createDefaultWorkspace() {
 }
 
 export default function Home() {
+  const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [threadSlug, setThreadSlug] = useState(null);
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
@@ -131,6 +132,10 @@ export default function Home() {
     );
   }
 
+  if (!workspace && user?.role === "default") {
+    return <NoWorkspacesAssigned />;
+  }
+
   if (workspace && threadSlug) {
     return (
       <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
@@ -170,7 +175,6 @@ export default function Home() {
 function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
@@ -278,15 +282,13 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
-            {(!user || user.role !== "default") && (
-              <QuickActions
-                onCreateAgent={() => navigate(paths.settings.agentSkills())}
-                onEditWorkspace={handleEditWorkspace}
-                onUploadDocument={() =>
-                  document.getElementById("dnd-chat-file-uploader")?.click()
-                }
-              />
-            )}
+            <QuickActions
+              onCreateAgent={() => navigate(paths.settings.agentSkills())}
+              onEditWorkspace={handleEditWorkspace}
+              onUploadDocument={() =>
+                document.getElementById("dnd-chat-file-uploader")?.click()
+              }
+            />
           </div>
           <SuggestedMessages
             suggestedMessages={workspace?.suggestedMessages}
@@ -294,6 +296,22 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           />
         </div>
       </DnDFileUploaderWrapper>
+    </div>
+  );
+}
+
+function NoWorkspacesAssigned() {
+  const { t } = useTranslation();
+  return (
+    <div
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+    >
+      <div className="flex flex-col h-full w-full items-center justify-center">
+        <p className="text-white/60 text-sm text-center whitespace-pre-line">
+          {t("home.notAssigned")}
+        </p>
+      </div>
     </div>
   );
 }
