@@ -139,6 +139,7 @@ const TRANSLATIONS = {
   },
 
   "main-page": {
+    greeting: "How may I make your day easier today?",
     noWorkspaceError: "Please create a workspace before starting a chat.",
     checklist: {
       title: "Getting Started",
@@ -177,6 +178,11 @@ const TRANSLATIONS = {
           action: "Browse",
         },
       },
+    },
+    quickActions: {
+      createAgent: "Create an Agent",
+      editWorkspace: "Edit Workspace",
+      uploadDocument: "Upload a Document",
     },
     quickLinks: {
       title: "Quick Links",

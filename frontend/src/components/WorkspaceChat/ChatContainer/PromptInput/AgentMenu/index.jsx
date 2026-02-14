@@ -16,13 +16,13 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
       data-tooltip-content={t("chat_window.agents")}
       aria-label={t("chat_window.agents")}
       onClick={() => setShowAgents(!showing)}
-      className={`flex justify-center items-center cursor-pointer ${
+      className={`flex justify-center items-center cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ${
         showing ? "!opacity-100" : ""
       }`}
     >
       <At
         color="var(--theme-sidebar-footer-icon-fill)"
-        className={`w-[22px] h-[22px] pointer-events-none text-theme-text-primary opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
+        className="w-[20px] h-[20px] pointer-events-none text-theme-text-primary"
       />
       <Tooltip
         id="tooltip-agent-list-btn"
@@ -47,6 +47,7 @@ export function AvailableAgents({
   setShowing,
   sendCommand,
   promptRef,
+  centered = false,
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
@@ -88,7 +89,13 @@ export function AvailableAgents({
   return (
     <>
       <div hidden={!showing}>
-        <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
+        <div
+          className={
+            centered
+              ? "w-full flex justify-center absolute bottom-full mb-2 left-0 z-10 px-4"
+              : "w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4"
+          }
+        >
           <div
             ref={formRef}
             className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
