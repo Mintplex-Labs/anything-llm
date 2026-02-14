@@ -199,6 +199,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "键盘快捷键",
     },
+    quickActions: {
+      createAgent: "创建代理",
+      editWorkspace: "编辑工作区",
+      uploadDocument: "上传文件",
+    },
+    greeting: "我今天能为您做些什么来让您的生活更轻松呢？",
   },
   "new-workspace": {
     title: "新工作区",

@@ -207,6 +207,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Taustiņu atvieglojumi",
     },
+    quickActions: {
+      createAgent: "Izveidot aģentu",
+      editWorkspace: "Rediģēt darba telpu",
+      uploadDocument: "August failu",
+    },
+    greeting: "Kā es varu jums šodien palīdzēt, lai jūsu diena būtu vieglāka?",
   },
   "new-workspace": {
     title: "Jauna darba telpa",

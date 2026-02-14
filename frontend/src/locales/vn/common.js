@@ -930,6 +930,13 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Phím tắt",
     },
+    quickActions: {
+      createAgent: "Tạo một đại lý",
+      editWorkspace: "Chỉnh sửa không gian làm việc",
+      uploadDocument: "Tải lên một tài liệu",
+    },
+    greeting:
+      "Tôi có thể giúp gì cho bạn để buổi hôm nay của bạn trở nên dễ dàng hơn?",
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",
