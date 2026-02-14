@@ -12,8 +12,9 @@ export const TOGGLE_LLM_SELECTOR_EVENT = "toggle_llm_selector";
 export const SAVE_LLM_SELECTOR_EVENT = "save_llm_selector";
 export const PROVIDER_SETUP_EVENT = "provider_setup_requested";
 
-export default function LLMSelectorAction() {
-  const { slug } = useParams();
+export default function LLMSelectorAction({ workspaceSlug = null }) {
+  const { slug: urlSlug } = useParams();
+  const slug = urlSlug ?? workspaceSlug;
   const tooltipRef = useRef(null);
   const { theme } = useTheme();
   const { user } = useUser();
@@ -120,7 +121,7 @@ export default function LLMSelectorAction() {
         }
         className="z-99 !w-[500px] !bg-theme-bg-primary !px-[5px] !rounded-lg !pointer-events-auto light:border-2 light:border-theme-modal-border"
       >
-        <LLMSelectorModal tooltipRef={tooltipRef} />
+        <LLMSelectorModal tooltipRef={tooltipRef} workspaceSlug={slug} />
       </Tooltip>
       <SetupProvider
         isOpen={isSetupProviderOpen}

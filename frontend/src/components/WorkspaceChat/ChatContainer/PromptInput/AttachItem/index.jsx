@@ -132,6 +132,8 @@ export default function AttachItem({
             currentTokens={currentTokens}
             setCurrentTokens={setCurrentTokens}
             contextWindow={contextWindow}
+            workspaceSlug={slug}
+            threadSlug={threadSlug}
           />
         </Tooltip>
       )}

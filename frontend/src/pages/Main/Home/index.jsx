@@ -49,6 +49,7 @@ async function createDefaultWorkspace() {
 }
 
 export default function Home() {
+  const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [threadSlug, setThreadSlug] = useState(null);
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
@@ -59,8 +60,11 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const suggestedMessages = await Workspace.getSuggestedMessages(ws.slug);
-        setWorkspace({ ...ws, suggestedMessages });
+        const [suggestedMessages, pfpUrl] = await Promise.all([
+          Workspace.getSuggestedMessages(ws.slug),
+          Workspace.fetchPfp(ws.slug),
+        ]);
+        setWorkspace({ ...ws, suggestedMessages, pfpUrl });
       }
       setWorkspaceLoading(false);
     }
@@ -128,6 +132,10 @@ export default function Home() {
     );
   }
 
+  if (!workspace && user?.role === "default") {
+    return <NoWorkspacesAssigned />;
+  }
+
   if (workspace && threadSlug) {
     return (
       <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
@@ -167,7 +175,6 @@ export default function Home() {
 function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
@@ -262,9 +269,10 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[750px]">
-            <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+            <h1 className="text-white text-xl md:text-2xl mb-4 text-center">
               {t("main-page.greeting")}
             </h1>
+            {workspace && <WorkspaceIndicator workspace={workspace} />}
             <PromptInput
               submit={handleSubmit}
               isStreaming={loading}
@@ -274,15 +282,13 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
-            {(!user || user.role !== "default") && (
-              <QuickActions
-                onCreateAgent={() => navigate(paths.settings.agentSkills())}
-                onEditWorkspace={handleEditWorkspace}
-                onUploadDocument={() =>
-                  document.getElementById("dnd-chat-file-uploader")?.click()
-                }
-              />
-            )}
+            <QuickActions
+              onCreateAgent={() => navigate(paths.settings.agentSkills())}
+              onEditWorkspace={handleEditWorkspace}
+              onUploadDocument={() =>
+                document.getElementById("dnd-chat-file-uploader")?.click()
+              }
+            />
           </div>
           <SuggestedMessages
             suggestedMessages={workspace?.suggestedMessages}
@@ -290,6 +296,37 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           />
         </div>
       </DnDFileUploaderWrapper>
+    </div>
+  );
+}
+
+function NoWorkspacesAssigned() {
+  const { t } = useTranslation();
+  return (
+    <div
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+    >
+      <div className="flex flex-col h-full w-full items-center justify-center">
+        <p className="text-white/60 text-sm text-center whitespace-pre-line">
+          {t("home.notAssigned")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WorkspaceIndicator({ workspace }) {
+  return (
+    <div className="flex items-center gap-x-2 mb-7">
+      {workspace.pfpUrl && (
+        <img
+          src={workspace.pfpUrl}
+          alt={workspace.name}
+          className="w-6 h-6 rounded-full"
+        />
+      )}
+      <span className="text-white/60 text-sm">{workspace.name}</span>
     </div>
   );
 }
