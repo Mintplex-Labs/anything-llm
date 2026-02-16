@@ -55,7 +55,7 @@ function workspaceEndpoints(app) {
           "workspace_created",
           {
             multiUserMode: multiUserMode(response),
-            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            LLMSelection: process.env.LLM_PROVIDER || "lis",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
             TTSSelection: process.env.TTS_PROVIDER || "native",

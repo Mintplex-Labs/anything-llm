@@ -614,6 +614,19 @@ const System = {
         return { models: [], error: e.message };
       });
   },
+
+  checkLisConnection: async function (basePath = null, apiKey = null) {
+    return fetch(`${API_BASE}/system/lis-connection`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ basePath, apiKey }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { connected: false, error: e.message };
+      });
+  },
   chats: async (offset = 0) => {
     return await fetch(`${API_BASE}/system/workspace-chats`, {
       method: "POST",

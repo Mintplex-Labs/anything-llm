@@ -234,6 +234,28 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // LIS (Local Inference Service) - TensorNext Hermes
+  LisBasePath: {
+    envKey: "LIS_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LisAuthToken: {
+    envKey: "LIS_AUTH_TOKEN",
+    checks: [isNotEmpty],
+  },
+  LisModelPref: {
+    envKey: "LIS_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LisTokenLimit: {
+    envKey: "LIS_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+  LisMaxTokens: {
+    envKey: "LIS_MAX_TOKENS",
+    checks: [],
+  },
+
   // AWS Bedrock LLM InferenceSettings
   AwsBedrockLLMConnectionMethod: {
     envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
@@ -943,6 +965,7 @@ function supportedLLM(input = "") {
     "docker-model-runner",
     "privatemode",
     "sambanova",
+    "lis",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

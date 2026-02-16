@@ -71,7 +71,7 @@ function chatEndpoints(app) {
         );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          LLMSelection: process.env.LLM_PROVIDER || "lis",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,
@@ -176,7 +176,7 @@ function chatEndpoints(app) {
 
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          LLMSelection: process.env.LLM_PROVIDER || "lis",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,

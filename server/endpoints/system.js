@@ -1104,6 +1104,47 @@ function systemEndpoints(app) {
   );
 
   app.post(
+    "/system/lis-connection",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { basePath = null, apiKey = null } = reqBody(request);
+        const path = basePath || process.env.LIS_BASE_PATH;
+        const token = apiKey || process.env.LIS_AUTH_TOKEN;
+        if (!path || !token) {
+          return response.status(200).json({
+            connected: false,
+            error: "LIS base path and auth token are required",
+          });
+        }
+        const base = path.replace(/\/$/, "");
+        const res = await fetch(`${base}/health`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const body = await res.json().catch(() => ({}));
+          const ok = body && body.status === "ok";
+          return response.status(200).json({
+            connected: !!ok,
+            error: ok ? null : "LIS health did not return status ok",
+          });
+        }
+        const text = await res.text();
+        return response.status(200).json({
+          connected: false,
+          error: `LIS returned ${res.status}: ${text.slice(0, 200)}`,
+        });
+      } catch (error) {
+        return response.status(200).json({
+          connected: false,
+          error: error.message || "Connection check failed",
+        });
+      }
+    }
+  );
+
+  app.post(
     "/system/event-logs",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {

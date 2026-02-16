@@ -47,6 +47,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "lis",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -126,8 +127,54 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
+    case "lis":
+      return await getLisModels(basePath, apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
+  }
+}
+
+/**
+ * Fetches available models from LIS (Hermes). Uses basePath and apiKey from args,
+ * or falls back to LIS_BASE_PATH and LIS_AUTH_TOKEN from env when not provided.
+ * LIS returns OpenAI-style { object, data: [{ id, object, created, owned_by }] }.
+ */
+async function getLisModels(basePath = null, apiKey = null) {
+  const path = basePath || process.env.LIS_BASE_PATH;
+  const token = apiKey || process.env.LIS_AUTH_TOKEN;
+  if (!path || !token) {
+    return {
+      models: [],
+      error: "LIS base path and auth token are required (or set LIS_BASE_PATH and LIS_AUTH_TOKEN)",
+    };
+  }
+  const base = path.replace(/\/$/, "");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  try {
+    const modelsRes = await fetch(`${base}/v1/models`, { headers });
+    if (!modelsRes.ok) {
+      const text = await modelsRes.text();
+      return {
+        models: [],
+        error: `LIS /v1/models returned ${modelsRes.status}: ${text.slice(0, 200)}`,
+      };
+    }
+    const json = await modelsRes.json();
+    const data = json.data || [];
+    const models = data.map((m) => ({
+      id: m.id || m.name,
+      name: m.name || m.id,
+      object: m.object || "model",
+      created: m.created,
+      owned_by: m.owned_by || "tensornext",
+    }));
+    return { models, error: null };
+  } catch (e) {
+    console.error("LIS:listModels", e.message);
+    return { models: [], error: e.message };
   }
 }
 

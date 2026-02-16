@@ -151,7 +151,7 @@ function apiOpenAICompatibleEndpoints(app) {
 
           await Telemetry.sendTelemetry("sent_chat", {
             LLMSelection:
-              workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "openai",
+              workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "lis",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
             TTSSelection: process.env.TTS_PROVIDER || "native",
@@ -179,7 +179,7 @@ function apiOpenAICompatibleEndpoints(app) {
           response,
         });
         await Telemetry.sendTelemetry("sent_chat", {
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          LLMSelection: process.env.LLM_PROVIDER || "lis",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",

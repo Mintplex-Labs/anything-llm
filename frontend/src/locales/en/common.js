@@ -575,6 +575,26 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    saved: "LLM preferences saved successfully.",
+    saving: "Saving...",
+    saveChanges: "Save changes",
+    lis: {
+      description:
+        "Connect to the Local Inference Service (LIS) to use models from the TensorNext ecosystem.",
+      connection: "LIS connection",
+      url: "LIS URL",
+      authToken: "LIS Auth Token",
+      checkConnection: "Check connection",
+      checking: "Checking...",
+      connected: "LIS connected",
+      notConnected: "Not connected",
+      urlAndTokenRequired: "LIS URL and Auth Token are required",
+      model: "Model",
+      modelDescription: "Select a model from the LIS ecosystem",
+      loadingModels: "Loading models...",
+      checkConnectionFirst: "Check connection first",
+      selectModel: "Select model",
+    },
     providers: {
       azure_openai: {
         azure_service_endpoint: "Azure Service Endpoint",

@@ -7,6 +7,7 @@ import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
 
 const ENABLED_PROVIDERS = [
+  "lis",
   "openai",
   "anthropic",
   "lmstudio",
@@ -40,8 +41,6 @@ const ENABLED_PROVIDERS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
-  // TODO: More agent support.
-  // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",

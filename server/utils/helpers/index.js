@@ -129,7 +129,7 @@ function getVectorDbClass(getExactly = null) {
  * @returns {BaseLLMProvider}
  */
 function getLLMProvider({ provider = null, model = null } = {}) {
-  const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
+  const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "lis";
   const embedder = getEmbeddingEngineSelection();
 
   switch (LLMSelection) {
@@ -190,6 +190,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);
+    case "lis":
+      const { LisLLM } = require("../AiProviders/lis");
+      return new LisLLM(embedder, model);
     case "bedrock":
       const { AWSBedrockLLM } = require("../AiProviders/bedrock");
       return new AWSBedrockLLM(embedder, model);
@@ -366,6 +369,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return GenericOpenAiLLM;
+    case "lis":
+      const { LisLLM } = require("../AiProviders/lis");
+      return LisLLM;
     case "bedrock":
       const { AWSBedrockLLM } = require("../AiProviders/bedrock");
       return AWSBedrockLLM;
@@ -466,6 +472,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.LITE_LLM_MODEL_PREF;
     case "generic-openai":
       return process.env.GENERIC_OPEN_AI_MODEL_PREF;
+    case "lis":
+      return process.env.LIS_MODEL_PREF;
     case "bedrock":
       return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
     case "deepseek":
