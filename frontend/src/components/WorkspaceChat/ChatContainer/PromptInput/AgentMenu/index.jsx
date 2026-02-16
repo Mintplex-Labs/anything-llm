@@ -92,13 +92,13 @@ export function AvailableAgents({
         <div
           className={
             centered
-              ? "w-full flex justify-center absolute bottom-full mb-2 left-0 z-10 px-4"
-              : "w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4"
+              ? "w-full flex justify-center md:justify-start absolute top-full mt-2 left-0 z-10 px-4 md:px-0 md:pl-[57px]"
+              : "flex justify-center md:justify-start absolute bottom-[130px] md:bottom-[150px] left-0 right-0 z-10 max-w-[750px] mx-auto px-4 md:px-0 md:pl-[57px]"
           }
         >
           <div
             ref={formRef}
-            className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
+            className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex overflow-y-auto max-h-[200px] no-scroll"
           >
             <button
               onClick={handleAgentClick}
