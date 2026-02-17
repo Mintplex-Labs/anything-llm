@@ -197,12 +197,13 @@ export default memo(
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-4 mt-4">
       {attachments.map((item) => (
         <img
+          alt={`Attachment: ${item.name}`}
           key={item.name}
           src={item.contentString}
-          className="max-w-[300px] rounded-md"
+          className="w-[120px] h-[120px] object-cover rounded-lg"
         />
       ))}
     </div>
