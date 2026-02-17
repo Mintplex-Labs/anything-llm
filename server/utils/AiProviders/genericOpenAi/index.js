@@ -25,6 +25,7 @@ class GenericOpenAiLLM {
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
+        ...GenericOpenAiLLM.parseCustomHeaders(),
       },
     });
     this.model =
@@ -47,6 +48,31 @@ class GenericOpenAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Parses custom headers from a CSV-formatted environment variable.
+   * Format: "Header-Name:value,Another-Header:value2"
+   * @returns {Object} Object with header key-value pairs
+   */
+  static parseCustomHeaders() {
+    const customHeadersEnv = process.env.GENERIC_OPEN_AI_CUSTOM_HEADERS;
+    if (!customHeadersEnv) return {};
+
+    const headers = {};
+    const pairs = customHeadersEnv.split(",");
+
+    for (const pair of pairs) {
+      const colonIndex = pair.indexOf(":"); // only split on first colon for key/value separation
+      if (colonIndex === -1) continue;
+
+      const key = pair.substring(0, colonIndex).trim();
+      const value = pair.substring(colonIndex + 1).trim();
+
+      if (key && value) headers[key] = value;
+    }
+
+    return headers;
   }
 
   #appendContext(contextTexts = []) {
