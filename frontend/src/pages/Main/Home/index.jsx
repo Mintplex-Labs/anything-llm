@@ -269,10 +269,9 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[750px]">
-            <h1 className="text-white text-xl md:text-2xl mb-4 text-center">
+            <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
               {t("main-page.greeting")}
             </h1>
-            {workspace && <WorkspaceIndicator workspace={workspace} />}
             <PromptInput
               submit={handleSubmit}
               isStreaming={loading}
@@ -312,21 +311,6 @@ function NoWorkspacesAssigned() {
           {t("home.notAssigned")}
         </p>
       </div>
-    </div>
-  );
-}
-
-function WorkspaceIndicator({ workspace }) {
-  return (
-    <div className="flex items-center gap-x-2 mb-7">
-      {workspace.pfpUrl && (
-        <img
-          src={workspace.pfpUrl}
-          alt={workspace.name}
-          className="w-6 h-6 rounded-full"
-        />
-      )}
-      <span className="text-white/60 text-sm">{workspace.name}</span>
     </div>
   );
 }
