@@ -24,7 +24,7 @@ export default function StatusResponse({ messages = [], isThinking = false }) {
               transition: "all 0.1s ease-in-out",
               borderRadius: "16px",
             }}
-            className={`${!previousThoughts?.length ? "" : `${previousThoughts?.length ? "hover:bg-theme-sidebar-item-hover" : ""}`} relative bg-theme-bg-chat-input p-4`}
+            className="relative bg-zinc-800 light:bg-slate-100 p-4"
           >
             <div className="absolute top-4 left-4 w-[18px] h-[18px]">
               {isThinking ? (
@@ -54,7 +54,7 @@ export default function StatusResponse({ messages = [], isThinking = false }) {
             {previousThoughts?.length > 0 && (
               <button
                 onClick={handleExpandClick}
-                className="absolute top-4 right-4 border-none text-theme-text-secondary hover:text-theme-text-primary transition-colors"
+                className="absolute top-4 right-4 border-none text-white light:text-slate-800 transition-colors"
                 data-tooltip-id="expand-cot"
                 data-tooltip-content={
                   isExpanded ? "Hide thought chain" : "Show thought chain"
@@ -71,7 +71,7 @@ export default function StatusResponse({ messages = [], isThinking = false }) {
             <div
               className={`ml-[28px] mr-[26px] transition-[max-height] duration-300 ease-in-out origin-top ${isExpanded ? "" : "overflow-hidden max-h-[18px]"}`}
             >
-              <div className="text-theme-text-secondary font-mono text-sm leading-[18px]">
+              <div className="text-white light:text-slate-800 font-mono text-sm leading-[18px]">
                 {!isExpanded ? (
                   <span className="block w-full truncate">
                     {currentThought.content}
