@@ -1,5 +1,5 @@
 import { REFETCH_LOGO_EVENT } from "@/LogoContext";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const availableThemes = {
   system: "System",
@@ -7,16 +7,10 @@ const availableThemes = {
   dark: "Dark",
 };
 
-function getSystemResolvedTheme() {
-  if (!window.matchMedia) return "default";
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "default";
-}
-
 /**
- * Determines the current theme of the application
- * @returns {{theme: ('system' | 'light' | 'dark'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
+ * Determines the current theme of the application.
+ * "system" follows the OS preference, "light" and "dark" force that mode.
+ * @returns {{theme: ('system' | 'light' | 'dark'), setTheme: function, availableThemes: object}}
  */
 export function useTheme() {
   const [theme, _setTheme] = useState(() => {
@@ -25,23 +19,22 @@ export function useTheme() {
     return stored || "system";
   });
 
-  const [systemTheme, setSystemTheme] = useState(getSystemResolvedTheme);
+  const [systemTheme, setSystemTheme] = useState(() =>
+    window.matchMedia?.("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark"
+  );
 
-  // Listen for OS theme changes
+  // Listen for OS level theme changes
   useEffect(() => {
     if (!window.matchMedia) return;
     const mql = window.matchMedia("(prefers-color-scheme: light)");
-    const handler = (e) => setSystemTheme(e.matches ? "light" : "default");
+    const handler = (e) => setSystemTheme(e.matches ? "light" : "dark");
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
 
-  // Resolve to the CSS data-theme value: "default" (dark) or "light"
-  const resolvedTheme = useMemo(() => {
-    if (theme === "system") return systemTheme;
-    if (theme === "light") return "light";
-    return "default"; // dark
-  }, [theme, systemTheme]);
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", resolvedTheme);
@@ -56,18 +49,13 @@ export function useTheme() {
     function toggleOnKeybind(e) {
       if (e.metaKey && e.key === ".") {
         e.preventDefault();
-        setTheme((prev) => (prev === "light" ? "dark" : "light"));
+        _setTheme((prev) => (prev === "light" ? "dark" : "light"));
       }
     }
     document.addEventListener("keydown", toggleOnKeybind);
     return () => document.removeEventListener("keydown", toggleOnKeybind);
   }, []);
 
-  /**
-   * Sets the theme of the application and runs any
-   * other necessary side effects
-   * @param {string} newTheme The new theme to set
-   */
   function setTheme(newTheme) {
     _setTheme(newTheme);
   }
