@@ -25,6 +25,7 @@ class GenericOpenAiLLM {
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
+        ...GenericOpenAiLLM.parseCustomHeaders(),
       },
     });
     this.model =
@@ -47,6 +48,31 @@ class GenericOpenAiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Parses custom headers from a CSV-formatted environment variable.
+   * Format: "Header-Name:value,Another-Header:value2"
+   * @returns {Object} Object with header key-value pairs
+   */
+  static parseCustomHeaders() {
+    const customHeadersEnv = process.env.GENERIC_OPEN_AI_CUSTOM_HEADERS;
+    if (!customHeadersEnv) return {};
+
+    const headers = {};
+    const pairs = customHeadersEnv.split(",");
+
+    for (const pair of pairs) {
+      const colonIndex = pair.indexOf(":"); // only split on first colon for key/value separation
+      if (colonIndex === -1) continue;
+
+      const key = pair.substring(0, colonIndex).trim();
+      const value = pair.substring(colonIndex + 1).trim();
+
+      if (key && value) headers[key] = value;
+    }
+
+    return headers;
   }
 
   #appendContext(contextTexts = []) {
@@ -150,6 +176,23 @@ class GenericOpenAiLLM {
   }
 
   /**
+   * Extracts accurate generation-only timing and token count from a llama.cpp
+   * response or streaming chunk. Mutates the provided usage object in place
+   * so it can be used by both streaming and non-streaming code paths.
+   * @param {Object} response - the API response or final streaming chunk
+   * @param {Object} usage - the usage object to mutate
+   */
+  #extractLlamaCppTimings(response, usage) {
+    if (!response || !response.timings) return;
+
+    if (response.timings.hasOwnProperty("predicted_n"))
+      usage.completion_tokens = Number(response.timings.predicted_n);
+
+    if (response.timings.hasOwnProperty("predicted_ms"))
+      usage.duration = Number(response.timings.predicted_ms) / 1000;
+  }
+
+  /**
    * Parses and prepends reasoning from the response and returns the full text response.
    * @param {Object} response
    * @returns {string}
@@ -184,16 +227,21 @@ class GenericOpenAiLLM {
     )
       return null;
 
+    const usage = {
+      prompt_tokens: result.output?.usage?.prompt_tokens || 0,
+      completion_tokens: result.output?.usage?.completion_tokens || 0,
+      total_tokens: result.output?.usage?.total_tokens || 0,
+      duration: result.duration,
+    };
+    this.#extractLlamaCppTimings(result.output, usage);
+
     return {
       textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
-        prompt_tokens: result.output?.usage?.prompt_tokens || 0,
-        completion_tokens: result.output?.usage?.completion_tokens || 0,
-        total_tokens: result.output?.usage?.total_tokens || 0,
-        outputTps:
-          (result.output?.usage?.completion_tokens || 0) / result.duration,
-        duration: result.duration,
+        ...usage,
+        outputTps: usage.completion_tokens / usage.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -209,9 +257,9 @@ class GenericOpenAiLLM {
         max_tokens: this.maxTokens,
       }),
       messages,
-      // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }
@@ -331,6 +379,8 @@ class GenericOpenAiLLM {
               close: true,
               error: false,
             });
+            this.#extractLlamaCppTimings(chunk, usage);
+
             response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);
             resolve(fullText);

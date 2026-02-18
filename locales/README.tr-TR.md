@@ -32,7 +32,6 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
   <b>English</b> · <a href='./locales/README.zh-CN.md'>简体中文</a> · <a href='./locales/README.ja-JP.md'>日本語</a> · <a href='./locales/README.tr-TR.md'>Turkish</a>
 </p>
 
-
 <p align="center">
 👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>
 </p>
@@ -87,7 +86,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
-- [Fireworks AI  (chat models)](https://fireworks.ai/)
+- [Fireworks AI (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
@@ -103,6 +102,8 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+- [PrivateModeAI (chat models)](https://privatemode.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 
 **Embedder modelleri:**
 
@@ -161,8 +162,8 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway  |  RepoCloud | Elestio |
-| --- | --- | --- |
+| Railway                                             | RepoCloud                                                 | Elestio                                             |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
 [veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)
@@ -214,10 +215,9 @@ Yalnızca ürün ve yol haritası kararlarını almamıza yardımcı olacak kull
 
 Bu verileri doğrulamak için kod içinde **`Telemetry.sendTelemetry` çağrılarını** inceleyebilirsiniz. Ayrıca, bu olaylar günlük kaydına yazıldığı için hangi verilerin gönderildiğini görebilirsiniz (eğer etkinleştirilmişse). **IP adresi veya diğer tanımlayıcı bilgiler toplanmaz.** Telemetri sağlayıcısı, açık kaynaklı bir telemetri toplama hizmeti olan [PostHog](https://posthog.com/)‘dur.
 
-[Kaynak kodda tüm telemetri olaylarını görüntüle](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[Kaynak kodda tüm telemetri olaylarını görüntüle](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
 </details>
-
 
 ## 👋 Katkıda Bulunma
 

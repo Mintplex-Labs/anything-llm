@@ -58,7 +58,7 @@ const AgentFlows = {
       headers: baseHeaders(),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(response.error || "Failed to get flow");
+        if (!res.ok) throw new Error(res.error || "Failed to get flow");
         return res;
       })
       .then((res) => res.json())
@@ -107,7 +107,7 @@ const AgentFlows = {
       headers: baseHeaders(),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(response.error || "Failed to delete flow");
+        if (!res.ok) throw new Error(res.error || "Failed to delete flow");
         return res;
       })
       .then((res) => res.json())

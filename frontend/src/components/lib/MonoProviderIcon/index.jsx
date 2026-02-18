@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 // https://lobehub.com/icons for all the icons
 import OpenAI from "@lobehub/icons/es/OpenAI/components/Mono";
 import Anthropic from "@lobehub/icons/es/Anthropic/components/Mono";
@@ -16,6 +17,7 @@ import IBM from "@lobehub/icons/es/IBM/components/Mono";
 import Bytedance from "@lobehub/icons/es/ByteDance/components/Mono";
 import Kimi from "@lobehub/icons/es/Kimi/components/Mono";
 import Snowflake from "@lobehub/icons/es/Snowflake/components/Mono";
+import Liquid from "@lobehub/icons/es/Liquid/components/Mono";
 
 // Direct provider key -> icon mapping for exact matches
 const providerIcons = {
@@ -36,6 +38,7 @@ const providerIcons = {
   ibm: IBM,
   bytedance: Bytedance,
   kimi: Kimi,
+  liquid: Liquid,
 };
 
 // Pattern matching rules: regex pattern -> icon component
@@ -63,6 +66,7 @@ const modelPatterns = [
   { pattern: /^seed/i, icon: Bytedance },
   { pattern: /^kimi/i, icon: Kimi },
   { pattern: /^snowflake/i, icon: Snowflake },
+  { pattern: /^lfm/i, icon: Liquid },
 ];
 
 /**

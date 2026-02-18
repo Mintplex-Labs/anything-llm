@@ -115,7 +115,7 @@ const HistoricalMessage = ({
               <RenderChatContent
                 role={role}
                 message={message}
-                expanded={isLastMessage}
+                messageId={uuid}
               />
               {isRefusalMessage && (
                 <Link
@@ -212,7 +212,7 @@ function ChatAttachments({ attachments = [] }) {
 }
 
 const RenderChatContent = memo(
-  ({ role, message, expanded = false }) => {
+  ({ role, message, messageId }) => {
     // If the message is not from the assistant, we can render it directly
     // as normal since the user cannot think (lol)
     if (role !== "assistant")
@@ -240,18 +240,16 @@ const RenderChatContent = memo(
     // This can occur when the assistant starts with <thinking> and then <response>'s later.
     if (
       message.match(THOUGHT_REGEX_OPEN) &&
-      message.match(THOUGHT_REGEX_CLOSE)
+      !message.match(THOUGHT_REGEX_CLOSE)
     ) {
-      const closingTag = message.match(THOUGHT_REGEX_CLOSE)?.[0];
-      const splitMessage = message.split(closingTag);
-      thoughtChain = splitMessage[0] + closingTag;
-      msgToRender = splitMessage[1];
+      thoughtChain = message;
+      msgToRender = "";
     }
 
     return (
       <>
         {thoughtChain && (
-          <ThoughtChainComponent content={thoughtChain} expanded={expanded} />
+          <ThoughtChainComponent content={thoughtChain} messageId={messageId} />
         )}
         <span
           className="flex flex-col gap-y-1"
@@ -266,7 +264,7 @@ const RenderChatContent = memo(
     return (
       prevProps.role === nextProps.role &&
       prevProps.message === nextProps.message &&
-      prevProps.expanded === nextProps.expanded
+      prevProps.messageId === nextProps.messageId
     );
   }
 );

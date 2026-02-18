@@ -11,6 +11,7 @@ import {
   BracketsCurly,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import Toggle from "@/components/lib/Toggle";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
 import WebsiteNode from "../nodes/WebsiteNode";
@@ -172,32 +173,20 @@ export default function BlockList({
       return (
         <div className="space-y-4">
           {renderBlockConfigContent(block, props)}
-          <div className="flex justify-between items-center pt-4 border-t border-white/10">
-            <div>
-              <label className="block text-sm font-medium text-theme-text-primary">
-                Direct Output
-              </label>
-              <p className="text-xs text-theme-text-secondary">
-                The output of this block will be returned directly to the chat.
-                <br />
-                This will prevent any further tool calls from being executed.
-              </p>
-            </div>
-            <label className="relative inline-flex cursor-pointer items-center">
-              <input
-                type="checkbox"
-                checked={props.config.directOutput || false}
-                onChange={(e) =>
-                  props.onConfigChange({
-                    ...props.config,
-                    directOutput: e.target.checked,
-                  })
-                }
-                className="peer sr-only"
-                aria-label="Toggle direct output"
-              />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-            </label>
+          <div className="pt-4 border-t border-white/10">
+            <Toggle
+              size="md"
+              variant="horizontal"
+              label="Direct Output"
+              description="The output of this block will be returned directly to the chat. This will prevent any further tool calls from being executed."
+              enabled={props.config.directOutput || false}
+              onChange={(checked) =>
+                props.onConfigChange({
+                  ...props.config,
+                  directOutput: checked,
+                })
+              }
+            />
           </div>
         </div>
       );

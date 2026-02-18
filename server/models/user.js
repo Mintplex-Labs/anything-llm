@@ -1,3 +1,4 @@
+const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 
@@ -13,7 +14,7 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  usernameRegex: new RegExp(/^[a-zA-Z0-9._%+-@]+$/),
+  usernameRegex: new RegExp(/^[a-z][a-z0-9._@-]*$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -25,13 +26,24 @@ const User = {
     "bio",
   ],
   validations: {
+    /**
+     * Unix-style username regex:
+     * - Must start with a lowercase letter
+     * - Can contain lowercase letters, digits, underscores, hyphens, @ signs, and periods
+     * - 2-32 characters long
+     */
     username: (newValue = "") => {
       try {
-        if (String(newValue).length > 100)
-          throw new Error("Username cannot be longer than 100 characters");
-        if (String(newValue).length < 2)
+        const username = String(newValue);
+        if (username.length > 32)
+          throw new Error("Username cannot be longer than 32 characters");
+        if (username.length < 2)
           throw new Error("Username must be at least 2 characters");
-        return String(newValue);
+        if (!User.usernameRegex.test(username))
+          throw new Error(
+            "Username must start with a lowercase letter and only contain lowercase letters, numbers, underscores, hyphens, and periods"
+          );
+        return username;
       } catch (e) {
         throw new Error(e.message);
       }
@@ -75,8 +87,18 @@ const User = {
   },
 
   filterFields: function (user = {}) {
-    const { password, ...rest } = user;
+    const { password, web_push_subscription_config, ...rest } = user;
     return { ...rest };
+  },
+  _identifyErrorAndFormatMessage: function (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002 is the unique constraint violation error code
+      if (error.code === "P2002") {
+        const target = error.meta?.target;
+        return `A user with that ${target?.join(", ")} already exists`;
+      }
+    }
+    return error.message;
   },
 
   create: async function ({
@@ -92,17 +114,14 @@ const User = {
     }
 
     try {
-      // Do not allow new users to bypass validation
-      if (!this.usernameRegex.test(username))
-        throw new Error(
-          "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces"
-        );
+      // Validate username format (validation function handles all checks)
+      const validatedUsername = this.validations.username(username);
 
       const bcrypt = require("bcryptjs");
       const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await prisma.users.create({
         data: {
-          username: this.validations.username(username),
+          username: validatedUsername,
           password: hashedPassword,
           role: this.validations.role(role),
           bio: this.validations.bio(bio),
@@ -113,7 +132,7 @@ const User = {
       return { user: this.filterFields(user), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
-      return { user: null, error: error.message };
+      return { user: null, error: this._identifyErrorAndFormatMessage(error) };
     }
   },
   // Log the changes to a user object, but omit sensitive fields
@@ -138,6 +157,14 @@ const User = {
         where: { id: parseInt(userId) },
       });
       if (!currentUser) return { success: false, error: "User not found" };
+
+      // We previously had more lenient username validation, but now with more strict validation
+      // we dont want to break existing users by changing non-username fields.
+      // If they are not explictly changing the username, do not attempt to validate it.
+      if (updates.hasOwnProperty("username")) {
+        if (updates.username === currentUser.username) delete updates.username;
+      }
+
       // Removes non-writable fields for generic updates
       // and force-casts to the proper type;
       Object.entries(updates).forEach(([key, value]) => {
@@ -167,17 +194,6 @@ const User = {
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
 
-      if (
-        updates.hasOwnProperty("username") &&
-        currentUser.username !== updates.username &&
-        !this.usernameRegex.test(updates.username)
-      )
-        return {
-          success: false,
-          error:
-            "Username must only contain letters, numbers, periods, underscores, hyphens, and email characters (@, %, +, -) with no spaces",
-        };
-
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },
         data: updates,
@@ -193,14 +209,22 @@ const User = {
       );
       return { success: true, error: null };
     } catch (error) {
-      console.error(error.message);
-      return { success: false, error: error.message };
+      console.error("FAILED TO UPDATE USER.", error.message);
+      return {
+        success: false,
+        error: this._identifyErrorAndFormatMessage(error),
+      };
     }
   },
 
-  // Explicit direct update of user object.
-  // Only use this method when directly setting a key value
-  // that takes no user input for the keys being modified.
+  /**
+   * Explicit direct update of user object.
+   * Only use this method when directly setting a key value
+   * that takes no user input for the keys being modified.
+   * @param {number} id - The id of the user to update.
+   * @param {Object} data - The data to update the user with.
+   * @returns {Promise<Object>} The updated user object.
+   */
   _update: async function (id = null, data = {}) {
     if (!id) throw new Error("No user id provided for update");
 
@@ -213,6 +237,26 @@ const User = {
     } catch (error) {
       console.error(error.message);
       return { user: null, message: error.message };
+    }
+  },
+
+  /**
+   * Get all users that match the given clause without filtering the fields.
+   * Internal use only - do not use this method for user-input flows
+   * @param {Object} clause - The clause to filter the users by.
+   * @param {number|null} limit - The maximum number of users to return.
+   * @returns {Promise<Array<User>>} The users that match the given clause.
+   */
+  _where: async function (clause = {}, limit = null) {
+    try {
+      const users = await prisma.users.findMany({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+      });
+      return users;
+    } catch (error) {
+      console.error(error.message);
+      return [];
     }
   },
 

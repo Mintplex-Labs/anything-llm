@@ -62,6 +62,7 @@ class LLMPerformanceMonitor {
    * @param {Messages} [opts.messages=[]] - the messages sent to the LLM so we can calculate the prompt tokens since most providers do not return this on stream
    * @param {boolean} [opts.runPromptTokenCalculation=true] - whether to run the prompt token calculation to estimate the `prompt_tokens` metric. This is useful for providers that do not return this on stream.
    * @param {string} [opts.modelTag=""] - the tag of the model that was used to generate the stream (eg: gpt-4o, claude-3-5-sonnet, qwen3/72b-instruct, etc.)
+   * @param {string} [opts.provider=""] - the class name of the LLM that was used to generate the stream (eg: OpenAI, Anthropic, LMStudio, ApiPie, etc.)
    * @returns {Promise<MonitoredStream>}
    */
   static async measureStream({
@@ -69,6 +70,7 @@ class LLMPerformanceMonitor {
     messages = [],
     runPromptTokenCalculation = true,
     modelTag = "",
+    provider = "",
   }) {
     const stream = await func;
     stream.start = Date.now();
@@ -80,6 +82,7 @@ class LLMPerformanceMonitor {
       outputTps: 0,
       duration: 0,
       ...(modelTag ? { model: modelTag } : {}),
+      ...(provider ? { provider: provider } : {}),
     };
 
     stream.endMeasurement = (reportedUsage = {}) => {

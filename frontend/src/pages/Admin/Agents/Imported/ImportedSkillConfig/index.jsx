@@ -3,6 +3,7 @@ import showToast from "@/utils/toast";
 import { Gear, Plug } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
 import { sentenceCase } from "text-case";
+import Toggle from "@/components/lib/Toggle";
 
 /**
  * Converts setup_args to inputs for the form builder
@@ -110,25 +111,24 @@ export default function ImportedSkillConfig({
     <>
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
-          <div className="flex items-center gap-x-2">
-            <Plug size={24} weight="bold" className="text-white" />
-            <label htmlFor="name" className="text-white text-md font-bold">
-              {sentenceCase(config.name)}
-            </label>
-            <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
-              <input
-                type="checkbox"
-                className="peer sr-only"
-                checked={config.active}
-                onChange={() => toggleSkill()}
+          <div className="flex w-full justify-between items-center">
+            <div className="flex items-center gap-x-2">
+              <Plug size={24} weight="bold" className="text-white" />
+              <label htmlFor="name" className="text-white text-md font-bold">
+                {sentenceCase(config.name)}
+              </label>
+            </div>
+            <div className="flex items-center gap-x-2">
+              <Toggle
+                size="lg"
+                enabled={config.active}
+                onChange={toggleSkill}
               />
-              <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-              <span className="ml-3 text-sm font-medium"></span>
-            </label>
-            <ManageSkillMenu
-              config={config}
-              setImportedSkills={setImportedSkills}
-            />
+              <ManageSkillMenu
+                config={config}
+                setImportedSkills={setImportedSkills}
+              />
+            </div>
           </div>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             {config.description} by{" "}
