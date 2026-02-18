@@ -1,4 +1,5 @@
 const ignore = require("ignore");
+const MAX_RETRIES = 3;
 
 /**
  * @typedef {Object} RepoLoaderArgs
@@ -46,11 +47,6 @@ class GitLabRepoLoader {
     this.branches = [];
   }
 
-  /**
-   * Waits for the specified number of milliseconds.
-   * @param {number} ms - The number of milliseconds to wait.
-   * @returns {Promise<void>}
-   */
   #wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -344,14 +340,13 @@ ${body}`
       });
 
       if (response.status === 429) {
-        if (retries >= 3) {
+        if (retries >= MAX_RETRIES) {
           console.warn(
             `[Gitlab Loader]: Rate limit persists for ${sourceFilePath} after ${retries} retries. Skipping.`
           );
           return null;
         }
-        const retryAfter =
-          Number(response.headers.get("retry-after")) || 60;
+        const retryAfter = Number(response.headers.get("retry-after")) || 60;
         console.warn(
           `[Gitlab Loader]: Rate limit hit fetching ${sourceFilePath}. Waiting ${retryAfter}s...`
         );
@@ -374,7 +369,7 @@ ${body}`
    * @param {Object} requestData - The request data.
    * @returns {Promise<Array<Object>|null>} The next page of data, or null if no more pages.
    */
-  async fetchNextPage(requestData) {
+  async fetchNextPage(requestData, retries = 0) {
     try {
       if (requestData.page === -1) return null;
       if (!requestData.page) requestData.page = 1;
@@ -392,15 +387,19 @@ ${body}`
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
       });
 
-      // Handle rate limiting (429) with retry
       if (response.status === 429) {
-        const retryAfter =
-          Number(response.headers.get("retry-after")) || 60;
+        if (retries >= MAX_RETRIES) {
+          console.warn(
+            `[Gitlab Loader]: Rate limit persists for ${endpoint} after ${retries} retries. Skipping.`
+          );
+          return null;
+        }
+        const retryAfter = Number(response.headers.get("retry-after")) || 60;
         console.warn(
           `[Gitlab Loader]: Rate limit hit for ${endpoint}. Waiting ${retryAfter}s before retrying...`
         );
         await this.#wait(retryAfter * 1000);
-        return this.fetchNextPage(requestData);
+        return this.fetchNextPage(requestData, retries + 1);
       }
 
       if (response.status === 401) {
@@ -423,20 +422,17 @@ ${body}`
         return [];
       }
 
-      // Use x-next-page as the primary pagination mechanism.
-      // GitLab may omit x-total-pages for large repos, but x-next-page
-      // is reliably present when there are more pages to fetch.
+      // GitLab omits x-total-pages for large repos, so use x-next-page
+      // as the sole pagination signal — it's empty on the last page.
       const nextPage = response.headers.get("x-next-page");
       const totalPages = response.headers.get("x-total-pages");
       console.log(
-        `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}${totalPages ? `/${totalPages}` : ""} with ${data.length} records.`
+        `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}${
+          totalPages ? `/${totalPages}` : ""
+        } with ${data.length} records.`
       );
 
-      if (nextPage && nextPage.trim() !== "") {
-        requestData.page = Number(nextPage);
-      } else {
-        requestData.page = -1;
-      }
+      requestData.page = nextPage?.trim() ? Number(nextPage) : -1;
 
       return data;
     } catch (e) {
