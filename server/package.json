@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -68,7 +68,7 @@
     "mssql": "^10.0.2",
     "multer": "2.0.0",
     "mysql2": "^3.9.8",
-    "ollama": "^0.5.10",
+    "ollama": "^0.6.3",
     "openai": "4.95.1",
     "pg": "^8.11.5",
     "pinecone-client": "^1.1.0",
@@ -84,6 +84,7 @@
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
+    "web-push": "^3.6.7",
     "winston": "^3.13.0"
   },
   "resolutions": {

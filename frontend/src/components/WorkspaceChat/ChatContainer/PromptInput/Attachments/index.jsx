@@ -11,7 +11,6 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { REMOVE_ATTACHMENT_EVENT } from "../../DnDWrapper";
-import { Tooltip } from "react-tooltip";
 
 /**
  * @param {{attachments: import("../../DnDWrapper").Attachment[]}}
@@ -68,52 +67,44 @@ function AttachmentItem({ attachment }) {
 
   if (status === "failed") {
     return (
-      <>
-        <div
-          data-tooltip-id={`attachment-uid-${uid}-error`}
-          data-tooltip-content={error}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-none w-[180px] group`}
-        >
-          <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
-            <button
-              onClick={removeFileFromQueue}
-              type="button"
-              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
-            >
-              <X size={10} className="flex-shrink-0" />
-            </button>
-          </div>
-          <div
-            className={`bg-error rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
+      <div
+        data-tooltip-id="attachment-status-tooltip"
+        data-tooltip-content={error}
+        className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-none w-[180px] group`}
+      >
+        <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
+          <button
+            onClick={removeFileFromQueue}
+            type="button"
+            className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
           >
-            <WarningOctagon size={24} className="text-theme-attachment-icon" />
-          </div>
-          <div className="flex flex-col w-[125px]">
-            <p className="text-theme-attachment-text text-xs font-semibold truncate">
-              {file.name}
-            </p>
-            <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium truncate">
-              {error ?? "File not embedded!"}
-            </p>
-          </div>
+            <X size={10} className="flex-shrink-0" />
+          </button>
         </div>
-        <Tooltip
-          id={`attachment-uid-${uid}-error`}
-          place="top"
-          delayShow={300}
-          className="allm-tooltip !allm-text-xs"
-        />
-      </>
+        <div
+          className={`bg-error rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
+        >
+          <WarningOctagon size={24} className="text-theme-attachment-icon" />
+        </div>
+        <div className="flex flex-col w-[125px]">
+          <p className="text-theme-attachment-text text-xs font-semibold truncate">
+            {file.name}
+          </p>
+          <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium truncate">
+            {error ?? "File not embedded!"}
+          </p>
+        </div>
+      </div>
     );
   }
 
   if (type === "attachment") {
-    return (
-      <>
+    if (contentString) {
+      return (
         <div
-          data-tooltip-id={`attachment-uid-${uid}-success`}
+          data-tooltip-id="attachment-status-tooltip"
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border-none w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg border-none group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -124,48 +115,21 @@ function AttachmentItem({ attachment }) {
               <X size={10} className="flex-shrink-0" />
             </button>
           </div>
-          {contentString ? (
-            <img
-              alt={`Preview of ${file.name}`}
-              src={contentString}
-              className={`${iconBgColor} w-[30px] h-[30px] rounded-lg flex items-center justify-center m-1`}
-            />
-          ) : (
-            <div
-              className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
-            >
-              <Icon size={24} className="text-theme-attachment-icon" />
-            </div>
-          )}
-          <div className="flex flex-col w-[125px]">
-            <p className="text-theme-attachment-text text-xs font-semibold truncate">
-              {file.name}
-            </p>
-            <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
-              Image attached!
-            </p>
-          </div>
+          <img
+            alt={`Preview of ${file.name}`}
+            src={contentString}
+            style={{ objectFit: "cover", objectPosition: "center" }}
+            className={`${iconBgColor} w-[40px] h-[40px] rounded-lg flex items-center justify-center`}
+          />
         </div>
-        <Tooltip
-          id={`attachment-uid-${uid}-success`}
-          place="top"
-          delayShow={300}
-          className="allm-tooltip !allm-text-xs"
-        />
-      </>
-    );
-  }
+      );
+    }
 
-  return (
-    <>
+    return (
       <div
-        data-tooltip-id={`attachment-uid-${uid}-success`}
-        data-tooltip-content={
-          status === "embedded"
-            ? `${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`
-            : `${file.name} will be used as context for this chat only.`
-        }
-        className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
+        data-tooltip-id="attachment-status-tooltip"
+        data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
+        className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border-none w-[180px] group`}
       >
         <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
           <button
@@ -179,28 +143,51 @@ function AttachmentItem({ attachment }) {
         <div
           className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
-          <Icon
-            size={24}
-            weight="light"
-            className="text-theme-attachment-icon"
-          />
+          <Icon size={24} className="text-theme-attachment-icon" />
         </div>
         <div className="flex flex-col w-[125px]">
-          <p className="text-white text-xs font-semibold truncate">
+          <p className="text-theme-attachment-text text-xs font-semibold truncate">
             {file.name}
           </p>
           <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
-            {status === "embedded" ? "File embedded!" : "Added as context!"}
+            Image attached!
           </p>
         </div>
       </div>
-      <Tooltip
-        id={`attachment-uid-${uid}-success`}
-        place="top"
-        delayShow={300}
-        className="allm-tooltip !allm-text-xs"
-      />
-    </>
+    );
+  }
+
+  return (
+    <div
+      data-tooltip-id="attachment-status-tooltip"
+      data-tooltip-content={
+        status === "embedded"
+          ? `${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`
+          : `${file.name} will be used as context for this chat only.`
+      }
+      className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
+    >
+      <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
+        <button
+          onClick={removeFileFromQueue}
+          type="button"
+          className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+        >
+          <X size={10} className="flex-shrink-0" />
+        </button>
+      </div>
+      <div
+        className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
+      >
+        <Icon size={24} weight="light" className="text-theme-attachment-icon" />
+      </div>
+      <div className="flex flex-col w-[125px]">
+        <p className="text-white text-xs font-semibold truncate">{file.name}</p>
+        <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
+          {status === "embedded" ? "File embedded!" : "Added as context!"}
+        </p>
+      </div>
+    </div>
   );
 }
 

@@ -1,0 +1,26 @@
+# Cleans up the GHCR image tag when the PR is closed or the "PR: Ready for QA" label is removed.
+name: Cleanup QA GHCR Image
+
+on:
+  pull_request:
+    types: [closed, unlabeled]
+
+jobs:
+  cleanup:
+    name: Delete QA GHCR image tag
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
+      (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA') }}
+    permissions:
+      packages: write
+    steps:
+      - name: Delete PR tag from GHCR
+        uses: actions/delete-package-versions@v5
+        continue-on-error: true  # Package may not exist if build never ran
+        with:
+          owner: ${{ github.repository_owner }}
+          package-name: ${{ github.repository }}
+          package-type: container
+          min-versions-to-keep: 0
+          ignore-versions: '^(?!pr-${{ github.event.pull_request.number }}$).*$'

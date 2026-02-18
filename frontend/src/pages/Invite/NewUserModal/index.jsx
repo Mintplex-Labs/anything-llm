@@ -4,10 +4,17 @@ import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function NewUserModal() {
   const { code } = useParams();
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleCreate = async (e) => {
     setError(null);
@@ -53,10 +60,15 @@ export default function NewUserModal() {
                   type="text"
                   className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="My username"
-                  minLength={2}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  pattern={USERNAME_PATTERN}
                   required={true}
                   autoComplete="off"
                 />
+                <p className="mt-2 text-xs text-theme-text-secondary">
+                  {t("common.username_requirements")}
+                </p>
               </div>
               <div>
                 <label

@@ -25,6 +25,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new Ollama({
       host: process.env.OLLAMA_BASE_PATH,
       headers: headers,
+      fetch: this.#applyFetch(),
     });
     this.model = model;
     this.verbose = true;
@@ -38,15 +39,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
-  get performanceMode() {
-    return process.env.OLLAMA_PERFORMANCE_MODE || "base";
-  }
-
   get queryOptions() {
+    this.providerLog(
+      `${this.model} is using a max context window of ${OllamaAILLM.promptWindowLimit(this.model)}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
+    );
     return {
-      ...(this.performanceMode === "base"
-        ? {}
-        : { num_ctx: OllamaAILLM.promptWindowLimit(this.model) }),
+      num_ctx: OllamaAILLM.promptWindowLimit(this.model),
     };
   }
 
@@ -365,6 +363,46 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   getCost(_usage) {
     return 0;
+  }
+
+  /**
+   * Apply a custom fetch function to the Ollama client.
+   * This is useful when we want to bypass the default 5m timeout for global fetch
+   * for machines which run responses very slowly.
+   * @returns {Function} The custom fetch function.
+   */
+  #applyFetch() {
+    try {
+      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
+      const { Agent } = require("undici");
+      const moment = require("moment");
+      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
+
+      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
+        this.providerLog(
+          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
+          { timeout }
+        );
+        return fetch;
+      } else timeout = Number(timeout);
+
+      const noTimeoutFetch = (input, init = {}) => {
+        return fetch(input, {
+          ...init,
+          dispatcher: new Agent({ headersTimeout: timeout }),
+        });
+      };
+
+      const humanDiff = moment.duration(timeout).humanize();
+      this.providerLog(`Applying custom fetch w/timeout of ${humanDiff}.`);
+      return noTimeoutFetch;
+    } catch (error) {
+      this.providerLog(
+        "Error applying custom fetch - using default fetch",
+        error
+      );
+      return fetch;
+    }
   }
 }
 

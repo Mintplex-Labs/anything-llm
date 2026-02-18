@@ -34,39 +34,41 @@ export default function Sidebar() {
           width: showSidebar ? "292px" : "0px",
           paddingLeft: showSidebar ? "0px" : "16px",
         }}
-        className="transition-all duration-500"
+        className="relative transition-all duration-500"
       >
-        <div className="flex shrink-0 w-full justify-center my-[18px]">
-          <div className="flex justify-between w-[250px] min-w-[250px]">
-            <Link to={paths.home()} aria-label="Home">
-              <img
-                src={logo}
-                alt="Logo"
-                className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
-              />
-            </Link>
-            {canToggleSidebar && (
-              <ToggleSidebarButton
-                showSidebar={showSidebar}
-                setShowSidebar={setShowSidebar}
-              />
-            )}
+        {canToggleSidebar && (
+          <ToggleSidebarButton
+            showSidebar={showSidebar}
+            setShowSidebar={setShowSidebar}
+          />
+        )}
+        <div className="overflow-hidden h-full">
+          <div className="flex shrink-0 w-full justify-center my-[18px]">
+            <div className="flex w-[250px] min-w-[250px]">
+              <Link to={paths.home()} aria-label="Home">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                />
+              </Link>
+            </div>
           </div>
-        </div>
-        <div
-          ref={sidebarRef}
-          className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
-        >
-          <div className="flex flex-col h-full overflow-x-hidden">
-            <div className="flex-grow flex flex-col min-w-[235px]">
-              <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-                <div className="flex flex-col gap-y-2 pb-[60px] gap-y-[14px] overflow-y-scroll no-scroll">
-                  <SearchBox user={user} showNewWsModal={showNewWsModal} />
-                  <ActiveWorkspaces />
+          <div
+            ref={sidebarRef}
+            className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          >
+            <div className="flex flex-col h-full overflow-hidden">
+              <div className="flex-grow flex flex-col min-w-[235px] min-h-0">
+                <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-[14px]">
+                    <SearchBox user={user} showNewWsModal={showNewWsModal} />
+                    <ActiveWorkspaces />
+                  </div>
                 </div>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
-                <Footer />
+                <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+                  <Footer />
+                </div>
               </div>
             </div>
           </div>

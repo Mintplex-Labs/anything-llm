@@ -11,6 +11,7 @@ class GroqLLM {
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.GROQ_API_KEY) throw new Error("No Groq API key was set.");
+    this.className = "GroqLLM";
 
     this.openai = new OpenAIApi({
       baseURL: "https://api.groq.com/openai/v1",
@@ -204,6 +205,7 @@ class GroqLLM {
           result.output.usage.completion_time,
         duration: result.output.usage.total_time,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -225,6 +227,7 @@ class GroqLLM {
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;

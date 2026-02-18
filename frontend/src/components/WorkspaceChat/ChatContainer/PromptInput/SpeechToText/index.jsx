@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
-import _regeneratorRuntime from "regenerator-runtime";
+import "regenerator-runtime"; //required polyfill for speech recognition;
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";

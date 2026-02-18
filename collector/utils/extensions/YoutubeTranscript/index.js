@@ -6,6 +6,7 @@ const {
   writeToServerDocuments,
   sanitizeFileName,
   documentsFolder,
+  isWithin,
 } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { YoutubeLoader } = require("./YoutubeLoader");
@@ -129,11 +130,31 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
     slugify(`${metadata.author} YouTube transcripts`).toLowerCase()
   );
   const outFolderPath = path.resolve(documentsFolder, outFolder);
+  const uuid = v4();
+  const fileName = sanitizeFileName(`${slugify(metadata.title)}-${uuid}`);
+
+  if (!isWithin(documentsFolder, path.resolve(outFolderPath, fileName))) {
+    console.error(
+      `[YouTube Loader]: Invalid file path ${path.resolve(
+        outFolderPath,
+        fileName
+      )} is not within the documents folder ${documentsFolder}`
+    );
+    return {
+      success: false,
+      reason: `[YouTube Loader]: Invalid file path ${path.resolve(
+        outFolderPath,
+        fileName
+      )} is not within the documents folder ${documentsFolder}`,
+      documents: [],
+      data: {},
+    };
+  }
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
   const data = {
-    id: v4(),
+    id: uuid,
     url: url + ".youtube",
     title: metadata.title || url,
     docAuthor: metadata.author,
@@ -147,15 +168,16 @@ async function loadYouTubeTranscript({ url }, options = { parseOnly: false }) {
   };
 
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
-  writeToServerDocuments({
+  const document = writeToServerDocuments({
     data,
-    filename: sanitizeFileName(`${slugify(metadata.title)}-${data.id}`),
+    filename: fileName,
     destinationOverride: outFolderPath,
   });
 
   return {
     success: true,
     reason: null,
+    documents: [document],
     data: {
       title: metadata.title,
       author: metadata.author,

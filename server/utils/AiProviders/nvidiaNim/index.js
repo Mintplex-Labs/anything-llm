@@ -185,6 +185,7 @@ class NvidiaNimLLM {
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -206,6 +207,7 @@ class NvidiaNimLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }

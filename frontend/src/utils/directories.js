@@ -13,7 +13,7 @@ export function formatDateTimeAsMoment(dateString, format = "LLL") {
   if (!dateString) return moment().format(format);
   try {
     return moment(dateString).format(format);
-  } catch (error) {
+  } catch {
     return moment().format(format);
   }
 }
