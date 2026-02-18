@@ -244,7 +244,7 @@ Bu verileri doğrulamak için kod içinde **`Telemetry.sendTelemetry` çağrıla
 
 ---
 
-Telif Hakkı © 2025 [Mintplex Labs][profile-link]. <br />
+Telif Hakkı © 2026 [Mintplex Labs][profile-link]. <br />
 Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 
 <!-- LINK GROUP -->

@@ -267,7 +267,7 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 ---
 
-Copyright © 2025 [Mintplex Labs][profile-link]. <br />
+Copyright © 2026 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
