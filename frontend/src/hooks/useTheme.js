@@ -56,6 +56,11 @@ export function useTheme() {
     return () => document.removeEventListener("keydown", toggleOnKeybind);
   }, []);
 
+  /**
+   * Sets the theme of the application and runs any
+   * other necessary side effects
+   * @param {string} newTheme The new theme to set
+   */
   function setTheme(newTheme) {
     _setTheme(newTheme);
   }

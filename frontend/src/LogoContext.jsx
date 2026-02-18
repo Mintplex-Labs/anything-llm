@@ -16,11 +16,11 @@ export function LogoProvider({ children }) {
   const [logo, setLogo] = useState("");
   const [loginLogo, setLoginLogo] = useState("");
   const [isCustomLogo, setIsCustomLogo] = useState(false);
-  const DefaultLoginLogo = isLightMode()
-    ? DefaultLoginLogoDark
-    : DefaultLoginLogoLight;
 
   async function fetchInstanceLogo() {
+    const DefaultLoginLogo = isLightMode()
+      ? DefaultLoginLogoDark
+      : DefaultLoginLogoLight;
     try {
       const { isCustomLogo, logoURL } = await System.fetchLogo();
       if (logoURL) {
