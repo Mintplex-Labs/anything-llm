@@ -952,8 +952,13 @@ const TRANSLATIONS = {
     delete: "Delete",
     save_submit: "Save & Submit",
     cancel: "Cancel",
+    submit: "Submit",
     edit_prompt: "Edit prompt",
     edit_response: "Edit response",
+    edit_info_user:
+      '"Submit" regenerates the AI response. "Save" updates your message only.',
+    edit_info_assistant:
+      "Your changes will be saved directly to this response.",
     at_agent: "@agent",
     default_agent_description: " - the default agent for this workspace.",
     custom_agents_coming_soon: "custom agents are coming soon!",

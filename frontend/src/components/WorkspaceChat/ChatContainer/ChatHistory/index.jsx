@@ -105,10 +105,28 @@ export default forwardRef(function (
     chatId,
     role,
     attachments = [],
+    saveOnly = false,
   }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
-    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // "Save" on a user message: update the prompt text without regenerating
+    if (role === "user" && saveOnly) {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChat(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage,
+        "user"
+      );
+      return;
+    }
+
+    // "Submit" on a user message: auto-regenerate the response and delete all
     // messages post modified message
     if (role === "user") {
       // remove all messages after the edited message
@@ -140,7 +158,7 @@ export default forwardRef(function (
       if (targetIdx < 0) return;
       updatedHistory[targetIdx].content = editedMessage;
       updateHistory(updatedHistory);
-      await Workspace.updateChatResponse(
+      await Workspace.updateChat(
         workspace.slug,
         threadSlug,
         chatId,

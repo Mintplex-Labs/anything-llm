@@ -71,6 +71,21 @@ const HistoricalMessage = ({
   }
 
   if (role === "user") {
+    if (isEditing) {
+      return (
+        <div key={uuid} className="flex justify-end w-full py-4 px-4">
+          <EditMessageForm
+            role={role}
+            chatId={chatId}
+            message={message}
+            attachments={attachments}
+            adjustTextArea={adjustTextArea}
+            saveChanges={saveEditedMessage}
+          />
+        </div>
+      );
+    }
+
     return (
       <div
         key={uuid}
@@ -79,25 +94,14 @@ const HistoricalMessage = ({
       >
         <div className="py-4 px-4 flex flex-col items-end">
           <div className="bg-zinc-800 light:bg-slate-100 rounded-[20px] rounded-br-none px-4 py-3.5 max-w-[600px] [&_p]:m-0">
-            {isEditing ? (
-              <EditMessageForm
+            <TruncatableContent>
+              <RenderChatContent
                 role={role}
-                chatId={chatId}
                 message={message}
-                attachments={attachments}
-                adjustTextArea={adjustTextArea}
-                saveChanges={saveEditedMessage}
+                messageId={uuid}
               />
-            ) : (
-              <TruncatableContent>
-                <RenderChatContent
-                  role={role}
-                  message={message}
-                  messageId={uuid}
-                />
-                <ChatAttachments attachments={attachments} />
-              </TruncatableContent>
-            )}
+              <ChatAttachments attachments={attachments} />
+            </TruncatableContent>
           </div>
           <Actions
             message={message}
@@ -122,7 +126,7 @@ const HistoricalMessage = ({
       onAnimationEnd={onEndAnimation}
       className={`${isDeleted ? "animate-remove" : ""} flex justify-start w-full group`}
     >
-      <div className="py-4 pl-0 pr-4 flex flex-col w-full">
+      <div className="py-4 px-4 md:pl-0 flex flex-col w-full">
         {isEditing ? (
           <EditMessageForm
             role={role}
@@ -154,7 +158,7 @@ const HistoricalMessage = ({
             <ChatAttachments attachments={attachments} />
           </div>
         )}
-        <div className="flex items-center gap-x-1">
+        <div className="flex items-start md:items-center gap-x-1">
           <TTSMessage
             slug={workspace?.slug}
             chatId={chatId}

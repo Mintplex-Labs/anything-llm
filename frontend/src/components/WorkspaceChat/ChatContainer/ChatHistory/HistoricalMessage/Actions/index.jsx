@@ -30,7 +30,7 @@ const Actions = ({
 
   return (
     <div
-      className={`flex w-full items-center ${role === "user" ? "justify-end" : "justify-between"}`}
+      className={`flex w-full flex-wrap items-center gap-y-1 ${role === "user" ? "justify-end" : "justify-between"}`}
     >
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
