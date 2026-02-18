@@ -46,6 +46,15 @@ class GitLabRepoLoader {
     this.branches = [];
   }
 
+  /**
+   * Waits for the specified number of milliseconds.
+   * @param {number} ms - The number of milliseconds to wait.
+   * @returns {Promise<void>}
+   */
+  #wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   #validGitlabUrl() {
     const validPatterns = [
       /https:\/\/gitlab\.com\/(?<author>[^\/]+)\/(?<project>.*)/,
@@ -322,26 +331,38 @@ ${body}`
    * @param {string} sourceFilePath - The path to the file in the repository.
    * @returns {Promise<string|null>} The content of the file, or null if fetching fails.
    */
-  async fetchSingleFileContents(sourceFilePath) {
+  async fetchSingleFileContents(sourceFilePath, retries = 0) {
     try {
-      const data = await fetch(
-        `${this.apiBase}/api/v4/projects/${
-          this.projectId
-        }/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${
-          this.branch
-        }`,
-        {
-          method: "GET",
-          headers: this.accessToken
-            ? { "PRIVATE-TOKEN": this.accessToken }
-            : {},
-        }
-      ).then((res) => {
-        if (res.ok) return res.text();
-        throw new Error(`Failed to fetch single file ${sourceFilePath}`);
+      const url = `${this.apiBase}/api/v4/projects/${
+        this.projectId
+      }/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${
+        this.branch
+      }`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
       });
 
-      return data;
+      if (response.status === 429) {
+        if (retries >= 3) {
+          console.warn(
+            `[Gitlab Loader]: Rate limit persists for ${sourceFilePath} after ${retries} retries. Skipping.`
+          );
+          return null;
+        }
+        const retryAfter =
+          Number(response.headers.get("retry-after")) || 60;
+        console.warn(
+          `[Gitlab Loader]: Rate limit hit fetching ${sourceFilePath}. Waiting ${retryAfter}s...`
+        );
+        await this.#wait(retryAfter * 1000);
+        return this.fetchSingleFileContents(sourceFilePath, retries + 1);
+      }
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch single file ${sourceFilePath}`);
+
+      return await response.text();
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFileContents`, e);
       return null;
@@ -371,27 +392,50 @@ ${body}`
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
       });
 
-      // Rate limits get hit very often if no PAT is provided
+      // Handle rate limiting (429) with retry
+      if (response.status === 429) {
+        const retryAfter =
+          Number(response.headers.get("retry-after")) || 60;
+        console.warn(
+          `[Gitlab Loader]: Rate limit hit for ${endpoint}. Waiting ${retryAfter}s before retrying...`
+        );
+        await this.#wait(retryAfter * 1000);
+        return this.fetchNextPage(requestData);
+      }
+
       if (response.status === 401) {
-        console.warn(`Rate limit hit for ${endpoint}. Skipping.`);
+        console.warn(
+          `[Gitlab Loader]: Unauthorized request for ${endpoint}. Skipping.`
+        );
         return null;
       }
 
-      const totalPages = Number(response.headers.get("x-total-pages"));
+      if (!response.ok) {
+        console.warn(
+          `[Gitlab Loader]: Unexpected status ${response.status} for ${endpoint}. Skipping.`
+        );
+        return null;
+      }
+
       const data = await response.json();
       if (!Array.isArray(data)) {
         console.warn(`Unexpected response format for ${endpoint}:`, data);
         return [];
       }
 
+      // Use x-next-page as the primary pagination mechanism.
+      // GitLab may omit x-total-pages for large repos, but x-next-page
+      // is reliably present when there are more pages to fetch.
+      const nextPage = response.headers.get("x-next-page");
+      const totalPages = response.headers.get("x-total-pages");
       console.log(
-        `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}/${totalPages} with ${data.length} records.`
+        `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}${totalPages ? `/${totalPages}` : ""} with ${data.length} records.`
       );
 
-      if (totalPages === requestData.page) {
-        requestData.page = -1;
+      if (nextPage && nextPage.trim() !== "") {
+        requestData.page = Number(nextPage);
       } else {
-        requestData.page = Number(response.headers.get("x-next-page"));
+        requestData.page = -1;
       }
 
       return data;
