@@ -455,6 +455,15 @@ const KEY_MAPPING = {
     envKey: "TOGETHER_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  // ModelsLab Settings
+  ModelsLabApiKey: {
+    envKey: "MODELSLAB_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ModelsLabModelPref: {
+    envKey: "MODELSLAB_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 
   // Fireworks AI Options
   FireworksAiLLMApiKey: {
