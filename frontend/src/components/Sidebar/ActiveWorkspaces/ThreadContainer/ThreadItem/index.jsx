@@ -68,7 +68,7 @@ export default function ThreadItem({
         className="h-full"
       />
       <div
-        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] border border-solid border-transparent light:border-blue-400" : "hover:bg-theme-sidebar-subitem-hover"} rounded-[4px]`}
+        className={`flex w-full items-center justify-between pr-2 group/thread-item relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] border border-solid border-transparent light:border-blue-400" : "hover:bg-theme-sidebar-subitem-hover"} rounded-[4px]`}
       >
         {thread.deleted ? (
           <div className="w-full flex justify-between">
@@ -129,7 +129,7 @@ export default function ThreadItem({
                 />
               </button>
             ) : (
-              <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
+              <div className="flex items-center w-fit md:invisible md:group-hover/thread-item:visible gap-x-1">
                 <button
                   type="button"
                   className="border-none"
