@@ -71,9 +71,6 @@ function workspaceEndpoints(app) {
           },
           user?.id
         );
-        if (onboardingComplete === true)
-          await Telemetry.sendTelemetry("onboarding_complete");
-
         response.status(200).json({ workspace, message });
       } catch (e) {
         console.error(e.message, e);

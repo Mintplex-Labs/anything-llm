@@ -63,7 +63,7 @@ export default function EmbeddingTextSplitterPreference() {
       setHasChanges(false);
       closeModal();
       showToast("Text chunking strategy settings saved.", "success");
-    } catch (error) {
+    } catch {
       showToast("Failed to save text chunking strategy settings.", "error");
     } finally {
       setSaving(false);
@@ -72,7 +72,13 @@ export default function EmbeddingTextSplitterPreference() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const _settings = (await Admin.systemPreferences())?.settings;
+      const _settings = (
+        await Admin.systemPreferencesByFields([
+          "text_splitter_chunk_size",
+          "text_splitter_chunk_overlap",
+          "max_embed_chunk_size",
+        ])
+      )?.settings;
       setSettings(_settings ?? {});
       setLoading(false);
     }

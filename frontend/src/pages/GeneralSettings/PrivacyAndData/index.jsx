@@ -6,6 +6,7 @@ import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { useTranslation } from "react-i18next";
 import ProviderPrivacy from "@/components/ProviderPrivacy";
+import Toggle from "@/components/lib/Toggle";
 
 export default function PrivacyAndDataHandling() {
   const [settings, setSettings] = useState({});
@@ -80,18 +81,13 @@ function TelemetryLogs({ settings }) {
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
-              <label className="mb-2.5 block font-medium text-theme-text-primary">
-                {t("privacy.anonymous")}
-              </label>
-              <label className="relative inline-flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  onClick={toggleTelemetry}
-                  checked={telemetry}
-                  className="peer sr-only pointer-events-none"
-                />
-                <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-              </label>
+              <Toggle
+                size="lg"
+                className="mb-4"
+                label={t("privacy.anonymous")}
+                enabled={telemetry}
+                onChange={toggleTelemetry}
+              />
             </div>
           </div>
         </div>
@@ -105,6 +101,7 @@ function TelemetryLogs({ settings }) {
               href="https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code"
               className="underline text-blue-400"
               target="_blank"
+              rel="noreferrer"
             >
               GitHub here
             </a>
@@ -120,6 +117,7 @@ function TelemetryLogs({ settings }) {
               href="mailto:team@mintplexlabs.com"
               className="underline text-blue-400"
               target="_blank"
+              rel="noreferrer"
             >
               team@mintplexlabs.com
             </a>

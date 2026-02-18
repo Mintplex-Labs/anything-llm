@@ -11,7 +11,7 @@ import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import "@/index.css";
 
-const isDev = process.env.NODE_ENV !== "production";
+const isDev = import.meta.env.DEV;
 const REACTWRAP = isDev ? React.Fragment : React.StrictMode;
 
 const router = createBrowserRouter([

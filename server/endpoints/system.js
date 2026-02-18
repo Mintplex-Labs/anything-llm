@@ -80,6 +80,26 @@ function systemEndpoints(app) {
     response.sendStatus(200).end();
   });
 
+  app.get("/onboarding", async (_, response) => {
+    try {
+      const results = await SystemSettings.isOnboardingComplete();
+      response.status(200).json({ onboardingComplete: results });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/onboarding", [validatedRequest], async (_, response) => {
+    try {
+      await SystemSettings.markOnboardingComplete();
+      response.sendStatus(200).end();
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
   app.get("/setup-complete", async (_, response) => {
     try {
       const results = await SystemSettings.currentSettings();
@@ -1208,7 +1228,9 @@ function systemEndpoints(app) {
       }
 
       const updates = {};
-      if (username)
+      // If the username is being changed, validate it.
+      // Otherwise, do not attempt to validate it to allow existing users to keep their username if not changing it.
+      if (username !== sessionUser.username)
         updates.username = User.validations.username(String(username));
       if (password) updates.password = String(password);
       if (bio) updates.bio = String(bio);
@@ -1224,7 +1246,9 @@ function systemEndpoints(app) {
       response.status(200).json({ success, error });
     } catch (e) {
       console.error(e);
-      response.sendStatus(500).end();
+      response
+        .status(500)
+        .json({ success: false, error: e.message || "Internal server error" });
     }
   });
 

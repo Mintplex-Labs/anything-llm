@@ -18,6 +18,7 @@ class PerplexityLLM {
     if (!process.env.PERPLEXITY_API_KEY)
       throw new Error("No Perplexity API key was set.");
 
+    this.className = "PerplexityLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       baseURL: "https://api.perplexity.ai",
@@ -118,6 +119,7 @@ class PerplexityLLM {
         outputTps: result.output.usage?.completion_tokens / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -139,6 +141,7 @@ class PerplexityLLM {
       messages,
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
     return measuredStreamRequest;
   }
