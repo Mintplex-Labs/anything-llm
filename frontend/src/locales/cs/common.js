@@ -940,11 +940,12 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klikněte pro nastavení přihlašovacích údajů",
     },
-    submit: null,
-    edit_info_user: null,
-    edit_info_assistant: null,
-    see_less: null,
-    see_more: null,
+    submit: "Odeslat",
+    edit_info_user:
+      "„Odeslat“ znovu vygeneruje odpověď od AI. „Uložit“ aktualizuje pouze vaši zprávu.",
+    edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
+    see_less: "Zobrazit méně",
+    see_more: "Více",
   },
   profile_settings: {
     edit_account: "Upravit účet",

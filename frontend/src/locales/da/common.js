@@ -729,11 +729,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klik for at oprette legitimationsoplysninger",
     },
-    submit: null,
-    edit_info_user: null,
-    edit_info_assistant: null,
-    see_less: null,
-    see_more: null,
+    submit: "Indsend",
+    edit_info_user:
+      '"Send" genopretter AI-responsen. "Gem" opdaterer kun dit budskab.',
+    edit_info_assistant:
+      "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
+    see_less: "Se mindre",
+    see_more: "Se flere",
   },
   profile_settings: {
     edit_account: "Rediger konto",

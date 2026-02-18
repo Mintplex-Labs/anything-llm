@@ -730,11 +730,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Нажмите, чтобы настроить учетные данные",
     },
-    submit: null,
-    edit_info_user: null,
-    edit_info_assistant: null,
-    see_less: null,
-    see_more: null,
+    submit: "Отправить",
+    edit_info_user:
+      '"Отправить" генерирует новый ответ от ИИ. "Сохранить" обновляет только ваше сообщение.',
+    edit_info_assistant:
+      "Ваши изменения будут сохранены непосредственно в этом ответе.",
+    see_less: "Показать меньше",
+    see_more: "Узнать больше",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

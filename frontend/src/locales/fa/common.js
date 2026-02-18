@@ -725,11 +725,12 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "برای تنظیم اعتبارها، اینجا را کلیک کنید",
     },
-    submit: null,
-    edit_info_user: null,
-    edit_info_assistant: null,
-    see_less: null,
-    see_more: null,
+    submit: "ارسال",
+    edit_info_user:
+      '"ارسال" پاسخ تولید شده توسط هوش مصنوعی را دوباره ایجاد می‌کند. "ذخیره" فقط پیام شما را به‌روز می‌کند.',
+    edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
+    see_less: "کمی بیشتر",
+    see_more: "بیشتر",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

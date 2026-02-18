@@ -913,11 +913,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kliknij, aby skonfigurować poświadczenia",
     },
-    submit: null,
-    edit_info_user: null,
-    edit_info_assistant: null,
-    see_less: null,
-    see_more: null,
+    submit: "Prześlij",
+    edit_info_user:
+      '"Wyślij" powoduje ponowne wygenerowanie odpowiedzi przez sztuczną inteligencję. "Zapisz" aktualizuje tylko Twoje wiadomości.',
+    edit_info_assistant:
+      "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
+    see_less: "Zobacz mniej",
+    see_more: "Zobacz więcej",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
