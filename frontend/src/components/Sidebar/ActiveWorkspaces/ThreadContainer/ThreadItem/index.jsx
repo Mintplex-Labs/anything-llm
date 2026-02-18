@@ -106,8 +106,8 @@ export default function ThreadItem({
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
                 isActive
-                  ? "font-semibold text-white light:text-blue-900"
-                  : "text-zinc-600 font-medium light:text-slate-800"
+                  ? "font-semibold text-theme-text-primary light:text-blue-900"
+                  : "text-theme-text-primary font-medium light:text-slate-800"
               }`}
             >
               {thread.name}
