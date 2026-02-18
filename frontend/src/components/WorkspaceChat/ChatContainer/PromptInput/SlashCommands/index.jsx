@@ -63,13 +63,13 @@ export function SlashCommands({
       <div
         className={
           centered
-            ? "w-full flex justify-center absolute bottom-full mb-2 left-0 z-10 px-4"
-            : "w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4"
+            ? "w-full flex justify-center md:justify-start absolute top-full mt-2 left-0 z-10 px-4 md:px-0 md:pl-[31px]"
+            : "flex justify-center md:justify-start absolute bottom-[130px] md:bottom-[150px] left-0 right-0 z-10 max-w-[750px] mx-auto px-4 md:px-0 md:pl-[31px]"
         }
       >
         <div
           ref={cmdRef}
-          className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
+          className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[200px] no-scroll"
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
