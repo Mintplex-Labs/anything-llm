@@ -14,7 +14,7 @@ const WorkspaceThread = {
       }
     )
       .then((res) => res.json())
-      .catch((e) => {
+      .catch(() => {
         return { threads: [] };
       });
 

@@ -23,7 +23,6 @@ class OllamaAILLM {
     this.authToken = process.env.OLLAMA_AUTH_TOKEN;
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
-    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
@@ -43,9 +42,7 @@ class OllamaAILLM {
     this.limits = null;
 
     OllamaAILLM.cacheContextWindows(true);
-    this.#log(
-      `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}`
-    );
+    this.#log(`initialized with model: ${this.model}`);
   }
 
   #log(text, ...args) {
@@ -64,6 +61,9 @@ class OllamaAILLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.#log(
+      `model ${this.model} is using a max context window of ${this.promptWindowLimit()}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
+    );
   }
 
   /**
@@ -176,8 +176,7 @@ class OllamaAILLM {
     }
 
     let userDefinedLimit = null;
-    const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+    const systemDefinedLimit = OllamaAILLM.maxContextWindow(modelName);
 
     if (
       process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
@@ -190,11 +189,21 @@ class OllamaAILLM {
     // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
     if (userDefinedLimit !== null)
       return Math.min(userDefinedLimit, systemDefinedLimit);
-    return systemDefinedLimit;
+
+    // Cap the context window limit to 16,384 tokens if the model supports more than that and no value is specified by the user.
+    // This prevents super-large context windows from being used if the user does not specify a value
+    // as well as also having smaller context windows use the full context window limit.
+    return Math.min(systemDefinedLimit, 16384);
   }
 
   promptWindowLimit() {
     return this.constructor.promptWindowLimit(this.model);
+  }
+
+  static maxContextWindow(modelName = null) {
+    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0 || !modelName)
+      return 4096;
+    return Number(OllamaAILLM.modelContextWindows[modelName]) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -266,10 +275,7 @@ class OllamaAILLM {
           options: {
             temperature,
             use_mlock: true,
-            // There are currently only two performance settings so if its not "base" - its max context.
-            ...(this.performanceMode === "base"
-              ? {} // TODO: if in base mode, maybe we just use half the context window when below <10K?
-              : { num_ctx: this.promptWindowLimit() }),
+            num_ctx: this.promptWindowLimit(),
           },
         })
         .then((res) => {
@@ -306,6 +312,7 @@ class OllamaAILLM {
           result.output.usage.completion_tokens / result.output.usage.duration,
         duration: result.output.usage.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -321,15 +328,13 @@ class OllamaAILLM {
         options: {
           temperature,
           use_mlock: true,
-          // There are currently only two performance settings so if its not "base" - its max context.
-          ...(this.performanceMode === "base"
-            ? {}
-            : { num_ctx: this.promptWindowLimit() }),
+          num_ctx: this.promptWindowLimit(),
         },
       }),
       messages,
       runPromptTokenCalculation: false,
       modelTag: this.model,
+      provider: this.className,
     }).catch((e) => {
       throw this.#errorHandler(e);
     });

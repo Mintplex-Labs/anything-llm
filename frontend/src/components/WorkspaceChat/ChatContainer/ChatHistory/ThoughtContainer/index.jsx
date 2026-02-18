@@ -1,10 +1,62 @@
-import { useState, forwardRef, useImperativeHandle } from "react";
+import {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
 import renderMarkdown from "@/utils/chat/markdown";
 import { CaretDown } from "@phosphor-icons/react";
 import DOMPurify from "dompurify";
 import { isMobile } from "react-device-detect";
 import ThinkingAnimation from "@/media/animations/thinking-animation.webm";
 import ThinkingStatic from "@/media/animations/thinking-static.png";
+
+/**
+ * Context to persist thought expansion state across component transitions
+ * (e.g., from PromptReply to HistoricalMessage)
+ */
+const ThoughtExpansionContext = createContext(null);
+
+export function ThoughtExpansionProvider({ children }) {
+  const [expansionStates, setExpansionStates] = useState({});
+
+  const getExpanded = useCallback(
+    (messageId) => {
+      if (!messageId) return false;
+      return expansionStates[messageId] ?? false;
+    },
+    [expansionStates]
+  );
+
+  const setExpanded = useCallback((messageId, expanded) => {
+    if (!messageId) return;
+    setExpansionStates((prev) => ({
+      ...prev,
+      [messageId]: expanded,
+    }));
+  }, []);
+
+  return (
+    <ThoughtExpansionContext.Provider value={{ getExpanded, setExpanded }}>
+      {children}
+    </ThoughtExpansionContext.Provider>
+  );
+}
+
+export function useThoughtExpansion(messageId) {
+  const context = useContext(ThoughtExpansionContext);
+  if (!context) {
+    // Fallback when used outside provider - use local state only
+    return { expanded: false, setExpanded: () => {} };
+  }
+  return {
+    expanded: context.getExpanded(messageId),
+    setExpanded: (value) => context.setExpanded(messageId, value),
+  };
+}
 
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
 const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
@@ -40,16 +92,31 @@ function contentIsNotEmpty(content = "") {
 /**
  * Component to render a thought chain.
  * @param {string} content - The content of the thought chain.
- * @param {boolean} expanded - Whether the thought chain is expanded.
+ * @param {string} messageId - The unique ID for this message (used to persist expansion state).
  * @returns {JSX.Element}
  */
 export const ThoughtChainComponent = forwardRef(
-  ({ content: initialContent, expanded }, ref) => {
+  ({ content: initialContent, messageId }, ref) => {
     const [content, setContent] = useState(initialContent);
     const [hasReadableContent, setHasReadableContent] = useState(
       contentIsNotEmpty(initialContent)
     );
-    const [isExpanded, setIsExpanded] = useState(expanded);
+    const { expanded: persistedExpanded, setExpanded: setPersistedExpanded } =
+      useThoughtExpansion(messageId);
+    const [localExpanded, setLocalExpanded] = useState(false);
+
+    // Use persisted state if messageId is provided, otherwise use local state
+    const isExpanded = messageId ? persistedExpanded : localExpanded;
+    const setIsExpanded = messageId ? setPersistedExpanded : setLocalExpanded;
+
+    // Sync content state with prop changes (for streaming through HistoricalMessage)
+    useEffect(() => {
+      if (initialContent !== content) {
+        setContent(initialContent);
+        setHasReadableContent(contentIsNotEmpty(initialContent));
+      }
+    }, [initialContent]);
+
     useImperativeHandle(ref, () => ({
       updateContent: (newContent) => {
         setContent(newContent);
@@ -65,8 +132,6 @@ export const ThoughtChainComponent = forwardRef(
     const tagStrippedContent = content
       .replace(THOUGHT_REGEX_OPEN, "")
       .replace(THOUGHT_REGEX_CLOSE, "");
-    const autoExpand =
-      isThinking && tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
     const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
     if (!content || !content.length || !hasReadableContent) return null;
 
@@ -83,10 +148,10 @@ export const ThoughtChainComponent = forwardRef(
               transition: "all 0.1s ease-in-out",
               borderRadius: "6px",
             }}
-            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
+            className={`${isExpanded ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
           >
             <div
-              className={`w-7 h-7 flex justify-center flex-shrink-0 ${!isExpanded && !autoExpand ? "items-center" : "items-start pt-[2px]"}`}
+              className={`w-7 h-7 flex justify-center flex-shrink-0 ${!isExpanded ? "items-center" : "items-start pt-[2px]"}`}
             >
               {isThinking || isComplete ? (
                 <>
@@ -115,16 +180,16 @@ export const ThoughtChainComponent = forwardRef(
             </div>
             <div className="flex-1 min-w-0">
               <div
-                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "" : "max-h-6"}`}
+                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded ? "" : "max-h-6"}`}
               >
                 <div
-                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded || autoExpand ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}
+                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}
                 >
                   <span
-                    className={`block w-full ${!isExpanded && !autoExpand ? "truncate" : ""}`}
+                    className={`block w-full ${!isExpanded ? "truncate" : ""}`}
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(
-                        isExpanded || autoExpand
+                        isExpanded
                           ? renderMarkdown(tagStrippedContent)
                           : tagStrippedContent
                       ),
@@ -134,7 +199,7 @@ export const ThoughtChainComponent = forwardRef(
               </div>
             </div>
             <div className="flex items-center gap-x-2">
-              {!autoExpand && canExpand ? (
+              {canExpand ? (
                 <button
                   onClick={handleExpandClick}
                   data-tooltip-id="expand-cot"

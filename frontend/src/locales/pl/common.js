@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Ważne jest, aby zapisać to hasło, ponieważ nie ma metody jego odzyskania.",
       adminUsername: "Nazwa użytkownika konta administratora",
-      adminUsernameReq:
-        "Nazwa użytkownika musi składać się z co najmniej 6 znaków i zawierać wyłącznie małe litery, cyfry, podkreślenia i myślniki bez spacji.",
       adminPassword: "Hasło konta administratora",
       adminPasswordReq: "Hasła muszą składać się z co najmniej 8 znaków.",
       teamHint:
@@ -70,7 +68,9 @@ const TRANSLATIONS = {
     optional: "Opcjonalnie",
     yes: "Tak",
     no: "Nie",
-    search: null,
+    search: "Wyszukaj",
+    username_requirements:
+      "Nazwa użytkownika musi mieć od 2 do 32 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
   },
   settings: {
     title: "Ustawienia instancji",
@@ -103,7 +103,7 @@ const TRANSLATIONS = {
     "experimental-features": "Funkcje eksperymentalne",
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM Mobile",
   },
   login: {
     "multi-user": {
@@ -115,10 +115,7 @@ const TRANSLATIONS = {
       "forgot-pass": "Nie pamiętam hasła",
       reset: "Reset",
     },
-    "sign-in": {
-      start: "Zaloguj się do",
-      end: "",
-    },
+    "sign-in": "Zaloguj się do {{appName}}.",
     "password-reset": {
       title: "Resetowanie hasła",
       description: "Podaj poniżej niezbędne informacje, aby zresetować hasło.",
@@ -500,7 +497,7 @@ const TRANSLATIONS = {
         new: "Nowa wiadomość",
         system: "systemu",
         user: "użytkownika",
-        message: "",
+        message: "wiadomość",
         assistant: "Asystent czatu AnythingLLM",
         "double-click": "Kliknij dwukrotnie, aby edytować...",
         save: "Zapisz wiadomości",
@@ -527,8 +524,9 @@ const TRANSLATIONS = {
         link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Renderowanie HTML w czacie",
+        description:
+          "Wyświetlanie odpowiedzi w formacie HTML w odpowiedziach asystenta.\nMoże to prowadzić do znacznie wyższej jakości odpowiedzi, ale również wiąże się z potencjalnymi zagrożeniami bezpieczeństwa.",
       },
     },
   },
@@ -558,7 +556,8 @@ const TRANSLATIONS = {
         model_type: "Typ modelu",
         default: "Domyślne",
         reasoning: "Uzasadnienie",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "Jeśli w Państwa systemie używany jest model rozumowania (np. o1, o1-mini, o3-mini), ustaw tę opcję na „Rozumowanie”. W przeciwnym razie, Państwa zapytania w czacie mogą nie działać.",
       },
     },
   },
@@ -787,8 +786,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Osobisty token dostępu do Confluence.",
       task_explained:
         "Po zakończeniu zawartość strony będzie dostępna do osadzenia w obszarach roboczych w selektorze dokumentów.",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "Omijanie weryfikacji certyfikatu SSL",
+      bypass_ssl_explained:
+        "Włącz tę opcję, aby ominąć weryfikację certyfikatu SSL dla instancji Confluence, które są samodzielnie hostowane i posiadają certyfikat samodzielnie podpisany.",
     },
     manage: {
       documents: "Dokumenty",
@@ -919,10 +919,8 @@ const TRANSLATIONS = {
     profile_picture: "Zdjęcie profilowe",
     remove_profile_picture: "Usuń zdjęcie profilowe",
     username: "Nazwa użytkownika",
-    username_description:
-      "Nazwa użytkownika musi zawierać tylko małe litery, cyfry, podkreślenia i myślniki bez spacji.",
     new_password: "Nowe hasło",
-    password_description: null,
+    password_description: "Hasz do 8 znaków.",
     cancel: "Anuluj",
     update_account: "Zaktualizuj konto",
     theme: "Preferencje dotyczące motywu",

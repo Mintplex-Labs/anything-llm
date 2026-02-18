@@ -22,7 +22,7 @@ class LiteLLM {
       apiKey: process.env.LITE_LLM_API_KEY ?? null,
     });
     this.model = modelPreference ?? process.env.LITE_LLM_MODEL_PREF ?? null;
-    this.maxTokens = process.env.LITE_LLM_MODEL_TOKEN_LIMIT ?? 1024;
+
     if (!this.model) throw new Error("LiteLLM must have a valid model set.");
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -132,7 +132,6 @@ class LiteLLM {
           model: this.model,
           messages,
           temperature,
-          max_tokens: parseInt(this.maxTokens), // LiteLLM requires int
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -155,6 +154,7 @@ class LiteLLM {
           (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
         model: this.model,
+        provider: this.className,
         timestamp: new Date(),
       },
     };
@@ -167,12 +167,11 @@ class LiteLLM {
         stream: true,
         messages,
         temperature,
-        max_tokens: parseInt(this.maxTokens), // LiteLLM requires int
       }),
       messages,
-      // runPromptTokenCalculation: true - We manually count the tokens because they may or may not be provided in the stream
       runPromptTokenCalculation: true,
       modelTag: this.model,
+      provider: this.className,
     });
 
     return measuredStreamRequest;

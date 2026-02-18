@@ -22,20 +22,16 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
-  const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
-
-  // Maintain state of message from whatever is in PromptInput
-  const handleMessageChange = (event) => {
-    setMessage(event.target.value);
-  };
+  const { chatHistoryRef } = useChatContainerQuickScroll();
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -48,10 +44,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text (default: replace)
    */
   function setMessageEmit(messageContent = "", writeMode = "replace") {
-    if (writeMode === "append") setMessage((prev) => prev + messageContent);
-    else setMessage(messageContent ?? "");
-
-    // Push the update to the PromptInput component (same logic as above to keep in sync)
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent, writeMode },
@@ -61,11 +53,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!message || message === "") return false;
+    const currentMessage =
+      document.getElementById(PROMPT_INPUT_ID)?.value || "";
+    if (!currentMessage) return false;
+
     const prevChatHistory = [
       ...chatHistory,
       {
-        content: message,
+        content: currentMessage,
         role: "user",
         attachments: parseAttachments(),
       },
@@ -73,7 +68,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         content: "",
         role: "assistant",
         pending: true,
-        userMessage: message,
+        userMessage: currentMessage,
         animate: true,
       },
     ];
@@ -135,7 +130,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     // @note: `message` will not work here since it is not updated yet.
     // If text is still empty, after this, then we should just return.
     if (writeMode === "append") {
-      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value;
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
       text = currentText + text;
     }
 
@@ -245,7 +240,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           setLoadingResponse(true);
           try {
             handleSocketResponse(socket, event, setChatHistory);
-          } catch (e) {
+          } catch {
             console.error("Failed to parse data");
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();
@@ -308,6 +303,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       <DnDFileUploaderWrapper>
         <MetricsProvider>
           <ChatHistory
+            ref={chatHistoryRef}
             history={chatHistory}
             workspace={workspace}
             sendCommand={sendCommand}
@@ -318,7 +314,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         </MetricsProvider>
         <PromptInput
           submit={handleSubmit}
-          onChange={handleMessageChange}
           isStreaming={loadingResponse}
           sendCommand={sendCommand}
           attachments={files}

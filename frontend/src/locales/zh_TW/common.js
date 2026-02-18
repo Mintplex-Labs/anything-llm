@@ -21,8 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "密碼必須至少包含 8 個字元。",
       passwordWarn: "保存此密碼很重要，因為沒有恢復方法。",
       adminUsername: "管理員帳號使用者名稱",
-      adminUsernameReq:
-        "使用者名稱必須至少為 6 個字元，並且只能包含小寫字母、數字、底線和連字號，不含空格。",
       adminPassword: "管理員帳號密碼",
       adminPasswordReq: "密碼必須至少包含 8 個字元。",
       teamHint:
@@ -66,6 +64,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜尋",
+    username_requirements:
+      "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
   },
   settings: {
     title: "系統設定",
@@ -98,7 +98,7 @@ const TRANSLATIONS = {
     interface: "使用者介面偏好設定",
     branding: "品牌與白標設定",
     chat: "聊天室",
-    "mobile-app": null,
+    "mobile-app": "AnythingLLM 應用程式",
   },
   login: {
     "multi-user": {
@@ -110,10 +110,7 @@ const TRANSLATIONS = {
       "forgot-pass": "忘記密碼",
       reset: "重設",
     },
-    "sign-in": {
-      start: "登入您的",
-      end: "帳號。",
-    },
+    "sign-in": "登入您的 {{appName}} 帳號。",
     "password-reset": {
       title: "重設密碼",
       description: "請在下方提供必要資訊以重設您的密碼。",
@@ -349,7 +346,8 @@ const TRANSLATIONS = {
         model_type: "模型類型",
         default: "預設",
         reasoning: "推理",
-        model_type_tooltip: null,
+        model_type_tooltip:
+          "如果您的部署使用推理模型（例如 o1、o1-mini、o3-mini 等），請將此設定設為「推理」。否則，您的對話請求可能會失敗。",
       },
     },
   },
@@ -546,8 +544,9 @@ const TRANSLATIONS = {
       pat_token: "Confluence 個人存取權杖",
       pat_token_explained: "您的 Confluence 個人存取權杖。",
       task_explained: "完成後，頁面內容將可供嵌入到工作區中的檔案選擇器。",
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      bypass_ssl: "跳過 SSL 憑證驗證",
+      bypass_ssl_explained:
+        "啟用此選項，以繞過自簽憑證的 SSL 憑證驗證，適用於您自行託管的 Confluence 實例。",
     },
     manage: {
       documents: "文件",
@@ -655,7 +654,7 @@ const TRANSLATIONS = {
     cancel: "取消",
     edit_prompt: "編輯問題",
     edit_response: "編輯回應",
-    at_agent: "代理",
+    at_agent: "@agent",
     default_agent_description: " - 此工作區的預設代理。",
     custom_agents_coming_soon: "自訂代理功能即將推出！",
     slash_reset: "/reset",
@@ -686,8 +685,6 @@ const TRANSLATIONS = {
     profile_picture: "個人資料圖片",
     remove_profile_picture: "移除個人資料圖片",
     username: "使用者名稱",
-    username_description:
-      "使用者名稱必須只包含小寫字母、數字、底線和連字號，且沒有空格",
     new_password: "新密碼",
     password_description: "密碼長度必須至少為 8 個字元",
     cancel: "取消",
@@ -791,8 +788,9 @@ const TRANSLATIONS = {
         link: "連結",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "將 HTML 內容轉換為聊天格式",
+        description:
+          "將 HTML 格式的回應嵌入到助理的回應中。\n這可以顯著提高回應品質，但也可能帶來潛在的安全風險。",
       },
     },
   },

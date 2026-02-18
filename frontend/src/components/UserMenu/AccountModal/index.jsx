@@ -11,6 +11,12 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
+import Toggle from "@/components/lib/Toggle";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from "@/utils/username";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -143,13 +149,15 @@ export default function AccountModal({ user, hideModal }) {
                   type="text"
                   className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
-                  minLength={2}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  pattern={USERNAME_PATTERN}
                   defaultValue={user.username}
                   required
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  {t("profile_settings.username_description")}
+                  {t("common.username_requirements")}
                 </p>
               </div>
               <div>
@@ -287,10 +295,9 @@ function AutoSubmitPreference() {
     setAutoSubmitSttInput(settings.autoSubmitSttInput ?? true);
   }, []);
 
-  const handleChange = (e) => {
-    const newValue = e.target.checked;
-    setAutoSubmitSttInput(newValue);
-    Appearance.updateSettings({ autoSubmitSttInput: newValue });
+  const handleChange = (checked) => {
+    setAutoSubmitSttInput(checked);
+    Appearance.updateSettings({ autoSubmitSttInput: checked });
   };
 
   return (
@@ -310,19 +317,7 @@ function AutoSubmitPreference() {
           <Info size={16} weight="bold" className="text-white" />
         </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        <label className="relative inline-flex cursor-pointer items-center">
-          <input
-            id="autoSubmit"
-            type="checkbox"
-            name="autoSubmit"
-            checked={autoSubmitSttInput}
-            onChange={handleChange}
-            className="peer sr-only"
-          />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-        </label>
-      </div>
+      <Toggle size="lg" enabled={autoSubmitSttInput} onChange={handleChange} />
       <Tooltip
         id="auto-submit-info"
         place="bottom"
@@ -345,10 +340,9 @@ function AutoSpeakPreference() {
     );
   }, []);
 
-  const handleChange = (e) => {
-    const newValue = e.target.checked;
-    setAutoPlayAssistantTtsResponse(newValue);
-    Appearance.updateSettings({ autoPlayAssistantTtsResponse: newValue });
+  const handleChange = (checked) => {
+    setAutoPlayAssistantTtsResponse(checked);
+    Appearance.updateSettings({ autoPlayAssistantTtsResponse: checked });
   };
 
   return (
@@ -368,19 +362,11 @@ function AutoSpeakPreference() {
           <Info size={16} weight="bold" className="text-white" />
         </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        <label className="relative inline-flex cursor-pointer items-center">
-          <input
-            id="autoSpeak"
-            type="checkbox"
-            name="autoSpeak"
-            checked={autoPlayAssistantTtsResponse}
-            onChange={handleChange}
-            className="peer sr-only"
-          />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-        </label>
-      </div>
+      <Toggle
+        size="lg"
+        enabled={autoPlayAssistantTtsResponse}
+        onChange={handleChange}
+      />
       <Tooltip
         id="auto-speak-info"
         place="bottom"

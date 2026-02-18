@@ -33,7 +33,7 @@ function isValidDelim(state, pos) {
 }
 
 function math_inline(state, silent) {
-  var start, match, token, res, pos, esc_count;
+  var start, match, token, res, pos;
 
   // Only process $ and \( delimiters for inline math
   if (

@@ -1,11 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import Toggle from "@/components/lib/Toggle";
 
+/**
+ * Converts a string to a URL-friendly slug format.
+ * Matches backend slugify behavior for consistent database_id generation.
+ * @param {string} str - The string to slugify
+ * @returns {string} - The slugified string (lowercase, hyphens, no special chars)
+ */
+function slugify(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+/**
+ * Assembles a database connection string based on the engine type and configuration.
+ * @param {Object} params - Connection parameters
+ * @param {string} params.engine - The database engine ('postgresql', 'mysql', or 'sql-server')
+ * @param {string} [params.username=""] - Database username
+ * @param {string} [params.password=""] - Database password
+ * @param {string} [params.host=""] - Database host/endpoint
+ * @param {string} [params.port=""] - Database port
+ * @param {string} [params.database=""] - Database name
+ * @param {boolean} [params.encrypt=false] - Enable encryption (SQL Server only)
+ * @returns {string|null} - The assembled connection string, error message if fields missing, or null if engine invalid
+ */
 function assembleConnectionString({
   engine,
   username = "",
@@ -31,6 +59,7 @@ function assembleConnectionString({
 
 const DEFAULT_ENGINE = "postgresql";
 const DEFAULT_CONFIG = {
+  name: "",
   username: null,
   password: null,
   host: null,
@@ -40,15 +69,59 @@ const DEFAULT_CONFIG = {
   encrypt: false,
 };
 
-export default function NewSQLConnection({
+/**
+ * Modal component for creating or editing SQL database connections.
+ * Supports PostgreSQL, MySQL, and SQL Server with connection validation.
+ * Handles duplicate connection name detection and connection string assembly.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is currently open
+ * @param {Function} props.closeModal - Callback to close the modal
+ * @param {Function} props.onSubmit - Callback when connection is successfully validated and saved
+ * @param {Function} props.setHasChanges - Callback to mark that changes have been made
+ * @param {Object|null} [props.existingConnection=null] - Existing connection data for edit mode (contains database_id, engine, username, password, host, port, database, scheme, encrypt)
+ * @param {Array} [props.connections=[]] - List of all existing connections for duplicate detection
+ * @returns {React.ReactPortal|null} - Portal containing the modal UI, or null if not open
+ */
+export default function SQLConnectionModal({
   isOpen,
   closeModal,
   onSubmit,
   setHasChanges,
+  existingConnection = null, // { database_id, engine } for edit mode
+  connections = [], // List of all existing connections for duplicate detection
 }) {
+  const isEditMode = !!existingConnection;
   const [engine, setEngine] = useState(DEFAULT_ENGINE);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [isValidating, setIsValidating] = useState(false);
+
+  // Sync state when modal opens - useState initial values only run once on mount,
+  // so we need this effect to update state when the modal is reopened
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (existingConnection) {
+      setEngine(existingConnection.engine);
+      setConfig({
+        name: existingConnection.database_id,
+        username: existingConnection.username,
+        password: existingConnection.password,
+        host: existingConnection.host,
+        port: existingConnection.port,
+        database: existingConnection.database,
+        scheme: existingConnection.scheme,
+        encrypt: existingConnection?.encrypt,
+      });
+    } else {
+      setEngine(DEFAULT_ENGINE);
+      setConfig(DEFAULT_CONFIG);
+    }
+  }, [isOpen, existingConnection]);
+
+  // Track original database ID to send to server for updating if in edit mode
+  const originalDatabaseId = isEditMode ? existingConnection.database_id : null;
+
   if (!isOpen) return null;
 
   function handleClose() {
@@ -60,6 +133,7 @@ export default function NewSQLConnection({
   function onFormChange(e) {
     const form = new FormData(e.target.form);
     setConfig({
+      name: form.get("name").trim(),
       username: form.get("username").trim(),
       password: form.get("password"),
       host: form.get("host").trim(),
@@ -69,14 +143,61 @@ export default function NewSQLConnection({
     });
   }
 
+  /**
+   * Checks if a connection name (slugified) already exists in the connections list.
+   * For edit mode, excludes the original connection being edited.
+   * @param {string} slugifiedName - The slugified name to check
+   * @returns {boolean} - True if duplicate exists, false otherwise
+   */
+  function isDuplicateConnectionName(slugifiedName) {
+    // Get active connections (not marked for removal)
+    const activeConnections = connections.filter(
+      (conn) => conn.action !== "remove"
+    );
+
+    // Check for duplicates, excluding the original connection in edit mode
+    return activeConnections.some((conn) => {
+      // In edit mode, skip the original connection being edited
+      if (isEditMode && conn.database_id === originalDatabaseId) {
+        return false;
+      }
+      return conn.database_id === slugifiedName;
+    });
+  }
+
+  /**
+   * Handles form submission for both creating new connections and updating existing ones.
+   * Process:
+   * 1. Slugify the connection name to match backend behavior
+   * 2. Check for duplicate names (prevents frontend from sending invalid updates)
+   * 3. Validate the connection string by attempting to connect to the database
+   * 4. If valid, submit with appropriate action ("add" or "update")
+   *
+   * For updates: Includes originalDatabaseId so backend can find and replace the old connection
+   * For new connections: Just includes the new connection data
+   */
   async function handleUpdate(e) {
     e.preventDefault();
     e.stopPropagation();
     const form = new FormData(e.target);
     const connectionString = assembleConnectionString({ engine, ...config });
 
+    // Slugify the database_id immediately to match backend behavior
+    const slugifiedDatabaseId = slugify(form.get("name"));
+
+    // Check for duplicate connection names before validation
+    if (isDuplicateConnectionName(slugifiedDatabaseId)) {
+      showToast(
+        `A connection with the name "${slugifiedDatabaseId}" already exists. Please choose a different name.`,
+        "error",
+        { clear: true }
+      );
+      return;
+    }
+
     setIsValidating(true);
     try {
+      // Validate that we can actually connect to this database
       const { success, error } = await System.validateSQLConnection(
         engine,
         connectionString
@@ -92,11 +213,30 @@ export default function NewSQLConnection({
         return;
       }
 
-      onSubmit({
+      const connectionData = {
         engine,
-        database_id: form.get("name"),
+        database_id: slugifiedDatabaseId,
         connectionString,
-      });
+      };
+
+      if (isEditMode) {
+        // EDIT MODE: Send update action with originalDatabaseId
+        // This tells the backend to find the connection with originalDatabaseId
+        // and replace it with the new connection data
+        onSubmit({
+          ...connectionData,
+          action: "update",
+          originalDatabaseId: originalDatabaseId,
+        });
+      } else {
+        // CREATE MODE: Send add action
+        // Backend will check for duplicates and add if unique
+        onSubmit({
+          ...connectionData,
+          action: "add",
+        });
+      }
+
       setHasChanges(true);
       handleClose();
     } catch (error) {
@@ -122,7 +262,7 @@ export default function NewSQLConnection({
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
               <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-                New SQL Connection
+                {isEditMode ? "Edit SQL Connection" : "New SQL Connection"}
               </h3>
             </div>
             <button
@@ -141,8 +281,9 @@ export default function NewSQLConnection({
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                 <p className="text-sm text-white/60">
-                  Add the connection information for your database below and it
-                  will be available for future SQL agent calls.
+                  {isEditMode
+                    ? "Update the connection information for your database below."
+                    : "Add the connection information for your database below and it will be available for future SQL agent calls."}
                 </p>
                 <div className="flex flex-col w-full">
                   <div className="border border-red-800 bg-zinc-800 light:bg-red-200/50 p-4 rounded-lg flex items-center gap-x-2 text-sm text-red-400 light:text-red-500">
@@ -190,6 +331,7 @@ export default function NewSQLConnection({
                     required={true}
                     autoComplete="off"
                     spellCheck={false}
+                    defaultValue={config.name || ""}
                   />
                 </div>
 
@@ -206,6 +348,7 @@ export default function NewSQLConnection({
                       required={true}
                       autoComplete="off"
                       spellCheck={false}
+                      defaultValue={config.username || ""}
                     />
                   </div>
                   <div className="flex flex-col">
@@ -213,13 +356,14 @@ export default function NewSQLConnection({
                       Database user password
                     </label>
                     <input
-                      type="text"
+                      type="password"
                       name="password"
                       className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                       placeholder="password123"
                       required={true}
                       autoComplete="off"
                       spellCheck={false}
+                      defaultValue={config.password || ""}
                     />
                   </div>
                 </div>
@@ -237,6 +381,7 @@ export default function NewSQLConnection({
                       required={true}
                       autoComplete="off"
                       spellCheck={false}
+                      defaultValue={config.host || ""}
                     />
                   </div>
                   <div>
@@ -251,6 +396,7 @@ export default function NewSQLConnection({
                       required={false}
                       autoComplete="off"
                       spellCheck={false}
+                      defaultValue={config.port || ""}
                     />
                   </div>
                 </div>
@@ -267,6 +413,7 @@ export default function NewSQLConnection({
                     required={true}
                     autoComplete="off"
                     spellCheck={false}
+                    defaultValue={config.database || ""}
                   />
                 </div>
 
@@ -283,26 +430,19 @@ export default function NewSQLConnection({
                       required={false}
                       autoComplete="off"
                       spellCheck={false}
+                      defaultValue={config.schema || ""}
                     />
                   </div>
                 )}
 
                 {engine === "sql-server" && (
-                  <div className="flex items-center justify-between">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="encrypt"
-                        value="true"
-                        className="sr-only peer"
-                        checked={config.encrypt}
-                      />
-                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      <span className="ml-3 text-sm font-medium text-white">
-                        Enable Encryption
-                      </span>
-                    </label>
-                  </div>
+                  <Toggle
+                    name="encrypt"
+                    value="true"
+                    size="md"
+                    label="Enable Encryption"
+                    enabled={config.encrypt}
+                  />
                 )}
 
                 <p className="text-theme-text-secondary text-sm">
@@ -335,6 +475,16 @@ export default function NewSQLConnection({
   );
 }
 
+/**
+ * Database engine selection button component.
+ * Displays a database logo and handles selection state.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.provider - The database provider identifier ('postgresql', 'mysql', 'sql-server')
+ * @param {boolean} props.active - Whether this engine is currently selected
+ * @param {Function} props.onClick - Callback when the engine is clicked
+ * @returns {JSX.Element} - Button element with database logo
+ */
 function DBEngine({ provider, active, onClick }) {
   return (
     <button
