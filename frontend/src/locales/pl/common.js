@@ -913,6 +913,11 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kliknij, aby skonfigurować poświadczenia",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Edytuj konto",

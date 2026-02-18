@@ -883,6 +883,11 @@ const TRANSLATIONS = {
       missing_credentials: "חסרים אישורים לספק זה!",
       missing_credentials_description: "לחץ להגדרת אישורים",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

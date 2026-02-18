@@ -918,6 +918,11 @@ const TRANSLATIONS = {
       missing_credentials: "Für diesen Anbieter fehlen Anmeldedaten!",
       missing_credentials_description: "Klicken, um Zugangsdaten einzurichten",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

@@ -718,6 +718,11 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "認証情報を設定するには、ここをクリックしてください。",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "アカウントを編集",

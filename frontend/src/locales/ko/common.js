@@ -893,6 +893,11 @@ const TRANSLATIONS = {
       missing_credentials: "이 제공자의 인증 정보가 없습니다!",
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

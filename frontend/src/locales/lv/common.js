@@ -915,6 +915,11 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

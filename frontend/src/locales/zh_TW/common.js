@@ -679,6 +679,11 @@ const TRANSLATIONS = {
       missing_credentials: "缺少憑證",
       missing_credentials_description: "缺少憑證說明",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "編輯帳戶",

@@ -723,6 +723,11 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kimlik bilgilerini ayarlamak için tıklayın",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

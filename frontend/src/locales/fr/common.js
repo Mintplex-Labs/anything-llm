@@ -730,6 +730,11 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Vous devez configurer vos identifiants de fournisseur LLM avant de pouvoir sélectionner un modèle.",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Modifier le compte",

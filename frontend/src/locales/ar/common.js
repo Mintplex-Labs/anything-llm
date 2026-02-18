@@ -715,6 +715,11 @@ const TRANSLATIONS = {
       missing_credentials: "هذا المزود لا يمتلك المؤهلات اللازمة!",
       missing_credentials_description: "انقر لإعداد بيانات الاعتماد",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

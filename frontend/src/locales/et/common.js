@@ -876,6 +876,11 @@ const TRANSLATIONS = {
       missing_credentials: "Sellel pakkujal puuduvad võtmed!",
       missing_credentials_description: "Klõpsa, et määrata võtmed",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "Muuda kontot",

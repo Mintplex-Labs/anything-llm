@@ -851,6 +851,11 @@ const TRANSLATIONS = {
       missing_credentials: "缺少凭证",
       missing_credentials_description: "缺少凭证说明",
     },
+    submit: null,
+    edit_info_user: null,
+    edit_info_assistant: null,
+    see_less: null,
+    see_more: null,
   },
   profile_settings: {
     edit_account: "编辑帐户",
