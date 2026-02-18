@@ -78,7 +78,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {('pinecone' | 'chroma' | 'chromacloud' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explicit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
