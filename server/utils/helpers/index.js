@@ -416,6 +416,10 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "sambanova":
       const { SambaNovaLLM } = require("../AiProviders/sambanova");
       return SambaNovaLLM;
+        case "modelslab": {
+      const { ModelsLabLLM } = require("../AiProviders/modelsLab");
+      return await ModelsLabLLM.getModelsListing();
+    }
     default:
       return null;
   }
@@ -498,6 +502,10 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.PRIVATEMODE_LLM_MODEL_PREF;
     case "sambanova":
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
+        case "modelslab": {
+      const { ModelsLabLLM } = require("../AiProviders/modelsLab");
+      return await ModelsLabLLM.getModelsListing();
+    }
     default:
       return null;
   }
