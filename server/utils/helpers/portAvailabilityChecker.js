@@ -28,11 +28,12 @@ function checkPort(options = {}) {
   });
 }
 
-async function isPortInUse(port, host) {
+async function isPortAvailable(port, host) {
   try {
     await checkPort({ port, host });
-    return true;
+    return true; // Successfully listened and closed, port is available.
   } catch (error) {
+    // If the error is EADDRINUSE, then the port is in use and not available.
     if (!["EADDRNOTAVAIL", "EINVAL"].includes(error.code)) {
       return false;
     }
@@ -41,6 +42,6 @@ async function isPortInUse(port, host) {
 }
 
 module.exports = {
-  isPortInUse,
+  isPortAvailable,
   getLocalHosts,
 };
