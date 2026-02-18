@@ -218,6 +218,7 @@ function TruncatableContent({ children }) {
   const contentRef = useRef(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (contentRef.current) {
@@ -260,7 +261,7 @@ function TruncatableContent({ children }) {
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-zinc-300 light:text-slate-700 hover:text-white light:hover:text-slate-900 text-xs font-medium leading-4 mt-2"
         >
-          {isExpanded ? "See Less" : "See More"}
+          {isExpanded ? t("chat_window.see_less") : t("chat_window.see_more")}
         </button>
       )}
     </>

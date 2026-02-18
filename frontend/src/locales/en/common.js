@@ -959,6 +959,8 @@ const TRANSLATIONS = {
       '"Submit" regenerates the AI response. "Save" updates your message only.',
     edit_info_assistant:
       "Your changes will be saved directly to this response.",
+    see_less: "See Less",
+    see_more: "See More",
     at_agent: "@agent",
     default_agent_description: " - the default agent for this workspace.",
     custom_agents_coming_soon: "custom agents are coming soon!",
