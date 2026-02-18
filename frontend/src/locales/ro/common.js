@@ -209,6 +209,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Scurtături de tastatură",
     },
+    quickActions: {
+      createAgent: "Creați un agent",
+      editWorkspace: "Modifică spațiul de lucru",
+      uploadDocument: "Încărcați un document",
+    },
+    greeting: "Ce pot face pentru a vă ușura ziua astăzi?",
   },
   "new-workspace": {
     title: "Spațiu de lucru nou",

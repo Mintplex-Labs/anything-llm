@@ -203,6 +203,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "קיצורי מקלדת",
     },
+    quickActions: {
+      createAgent: "צור סוכן",
+      editWorkspace: "ערוך את סביבת העבודה",
+      uploadDocument: "העלה מסמך",
+    },
+    greeting: "איך אוכל לעזור לכם להקל על היום שלכם?",
   },
   "new-workspace": {
     title: "סביבת עבודה חדשה",
