@@ -220,7 +220,7 @@ Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用
 
 ---
 
-Copyright © 2025 [Mintplex Labs][profile-link]。<br />
+Copyright © 2026 [Mintplex Labs][profile-link]。<br />
 このプロジェクトは[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)ライセンスの下でライセンスされています。
 
 <!-- LINK GROUP -->
