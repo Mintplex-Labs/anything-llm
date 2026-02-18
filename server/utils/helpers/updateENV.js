@@ -1025,7 +1025,7 @@ async function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
 
   try {
-    const { isPortInUse, getLocalHosts } = require("./portAvailabilityChecker");
+    const { isPortAvailable, getLocalHosts } = require("./portAvailabilityChecker");
     const localInterfaces = getLocalHosts();
     const url = new URL(input);
     const hostname = url.hostname.toLowerCase();
@@ -1035,7 +1035,7 @@ async function validDockerizedUrl(input = "") {
     if (!localInterfaces.includes(hostname)) return null;
     if (isNaN(port)) return "Invalid URL: Port is not specified or invalid";
 
-    const isPortAvailableFromDocker = await isPortInUse(port, hostname);
+    const isPortAvailableFromDocker = await isPortAvailable(port, hostname);
     if (isPortAvailableFromDocker)
       return "Port is not running a reachable service on loopback address from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
   } catch (error) {
