@@ -130,8 +130,7 @@ export default function ActiveWorkspaces() {
                             transition-all duration-[200ms]
                             flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
                             bg-theme-sidebar-item-default
-                            hover:bg-theme-sidebar-subitem-hover hover:font-bold
-                            ${isActive ? "bg-theme-sidebar-item-selected font-bold light:outline-2 light:outline light:outline-blue-400 light:outline-offset-[-2px]" : ""}
+                            ${isActive ? "light:bg-blue-200 font-bold" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"}
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
@@ -141,7 +140,7 @@ export default function ActiveWorkspaces() {
                             >
                               <DotsSixVertical
                                 size={20}
-                                color="var(--theme-sidebar-item-workspace-active)"
+                                className={`${isActive ? "text-white light:text-blue-800" : ""}`}
                                 weight="bold"
                               />
                             </div>
@@ -149,9 +148,9 @@ export default function ActiveWorkspaces() {
                               <div className="w-[130px] overflow-hidden">
                                 <p
                                   className={`
-                                  text-[14px] leading-loose whitespace-nowrap overflow-hidden text-white
-                                  ${isActive ? "font-bold" : "font-medium"} truncate
-                                  w-full group-hover:w-[130px] group-hover:font-bold group-hover:duration-200
+                                  text-[14px] leading-loose whitespace-nowrap overflow-hidden
+                                  ${isActive ? "font-bold text-white light:text-blue-900" : "font-medium "} truncate
+                                  w-full group-hover:w-[130px] group-hover:duration-200
                                 `}
                                 >
                                   {workspace.name}
@@ -169,9 +168,11 @@ export default function ActiveWorkspaces() {
                                     setSelectedWs(workspace);
                                     showModal();
                                   }}
-                                  className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
+                                  className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                 >
-                                  <UploadSimple className="h-[20px] w-[20px]" />
+                                  <UploadSimple
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/upload:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/upload:text-slate-950"}`}
+                                  />
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -185,7 +186,7 @@ export default function ActiveWorkspaces() {
                                           )
                                     );
                                   }}
-                                  className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
+                                  className={`group/gear rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                   aria-label="General appearance settings"
                                 >
                                   <GearSix
@@ -195,7 +196,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className="h-[20px] w-[20px]"
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/gear:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/gear:text-slate-950"}`}
                                   />
                                 </button>
                               </div>
