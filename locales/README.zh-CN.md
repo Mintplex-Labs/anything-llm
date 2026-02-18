@@ -262,7 +262,7 @@ _以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex La
 
 ---
 
-版权所有 © 2025 [Mintplex Labs][profile-link]。<br />
+版权所有 © 2026 [Mintplex Labs][profile-link]。<br />
 本项目采用[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)许可证。
 
 <!-- LINK GROUP -->
