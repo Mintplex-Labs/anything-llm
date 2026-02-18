@@ -1,7 +1,7 @@
 const Formatter = Intl.NumberFormat("en", { notation: "compact" });
 
 export function numberWithCommas(input) {
-  return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return new Intl.NumberFormat("en-US").format(input);
 }
 
 export function nFormatter(input) {
@@ -55,6 +55,6 @@ export function milliToHms(milli = 0) {
 
   var hDisplay = h >= 1 ? h + "h " : "";
   var mDisplay = m >= 1 ? m + "m " : "";
-  var sDisplay = s >= 0.01 ? s.toFixed(2) + "s" : "";
-  return hDisplay + mDisplay + sDisplay;
+  var sDisplay = s >= 0.01 ? s.toFixed(2) + "s" : hDisplay || mDisplay ? "" : "0s";
+  return (hDisplay + mDisplay + sDisplay).trim();
 }

@@ -5,7 +5,7 @@ export default function useCopyText(delay = 2500) {
   const copyText = async (content) => {
     if (!content) return;
     navigator?.clipboard?.writeText(content);
-    setCopied(content);
+    setCopied(true);
     setTimeout(() => {
       setCopied(false);
     }, delay);
