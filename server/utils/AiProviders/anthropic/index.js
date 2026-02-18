@@ -178,7 +178,7 @@ class AnthropicLLM {
       };
     } catch (error) {
       console.log(error);
-      return { textResponse: error, metrics: {} };
+      return { textResponse: error.message || "An error occurred with Anthropic.", metrics: {} };
     }
   }
 
