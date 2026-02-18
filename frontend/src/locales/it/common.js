@@ -740,6 +740,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Fare clic per configurare le credenziali",
     },
+    submit: "Invia",
+    edit_info_user:
+      '"Invia" rigenera la risposta dell\'IA. "Salva" aggiorna solo il tuo messaggio.',
+    edit_info_assistant:
+      "Le modifiche verranno salvate direttamente in questa risposta.",
+    see_less: "Visualizza meno",
+    see_more: "Visualizza altro",
   },
   profile_settings: {
     edit_account: "Modifica account",

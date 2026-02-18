@@ -893,6 +893,12 @@ const TRANSLATIONS = {
       missing_credentials: "이 제공자의 인증 정보가 없습니다!",
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
     },
+    submit: "제출",
+    edit_info_user:
+      '"제출"은 AI 응답을 다시 생성합니다. "저장"은 사용자 메시지만 업데이트합니다.',
+    edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
+    see_less: "더 보기",
+    see_more: "더 보기",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

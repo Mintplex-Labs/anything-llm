@@ -679,6 +679,11 @@ const TRANSLATIONS = {
       missing_credentials: "缺少憑證",
       missing_credentials_description: "缺少憑證說明",
     },
+    submit: "提交",
+    edit_info_user: "「提交」會重新產生 AI 的回覆。 「儲存」僅會更新您的訊息。",
+    edit_info_assistant: "您的修改將直接儲存到此處。",
+    see_less: "查看更多",
+    see_more: "查看更多",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

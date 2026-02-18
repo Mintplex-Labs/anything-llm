@@ -718,6 +718,12 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "認証情報を設定するには、ここをクリックしてください。",
     },
+    submit: "送信",
+    edit_info_user:
+      "「送信」はAIの応答を再生成します。「保存」は、あなたのメッセージのみを更新します。",
+    edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
+    see_less: "詳細を見る",
+    see_more: "詳細を見る",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

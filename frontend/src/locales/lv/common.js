@@ -915,6 +915,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: "Iesniegt",
+    edit_info_user:
+      '"Sūtīt" atjauno AI atbildi. "Saglabāt" atjauno tikai jūsu ziņu.',
+    edit_info_assistant:
+      "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
+    see_less: "Skatīt mazāk",
+    see_more: "Skatīt vairāk",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
