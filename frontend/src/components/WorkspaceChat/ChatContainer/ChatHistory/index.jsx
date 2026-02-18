@@ -352,9 +352,7 @@ function buildMessages({
     }
 
     if (props.type === "rechartVisualize" && !!props.content) {
-      acc.push(
-        <Chartable key={props.uuid} workspace={workspace} props={props} />
-      );
+      acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -364,7 +362,6 @@ function buildMessages({
           pending={props.pending}
           sources={props.sources}
           error={props.error}
-          workspace={workspace}
           closed={props.closed}
         />
       );
