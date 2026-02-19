@@ -4,7 +4,7 @@ import SlashCommandsButton, {
   useSlashCommands,
 } from "./SlashCommands";
 import debounce from "lodash.debounce";
-import { PaperPlaneRight } from "@phosphor-icons/react";
+import { ArrowUp } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
 import AvailableAgentsButton, {
   AvailableAgents,
@@ -30,11 +30,23 @@ export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
 
+/**
+ * @param {function} props.submit - form submit handler
+ * @param {boolean} props.isStreaming - disables input while streaming response
+ * @param {function} props.sendCommand - handler for slash commands and agent mentions
+ * @param {Array} [props.attachments] - file attachments array
+ * @param {boolean} [props.centered] - renders in centered layout mode (for home page)
+ * @param {string} [props.workspaceSlug] - workspace slug for home page context
+ * @param {string} [props.threadSlug] - thread slug for home page context
+ */
 export default function PromptInput({
   submit,
   isStreaming,
   sendCommand,
   attachments = [],
+  centered = false,
+  workspaceSlug = null,
+  threadSlug = null,
 }) {
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
@@ -247,27 +259,41 @@ export default function PromptInput({
   }
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5">
+    <div
+      className={
+        centered
+          ? "w-full relative flex justify-center items-center"
+          : "w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5"
+      }
+    >
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
         promptRef={textareaRef}
+        centered={centered}
       />
       <AvailableAgents
         showing={showAgents}
         setShowing={setShowAgents}
         sendCommand={sendCommand}
         promptRef={textareaRef}
+        centered={centered}
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
+        className={
+          centered
+            ? "flex flex-col gap-y-1 rounded-t-lg w-full items-center"
+            : "flex flex-col gap-y-1 rounded-t-lg md:w-full w-full mx-auto max-w-[750px] items-center"
+        }
       >
-        <div className="flex items-center rounded-lg md:mb-4 md:w-full">
-          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
+        <div
+          className={`flex items-center rounded-lg md:w-full ${centered ? "mb-0" : "mb-4"}`}
+        >
+          <div className="w-[95vw] md:w-[750px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-[20px] pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center border-b border-theme-chat-input-border mx-3">
+            <div className="flex items-center mx-[7px]">
               <textarea
                 id={PROMPT_INPUT_ID}
                 ref={textareaRef}
@@ -288,42 +314,13 @@ export default function PromptInput({
                 className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow mb-1 pwa:!text-[16px] ${textSizeClass}`}
                 placeholder={t("chat_window.send_message")}
               />
-              {isStreaming ? (
-                <StopGenerationButton />
-              ) : (
-                <>
-                  <button
-                    ref={formRef}
-                    type="submit"
-                    disabled={isDisabled}
-                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4 disabled:cursor-not-allowed group"
-                    data-tooltip-id="send-prompt"
-                    data-tooltip-content={
-                      isDisabled
-                        ? t("chat_window.attachments_processing")
-                        : t("chat_window.send")
-                    }
-                    aria-label={t("chat_window.send")}
-                  >
-                    <PaperPlaneRight
-                      color="var(--theme-sidebar-footer-icon-fill)"
-                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
-                      weight="fill"
-                    />
-                    <span className="sr-only">Send message</span>
-                  </button>
-                  <Tooltip
-                    id="send-prompt"
-                    place="bottom"
-                    delayShow={300}
-                    className="tooltip !text-xs z-99"
-                  />
-                </>
-              )}
             </div>
-            <div className="flex justify-between py-3.5 mx-3 mb-1">
-              <div className="flex gap-x-2">
-                <AttachItem />
+            <div className="flex justify-between items-center pt-3.5 pb-3 mx-[7px]">
+              <div className="flex gap-x-2 items-center h-5 -ml-[4.5px]">
+                <AttachItem
+                  workspaceSlug={workspaceSlug}
+                  workspaceThreadSlug={threadSlug}
+                />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
@@ -333,10 +330,41 @@ export default function PromptInput({
                   setShowAgents={setShowAgents}
                 />
                 <TextSizeButton />
-                <LLMSelectorAction />
+                <LLMSelectorAction workspaceSlug={workspaceSlug} />
               </div>
-              <div className="flex gap-x-2">
+              <div className="flex gap-x-2 items-center h-5">
                 <SpeechToText sendCommand={sendCommand} />
+                {isStreaming ? (
+                  <StopGenerationButton />
+                ) : (
+                  <>
+                    <button
+                      ref={formRef}
+                      type="submit"
+                      disabled={isDisabled}
+                      className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] light:bg-slate-800 bg-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 transition-opacity"
+                      data-tooltip-id="send-prompt"
+                      data-tooltip-content={
+                        isDisabled
+                          ? t("chat_window.attachments_processing")
+                          : t("chat_window.send")
+                      }
+                      aria-label={t("chat_window.send")}
+                    >
+                      <ArrowUp
+                        className="w-[12px] h-[12px] pointer-events-none light:text-white text-black"
+                        weight="bold"
+                      />
+                      <span className="sr-only">Send message</span>
+                    </button>
+                    <Tooltip
+                      id="send-prompt"
+                      place="bottom"
+                      delayShow={300}
+                      className="tooltip !text-xs z-99"
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -15,13 +15,13 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
       data-tooltip-id="tooltip-slash-cmd-btn"
       data-tooltip-content={t("chat_window.slash")}
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center cursor-pointer ${
+      className={`flex justify-center items-center cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ${
         showing ? "!opacity-100" : ""
       }`}
     >
       <SlashCommandIcon
         color="var(--theme-sidebar-footer-icon-fill)"
-        className={`w-[20px] h-[20px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
+        className="w-[18px] h-[18px] pointer-events-none"
       />
       <Tooltip
         id="tooltip-slash-cmd-btn"
@@ -33,7 +33,13 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   );
 }
 
-export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
+export function SlashCommands({
+  showing,
+  setShowing,
+  sendCommand,
+  promptRef,
+  centered = false,
+}) {
   const cmdRef = useRef(null);
   useSlashCommandKeyboardNavigation({ showing });
 
@@ -54,10 +60,16 @@ export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
 
   return (
     <div hidden={!showing}>
-      <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
+      <div
+        className={
+          centered
+            ? "w-full flex justify-center md:justify-start absolute top-full mt-2 left-0 z-10 px-4 md:px-0 md:pl-[31px]"
+            : "flex justify-center md:justify-start absolute bottom-[130px] md:bottom-[150px] left-0 right-0 z-10 max-w-[750px] mx-auto px-4 md:px-0 md:pl-[31px]"
+        }
+      >
         <div
           ref={cmdRef}
-          className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
+          className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[200px] no-scroll"
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />

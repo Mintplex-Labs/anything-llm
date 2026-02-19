@@ -215,6 +215,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Klávesové zkratky",
     },
+    quickActions: {
+      createAgent: "Vytvořte agenta",
+      editWorkspace: "Upravit pracovní prostor",
+      uploadDocument: "Nahrajte dokument",
+    },
+    greeting: "Jak vám mohu dnes pomoci?",
   },
   "new-workspace": {
     title: "Nový pracovní prostor",
