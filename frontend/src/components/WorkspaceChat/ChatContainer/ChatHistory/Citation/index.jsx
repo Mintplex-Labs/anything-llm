@@ -53,7 +53,7 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none font-semibold text-white/50 light:text-black/50 font-medium italic ${textSizeClass} text-left ml-14 pt-2 ${
+        className={`border-none font-semibold text-white/50 light:text-black/50 font-medium italic ${textSizeClass} text-left pt-2 ${
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
@@ -69,7 +69,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 ml-14 gap-y-2">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 gap-y-2">
           {combineLikeSources(sources).map((source, idx) => (
             <Citation
               key={source.title || idx.toString()}

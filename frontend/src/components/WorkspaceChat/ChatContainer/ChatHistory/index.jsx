@@ -20,7 +20,6 @@ import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
-import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 
 export default forwardRef(function (
@@ -42,7 +41,6 @@ export default forwardRef(function (
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -98,10 +96,28 @@ export default forwardRef(function (
     chatId,
     role,
     attachments = [],
+    saveOnly = false,
   }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
-    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // "Save" on a user message: update the prompt text without regenerating
+    if (role === "user" && saveOnly) {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChat(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage,
+        "user"
+      );
+      return;
+    }
+
+    // "Submit" on a user message: auto-regenerate the response and delete all
     // messages post modified message
     if (role === "user") {
       // remove all messages after the edited message
@@ -133,7 +149,7 @@ export default forwardRef(function (
       if (targetIdx < 0) return;
       updatedHistory[targetIdx].content = editedMessage;
       updateHistory(updatedHistory);
-      await Workspace.updateChatResponse(
+      await Workspace.updateChat(
         workspace.slug,
         threadSlug,
         chatId,
@@ -163,7 +179,6 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
-        getMessageAlignment,
       }),
     [
       workspace,
@@ -191,14 +206,16 @@ export default forwardRef(function (
   return (
     <ThoughtExpansionProvider>
       <div
-        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
         id="chat-history"
         ref={chatHistoryRef}
         onScroll={handleScroll}
       >
-        {compiledHistory.map((item, index) =>
-          Array.isArray(item) ? renderStatusResponse(item, index) : item
-        )}
+        <div className="w-full max-w-[750px]">
+          {compiledHistory.map((item, index) =>
+            Array.isArray(item) ? renderStatusResponse(item, index) : item
+          )}
+        </div>
         {showing && (
           <ManageWorkspace
             hideModal={hideModal}
@@ -245,7 +262,6 @@ const getLastMessageInfo = (history) => {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
- * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -254,7 +270,6 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
-  getMessageAlignment,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -270,9 +285,7 @@ function buildMessages({
     }
 
     if (props.type === "rechartVisualize" && !!props.content) {
-      acc.push(
-        <Chartable key={props.uuid} workspace={workspace} props={props} />
-      );
+      acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -282,7 +295,6 @@ function buildMessages({
           pending={props.pending}
           sources={props.sources}
           error={props.error}
-          workspace={workspace}
           closed={props.closed}
         />
       );
@@ -304,7 +316,6 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
-          alignmentCls={getMessageAlignment?.(props.role)}
         />
       );
     }
