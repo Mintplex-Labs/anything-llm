@@ -17,33 +17,34 @@ export default function QuickActions({
 }) {
   const { t } = useTranslation();
   const { user } = useUser();
-  const role = user?.role ?? "admin";
 
-  // If the user is a default user, don't show any quick actions.
-  if (user?.role === "default") return null;
   return (
     <div className="flex flex-wrap justify-center gap-2 mt-6">
-      {role === "admin" && (
-        <QuickActionButton
-          label={t("main-page.quickActions.createAgent")}
-          onClick={onCreateAgent}
-        />
-      )}
-      {role !== "default" && hasAvailableWorkspace && (
-        <QuickActionButton
-          label={t("main-page.quickActions.editWorkspace")}
-          onClick={onEditWorkspace}
-        />
-      )}
+      <QuickActionButton
+        label={t("main-page.quickActions.createAgent")}
+        onClick={onCreateAgent}
+        show={!user || ["admin"].includes(user?.role)}
+      />
+      <QuickActionButton
+        label={t("main-page.quickActions.editWorkspace")}
+        onClick={onEditWorkspace}
+        show={
+          hasAvailableWorkspace &&
+          (!user || ["admin", "manager"].includes(user?.role))
+        }
+      />
       <QuickActionButton
         label={t("main-page.quickActions.uploadDocument")}
         onClick={onUploadDocument}
+        // Any user can upload documents.
+        show={true}
       />
     </div>
   );
 }
 
-function QuickActionButton({ label, onClick }) {
+function QuickActionButton({ label, onClick, show = true }) {
+  if (!show) return null;
   return (
     <button
       type="button"
