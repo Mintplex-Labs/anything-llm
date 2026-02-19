@@ -267,7 +267,7 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 <div dir="ltr" align="left">
 
-Copyright © 2025 [Mintplex Labs][profile-link]. <br />
+Copyright © 2026 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](../LICENSE) licensed.
 
 </div>

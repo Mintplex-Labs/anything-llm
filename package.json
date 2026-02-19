@@ -1,11 +1,19 @@
 {
   "name": "anything-llm",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
   "type": "module",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mintplex-labs/anything-llm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mintplex-labs/anything-llm/issues"
+  },
+  "homepage": "https://github.com/mintplex-labs/anything-llm#readme",
   "engines": {
     "node": ">=18"
   },
