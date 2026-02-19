@@ -16,6 +16,7 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
+import { dispatchThreadActivityEvent } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -212,7 +213,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             setChatHistory,
             remHistory,
             _chatHistory,
-            setSocketId
+            setSocketId,
+            threadSlug
           ),
         attachments,
       });
@@ -270,6 +272,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
         setWebsocket(socket);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+
+        // Move thread to top
+        dispatchThreadActivityEvent(threadSlug);
+
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
         setChatHistory((prev) => [

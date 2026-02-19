@@ -23,6 +23,15 @@ const WorkspaceChats = {
           include,
         },
       });
+
+      // Update thread timestamp for ordering
+      if (threadId) {
+        await prisma.workspace_threads.update({
+          where: { id: threadId },
+          data: { lastUpdatedAt: new Date() },
+        });
+      }
+
       return { chat, message: null };
     } catch (error) {
       console.error(error.message);

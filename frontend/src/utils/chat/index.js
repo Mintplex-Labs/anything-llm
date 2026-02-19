@@ -1,4 +1,7 @@
-import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import {
+  THREAD_RENAME_EVENT,
+  dispatchThreadActivityEvent,
+} from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
@@ -9,7 +12,8 @@ export default function handleChat(
   setChatHistory,
   remHistory,
   _chatHistory,
-  setWebsocket
+  setWebsocket,
+  threadSlug = null
 ) {
   const {
     uuid,
@@ -83,6 +87,9 @@ export default function handleChat(
       metrics,
     });
     emitAssistantMessageCompleteEvent(chatId);
+
+    // Move thread to top
+    dispatchThreadActivityEvent(threadSlug);
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
@@ -108,6 +115,9 @@ export default function handleChat(
 
         emitAssistantMessageCompleteEvent(chatId);
         setLoadingResponse(false);
+
+        // Move thread to top
+        dispatchThreadActivityEvent(threadSlug);
       } else {
         updatedHistory = {
           ...existingHistory,
@@ -161,6 +171,9 @@ export default function handleChat(
   if (action === "reset_chat") {
     // Chat was reset, keep reset message and clear everything else.
     setChatHistory([_chatHistory.pop()]);
+
+    // Move thread to top
+    dispatchThreadActivityEvent(threadSlug);
   }
 
   // If thread was updated automatically based on chat prompt

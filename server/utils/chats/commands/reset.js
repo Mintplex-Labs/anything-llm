@@ -1,4 +1,5 @@
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { WorkspaceThread } = require("../../../models/workspaceThread");
 
 async function resetMemory(
   workspace,
@@ -15,6 +16,8 @@ async function resetMemory(
         thread.id
       )
     : await WorkspaceChats.markHistoryInvalid(workspace.id, user);
+
+  if (thread?.id) await WorkspaceThread.touchActivity(thread.id);
 
   return {
     uuid: msgUUID,

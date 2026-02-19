@@ -1120,6 +1120,26 @@ does not extend the close button beyond the viewport. */
   animation: thoughtTransition 0.5s ease-out forwards;
 }
 
+/* Thread bump animation when thread moves to top of list */
+@keyframes threadBump {
+  0% {
+    opacity: 0.75;
+    transform: translateY(-3px);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateY(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thread-bump-animation {
+  animation: threadBump 0.6s ease-out forwards;
+}
+
 .checklist-completed {
   -webkit-animation: fadein 0.3s linear forwards;
   animation: fadein 0.3s linear forwards;
