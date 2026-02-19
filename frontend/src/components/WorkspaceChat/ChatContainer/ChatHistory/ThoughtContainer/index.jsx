@@ -50,7 +50,7 @@ export function useThoughtExpansion(messageId) {
   const context = useContext(ThoughtExpansionContext);
   if (!context) {
     // Fallback when used outside provider - use local state only
-    return { expanded: false, setExpanded: () => { } };
+    return { expanded: false, setExpanded: () => {} };
   }
   return {
     expanded: context.getExpanded(messageId),
