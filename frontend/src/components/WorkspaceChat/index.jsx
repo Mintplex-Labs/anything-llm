@@ -11,6 +11,7 @@ import {
   TTSProvider,
   useWatchForAutoPlayAssistantTTSResponse,
 } from "../contexts/TTSProvider";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
@@ -36,7 +37,15 @@ export default function WorkspaceChat({ loading, workspace }) {
     getHistory();
   }, [workspace, loading]);
 
-  if (loadingHistory) return <LoadingChat />;
+  const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
+  if (loadingHistory) {
+    if (hasPendingMessage) {
+      return (
+        <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full" />
+      );
+    }
+    return <LoadingChat />;
+  }
   if (!loading && !loadingHistory && !workspace) {
     return (
       <>

@@ -953,6 +953,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Сочетания клавиш",
     },
+    quickActions: {
+      createAgent: "Создать агента",
+      editWorkspace: "Редактировать рабочее пространство",
+      uploadDocument: "Загрузить документ",
+    },
+    greeting: "Чем я могу вам помочь сегодня?",
   },
   "keyboard-shortcuts": {
     title: "Сочетания клавиш",

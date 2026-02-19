@@ -24,12 +24,15 @@ export default function ThreadItem({
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug, threadSlug = null } = useParams();
+  const { slug: urlSlug, threadSlug = null } = useParams();
+  const workspaceSlug = workspace?.slug ?? urlSlug;
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
-  const linkTo = !thread.slug
-    ? paths.workspace.chat(slug)
-    : paths.workspace.thread(slug, thread.slug);
+  const linkTo = thread.virtual
+    ? "/"
+    : !thread.slug
+      ? paths.workspace.chat(workspaceSlug)
+      : paths.workspace.thread(workspaceSlug, thread.slug);
 
   const { ref } = useScrollActiveItemIntoView({
     isActive,
@@ -46,8 +49,8 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-[2]"
-            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
+            ? "border-l-2 border-b-2 border-white light:border-blue-800 z-[2]"
+            : "border-l border-b border-zinc-500 light:border-slate-400 z-[1]"
         } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
@@ -56,8 +59,8 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white light:border-theme-sidebar-border z-[2]"
-              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
+              ? "border-l-2 border-white light:border-blue-800 z-[2]"
+              : "border-l border-zinc-500 light:border-slate-400 z-[1]"
           } h-[100%] absolute top-0 left-3`}
         ></div>
       )}
@@ -68,7 +71,7 @@ export default function ThreadItem({
         className="h-full"
       />
       <div
-        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] border border-solid border-transparent light:border-blue-400" : "hover:bg-theme-sidebar-subitem-hover"} rounded-[4px]`}
+        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] light:bg-blue-200" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"} rounded-[4px]`}
       >
         {thread.deleted ? (
           <div className="w-full flex justify-between">
@@ -105,14 +108,16 @@ export default function ThreadItem({
           >
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
-                isActive ? "font-medium text-white" : "text-theme-text-primary"
+                isActive
+                  ? "font-semibold text-theme-text-primary light:text-blue-900"
+                  : "text-theme-text-primary font-medium light:text-slate-800"
               }`}
             >
               {thread.name}
             </p>
           </a>
         )}
-        {!!thread.slug && !thread.deleted && (
+        {!!thread.slug && !thread.deleted && !thread.virtual && (
           <div ref={optionsContainer} className="flex items-center">
             {" "}
             {/* Added flex and items-center */}
