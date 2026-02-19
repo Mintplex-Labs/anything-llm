@@ -14,10 +14,13 @@ export default function StopGenerationButton() {
         onClick={emitHaltEvent}
         data-tooltip-id="stop-generation-button"
         data-tooltip-content="Stop generating response"
-        className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] bg-white hover:opacity-80 transition-opacity"
+        className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] light:bg-slate-800 bg-white hover:opacity-80 transition-opacity"
         aria-label="Stop generating"
       >
-        <Stop className="w-[12px] h-[12px] text-black" weight="fill" />
+        <Stop
+          className="w-[12px] h-[12px] light:text-white text-black"
+          weight="fill"
+        />
       </button>
       <Tooltip
         id="stop-generation-button"

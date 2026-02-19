@@ -342,7 +342,7 @@ export default function PromptInput({
                       ref={formRef}
                       type="submit"
                       disabled={isDisabled}
-                      className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] bg-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 transition-opacity"
+                      className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] light:bg-slate-800 bg-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 transition-opacity"
                       data-tooltip-id="send-prompt"
                       data-tooltip-content={
                         isDisabled
@@ -352,7 +352,7 @@ export default function PromptInput({
                       aria-label={t("chat_window.send")}
                     >
                       <ArrowUp
-                        className="w-[12px] h-[12px] pointer-events-none text-black"
+                        className="w-[12px] h-[12px] pointer-events-none light:text-white text-black"
                         weight="bold"
                       />
                       <span className="sr-only">Send message</span>
