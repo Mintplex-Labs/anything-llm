@@ -37,9 +37,9 @@ async function getTargetWorkspace() {
   return workspaces.length > 0 ? workspaces[0] : null;
 }
 
-async function createDefaultWorkspace() {
+async function createDefaultWorkspace(workspaceName = "My Workspace") {
   const { workspace, message: errorMsg } = await Workspace.new({
-    name: "My Workspace",
+    name: workspaceName,
   });
   if (!workspace) {
     showToast(errorMsg || "Failed to create workspace", "error");
@@ -49,6 +49,7 @@ async function createDefaultWorkspace() {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [threadSlug, setThreadSlug] = useState(null);
@@ -93,7 +94,7 @@ export default function Home() {
       pendingFilesRef.current = files;
       let ws = workspace;
       if (!ws) {
-        ws = await createDefaultWorkspace();
+        ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
         if (!ws) return;
         setWorkspace(ws);
       }
@@ -109,7 +110,7 @@ export default function Home() {
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
-    const ws = await createDefaultWorkspace();
+    const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
     if (!ws) return;
     setWorkspace(ws);
     const { thread } = await Workspace.threads.new(ws.slug);
@@ -194,7 +195,9 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       let targetThread = threadSlug;
 
       if (!targetWorkspace) {
-        targetWorkspace = await createDefaultWorkspace();
+        targetWorkspace = await createDefaultWorkspace(
+          t("new-workspace.placeholder")
+        );
         if (!targetWorkspace) {
           setLoading(false);
           return;
@@ -252,7 +255,9 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     let targetWorkspace = workspace;
 
     if (!targetWorkspace) {
-      targetWorkspace = await createDefaultWorkspace();
+      targetWorkspace = await createDefaultWorkspace(
+        t("new-workspace.placeholder")
+      );
       if (!targetWorkspace) return;
       setWorkspace(targetWorkspace);
     }
@@ -277,11 +282,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               isStreaming={loading}
               sendCommand={sendCommand}
               attachments={files}
-              centered
+              centered={true}
               workspaceSlug={workspace?.slug}
               threadSlug={threadSlug}
             />
             <QuickActions
+              hasAvailableWorkspace={!!workspace}
               onCreateAgent={() => navigate(paths.settings.agentSkills())}
               onEditWorkspace={handleEditWorkspace}
               onUploadDocument={() =>

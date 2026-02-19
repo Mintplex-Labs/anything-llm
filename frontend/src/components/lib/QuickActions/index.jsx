@@ -4,11 +4,13 @@ import useUser from "@/hooks/useUser";
 /**
  * Quick action buttons for home and empty workspace states.
  * @param {Object} props
+ * @param {boolean} props.hasAvailableWorkspace - Whether the user has a workspace they can use
  * @param {Function} props.onCreateAgent - Handler for "Create an Agent" action
  * @param {Function} props.onEditWorkspace - Handler for "Edit Workspace" action
  * @param {Function} props.onUploadDocument - Handler for "Upload a Document" action
  */
 export default function QuickActions({
+  hasAvailableWorkspace,
   onCreateAgent,
   onEditWorkspace,
   onUploadDocument,
@@ -17,6 +19,8 @@ export default function QuickActions({
   const { user } = useUser();
   const role = user?.role ?? "admin";
 
+  // If the user is a default user, don't show any quick actions.
+  if (user?.role === "default") return null;
   return (
     <div className="flex flex-wrap justify-center gap-2 mt-6">
       {role === "admin" && (
@@ -25,7 +29,7 @@ export default function QuickActions({
           onClick={onCreateAgent}
         />
       )}
-      {role !== "default" && (
+      {role !== "default" && hasAvailableWorkspace && (
         <QuickActionButton
           label={t("main-page.quickActions.editWorkspace")}
           onClick={onEditWorkspace}
