@@ -388,20 +388,15 @@ function useIsDisabled() {
    */
   useEffect(() => {
     if (!window) return;
-    window.addEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
-      setIsDisabled(true)
-    );
-    window.addEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
-      setIsDisabled(false)
-    );
+    const onProcessing = () => setIsDisabled(true);
+    const onProcessed = () => setIsDisabled(false);
+
+    window.addEventListener(ATTACHMENTS_PROCESSING_EVENT, onProcessing);
+    window.addEventListener(ATTACHMENTS_PROCESSED_EVENT, onProcessed);
 
     return () => {
-      window?.removeEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
-        setIsDisabled(true)
-      );
-      window?.removeEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
-        setIsDisabled(false)
-      );
+      window.removeEventListener(ATTACHMENTS_PROCESSING_EVENT, onProcessing);
+      window.removeEventListener(ATTACHMENTS_PROCESSED_EVENT, onProcessed);
     };
   }, []);
 

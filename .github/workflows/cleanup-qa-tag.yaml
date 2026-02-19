@@ -20,7 +20,7 @@ jobs:
         continue-on-error: true  # Package may not exist if build never ran
         with:
           owner: ${{ github.repository_owner }}
-          package-name: ${{ github.repository }}
+          package-name: ${{ github.event.repository.name }}
           package-type: container
           min-versions-to-keep: 0
           ignore-versions: '^(?!pr-${{ github.event.pull_request.number }}$).*$'
