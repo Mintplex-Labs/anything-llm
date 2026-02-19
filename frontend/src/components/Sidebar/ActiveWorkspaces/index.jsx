@@ -6,13 +6,14 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useMatch } from "react-router-dom";
 import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
-import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
+import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
+import { safeJsonParse } from "@/utils/request";
 
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function ActiveWorkspaces() {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
+  const isHomePage = !!useMatch("/");
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -71,6 +73,20 @@ export default function ActiveWorkspaces() {
     reorderWorkspaces(result.source.index, result.destination.index);
   };
 
+  // When on the home page, resolve which workspace should be virtually active
+  const virtualActiveSlug = (() => {
+    if (!isHomePage || workspaces.length === 0) return null;
+    const lastVisited = safeJsonParse(
+      localStorage.getItem(LAST_VISITED_WORKSPACE)
+    );
+    if (
+      lastVisited?.slug &&
+      workspaces.some((ws) => ws.slug === lastVisited.slug)
+    )
+      return lastVisited.slug;
+    return workspaces[0]?.slug ?? null;
+  })();
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="workspaces">
@@ -83,7 +99,8 @@ export default function ActiveWorkspaces() {
             {...provided.droppableProps}
           >
             {workspaces.map((workspace, index) => {
-              const isActive = workspace.slug === slug;
+              const isVirtuallyActive = workspace.slug === virtualActiveSlug;
+              const isActive = workspace.slug === slug || isVirtuallyActive;
               return (
                 <Draggable
                   key={workspace.id}
@@ -191,6 +208,7 @@ export default function ActiveWorkspaces() {
                         <ThreadContainer
                           workspace={workspace}
                           isActive={isActive}
+                          isVirtualThread={isVirtuallyActive}
                         />
                       )}
                     </div>

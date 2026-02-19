@@ -2,33 +2,46 @@ import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 import { useState, useEffect } from "react";
 
 const availableThemes = {
-  default: "Default",
+  system: "System",
   light: "Light",
+  dark: "Dark",
 };
 
 /**
- * Determines the current theme of the application
- * @returns {{theme: ('default' | 'light'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
+ * Determines the current theme of the application.
+ * "system" follows the OS preference, "light" and "dark" force that mode.
+ * @returns {{theme: ('system' | 'light' | 'dark'), setTheme: function, availableThemes: object}}
  */
 export function useTheme() {
   const [theme, _setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "default";
+    const stored = localStorage.getItem("theme");
+    if (stored === "default") return "dark"; // migrate legacy value
+    return stored || "system";
   });
 
+  const [systemTheme, setSystemTheme] = useState(() =>
+    window.matchMedia?.("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark"
+  );
+
+  // Listen for OS level theme changes
   useEffect(() => {
-    if (localStorage.getItem("theme") !== null) return;
     if (!window.matchMedia) return;
-    if (window.matchMedia("(prefers-color-scheme: light)").matches)
-      return _setTheme("light");
-    _setTheme("default");
+    const mql = window.matchMedia("(prefers-color-scheme: light)");
+    const handler = (e) => setSystemTheme(e.matches ? "light" : "dark");
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
   }, []);
 
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
+
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    document.body.classList.toggle("light", theme === "light");
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+    document.body.classList.toggle("light", resolvedTheme === "light");
     localStorage.setItem("theme", theme);
     window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
-  }, [theme]);
+  }, [resolvedTheme, theme]);
 
   // In development, attach keybind combinations to toggle theme
   useEffect(() => {
@@ -36,7 +49,7 @@ export function useTheme() {
     function toggleOnKeybind(e) {
       if (e.metaKey && e.key === ".") {
         e.preventDefault();
-        setTheme((prev) => (prev === "light" ? "default" : "light"));
+        _setTheme((prev) => (prev === "light" ? "dark" : "light"));
       }
     }
     document.addEventListener("keydown", toggleOnKeybind);

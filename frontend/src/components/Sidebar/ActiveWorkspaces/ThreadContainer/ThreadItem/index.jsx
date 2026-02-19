@@ -24,12 +24,15 @@ export default function ThreadItem({
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug, threadSlug = null } = useParams();
+  const { slug: urlSlug, threadSlug = null } = useParams();
+  const workspaceSlug = workspace?.slug ?? urlSlug;
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
-  const linkTo = !thread.slug
-    ? paths.workspace.chat(slug)
-    : paths.workspace.thread(slug, thread.slug);
+  const linkTo = thread.virtual
+    ? "/"
+    : !thread.slug
+      ? paths.workspace.chat(workspaceSlug)
+      : paths.workspace.thread(workspaceSlug, thread.slug);
 
   const { ref } = useScrollActiveItemIntoView({
     isActive,
@@ -114,7 +117,7 @@ export default function ThreadItem({
             </p>
           </a>
         )}
-        {!!thread.slug && !thread.deleted && (
+        {!!thread.slug && !thread.deleted && !thread.virtual && (
           <div ref={optionsContainer} className="flex items-center">
             {" "}
             {/* Added flex and items-center */}

@@ -928,6 +928,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "キーボードショートカット",
     },
+    quickActions: {
+      createAgent: "エージェントを作成する",
+      editWorkspace: "ワークスペースの編集",
+      uploadDocument: "ドキュメントをアップロードする",
+    },
+    greeting: "今日はどのようにお手伝いできますか？",
   },
   "keyboard-shortcuts": {
     title: "キーボードショートカット",

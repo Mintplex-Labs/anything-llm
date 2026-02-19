@@ -959,6 +959,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Combinazioni di tasti",
     },
+    quickActions: {
+      createAgent: "Creare un agente",
+      editWorkspace: "Modifica l'area di lavoro",
+      uploadDocument: "Caricare un documento",
+    },
+    greeting: "Come posso aiutarti oggi?",
   },
   "keyboard-shortcuts": {
     title: "Combinazioni di tasti",
