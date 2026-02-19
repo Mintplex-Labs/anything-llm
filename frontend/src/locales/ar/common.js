@@ -922,7 +922,7 @@ const TRANSLATIONS = {
       editWorkspace: "تعديل مساحة العمل",
       uploadDocument: "تحميل مستند",
     },
-    greeting: "كيف يمكنني أن أساعد في تسهيل يومكم اليوم؟",
+    greeting: "كيف يمكنني مساعدتك اليوم؟",
   },
   "keyboard-shortcuts": {
     title: "اختصارات لوحة المفاتيح",

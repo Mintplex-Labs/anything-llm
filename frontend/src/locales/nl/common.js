@@ -942,8 +942,7 @@ const TRANSLATIONS = {
       editWorkspace: "Werkruimte bewerken",
       uploadDocument: "Upload een document",
     },
-    greeting:
-      "Hoe kan ik vandaag iets voor u doen om uw dag gemakkelijker te maken?",
+    greeting: "Hoe kan ik u vandaag helpen?",
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",

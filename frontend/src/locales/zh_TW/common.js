@@ -879,7 +879,7 @@ const TRANSLATIONS = {
       editWorkspace: "編輯工作區",
       uploadDocument: "上傳文件",
     },
-    greeting: "我今天能為您做些什麼，讓您的生活更輕鬆呢？",
+    greeting: "今天我能幫您什麼？",
   },
   "keyboard-shortcuts": {
     title: "鍵盤快捷鍵",
