@@ -40,6 +40,7 @@ import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
+import LlmApiLogo from "@/media/llmprovider/llmapi.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -77,6 +78,7 @@ import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import LlmApiOptions from "@/components/LLMSelection/LlmApiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -237,6 +239,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <OpenRouterOptions settings={settings} />,
     description: "A unified interface for LLMs.",
     requiredConfig: ["OpenRouterApiKey"],
+  },
+  {
+    name: "LLM API",
+    value: "llmapi",
+    logo: LlmApiLogo,
+    options: (settings) => <LlmApiOptions settings={settings} />,
+    description:
+      "Unified API gateway for 120+ LLM models across OpenAI, Anthropic, Google, xAI, and more.",
+    requiredConfig: ["LlmApiKey"],
   },
   {
     name: "Groq",
