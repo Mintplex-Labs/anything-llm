@@ -47,6 +47,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "llmapi",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -126,6 +127,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
+    case "llmapi":
+      return await getLlmApiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -985,6 +988,36 @@ async function getSambaNovaModels(_apiKey = null) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
   }
+}
+
+async function getLlmApiModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.LLM_API_KEY
+      : _apiKey || process.env.LLM_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.llmapi.ai/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "LLM API",
+      }))
+    )
+    .catch((e) => {
+      console.error(`LlmApi:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.LLM_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {
