@@ -167,9 +167,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Hostim.dev                                        |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Hostim][hostim-btn]][hostim-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -296,3 +296,6 @@ This project is [MIT](./LICENSE) licensed.
 [elestio-deploy]: https://elest.io/open-source/anythingllm
 [northflank-btn]: https://assets.northflank.com/deploy_to_northflank_smm_36700fb050.svg
 [northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
+
+[hostim-btn]: https://hostim.dev/img/deploy-button.svg
+[hostim-deploy]: https://console.hostim.dev/dashboard?preview=1&modal=1&template=anything-llm-no-llamma
