@@ -118,10 +118,20 @@ const JustMe = ({
   const { t } = useTranslation();
   const [itemSelected, setItemSelected] = useState(false);
   const [password, setPassword] = useState("");
+  const PW_REGEX = /^[a-zA-Z0-9_\-!@$%^&*();]+$/;
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+
+    if (!PW_REGEX.test(formData.get("password"))) {
+      showToast(
+        `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`,
+        "error"
+      );
+      return;
+    }
+
     const { error } = await System.updateSystemPassword({
       usePassword: true,
       newPassword: formData.get("password"),
