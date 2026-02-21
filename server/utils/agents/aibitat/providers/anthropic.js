@@ -5,11 +5,37 @@ const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 
 /**
+ * Maximum output tokens per Anthropic model.
+ * This is the output (response) token limit, which is distinct from and
+ * smaller than the context window (input) limit. Passing a max_tokens value
+ * above a model's output limit causes a 400 error from the Anthropic API
+ * before any generation occurs, so we must respect per-model limits.
+ * Unknown or legacy models fall back to the conservative 4096 default.
+ */
+const MODEL_MAX_OUTPUT_TOKENS = {
+  "claude-instant-1.2": 4096,
+  "claude-2.0": 4096,
+  "claude-2.1": 4096,
+  "claude-3-haiku-20240307": 4096,
+  "claude-3-sonnet-20240229": 4096,
+  "claude-3-opus-20240229": 4096,
+  "claude-3-opus-latest": 4096,
+  "claude-3-5-sonnet-20240620": 8192,
+  "claude-3-5-sonnet-20241022": 8192,
+  "claude-3-5-sonnet-latest": 8192,
+  "claude-3-5-haiku-20241022": 8192,
+  "claude-3-5-haiku-latest": 8192,
+  "claude-3-7-sonnet-20250219": 64000,
+  "claude-3-7-sonnet-latest": 64000,
+};
+
+/**
  * The agent provider for the Anthropic API.
  * By default, the model is set to 'claude-2'.
  */
 class AnthropicProvider extends Provider {
   model;
+  maxTokens;
 
   constructor(config = {}) {
     const {
@@ -24,6 +50,7 @@ class AnthropicProvider extends Provider {
 
     super(client);
     this.model = model;
+    this.maxTokens = MODEL_MAX_OUTPUT_TOKENS[model] ?? 4096;
   }
 
   /**
@@ -189,7 +216,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: true,
@@ -316,7 +343,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: false,
