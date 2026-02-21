@@ -158,6 +158,7 @@ const HistoricalMessage = ({
             <ChatAttachments attachments={attachments} />
           </div>
         )}
+        {role === "assistant" && <Citations sources={sources} />}
         <div className="flex items-start md:items-center gap-x-1">
           <TTSMessage
             slug={workspace?.slug}
@@ -177,7 +178,6 @@ const HistoricalMessage = ({
             metrics={metrics}
           />
         </div>
-        {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
   );

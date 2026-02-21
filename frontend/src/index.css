@@ -326,25 +326,6 @@ a {
   }
 }
 
-.doc__source {
-  opacity: 0;
-  animation-delay: 50ms;
-  animation: citationAnimation 0.15s ease-out 0s forwards;
-}
-
-@keyframes citationAnimation {
-  0% {
-    opacity: 0;
-  }
-
-  80% {
-    opacity: 0.5;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
 
 @media (prefers-color-scheme: light) {
   .sidebar-items:after {

@@ -1,10 +1,8 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
-import { middleTruncate } from "@/utils/directories";
 import {
-  CaretRight,
   FileText,
   Info,
   ArrowSquareOut,
@@ -14,16 +12,40 @@ import {
   LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
-import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
-import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
-import ObsidianLogo from "@/media/dataConnectors/obsidian.png";
-import PaperlessNgxLogo from "@/media/dataConnectors/paperlessngx.png";
 import { toPercentString } from "@/utils/numbers";
-import { useTranslation } from "react-i18next";
-import pluralize from "pluralize";
-import useTextSize from "@/hooks/useTextSize";
+import { useSourcesSidebar } from "../../SourcesSidebar";
 
-function combineLikeSources(sources) {
+const CIRCLE_ICONS = {
+  file: FileText,
+  link: LinkSimple,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+  gitlab: GitlabLogo,
+  confluence: LinkSimple,
+  drupalwiki: FileText,
+  obsidian: FileText,
+  paperlessNgx: FileText,
+};
+
+/**
+ * Renders a circle with a source type icon inside.
+ * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
+ * @param {number} [props.size] - Circle diameter in px
+ * @param {number} [props.iconSize] - Icon size in px
+ */
+export function SourceTypeCircle({ type = "file", size = 22, iconSize = 12 }) {
+  const Icon = CIRCLE_ICONS[type] || CIRCLE_ICONS.file;
+  return (
+    <div
+      className="bg-white light:bg-slate-100 rounded-full flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <Icon size={iconSize} weight="bold" className="text-black" />
+    </div>
+  );
+}
+
+export function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
     const { id, title, text, chunkSource = "", score = null } = source;
@@ -42,106 +64,66 @@ function combineLikeSources(sources) {
 }
 
 export default function Citations({ sources = [] }) {
-  const [open, setOpen] = useState(false);
-  const [selectedSource, setSelectedSource] = useState(null);
-  const { t } = useTranslation();
-  const { textSizeClass } = useTextSize();
-
+  const { openSources, setOpenSources } = useSourcesSidebar();
   if (sources.length === 0) return null;
 
-  return (
-    <div className="flex flex-col mt-4 justify-left">
-      <button
-        onClick={() => setOpen(!open)}
-        className={`border-none font-semibold text-white/50 light:text-black/50 font-medium italic ${textSizeClass} text-left pt-2 ${
-          open ? "pb-2" : ""
-        } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
-      >
-        {open
-          ? t("chat_window.hide_citations")
-          : t("chat_window.show_citations")}
-        <CaretRight
-          weight="bold"
-          size={14}
-          className={`inline-block ml-1 transform transition-transform duration-300 ${
-            open ? "rotate-90" : ""
-          }`}
-        />
-      </button>
-      {open && (
-        <div className="flex flex-wrap flex-col items-start overflow-x-scroll no-scroll mt-1 gap-y-2">
-          {combineLikeSources(sources).map((source, idx) => (
-            <Citation
-              key={source.title || idx.toString()}
-              source={source}
-              onClick={() => setSelectedSource(source)}
-              textSizeClass={textSizeClass}
-            />
-          ))}
-        </div>
-      )}
-      {selectedSource && (
-        <CitationDetailModal
-          source={selectedSource}
-          onClose={() => setSelectedSource(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-const Citation = ({ source, onClick, textSizeClass }) => {
-  const { title, references = 1 } = source;
-  if (!title) return null;
-  const chunkSourceInfo = parseChunkSource(source);
-  const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
-  const CitationIcon = ICONS.hasOwnProperty(chunkSourceInfo?.icon)
-    ? ICONS[chunkSourceInfo.icon]
-    : ICONS.file;
+  const combined = combineLikeSources(sources);
+  const visibleSources = combined.slice(0, 3);
+  const remainingCount = Math.max(0, combined.length - 3);
 
   return (
     <button
-      className={`flex doc__source gap-x-1 ${textSizeClass}`}
-      onClick={onClick}
+      onClick={() => setOpenSources(openSources ? null : sources)}
+      className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >
-      <div className="flex items-start flex-1 pt-[4px]">
-        <CitationIcon size={16} />
+      <span className="text-xs text-white light:text-slate-800">Sources</span>
+      <div
+        className="relative h-[22px]"
+        style={{ width: `${visibleSources.length * 17 + 5}px` }}
+      >
+        {visibleSources.map((source, idx) => {
+          const info = parseChunkSource(source);
+          return (
+            <div
+              key={source.title || idx}
+              className="absolute top-0 size-[22px] rounded-full border-2 border-zinc-800 light:border-white"
+              style={{ left: `${idx * 17}px`, zIndex: 3 - idx }}
+            >
+              <SourceTypeCircle type={info.icon} size={18} iconSize={10} />
+            </div>
+          );
+        })}
       </div>
-      <div className="flex flex-col items-start gap-y-[0.2px] px-1">
-        <p
-          className={`!m-0 font-semibold whitespace-nowrap text-theme-text-primary hover:opacity-55 ${textSizeClass}`}
-        >
-          {truncatedTitle}
-        </p>
-        <p
-          className={`!m-0 text-[10px] font-medium text-theme-text-secondary ${textSizeClass}`}
-        >{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
-      </div>
+      {remainingCount > 0 && (
+        <span className="text-xs text-white light:text-slate-800">
+          + {remainingCount}
+        </span>
+      )}
     </button>
   );
-};
+}
 
 function omitChunkHeader(text) {
   if (!text.includes("<document_metadata>")) return text;
   return text.split("</document_metadata>")[1].trim();
 }
 
-function CitationDetailModal({ source, onClose }) {
+export function CitationDetailModal({ source, onClose }) {
   const { references, title, chunks } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
     <ModalWrapper isOpen={!!source}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+      <div className="w-full max-w-2xl bg-zinc-900 light:bg-white rounded-lg shadow border-2 border-zinc-700 light:border-slate-300 overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-zinc-700 light:border-slate-300">
           <div className="w-full flex gap-x-2 items-center">
             {isUrl ? (
               <a
                 href={linkTo}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xl w-[90%] font-semibold text-white whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+                className="text-xl w-[90%] font-semibold text-white light:text-slate-900 whitespace-nowrap hover:underline hover:text-blue-300 light:hover:text-blue-600 flex items-center gap-x-1"
               >
                 <div className="flex items-center gap-x-1 max-w-full overflow-hidden">
                   <h3 className="truncate text-ellipsis whitespace-nowrap overflow-hidden w-full">
@@ -151,22 +133,26 @@ function CitationDetailModal({ source, onClose }) {
                 </div>
               </a>
             ) : (
-              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-white light:text-slate-900 overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {truncate(title, 45)}
               </h3>
             )}
           </div>
           {references > 1 && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-zinc-400 light:text-slate-500 mt-2">
               Referenced {references} times.
             </p>
           )}
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-700 light:hover:bg-slate-200 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X
+              size={24}
+              weight="bold"
+              className="text-white light:text-slate-900"
+            />
           </button>
         </div>
         <div
@@ -176,14 +162,14 @@ function CitationDetailModal({ source, onClose }) {
           <div className="py-7 px-9 space-y-2 flex-col">
             {chunks.map(({ text, score }, idx) => (
               <Fragment key={idx}>
-                <div className="pt-6 text-white">
+                <div className="pt-6 text-white light:text-slate-900">
                   <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                    <p className="text-white whitespace-pre-line">
+                    <p className="text-white light:text-slate-900 whitespace-pre-line">
                       {HTMLDecode(omitChunkHeader(text))}
                     </p>
 
                     {!!score && (
-                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                      <div className="w-full flex items-center text-xs text-white/60 light:text-slate-500 gap-x-2 cursor-default">
                         <div
                           data-tooltip-id="similarity-score"
                           data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
@@ -197,7 +183,7 @@ function CitationDetailModal({ source, onClose }) {
                   </div>
                 </div>
                 {idx !== chunks.length - 1 && (
-                  <hr className="border-theme-modal-border" />
+                  <hr className="border-zinc-700 light:border-slate-300" />
                 )}
               </Fragment>
             ))}
@@ -228,7 +214,7 @@ const supportedSources = [
  * @param {{title: string, chunks: {text: string, chunkSource: string}[]}} options
  * @returns {{isUrl: boolean, text: string, href: string, icon: string}}
  */
-function parseChunkSource({ title = "", chunks = [] }) {
+export function parseChunkSource({ title = "", chunks = [] }) {
   const nullResponse = {
     isUrl: false,
     text: null,
@@ -315,33 +301,3 @@ function parseChunkSource({ title = "", chunks = [] }) {
   }
   return nullResponse;
 }
-
-const ConfluenceIcon = ({ size = 16, ...props }) => (
-  <img src={ConfluenceLogo} {...props} width={size} height={size} />
-);
-const DrupalWikiIcon = ({ size = 16, ...props }) => (
-  <img src={DrupalWikiLogo} {...props} width={size} height={size} />
-);
-const ObsidianIcon = ({ size = 16, ...props }) => (
-  <img src={ObsidianLogo} {...props} width={size} height={size} />
-);
-const PaperlessNgxIcon = ({ size = 16, ...props }) => (
-  <img
-    src={PaperlessNgxLogo}
-    {...props}
-    width={size}
-    height={size}
-    className="rounded-sm bg-white"
-  />
-);
-const ICONS = {
-  file: FileText,
-  link: LinkSimple,
-  youtube: YoutubeLogo,
-  github: GithubLogo,
-  gitlab: GitlabLogo,
-  confluence: ConfluenceIcon,
-  drupalwiki: DrupalWikiIcon,
-  obsidian: ObsidianIcon,
-  paperlessNgx: PaperlessNgxIcon,
-};
