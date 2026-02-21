@@ -889,6 +889,12 @@ const TRANSLATIONS = {
       missing_credentials: "חסרים אישורים לספק זה!",
       missing_credentials_description: "לחץ להגדרת אישורים",
     },
+    submit: "הגש",
+    edit_info_user:
+      '"שלח" מחזיר את התגובה של הבינה המלאכותית. "שמור" מעדכן רק את ההודעה שלך.',
+    edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
+    see_less: "ראה פחות",
+    see_more: "לראות עוד",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

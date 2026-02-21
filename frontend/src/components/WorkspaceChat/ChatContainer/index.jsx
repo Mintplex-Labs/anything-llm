@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const navigate = useNavigate();
@@ -369,35 +370,40 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
-    >
-      {isMobile && <SidebarMobileHeader />}
-      <DnDFileUploaderWrapper>
-        <div className="flex flex-col h-full w-full">
-          <div className="contents">
-            <MetricsProvider>
-              <ChatHistory
-                ref={chatHistoryRef}
-                history={chatHistory}
-                workspace={workspace}
-                sendCommand={sendCommand}
-                updateHistory={setChatHistory}
-                regenerateAssistantMessage={regenerateAssistantMessage}
-              />
-            </MetricsProvider>
-            <PromptInput
-              submit={handleSubmit}
-              isStreaming={loadingResponse}
-              sendCommand={sendCommand}
-              attachments={files}
-              centered={false}
-            />
-          </div>
+    <SourcesSidebarProvider>
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+      >
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden">
+          {isMobile && <SidebarMobileHeader />}
+          <DnDFileUploaderWrapper>
+            <div className="flex flex-col h-full w-full">
+              <div className="contents">
+                <MetricsProvider>
+                  <ChatHistory
+                    ref={chatHistoryRef}
+                    history={chatHistory}
+                    workspace={workspace}
+                    sendCommand={sendCommand}
+                    updateHistory={setChatHistory}
+                    regenerateAssistantMessage={regenerateAssistantMessage}
+                  />
+                </MetricsProvider>
+                <PromptInput
+                  submit={handleSubmit}
+                  isStreaming={loadingResponse}
+                  sendCommand={sendCommand}
+                  attachments={files}
+                  centered={false}
+                />
+              </div>
+            </div>
+          </DnDFileUploaderWrapper>
+          <ChatTooltips />
         </div>
-      </DnDFileUploaderWrapper>
-      <ChatTooltips />
-    </div>
+        <SourcesSidebar />
+      </div>
+    </SourcesSidebarProvider>
   );
 }
