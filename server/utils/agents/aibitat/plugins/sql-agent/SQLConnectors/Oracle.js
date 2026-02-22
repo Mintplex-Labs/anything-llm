@@ -3,7 +3,7 @@ const oracledb = require("oracledb");
 const { ConnectionStringParser } = require("./utils");
 
 oracledb.initOracleClient({
-  libDir: "/opt/oracle/instantclient",
+  libDir: "/opt/oracle/instantclient_23_26",
 });
 
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
