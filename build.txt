@@ -1,0 +1,16 @@
+docker build -t anythingllm:oracle -f docker/Dockerfile .
+
+# 1️⃣ Set the storage location to E:\
+$env:STORAGE_LOCATION="E:\anythingllm"
+
+# 2️⃣ Create the directory if it doesn't exist
+If (!(Test-Path $env:STORAGE_LOCATION)) {
+    New-Item $env:STORAGE_LOCATION -ItemType Directory
+}
+
+# 3️⃣ Create the .env file if missing
+If (!(Test-Path "$env:STORAGE_LOCATION\.env")) {
+    New-Item "$env:STORAGE_LOCATION\.env" -ItemType File
+}
+
+docker run -d -p 3001:3001 --name anythingllm --cap-add SYS_ADMIN -v "$($env:STORAGE_LOCATION):/app/server/storage" -v "$($env:STORAGE_LOCATION)\.env:/app/server/.env" -e STORAGE_DIR="/app/server/storage" anythingllm:oracle

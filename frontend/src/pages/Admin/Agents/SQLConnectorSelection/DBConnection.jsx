@@ -1,6 +1,8 @@
 import PostgreSQLLogo from "./icons/postgresql.png";
 import MySQLLogo from "./icons/mysql.png";
 import MSSQLLogo from "./icons/mssql.png";
+import OracleLogo from "./icons/oracle.png";
+
 import { PencilSimple, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import EditSQLConnection from "./SQLConnectionModal";
@@ -9,6 +11,7 @@ export const DB_LOGOS = {
   postgresql: PostgreSQLLogo,
   mysql: MySQLLogo,
   "sql-server": MSSQLLogo,
+  oracle: OracleLogo,
 };
 
 export default function DBConnection({

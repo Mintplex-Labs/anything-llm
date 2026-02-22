@@ -2,7 +2,7 @@ const { SystemSettings } = require("../../../../../../models/systemSettings");
 const { safeJsonParse } = require("../../../../../http");
 
 /**
- * @typedef {('postgresql'|'mysql'|'sql-server')} SQLEngine
+ * @typedef {('postgresql'|'mysql'|'sql-server'|'oracle')} SQLEngine
  */
 
 /**
@@ -36,6 +36,9 @@ function getDBClient(identifier = "", connectionConfig = {}) {
     case "sql-server":
       const { MSSQLConnector } = require("./MSSQL");
       return new MSSQLConnector(connectionConfig);
+    case "oracle":
+      const { OracleConnector } = require("./Oracle");
+      return new OracleConnector(connectionConfig);
     default:
       throw new Error(
         `There is no supported database connector for ${identifier}`
@@ -65,7 +68,7 @@ async function validateConnection(identifier = "", connectionConfig = {}) {
     const client = getDBClient(identifier, connectionConfig);
     return await client.validateConnection();
   } catch (error) {
-    console.log(`Failed to connect to ${identifier} database.`);
+    console.log(`Failed to connect to ${identifier} database.`, error);
     return {
       success: false,
       error: `Unable to connect to ${identifier}. Please verify your connection details.`,

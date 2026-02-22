@@ -154,6 +154,34 @@ WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
 
+# Install the Oracle Instant Client and Dependencies
+# Install required packages and create compatibility symlink for Ubuntu 24.04
+USER root
+RUN apt-get update && \
+    apt-get install -y libaio1t64 && \
+    ln -sf /lib/x86_64-linux-gnu/libaio.so.1t64 /lib/x86_64-linux-gnu/libaio.so.1 && \
+    ldconfig && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create Oracle directory
+RUN mkdir -p /opt/oracle
+
+# Download and install Instant Client
+RUN cd /opt/oracle && \
+    curl -L -o instantclient.zip \
+    https://download.oracle.com/otn_software/linux/instantclient/2326100/instantclient-basic-linux.x64-23.26.1.0.0.zip && \
+    unzip instantclient.zip && \
+    rm instantclient.zip && \
+    ln -s instantclient_* instantclient
+
+# Set environment variable (adjust version if needed)
+ENV ORACLE_HOME=/opt/oracle/instantclient_23_26
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_23_26
+
+
+# Oracle Instant Client Installation Complete
+
+
 # Install collector dependencies
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 WORKDIR /app/collector

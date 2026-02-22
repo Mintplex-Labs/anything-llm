@@ -70,6 +70,7 @@
     "mysql2": "^3.9.8",
     "ollama": "^0.6.3",
     "openai": "4.95.1",
+    "oracledb": "^6.10.0",
     "pg": "^8.11.5",
     "pinecone-client": "^1.1.0",
     "pluralize": "^8.0.0",

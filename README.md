@@ -192,6 +192,8 @@ _These are apps that are not maintained by Mintplex Labs, but are compatible wit
 - [Midori AI Subsystem Manager](https://io.midori-ai.xyz/subsystem/anythingllm/) - A streamlined and efficient way to deploy AI systems using Docker container technology.
 - [Coolify](https://coolify.io/docs/services/anythingllm/) - Deploy AnythingLLM with a single click.
 - [GPTLocalhost for Microsoft Word](https://gptlocalhost.com/demo/) - A local Word Add-in for you to use AnythingLLM in Microsoft Word.
+## ✨ Added Features
+- **Oracle Database support** for the SQL Agent. See [Oracle Integration](extras/oracle-support.md) for details.
 
 ## Telemetry & Privacy
 
