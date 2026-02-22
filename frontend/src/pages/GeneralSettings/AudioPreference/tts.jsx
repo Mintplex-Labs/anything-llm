@@ -15,6 +15,7 @@ import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import ModelsLabTTSOptions from "@/components/TextToSpeech/ModelsLabOptions";
 
 const PROVIDERS = [
   {
@@ -52,6 +53,13 @@ const PROVIDERS = [
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
     description:
       "Connect to an OpenAI compatible TTS service running locally or remotely.",
+  },
+  {
+    name: "ModelsLab",
+    value: "modelslab",
+    logo: GenericOpenAiLogo, // Reuse generic logo until custom one added
+    options: (settings) => <ModelsLabTTSOptions settings={settings} />,
+    description: "Use ModelsLab's text to speech API with 10 voice options.",
   },
 ];
 
