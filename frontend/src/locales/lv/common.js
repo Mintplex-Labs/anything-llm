@@ -291,7 +291,7 @@ const TRANSLATIONS = {
       title: "Sarunu vēsture",
       "desc-start":
         "Iepriekšējo sarunu skaits, kas tiks iekļauts atbildes īslaicīgajā atmiņā.",
-      recommend: "Ieteicams 20. ",
+      recommend: "Ieteicams 20.",
       "desc-end":
         "Vairāk nekā 45 var novest pie nepārtrauktām sarunu kļūmēm atkarībā no ziņojuma izmēra.",
     },

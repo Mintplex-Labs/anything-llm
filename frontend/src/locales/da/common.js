@@ -202,8 +202,8 @@ const TRANSLATIONS = {
     history: {
       title: "Chat-historik",
       "desc-start":
-        "Antallet af tidligere chats, der vil blive inkluderet i svarens korttidshukommelse.",
-      recommend: "Anbefal 20. ",
+        "Antallet af tidligere beskeder, der vil blive inkluderet i svarens korttidshukommelse.",
+      recommend: "Anbefal 20.",
       "desc-end":
         "Alt over 45 kan sandsynligvis føre til gentagne chat-fejl afhængigt af beskedstørrelsen.",
     },

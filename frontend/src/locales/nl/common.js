@@ -202,8 +202,8 @@ const TRANSLATIONS = {
     history: {
       title: "Chatgeschiedenis",
       "desc-start":
-        "Het aantal vorige chats dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
-      recommend: "Aanbevolen 20. ",
+        "Het aantal eerdere berichten dat in het kortetermijngeheugen van de reactie wordt opgenomen.",
+      recommend: "Aanbevolen 20.",
       "desc-end":
         "Alles meer dan 45 leidt waarschijnlijk tot continue chatfouten, afhankelijk van de berichtgrootte.",
     },

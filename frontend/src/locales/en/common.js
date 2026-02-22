@@ -311,8 +311,8 @@ const TRANSLATIONS = {
     history: {
       title: "Chat History",
       "desc-start":
-        "The number of previous chats that will be included in the response's short-term memory.",
-      recommend: "Recommend 20. ",
+        "The number of previous messages that will be included in the response's short-term memory.",
+      recommend: "Recommend 20.",
       "desc-end":
         "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },

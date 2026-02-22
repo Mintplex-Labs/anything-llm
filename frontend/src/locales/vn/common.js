@@ -203,7 +203,7 @@ const TRANSLATIONS = {
       title: "Lịch sử Trò chuyện",
       "desc-start":
         "Số lượng cuộc trò chuyện trước đó sẽ được bao gồm trong bộ nhớ ngắn hạn của phản hồi.",
-      recommend: "Khuyến nghị 20. ",
+      recommend: "Khuyến nghị 20.",
       "desc-end":
         "Bất kỳ số nào lớn hơn 45 có thể dẫn đến lỗi trò chuyện liên tục tùy thuộc vào kích thước tin nhắn.",
     },

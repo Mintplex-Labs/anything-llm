@@ -285,7 +285,7 @@ const TRANSLATIONS = {
     history: {
       title: "Vestlusajalugu",
       "desc-start": "Eelmiste sõnumite arv, mis kaasatakse vastuse lühimällu.",
-      recommend: "Soovitatav 20. ",
+      recommend: "Soovitatav 20.",
       "desc-end": "Üle 45 võib sõltuvalt sõnumi suurusest põhjustada tõrkeid.",
     },
     prompt: {

@@ -300,8 +300,8 @@ const TRANSLATIONS = {
     history: {
       title: "Historie chatu",
       "desc-start":
-        "Počet předchozích chatů, které budou zahrnuty do krátkodobé paměti odpovědi.",
-      recommend: "Doporučeno 20. ",
+        "Počet předchozích zpráv, které budou zahrnuty do krátkodobé paměti odpovědi.",
+      recommend: "Doporučeno 20.",
       "desc-end":
         "Více než 45 pravděpodobně povede k trvalým selháním chatu v závislosti na velikosti zprávy.",
     },

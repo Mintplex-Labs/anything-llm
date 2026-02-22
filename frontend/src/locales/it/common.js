@@ -204,8 +204,8 @@ const TRANSLATIONS = {
     history: {
       title: "Chat History",
       "desc-start":
-        "Numero di chat precedenti che verranno incluse nella memoria a breve termine della risposta.",
-      recommend: "Recommend 20. ",
+        "Numero di messaggi precedenti che verranno incluse nella memoria a breve termine della risposta.",
+      recommend: "Recommend 20.",
       "desc-end":
         "Un numero superiore a 45 potrebbe causare continui errori nella chat, a seconda delle dimensioni del messaggio.",
     },
