@@ -849,7 +849,7 @@ const System = {
 
   /**
    * Validates a SQL connection string.
-   * @param {'postgresql'|'mysql'|'sql-server'} engine - the database engine identifier
+   * @param {'postgresql'|'mysql'|'sql-server'|'oracle'} engine - the database engine identifier
    * @param {string} connectionString - the connection string to validate
    * @returns {Promise<{success: boolean, error: string | null}>}
    */
