@@ -287,6 +287,9 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+  // ModelsLab TTS
+  TTSModelsLabKey: !!process.env.TTS_MODELSLAB_KEY,
+  TTSModelsLabVoiceModel: process.env.TTS_MODELSLAB_VOICE_MODEL || "Bella",
 
       // --------------------------------------------------------
       // Agent Settings & Configs

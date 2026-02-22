@@ -657,6 +657,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   TTSOpenAICompatibleEndpoint: {
+
+  // ModelsLab TTS
+  TTSModelsLabKey: {
+    envKey: "TTS_MODELSLAB_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSModelsLabVoiceModel: {
+    envKey: "TTS_MODELSLAB_VOICE_MODEL",
+    checks: [],
+  },
     envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
     checks: [isValidURL],
   },
@@ -892,6 +902,7 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "modelslab",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
@@ -928,6 +939,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "modelslab",
     "bedrock",
     "deepseek",
     "apipie",
@@ -979,6 +991,7 @@ function supportedEmbeddingModel(input = "") {
     "voyageai",
     "litellm",
     "generic-openai",
+    "modelslab",
     "mistral",
     "openrouter",
   ];
