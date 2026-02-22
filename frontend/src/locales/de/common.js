@@ -294,8 +294,8 @@ const TRANSLATIONS = {
     history: {
       title: "Chat-Verlauf",
       "desc-start":
-        "Die Anzahl der vorherigen Chats, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
-      recommend: "Empfohlen 20. ",
+        "Die Anzahl der vorherigen Nachrichten, die in das Kurzzeitgedächtnis der Antwort einbezogen werden.",
+      recommend: "Empfohlen 20.",
       "desc-end":
         "Alles über 45 führt wahrscheinlich zu kontinuierlichen Chat-Ausfällen, abhängig von der Nachrichtengröße.",
     },

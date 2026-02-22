@@ -204,7 +204,7 @@ const TRANSLATIONS = {
     history: {
       title: "Historique des chats",
       "desc-start":
-        "Le nombre de chats précédents qui seront inclus dans la mémoire à court terme de la réponse.",
+        "Le nombre de messages précédents qui seront inclus dans la mémoire à court terme de la réponse.",
       recommend: "Recommandé: 20.",
       "desc-end":
         "Tout nombre supérieur à 45 risque de provoquer des échecs de chat continus en fonction de la taille du message.",

@@ -295,7 +295,7 @@ const TRANSLATIONS = {
     history: {
       title: "Istoric chat",
       "desc-start":
-        "Numărul conversațiilor anterioare care vor fi incluse în memoria pe termen scurt a răspunsului.",
+        "Numărul de mesaje anterioare care vor fi incluse în memoria pe termen scurt a răspunsului.",
       recommend: "Recomandat: 20.",
       "desc-end":
         "Mai mult de 45 poate duce la erori în conversații în funcție de mărimea mesajelor.",

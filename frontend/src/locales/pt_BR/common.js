@@ -288,8 +288,8 @@ const TRANSLATIONS = {
     history: {
       title: "Histórico de Chat",
       "desc-start":
-        "Número de chats anteriores que serão incluídos na memória de curto prazo.",
-      recommend: "Recomendado: 20. ",
+        "Número de mensagens anteriores que serão incluídos na memória de curto prazo.",
+      recommend: "Recomendado: 20.",
       "desc-end":
         "Valores acima de 45 podem causar falhas dependendo do tamanho das mensagens.",
     },

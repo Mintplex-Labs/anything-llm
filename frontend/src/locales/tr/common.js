@@ -202,8 +202,8 @@ const TRANSLATIONS = {
     history: {
       title: "Sohbet Geçmişi",
       "desc-start":
-        "Yanıta dahil edilecek önceki sohbetlerin sayısı (kısa süreli hafıza).",
-      recommend: "20 önerilir. ",
+        "Yanıtın kısa süreli belleğine dahil edilecek önceki mesajların sayısı.",
+      recommend: "20 önerilir.",
       "desc-end":
         "45'ten fazlası, mesaj boyutuna göre sürekli sohbet hatalarına yol açabilir.",
     },
