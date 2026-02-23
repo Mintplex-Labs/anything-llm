@@ -248,13 +248,13 @@ export default function EmbedChatsView() {
                 </p>
                 <div className="space-y-0.5 text-xs">
                   {Object.entries(retentionInfo).map(([embedId, info]) => {
-                    const cutoffDate = new Date();
-                    cutoffDate.setDate(cutoffDate.getDate() - info.days + 1);
-                    cutoffDate.setHours(0, 0, 0, 0);
+                    const expiryDate = new Date();
+                    expiryDate.setDate(expiryDate.getDate() + info.days);
+                    expiryDate.setHours(0, 0, 0, 0);
 
                     return (
                       <p key={embedId}>
-                        • {info.workspace}: {t("embed-chats.cutoff-date", { date: formatDate(cutoffDate) })}
+                        • {info.workspace}: {t("embed-chats.cutoff-date", { days: info.days, date: formatDate(expiryDate) })}
                       </p>
                     );
                   })}

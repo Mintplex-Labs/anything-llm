@@ -663,7 +663,7 @@ const TRANSLATIONS = {
     response: "Antwort",
     "no-conversations": "Keine Konversationen vorhanden.",
     "session-copied": "Session ID kopiert!",
-    "retention-notice": "ℹ️ DSGVO-Datenlöschung: Nächster Cleanup heute Nacht, 00:00 Uhr (Chats vor dem {{cutoffDate}} werden gelöscht)",
+    "retention-notice": "ℹ️ DSGVO: Aufbewahrungsfrist {{days}} Tage — Heutige Chats verfallen am {{expiryDate}}",
   },
   "embed-row": {
     code: "Code",
@@ -780,8 +780,8 @@ const TRANSLATIONS = {
       "Dies sind alle aufgezeichneten Chat-Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
     "no-conversations": "Keine Konversationen gefunden.",
     "no-chats": "Keine Chats gefunden.",
-    "retention-header": "ℹ️ DSGVO-Datenlöschung aktiv - Nächster Cleanup: heute Nacht, 00:00 Uhr",
-    "cutoff-date": "Chats vor dem {{date}} werden gelöscht",
+    "retention-header": "ℹ️ DSGVO-Datenlöschung aktiv",
+    "cutoff-date": "Aufbewahrung {{days}} Tage — heutige Chats verfallen am {{date}}",
     table: {
       embed: "Einbettung",
       sender: "Absender",

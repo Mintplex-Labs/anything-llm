@@ -126,9 +126,9 @@ export default function EmbedAnalyticsView() {
       {retentionDays &&
         retentionDays > 0 &&
         (() => {
-          const cutoffDate = new Date();
-          cutoffDate.setDate(cutoffDate.getDate() - retentionDays + 1);
-          cutoffDate.setHours(0, 0, 0, 0);
+          const expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + retentionDays);
+          expiryDate.setHours(0, 0, 0, 0);
 
           const formatDate = (date) => {
             return date.toLocaleDateString("de-DE", {
@@ -154,7 +154,8 @@ export default function EmbedAnalyticsView() {
                 </svg>
                 <span className="text-blue-300 text-sm light:text-blue-700">
                   {t("embed-analytics.retention-notice", {
-                    cutoffDate: formatDate(cutoffDate),
+                    days: retentionDays,
+                    expiryDate: formatDate(expiryDate),
                   })}
                 </span>
               </div>
