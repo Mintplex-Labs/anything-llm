@@ -83,6 +83,10 @@ class GeminiProvider extends Provider {
    * Format the messages to the Gemini API Responses format.
    * - Gemini has some loosely documented format for tool calls and it can change at any time.
    * - We need to map the function call to the correct id and Gemini will throw an error if it does not.
+   * - Gemini requires a `thought_signature` (via `extra_content.google.thought_signature`) on function call
+   *   parts in multi-turn tool conversations. This is an encrypted token Gemini attaches to every tool call
+   *   it makes, and it must be passed back when sending tool results or Gemini rejects the request with a 400.
+   *   See: https://ai.google.dev/gemini-api/docs/thought-signatures
    * @param {any[]} messages - The messages to format.
    * @returns {OpenAI.OpenAI.Responses.ResponseInput[]} The formatted messages.
    */
@@ -197,6 +201,7 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
             arguments: toolCall.function.arguments,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
             extra_content: toolCall.extra_content ?? null,
           };
           eventHandler?.("reportStreamEvent", {
@@ -276,6 +281,7 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             arguments: functionArgs,
             id: toolCall.id,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
             extra_content: toolCall.extra_content ?? null,
           },
           cost,
