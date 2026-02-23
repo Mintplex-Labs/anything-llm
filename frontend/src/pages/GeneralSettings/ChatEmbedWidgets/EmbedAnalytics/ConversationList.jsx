@@ -137,7 +137,7 @@ function ConversationCard({ conversation, embedId }) {
   };
 
   return (
-    <div className="border border-white/10 rounded-lg bg-theme-bg-primary hover:border-white/20 transition-all">
+    <div className="border border-white/10 light:border-gray-200 rounded-lg bg-theme-bg-primary hover:border-white/20 light:hover:border-gray-400 transition-all">
       {/* Header */}
       <div
         className="p-4 cursor-pointer"
@@ -213,7 +213,7 @@ function ConversationCard({ conversation, embedId }) {
 
       {/* Expanded Messages */}
       {expanded && (
-        <div className="border-t border-white/10 p-6 bg-theme-bg-secondary">
+        <div className="border-t border-white/10 light:border-gray-200 p-6 bg-theme-bg-secondary">
           {loading ? (
             <div className="text-center py-4 text-theme-text-secondary text-sm">
               {t("common.loading")}

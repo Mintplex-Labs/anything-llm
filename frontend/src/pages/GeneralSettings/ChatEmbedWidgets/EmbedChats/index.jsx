@@ -10,6 +10,7 @@ import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
 import useUser from "@/hooks/useUser";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
 const exportOptions = {
   csv: {
@@ -59,6 +60,8 @@ export default function EmbedChatsView() {
   const [canNext, setCanNext] = useState(false);
   const isReadOnly = user?.role === "default";
   const [retentionInfo, setRetentionInfo] = useState({});
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -138,14 +141,10 @@ export default function EmbedChatsView() {
   };
 
   const handleClearAllChats = async () => {
-    if (
-      !window.confirm(
-        t("embed-chats.clear-all-confirm")
-      )
-    )
-      return;
-
+    setDeleting(true);
     const { success, deletedCount } = await Embed.clearAllChats();
+    setDeleting(false);
+    setShowDeleteModal(false);
     if (success) {
       showToast(
         t("embed-chats.clear-all-success", { count: deletedCount }),
@@ -213,7 +212,7 @@ export default function EmbedChatsView() {
           </div>
           {!isReadOnly && (
             <button
-              onClick={handleClearAllChats}
+              onClick={() => setShowDeleteModal(true)}
               className="flex items-center gap-x-2 px-4 py-1 rounded-lg border border-red-400 text-red-400 hover:border-transparent hover:text-white text-xs font-semibold hover:bg-red-500 h-[34px] w-fit transition-all duration-200"
             >
               <Trash size={18} weight="bold" />
@@ -333,6 +332,15 @@ export default function EmbedChatsView() {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleClearAllChats}
+        title={t("embed-chats.clear-all")}
+        message={t("embed-chats.clear-all-confirm")}
+        loading={deleting}
+      />
     </div>
   );
 }

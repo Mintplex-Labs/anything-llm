@@ -59,7 +59,7 @@ export default function StatisticsGrid({ stats }) {
         {statCards.map((stat, idx) => (
           <div
             key={idx}
-            className="bg-theme-bg-secondary border border-white/10 rounded-lg p-5 hover:border-white/20 transition-all"
+            className="bg-theme-bg-secondary border border-white/10 light:border-gray-200 rounded-lg p-5 hover:border-white/20 light:hover:border-gray-400 transition-all"
           >
             <h4 className="text-theme-text-secondary text-xs uppercase tracking-wide mb-2">
               {stat.label}
@@ -88,7 +88,7 @@ export default function StatisticsGrid({ stats }) {
           </button>
 
           {showTechnical && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-theme-bg-secondary/50 border border-white/10 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-theme-bg-secondary/50 border border-white/10 light:border-gray-200 rounded-lg">
               {technicalStats.map((stat, idx) => (
                 <div key={idx} className="p-4 bg-theme-bg-primary rounded-lg">
                   <h4 className="text-theme-text-secondary text-xs uppercase tracking-wide mb-2">

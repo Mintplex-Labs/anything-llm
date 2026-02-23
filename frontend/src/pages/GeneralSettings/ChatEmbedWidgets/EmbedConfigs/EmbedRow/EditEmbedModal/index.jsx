@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X } from "@phosphor-icons/react";
+import { X, Warning } from "@phosphor-icons/react";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import {
   BooleanInput,
   ChatModeSelection,
@@ -16,6 +17,8 @@ import { useTranslation } from "react-i18next";
 export default function EditEmbedModal({ embed, closeModal }) {
   const { t } = useTranslation();
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -33,18 +36,10 @@ export default function EditEmbedModal({ embed, closeModal }) {
   };
 
   const handleClearChats = async () => {
-    const chatCount = embed._count.embed_chats;
-    if (chatCount === 0) {
-      showToast(t("embed-modal.no-chats"), "info", { clear: true });
-      return;
-    }
-
-    if (
-      !window.confirm(t("embed-modal.confirm-clear-chats", { count: chatCount }))
-    )
-      return;
-
+    setDeleting(true);
     const { success, deletedCount, error } = await Embed.clearEmbedChats(embed.id);
+    setDeleting(false);
+    setShowDeleteModal(false);
     if (!success) {
       showToast(error || t("embed-modal.clear-error"), "error", { clear: true });
       return;
@@ -59,6 +54,8 @@ export default function EditEmbedModal({ embed, closeModal }) {
       window.location.reload();
     }, 1000);
   };
+
+  const chatCount = embed._count?.embed_chats || 0;
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
@@ -139,18 +136,19 @@ export default function EditEmbedModal({ embed, closeModal }) {
                   </option>
                 </select>
               </div>
-              {embed._count.embed_chats > 0 && (
+              {chatCount > 0 && (
                 <div className="flex flex-col gap-y-1">
                   <p className="text-theme-text-secondary text-xs">
                     {t("embed-modal.clear-chats-hint")}
                   </p>
                   <button
                     type="button"
-                    onClick={handleClearChats}
-                    className="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg border border-orange-400 text-orange-400 hover:border-transparent hover:text-white text-xs font-semibold hover:bg-orange-500 transition-all duration-200 w-[15rem]"
+                    onClick={() => setShowDeleteModal(true)}
+                    className="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg border border-red-400 text-red-400 hover:border-transparent hover:text-white text-xs font-semibold hover:bg-red-500 transition-all duration-200 w-[15rem]"
                   >
+                    <Warning size={16} weight="bold" />
                     {t("embed-modal.clear-chats-button", {
-                      count: embed._count.embed_chats,
+                      count: chatCount,
                     })}
                   </button>
                 </div>
@@ -204,6 +202,15 @@ export default function EditEmbedModal({ embed, closeModal }) {
           </form>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleClearChats}
+        title={t("embed-modal.clear-chats-button", { count: chatCount })}
+        message={t("embed-modal.confirm-clear-chats", { count: chatCount })}
+        loading={deleting}
+      />
     </div>
   );
 }

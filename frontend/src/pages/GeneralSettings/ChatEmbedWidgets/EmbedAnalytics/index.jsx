@@ -104,7 +104,7 @@ export default function EmbedAnalyticsView() {
           <select
             value={selectedEmbed || ""}
             onChange={(e) => setSelectedEmbed(Number(e.target.value))}
-            className="bg-theme-settings-input-bg text-white rounded-lg px-4 py-2 text-sm border border-white/10"
+            className="bg-theme-settings-input-bg text-white rounded-lg px-4 py-2 text-sm border border-white/10 light:border-gray-200"
           >
             {embeds.map((embed) => (
               <option key={embed.id} value={embed.id}>
