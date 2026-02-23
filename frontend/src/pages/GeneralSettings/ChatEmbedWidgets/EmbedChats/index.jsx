@@ -228,10 +228,6 @@ export default function EmbedChatsView() {
 
       {/* DSGVO Retention Notice */}
       {Object.keys(retentionInfo).length > 0 && (() => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-
         const formatDate = (date) => {
           return date.toLocaleDateString('de-DE', {
             day: '2-digit',
@@ -248,7 +244,7 @@ export default function EmbedChatsView() {
               </svg>
               <div className="text-blue-300 text-sm light:text-blue-700 space-y-1.5 flex-1">
                 <p className="font-medium">
-                  {t("embed-chats.retention-header", { date: formatDate(tomorrow) })}
+                  {t("embed-chats.retention-header")}
                 </p>
                 <div className="space-y-0.5 text-xs">
                   {Object.entries(retentionInfo).map(([embedId, info]) => {

@@ -126,10 +126,6 @@ export default function EmbedAnalyticsView() {
       {retentionDays &&
         retentionDays > 0 &&
         (() => {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
-
           const cutoffDate = new Date();
           cutoffDate.setDate(cutoffDate.getDate() - retentionDays + 1);
           cutoffDate.setHours(0, 0, 0, 0);
@@ -158,7 +154,6 @@ export default function EmbedAnalyticsView() {
                 </svg>
                 <span className="text-blue-300 text-sm light:text-blue-700">
                   {t("embed-analytics.retention-notice", {
-                    nextCleanup: formatDate(tomorrow),
                     cutoffDate: formatDate(cutoffDate),
                   })}
                 </span>
