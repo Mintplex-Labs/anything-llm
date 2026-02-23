@@ -111,7 +111,10 @@ class GeminiProvider extends Provider {
                   arguments: JSON.stringify(
                     message.originalFunctionCall.arguments
                   ),
-                  name: message.originalFunctionCall.name,
+                  name: this.prefixToolCall(
+                    message.originalFunctionCall.name,
+                    "add"
+                  ),
                 },
                 id: message.originalFunctionCall.id,
               },
