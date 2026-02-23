@@ -1130,8 +1130,6 @@ const TRANSLATIONS = {
   "embed-analytics": {
     title: "Analytics Dashboard",
     "load-error": "Error loading analytics data.",
-    "last-week": "Last Week",
-    "last-month": "Last Month",
     "all-time": "All Time",
     "statistics-title": "STATISTICS",
     stats: {
@@ -1146,6 +1144,16 @@ const TRANSLATIONS = {
     request: "Request",
     response: "Response",
     "no-conversations": "No conversations available.",
+  },
+  "date-picker": {
+    today: "Today",
+    yesterday: "Yesterday",
+    "this-week": "This Week",
+    "this-month": "This Month",
+    "last-month": "Last Month",
+    all: "All Time",
+    apply: "Apply",
+    "custom-range": "Select period",
   },
 };
 

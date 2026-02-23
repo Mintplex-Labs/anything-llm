@@ -97,6 +97,24 @@ yarn start        # Production Start
 
 Details in: `.claude/skills/review-code.md`
 
+## Windows-Pfade (WSL)
+
+Wenn der User Windows-Pfade wie `C:\Users\CA\Pictures\...` einfügt, immer automatisch in WSL-Pfade umwandeln:
+- `C:\Users\...` → `/mnt/c/Users/...`
+- `D:\Projekte\...` → `/mnt/d/Projekte/...`
+- Backslashes `\` → Forward-Slashes `/`
+
+## Screenshot-Referenzen & Skizzen
+
+Wenn der User sagt "siehe g25", ist der Pfad immer:
+- `/mnt/c/Users/CA/Pictures/Screenshots/g25.png`
+
+Excalidraw-Exports immer ablegen unter:
+- Basispfad: `/mnt/c/Users/CA/Pictures/Skizzen/`
+- Unterordner pro Projekt, z.B. `Datumspicker-Konversationen/`
+- Beide Formate exportieren: `.excalidraw` (editierbar) + `.png` (Vorschau)
+- Benennung: beschreibender Name, z.B. `Kalender-Popover.excalidraw` + `Kalender-Popover.png`
+
 ## Related Projects
 
 - `anythingllm-embed/` - Embed Chat Widget (Submodul)

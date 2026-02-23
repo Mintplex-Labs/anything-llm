@@ -2,6 +2,71 @@
 
 Alle wichtigen Änderungen am AnythingLLM Server werden hier dokumentiert.
 
+## [4.1.0] - 2026-02-23
+
+### 📅 DateRange-Picker für Analytics Dashboard
+
+**Problem gelöst:** Die bisherigen Zeitfilter ("Letzte Woche", "Letzter Monat", "Gesamt") waren **rollende Zeitfenster** - "Letzter Monat" änderte sich buchstäblich jede Stunde. Systematisches Abarbeiten (z.B. alle Konversationen vom Januar) war damit unmöglich.
+
+#### Hinzugefügt
+
+- **📅 DateRangePicker-Komponente** (`frontend/src/components/DateRangePicker/index.jsx`)
+  - Chatbase-inspiriertes Design: Trigger-Button mit Kalender-Icon + Datumsbereich-Text
+  - Popover mit Preset-Dropdown + Dual-Kalender (2 Monate nebeneinander)
+  - "Anwenden"-Button für manuelle Kalenderauswahl
+  - Click-outside schließt Popover ohne Änderung
+  - Library: `react-day-picker` v9 mit deutscher Locale
+
+- **🗓️ Feste Kalender-Presets** (keine rollenden Fenster mehr!):
+  - Heute, Gestern, Diese Woche (ab Montag!), Dieser Monat, Letzter Monat, Gesamt
+  - "Dieser Monat" = 1. bis heute, "Letzter Monat" = voller Vormonat
+
+- **🎨 Theme-Overrides** für react-day-picker (Dark + Light Mode)
+  - CSS-Variablen nutzen bestehende `--theme-*` Farben
+  - Ausgewählte Range in Theme-Akzentfarbe
+
+- **🌍 Translations**: Neue `date-picker.*` Keys (DE + EN)
+
+- **📋 Browser-Testanweisung** (`BROWSER-TEST-DATEPICKER.md`): 15 GUI-Testfälle
+
+#### Geändert
+
+- **EmbedAnalyticsView**: State von `dateRange: "week"|"month"|"all"` auf `startDate/endDate` (Date-Objekte) umgebaut
+  - `getDateRange()` Funktion entfernt
+  - ISO-Strings als stabile useEffect-Dependencies
+  - Default: "Dieser Monat" statt "Letzte Woche"
+
+- **ConversationList**: Props von `dateRange`/`getDateRange` auf `startDate`/`endDate` (ISO-Strings) umgestellt
+  - Pagination resettet auf Seite 1 bei Datumswechsel
+
+- **CLAUDE.md**: Screenshot-Referenz-Pfade und Excalidraw-Export-Konventionen hinzugefügt
+
+#### Entfernt
+
+- Alte Translation-Keys `embed-analytics.last-week` und `embed-analytics.last-month`
+- `getDateRange()` Funktion (ersetzt durch DateRangePicker-Presets)
+
+#### Geänderte Dateien
+
+| Datei | Aktion |
+|-------|--------|
+| `frontend/src/components/DateRangePicker/index.jsx` | **NEU** |
+| `frontend/src/pages/.../EmbedAnalytics/index.jsx` | State-Umbau |
+| `frontend/src/pages/.../EmbedAnalytics/ConversationList.jsx` | Props-Anpassung |
+| `frontend/src/locales/de/common.js` | Translations |
+| `frontend/src/locales/en/common.js` | Translations |
+| `frontend/src/index.css` | CSS-Overrides |
+| `frontend/package.json` | react-day-picker |
+| `CLAUDE.md` | Konventionen |
+
+---
+
+## [4.0.0] - 2026-02-22
+
+### 📊 Analytics Edition - Enhanced Metrics & Pagination
+
+---
+
 ## [2.9.0] - 2026-02-22
 
 ### 🎯 Conversation ID Tracking & RAG Context Fix (Major Feature)

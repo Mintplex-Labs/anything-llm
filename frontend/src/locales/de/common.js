@@ -648,8 +648,6 @@ const TRANSLATIONS = {
   "embed-analytics": {
     title: "Analytics Dashboard",
     "load-error": "Fehler beim Laden der Analytics-Daten.",
-    "last-week": "Letzte Woche",
-    "last-month": "Letzter Monat",
     "all-time": "Gesamt",
     "statistics-title": "STATISTIKEN",
     stats: {
@@ -1232,6 +1230,16 @@ const TRANSLATIONS = {
         "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
       "password-label": "Instanzpasswort",
     },
+  },
+  "date-picker": {
+    today: "Heute",
+    yesterday: "Gestern",
+    "this-week": "Diese Woche",
+    "this-month": "Dieser Monat",
+    "last-month": "Letzter Monat",
+    all: "Gesamt",
+    apply: "Anwenden",
+    "custom-range": "Zeitraum wählen",
   },
   home: {
     welcome: "Willkommen",

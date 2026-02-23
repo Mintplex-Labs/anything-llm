@@ -7,7 +7,7 @@ import showToast from "@/utils/toast";
 import MarkdownRenderer from "../EmbedChats/MarkdownRenderer";
 import Pagination from "@/components/Pagination";
 
-export default function ConversationList({ embedId, dateRange, getDateRange }) {
+export default function ConversationList({ embedId, startDate, endDate }) {
   const { t } = useTranslation();
   const [conversations, setConversations] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -19,14 +19,13 @@ export default function ConversationList({ embedId, dateRange, getDateRange }) {
 
   useEffect(() => {
     setOffset(0); // Reset offset when filters change
-  }, [embedId, dateRange]);
+  }, [embedId, startDate, endDate]);
 
   useEffect(() => {
     if (!embedId) return;
 
     async function loadConversations() {
       setLoading(true);
-      const { startDate, endDate } = getDateRange(dateRange);
       const { success, conversations: data, hasMore: more, totalCount: total } =
         await Embed.getConversations(embedId, offset, ITEMS_PER_PAGE, startDate, endDate);
 
@@ -41,7 +40,7 @@ export default function ConversationList({ embedId, dateRange, getDateRange }) {
     }
 
     loadConversations();
-  }, [embedId, dateRange, offset, getDateRange, t]);
+  }, [embedId, startDate, endDate, offset, t]);
 
   if (loading) {
     return <div className="text-white">{t("common.loading")}</div>;

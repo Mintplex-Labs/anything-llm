@@ -1139,3 +1139,77 @@ does not extend the close button beyond the viewport. */
 .analytics-bot-response em {
   color: var(--theme-text-primary) !important;
 }
+
+/* ===== react-day-picker Theme Overrides ===== */
+.rdp-theme-wrapper .rdp-root {
+  --rdp-accent-color: var(--theme-button-primary);
+  --rdp-accent-background-color: rgba(70, 200, 255, 0.15);
+  --rdp-range_start-color: #000;
+  --rdp-range_end-color: #000;
+  --rdp-range_middle-color: var(--theme-text-primary);
+  --rdp-today-color: var(--theme-button-primary);
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-day_button-height: 34px;
+  --rdp-day_button-width: 34px;
+  --rdp-day_button-border-radius: 6px;
+  --rdp-months-gap: 1.5rem;
+  color: var(--theme-text-primary);
+  font-size: 0.85rem;
+}
+
+.rdp-theme-wrapper .rdp-month_caption {
+  color: var(--theme-text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.rdp-theme-wrapper .rdp-weekday {
+  color: var(--theme-text-secondary);
+  font-size: 0.75rem;
+}
+
+.rdp-theme-wrapper .rdp-day button {
+  color: var(--theme-text-primary);
+}
+
+.rdp-theme-wrapper .rdp-day button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.rdp-theme-wrapper .rdp-button_previous,
+.rdp-theme-wrapper .rdp-button_next {
+  color: var(--theme-text-secondary);
+}
+
+.rdp-theme-wrapper .rdp-button_previous:hover,
+.rdp-theme-wrapper .rdp-button_next:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.rdp-theme-wrapper .rdp-outside {
+  color: var(--theme-text-secondary);
+  opacity: 0.4;
+}
+
+.rdp-theme-wrapper .rdp-disabled {
+  color: var(--theme-text-secondary);
+  opacity: 0.3;
+}
+
+/* Light mode adjustments */
+[data-theme="light"] .rdp-theme-wrapper .rdp-root {
+  --rdp-accent-color: var(--theme-button-primary);
+  --rdp-accent-background-color: rgba(11, 165, 236, 0.12);
+  --rdp-range_start-color: #fff;
+  --rdp-range_end-color: #fff;
+}
+
+[data-theme="light"] .rdp-theme-wrapper .rdp-day button:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .rdp-theme-wrapper .rdp-button_previous:hover,
+[data-theme="light"] .rdp-theme-wrapper .rdp-button_next:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
