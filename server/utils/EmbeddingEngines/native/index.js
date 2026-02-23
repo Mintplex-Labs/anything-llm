@@ -275,7 +275,9 @@ class NativeEmbedder {
       fs.readFileSync(tmpFilePath, { encoding: "utf-8" })
     );
     fs.rmSync(tmpFilePath, { force: true });
-    return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+    return embeddingResults.length > 0
+      ? embeddingResults.reduce((acc, val) => acc.concat(val), [])
+      : null;
   }
 }
 
