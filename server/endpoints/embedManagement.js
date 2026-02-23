@@ -224,11 +224,13 @@ function embedManagementEndpoints(app) {
         `;
 
         const hasMore = (offset + limit) < Number(totalCount[0]?.count || 0);
+        const total = Number(totalCount[0]?.count || 0);
 
         response.status(200).json({
           success: true,
           conversations: filteredConversations,
           hasMore,
+          totalCount: total,
         });
       } catch (e) {
         console.error(e);
@@ -298,6 +300,7 @@ function embedManagementEndpoints(app) {
         `;
 
         const hasMore = (offset + limit) < Number(totalCount[0]?.count || 0);
+        const total = Number(totalCount[0]?.count || 0);
 
         // Debug: Check for BigInt values
         console.log("Conversations sample:", conversations[0]);
@@ -310,6 +313,7 @@ function embedManagementEndpoints(app) {
           success: true,
           conversations,
           hasMore,
+          totalCount: total,
         });
       } catch (e) {
         console.error(e);

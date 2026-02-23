@@ -451,7 +451,11 @@ const EmbedChats = {
       const wordCounts = await prisma.$queryRaw`
         SELECT
           SUM(LENGTH(prompt) - LENGTH(REPLACE(prompt, ' ', '')) + 1) as total_words_prompt,
-          SUM(LENGTH(response) - LENGTH(REPLACE(response, ' ', '')) + 1) as total_words_response
+          SUM(LENGTH(response) - LENGTH(REPLACE(response, ' ', '')) + 1) as total_words_response,
+          AVG(LENGTH(prompt) - LENGTH(REPLACE(prompt, ' ', '')) + 1) as avg_words_prompt,
+          AVG(LENGTH(response) - LENGTH(REPLACE(response, ' ', '')) + 1) as avg_words_response,
+          MAX(LENGTH(prompt) - LENGTH(REPLACE(prompt, ' ', '')) + 1) as max_words_prompt,
+          MAX(LENGTH(response) - LENGTH(REPLACE(response, ' ', '')) + 1) as max_words_response
         FROM embed_chats
         WHERE embed_id = ${embedId}
           ${dateConditions.length > 0 ? Prisma.join(dateConditions, " ") : Prisma.empty}
@@ -466,6 +470,10 @@ const EmbedChats = {
       const conversationCount = Number(uniqueConversations[0]?.count) || 0;
       const wordsPrompt = Number(wordCounts[0]?.total_words_prompt) || 0;
       const wordsResponse = Number(wordCounts[0]?.total_words_response) || 0;
+      const avgWordsPrompt = Number(wordCounts[0]?.avg_words_prompt) || 0;
+      const avgWordsResponse = Number(wordCounts[0]?.avg_words_response) || 0;
+      const maxWordsPrompt = Number(wordCounts[0]?.max_words_prompt) || 0;
+      const maxWordsResponse = Number(wordCounts[0]?.max_words_response) || 0;
 
       return {
         total_chats: totalChats,
@@ -473,6 +481,10 @@ const EmbedChats = {
         unique_sessions: conversationCount, // Deprecated, kept for backwards compatibility
         total_words_prompt: wordsPrompt,
         total_words_response: wordsResponse,
+        avg_words_prompt: Math.round(avgWordsPrompt),
+        avg_words_response: Math.round(avgWordsResponse),
+        max_words_prompt: maxWordsPrompt,
+        max_words_response: maxWordsResponse,
         avg_chats_per_conversation:
           conversationCount > 0 ? totalChats / conversationCount : 0,
         avg_chats_per_day: days ? totalChats / days : null,
@@ -485,6 +497,10 @@ const EmbedChats = {
         unique_sessions: 0, // Deprecated, kept for backwards compatibility
         total_words_prompt: 0,
         total_words_response: 0,
+        avg_words_prompt: 0,
+        avg_words_response: 0,
+        max_words_prompt: 0,
+        max_words_response: 0,
         avg_chats_per_conversation: 0,
         avg_chats_per_day: null,
       };

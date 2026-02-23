@@ -5,13 +5,17 @@ import Embed from "@/models/embed";
 import { formatDateTimeDE } from "@/utils/directories";
 import showToast from "@/utils/toast";
 import MarkdownRenderer from "../EmbedChats/MarkdownRenderer";
+import Pagination from "@/components/Pagination";
 
 export default function ConversationList({ embedId, dateRange, getDateRange }) {
   const { t } = useTranslation();
   const [conversations, setConversations] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
     setOffset(0); // Reset offset when filters change
@@ -23,12 +27,13 @@ export default function ConversationList({ embedId, dateRange, getDateRange }) {
     async function loadConversations() {
       setLoading(true);
       const { startDate, endDate } = getDateRange(dateRange);
-      const { success, conversations: data, hasMore: more } =
-        await Embed.getConversations(embedId, offset, 20, startDate, endDate);
+      const { success, conversations: data, hasMore: more, totalCount: total } =
+        await Embed.getConversations(embedId, offset, ITEMS_PER_PAGE, startDate, endDate);
 
       if (success) {
         setConversations(data || []);
         setHasMore(more);
+        setTotalCount(total || 0);
       } else {
         showToast(t("embed-analytics.load-error"), "error");
       }
@@ -37,9 +42,6 @@ export default function ConversationList({ embedId, dateRange, getDateRange }) {
 
     loadConversations();
   }, [embedId, dateRange, offset, getDateRange, t]);
-
-  const handlePrevious = () => setOffset(Math.max(0, offset - 20));
-  const handleNext = () => setOffset(offset + 20);
 
   if (loading) {
     return <div className="text-white">{t("common.loading")}</div>;
@@ -69,24 +71,15 @@ export default function ConversationList({ embedId, dateRange, getDateRange }) {
         ))}
       </div>
 
-      {/* Pagination */}
-      {(offset > 0 || hasMore) && (
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={handlePrevious}
-            disabled={offset === 0}
-            className="px-4 py-2 bg-white/10 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-all"
-          >
-            {t("common.previous")}
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={!hasMore}
-            className="px-4 py-2 bg-white/10 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-all"
-          >
-            {t("common.next")}
-          </button>
-        </div>
+      {/* Pagination - Google Style */}
+      {totalCount > 0 && (
+        <Pagination
+          currentPage={offset / ITEMS_PER_PAGE}
+          totalPages={Math.ceil(totalCount / ITEMS_PER_PAGE)}
+          onPageChange={(page) => setOffset(page * ITEMS_PER_PAGE)}
+          totalItems={totalCount}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       )}
     </div>
   );
@@ -116,10 +109,10 @@ function ConversationRow({ conversation, embedId }) {
     setExpanded(!expanded);
   };
 
-  const handleCopySessionId = (e) => {
+  const handleCopyConversationId = (e) => {
     e.stopPropagation(); // Prevent toggle when clicking copy
-    navigator.clipboard.writeText(conversation.session_id);
-    showToast(t("embed-analytics.session-copied"), "success");
+    navigator.clipboard.writeText(conversation.conversation_id);
+    showToast("Konversations-ID kopiert", "success");
   };
 
   // Format relative time
@@ -167,18 +160,18 @@ function ConversationRow({ conversation, embedId }) {
             )}
           </div>
         </div>
-        {/* Session ID komplett sichtbar mit Copy-Button */}
+        {/* Conversation ID komplett sichtbar mit Copy-Button */}
         <div className="flex items-center gap-2 flex-shrink-0 ml-4 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300">
           <span className="text-theme-text-secondary text-[10px] font-semibold uppercase">
-            Session:
+            Konversation:
           </span>
           <span className="text-theme-text-primary text-[10px] font-mono">
-            {conversation.session_id}
+            {conversation.conversation_id}
           </span>
           <button
-            onClick={handleCopySessionId}
+            onClick={handleCopyConversationId}
             className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-0.5 hover:bg-white/10 light:hover:bg-gray-200 rounded flex-shrink-0"
-            title="Session ID kopieren"
+            title="Konversations-ID kopieren"
           >
             <Copy size={12} weight="bold" />
           </button>
