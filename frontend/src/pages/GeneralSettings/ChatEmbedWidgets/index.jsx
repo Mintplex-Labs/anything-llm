@@ -126,11 +126,11 @@ function WidgetList({ selectedView, handleClick }) {
     configs: {
       title: t("embed-widgets.widgets"),
     },
-    chats: {
-      title: t("embed-widgets.history"),
-    },
     analytics: {
       title: t("embed-widgets.analytics"),
+    },
+    chats: {
+      title: t("embed-widgets.history"),
     },
   };
 

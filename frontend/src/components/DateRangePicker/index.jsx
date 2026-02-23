@@ -100,7 +100,7 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
     from: startDate,
     to: endDate,
   });
-  const [activePreset, setActivePreset] = useState("this-month");
+  const [activePreset, setActivePreset] = useState("this-week");
   const popoverRef = useRef(null);
   const triggerRef = useRef(null);
 

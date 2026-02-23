@@ -7,13 +7,17 @@ import DateRangePicker from "@/components/DateRangePicker";
 import showToast from "@/utils/toast";
 
 /**
- * Returns "this month" default: 1st of current month to today.
+ * Returns "this week" default: Monday of current week to today.
+ * German convention: week starts on Monday.
  */
-function getThisMonthRange() {
+function getThisWeekRange() {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  return { startDate: firstOfMonth, endDate: today };
+  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+  const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - diff);
+  return { startDate: monday, endDate: today };
 }
 
 /**
@@ -33,9 +37,9 @@ export default function EmbedAnalyticsView() {
 
   // Date range as Date objects (null = "all time")
   const [startDate, setStartDate] = useState(
-    () => getThisMonthRange().startDate
+    () => getThisWeekRange().startDate
   );
-  const [endDate, setEndDate] = useState(() => getThisMonthRange().endDate);
+  const [endDate, setEndDate] = useState(() => getThisWeekRange().endDate);
 
   // ISO strings for stable useEffect dependencies
   const startDateISO = toISO(startDate);
