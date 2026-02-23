@@ -101,20 +101,25 @@ class GeminiProvider extends Provider {
           return;
         }
 
+        const prefixedName = this.prefixToolCall(
+          message.originalFunctionCall.name,
+          "add"
+        );
         formattedMessages.push(
           {
             role: "assistant",
+            content: "",
             tool_calls: [
               {
                 type: "function",
+                ...(message.originalFunctionCall.extra_content
+                  ? { extra_content: message.originalFunctionCall.extra_content }
+                  : {}),
                 function: {
                   arguments: JSON.stringify(
                     message.originalFunctionCall.arguments
                   ),
-                  name: this.prefixToolCall(
-                    message.originalFunctionCall.name,
-                    "add"
-                  ),
+                  name: prefixedName,
                 },
                 id: message.originalFunctionCall.id,
               },
@@ -123,6 +128,7 @@ class GeminiProvider extends Provider {
           {
             role: "tool",
             tool_call_id: message.originalFunctionCall.id,
+            name: prefixedName,
             content: message.content,
           }
         );
@@ -191,6 +197,7 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
             arguments: toolCall.function.arguments,
+            extra_content: toolCall.extra_content ?? null,
           };
           eventHandler?.("reportStreamEvent", {
             type: "toolCallInvocation",
@@ -211,6 +218,7 @@ class GeminiProvider extends Provider {
             id: completion.functionCall.call_id,
             name: completion.functionCall.name,
             arguments: completion.functionCall.arguments,
+            extra_content: completion.functionCall.extra_content,
           },
           cost: this.getCost(),
         };
@@ -268,6 +276,7 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             arguments: functionArgs,
             id: toolCall.id,
+            extra_content: toolCall.extra_content ?? null,
           },
           cost,
         };
