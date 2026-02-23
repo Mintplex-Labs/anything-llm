@@ -1,11 +1,31 @@
 import { useState, useEffect } from "react";
-import { CaretDown, CaretRight, ChatCircle, User, Copy } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, ChatCircle, User, Copy } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import Embed from "@/models/embed";
 import { formatDateTimeDE } from "@/utils/directories";
 import showToast from "@/utils/toast";
 import MarkdownRenderer from "../EmbedChats/MarkdownRenderer";
 import Pagination from "@/components/Pagination";
+
+function timeAgo(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return "vor wenigen Sekunden";
+  if (minutes < 60) return `vor ${minutes} ${minutes === 1 ? "Minute" : "Minuten"}`;
+  if (hours < 24) return `vor ${hours} ${hours === 1 ? "Stunde" : "Stunden"}`;
+  if (days < 30) return `vor ${days} ${days === 1 ? "Tag" : "Tagen"}`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `vor ${months} ${months === 1 ? "Monat" : "Monaten"}`;
+
+  const years = Math.floor(months / 12);
+  return `vor ${years} ${years === 1 ? "Jahr" : "Jahren"}`;
+}
 
 export default function ConversationList({ embedId, startDate, endDate }) {
   const { t } = useTranslation();
@@ -18,7 +38,7 @@ export default function ConversationList({ embedId, startDate, endDate }) {
   const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
-    setOffset(0); // Reset offset when filters change
+    setOffset(0);
   }, [embedId, startDate, endDate]);
 
   useEffect(() => {
@@ -57,12 +77,12 @@ export default function ConversationList({ embedId, startDate, endDate }) {
   return (
     <div>
       <h3 className="text-white text-xl mb-4">
-        {t("embed-analytics.conversations-title")} ({conversations.length})
+        {t("embed-analytics.conversations-title")} ({totalCount || conversations.length})
       </h3>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {conversations.map((conv) => (
-          <ConversationRow
+          <ConversationCard
             key={conv.session_id}
             conversation={conv}
             embedId={embedId}
@@ -70,7 +90,6 @@ export default function ConversationList({ embedId, startDate, endDate }) {
         ))}
       </div>
 
-      {/* Pagination - Google Style */}
       {totalCount > 0 && (
         <Pagination
           currentPage={offset / ITEMS_PER_PAGE}
@@ -84,11 +103,14 @@ export default function ConversationList({ embedId, startDate, endDate }) {
   );
 }
 
-function ConversationRow({ conversation, embedId }) {
+function ConversationCard({ conversation, embedId }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [messages, setMessages] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
+  const isNew = Date.now() - conversation.started_at < FOUR_HOURS_MS;
 
   const handleToggle = async () => {
     if (!expanded && !messages) {
@@ -109,84 +131,98 @@ function ConversationRow({ conversation, embedId }) {
   };
 
   const handleCopyConversationId = (e) => {
-    e.stopPropagation(); // Prevent toggle when clicking copy
+    e.stopPropagation();
     navigator.clipboard.writeText(conversation.conversation_id);
     showToast("Konversations-ID kopiert", "success");
   };
 
-  // Format relative time
-  const getRelativeTime = (timestamp) => {
-    const diff = Date.now() - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-
-    if (minutes < 1) return "gerade eben";
-    if (minutes < 60) return `vor ${minutes} Min`;
-    if (hours < 24) return `vor ${hours} Std`;
-    return formatDateTimeDE(timestamp);
-  };
-
   return (
-    <div className="border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all">
+    <div className="border border-white/10 rounded-lg bg-theme-bg-primary hover:border-white/20 transition-all">
       {/* Header */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-all"
+        className="p-4 cursor-pointer"
         onClick={handleToggle}
       >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {expanded ? (
-            <CaretDown size={18} className="text-theme-text-secondary flex-shrink-0" />
-          ) : (
-            <CaretRight size={18} className="text-theme-text-secondary flex-shrink-0" />
-          )}
-          <ChatCircle size={20} className="text-theme-text-secondary flex-shrink-0" />
-
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h4 className="text-theme-text-primary text-sm font-semibold">
-              {t("embed-analytics.conversation-number", {
-                id: conversation.conversation_number,
-              })}
-            </h4>
-            <p className="text-theme-text-secondary text-xs">
-              Start: {formatDateTimeDE(conversation.started_at)} |{" "}
-              Letzte: {getRelativeTime(conversation.last_message_at)} |{" "}
-              {conversation.message_count} {t("embed-analytics.messages")}
+            <div className="flex items-center gap-2 mb-2">
+              {/* Workspace Name */}
+              <h3 className="text-sm font-semibold text-white truncate">
+                {conversation.workspace || `Embed #${embedId}`}
+              </h3>
+              {/* NEU Badge */}
+              {isNew && (
+                <span className="px-2 py-0.5 text-xs font-bold bg-green-500/20 text-green-400 rounded border border-green-500/30">
+                  NEU
+                </span>
+              )}
+            </div>
+
+            {/* Preview */}
+            <p className="text-xs text-theme-text-secondary mb-3 line-clamp-2">
+              {conversation.preview || "Keine Vorschau verfügbar"}
             </p>
-            {!expanded && (
-              <p className="text-theme-text-secondary opacity-60 text-xs mt-1 italic truncate">
-                &quot;{conversation.preview}&quot;
-              </p>
+
+            {/* Metadata */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-theme-text-secondary">
+              <span>
+                Erstellt: {formatDateTimeDE(conversation.started_at)}
+              </span>
+              <span>•</span>
+              <span>
+                Letzte Nachricht: {timeAgo(conversation.last_message_at)}
+              </span>
+              <span>•</span>
+              <span>
+                {conversation.message_count} {conversation.message_count === 1 ? "Nachricht" : "Nachrichten"}
+              </span>
+            </div>
+          </div>
+
+          {/* Right side: Conversation ID Badge + Expand Icon */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Conversation ID Badge */}
+            <div
+              className="flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-theme-text-secondary text-[10px] font-semibold uppercase">
+                ID:
+              </span>
+              <span className="text-theme-text-primary text-[10px] font-mono">
+                {conversation.conversation_id}
+              </span>
+              <button
+                onClick={handleCopyConversationId}
+                className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-0.5 hover:bg-white/10 light:hover:bg-gray-200 rounded flex-shrink-0"
+                title="Konversations-ID kopieren"
+              >
+                <Copy size={12} weight="bold" />
+              </button>
+            </div>
+
+            {/* Expand Icon */}
+            {expanded ? (
+              <CaretUp size={20} className="text-theme-text-secondary" />
+            ) : (
+              <CaretDown size={20} className="text-theme-text-secondary" />
             )}
           </div>
         </div>
-        {/* Conversation ID komplett sichtbar mit Copy-Button */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-4 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300">
-          <span className="text-theme-text-secondary text-[10px] font-semibold uppercase">
-            Konversation:
-          </span>
-          <span className="text-theme-text-primary text-[10px] font-mono">
-            {conversation.conversation_id}
-          </span>
-          <button
-            onClick={handleCopyConversationId}
-            className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-0.5 hover:bg-white/10 light:hover:bg-gray-200 rounded flex-shrink-0"
-            title="Konversations-ID kopieren"
-          >
-            <Copy size={12} weight="bold" />
-          </button>
-        </div>
       </div>
 
-      {/* Details */}
+      {/* Expanded Messages */}
       {expanded && (
-        <div className="border-t border-white/10 p-6 bg-transparent">
+        <div className="border-t border-white/10 p-6 bg-theme-bg-secondary">
           {loading ? (
-            <div className="text-white text-sm">{t("common.loading")}</div>
-          ) : messages ? (
+            <div className="text-center py-4 text-theme-text-secondary text-sm">
+              {t("common.loading")}
+            </div>
+          ) : messages && messages.length > 0 ? (
             <div className="space-y-5">
               {messages.map((msg, idx) => (
                 <div key={msg.id}>
-                  {/* User Message - Blauer Kasten wie HTML-Statistik */}
+                  {/* User Message */}
                   <div className="bg-blue-900/20 border-l-4 border-blue-400 p-4 rounded-lg mb-3 light:bg-blue-100 light:border-blue-600">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -204,7 +240,7 @@ function ConversationRow({ conversation, embedId }) {
                     </p>
                   </div>
 
-                  {/* Bot Response - Grauer Kasten wie HTML-Statistik */}
+                  {/* Bot Response */}
                   <div className="bg-gray-800/20 border-l-4 border-gray-500 p-4 rounded-lg light:bg-gray-100 light:border-gray-400">
                     <div className="flex items-center gap-2 mb-2">
                       <ChatCircle size={18} weight="fill" className="text-gray-400 light:text-gray-600" />
@@ -226,14 +262,17 @@ function ConversationRow({ conversation, embedId }) {
                     </div>
                   </div>
 
-                  {/* Dickere Trennlinie zwischen Nachrichtenpaaren */}
                   {idx < messages.length - 1 && (
                     <div className="h-0.5 bg-white/20 my-5 light:bg-gray-300"></div>
                   )}
                 </div>
               ))}
             </div>
-          ) : null}
+          ) : (
+            <div className="text-center py-4 text-theme-text-secondary text-sm">
+              Keine Nachrichten gefunden
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -5,13 +5,11 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import Embed from "@/models/embed";
 import { useTranslation } from "react-i18next";
-import { CaretDown, Download, Trash, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
 import useUser from "@/hooks/useUser";
-import { formatDateTimeDE } from "@/utils/directories";
-import { safeJsonParse } from "@/utils/request";
 
 const exportOptions = {
   csv: {
@@ -116,18 +114,15 @@ export default function EmbedChatsView() {
   }, []);
 
   useEffect(() => {
-    async function fetchConversations() {
+    async function fetchChats() {
       setLoading(true);
-      await Embed.getConversationsGlobal(offset, 20)
-        .then(({ conversations = [], hasMore = false }) => {
-          setChats(conversations);
-          setCanNext(hasMore);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const { chats: _chats = [], hasPages = false } =
+        await Embed.chats(offset);
+      setChats(_chats);
+      setCanNext(hasPages);
+      setLoading(false);
     }
-    fetchConversations();
+    fetchChats();
   }, [offset]);
 
   const handlePrevious = () => {
@@ -231,7 +226,7 @@ export default function EmbedChatsView() {
         </p>
       </div>
 
-      {/* DSGVO Retention Notice - Gruppiert nach Embed */}
+      {/* DSGVO Retention Notice */}
       {Object.keys(retentionInfo).length > 0 && (() => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -274,22 +269,47 @@ export default function EmbedChatsView() {
         );
       })()}
 
-      <div className="mt-6">
-        <div className="space-y-4">
-          {chats.length === 0 ? (
-            <div className="text-center py-12 text-theme-text-secondary">
-              <p>{t("embed-chats.no-conversations")}</p>
-            </div>
-          ) : (
-            chats.map((conversation) => (
-              <ConversationCard
-                key={conversation.conversation_id}
-                conversation={conversation}
-                isReadOnly={isReadOnly}
-              />
-            ))
-          )}
-        </div>
+      <div className="mt-6 overflow-x-auto">
+        <table className="w-full text-sm text-left rounded-lg min-w-[800px]">
+          <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-b border-white/10">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.embed")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.sender")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.message")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.response")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.at")}
+              </th>
+              <th scope="col" className="px-6 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {chats.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-12 text-theme-text-secondary">
+                  {t("embed-chats.no-chats")}
+                </td>
+              </tr>
+            ) : (
+              chats.map((chat) => (
+                <ChatRow
+                  key={chat.id}
+                  chat={chat}
+                  onDelete={handleDeleteChat}
+                  isReadOnly={isReadOnly}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
         {(offset > 0 || canNext) && (
           <div className="flex items-center justify-end gap-2 mt-6 pb-6">
             <button
@@ -317,148 +337,6 @@ export default function EmbedChatsView() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Helper function: Time ago in German (e.g., "vor 2 Stunden")
-function timeAgo(timestamp) {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (seconds < 60) return "vor wenigen Sekunden";
-  if (minutes < 60) return `vor ${minutes} ${minutes === 1 ? "Minute" : "Minuten"}`;
-  if (hours < 24) return `vor ${hours} ${hours === 1 ? "Stunde" : "Stunden"}`;
-  if (days < 30) return `vor ${days} ${days === 1 ? "Tag" : "Tagen"}`;
-
-  const months = Math.floor(days / 30);
-  if (months < 12) return `vor ${months} ${months === 1 ? "Monat" : "Monaten"}`;
-
-  const years = Math.floor(months / 12);
-  return `vor ${years} ${years === 1 ? "Jahr" : "Jahren"}`;
-}
-
-// Conversation Card Component
-function ConversationCard({ conversation, isReadOnly }) {
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [loadingMessages, setLoadingMessages] = useState(false);
-
-  const isNew = Date.now() - conversation.last_message_at < 60 * 60 * 1000; // <1h
-
-  const loadMessages = async () => {
-    if (expanded) {
-      setExpanded(false);
-      return;
-    }
-
-    setExpanded(true);
-    setLoadingMessages(true);
-
-    try {
-      const result = await Embed.getConversationDetails(
-        conversation.embed_id,
-        conversation.conversation_id
-      );
-      if (result.success && result.messages) {
-        setMessages(result.messages);
-      }
-    } catch (error) {
-      console.error("Failed to load conversation messages:", error);
-    } finally {
-      setLoadingMessages(false);
-    }
-  };
-
-  return (
-    <div className="border border-white/10 rounded-lg bg-theme-bg-primary hover:border-white/20 transition-all">
-      {/* Header */}
-      <div
-        className="p-4 cursor-pointer"
-        onClick={loadMessages}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              {/* Workspace Name */}
-              <h3 className="text-sm font-semibold text-white truncate">
-                {conversation.workspace || `Embed #${conversation.embed_id}`}
-              </h3>
-              {/* NEW Badge */}
-              {isNew && (
-                <span className="px-2 py-0.5 text-xs font-bold bg-green-500/20 text-green-400 rounded border border-green-500/30">
-                  🆕 NEU
-                </span>
-              )}
-            </div>
-
-            {/* Preview */}
-            <p className="text-xs text-theme-text-secondary mb-3 line-clamp-2">
-              {conversation.preview || "Keine Vorschau verfügbar"}
-            </p>
-
-            {/* Metadata */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-theme-text-secondary">
-              <span>
-                Erstellt: {formatDateTimeDE(conversation.started_at)}
-              </span>
-              <span>•</span>
-              <span>
-                Letzte Nachricht: {timeAgo(conversation.last_message_at)}
-              </span>
-              <span>•</span>
-              <span>
-                {conversation.message_count} {conversation.message_count === 1 ? "Nachricht" : "Nachrichten"}
-              </span>
-            </div>
-          </div>
-
-          {/* Expand Icon */}
-          <div className="flex-shrink-0">
-            {expanded ? (
-              <CaretUp size={20} className="text-theme-text-secondary" />
-            ) : (
-              <CaretDown size={20} className="text-theme-text-secondary" />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Expanded Messages */}
-      {expanded && (
-        <div className="border-t border-white/10 p-4 bg-theme-bg-secondary">
-          {loadingMessages ? (
-            <div className="text-center py-4 text-theme-text-secondary text-sm">
-              Lade Nachrichten...
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="text-center py-4 text-theme-text-secondary text-sm">
-              Keine Nachrichten gefunden
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {messages.map((msg, idx) => (
-                <div key={msg.id || idx} className="border-l-2 border-blue-500/30 pl-3">
-                  <div className="text-xs text-theme-text-secondary mb-1">
-                    {formatDateTimeDE(msg.createdAt)}
-                  </div>
-                  <div className="text-sm text-white mb-1">
-                    <strong>User:</strong> {msg.prompt}
-                  </div>
-                  <div className="text-sm text-theme-text-secondary">
-                    <strong>AI:</strong> {safeJsonParse(msg.response, {})?.text || msg.response || 'Keine Antwort'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

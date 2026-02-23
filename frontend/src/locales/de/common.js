@@ -777,8 +777,9 @@ const TRANSLATIONS = {
     "clear-all-success": "{{count}} Embed-Chats erfolgreich gelöscht.",
     "clear-all-error": "Fehler beim Löschen der Embed-Chats.",
     description:
-      "Dies sind alle aufgezeichneten Konversationen von jeder Einbettung, die Sie veröffentlicht haben, gruppiert nach Konversation.",
+      "Dies sind alle aufgezeichneten Chat-Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
     "no-conversations": "Keine Konversationen gefunden.",
+    "no-chats": "Keine Chats gefunden.",
     "retention-header": "ℹ️ DSGVO-Datenlöschung aktiv - Nächster Cleanup: {{date}}, 00:00 Uhr",
     "cutoff-date": "Chats vor dem {{date}} werden gelöscht",
     table: {

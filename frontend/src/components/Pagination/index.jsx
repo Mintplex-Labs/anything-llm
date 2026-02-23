@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 
 /**
@@ -20,17 +20,19 @@ export default function Pagination({
 }) {
   if (totalPages <= 1) return null; // Don't show pagination if only 1 page
 
+  const [jumpInput, setJumpInput] = useState("");
+
   /**
    * Generate page numbers with ellipsis (...)
    * Examples:
-   *   Page 1:  [1] 2 3 4 5 ... 55
-   *   Page 3:  1 2 [3] 4 5 ... 55
-   *   Page 30: 1 ... 28 29 [30] 31 32 ... 55
-   *   Page 55: 1 ... 51 52 53 54 [55]
+   *   Page 1:   [1] 2 3 4 5 6 7 8 9 10 ... 184
+   *   Page 10:  1 ... 5 6 7 8 9 [10] 11 12 13 14 15 ... 184
+   *   Page 100: 1 ... 95 96 97 98 99 [100] 101 102 103 104 105 ... 184
+   *   Page 184: 1 ... 175 176 177 178 179 180 181 182 183 [184]
    */
   const generatePageNumbers = () => {
     const pages = [];
-    const delta = 2; // How many pages to show on each side of current page
+    const delta = 5; // Show 5 pages on each side (Google-style)
 
     // Always show first page
     pages.push(0);
@@ -85,6 +87,15 @@ export default function Pagination({
   // Calculate "Showing X-Y of Z" text
   const showingFrom = currentPage * itemsPerPage + 1;
   const showingTo = Math.min((currentPage + 1) * itemsPerPage, totalItems || 0);
+
+  const handleJump = (e) => {
+    e.preventDefault();
+    const page = parseInt(jumpInput, 10);
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      onPageChange(page - 1);
+      setJumpInput("");
+    }
+  };
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pb-6">
@@ -158,6 +169,28 @@ export default function Pagination({
         >
           <CaretRight size={16} weight="bold" />
         </button>
+
+        {/* Jump to page - only show when many pages */}
+        {totalPages > 10 && (
+          <form onSubmit={handleJump} className="flex items-center gap-1 ml-2">
+            <input
+              type="number"
+              min="1"
+              max={totalPages}
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              placeholder={`Seite`}
+              className="w-16 h-8 px-2 text-sm text-center rounded-lg border border-theme-sidebar-border bg-theme-bg-secondary text-theme-text-primary focus:outline-none focus:ring-1 focus:ring-primary-button"
+            />
+            <button
+              type="submit"
+              className="h-8 px-2 text-xs rounded-lg bg-theme-bg-secondary text-theme-text-primary hover:bg-theme-hover transition-colors"
+              title="Zur Seite springen"
+            >
+              Go
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

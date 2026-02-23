@@ -672,6 +672,7 @@ const TRANSLATIONS = {
     description:
       "These are all the recorded conversations from any embed that you have published, grouped by conversation.",
     "no-conversations": "No conversations found.",
+    "no-chats": "No chats found.",
     table: {
       embed: "Embed",
       sender: "Sender",
