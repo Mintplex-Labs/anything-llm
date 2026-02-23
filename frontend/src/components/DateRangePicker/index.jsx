@@ -9,17 +9,27 @@ import "react-day-picker/style.css";
  * Computes fixed calendar-boundary preset dates (NOT rolling windows).
  * Returns { from: Date|null, to: Date|null }
  */
+/**
+ * Returns a new Date with time set to 23:59:59.999 (end of day).
+ * Critical: without this, API queries miss all conversations after 00:00.
+ */
+function endOfDay(date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
 function getPresetRange(presetKey) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   switch (presetKey) {
     case "today":
-      return { from: today, to: today };
+      return { from: today, to: endOfDay(today) };
     case "yesterday": {
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      return { from: yesterday, to: yesterday };
+      return { from: yesterday, to: endOfDay(yesterday) };
     }
     case "this-week": {
       // German convention: week starts on Monday
@@ -27,12 +37,12 @@ function getPresetRange(presetKey) {
       const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
       const monday = new Date(today);
       monday.setDate(today.getDate() - diff);
-      return { from: monday, to: today };
+      return { from: monday, to: endOfDay(today) };
     }
     case "this-month":
       return {
         from: new Date(today.getFullYear(), today.getMonth(), 1),
-        to: today,
+        to: endOfDay(today),
       };
     case "last-month": {
       const firstOfLastMonth = new Date(
@@ -45,7 +55,7 @@ function getPresetRange(presetKey) {
         today.getMonth(),
         0
       );
-      return { from: firstOfLastMonth, to: lastOfLastMonth };
+      return { from: firstOfLastMonth, to: endOfDay(lastOfLastMonth) };
     }
     case "all":
       return { from: null, to: null };
@@ -94,16 +104,18 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
   const popoverRef = useRef(null);
   const triggerRef = useRef(null);
 
-  // Detect which preset matches current dates
+  // Detect which preset matches current dates (compare date part only)
   useEffect(() => {
+    const sameDay = (a, b) =>
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+
     const matched = PRESET_KEYS.find((key) => {
       const { from, to } = getPresetRange(key);
       if (key === "all") return startDate === null && endDate === null;
       if (!from || !to || !startDate || !endDate) return false;
-      return (
-        from.getTime() === startDate.getTime() &&
-        to.getTime() === endDate.getTime()
-      );
+      return sameDay(from, startDate) && sameDay(to, endDate);
     });
     setActivePreset(matched || null);
   }, [startDate, endDate]);
@@ -152,9 +164,10 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
 
   const handleApply = useCallback(() => {
     if (calendarRange.from) {
+      const end = calendarRange.to || calendarRange.from;
       onChange({
         startDate: calendarRange.from,
-        endDate: calendarRange.to || calendarRange.from,
+        endDate: endOfDay(end),
       });
       setOpen(false);
       setPresetDropdownOpen(false);
@@ -182,13 +195,13 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
       <button
         ref={triggerRef}
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 bg-theme-settings-input-bg text-theme-text-primary rounded-lg px-4 py-2 text-sm border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+        className="flex items-center gap-2 bg-theme-settings-input-bg text-theme-text-primary rounded-lg px-4 py-2 text-sm border border-white/10 cursor-pointer"
       >
         <CalendarBlank size={16} className="text-theme-text-secondary" />
         <span>{displayText}</span>
         <CaretDown
           size={12}
-          className={`text-theme-text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-theme-text-secondary ml-1 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -202,7 +215,7 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
           <div className="relative mb-3">
             <button
               onClick={() => setPresetDropdownOpen(!presetDropdownOpen)}
-              className="flex items-center justify-between w-full bg-theme-settings-input-bg text-theme-text-primary rounded-lg px-3 py-2 text-sm border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+              className="flex items-center justify-between w-full bg-theme-settings-input-bg text-theme-text-primary rounded-lg px-3 py-2 text-sm border border-white/10 cursor-pointer"
             >
               <span>
                 {activePreset
