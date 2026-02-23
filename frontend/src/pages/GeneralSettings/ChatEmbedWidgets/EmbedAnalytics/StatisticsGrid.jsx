@@ -59,7 +59,7 @@ export default function StatisticsGrid({ stats }) {
         {statCards.map((stat, idx) => (
           <div
             key={idx}
-            className="bg-theme-bg-secondary border border-white/10 light:border-gray-200 rounded-lg p-5 hover:border-white/20 light:hover:border-gray-400 transition-all"
+            className="bg-theme-bg-secondary border border-white/10 light:border-gray-200 rounded-lg p-5"
           >
             <h4 className="text-theme-text-secondary text-xs uppercase tracking-wide mb-2">
               {stat.label}
