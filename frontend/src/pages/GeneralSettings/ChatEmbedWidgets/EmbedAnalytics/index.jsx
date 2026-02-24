@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CaretDown, Check } from "@phosphor-icons/react";
 import Embed from "@/models/embed";
 import ConversationList from "./ConversationList";
 import StatisticsGrid from "./StatisticsGrid";
@@ -46,6 +47,20 @@ export default function EmbedAnalyticsView() {
   const [selectedEmbed, setSelectedEmbed] = useState(null);
   const [embeds, setEmbeds] = useState([]);
   const [retentionDays, setRetentionDays] = useState(null);
+  const [embedDropdownOpen, setEmbedDropdownOpen] = useState(false);
+  const embedDropdownRef = useRef(null);
+
+  // Close embed dropdown on outside click
+  useEffect(() => {
+    if (!embedDropdownOpen) return;
+    function handleMouseDown(e) {
+      if (embedDropdownRef.current && !embedDropdownRef.current.contains(e.target)) {
+        setEmbedDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [embedDropdownOpen]);
 
   // Date range as Date objects (null = "all time")
   const [startDate, setStartDate] = useState(
@@ -113,17 +128,43 @@ export default function EmbedAnalyticsView() {
 
         <div className="flex gap-3 items-center">
           {/* Embed Selector */}
-          <select
-            value={selectedEmbed || ""}
-            onChange={(e) => setSelectedEmbed(Number(e.target.value))}
-            className="bg-theme-settings-input-bg text-white rounded-lg px-4 py-2 text-sm border border-white/10 light:border-gray-200"
-          >
-            {embeds.map((embed) => (
-              <option key={embed.id} value={embed.id}>
-                Embed #{embed.id} ({embed.workspace?.name})
-              </option>
-            ))}
-          </select>
+          <div className="relative" ref={embedDropdownRef}>
+            <button
+              onClick={() => setEmbedDropdownOpen(!embedDropdownOpen)}
+              className="flex items-center gap-2 bg-theme-settings-input-bg text-theme-text-primary rounded-lg px-4 py-2 text-sm border border-white/10 cursor-pointer"
+            >
+              <span>
+                {embeds.find((e) => e.id === selectedEmbed)
+                  ? `Embed #${selectedEmbed} (${embeds.find((e) => e.id === selectedEmbed)?.workspace?.name})`
+                  : "Embed wählen"}
+              </span>
+              <CaretDown
+                size={12}
+                className={`text-theme-text-primary ml-1 transition-transform ${embedDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {embedDropdownOpen && (
+              <div className="absolute left-0 top-full mt-1 w-full bg-theme-bg-secondary border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                {embeds.map((embed) => (
+                  <button
+                    key={embed.id}
+                    onClick={() => {
+                      setSelectedEmbed(embed.id);
+                      setEmbedDropdownOpen(false);
+                    }}
+                    className={`flex items-center justify-between w-full px-3 py-2 text-sm text-left transition-all cursor-pointer
+                      ${selectedEmbed === embed.id ? "bg-white/10 text-theme-text-primary font-medium" : "text-theme-text-secondary hover:bg-white/5 hover:text-theme-text-primary"}`}
+                  >
+                    <span>Embed #{embed.id} ({embed.workspace?.name})</span>
+                    {selectedEmbed === embed.id && (
+                      <Check size={14} className="text-theme-text-primary" weight="bold" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Date Range Picker */}
           <DateRangePicker

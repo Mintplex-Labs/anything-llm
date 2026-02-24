@@ -39,6 +39,18 @@ function getPresetRange(presetKey) {
       monday.setDate(today.getDate() - diff);
       return { from: monday, to: endOfDay(today) };
     }
+    case "last-week": {
+      // German convention: week starts on Monday
+      const lwDayOfWeek = today.getDay();
+      const lwDiff = lwDayOfWeek === 0 ? 6 : lwDayOfWeek - 1;
+      const thisMonday = new Date(today);
+      thisMonday.setDate(today.getDate() - lwDiff);
+      const lastMonday = new Date(thisMonday);
+      lastMonday.setDate(thisMonday.getDate() - 7);
+      const lastSunday = new Date(thisMonday);
+      lastSunday.setDate(thisMonday.getDate() - 1);
+      return { from: lastMonday, to: endOfDay(lastSunday) };
+    }
     case "this-month":
       return {
         from: new Date(today.getFullYear(), today.getMonth(), 1),
@@ -79,6 +91,7 @@ const PRESET_KEYS = [
   "today",
   "yesterday",
   "this-week",
+  "last-week",
   "this-month",
   "last-month",
   "all",
@@ -201,7 +214,7 @@ export default function DateRangePicker({ startDate, endDate, onChange }) {
         <span>{displayText}</span>
         <CaretDown
           size={12}
-          className={`text-theme-text-secondary ml-1 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-theme-text-primary ml-1 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 

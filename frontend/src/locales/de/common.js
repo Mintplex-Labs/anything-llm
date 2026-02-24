@@ -1236,6 +1236,7 @@ const TRANSLATIONS = {
     today: "Heute",
     yesterday: "Gestern",
     "this-week": "Diese Woche",
+    "last-week": "Letzte Woche",
     "this-month": "Dieser Monat",
     "last-month": "Letzter Monat",
     all: "Gesamt",
