@@ -52,8 +52,6 @@ export default function StatisticsGrid({ stats }) {
 
   return (
     <div>
-      <h3 className="text-white text-xl font-semibold mb-4">STATISTIKEN</h3>
-
       {/* Standard Statistics (visible for all) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {statCards.map((stat, idx) => (

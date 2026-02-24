@@ -76,10 +76,6 @@ export default function ConversationList({ embedId, startDate, endDate }) {
 
   return (
     <div>
-      <h3 className="text-white text-xl mb-4">
-        {t("embed-analytics.conversations-title")} ({totalCount || conversations.length})
-      </h3>
-
       <div className="space-y-4">
         {conversations.map((conv) => (
           <ConversationCard

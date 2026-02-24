@@ -646,10 +646,9 @@ const TRANSLATIONS = {
     analytics: "Konversationen (neu)",
   },
   "embed-analytics": {
-    title: "Analytics Dashboard",
-    "load-error": "Fehler beim Laden der Analytics-Daten.",
+    title: "Konversationen",
+    "load-error": "Fehler beim Laden der Konversationsdaten.",
     "all-time": "Gesamt",
-    "statistics-title": "STATISTIKEN",
     stats: {
       "total-chats": "KI Nachrichten",
       conversations: "Konversationen",
