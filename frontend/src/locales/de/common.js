@@ -663,7 +663,7 @@ const TRANSLATIONS = {
     response: "Antwort",
     "no-conversations": "Keine Konversationen vorhanden.",
     "session-copied": "Session ID kopiert!",
-    "retention-notice": "ℹ️ DSGVO: Aufbewahrungsfrist {{days}} Tage — Heutige Chats verfallen am {{expiryDate}}",
+    "retention-notice": "ℹ️ DSGVO: Aufbewahrungsfrist {{days}} Tage — Alle Chats verfallen nach {{days}} Tagen automatisch",
   },
   "embed-row": {
     code: "Code",
