@@ -104,7 +104,7 @@ export default function Citations({ sources = [] }) {
   );
 }
 
-function omitChunkHeader(text) {
+export function omitChunkHeader(text) {
   if (!text.includes("<document_metadata>")) return text;
   return text.split("</document_metadata>")[1].trim();
 }

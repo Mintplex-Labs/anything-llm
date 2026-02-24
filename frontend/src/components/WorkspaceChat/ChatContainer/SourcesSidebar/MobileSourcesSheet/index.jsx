@@ -1,0 +1,63 @@
+import { useEffect, useState } from "react";
+import { X } from "@phosphor-icons/react";
+import { combineLikeSources } from "../../ChatHistory/Citation";
+import SourceDetailView from "./SourceDetailView";
+import SourceItem from "../SourceItem";
+
+export default function MobileSourcesSheet({
+  openSources,
+  selectedSource,
+  setSelectedSource,
+  onClose,
+}) {
+  const isOpen = !!openSources;
+  const [sources, setSources] = useState([]);
+
+  useEffect(() => {
+    if (openSources) setSources(combineLikeSources(openSources));
+  }, [openSources]);
+
+  return (
+    <div className={`mobile-sources-overlay ${isOpen ? "open" : ""}`}>
+      <div
+        className={`mobile-sources-backdrop ${isOpen ? "open" : ""}`}
+        onClick={onClose}
+      />
+      <div
+        className={`mobile-sources-panel rounded-t-[16px] bg-zinc-800 light:bg-white light:border-t-2 light:border-x-2 light:border-slate-300 p-4 flex flex-col gap-4 ${isOpen ? "open" : ""}`}
+      >
+        {selectedSource ? (
+          <SourceDetailView
+            source={selectedSource}
+            onBack={() => setSelectedSource(null)}
+            onClose={onClose}
+          />
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-base leading-6 text-white light:text-slate-900">
+                Sources
+              </p>
+              <button
+                onClick={onClose}
+                type="button"
+                className="text-white/60 light:text-slate-400 hover:text-white light:hover:text-slate-900 transition-colors"
+              >
+                <X size={16} weight="bold" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-3 overflow-y-auto no-scroll">
+              {sources.map((source, idx) => (
+                <SourceItem
+                  key={source.title || idx}
+                  source={source}
+                  onClick={() => setSelectedSource(source)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
