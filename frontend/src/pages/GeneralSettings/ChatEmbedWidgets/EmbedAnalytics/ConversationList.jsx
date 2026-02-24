@@ -179,7 +179,8 @@ function ConversationCard({ conversation, embedId }) {
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Conversation ID Badge — entire badge is clickable */}
             <button
-              className="flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300 cursor-pointer hover:bg-white/10 hover:border-white/20 light:hover:bg-gray-200 light:hover:border-gray-400 transition-all group"
+              type="button"
+              className="relative z-10 flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300 cursor-pointer hover:bg-white/15 hover:border-white/30 light:hover:bg-gray-100 light:hover:border-gray-400 transition-all group"
               onClick={handleCopyConversationId}
               title="Konversations-ID kopieren"
             >
