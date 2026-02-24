@@ -17,7 +17,19 @@ function getThisWeekRange() {
   const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   const monday = new Date(today);
   monday.setDate(today.getDate() - diff);
-  return { startDate: monday, endDate: today };
+  const endOfToday = new Date(today);
+  endOfToday.setHours(23, 59, 59, 999);
+  return { startDate: monday, endDate: endOfToday };
+}
+
+/**
+ * Format a Date as DD.MM.YYYY (German convention).
+ */
+function formatDate(date) {
+  const d = date.getDate().toString().padStart(2, "0");
+  const m = (date.getMonth() + 1).toString().padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}.${m}.${y}`;
 }
 
 /**
@@ -123,28 +135,33 @@ export default function EmbedAnalyticsView() {
       </div>
 
       {/* DSGVO Retention Notice */}
-      {retentionDays && retentionDays > 0 && (
-        <div className="mb-6 p-4 bg-blue-500/10 border-l-4 border-blue-400 rounded-lg light:bg-blue-50 light:border-blue-600">
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-5 h-5 text-blue-400 light:text-blue-600 flex-shrink-0"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="text-blue-300 text-sm light:text-blue-700">
-              {t("embed-analytics.retention-notice", {
-                days: retentionDays,
-              })}
-            </span>
+      {retentionDays && retentionDays > 0 && (() => {
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + retentionDays);
+        return (
+          <div className="mb-6 p-4 bg-blue-500/10 border-l-4 border-blue-400 rounded-lg light:bg-blue-50 light:border-blue-600">
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-5 h-5 text-blue-400 light:text-blue-600 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-blue-300 text-sm light:text-blue-700">
+                {t("embed-analytics.retention-notice", {
+                  days: retentionDays,
+                  expiryDate: formatDate(expiry),
+                })}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Statistics Grid */}
       <StatisticsGrid stats={stats} />
