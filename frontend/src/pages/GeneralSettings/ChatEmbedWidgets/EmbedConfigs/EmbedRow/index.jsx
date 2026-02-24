@@ -86,12 +86,7 @@ export default function EmbedRow({ embed, isReadOnly = false, userRole = null })
           scope="row"
           className="px-6 whitespace-nowrap text-theme-text-secondary !font-normal"
         >
-          {
-            // If the embed was created more than a day ago, show the date, otherwise show the time ago
-            moment(embed.createdAt).diff(moment(), "days") > 0
-              ? moment(embed.createdAt).format("MMM D, YYYY")
-              : moment(embed.createdAt).fromNow()
-          }
+          {moment(embed.createdAt).format("DD.MM.YYYY")}
         </th>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           {!isReadOnly && (
