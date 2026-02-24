@@ -177,10 +177,11 @@ function ConversationCard({ conversation, embedId }) {
 
           {/* Right side: Conversation ID Badge + Expand Icon */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Conversation ID Badge */}
-            <div
-              className="flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300"
-              onClick={(e) => e.stopPropagation()}
+            {/* Conversation ID Badge — entire badge is clickable */}
+            <button
+              className="flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300 cursor-pointer hover:bg-white/10 hover:border-white/20 light:hover:bg-gray-200 light:hover:border-gray-400 transition-all group"
+              onClick={handleCopyConversationId}
+              title="Konversations-ID kopieren"
             >
               <span className="text-theme-text-secondary text-[10px] font-semibold uppercase">
                 ID:
@@ -188,14 +189,8 @@ function ConversationCard({ conversation, embedId }) {
               <span className="text-theme-text-primary text-[10px] font-mono">
                 {conversation.conversation_id}
               </span>
-              <button
-                onClick={handleCopyConversationId}
-                className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-0.5 hover:bg-white/10 light:hover:bg-gray-200 rounded flex-shrink-0"
-                title="Konversations-ID kopieren"
-              >
-                <Copy size={12} weight="bold" />
-              </button>
-            </div>
+              <Copy size={12} weight="bold" className="text-theme-text-secondary group-hover:text-theme-text-primary transition-colors flex-shrink-0" />
+            </button>
 
             {/* Expand Icon */}
             {expanded ? (
