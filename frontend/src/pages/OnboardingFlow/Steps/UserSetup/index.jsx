@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 import { USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH } from "@/utils/username";
+import { PW_REGEX } from "@/pages/GeneralSettings/Security";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -118,7 +119,6 @@ const JustMe = ({
   const { t } = useTranslation();
   const [itemSelected, setItemSelected] = useState(false);
   const [password, setPassword] = useState("");
-  const PW_REGEX = /^[a-zA-Z0-9_\-!@$%^&*();]+$/;
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
