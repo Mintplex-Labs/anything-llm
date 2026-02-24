@@ -148,7 +148,7 @@ function ConversationCard({ conversation, embedId }) {
             <div className="flex items-center gap-2 mb-2">
               {/* Workspace Name */}
               <h3 className="text-sm font-semibold text-white truncate">
-                {conversation.workspace || `Embed #${embedId}`}
+                Konversation #{conversation.conversation_number || "?"}
               </h3>
               {/* NEU Badge */}
               {isNew && (
@@ -159,8 +159,8 @@ function ConversationCard({ conversation, embedId }) {
             </div>
 
             {/* Preview */}
-            <p className="text-xs text-theme-text-secondary mb-3 line-clamp-2">
-              {conversation.preview || "Keine Vorschau verfügbar"}
+            <p className="text-xs text-theme-text-secondary mb-3 line-clamp-2 italic">
+              &quot;{conversation.preview || "Keine Vorschau verfügbar"}&quot;
             </p>
 
             {/* Metadata */}
