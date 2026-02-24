@@ -23,6 +23,7 @@ export function enforceSubmissionSchema(form) {
   if (!data.hasOwnProperty("allow_prompt_override"))
     data.allow_prompt_override = false;
   if (!data.hasOwnProperty("message_limit")) data.message_limit = 20;
+  if (!data.hasOwnProperty("chat_retention_days")) data.chat_retention_days = null;
   return data;
 }
 

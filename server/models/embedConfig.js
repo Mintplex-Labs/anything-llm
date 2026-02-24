@@ -83,6 +83,26 @@ const EmbedConfig = {
       updates[key] = validatedCreationData(data[key], key);
     });
 
+    // DSGVO: Track when retention was activated so cleanup doesn't delete retroactively.
+    // Only set retention_started_at when retention is being enabled (changed from null to a value).
+    if ("chat_retention_days" in updates) {
+      const newRetention = updates.chat_retention_days;
+      if (newRetention && newRetention > 0) {
+        // Check if retention was previously not set
+        const current = await prisma.embed_configs.findFirst({
+          where: { id: Number(embedId) },
+          select: { chat_retention_days: true, retention_started_at: true },
+        });
+        // Only set start date if retention is new or was previously disabled
+        if (!current?.chat_retention_days || !current?.retention_started_at) {
+          updates.retention_started_at = new Date();
+        }
+      } else {
+        // Retention disabled — clear the start date
+        updates.retention_started_at = null;
+      }
+    }
+
     try {
       await prisma.embed_configs.update({
         where: { id: Number(embedId) },

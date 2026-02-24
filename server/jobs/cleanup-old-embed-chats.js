@@ -6,6 +6,10 @@ const { EventLogs } = require("../models/eventLogs.js");
 /**
  * DSGVO-compliant automatic deletion of old embed chats based on retention periods.
  * Runs daily to clean up chats older than their configured retention days.
+ *
+ * IMPORTANT: Cleanup only starts AFTER retention_days have passed since the
+ * retention was activated (retention_started_at). This prevents retroactive
+ * deletion of old chats when a retention policy is first enabled.
  */
 (async () => {
   try {
@@ -31,6 +35,33 @@ const { EventLogs } = require("../models/eventLogs.js");
       try {
         const retentionDays = embed.chat_retention_days;
         if (!retentionDays || retentionDays <= 0) continue;
+
+        const retentionStartedAt = embed.retention_started_at
+          ? new Date(embed.retention_started_at)
+          : null;
+
+        // Safety check: If retention_started_at is not set, skip this embed.
+        // This protects against retroactive deletion for legacy entries.
+        if (!retentionStartedAt) {
+          log(
+            `  Skipping embed ${embed.id}: retention_started_at not set (legacy entry). ` +
+            `Re-save the retention setting to activate cleanup.`
+          );
+          continue;
+        }
+
+        // Only start cleanup AFTER retention_days have passed since activation.
+        // Example: If set on Feb 24 with 30 days, first cleanup is March 26.
+        const cleanupStartDate = new Date(retentionStartedAt);
+        cleanupStartDate.setDate(cleanupStartDate.getDate() + retentionDays);
+
+        if (new Date() < cleanupStartDate) {
+          log(
+            `  Skipping embed ${embed.id}: retention grace period active until ${cleanupStartDate.toISOString()}. ` +
+            `Cleanup will begin after ${retentionDays} days from activation.`
+          );
+          continue;
+        }
 
         // Calculate cutoff date: now - retention_days
         const cutoffDate = new Date();
