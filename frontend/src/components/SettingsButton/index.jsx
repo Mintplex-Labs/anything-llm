@@ -9,7 +9,7 @@ export default function SettingsButton() {
   const { user } = useUser();
 
   // Default users can access settings (for workspace-chats and embed-chat-widgets)
-  const defaultUserSettingsPath = paths.settings.chats();
+  const defaultUserSettingsPath = paths.settings.embedChatWidgets();
 
   if (isInSettings)
     return (

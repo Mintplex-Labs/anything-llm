@@ -179,7 +179,7 @@ const router = createBrowserRouter([
           const { default: ChatEmbedWidgets } = await import(
             "@/pages/GeneralSettings/ChatEmbedWidgets"
           );
-          return { element: <AdminRoute Component={ChatEmbedWidgets} /> };
+          return { element: <PrivateRoute Component={ChatEmbedWidgets} /> };
         },
       },
       // Manager routes
@@ -283,7 +283,7 @@ const router = createBrowserRouter([
           const { default: GeneralChats } = await import(
             "@/pages/GeneralSettings/Chats"
           );
-          return { element: <ManagerRoute Component={GeneralChats} /> };
+          return { element: <PrivateRoute Component={GeneralChats} /> };
         },
       },
       {
