@@ -124,11 +124,6 @@ export default function EmbedAnalyticsView() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-white text-2xl font-bold">
           {t("embed-analytics.title")}
-          {stats?.unique_conversations != null && (
-            <span className="text-theme-text-secondary font-normal ml-2">
-              ({stats.unique_conversations.toLocaleString("de-DE")})
-            </span>
-          )}
         </h2>
 
         <div className="flex gap-3 items-center">
@@ -213,7 +208,7 @@ export default function EmbedAnalyticsView() {
       <StatisticsGrid stats={stats} />
 
       {/* Divider */}
-      <div className="h-px bg-white/20 my-8" />
+      <div className="h-px bg-white/20 my-4" />
 
       {/* Conversations List */}
       <ConversationList
