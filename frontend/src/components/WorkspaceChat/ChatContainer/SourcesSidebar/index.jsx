@@ -5,7 +5,7 @@ import {
   combineLikeSources,
   CitationDetailModal,
 } from "../ChatHistory/Citation";
-import MobileSourcesSheet from "./MobileSourcesSheet";
+import MobileCitationModal from "./MobileCitationModal";
 import SourceItem from "./SourceItem";
 
 export const SourcesSidebarContext = createContext();
@@ -32,7 +32,7 @@ export default function SourcesSidebar() {
 
   if (isMobile) {
     return (
-      <MobileSourcesSheet
+      <MobileCitationModal
         openSources={openSources}
         selectedSource={selectedSource}
         setSelectedSource={setSelectedSource}

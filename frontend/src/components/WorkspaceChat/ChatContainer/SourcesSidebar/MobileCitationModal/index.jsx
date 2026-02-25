@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
+import ModalWrapper from "@/components/ModalWrapper";
 import { combineLikeSources } from "../../ChatHistory/Citation";
 import SourceDetailView from "./SourceDetailView";
 import SourceItem from "../SourceItem";
 
-export default function MobileSourcesSheet({
+export default function MobileCitationModal({
   openSources,
   selectedSource,
   setSelectedSource,
@@ -18,14 +19,9 @@ export default function MobileSourcesSheet({
   }, [openSources]);
 
   return (
-    <div className={`mobile-sources-overlay ${isOpen ? "open" : ""}`}>
-      <div
-        className={`mobile-sources-backdrop ${isOpen ? "open" : ""}`}
-        onClick={onClose}
-      />
-      <div
-        className={`mobile-sources-panel rounded-t-[16px] bg-zinc-800 light:bg-white light:border-t-2 light:border-x-2 light:border-slate-300 p-4 flex flex-col gap-4 ${isOpen ? "open" : ""}`}
-      >
+    <ModalWrapper isOpen={isOpen}>
+      <div className="fixed inset-0" onClick={onClose} />
+      <div className="relative z-10 w-[calc(100%-40px)] max-h-[70vh] rounded-[16px] bg-zinc-800 light:bg-white light:border-2 light:border-slate-300 p-4 flex flex-col gap-4">
         {selectedSource ? (
           <SourceDetailView
             source={selectedSource}
@@ -58,6 +54,6 @@ export default function MobileSourcesSheet({
           </>
         )}
       </div>
-    </div>
+    </ModalWrapper>
   );
 }
