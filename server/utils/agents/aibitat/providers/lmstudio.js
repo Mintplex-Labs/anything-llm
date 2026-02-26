@@ -52,7 +52,6 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<boolean>}
    */
   async supportsNativeToolCalling() {
-    return false;
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const lmstudio = new LMStudioLLM(null, this.model);
     const capabilities = await lmstudio.getModelCapabilities();
