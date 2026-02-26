@@ -1303,6 +1303,9 @@ function dumpENV() {
 
     // Allow disabling of streaming for AWS Bedrock
     "AWS_BEDROCK_STREAMING_DISABLED",
+
+    // Allow native tool calling for specific providers.
+    "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

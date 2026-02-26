@@ -1,6 +1,7 @@
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { formatFunctionsToTools } = require("./helpers/tooled.js");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
@@ -8,6 +9,8 @@ const { safeJsonParse } = require("../../../http");
 
 /**
  * The agent provider for the Ollama provider.
+ * Supports true OpenAI-compatible tool calling when the model supports it,
+ * falling back to the UnTooled prompt-based approach otherwise.
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -19,16 +22,17 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     } = config;
 
     super();
-    const headers = process.env.OLLAMA_AUTH_TOKEN
-      ? { Authorization: `Bearer ${process.env.OLLAMA_AUTH_TOKEN}` }
-      : {};
+    const authToken = process.env.OLLAMA_AUTH_TOKEN;
+    const basePath = process.env.OLLAMA_BASE_PATH;
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
     this._client = new Ollama({
-      host: process.env.OLLAMA_BASE_PATH,
+      host: basePath,
       headers: headers,
       fetch: this.#applyFetch(),
     });
     this.model = model;
     this.verbose = true;
+    this._supportsToolCalling = null;
   }
 
   get client() {
@@ -37,6 +41,19 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * Override in subclass and return true to use native tool calling instead of UnTooled.
+   * @returns {boolean|Promise<boolean>}
+   */
+  async supportsNativeToolCalling() {
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const ollama = new OllamaAILLM(null, this.model);
+    const capabilities = await ollama.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+    return this._supportsToolCalling;
   }
 
   get queryOptions() {
@@ -72,6 +89,49 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       options: this.queryOptions,
     });
+  }
+
+  /**
+   * Convert aibitat's internal message history (which uses role:"function" with
+   * originalFunctionCall metadata) into the Ollama tool-calling message format
+   * (assistant tool_calls + role:"tool" result pairs).
+   * @param {Array} messages
+   * @returns {Array}
+   */
+  #formatMessagesForOllamaTools(messages) {
+    const formatted = [];
+    for (const message of messages) {
+      if (message.role === "function") {
+        const funcName =
+          message.originalFunctionCall?.name || message.name || "unknown";
+        const funcArgs = message.originalFunctionCall?.arguments || {};
+        formatted.push({
+          role: "assistant",
+          content: "",
+          tool_calls: [
+            {
+              function: {
+                name: funcName,
+                arguments:
+                  typeof funcArgs === "string"
+                    ? safeJsonParse(funcArgs, {})
+                    : funcArgs,
+              },
+            },
+          ],
+        });
+        formatted.push({
+          role: "tool",
+          content:
+            typeof message.content === "string"
+              ? message.content
+              : JSON.stringify(message.content),
+        });
+      } else {
+        formatted.push(message);
+      }
+    }
+    return formatted;
   }
 
   async streamingFunctionCall(
@@ -168,9 +228,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Stream a chat completion from the LLM with tool calling
-   * This is overriding the inherited `stream` method since Ollamas
-   * SDK has different response structures to other OpenAI.
+   * Stream a chat completion with tool calling support.
+   * Uses native tool calling when supported, otherwise falls back to the
+   * Ollama SDK + UnTooled prompt-based approach.
    *
    * @param messages A list of messages to send to the API.
    * @param functions
@@ -178,8 +238,74 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
+
+    if (useNative) {
+      this.providerLog(
+        "OllamaProvider.stream (tooled) - will process this chat completion."
+      );
+      await OllamaAILLM.cacheContextWindows();
+      const msgUUID = v4();
+      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
+      const tools = formatFunctionsToTools(functions);
+
+      const stream = await this.client.chat({
+        model: this.model,
+        messages: formattedMessages,
+        tools,
+        stream: true,
+        options: this.queryOptions,
+      });
+
+      let textResponse = "";
+      let toolCalls = null;
+
+      for await (const chunk of stream) {
+        if (!chunk?.message) continue;
+
+        if (chunk.message.content) {
+          textResponse += chunk.message.content;
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content: chunk.message.content,
+          });
+        }
+
+        if (chunk.message.tool_calls?.length > 0) {
+          toolCalls = chunk.message.tool_calls;
+          eventHandler?.("reportStreamEvent", {
+            uuid: `${msgUUID}:tool_call_invocation`,
+            type: "toolCallInvocation",
+            content: `Tool Call: ${toolCalls[0].function.name}(${JSON.stringify(toolCalls[0].function.arguments)})`,
+          });
+        }
+      }
+
+      if (toolCalls && toolCalls.length > 0) {
+        const toolCall = toolCalls[0];
+        const args =
+          typeof toolCall.function.arguments === "string"
+            ? safeJsonParse(toolCall.function.arguments, {})
+            : toolCall.function.arguments || {};
+
+        return {
+          textResponse,
+          functionCall: {
+            id: `ollama_${v4()}`,
+            name: toolCall.function.name,
+            arguments: args,
+          },
+        };
+      }
+
+      return { textResponse, functionCall: null };
+    }
+
+    // Fallback: UnTooled prompt-based approach via the native Ollama SDK
     this.providerLog(
-      "OllamaProvider.complete - will process this chat completion."
+      "OllamaProvider.stream - will process this chat completion."
     );
     try {
       let completion = { content: "" };
@@ -281,9 +407,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         }
       }
 
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
@@ -295,13 +418,54 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Create a completion based on the received messages.
+   * Create a non-streaming completion with tool calling support.
+   * Uses native tool calling when supported, otherwise falls back to UnTooled.
    *
    * @param messages A list of messages to send to the API.
    * @param functions
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    const useNative =
+      functions.length > 0 && (await this.supportsNativeToolCalling());
+
+    if (useNative) {
+      await OllamaAILLM.cacheContextWindows();
+      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
+      const tools = formatFunctionsToTools(functions);
+
+      const response = await this.client.chat({
+        model: this.model,
+        messages: formattedMessages,
+        tools,
+        options: this.queryOptions,
+      });
+
+      if (response.message?.tool_calls?.length > 0) {
+        const toolCall = response.message.tool_calls[0];
+        const args =
+          typeof toolCall.function.arguments === "string"
+            ? safeJsonParse(toolCall.function.arguments, {})
+            : toolCall.function.arguments || {};
+
+        return {
+          textResponse: null,
+          functionCall: {
+            id: `ollama_${v4()}`,
+            name: toolCall.function.name,
+            arguments: args,
+          },
+          cost: 0,
+        };
+      }
+
+      return {
+        textResponse: response.message?.content || null,
+        cost: 0,
+      };
+    }
+
+    // Fallback: UnTooled prompt-based approach via the native Ollama SDK
     this.providerLog(
       "OllamaProvider.complete - will process this chat completion."
     );
@@ -341,9 +505,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         completion.content = textResponse;
       }
 
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
         textResponse: completion.content,
@@ -356,10 +517,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Get the cost of the completion.
-   *
+   * Stubbed since Ollama has no cost basis.
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
