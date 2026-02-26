@@ -159,11 +159,13 @@ const HistoricalMessage = ({
           </div>
         )}
         <div className="flex items-start md:items-center gap-x-1">
-          <TTSMessage
-            slug={workspace?.slug}
-            chatId={chatId}
-            message={message}
-          />
+          <div className="mx-2">
+            <TTSMessage
+              slug={workspace?.slug}
+              chatId={chatId}
+              message={message}
+            />
+          </div>
           <Actions
             message={message}
             feedbackScore={feedbackScore}
