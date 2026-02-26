@@ -62,9 +62,7 @@ function formatMessagesForTools(messages) {
                   arguments:
                     typeof message.originalFunctionCall.arguments === "string"
                       ? message.originalFunctionCall.arguments
-                      : JSON.stringify(
-                          message.originalFunctionCall.arguments
-                        ),
+                      : JSON.stringify(message.originalFunctionCall.arguments),
                 },
               },
             ],

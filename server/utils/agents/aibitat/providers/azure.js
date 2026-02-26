@@ -76,10 +76,7 @@ class AzureOpenAiProvider extends Provider {
       );
 
       if (result.retryWithError) {
-        return this.complete(
-          [...messages, result.retryWithError],
-          functions
-        );
+        return this.complete([...messages, result.retryWithError], functions);
       }
 
       return result;
