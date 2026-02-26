@@ -125,13 +125,13 @@ export default function SpeechToText({ sendCommand }) {
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
-      className={`border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700/50 light:hover:bg-slate-100 ${
+      className={`group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200 ${
         listening ? "bg-zinc-700 light:bg-slate-200" : ""
       }`}
     >
       <Microphone
         weight="regular"
-        className={`w-[18px] h-[18px] pointer-events-none text-zinc-300 light:text-slate-600 ${
+        className={`w-[18px] h-[18px] ppointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 ${
           listening
             ? "animate-pulse-glow !text-white light:!text-slate-800"
             : ""

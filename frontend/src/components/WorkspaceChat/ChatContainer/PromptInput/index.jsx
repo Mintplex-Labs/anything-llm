@@ -319,7 +319,7 @@ export default function PromptInput({
                   }}
                   value={promptInput}
                   spellCheck={Appearance.get("enableSpellCheck")}
-                  className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[12px] w-full leading-5 text-white light:text-slate-600 bg-transparent placeholder:text-white/60 light:placeholder:text-slate-400 resize-none active:outline-none focus:outline-none flex-grow mb-1 pwa:!text-[16px] ${textSizeClass}`}
+                  className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[20px] w-full leading-5 text-white light:text-slate-600 bg-transparent placeholder:text-white/60 light:placeholder:text-slate-400 resize-none active:outline-none focus:outline-none flex-grow pwa:!text-[16px] ${textSizeClass}`}
                   placeholder={t("chat_window.send_message")}
                 />
               </div>
@@ -337,7 +337,7 @@ export default function PromptInput({
                       setShowSlashCommand(false);
                       setShowAgents(false);
                     }}
-                    className={`border-none cursor-pointer flex items-center justify-center h-8 px-3 rounded-full ${
+                    className={`group border-none cursor-pointer flex items-center justify-center h-8 px-3 rounded-full ${
                       showTools
                         ? "bg-zinc-700 light:bg-slate-200"
                         : "hover:bg-zinc-700 light:hover:bg-slate-200"
@@ -347,7 +347,7 @@ export default function PromptInput({
                       className={`text-sm font-medium ${
                         showTools
                           ? "text-white light:text-slate-800"
-                          : "text-zinc-300 light:text-slate-600 hover:text-white light:hover:text-slate-800"
+                          : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600"
                       }`}
                     >
                       Tools
