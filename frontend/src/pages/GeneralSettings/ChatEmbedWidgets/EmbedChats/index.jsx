@@ -5,12 +5,11 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import Embed from "@/models/embed";
 import { useTranslation } from "react-i18next";
-import { CaretDown, Download, Trash } from "@phosphor-icons/react";
+import { CaretDown, Download } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
 import useUser from "@/hooks/useUser";
-import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
 const exportOptions = {
   csv: {
@@ -60,8 +59,6 @@ export default function EmbedChatsView() {
   const [canNext, setCanNext] = useState(false);
   const isReadOnly = user?.role === "default";
   const [retentionInfo, setRetentionInfo] = useState({});
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -140,22 +137,6 @@ export default function EmbedChatsView() {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
   };
 
-  const handleClearAllChats = async () => {
-    setDeleting(true);
-    const { success, deletedCount } = await Embed.clearAllChats();
-    setDeleting(false);
-    setShowDeleteModal(false);
-    if (success) {
-      showToast(
-        t("embed-chats.clear-all-success", { count: deletedCount }),
-        "success"
-      );
-      setChats([]);
-      setOffset(0);
-    } else {
-      showToast(t("embed-chats.clear-all-error"), "error");
-    }
-  };
 
   if (loading) {
     return (
@@ -210,15 +191,6 @@ export default function EmbedChatsView() {
               </div>
             </div>
           </div>
-          {!isReadOnly && (
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-x-2 px-4 py-1 rounded-lg border border-red-400 text-red-400 hover:border-transparent hover:text-white text-xs font-semibold hover:bg-red-500 h-[34px] w-fit transition-all duration-200"
-            >
-              <Trash size={18} weight="bold" />
-              {t("embed-chats.clear-all")}
-            </button>
-          )}
         </div>
         <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
           {t("embed-chats.description")}
@@ -333,14 +305,6 @@ export default function EmbedChatsView() {
         )}
       </div>
 
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleClearAllChats}
-        title={t("embed-chats.clear-all")}
-        message={t("embed-chats.clear-all-confirm")}
-        loading={deleting}
-      />
     </div>
   );
 }
