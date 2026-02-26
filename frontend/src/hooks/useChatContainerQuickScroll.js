@@ -24,6 +24,10 @@ export default function useChatContainerQuickScroll() {
       if (!modifierPressed || !chatHistoryRef.current) return;
       if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
 
+      // Don't hijack cursor movement when a text input is focused
+      const tag = document.activeElement?.tagName;
+      if (tag === "TEXTAREA" || tag === "INPUT") return;
+
       switch (event.key) {
         case "ArrowUp":
           event.preventDefault();

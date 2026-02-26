@@ -857,6 +857,11 @@ const TRANSLATIONS = {
       missing_credentials: "缺少凭证",
       missing_credentials_description: "缺少凭证说明",
     },
+    submit: "提交",
+    edit_info_user: "“提交”会重新生成 AI 的回复。 “保存”只会更新您的消息。",
+    edit_info_assistant: "您所做的修改将直接保存到此处。",
+    see_less: "查看更多",
+    see_more: "查看更多",
   },
   profile_settings: {
     edit_account: "编辑帐户",
