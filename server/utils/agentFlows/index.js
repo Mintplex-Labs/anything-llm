@@ -186,6 +186,24 @@ class AgentFlows {
   }
 
   /**
+   * Sanitize a flow name into a valid OpenAI-compatible tool name.
+   * Must match ^[a-zA-Z0-9_-]{1,64}$
+   * @param {string} flowName - The human-readable flow name
+   * @returns {string|null} Sanitized tool name, or null if empty after sanitization
+   */
+  static sanitizeToolName(flowName) {
+    const sanitized = flowName
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_-]/g, "")
+      .replace(/_+/g, "_")
+      .replace(/^[-_]+|[-_]+$/g, "");
+    if (!sanitized) return null;
+    return sanitized.slice(0, 64);
+  }
+
+  /**
    * Load a flow plugin by its UUID
    * @param {string} uuid - The UUID of the flow to load
    * @returns {Object|null} Plugin configuration or null if not found
@@ -196,17 +214,18 @@ class AgentFlows {
 
     const startBlock = flow.config.steps?.find((s) => s.type === "start");
     const variables = startBlock?.config?.variables || [];
+    const toolName = AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`;
 
     return {
-      name: `flow_${uuid}`,
+      name: toolName,
       description: `Execute agent flow: ${flow.name}`,
       plugin: (_runtimeArgs = {}) => ({
-        name: `flow_${uuid}`,
+        name: toolName,
         description:
           flow.config.description || `Execute agent flow: ${flow.name}`,
         setup: (aibitat) => {
           aibitat.function({
-            name: `flow_${uuid}`,
+            name: toolName,
             description:
               flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
