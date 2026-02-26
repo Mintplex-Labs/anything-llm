@@ -1,5 +1,4 @@
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
-import { Stop } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 export default function StopGenerationButton() {
@@ -14,13 +13,10 @@ export default function StopGenerationButton() {
         onClick={emitHaltEvent}
         data-tooltip-id="stop-generation-button"
         data-tooltip-content="Stop generating response"
-        className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] light:bg-slate-800 bg-white hover:opacity-80 transition-opacity"
+        className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-8 h-8 bg-white light:bg-slate-800 hover:opacity-80 transition-opacity"
         aria-label="Stop generating"
       >
-        <Stop
-          className="w-[12px] h-[12px] light:text-white text-black"
-          weight="fill"
-        />
+        <div className="w-3.5 h-3.5 rounded-[4px] bg-zinc-800 light:bg-white" />
       </button>
       <Tooltip
         id="stop-generation-button"
