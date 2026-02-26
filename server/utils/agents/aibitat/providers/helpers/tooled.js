@@ -40,10 +40,14 @@ function formatFunctionsToTools(functions) {
  * `originalFunctionCall` metadata) into the OpenAI tool-calling message
  * format (assistant `tool_calls` + role:"tool" pairs).
  * @param {Array} messages
+ * @param {{injectReasoningContent?: boolean}} options
+ *   - injectReasoningContent: when true, ensures every assistant message has
+ *     a `reasoning_content` field (required by DeepSeek thinking-mode models).
  * @returns {Array} Messages formatted for the OpenAI tools API
  */
-function formatMessagesForTools(messages) {
+function formatMessagesForTools(messages, options = {}) {
   const formattedMessages = [];
+  const { injectReasoningContent = false } = options;
 
   for (const message of messages) {
     if (message.role === "function") {
@@ -53,6 +57,7 @@ function formatMessagesForTools(messages) {
           formattedMessages.push({
             role: "assistant",
             content: null,
+            ...(injectReasoningContent ? { reasoning_content: "" } : {}),
             tool_calls: [
               {
                 id: message.originalFunctionCall.id,
@@ -81,6 +86,7 @@ function formatMessagesForTools(messages) {
         formattedMessages.push({
           role: "assistant",
           content: null,
+          ...(injectReasoningContent ? { reasoning_content: "" } : {}),
           tool_calls: [
             {
               id: toolCallId,
@@ -101,6 +107,12 @@ function formatMessagesForTools(messages) {
               : JSON.stringify(message.content),
         });
       }
+    } else if (
+      injectReasoningContent &&
+      message.role === "assistant" &&
+      !("reasoning_content" in message)
+    ) {
+      formattedMessages.push({ ...message, reasoning_content: "" });
     } else {
       formattedMessages.push(message);
     }
@@ -119,6 +131,7 @@ function formatMessagesForTools(messages) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
+ * @param {{injectReasoningContent?: boolean}} options - Provider-specific options forwarded to formatMessagesForTools
  * @returns {Promise<{textResponse: string, functionCall: object|null}>}
  */
 async function tooledStream(
@@ -126,10 +139,11 @@ async function tooledStream(
   model,
   messages,
   functions = [],
-  eventHandler = null
+  eventHandler = null,
+  options = {}
 ) {
   const msgUUID = v4();
-  const formattedMessages = formatMessagesForTools(messages);
+  const formattedMessages = formatMessagesForTools(messages, options);
   const tools = formatFunctionsToTools(functions);
 
   const stream = await client.chat.completions.create({
@@ -214,6 +228,7 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
+ * @param {{injectReasoningContent?: boolean}} options - Provider-specific options forwarded to formatMessagesForTools
  * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number}>}
  */
 async function tooledComplete(
@@ -221,9 +236,10 @@ async function tooledComplete(
   model,
   messages,
   functions = [],
-  getCostFn = () => 0
+  getCostFn = () => 0,
+  options = {}
 ) {
-  const formattedMessages = formatMessagesForTools(messages);
+  const formattedMessages = formatMessagesForTools(messages, options);
   const tools = formatFunctionsToTools(functions);
 
   const response = await client.chat.completions.create({
