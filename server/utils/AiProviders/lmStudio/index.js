@@ -275,7 +275,7 @@ class LMStudioLLM {
   /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: string, imageGeneration: string, vision: string}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
