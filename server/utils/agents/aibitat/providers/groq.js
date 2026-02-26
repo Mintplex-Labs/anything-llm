@@ -48,9 +48,7 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
       process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("groq");
 
     if (supportsToolCalling)
-      this.providerLog(
-        "Groq supports native tool calling is ENABLED via ENV."
-      );
+      this.providerLog("Groq supports native tool calling is ENABLED via ENV.");
     else
       this.providerLog(
         "Groq supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
