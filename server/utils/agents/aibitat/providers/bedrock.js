@@ -46,6 +46,15 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * Override in subclass and return true to use native tool calling instead of UnTooled.
+   * @returns {boolean|Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    return false;
+  }
+
+  /**
    * Gets the credentials for the AWS Bedrock LLM based on the authentication method provided.
    * @returns {object} The credentials object.
    */
