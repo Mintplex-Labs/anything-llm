@@ -827,6 +827,16 @@ const KEY_MAPPING = {
     envKey: "SAMBANOVA_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Avian Options
+  AvianApiKey: {
+    envKey: "AVIAN_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AvianModelPref: {
+    envKey: "AVIAN_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -943,6 +953,7 @@ function supportedLLM(input = "") {
     "docker-model-runner",
     "privatemode",
     "sambanova",
+    "avian",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

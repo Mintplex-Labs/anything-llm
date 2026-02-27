@@ -47,6 +47,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "avian",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -126,6 +127,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
+    case "avian":
+      return await getAvianModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -985,6 +988,57 @@ async function getSambaNovaModels(_apiKey = null) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
   }
+}
+
+async function getAvianModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.AVIAN_API_KEY
+      : _apiKey || process.env.AVIAN_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.avian.io/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by || "avian",
+      }))
+    )
+    .catch((e) => {
+      console.error(`Avian:listModels`, e.message);
+      return [
+        {
+          id: "deepseek/deepseek-v3.2",
+          name: "deepseek/deepseek-v3.2",
+          organization: "avian",
+        },
+        {
+          id: "moonshotai/kimi-k2.5",
+          name: "moonshotai/kimi-k2.5",
+          organization: "avian",
+        },
+        {
+          id: "z-ai/glm-5",
+          name: "z-ai/glm-5",
+          organization: "avian",
+        },
+        {
+          id: "minimax/minimax-m2.5",
+          name: "minimax/minimax-m2.5",
+          organization: "avian",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.AVIAN_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

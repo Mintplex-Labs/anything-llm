@@ -34,6 +34,7 @@ import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
+import AvianLogo from "@/media/llmprovider/avian.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -69,6 +70,7 @@ import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import AvianOptions from "@/components/LLMSelection/AvianOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -268,6 +270,14 @@ const LLMS = [
     logo: APIPieLogo,
     options: (settings) => <ApiPieLLMOptions settings={settings} />,
     description: "A unified API of AI services from leading providers",
+  },
+  {
+    name: "Avian",
+    value: "avian",
+    logo: AvianLogo,
+    options: (settings) => <AvianOptions settings={settings} />,
+    description:
+      "Access cost-effective frontier LLMs via the Avian API.",
   },
   {
     name: "Generic OpenAI",
