@@ -53,6 +53,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "native-embedder",
   "cohere-embedder",
   "openrouter-embedder",
+  "lemonade-embedder",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -130,6 +131,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "lemonade-embedder":
+      return await getLemonadeModels(basePath, "embedding");
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -896,9 +899,9 @@ async function getDockerModelRunnerModels(basePath = null) {
   }
 }
 
-async function getLemonadeModels(basePath = null) {
+async function getLemonadeModels(basePath = null, task = "chat") {
   try {
-    const models = await getAllLemonadeModels(basePath);
+    const models = await getAllLemonadeModels(basePath, task);
     return { models, error: null };
   } catch (e) {
     console.error(`Lemonade:getLemonadeModels`, e.message);

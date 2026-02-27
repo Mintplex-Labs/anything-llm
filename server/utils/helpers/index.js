@@ -300,6 +300,9 @@ function getEmbeddingEngineSelection() {
     case "openrouter":
       const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
       return new OpenRouterEmbedder();
+    case "lemonade":
+      const { LemonadeEmbedder } = require("../EmbeddingEngines/lemonade");
+      return new LemonadeEmbedder();
     default:
       return new NativeEmbedder();
   }

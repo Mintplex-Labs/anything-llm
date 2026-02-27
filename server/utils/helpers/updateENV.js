@@ -996,6 +996,7 @@ function supportedEmbeddingModel(input = "") {
     "generic-openai",
     "mistral",
     "openrouter",
+    "lemonade",
   ];
   return supported.includes(input)
     ? null

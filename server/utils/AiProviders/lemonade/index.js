@@ -278,31 +278,24 @@ function parseLemonadeServerEndpoint(basePath = null, to = "openai") {
   }
 }
 
-// function filterByTask(task = "chat", models = {}) {
-//   const possibleEmbed = [{ pattern: /^all-mini/i }, { pattern: /embed/i }];
-//   const isEmbedModel = (strTag) =>
-//     possibleEmbed.some((p) => p.pattern.test(strTag));
-//   const filteredModels = {};
-//   for (const [modelName, tags] of Object.entries(models)) {
-//     if (task === "chat") {
-//       if (isEmbedModel(modelName)) continue;
-//       filteredModels[modelName] = tags;
-//     } else if (task === "embedding") {
-//       if (!isEmbedModel(modelName)) continue;
-//       filteredModels[modelName] = tags;
-//     }
-//   }
-//   return filteredModels;
-// }
-
 /**
  * This function will fetch the remote models from the Lemonade server as well
  * as the local models installed on the system.
  * @param {string} basePath - The base path of the Lemonade server endpoint.
- * @param {'chat' | 'embedding'} task - The task to fetch the models for.
+ * @param {'chat' | 'embedding' | 'reranking'} task - The task to fetch the models for.
  */
 async function getAllLemonadeModels(basePath = null, task = "chat") {
   const availableModels = {};
+
+  function isValidForTask(model) {
+    if (task === "reranking") return model.labels?.includes("reranking");
+    if (task === "embedding") return model.labels?.includes("embeddings");
+    if (task === "chat")
+      return !["embeddings", "reranking"].some((label) =>
+        model.labels?.includes(label)
+      );
+    return true;
+  }
 
   try {
     // Grab the locally installed models from the Lemonade server API
@@ -318,6 +311,8 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
       .then((res) => res.json())
       .then(({ data }) => {
         data?.forEach((model) => {
+          if (!isValidForTask(model)) return;
+
           const organization = extractModelOrganization(model.id);
           const modelData = {
             id: model.id,

@@ -13,7 +13,7 @@ import ModelTableLoadingSkeleton from "@/components/lib/ModelTable/loading";
 import showToast from "@/utils/toast";
 import LemonadeUtils from "@/models/utils/lemonadeUtils";
 
-function cleanBasePath(basePath = "") {
+export function cleanBasePath(basePath = "") {
   try {
     const url = new URL(basePath);
     return url.origin;
