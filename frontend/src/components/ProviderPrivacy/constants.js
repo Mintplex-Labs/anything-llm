@@ -395,6 +395,13 @@ const EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP = {
     policyUrl: "https://policies.google.com/privacy",
     logo: GeminiLogo,
   },
+  lemonade: {
+    name: "Lemonade",
+    description: [
+      "Your document text is embedded privately on the machine running the Lemonade server.",
+    ],
+    logo: LemonadeLogo,
+  },
 };
 
 export const PROVIDER_PRIVACY_MAP = {
