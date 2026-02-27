@@ -7,7 +7,7 @@ const { RetryError } = require("../error.js");
 const {
   assignOpenRouterModelParams,
   getOpenRouterModelParams,
-} = require("../../AiProviders/openRouter/openRouterModelParams");
+} = require("../../../AiProviders/openRouter/openRouterModelParams.js");
 
 /**
  * The agent provider for the OpenRouter provider.
