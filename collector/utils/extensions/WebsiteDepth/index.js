@@ -47,7 +47,10 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
 async function getPageLinks(url, baseUrl) {
   try {
     const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: { headless: "new" },
+      launchOptions: {
+        headless: "new",
+        ignoreHTTPSErrors: true,
+      },
       gotoOptions: { waitUntil: "networkidle2" },
     });
     const docs = await loader.load();
@@ -91,7 +94,10 @@ async function bulkScrapePages(links, outFolderPath) {
 
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: { headless: "new" },
+        launchOptions: {
+          headless: "new",
+          ignoreHTTPSErrors: true,
+        },
         gotoOptions: { waitUntil: "networkidle2" },
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
