@@ -977,14 +977,14 @@ const TRANSLATIONS = {
     normal: "Normal",
     large: "Large",
     workspace_llm_manager: {
-      search: "Search LLM providers",
+      search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
       available_models: "Available Models for {{provider}}",
       available_models_description: "Select a model to use for this workspace.",
       save: "Use this model",
       saving: "Setting model as workspace default...",
       missing_credentials: "This provider is missing credentials!",
-      missing_credentials_description: "Click to set up credentials",
+      missing_credentials_description: "Set up now",
     },
   },
 

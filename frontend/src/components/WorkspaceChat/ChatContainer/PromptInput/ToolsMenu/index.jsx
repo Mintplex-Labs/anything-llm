@@ -17,7 +17,6 @@ import Toggle from "@/components/lib/Toggle";
 const TABS = {
   AGENT_SKILLS: "agent-skills",
   SLASH_COMMANDS: "slash-commands",
-  TEXT_SIZE: "text-size",
 };
 
 // Default skills are enabled by default; toggling adds to disabled_agent_skills
@@ -121,12 +120,6 @@ export default function ToolsMenu({
         >
           Slash Commands
         </TabButton>
-        <TabButton
-          active={activeTab === TABS.TEXT_SIZE}
-          onClick={() => setActiveTab(TABS.TEXT_SIZE)}
-        >
-          Text Size
-        </TabButton>
       </div>
 
       <div
@@ -141,7 +134,6 @@ export default function ToolsMenu({
             promptRef={promptRef}
           />
         )}
-        {activeTab === TABS.TEXT_SIZE && <TextSizeTab />}
       </div>
     </div>
   );
@@ -553,43 +545,5 @@ function SlashCommandRow({
         </div>
       )}
     </div>
-  );
-}
-
-function TextSizeTab() {
-  const [selectedSize, setSelectedSize] = useState(
-    window.localStorage.getItem("anythingllm_text_size") || "normal"
-  );
-
-  function handleTextSizeChange(size) {
-    setSelectedSize(size);
-    window.localStorage.setItem("anythingllm_text_size", size);
-    window.dispatchEvent(new CustomEvent("textSizeChange", { detail: size }));
-  }
-
-  const sizes = [
-    { key: "small", label: "Small", textClass: "text-xs" },
-    { key: "normal", label: "Normal", textClass: "text-sm" },
-    { key: "large", label: "Large", textClass: "text-base" },
-  ];
-
-  return (
-    <>
-      {sizes.map(({ key, label, textClass }) => (
-        <div
-          key={key}
-          onClick={() => handleTextSizeChange(key)}
-          className={`flex items-center px-2 py-1 rounded cursor-pointer ${
-            selectedSize === key
-              ? "bg-zinc-700 light:bg-slate-200"
-              : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
-          }`}
-        >
-          <span className={`${textClass} text-white light:text-slate-900`}>
-            {label}
-          </span>
-        </div>
-      ))}
-    </>
   );
 }

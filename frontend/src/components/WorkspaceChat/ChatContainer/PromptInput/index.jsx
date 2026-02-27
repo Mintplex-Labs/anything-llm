@@ -347,7 +347,7 @@ export default function PromptInput({
                       className={`text-sm font-medium ${
                         showTools
                           ? "text-white light:text-slate-800"
-                          : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600"
+                          : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
                       }`}
                     >
                       Tools
@@ -393,10 +393,6 @@ export default function PromptInput({
                   )}
                 </div>
               </div>
-              {/* Todo: LLM Selector should be moved to top of workspace view */}
-              {/* <div className="hidden">
-                <LLMSelectorAction workspaceSlug={workspaceSlug} />
-              </div> */}
             </div>
           </div>
         </div>

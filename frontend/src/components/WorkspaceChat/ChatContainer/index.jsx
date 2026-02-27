@@ -29,6 +29,8 @@ import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import TextSizeMenu from "./TextSizeMenu";
+import WorkspaceModelPicker from "./WorkspaceModelPicker";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const navigate = useNavigate();
@@ -331,6 +333,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
       >
         {isMobile && <SidebarMobileHeader />}
+        <TextSizeMenu />
+        <WorkspaceModelPicker workspaceSlug={workspace.slug} />
         <DnDFileUploaderWrapper>
           <div className="flex flex-col h-full w-full items-center justify-center">
             <div className="flex flex-col items-center w-full max-w-[750px]">
@@ -374,6 +378,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
     >
       {isMobile && <SidebarMobileHeader />}
+      <TextSizeMenu />
+      <WorkspaceModelPicker workspaceSlug={workspace.slug} />
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full">
           <div className="contents">
