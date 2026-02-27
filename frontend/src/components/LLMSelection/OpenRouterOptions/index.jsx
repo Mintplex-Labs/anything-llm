@@ -74,7 +74,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterMaxTokens"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="Provider default"
-              defaultValue={settings?.OpenRouterMaxTokens || ""}
+              defaultValue={settings?.OpenRouterMaxTokens ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={1}
@@ -90,7 +90,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterTopP"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="0 to 1 (provider default)"
-              defaultValue={settings?.OpenRouterTopP || ""}
+              defaultValue={settings?.OpenRouterTopP ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={0}
@@ -107,7 +107,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterTopK"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="Provider default"
-              defaultValue={settings?.OpenRouterTopK || ""}
+              defaultValue={settings?.OpenRouterTopK ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={0}
@@ -123,7 +123,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterMinP"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="0 to 1 (provider default)"
-              defaultValue={settings?.OpenRouterMinP || ""}
+              defaultValue={settings?.OpenRouterMinP ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={0}
@@ -140,7 +140,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterFrequencyPenalty"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="-2 to 2 (provider default)"
-              defaultValue={settings?.OpenRouterFrequencyPenalty || ""}
+              defaultValue={settings?.OpenRouterFrequencyPenalty ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={-2}
@@ -157,7 +157,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterPresencePenalty"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="-2 to 2 (provider default)"
-              defaultValue={settings?.OpenRouterPresencePenalty || ""}
+              defaultValue={settings?.OpenRouterPresencePenalty ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={-2}
@@ -174,7 +174,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterRepetitionPenalty"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="0 to 2 (provider default)"
-              defaultValue={settings?.OpenRouterRepetitionPenalty || ""}
+              defaultValue={settings?.OpenRouterRepetitionPenalty ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={0}
@@ -191,7 +191,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterTopA"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="0 to 1 (provider default)"
-              defaultValue={settings?.OpenRouterTopA || ""}
+              defaultValue={settings?.OpenRouterTopA ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               min={0}
@@ -208,7 +208,7 @@ function AdvancedControls({ settings }) {
               name="OpenRouterSeed"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="Provider default"
-              defaultValue={settings?.OpenRouterSeed || ""}
+              defaultValue={settings?.OpenRouterSeed ?? ""}
               autoComplete="off"
               onScroll={(e) => e.target.blur()}
               step={1}
