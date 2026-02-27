@@ -14,6 +14,7 @@ const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
+const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -47,6 +48,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "lemonade",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -126,6 +128,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
+    case "lemonade":
+      return await getLemonadeModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -889,6 +893,16 @@ async function getDockerModelRunnerModels(basePath = null) {
       models: [],
       error: "Could not fetch Docker Model Runner Models",
     };
+  }
+}
+
+async function getLemonadeModels(basePath = null) {
+  try {
+    const models = await getAllLemonadeModels(basePath);
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Lemonade:getLemonadeModels`, e.message);
+    return { models: [], error: "Could not fetch Lemonade Models" };
   }
 }
 

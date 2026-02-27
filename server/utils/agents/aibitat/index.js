@@ -1037,6 +1037,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.PrivatemodeProvider({ model: config.model });
       case "sambanova":
         return new Providers.SambaNovaProvider({ model: config.model });
+      case "lemonade":
+        return new Providers.LemonadeProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

@@ -26,6 +26,9 @@ function utilEndpoints(app) {
     dockerModelRunnerUtilsEndpoints,
   } = require("./utils/dockerModelRunnerUtils");
   dockerModelRunnerUtilsEndpoints(app);
+
+  const { lemonadeUtilsEndpoints } = require("./utils/lemonadeUtilsEndpoints");
+  lemonadeUtilsEndpoints(app);
 }
 
 function getGitVersion() {
@@ -167,6 +170,9 @@ function getModelTag() {
       break;
     case "sambanova":
       model = process.env.SAMBANOVA_LLM_MODEL_PREF;
+      break;
+    case "lemonade":
+      model = process.env.LEMONADE_LLM_MODEL_PREF;
       break;
     default:
       model = "--";
