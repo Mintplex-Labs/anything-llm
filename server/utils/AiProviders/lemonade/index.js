@@ -53,6 +53,9 @@ class LemonadeLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.#log(
+      `${this.model} is using a max context window of ${this.promptWindowLimit()} tokens.`
+    );
   }
 
   #appendContext(contextTexts = []) {
