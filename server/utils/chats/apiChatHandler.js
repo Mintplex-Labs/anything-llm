@@ -188,8 +188,9 @@ async function chatSync({
             type: chatMode,
             thoughts,
           },
-          include: false,
+          include: true,
           apiSessionId: sessionId,
+          threadId: thread?.id || null,
         });
         return {
           id: uuid,
