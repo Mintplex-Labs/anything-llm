@@ -137,11 +137,7 @@ class LemonadeLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.model)
-      throw new Error(
-        `Lemonade chat: ${this.model} is not valid or defined model for chat completion!`
-      );
-
+    await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lemonade.chat.completions.create({
         model: this.model,
@@ -172,11 +168,7 @@ class LemonadeLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.model)
-      throw new Error(
-        `Lemonade chat: ${this.model} is not valid or defined model for chat completion!`
-      );
-
+    await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lemonade.chat.completions.create({
         model: this.model,
@@ -228,6 +220,47 @@ class LemonadeLLM {
         imageGeneration: "unknown",
         vision: "unknown",
       };
+    }
+  }
+
+  /**
+   * Utility function to load a model from the Lemonade server.
+   * Does not check if the model is already loaded or unloads any models.
+   * @param {*} model
+   */
+  static async loadModel(model, basePath = process.env.LEMONADE_LLM_BASE_PATH) {
+    try {
+      const endpoint = new URL(parseLemonadeServerEndpoint(basePath, "openai"));
+      endpoint.pathname += "/load";
+
+      console.log(endpoint.toString());
+
+      LemonadeLLM.slog(
+        `Loading model ${model} with context size ${this.promptWindowLimit()}`
+      );
+      await fetch(endpoint.toString(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model_name: String(model),
+          ctx_size: Number(this.promptWindowLimit()),
+        }),
+      })
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(
+              `Failed to load model ${model}: ${response.statusText}`
+            );
+          return response.json();
+        })
+        .then((data) => {
+          if (data.status !== "success") throw new Error(data.message);
+          LemonadeLLM.slog(`Model ${model} loaded successfully`);
+          return true;
+        });
+    } catch (error) {
+      LemonadeLLM.slog(`Error loading model ${model}:`, error);
+      return false;
     }
   }
 

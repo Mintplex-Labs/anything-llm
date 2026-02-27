@@ -34,6 +34,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this.preloaded = false;
     this._supportsToolCalling = null;
   }
 
@@ -43,6 +44,12 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
+  }
+
+  async preloadModel() {
+    if (this.preloaded) return;
+    await LemonadeLLM.loadModel(this.model);
+    this.preloaded = true;
   }
 
   /**
@@ -104,6 +111,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    await this.preloadModel();
     const useNative =
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
@@ -148,6 +156,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async complete(messages, functions = []) {
+    await this.preloadModel();
     const useNative =
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
