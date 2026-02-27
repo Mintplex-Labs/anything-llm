@@ -231,7 +231,9 @@ async function chatSync({
         metrics: {},
       },
       include: false,
+      threadId: thread?.id || null,
       apiSessionId: sessionId,
+      user,
     });
 
     return {
