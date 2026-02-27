@@ -4,10 +4,11 @@ const {
 } = require("langchain/document_loaders/web/puppeteer");
 const { default: slugify } = require("slugify");
 const { parse } = require("node-html-parser");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, documentsFolder } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
+const RuntimeSettings = require("../../runtimeSettings");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
@@ -46,8 +47,33 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
 
 async function getPageLinks(url, baseUrl) {
   try {
+    const runtimeSettings = new RuntimeSettings();
+    /** @type {import('puppeteer').PuppeteerLaunchOptions} */
+    let launchConfig = { headless: "new" };
+
+    /* On MacOS 15.1, the headless=new option causes the browser to crash immediately.
+     * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+     * in production runs in a container, we can disable headless mode to workaround the issue for development purposes.
+     *
+     * This may show a popup window when scraping a page in development mode.
+     * This is expected behavior if seen in development mode on MacOS 15+
+     */
+    if (
+      process.platform === "darwin" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.log(
+        "Darwin Development Mode: Disabling headless mode to prevent Chromium from crashing."
+      );
+      launchConfig.headless = "false";
+    }
+
     const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: { headless: "new" },
+      launchOptions: {
+        headless: launchConfig.headless,
+        ignoreHTTPSErrors: true,
+        args: runtimeSettings.get("browserLaunchArgs"),
+      },
       gotoOptions: { waitUntil: "networkidle2" },
     });
     const docs = await loader.load();
@@ -83,6 +109,24 @@ function extractLinks(html, baseUrl) {
 }
 
 async function bulkScrapePages(links, outFolderPath) {
+  const runtimeSettings = new RuntimeSettings();
+  /** @type {import('puppeteer').PuppeteerLaunchOptions} */
+  let launchConfig = { headless: "new" };
+
+  /* On MacOS 15.1, the headless=new option causes the browser to crash immediately.
+   * It is not clear why this is the case, but it is reproducible. Since AnythinglLM
+   * in production runs in a container, we can disable headless mode to workaround the issue for development purposes.
+   *
+   * This may show a popup window when scraping a page in development mode.
+   * This is expected behavior if seen in development mode on MacOS 15+
+   */
+  if (process.platform === "darwin" && process.env.NODE_ENV === "development") {
+    console.log(
+      "Darwin Development Mode: Disabling headless mode to prevent Chromium from crashing."
+    );
+    launchConfig.headless = "false";
+  }
+
   const scrapedData = [];
 
   for (let i = 0; i < links.length; i++) {
@@ -91,7 +135,11 @@ async function bulkScrapePages(links, outFolderPath) {
 
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: { headless: "new" },
+        launchOptions: {
+          headless: launchConfig.headless,
+          ignoreHTTPSErrors: true,
+          args: runtimeSettings.get("browserLaunchArgs"),
+        },
         gotoOptions: { waitUntil: "networkidle2" },
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
@@ -146,14 +194,7 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
   const outFolder = slugify(
     `${slugify(websiteName)}-${v4().slice(0, 4)}`
   ).toLowerCase();
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
   console.log("Discovering links...");
   const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
