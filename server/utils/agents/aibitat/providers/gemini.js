@@ -117,7 +117,9 @@ class GeminiProvider extends Provider {
               {
                 type: "function",
                 ...(message.originalFunctionCall.extra_content
-                  ? { extra_content: message.originalFunctionCall.extra_content }
+                  ? {
+                      extra_content: message.originalFunctionCall.extra_content,
+                    }
                   : {}),
                 function: {
                   arguments: JSON.stringify(
