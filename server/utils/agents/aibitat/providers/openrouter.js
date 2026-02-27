@@ -4,6 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { toValidNumber } = require("../../../http");
 
 /**
  * The agent provider for the OpenRouter provider.
@@ -32,6 +33,35 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this._supportsToolCalling = null;
+
+    // Optional model parameters - null means use OpenRouter defaults
+    this.maxTokens = process.env.OPENROUTER_MAX_TOKENS
+      ? toValidNumber(process.env.OPENROUTER_MAX_TOKENS, null)
+      : null;
+    this.topP = process.env.OPENROUTER_TOP_P
+      ? toValidNumber(process.env.OPENROUTER_TOP_P, null)
+      : null;
+    this.topK = process.env.OPENROUTER_TOP_K
+      ? toValidNumber(process.env.OPENROUTER_TOP_K, null)
+      : null;
+    this.minP = process.env.OPENROUTER_MIN_P
+      ? toValidNumber(process.env.OPENROUTER_MIN_P, null)
+      : null;
+    this.frequencyPenalty = process.env.OPENROUTER_FREQUENCY_PENALTY
+      ? toValidNumber(process.env.OPENROUTER_FREQUENCY_PENALTY, null)
+      : null;
+    this.presencePenalty = process.env.OPENROUTER_PRESENCE_PENALTY
+      ? toValidNumber(process.env.OPENROUTER_PRESENCE_PENALTY, null)
+      : null;
+    this.repetitionPenalty = process.env.OPENROUTER_REPETITION_PENALTY
+      ? toValidNumber(process.env.OPENROUTER_REPETITION_PENALTY, null)
+      : null;
+    this.topA = process.env.OPENROUTER_TOP_A
+      ? toValidNumber(process.env.OPENROUTER_TOP_A, null)
+      : null;
+    this.seed = process.env.OPENROUTER_SEED
+      ? toValidNumber(process.env.OPENROUTER_SEED, null)
+      : null;
   }
 
   get client() {
@@ -65,12 +95,34 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
     return supportsToolCalling;
   }
 
+  /**
+   * Builds an object of optional model parameters, only including non-null values.
+   * @returns {Object}
+   */
+  #getModelParams() {
+    const params = {};
+    if (this.maxTokens !== null) params.max_tokens = this.maxTokens;
+    if (this.topP !== null) params.top_p = this.topP;
+    if (this.topK !== null) params.top_k = this.topK;
+    if (this.minP !== null) params.min_p = this.minP;
+    if (this.frequencyPenalty !== null)
+      params.frequency_penalty = this.frequencyPenalty;
+    if (this.presencePenalty !== null)
+      params.presence_penalty = this.presencePenalty;
+    if (this.repetitionPenalty !== null)
+      params.repetition_penalty = this.repetitionPenalty;
+    if (this.topA !== null) params.top_a = this.topA;
+    if (this.seed !== null) params.seed = this.seed;
+    return params;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
         model: this.model,
         messages,
         user: this.executingUserId,
+        ...this.#getModelParams(),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -90,6 +142,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       messages,
       user: this.executingUserId,
+      ...this.#getModelParams(),
     });
   }
 

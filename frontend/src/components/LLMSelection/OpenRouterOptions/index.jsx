@@ -48,21 +48,172 @@ function AdvancedControls({ settings }) {
         )}
       </button>
       <div hidden={!showAdvancedControls}>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Stream Timeout (ms)
-          </label>
-          <input
-            type="number"
-            name="OpenRouterTimeout"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.OpenRouterTimeout ?? 3_000}
-            autoComplete="off"
-            onScroll={(e) => e.target.blur()}
-            min={500}
-            step={1}
-          />
+        <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Stream Timeout (ms)
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTimeout"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Timeout value between token responses to auto-timeout the stream"
+              defaultValue={settings?.OpenRouterTimeout ?? 3_000}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={500}
+              step={1}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Max Tokens
+            </label>
+            <input
+              type="number"
+              name="OpenRouterMaxTokens"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Provider default"
+              defaultValue={settings?.OpenRouterMaxTokens || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={1}
+              step={1}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Top P
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTopP"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="0 to 1 (provider default)"
+              defaultValue={settings?.OpenRouterTopP || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Top K
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTopK"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Provider default"
+              defaultValue={settings?.OpenRouterTopK || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={0}
+              step={1}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Min P
+            </label>
+            <input
+              type="number"
+              name="OpenRouterMinP"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="0 to 1 (provider default)"
+              defaultValue={settings?.OpenRouterMinP || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Frequency Penalty
+            </label>
+            <input
+              type="number"
+              name="OpenRouterFrequencyPenalty"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="-2 to 2 (provider default)"
+              defaultValue={settings?.OpenRouterFrequencyPenalty || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={-2}
+              max={2}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Presence Penalty
+            </label>
+            <input
+              type="number"
+              name="OpenRouterPresencePenalty"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="-2 to 2 (provider default)"
+              defaultValue={settings?.OpenRouterPresencePenalty || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={-2}
+              max={2}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Repetition Penalty
+            </label>
+            <input
+              type="number"
+              name="OpenRouterRepetitionPenalty"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="0 to 2 (provider default)"
+              defaultValue={settings?.OpenRouterRepetitionPenalty || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={0}
+              max={2}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Top A
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTopA"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="0 to 1 (provider default)"
+              defaultValue={settings?.OpenRouterTopA || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Seed
+            </label>
+            <input
+              type="number"
+              name="OpenRouterSeed"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Provider default"
+              defaultValue={settings?.OpenRouterSeed || ""}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              step={1}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -568,6 +568,15 @@ const SystemSettings = {
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
       OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
+      OpenRouterMaxTokens: process.env.OPENROUTER_MAX_TOKENS,
+      OpenRouterTopP: process.env.OPENROUTER_TOP_P,
+      OpenRouterTopK: process.env.OPENROUTER_TOP_K,
+      OpenRouterMinP: process.env.OPENROUTER_MIN_P,
+      OpenRouterFrequencyPenalty: process.env.OPENROUTER_FREQUENCY_PENALTY,
+      OpenRouterPresencePenalty: process.env.OPENROUTER_PRESENCE_PENALTY,
+      OpenRouterRepetitionPenalty: process.env.OPENROUTER_REPETITION_PENALTY,
+      OpenRouterTopA: process.env.OPENROUTER_TOP_A,
+      OpenRouterSeed: process.env.OPENROUTER_SEED,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,

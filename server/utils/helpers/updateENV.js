@@ -489,6 +489,42 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_TIMEOUT_MS",
     checks: [],
   },
+  OpenRouterMaxTokens: {
+    envKey: "OPENROUTER_MAX_TOKENS",
+    checks: [],
+  },
+  OpenRouterTopP: {
+    envKey: "OPENROUTER_TOP_P",
+    checks: [],
+  },
+  OpenRouterTopK: {
+    envKey: "OPENROUTER_TOP_K",
+    checks: [],
+  },
+  OpenRouterMinP: {
+    envKey: "OPENROUTER_MIN_P",
+    checks: [],
+  },
+  OpenRouterFrequencyPenalty: {
+    envKey: "OPENROUTER_FREQUENCY_PENALTY",
+    checks: [],
+  },
+  OpenRouterPresencePenalty: {
+    envKey: "OPENROUTER_PRESENCE_PENALTY",
+    checks: [],
+  },
+  OpenRouterRepetitionPenalty: {
+    envKey: "OPENROUTER_REPETITION_PENALTY",
+    checks: [],
+  },
+  OpenRouterTopA: {
+    envKey: "OPENROUTER_TOP_A",
+    checks: [],
+  },
+  OpenRouterSeed: {
+    envKey: "OPENROUTER_SEED",
+    checks: [],
+  },
 
   // Novita Options
   NovitaLLMApiKey: {
