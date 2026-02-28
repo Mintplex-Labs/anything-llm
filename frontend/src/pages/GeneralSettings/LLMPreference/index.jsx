@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -501,8 +500,7 @@ export default function GeneralLLMPreference() {
     (llm) => llm.value === selectedLLM
   );
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -637,6 +635,6 @@ export default function GeneralLLMPreference() {
           </form>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { isMobile } from "react-device-detect";
-import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
@@ -99,8 +98,7 @@ export default function TranscriptionModelPreference() {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -232,6 +230,6 @@ export default function TranscriptionModelPreference() {
           </form>
         </div>
       )}
-    </div>
+    </>
   );
 }

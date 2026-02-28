@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import CTAButton from "@/components/lib/CTAButton";
 import VariableRow from "./VariableRow";
@@ -35,8 +34,7 @@ export default function SystemPromptVariables() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
@@ -115,6 +113,6 @@ export default function SystemPromptVariables() {
       <ModalWrapper isOpen={isOpen}>
         <AddVariableModal closeModal={closeModal} onRefresh={fetchVariables} />
       </ModalWrapper>
-    </div>
+    </>
   );
 }

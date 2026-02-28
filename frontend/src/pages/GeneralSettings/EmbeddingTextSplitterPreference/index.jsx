@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
@@ -86,8 +85,7 @@ export default function EmbeddingTextSplitterPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -200,6 +198,6 @@ export default function EmbeddingTextSplitterPreference() {
           onConfirm={handleSaveSettings}
         />
       </ModalWrapper>
-    </div>
+    </>
   );
 }

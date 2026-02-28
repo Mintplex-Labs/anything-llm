@@ -1,6 +1,5 @@
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
 import Introduction from "./Introduction";
 import PullAndReview from "./PullAndReview";
 import Completed from "./Completed";
@@ -62,15 +61,14 @@ export function CommunityHubImportItemLayout({ setStep, children }) {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6">
-      <Sidebar />
+    <>
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
       >
         {children(settings, setSettings, setStep)}
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -248,8 +247,7 @@ export default function GeneralEmbeddingPreference() {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -394,6 +392,6 @@ export default function GeneralEmbeddingPreference() {
           onConfirm={handleSaveSettings}
         />
       </ModalWrapper>
-    </div>
+    </>
   );
 }

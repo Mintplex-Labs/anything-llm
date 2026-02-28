@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import SpeechToTextProvider from "./stt";
@@ -20,8 +19,7 @@ export default function AudioPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -40,6 +38,6 @@ export default function AudioPreference() {
           <TextToSpeechProvider settings={settings} />
         </div>
       )}
-    </div>
+    </>
   );
 }

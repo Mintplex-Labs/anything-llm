@@ -1,4 +1,3 @@
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
 import CommunityHub from "@/models/communityHub";
@@ -107,8 +106,7 @@ export default function CommunityHubAuthentication() {
   } = useCommunityHubAuthentication();
   if (loading) return <FullScreenLoader />;
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      <Sidebar />
+    <>
       <ContextualSaveBar
         showing={hasChanges}
         onSave={updateConnectionKey}
@@ -201,6 +199,6 @@ export default function CommunityHubAuthentication() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
