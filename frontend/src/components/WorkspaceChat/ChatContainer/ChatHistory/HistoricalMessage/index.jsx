@@ -158,13 +158,14 @@ const HistoricalMessage = ({
             <ChatAttachments attachments={attachments} />
           </div>
         )}
-        {role === "assistant" && <Citations sources={sources} />}
         <div className="flex items-start md:items-center gap-x-1">
-          <TTSMessage
-            slug={workspace?.slug}
-            chatId={chatId}
-            message={message}
-          />
+          <div className="mx-2">
+            <TTSMessage
+              slug={workspace?.slug}
+              chatId={chatId}
+              message={message}
+            />
+          </div>
           <Actions
             message={message}
             feedbackScore={feedbackScore}
@@ -178,6 +179,7 @@ const HistoricalMessage = ({
             metrics={metrics}
           />
         </div>
+        {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
   );

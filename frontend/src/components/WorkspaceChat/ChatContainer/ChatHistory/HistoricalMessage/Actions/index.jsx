@@ -33,13 +33,17 @@ const Actions = ({
       className={`flex w-full flex-wrap items-center gap-y-1 ${role === "user" ? "justify-end" : "justify-between"}`}
     >
       <div className="flex justify-start items-center gap-x-[8px]">
-        <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">
-          <EditMessageAction
-            chatId={chatId}
-            role={role}
-            isEditing={isEditing}
-          />
+          <div
+            className={`flex justify-start items-center gap-x-[8px] ${role === "user" ? "flex-row-reverse" : ""}`}
+          >
+            <CopyMessage message={message} />
+            <EditMessageAction
+              chatId={chatId}
+              role={role}
+              isEditing={isEditing}
+            />
+          </div>
           {isLastMessage && !isEditing && (
             <RegenerateMessage
               regenerateMessage={regenerateMessage}
