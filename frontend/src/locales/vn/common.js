@@ -727,8 +727,8 @@ const TRANSLATIONS = {
       "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
     see_less: "Xem ít hơn",
     see_more: "Xem thêm",
-    sources: null,
-    document: null,
+    sources: "Nguồn",
+    document: "Tài liệu",
     similarity_match: null,
   },
   profile_settings: {

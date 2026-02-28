@@ -905,8 +905,8 @@ const TRANSLATIONS = {
     edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
     see_less: "더 보기",
     see_more: "더 보기",
-    sources: null,
-    document: null,
+    sources: "출처",
+    document: "문서",
     similarity_match: null,
   },
   profile_settings: {

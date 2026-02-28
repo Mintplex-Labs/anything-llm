@@ -734,8 +734,8 @@ const TRANSLATIONS = {
       "Uw wijzigingen worden direct op deze reactie opgeslagen.",
     see_less: "Minder zien",
     see_more: "Meer zien",
-    sources: null,
-    document: null,
+    sources: "Bronnen",
+    document: "Document",
     similarity_match: null,
   },
   profile_settings: {

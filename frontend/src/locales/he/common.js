@@ -895,8 +895,8 @@ const TRANSLATIONS = {
     edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
     see_less: "ראה פחות",
     see_more: "לראות עוד",
-    sources: null,
-    document: null,
+    sources: "מקורות",
+    document: "מסמך",
     similarity_match: null,
   },
   profile_settings: {

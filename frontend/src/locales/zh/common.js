@@ -862,8 +862,8 @@ const TRANSLATIONS = {
     edit_info_assistant: "您所做的修改将直接保存到此处。",
     see_less: "查看更多",
     see_more: "查看更多",
-    sources: null,
-    document: null,
+    sources: "来源",
+    document: "文件",
     similarity_match: null,
   },
   profile_settings: {

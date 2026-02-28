@@ -661,8 +661,8 @@ const TRANSLATIONS = {
       "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
-    sources: null,
-    document: null,
+    sources: "Surse",
+    document: "Document",
     similarity_match: null,
   },
   profile_settings: {

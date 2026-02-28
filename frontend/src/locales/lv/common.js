@@ -928,8 +928,8 @@ const TRANSLATIONS = {
       "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
     see_less: "Skatīt mazāk",
     see_more: "Skatīt vairāk",
-    sources: null,
-    document: null,
+    sources: "Avotus",
+    document: "Dokuments",
     similarity_match: null,
   },
   profile_settings: {

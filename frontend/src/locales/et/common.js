@@ -888,8 +888,8 @@ const TRANSLATIONS = {
     edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
-    sources: null,
-    document: null,
+    sources: "Allikasid",
+    document: "Dokument",
     similarity_match: null,
   },
   profile_settings: {

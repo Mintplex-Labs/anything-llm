@@ -931,8 +931,8 @@ const TRANSLATIONS = {
       "Ihre Änderungen werden direkt in diese Antwort gespeichert.",
     see_less: "Weniger anzeigen",
     see_more: "Mehr anzeigen",
-    sources: null,
-    document: null,
+    sources: "Quellen",
+    document: "Dokument",
     similarity_match: null,
   },
   profile_settings: {

@@ -926,8 +926,8 @@ const TRANSLATIONS = {
       "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
-    sources: null,
-    document: null,
+    sources: "Źródła",
+    document: "Dokument",
     similarity_match: null,
   },
   profile_settings: {

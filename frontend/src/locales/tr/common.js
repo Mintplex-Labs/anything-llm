@@ -730,8 +730,8 @@ const TRANSLATIONS = {
       "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
     see_less: "Daha az",
     see_more: "Daha Fazla",
-    sources: null,
-    document: null,
+    sources: "Kaynaklar",
+    document: "Belge",
     similarity_match: null,
   },
   profile_settings: {

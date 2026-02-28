@@ -747,8 +747,8 @@ const TRANSLATIONS = {
       "Le modifiche verranno salvate direttamente in questa risposta.",
     see_less: "Visualizza meno",
     see_more: "Visualizza altro",
-    sources: null,
-    document: null,
+    sources: "Fonti",
+    document: "Documento",
     similarity_match: null,
   },
   profile_settings: {
