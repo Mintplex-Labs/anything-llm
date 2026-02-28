@@ -952,6 +952,9 @@ const TRANSLATIONS = {
     edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
     see_less: "Zobrazit méně",
     see_more: "Více",
+    sources: null,
+    document: null,
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Upravit účet",

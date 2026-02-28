@@ -721,6 +721,9 @@ const TRANSLATIONS = {
     edit_info_assistant: "سيتم حفظ التغييرات مباشرة في هذا الرد.",
     see_less: "اقرأ المزيد",
     see_more: "عرض المزيد",
+    sources: null,
+    document: null,
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

@@ -931,6 +931,9 @@ const TRANSLATIONS = {
       "Ihre Änderungen werden direkt in diese Antwort gespeichert.",
     see_less: "Weniger anzeigen",
     see_more: "Mehr anzeigen",
+    sources: null,
+    document: null,
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

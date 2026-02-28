@@ -731,6 +731,9 @@ const TRANSLATIONS = {
     edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
     see_less: "کمی بیشتر",
     see_more: "بیشتر",
+    sources: null,
+    document: null,
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

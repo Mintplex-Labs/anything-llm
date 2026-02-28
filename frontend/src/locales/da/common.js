@@ -736,6 +736,9 @@ const TRANSLATIONS = {
       "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
     see_less: "Se mindre",
     see_more: "Se flere",
+    sources: null,
+    document: null,
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Rediger konto",
