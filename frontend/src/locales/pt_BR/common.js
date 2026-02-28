@@ -897,6 +897,13 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Configure as credenciais do LLM primeiro",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" recria a resposta da IA. "Salvar" atualiza apenas sua mensagem.',
+    edit_info_assistant:
+      "Suas alterações serão salvas diretamente nesta resposta.",
+    see_less: "Ver menos",
+    see_more: "Ver mais",
   },
   profile_settings: {
     edit_account: "Editar conta",

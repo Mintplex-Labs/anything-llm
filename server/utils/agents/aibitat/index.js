@@ -41,6 +41,7 @@ class AIbitat {
       chats = [],
       interrupt = "NEVER",
       maxRounds = 100,
+      maxToolCalls = 10,
       provider = "openai",
       handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
@@ -48,6 +49,7 @@ class AIbitat {
     this._chats = chats;
     this.defaultInterrupt = interrupt;
     this.maxRounds = maxRounds;
+    this.maxToolCalls = maxToolCalls;
     this.handlerProps = handlerProps;
 
     this.defaultProvider = {
@@ -641,7 +643,8 @@ ${this.getHistory({ to: route.to })
     provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0
   ) {
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
@@ -655,6 +658,24 @@ ${this.getHistory({ to: route.to })
     );
 
     if (completionStream.functionCall) {
+      if (depth >= this.maxToolCalls) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Stopping tool execution.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. Returning what I have so far.`
+        );
+        const bailoutMessage =
+          completionStream.textResponse ||
+          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
+        eventHandler?.("reportStreamEvent", {
+          type: "fullTextResponse",
+          uuid: v4(),
+          content: bailoutMessage,
+        });
+        return bailoutMessage;
+      }
+
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
 
@@ -673,7 +694,8 @@ ${this.getHistory({ to: route.to })
             },
           ],
           functions,
-          byAgent
+          byAgent,
+          depth + 1
         );
       }
 
@@ -730,7 +752,8 @@ ${this.getHistory({ to: route.to })
           },
         ],
         functions,
-        byAgent
+        byAgent,
+        depth + 1
       );
     }
 
@@ -752,12 +775,26 @@ ${this.getHistory({ to: route.to })
     provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0
   ) {
     // get the chat completion
     const completion = await provider.complete(messages, functions);
 
     if (completion.functionCall) {
+      if (depth >= this.maxToolCalls) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Stopping tool execution.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. Returning what I have so far.`
+        );
+        return (
+          completion.textResponse ||
+          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
+        );
+      }
+
       const { name, arguments: args } = completion.functionCall;
       const fn = this.functions.get(name);
 
@@ -776,7 +813,8 @@ ${this.getHistory({ to: route.to })
             },
           ],
           functions,
-          byAgent
+          byAgent,
+          depth + 1
         );
       }
 
@@ -824,7 +862,8 @@ ${this.getHistory({ to: route.to })
           },
         ],
         functions,
-        byAgent
+        byAgent,
+        depth + 1
       );
     }
 

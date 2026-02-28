@@ -41,7 +41,7 @@ export default function NativeTTSMessage({ chatId, message }) {
         data-tooltip-content={
           speaking ? "Pause TTS speech of message" : "TTS Speak message"
         }
-        className="border-none text-[var(--theme-sidebar-footer-icon-fill)]"
+        className="border-none text-zinc-300 light:text-slate-500"
         aria-label={speaking ? "Pause speech" : "Speak message"}
       >
         {speaking ? (
