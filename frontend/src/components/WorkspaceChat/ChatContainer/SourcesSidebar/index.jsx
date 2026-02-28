@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { isMobile } from "react-device-detect";
+import { useTranslation } from "react-i18next";
 import { X } from "@phosphor-icons/react";
 import {
   combineLikeSources,
@@ -39,6 +40,7 @@ export function useSourcesSidebar() {
 
 export default function SourcesSidebar() {
   const { sources, sidebarOpen, closeSidebar } = useSourcesSidebar();
+  const { t } = useTranslation();
   const [selectedSource, setSelectedSource] = useState(null);
   const loginMode = useLoginMode();
   const hasAuth = loginMode !== null;
@@ -72,7 +74,7 @@ export default function SourcesSidebar() {
         >
           <div className="flex items-start justify-between">
             <p className="font-medium text-base leading-6 text-white light:text-slate-900">
-              Sources
+              {t("chat_window.sources")}
             </p>
             <button
               onClick={closeSidebar}

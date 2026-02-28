@@ -1,4 +1,5 @@
 import { X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import ModalWrapper from "@/components/ModalWrapper";
 import { combineLikeSources } from "../../ChatHistory/Citation";
 import SourceDetailView from "./SourceDetailView";
@@ -12,6 +13,7 @@ export default function MobileCitationModal({
   onClose,
 }) {
   const sources = combineLikeSources(rawSources);
+  const { t } = useTranslation();
 
   return (
     <ModalWrapper isOpen={isOpen}>
@@ -27,7 +29,7 @@ export default function MobileCitationModal({
           <>
             <div className="flex items-center justify-between">
               <p className="font-semibold text-base leading-6 text-white light:text-slate-900">
-                Sources
+                {t("chat_window.sources")}
               </p>
               <button
                 onClick={onClose}

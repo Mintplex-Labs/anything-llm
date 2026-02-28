@@ -1,9 +1,11 @@
 import { parseChunkSource, SourceTypeCircle } from "../../ChatHistory/Citation";
+import { useTranslation } from "react-i18next";
 import pluralize from "pluralize";
 
 export default function SourceItem({ source, onClick }) {
+  const { t } = useTranslation();
   const info = parseChunkSource(source);
-  const subtitle = info.isUrl ? info.text : "Document";
+  const subtitle = info.isUrl ? info.text : t("chat_window.document");
 
   return (
     <button

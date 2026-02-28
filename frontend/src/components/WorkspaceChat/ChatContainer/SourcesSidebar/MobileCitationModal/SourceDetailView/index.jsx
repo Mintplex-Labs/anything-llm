@@ -2,10 +2,12 @@ import { Fragment } from "react";
 import { CaretLeft, Info, X } from "@phosphor-icons/react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
+import { useTranslation } from "react-i18next";
 import { omitChunkHeader } from "../../../ChatHistory/Citation";
 import { toPercentString } from "@/utils/numbers";
 
 export default function SourceDetailView({ source, onBack, onClose }) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="flex items-center justify-between">
@@ -37,7 +39,9 @@ export default function SourceDetailView({ source, onBack, onClose }) {
               {!!score && (
                 <div className="flex items-center text-xs text-white/60 light:text-slate-500 gap-x-1">
                   <Info size={14} />
-                  <p>{toPercentString(score)} match</p>
+                  <p>
+                    {toPercentString(score)} {t("chat_window.similarity_match")}
+                  </p>
                 </div>
               )}
             </div>

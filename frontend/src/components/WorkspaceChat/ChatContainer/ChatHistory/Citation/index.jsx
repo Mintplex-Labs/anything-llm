@@ -13,6 +13,7 @@ import {
   GitlabLogo,
 } from "@phosphor-icons/react";
 import { toPercentString } from "@/utils/numbers";
+import { useTranslation } from "react-i18next";
 import { useSourcesSidebar } from "../../SourcesSidebar";
 
 const CIRCLE_ICONS = {
@@ -65,6 +66,7 @@ export function combineLikeSources(sources) {
 
 export default function Citations({ sources = [] }) {
   const { sidebarOpen, openSidebar, closeSidebar } = useSourcesSidebar();
+  const { t } = useTranslation();
   if (sources.length === 0) return null;
 
   const combined = combineLikeSources(sources);
@@ -77,7 +79,9 @@ export default function Citations({ sources = [] }) {
       className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >
-      <span className="text-xs text-white light:text-slate-800">Sources</span>
+      <span className="text-xs text-white light:text-slate-800">
+        {t("chat_window.sources")}
+      </span>
       <div
         className="relative h-[22px]"
         style={{ width: `${visibleSources.length * 17 + 5}px` }}
@@ -112,6 +116,7 @@ export function omitChunkHeader(text) {
 export function CitationDetailModal({ source, onClose }) {
   const { references, title, chunks } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
+  const { t } = useTranslation();
 
   return (
     <ModalWrapper isOpen={!!source}>
@@ -176,7 +181,10 @@ export function CitationDetailModal({ source, onClose }) {
                           className="flex items-center gap-x-1"
                         >
                           <Info size={14} />
-                          <p>{toPercentString(score)} match</p>
+                          <p>
+                            {toPercentString(score)}{" "}
+                            {t("chat_window.similarity_match")}
+                          </p>
                         </div>
                       </div>
                     )}
