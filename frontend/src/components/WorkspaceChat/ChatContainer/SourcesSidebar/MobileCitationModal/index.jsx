@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { combineLikeSources } from "../../ChatHistory/Citation";
@@ -6,17 +5,13 @@ import SourceDetailView from "./SourceDetailView";
 import SourceItem from "../SourceItem";
 
 export default function MobileCitationModal({
-  openSources,
+  sources: rawSources,
+  isOpen,
   selectedSource,
   setSelectedSource,
   onClose,
 }) {
-  const isOpen = !!openSources;
-  const [sources, setSources] = useState([]);
-
-  useEffect(() => {
-    if (openSources) setSources(combineLikeSources(openSources));
-  }, [openSources]);
+  const sources = combineLikeSources(rawSources);
 
   return (
     <ModalWrapper isOpen={isOpen}>

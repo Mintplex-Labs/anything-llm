@@ -12,9 +12,22 @@ import useLoginMode from "@/hooks/useLoginMode";
 export const SourcesSidebarContext = createContext();
 
 export function SourcesSidebarProvider({ children }) {
-  const [openSources, setOpenSources] = useState(null);
+  const [sources, setSources] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  function openSidebar(newSources) {
+    setSources(newSources);
+    setSidebarOpen(true);
+  }
+
+  function closeSidebar() {
+    setSidebarOpen(false);
+  }
+
   return (
-    <SourcesSidebarContext.Provider value={{ openSources, setOpenSources }}>
+    <SourcesSidebarContext.Provider
+      value={{ sources, sidebarOpen, openSidebar, closeSidebar }}
+    >
       {children}
     </SourcesSidebarContext.Provider>
   );
@@ -25,23 +38,23 @@ export function useSourcesSidebar() {
 }
 
 export default function SourcesSidebar() {
-  const { openSources, setOpenSources } = useSourcesSidebar();
+  const { sources, sidebarOpen, closeSidebar } = useSourcesSidebar();
   const [selectedSource, setSelectedSource] = useState(null);
   const loginMode = useLoginMode();
   const hasAuth = loginMode !== null;
 
-  const isOpen = !!openSources;
-  const combined = isOpen ? combineLikeSources(openSources) : [];
+  const combined = combineLikeSources(sources);
 
   if (isMobile) {
     return (
       <MobileCitationModal
-        openSources={openSources}
+        sources={sources}
+        isOpen={sidebarOpen}
         selectedSource={selectedSource}
         setSelectedSource={setSelectedSource}
         onClose={() => {
           setSelectedSource(null);
-          setOpenSources(null);
+          closeSidebar();
         }}
       />
     );
@@ -51,21 +64,18 @@ export default function SourcesSidebar() {
     <>
       <div
         className="h-full overflow-hidden transition-all duration-500 flex-shrink-0"
-        style={{
-          width: isOpen ? "350px" : "0px",
-          marginLeft: isOpen ? "16px" : "0px",
-        }}
+        style={{ width: sidebarOpen ? "366px" : "0px" }}
       >
         <div
-          className={`w-[350px] bg-zinc-900 light:bg-white light:border-2 light:border-slate-300 md:rounded-[16px] p-4 flex flex-col gap-4 overflow-hidden ${hasAuth ? "mt-[88px]" : "h-full"}`}
-          style={hasAuth ? { height: "calc(100% - 52px)" } : undefined}
+          className={`ml-4 w-[350px] bg-zinc-900 light:bg-white light:border-2 light:border-slate-300 md:rounded-[16px] p-4 flex flex-col gap-4 overflow-hidden ${hasAuth ? "mt-[88px]" : ""}`}
+          style={{ maxHeight: hasAuth ? "calc(100% - 88px)" : "100%" }}
         >
           <div className="flex items-start justify-between">
             <p className="font-medium text-base leading-6 text-white light:text-slate-900">
               Sources
             </p>
             <button
-              onClick={() => setOpenSources(null)}
+              onClick={closeSidebar}
               type="button"
               className="text-white/60 light:text-slate-400 hover:text-white light:hover:text-slate-900 transition-colors"
             >
