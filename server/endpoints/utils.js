@@ -97,7 +97,7 @@ function getModelTag() {
       model = process.env.TOGETHER_AI_MODEL_PREF;
       break;
     case "azure":
-      model = process.env.OPEN_MODEL_PREF;
+      model = process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF;
       break;
     case "koboldcpp":
       model = process.env.KOBOLD_CPP_MODEL_PREF;
