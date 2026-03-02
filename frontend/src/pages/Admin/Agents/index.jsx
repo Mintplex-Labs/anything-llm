@@ -230,10 +230,7 @@ export default function AdminAgents() {
 
   if (loading) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
-      >
+      <div className="relative md:rounded-[16px] w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
@@ -266,7 +263,7 @@ export default function AdminAgents() {
           {/* Skill settings nav */}
           <div
             hidden={showSkillModal}
-            className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
+            className="flex flex-col gap-y-[18px] overflow-y-auto no-scroll"
           >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
@@ -351,7 +348,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-auto no-scroll">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedMcpServer ? (
@@ -543,7 +540,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-auto no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -615,10 +612,7 @@ export default function AdminAgents() {
 
 function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 flex"
-    >
+    <div className="relative md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-auto p-4 md:p-0 flex">
       {children}
       <ContextualSaveBar
         showing={hasChanges}

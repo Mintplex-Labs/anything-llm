@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
@@ -36,10 +35,7 @@ export default function ExperimentalFeatures() {
 
   if (loading) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
-      >
+      <div className="relative md:rounded-[16px] w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
@@ -105,10 +101,7 @@ export default function ExperimentalFeatures() {
 
 function FeatureLayout({ children }) {
   return (
-    <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 flex"
-    >
+    <div className="relative md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-auto p-4 md:p-0 flex">
       {children}
     </div>
   );
