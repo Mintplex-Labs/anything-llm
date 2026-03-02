@@ -7,7 +7,10 @@ import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 export const THREAD_RENAME_EVENT = "renameThread";
 
-export default function ThreadContainer({ workspace }) {
+export default function ThreadContainer({
+  workspace,
+  isVirtualThread = false,
+}) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +112,12 @@ export default function ThreadContainer({ workspace }) {
     }, 500);
   }
 
+  function getActiveThreadIdx() {
+    if (isVirtualThread) return threads.length + 1;
+    const idx = threads.findIndex((t) => t?.slug === threadSlug);
+    return idx >= 0 ? idx + 1 : 0;
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
@@ -117,11 +126,7 @@ export default function ThreadContainer({ workspace }) {
     );
   }
 
-  const activeThreadIdx = !!threads.find(
-    (thread) => thread?.slug === threadSlug
-  )
-    ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
-    : 0;
+  const activeThreadIdx = getActiveThreadIdx();
 
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
@@ -129,8 +134,9 @@ export default function ThreadContainer({ workspace }) {
         idx={0}
         activeIdx={activeThreadIdx}
         isActive={activeThreadIdx === 0}
+        workspace={workspace}
         thread={{ slug: null, name: "default" }}
-        hasNext={threads.length > 0}
+        hasNext={threads.length > 0 || isVirtualThread}
       />
       {threads.map((thread, i) => (
         <ThreadItem
@@ -143,9 +149,19 @@ export default function ThreadContainer({ workspace }) {
           workspace={workspace}
           onRemove={removeThread}
           thread={thread}
-          hasNext={i !== threads.length - 1}
+          hasNext={i !== threads.length - 1 || isVirtualThread}
         />
       ))}
+      {isVirtualThread && (
+        <ThreadItem
+          idx={activeThreadIdx}
+          activeIdx={activeThreadIdx}
+          isActive={true}
+          workspace={workspace}
+          thread={{ slug: null, name: "*New Thread", virtual: true }}
+          hasNext={false}
+        />
+      )}
       <DeleteAllThreadButton
         ctrlPressed={ctrlPressed}
         threads={threads}
@@ -174,10 +190,10 @@ function NewThreadButton({ workspace }) {
   return (
     <button
       onClick={onClick}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] light:hover:bg-slate-300 hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-white/20 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-zinc-800 light:bg-slate-50 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           {loading ? (
             <CircleNotch
               weight="bold"
@@ -198,7 +214,7 @@ function NewThreadButton({ workspace }) {
             Starting Thread...
           </p>
         ) : (
-          <p className="text-left text-white light:text-theme-text-primary text-sm">
+          <p className="text-left text-white light:text-theme-text-primary text-sm font-semibold">
             New Thread
           </p>
         )}

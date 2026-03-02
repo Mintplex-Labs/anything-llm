@@ -15,10 +15,15 @@ import ParsedFilesMenu from "./ParsedFilesMenu";
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
  * @returns
  */
-export default function AttachItem() {
+export default function AttachItem({
+  workspaceSlug = null,
+  workspaceThreadSlug = null,
+}) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { slug, threadSlug = null } = useParams();
+  const params = useParams();
+  const slug = workspaceSlug || params.slug;
+  const threadSlug = workspaceThreadSlug ?? params.threadSlug ?? null;
   const tooltipRef = useRef(null);
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [files, setFiles] = useState([]);
@@ -93,7 +98,7 @@ export default function AttachItem() {
         <div className="relative">
           <PaperclipHorizontal
             color="var(--theme-sidebar-footer-icon-fill)"
-            className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100"
+            className="w-[20px] h-[20px] pointer-events-none text-white rotate-90 -scale-y-100"
           />
           {files.length > 0 && (
             <div className="absolute -top-2 right-[1%] bg-white text-black light:invert text-[8px] rounded-full px-1 flex items-center justify-center">
@@ -127,6 +132,8 @@ export default function AttachItem() {
             currentTokens={currentTokens}
             setCurrentTokens={setCurrentTokens}
             contextWindow={contextWindow}
+            workspaceSlug={slug}
+            threadSlug={threadSlug}
           />
         </Tooltip>
       )}

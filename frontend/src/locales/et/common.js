@@ -203,6 +203,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Klaviatuuri otseteed",
     },
+    quickActions: {
+      createAgent: "Loo agent",
+      editWorkspace: "Redige tööruum",
+      uploadDocument: "Lae fail üles",
+    },
+    greeting: "Kuidas saan teid täna aidata?",
   },
   "new-workspace": {
     title: "Uus tööruum",

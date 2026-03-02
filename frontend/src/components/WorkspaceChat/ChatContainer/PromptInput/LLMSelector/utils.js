@@ -44,6 +44,7 @@ export function validatedModelSelection(model) {
 }
 
 export function hasMissingCredentials(settings, provider) {
+  if (!settings) return false;
   const providerEntry = AVAILABLE_LLM_PROVIDERS.find(
     (p) => p.value === provider
   );
