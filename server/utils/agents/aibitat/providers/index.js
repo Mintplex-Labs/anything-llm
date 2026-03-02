@@ -32,6 +32,7 @@ const CohereProvider = require("./cohere.js");
 const DockerModelRunnerProvider = require("./dockerModelRunner.js");
 const PrivatemodeProvider = require("./privatemode.js");
 const SambaNovaProvider = require("./sambanova.js");
+const LemonadeProvider = require("./lemonade.js");
 
 module.exports = {
   OpenAIProvider,
@@ -68,4 +69,5 @@ module.exports = {
   DockerModelRunnerProvider,
   PrivatemodeProvider,
   SambaNovaProvider,
+  LemonadeProvider,
 };
