@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  Navigate,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 import App from "@/App.jsx";
 import PrivateRoute, {
   AdminRoute,
@@ -74,6 +78,10 @@ const router = createBrowserRouter([
         path: "/settings",
         element: <SettingsLayout />,
         children: [
+          {
+            index: true,
+            element: <Navigate to="interface" replace />,
+          },
           {
             path: "llm-preference",
             lazy: async () => {
