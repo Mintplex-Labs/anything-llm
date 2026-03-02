@@ -204,6 +204,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "단축키 안내",
     },
+    quickActions: {
+      createAgent: "에이전트 생성",
+      editWorkspace: "워크스페이스 편집",
+      uploadDocument: "문서 업로드",
+    },
+    greeting: "오늘 어떻게 도와드릴까요?",
   },
   "new-workspace": {
     title: "새 워크스페이스",

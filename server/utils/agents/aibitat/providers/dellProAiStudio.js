@@ -37,6 +37,15 @@ class DellProAiStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * Override in subclass and return true to use native tool calling instead of UnTooled.
+   * @returns {boolean|Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    return false;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({

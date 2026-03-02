@@ -205,6 +205,47 @@ class DockerModelRunnerLLM {
     return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
+  /**
+   * Returns the capabilities of the model.
+   * Note: This is a heuristic approach to get the capabilities of the model based on the model metadata.
+   * It is not perfect, but works since every model metadata is different and may not have key values we rely on.
+   * There is no "capabilities" key in the metadata via any API endpoint - so we do this.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const endpoint = new URL(
+        parseDockerModelRunnerEndpoint(
+          process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
+          "dmr"
+        )
+      );
+      // eg: /models/ai/qwen3:4B-UD-Q4_K_XL
+      endpoint.pathname = `/models/${this.model}`;
+      const response = await fetch(endpoint.toString());
+      const data = await response.text();
+
+      const tools = /tools|tool|tool_use|tool_call/.test(data);
+      const reasoning = /thinking|reason|reasoning|think/.test(data);
+      const imageGeneration = /diffusion/.test(data);
+      const vision = /vision|vllm|image/.test(data);
+      return {
+        tools: tools,
+        reasoning: reasoning,
+        imageGeneration: imageGeneration,
+        vision: vision,
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
+  }
+
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
   async embedTextInput(textInput) {
     return await this.embedder.embedTextInput(textInput);
@@ -232,6 +273,7 @@ function parseDockerModelRunnerEndpoint(basePath = null, to = "openai") {
   try {
     const url = new URL(basePath);
     if (to === "openai") url.pathname = "engines/v1";
+    else if (to === "ollama") url.pathname = "api";
     else if (to === "dmr") url.pathname = "";
     return url.toString();
   } catch (e) {

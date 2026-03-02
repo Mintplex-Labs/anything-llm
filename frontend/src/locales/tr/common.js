@@ -934,6 +934,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "Klavye Kısayolları",
     },
+    quickActions: {
+      createAgent: "Bir temsilci oluşturun",
+      editWorkspace: "Çalışma Alanını Düzenle",
+      uploadDocument: "Bir belge yükleyin",
+    },
+    greeting: "Bugün size nasıl yardımcı olabilirim?",
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",

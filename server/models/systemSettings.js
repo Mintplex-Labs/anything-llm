@@ -688,6 +688,12 @@ const SystemSettings = {
       // SambaNova Keys
       SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
       SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
+
+      // Lemonade Keys
+      LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
+      LemonadeLLMModelTokenLimit:
+        process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 

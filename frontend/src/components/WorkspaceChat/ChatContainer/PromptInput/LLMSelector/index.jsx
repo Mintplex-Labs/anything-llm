@@ -16,8 +16,9 @@ import showToast from "@/utils/toast";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
 
-export default function LLMSelectorModal() {
-  const { slug } = useParams();
+export default function LLMSelectorModal({ workspaceSlug = null }) {
+  const { slug: urlSlug } = useParams();
+  const slug = urlSlug ?? workspaceSlug;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState(null);

@@ -172,7 +172,7 @@ class OllamaAILLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
+      return Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) || 4096;
     }
 
     let userDefinedLimit = null;
@@ -466,6 +466,32 @@ class OllamaAILLM {
         resolve(fullText);
       }
     });
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const { capabilities = [] } = await this.client.show({
+        model: this.model,
+      });
+      return {
+        tools: capabilities.includes("tools") ? true : false,
+        reasoning: capabilities.includes("thinking") ? true : false,
+        imageGeneration: false, // we dont have any image generation capabilities for Ollama or anywhere right now.
+        vision: capabilities.includes("vision") ? true : false,
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
