@@ -11,12 +11,21 @@ import {
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
 
+function fetchModelName(slug, setModelName) {
+  if (!slug) return;
+  Promise.all([Workspace.bySlug(slug), System.keys()]).then(
+    ([workspace, systemSettings]) => {
+      const model = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
+      setModelName(model);
+    }
+  );
+}
+
 export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   const { slug: urlSlug } = useParams();
   const slug = urlSlug ?? workspaceSlug;
   const { user } = useUser();
   const [showSelector, setShowSelector] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [modelName, setModelName] = useState("");
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -28,33 +37,18 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   const [config, setConfig] = useState({ settings: {}, provider: null });
 
   // Fetch current model name for display
-  useEffect(() => {
-    if (!slug) return;
-    Promise.all([Workspace.bySlug(slug), System.keys()]).then(
-      ([workspace, systemSettings]) => {
-        const model = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
-        setModelName(model);
-      }
-    );
-  }, [slug, saved]);
+  useEffect(() => fetchModelName(slug, setModelName), [slug]);
 
-  // Close selector and show saved state when model is saved
+  // Close selector and refresh model name when model is saved
   useEffect(() => {
     function handleSave() {
       setShowSelector(false);
-      setSaved(true);
+      fetchModelName(slug, setModelName);
     }
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
     return () =>
       window.removeEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
-  }, []);
-
-  // Reset saved state after brief display
-  useEffect(() => {
-    if (!saved) return;
-    const timer = setTimeout(() => setSaved(false), 1500);
-    return () => clearTimeout(timer);
-  }, [saved]);
+  }, [slug]);
 
   // Handle provider setup request
   useEffect(() => {
@@ -93,15 +87,15 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
 
   return (
     <>
-      <div className="hidden md:block absolute top-3 md:top-5 left-3 md:left-4 z-30">
+      <div className="hidden md:block absolute top-2 left-3 z-30">
         <button
           ref={buttonRef}
           type="button"
           onClick={() => setShowSelector(!showSelector)}
           className={`group border-none cursor-pointer px-2.5 py-1 rounded-full transition-all ${
             showSelector
-              ? "bg-zinc-800 light:bg-slate-200"
-              : "hover:bg-zinc-800 light:hover:bg-slate-200"
+              ? "bg-zinc-700 light:bg-slate-200"
+              : "hover:bg-zinc-700 light:hover:bg-slate-200"
           }`}
         >
           <span
