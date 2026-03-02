@@ -385,9 +385,14 @@ class OpenRouterLLM {
       try {
         for await (const chunk of stream) {
           const message = chunk?.choices?.[0];
+          lastChunkTime = Number(new Date());
+
+          // OpenRouter sends a usage chunk with an empty choices array at the end of the stream.
+          // Skips these chunks to avoid accessing properties on undefined.
+          if (!message) continue;
+
           const token = message?.delta?.content;
           const reasoningToken = message?.delta?.reasoning;
-          lastChunkTime = Number(new Date());
 
           // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
           if (
