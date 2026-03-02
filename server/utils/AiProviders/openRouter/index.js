@@ -164,9 +164,9 @@ class OpenRouterLLM {
     const cacheModelPath = path.resolve(cacheFolder, "models.json");
     const availableModels = fs.existsSync(cacheModelPath)
       ? safeJsonParse(
-          fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
-          {}
-        )
+        fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+        {}
+      )
       : {};
     return availableModels[modelName]?.maxLength || 4096;
   }
@@ -335,6 +335,7 @@ class OpenRouterLLM {
       let lastChunkTime = null; // null when first token is still not received.
       let pplxCitations = []; // Array of inline citations for Perplexity models (if applicable)
       let isPerplexity = this.isPerplexityModel;
+      let streamUsage = null;
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
@@ -387,9 +388,12 @@ class OpenRouterLLM {
           const message = chunk?.choices?.[0];
           lastChunkTime = Number(new Date());
 
-          // OpenRouter sends a usage chunk with an empty choices array at the end of the stream.
-          // Skips these chunks to avoid accessing properties on undefined.
-          if (!message) continue;
+          // OpenRouter sends a trailing usage chunk with an empty choices array
+          // at the end of the stream. Stores the usage data for accurate metrics.
+          if (!message) {
+            streamUsage = chunk?.usage ?? streamUsage;
+            continue;
+          }
 
           const token = message?.delta?.content;
           const reasoningToken = message?.delta?.reasoning;
@@ -480,12 +484,16 @@ class OpenRouterLLM {
             });
             response.removeListener("close", handleAbort);
             clearInterval(timeoutCheck);
-            stream?.endMeasurement({
-              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-            });
-            resolve(fullText);
           }
         }
+
+        // Use real usage data from OpenRouter's usage chunk
+        stream?.endMeasurement(
+          streamUsage ?? {
+            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+          }
+        );
+        resolve(fullText);
       } catch (e) {
         writeResponseChunk(response, {
           uuid,
