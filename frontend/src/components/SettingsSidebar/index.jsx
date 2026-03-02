@@ -108,7 +108,11 @@ export default function SettingsSidebar() {
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
-                    <SidebarOptions user={user} t={t} />
+                    <SidebarOptions
+                      user={user}
+                      t={t}
+                      setShowSidebar={setShowSidebar}
+                    />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                     <SupportEmail />
                     <Link
@@ -211,7 +215,7 @@ function SupportEmail() {
   );
 }
 
-const SidebarOptions = ({ user = null, t }) => (
+const SidebarOptions = ({ user = null, t, setShowSidebar }) => (
   <CanViewChatHistoryProvider>
     {({ viewable: canViewChatHistory }) => (
       <>
@@ -219,6 +223,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.ai-providers")}
           icon={<Gear className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.llm"),
@@ -262,6 +267,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.admin")}
           icon={<UserCircleGear className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.users"),
@@ -298,12 +304,14 @@ const SidebarOptions = ({ user = null, t }) => (
           icon={<Robot className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.agentSkills()}
           user={user}
+          setShowSidebar={setShowSidebar}
           flex={true}
           roles={["admin"]}
         />
         <Option
           btnText="Community Hub"
           icon={<Globe className="h-5 w-5 flex-shrink-0" />}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: "Explore Trending",
@@ -329,6 +337,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.customization")}
           icon={<PencilSimpleLine className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.interface"),
@@ -354,6 +363,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.tools")}
           icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               hidden: !canViewChatHistory,
@@ -399,6 +409,7 @@ const SidebarOptions = ({ user = null, t }) => (
           icon={<Nut className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.security()}
           user={user}
+          setShowSidebar={setShowSidebar}
           flex={true}
           roles={["admin", "manager"]}
           hidden={user?.role}
@@ -409,6 +420,7 @@ const SidebarOptions = ({ user = null, t }) => (
             icon={<Flask className="h-5 w-5 flex-shrink-0" />}
             href={paths.settings.experimental()}
             user={user}
+            setShowSidebar={setShowSidebar}
             flex={true}
             roles={["admin"]}
           />
