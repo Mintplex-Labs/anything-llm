@@ -42,6 +42,7 @@ class CollectorApi {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref: process.env.WHISPER_MODEL_PREF,
       openAiKey: process.env.OPEN_AI_KEY || null,
+      cambAiTranscriptionKey: process.env.CAMB_AI_TRANSCRIPTION_KEY || null,
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },

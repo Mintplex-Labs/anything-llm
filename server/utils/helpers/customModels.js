@@ -6,6 +6,7 @@ const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
+const { CambAiTTS } = require("../TextToSpeech/cambAi");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
@@ -30,6 +31,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "koboldcpp",
   "litellm",
   "elevenlabs-tts",
+  "cambai-tts",
   "groq",
   "deepseek",
   "apipie",
@@ -84,6 +86,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await liteLLMModels(basePath, apiKey);
     case "elevenlabs-tts":
       return await getElevenLabsModels(apiKey);
+    case "cambai-tts":
+      return await getCambAiModels(apiKey);
     case "groq":
       return await getGroqAiModels(apiKey);
     case "deepseek":
@@ -575,6 +579,20 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getCambAiModels(apiKey = null) {
+  const voices = await CambAiTTS.voices(apiKey);
+  const models = voices.map((voice) => {
+    return {
+      id: voice.id,
+      organization: voice.gender || "CAMB AI",
+      name: voice.voice_name,
+    };
+  });
+
+  if (models.length > 0 && !!apiKey) process.env.TTS_CAMB_AI_KEY = apiKey;
   return { models, error: null };
 }
 

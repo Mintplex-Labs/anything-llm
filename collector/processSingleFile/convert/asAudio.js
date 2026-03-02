@@ -8,10 +8,14 @@ const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const { LocalWhisper } = require("../../utils/WhisperProviders/localWhisper");
 const { OpenAiWhisper } = require("../../utils/WhisperProviders/OpenAiWhisper");
+const {
+  CambAiTranscription,
+} = require("../../utils/WhisperProviders/CambAiTranscription");
 
 const WHISPER_PROVIDERS = {
   openai: OpenAiWhisper,
   local: LocalWhisper,
+  cambai: CambAiTranscription,
 };
 
 async function asAudio({

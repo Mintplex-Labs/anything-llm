@@ -8,6 +8,8 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
+import CambAiTranscriptionOptions from "@/components/TranscriptionSelection/CambAiOptions";
+import CambAiIcon from "@/media/transcriptionproviders/cambai.png";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
@@ -27,6 +29,16 @@ const PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
     description: "Run a built-in whisper model on this instance privately.",
+  },
+  {
+    name: "CAMB AI",
+    value: "cambai",
+    logo: CambAiIcon,
+    options: (settings) => (
+      <CambAiTranscriptionOptions settings={settings} />
+    ),
+    description:
+      "Use CAMB AI's transcription service supporting 140+ languages.",
   },
 ];
 

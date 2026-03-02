@@ -541,6 +541,10 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+  CambAiTranscriptionKey: {
+    envKey: "CAMB_AI_TRANSCRIPTION_KEY",
+    checks: [isNotEmpty],
+  },
 
   // System Settings
   AuthToken: {
@@ -634,6 +638,24 @@ const KEY_MAPPING = {
   },
   TTSElevenLabsVoiceModel: {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
+    checks: [],
+  },
+
+  // TTS CAMB AI
+  TTSCambAiKey: {
+    envKey: "TTS_CAMB_AI_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSCambAiVoiceModel: {
+    envKey: "TTS_CAMB_AI_VOICE_MODEL",
+    checks: [],
+  },
+  TTSCambAiSpeechModel: {
+    envKey: "TTS_CAMB_AI_SPEECH_MODEL",
+    checks: [],
+  },
+  TTSCambAiLanguage: {
+    envKey: "TTS_CAMB_AI_LANGUAGE",
     checks: [],
   },
 
@@ -890,6 +912,7 @@ function supportedTTSProvider(input = "") {
     "native",
     "openai",
     "elevenlabs",
+    "cambai",
     "piper_local",
     "generic-openai",
   ].includes(input);
@@ -948,7 +971,7 @@ function supportedLLM(input = "") {
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "local"].includes(input);
+  const validSelection = ["openai", "local", "cambai"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;

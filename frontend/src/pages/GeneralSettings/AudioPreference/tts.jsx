@@ -9,12 +9,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
+import CambAiIcon from "@/media/ttsproviders/cambai.png";
 
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import CambAiTTSOptions from "@/components/TextToSpeech/CambAiOptions";
 
 const PROVIDERS = [
   {
@@ -37,6 +39,14 @@ const PROVIDERS = [
     logo: ElevenLabsIcon,
     options: (settings) => <ElevenLabsTTSOptions settings={settings} />,
     description: "Use ElevenLabs's text to speech voices and technology.",
+  },
+  {
+    name: "CAMB AI",
+    value: "cambai",
+    logo: CambAiIcon,
+    options: (settings) => <CambAiTTSOptions settings={settings} />,
+    description:
+      "Use CAMB AI's MARS text to speech models supporting 140+ languages.",
   },
   {
     name: "PiperTTS",

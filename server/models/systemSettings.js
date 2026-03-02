@@ -266,6 +266,7 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref:
         process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
+      CambAiTranscriptionKey: !!process.env.CAMB_AI_TRANSCRIPTION_KEY,
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
@@ -278,6 +279,11 @@ const SystemSettings = {
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
+      // CAMB AI TTS
+      TTSCambAiKey: !!process.env.TTS_CAMB_AI_KEY,
+      TTSCambAiVoiceModel: process.env.TTS_CAMB_AI_VOICE_MODEL,
+      TTSCambAiSpeechModel: process.env.TTS_CAMB_AI_SPEECH_MODEL,
+      TTSCambAiLanguage: process.env.TTS_CAMB_AI_LANGUAGE,
       // Piper TTS
       TTSPiperTTSVoiceModel:
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",

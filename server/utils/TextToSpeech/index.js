@@ -10,6 +10,9 @@ function getTTSProvider() {
     case "generic-openai":
       const { GenericOpenAiTTS } = require("./openAiGeneric");
       return new GenericOpenAiTTS();
+    case "cambai":
+      const { CambAiTTS } = require("./cambAi");
+      return new CambAiTTS();
     default:
       throw new Error("ENV: No TTS_PROVIDER value found in environment!");
   }
