@@ -116,9 +116,7 @@ const router = createBrowserRouter([
                 "@/pages/GeneralSettings/EmbeddingPreference"
               );
               return {
-                element: (
-                  <AdminRoute Component={GeneralEmbeddingPreference} />
-                ),
+                element: <AdminRoute Component={GeneralEmbeddingPreference} />,
               };
             },
           },
@@ -277,9 +275,7 @@ const router = createBrowserRouter([
                 "@/pages/GeneralSettings/BrowserExtensionApiKey"
               );
               return {
-                element: (
-                  <ManagerRoute Component={GeneralBrowserExtension} />
-                ),
+                element: <ManagerRoute Component={GeneralBrowserExtension} />,
               };
             },
           },
@@ -341,9 +337,7 @@ const router = createBrowserRouter([
                 "@/pages/GeneralSettings/CommunityHub/Authentication"
               );
               return {
-                element: (
-                  <AdminRoute Component={CommunityHubAuthentication} />
-                ),
+                element: <AdminRoute Component={CommunityHubAuthentication} />,
               };
             },
           },
