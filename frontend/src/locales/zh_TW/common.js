@@ -874,6 +874,12 @@ const TRANSLATIONS = {
       },
       keyboardShortcuts: "鍵盤快捷鍵",
     },
+    quickActions: {
+      createAgent: "建立一個代理",
+      editWorkspace: "編輯工作區",
+      uploadDocument: "上傳文件",
+    },
+    greeting: "今天我能幫您什麼？",
   },
   "keyboard-shortcuts": {
     title: "鍵盤快捷鍵",

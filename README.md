@@ -109,6 +109,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Lemonade by AMD](https://lemonade-server.ai)
 
 **Embedder models:**
 
@@ -267,7 +268,7 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 ---
 
-Copyright © 2025 [Mintplex Labs][profile-link]. <br />
+Copyright © 2026 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->

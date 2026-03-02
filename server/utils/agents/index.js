@@ -233,6 +233,10 @@ class AgentHandler {
         if (!process.env.SAMBANOVA_LLM_API_KEY)
           throw new Error("SambaNova API key must be provided to use agents.");
         break;
+      case "lemonade":
+        if (!process.env.LEMONADE_LLM_BASE_PATH)
+          throw new Error("Lemonade base path must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -319,6 +323,8 @@ class AgentHandler {
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       case "sambanova":
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
+      case "lemonade":
+        return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
       default:
         return null;
     }
@@ -458,6 +464,8 @@ class AgentHandler {
       }
 
       // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+      // Replace the @@flow_ placeholder in the agent's function list with the actual
+      // tool name so the function lookup in reply() can find it.
       if (name.startsWith("@@flow_")) {
         const uuid = name.replace("@@flow_", "");
         const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
@@ -467,6 +475,11 @@ class AgentHandler {
           );
           continue;
         }
+
+        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+          .get("@agent")
+          .functions.filter((f) => f !== name);
+        this.aibitat.agents.get("@agent").functions.push(plugin.name);
 
         this.aibitat.use(plugin.plugin());
         this.log(

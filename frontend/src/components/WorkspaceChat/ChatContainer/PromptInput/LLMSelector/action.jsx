@@ -3,6 +3,7 @@ import { Brain, CheckCircle } from "@phosphor-icons/react";
 import LLMSelectorModal from "./index";
 import { useTheme } from "@/hooks/useTheme";
 import { useRef, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useUser from "@/hooks/useUser";
 import { useModal } from "@/hooks/useModal";
 import SetupProvider from "./SetupProvider";
@@ -11,7 +12,9 @@ export const TOGGLE_LLM_SELECTOR_EVENT = "toggle_llm_selector";
 export const SAVE_LLM_SELECTOR_EVENT = "save_llm_selector";
 export const PROVIDER_SETUP_EVENT = "provider_setup_requested";
 
-export default function LLMSelectorAction() {
+export default function LLMSelectorAction({ workspaceSlug = null }) {
+  const { slug: urlSlug } = useParams();
+  const slug = urlSlug ?? workspaceSlug;
   const tooltipRef = useRef(null);
   const { theme } = useTheme();
   const { user } = useUser();
@@ -87,6 +90,7 @@ export default function LLMSelectorAction() {
   // This feature is disabled for multi-user instances where the user is not an admin
   // This is because of the limitations of model selection currently and other nuances in controls.
   if (!!user && user.role !== "admin") return null;
+  if (!slug) return null;
 
   return (
     <>
@@ -97,9 +101,9 @@ export default function LLMSelectorAction() {
         className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
         {saved ? (
-          <CheckCircle className="w-[22px] h-[22px] pointer-events-none text-green-400" />
+          <CheckCircle className="w-[20px] h-[20px] pointer-events-none text-green-400" />
         ) : (
-          <Brain className="w-[22px] h-[22px] pointer-events-none text-[var(--theme-sidebar-footer-icon-fill)]" />
+          <Brain className="w-[20px] h-[20px] pointer-events-none text-[var(--theme-sidebar-footer-icon-fill)]" />
         )}
       </div>
       <Tooltip
@@ -117,7 +121,7 @@ export default function LLMSelectorAction() {
         }
         className="z-99 !w-[500px] !bg-theme-bg-primary !px-[5px] !rounded-lg !pointer-events-auto light:border-2 light:border-theme-modal-border"
       >
-        <LLMSelectorModal tooltipRef={tooltipRef} />
+        <LLMSelectorModal tooltipRef={tooltipRef} workspaceSlug={slug} />
       </Tooltip>
       <SetupProvider
         isOpen={isSetupProviderOpen}

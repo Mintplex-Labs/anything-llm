@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -9,7 +9,7 @@ import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse, {
   websocketURI,
@@ -23,8 +23,16 @@ import SpeechRecognition, {
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
+import QuickActions from "@/components/lib/QuickActions";
+import SuggestedMessages from "@/components/lib/SuggestedMessages";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const { threadSlug = null } = useParams();
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
@@ -32,6 +40,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
+  const pendingMessageChecked = useRef(false);
 
   const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
@@ -164,6 +173,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           role: "assistant",
           pending: true,
           userMessage: text,
+          attachments,
           animate: true,
         },
       ];
@@ -173,6 +183,23 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessageEmit("");
     setLoadingResponse(true);
   };
+
+  useEffect(() => {
+    if (pendingMessageChecked.current || !workspace?.slug) return;
+    pendingMessageChecked.current = true;
+
+    const pending = safeJsonParse(sessionStorage.getItem(PENDING_HOME_MESSAGE));
+    if (pending?.message) {
+      setTimeout(() => {
+        sessionStorage.removeItem(PENDING_HOME_MESSAGE);
+        sendCommand({
+          text: pending.message,
+          attachments: pending.attachments || [],
+          autoSubmit: true,
+        });
+      }, 100);
+    }
+  }, [workspace?.slug]);
 
   useEffect(() => {
     async function fetchReply() {
@@ -294,6 +321,53 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
+  const isEmpty =
+    chatHistory.length === 0 && !sessionStorage.getItem(PENDING_HOME_MESSAGE);
+
+  if (isEmpty) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      >
+        {isMobile && <SidebarMobileHeader />}
+        <DnDFileUploaderWrapper>
+          <div className="flex flex-col h-full w-full items-center justify-center">
+            <div className="flex flex-col items-center w-full max-w-[750px]">
+              <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
+                {t("main-page.greeting")}
+              </h1>
+              <PromptInput
+                submit={handleSubmit}
+                isStreaming={loadingResponse}
+                sendCommand={sendCommand}
+                attachments={files}
+                centered={true}
+              />
+              <QuickActions
+                hasAvailableWorkspace={!!workspace}
+                onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                onEditWorkspace={() =>
+                  navigate(
+                    paths.workspace.settings.generalAppearance(workspace.slug)
+                  )
+                }
+                onUploadDocument={() =>
+                  document.getElementById("dnd-chat-file-uploader")?.click()
+                }
+              />
+            </div>
+            <SuggestedMessages
+              suggestedMessages={workspace?.suggestedMessages}
+              sendCommand={sendCommand}
+            />
+          </div>
+        </DnDFileUploaderWrapper>
+        <ChatTooltips />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -301,23 +375,27 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <DnDFileUploaderWrapper>
-        <MetricsProvider>
-          <ChatHistory
-            ref={chatHistoryRef}
-            history={chatHistory}
-            workspace={workspace}
-            sendCommand={sendCommand}
-            updateHistory={setChatHistory}
-            regenerateAssistantMessage={regenerateAssistantMessage}
-            hasAttachments={files.length > 0}
-          />
-        </MetricsProvider>
-        <PromptInput
-          submit={handleSubmit}
-          isStreaming={loadingResponse}
-          sendCommand={sendCommand}
-          attachments={files}
-        />
+        <div className="flex flex-col h-full w-full">
+          <div className="contents">
+            <MetricsProvider>
+              <ChatHistory
+                ref={chatHistoryRef}
+                history={chatHistory}
+                workspace={workspace}
+                sendCommand={sendCommand}
+                updateHistory={setChatHistory}
+                regenerateAssistantMessage={regenerateAssistantMessage}
+              />
+            </MetricsProvider>
+            <PromptInput
+              submit={handleSubmit}
+              isStreaming={loadingResponse}
+              sendCommand={sendCommand}
+              attachments={files}
+              centered={false}
+            />
+          </div>
+        </div>
       </DnDFileUploaderWrapper>
       <ChatTooltips />
     </div>

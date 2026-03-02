@@ -41,6 +41,7 @@ class AIbitat {
       chats = [],
       interrupt = "NEVER",
       maxRounds = 100,
+      maxToolCalls = 10,
       provider = "openai",
       handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
@@ -48,6 +49,7 @@ class AIbitat {
     this._chats = chats;
     this.defaultInterrupt = interrupt;
     this.maxRounds = maxRounds;
+    this.maxToolCalls = maxToolCalls;
     this.handlerProps = handlerProps;
 
     this.defaultProvider = {
@@ -641,7 +643,8 @@ ${this.getHistory({ to: route.to })
     provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0
   ) {
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
@@ -655,11 +658,24 @@ ${this.getHistory({ to: route.to })
     );
 
     if (completionStream.functionCall) {
+      if (depth >= this.maxToolCalls) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
+        );
+
+        const finalStream = await provider.stream(messages, [], eventHandler);
+        const finalResponse =
+          finalStream?.textResponse ||
+          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
+        return finalResponse;
+      }
+
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
 
-      // if provider hallucinated on the function name
-      // ask the provider to complete again
       if (!fn) {
         return await this.handleAsyncExecution(
           provider,
@@ -673,21 +689,19 @@ ${this.getHistory({ to: route.to })
             },
           ],
           functions,
-          byAgent
+          byAgent,
+          depth + 1
         );
       }
 
-      // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
 
-      // If provider is verbose, log the tool call to the frontend
       if (provider?.verbose) {
         this?.introspect?.(
           `${fn.caller} is executing \`${name}\` tool ${JSON.stringify(args, null, 2)}`
         );
       }
 
-      // Always log the tool call to the console for debugging purposes
       this.handlerProps?.log?.(
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool ${JSON.stringify(args, null, 2)}`
       );
@@ -702,7 +716,7 @@ ${this.getHistory({ to: route.to })
        * or else no response will be sent to the chat.
        */
       if (this.skipHandleExecution) {
-        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this.skipHandleExecution = false;
         this?.introspect?.(
           `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
         );
@@ -730,7 +744,8 @@ ${this.getHistory({ to: route.to })
           },
         ],
         functions,
-        byAgent
+        byAgent,
+        depth + 1
       );
     }
 
@@ -752,17 +767,31 @@ ${this.getHistory({ to: route.to })
     provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0
   ) {
     // get the chat completion
     const completion = await provider.complete(messages, functions);
 
     if (completion.functionCall) {
+      if (depth >= this.maxToolCalls) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
+        );
+
+        const finalCompletion = await provider.complete(messages, []);
+        return (
+          finalCompletion?.textResponse ||
+          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
+        );
+      }
+
       const { name, arguments: args } = completion.functionCall;
       const fn = this.functions.get(name);
 
-      // if provider hallucinated on the function name
-      // ask the provider to complete again
       if (!fn) {
         return await this.handleExecution(
           provider,
@@ -776,21 +805,19 @@ ${this.getHistory({ to: route.to })
             },
           ],
           functions,
-          byAgent
+          byAgent,
+          depth + 1
         );
       }
 
-      // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
 
-      // If provider is verbose, log the tool call to the frontend
       if (provider?.verbose) {
         this?.introspect?.(
           `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
         );
       }
 
-      // Always log the tool call to the console for debugging purposes
       this.handlerProps?.log?.(
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
       );
@@ -798,10 +825,8 @@ ${this.getHistory({ to: route.to })
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
 
-      // If the tool call has direct output enabled, return the result directly to the chat
-      // without any further processing and no further tool calls will be run.
       if (this.skipHandleExecution) {
-        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this.skipHandleExecution = false;
         this?.introspect?.(
           `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
         );
@@ -824,7 +849,8 @@ ${this.getHistory({ to: route.to })
           },
         ],
         functions,
-        byAgent
+        byAgent,
+        depth + 1
       );
     }
 
@@ -998,6 +1024,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.PrivatemodeProvider({ model: config.model });
       case "sambanova":
         return new Providers.SambaNovaProvider({ model: config.model });
+      case "lemonade":
+        return new Providers.LemonadeProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
