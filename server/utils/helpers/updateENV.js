@@ -863,6 +863,20 @@ const KEY_MAPPING = {
     envKey: "SAMBANOVA_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Lemonade Options
+  LemonadeLLMBasePath: {
+    envKey: "LEMONADE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LemonadeLLMModelPref: {
+    envKey: "LEMONADE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LemonadeLLMModelTokenLimit: {
+    envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -979,6 +993,7 @@ function supportedLLM(input = "") {
     "docker-model-runner",
     "privatemode",
     "sambanova",
+    "lemonade",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -1017,6 +1032,7 @@ function supportedEmbeddingModel(input = "") {
     "generic-openai",
     "mistral",
     "openrouter",
+    "lemonade",
   ];
   return supported.includes(input)
     ? null
