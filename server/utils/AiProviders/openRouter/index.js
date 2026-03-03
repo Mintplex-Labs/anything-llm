@@ -302,15 +302,12 @@ class OpenRouterLLM {
         // before the token text.
         include_reasoning: true,
         user: user?.id ? `user_${user.id}` : "",
+        stream_options: {
+          include_usage: true,
+        },
       }),
       messages,
-      // We have to manually count the tokens
-      // OpenRouter has a ton of providers and they all can return slightly differently
-      // some return chunk.usage on STOP, some do it after stop, its inconsistent.
-      // So it is possible reported metrics are inaccurate since we cannot reliably
-      // catch the metrics before resolving the stream - so we just pretend this functionality
-      // is not available.
-      runPromptTokenCalculation: true,
+      runPromptTokenCalculation: false,
       modelTag: this.model,
       provider: this.className,
     });
@@ -328,6 +325,8 @@ class OpenRouterLLM {
   handleStream(response, stream, responseProps) {
     const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
+    let hasUsageMetrics = false;
+    let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
 
     return new Promise(async (resolve) => {
       let fullText = "";
@@ -336,14 +335,8 @@ class OpenRouterLLM {
       let pplxCitations = []; // Array of inline citations for Perplexity models (if applicable)
       let isPerplexity = this.isPerplexityModel;
 
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
       const handleAbort = () => {
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
       };
       response.on("close", handleAbort);
@@ -375,9 +368,7 @@ class OpenRouterLLM {
           });
           clearInterval(timeoutCheck);
           response.removeListener("close", handleAbort);
-          stream?.endMeasurement({
-            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-          });
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       }, 500);
@@ -388,6 +379,15 @@ class OpenRouterLLM {
           const token = message?.delta?.content;
           const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
+
+          if (chunk.hasOwnProperty("usage") && !hasUsageMetrics) {
+            hasUsageMetrics = true;
+            usage = {
+              prompt_tokens: chunk.usage.prompt_tokens,
+              completion_tokens: chunk.usage.completion_tokens,
+              total_tokens: chunk.usage.total_tokens,
+            };
+          }
 
           // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
           if (
@@ -464,7 +464,7 @@ class OpenRouterLLM {
             });
           }
 
-          if (message.finish_reason !== null) {
+          if (message?.finish_reason) {
             writeResponseChunk(response, {
               uuid,
               sources,
@@ -473,14 +473,14 @@ class OpenRouterLLM {
               close: true,
               error: false,
             });
-            response.removeListener("close", handleAbort);
-            clearInterval(timeoutCheck);
-            stream?.endMeasurement({
-              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-            });
-            resolve(fullText);
           }
         }
+
+        // Stream completed naturally - resolve with final metrics
+        response.removeListener("close", handleAbort);
+        clearInterval(timeoutCheck);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       } catch (e) {
         writeResponseChunk(response, {
           uuid,
@@ -492,9 +492,7 @@ class OpenRouterLLM {
         });
         response.removeListener("close", handleAbort);
         clearInterval(timeoutCheck);
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         resolve(fullText);
       }
     });
