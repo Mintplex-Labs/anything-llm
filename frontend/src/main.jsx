@@ -11,6 +11,7 @@ import PrivateRoute, {
   ManagerRoute,
 } from "@/components/PrivateRoute";
 import SettingsLayout from "@/components/SettingsLayout";
+import PanelSettingsLayout from "@/components/SettingsLayout/PanelSettingsLayout";
 import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
@@ -153,32 +154,12 @@ const router = createBrowserRouter([
             },
           },
           {
-            path: "agents",
-            lazy: async () => {
-              const { default: AdminAgents } = await import(
-                "@/pages/Admin/Agents"
-              );
-              return { element: <AdminRoute Component={AdminAgents} /> };
-            },
-          },
-          {
             path: "event-logs",
             lazy: async () => {
               const { default: AdminLogs } = await import(
                 "@/pages/Admin/Logging"
               );
               return { element: <AdminRoute Component={AdminLogs} /> };
-            },
-          },
-          {
-            path: "embed-chat-widgets",
-            lazy: async () => {
-              const { default: ChatEmbedWidgets } = await import(
-                "@/pages/GeneralSettings/ChatEmbedWidgets"
-              );
-              return {
-                element: <AdminRoute Component={ChatEmbedWidgets} />,
-              };
             },
           },
           {
@@ -242,17 +223,6 @@ const router = createBrowserRouter([
               );
               return {
                 element: <ManagerRoute Component={ChatSettings} />,
-              };
-            },
-          },
-          {
-            path: "beta-features",
-            lazy: async () => {
-              const { default: ExperimentalFeatures } = await import(
-                "@/pages/Admin/ExperimentalFeatures"
-              );
-              return {
-                element: <AdminRoute Component={ExperimentalFeatures} />,
               };
             },
           },
@@ -370,6 +340,42 @@ const router = createBrowserRouter([
                 element: <ManagerRoute Component={MobileConnections} />,
               };
             },
+          },
+          {
+            element: <PanelSettingsLayout />,
+            children: [
+              {
+                path: "agents",
+                lazy: async () => {
+                  const { default: AdminAgents } = await import(
+                    "@/pages/Admin/Agents"
+                  );
+                  return { element: <AdminRoute Component={AdminAgents} /> };
+                },
+              },
+              {
+                path: "embed-chat-widgets",
+                lazy: async () => {
+                  const { default: ChatEmbedWidgets } = await import(
+                    "@/pages/GeneralSettings/ChatEmbedWidgets"
+                  );
+                  return {
+                    element: <AdminRoute Component={ChatEmbedWidgets} />,
+                  };
+                },
+              },
+              {
+                path: "beta-features",
+                lazy: async () => {
+                  const { default: ExperimentalFeatures } = await import(
+                    "@/pages/Admin/ExperimentalFeatures"
+                  );
+                  return {
+                    element: <AdminRoute Component={ExperimentalFeatures} />,
+                  };
+                },
+              },
+            ],
           },
         ],
       },

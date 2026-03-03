@@ -10,98 +10,84 @@ export default function ChatEmbedWidgets() {
 
   if (isMobile) {
     return (
-      <WidgetLayout>
-        <div className="flex flex-col w-full p-4 mt-10">
-          <div
-            hidden={showViewModal}
-            className="flex flex-col gap-y-[18px] overflow-y-auto no-scroll"
-          >
-            <div className="text-theme-text-primary flex items-center gap-x-2">
-              <p className="text-lg font-medium">Chat Embed</p>
-            </div>
-            <WidgetList
-              selectedView={selectedView}
-              handleClick={(view) => {
-                setSelectedView(view);
-                setShowViewModal(true);
-              }}
-            />
+      <div className="flex flex-col w-full p-4 mt-10">
+        <div
+          hidden={showViewModal}
+          className="flex flex-col gap-y-[18px] overflow-y-auto no-scroll"
+        >
+          <div className="text-theme-text-primary flex items-center gap-x-2">
+            <p className="text-lg font-medium">Chat Embed</p>
           </div>
-          {showViewModal && (
-            <div className="fixed top-0 left-0 w-full h-full bg-sidebar z-30">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center p-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowViewModal(false);
-                      setSelectedView("");
-                    }}
-                    className="text-white/60 hover:text-white transition-colors duration-200"
-                  >
-                    <div className="flex items-center text-sky-400">
-                      <CaretLeft size={24} />
-                      <div>Back</div>
-                    </div>
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                  <div className="bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-auto no-scroll">
-                    {selectedView === "configs" ? (
-                      <EmbedConfigsView />
-                    ) : (
-                      <EmbedChatsView />
-                    )}
+          <WidgetList
+            selectedView={selectedView}
+            handleClick={(view) => {
+              setSelectedView(view);
+              setShowViewModal(true);
+            }}
+          />
+        </div>
+        {showViewModal && (
+          <div className="fixed top-0 left-0 w-full h-full bg-sidebar z-30">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center p-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setSelectedView("");
+                  }}
+                  className="text-white/60 hover:text-white transition-colors duration-200"
+                >
+                  <div className="flex items-center text-sky-400">
+                    <CaretLeft size={24} />
+                    <div>Back</div>
                   </div>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-auto no-scroll">
+                  {selectedView === "configs" ? (
+                    <EmbedConfigsView />
+                  ) : (
+                    <EmbedChatsView />
+                  )}
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </WidgetLayout>
+          </div>
+        )}
+      </div>
     );
   }
 
   return (
-    <WidgetLayout>
-      <div className="flex-1 flex gap-x-6 p-4 mt-10">
-        <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
-          <div className="flex-none mb-4">
-            <div className="text-theme-text-primary flex items-center gap-x-2">
-              <p className="text-lg font-medium">Chat Embed</p>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto pr-2 pb-4">
-            <div className="space-y-4">
-              <WidgetList
-                selectedView={selectedView}
-                handleClick={setSelectedView}
-              />
-            </div>
+    <div className="flex-1 flex gap-x-6 p-4 mt-10">
+      <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
+        <div className="flex-none mb-4">
+          <div className="text-theme-text-primary flex items-center gap-x-2">
+            <p className="text-lg font-medium">Chat Embed</p>
           </div>
         </div>
-        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-auto no-scroll">
-            {selectedView === "configs" ? (
-              <EmbedConfigsView />
-            ) : (
-              <EmbedChatsView />
-            )}
+
+        <div className="flex-1 overflow-y-auto pr-2 pb-4">
+          <div className="space-y-4">
+            <WidgetList
+              selectedView={selectedView}
+              handleClick={setSelectedView}
+            />
           </div>
         </div>
       </div>
-    </WidgetLayout>
-  );
-}
-
-function WidgetLayout({ children }) {
-  return (
-    <>
-      <div className="relative md:rounded-[16px] w-full h-full overflow-y-auto p-4 md:p-0 flex">
-        {children}
+      <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+        <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-auto no-scroll">
+          {selectedView === "configs" ? (
+            <EmbedConfigsView />
+          ) : (
+            <EmbedChatsView />
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

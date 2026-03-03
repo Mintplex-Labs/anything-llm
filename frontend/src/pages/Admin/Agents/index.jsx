@@ -230,7 +230,7 @@ export default function AdminAgents() {
 
   if (loading) {
     return (
-      <div className="relative md:rounded-[16px] w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
@@ -238,11 +238,7 @@ export default function AdminAgents() {
 
   if (isMobile) {
     return (
-      <SkillLayout
-        hasChanges={hasChanges}
-        handleCancel={() => setHasChanges(false)}
-        handleSubmit={handleSubmit}
-      >
+      <>
         <form
           onSubmit={handleSubmit}
           onChange={() => !selectedFlow && setHasChanges(true)}
@@ -417,16 +413,17 @@ export default function AdminAgents() {
             </div>
           )}
         </form>
-      </SkillLayout>
+        <ContextualSaveBar
+          showing={hasChanges}
+          onSave={handleSubmit}
+          onCancel={() => setHasChanges(false)}
+        />
+      </>
     );
   }
 
   return (
-    <SkillLayout
-      hasChanges={hasChanges}
-      handleCancel={() => setHasChanges(false)}
-      handleSubmit={handleSubmit}
-    >
+    <>
       <form
         onSubmit={handleSubmit}
         onChange={() =>
@@ -606,20 +603,12 @@ export default function AdminAgents() {
           </div>
         </div>
       </form>
-    </SkillLayout>
-  );
-}
-
-function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
-  return (
-    <div className="relative md:rounded-[16px] w-full h-full overflow-y-auto p-4 md:p-0 flex">
-      {children}
       <ContextualSaveBar
         showing={hasChanges}
         onSave={handleSubmit}
-        onCancel={handleCancel}
+        onCancel={() => setHasChanges(false)}
       />
-    </div>
+    </>
   );
 }
 
