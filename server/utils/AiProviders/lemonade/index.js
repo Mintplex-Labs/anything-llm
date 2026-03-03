@@ -369,6 +369,7 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     LemonadeLLM.slog(`Error getting Lemonade models`, e);
   } finally {
+    // eslint-disable-next-line
     return Object.values(availableModels).flatMap((m) => m.tags);
   }
 }

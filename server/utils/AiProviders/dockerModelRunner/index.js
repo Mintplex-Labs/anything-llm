@@ -508,6 +508,7 @@ async function getDockerModels(basePath = null, task = "chat") {
   } catch (e) {
     DockerModelRunnerLLM.slog(`Error getting Docker models`, e);
   } finally {
+    // eslint-disable-next-line
     return Object.values(availableModels).flatMap((m) => m.tags);
   }
 }
