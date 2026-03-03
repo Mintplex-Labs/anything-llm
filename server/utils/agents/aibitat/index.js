@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 const { EventEmitter } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");

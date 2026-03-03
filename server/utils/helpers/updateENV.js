@@ -861,7 +861,7 @@ function isValidURL(input = "") {
   try {
     new URL(input);
     return null;
-  } catch (e) {
+  } catch {
     return "URL is not a valid URL.";
   }
 }

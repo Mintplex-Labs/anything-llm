@@ -309,7 +309,7 @@ function parseLemonadeServerEndpoint(basePath = null, to = "openai") {
     else if (to === "ollama") url.pathname = "api";
     else if (to === "base") url.pathname = ""; // only used for /live
     return url.toString();
-  } catch (e) {
+  } catch {
     return basePath;
   }
 }

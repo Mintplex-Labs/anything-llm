@@ -276,7 +276,7 @@ function parseDockerModelRunnerEndpoint(basePath = null, to = "openai") {
     else if (to === "ollama") url.pathname = "api";
     else if (to === "dmr") url.pathname = "";
     return url.toString();
-  } catch (e) {
+  } catch {
     return basePath;
   }
 }

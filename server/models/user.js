@@ -87,7 +87,11 @@ const User = {
   },
 
   filterFields: function (user = {}) {
-    const { password, web_push_subscription_config, ...rest } = user;
+    const {
+      password: _password,
+      web_push_subscription_config: _web_push_subscription_config,
+      ...rest
+    } = user;
     return { ...rest };
   },
   _identifyErrorAndFormatMessage: function (error) {

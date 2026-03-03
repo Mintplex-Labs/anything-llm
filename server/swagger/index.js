@@ -4,7 +4,7 @@ function waitForElm(selector) {
       return resolve(document.querySelector(selector));
     }
 
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((_mutations) => {
       if (document.querySelector(selector)) {
         resolve(document.querySelector(selector));
         observer.disconnect();

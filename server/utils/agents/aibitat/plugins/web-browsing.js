@@ -631,6 +631,7 @@ const webBrowsing = {
             query,
             language = "en",
             hl = "us",
+            //eslint-disable-next-line
             limit = 100,
             device_type = "desktop",
             proxy_location = "US"
