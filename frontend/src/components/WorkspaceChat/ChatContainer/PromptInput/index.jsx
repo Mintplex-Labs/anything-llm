@@ -84,11 +84,6 @@ export default function PromptInput({
     resetTextAreaHeight();
   }, [isStreaming]);
 
-  // Close tools menu when slash command or agent menu opens
-  useEffect(() => {
-    if (showSlashCommand || showAgents) setShowTools(false);
-  }, [showSlashCommand, showAgents]);
-
   /**
    * Save the current state before changes
    * @param {number} adjustment

@@ -16,7 +16,10 @@ import showToast from "@/utils/toast";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
 
-export default function LLMSelectorModal({ workspaceSlug = null }) {
+export default function LLMSelectorModal({
+  workspaceSlug = null,
+  initialProvider = null,
+}) {
   const { slug: urlSlug } = useParams();
   const slug = urlSlug ?? workspaceSlug;
   const { t } = useTranslation();
@@ -36,14 +39,22 @@ export default function LLMSelectorModal({ workspaceSlug = null }) {
     setLoading(true);
     Promise.all([Workspace.bySlug(slug), System.keys()])
       .then(([workspace, systemSettings]) => {
-        const selectedLLMProvider =
+        const savedProvider =
           workspace.chatProvider ?? systemSettings.LLMProvider;
-        const selectedLLMModel = workspace.chatModel ?? systemSettings.LLMModel;
+        const savedModel = workspace.chatModel ?? systemSettings.LLMModel;
+        const providerToSelect = initialProvider ?? savedProvider;
 
         setSettings(systemSettings);
-        setSelectedLLMProvider(selectedLLMProvider);
-        autoScrollToSelectedLLMProvider(selectedLLMProvider);
-        setSelectedLLMModel(selectedLLMModel);
+        setSelectedLLMProvider(providerToSelect);
+        autoScrollToSelectedLLMProvider(providerToSelect);
+        setSelectedLLMModel(savedModel);
+
+        if (initialProvider && initialProvider !== savedProvider) {
+          setHasChanges(true);
+          setMissingCredentials(
+            hasMissingCredentials(systemSettings, initialProvider)
+          );
+        }
       })
       .finally(() => setLoading(false));
   }, [slug]);

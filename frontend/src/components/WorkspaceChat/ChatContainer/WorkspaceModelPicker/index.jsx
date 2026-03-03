@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useUser from "@/hooks/useUser";
 import { useModal } from "@/hooks/useModal";
@@ -27,14 +27,13 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   const { user } = useUser();
   const [showSelector, setShowSelector] = useState(false);
   const [modelName, setModelName] = useState("");
-  const menuRef = useRef(null);
-  const buttonRef = useRef(null);
   const {
     isOpen: isSetupProviderOpen,
     openModal: openSetupProviderModal,
     closeModal: closeSetupProviderModal,
   } = useModal();
   const [config, setConfig] = useState({ settings: {}, provider: null });
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Fetch current model name for display
   useEffect(() => fetchModelName(slug, setModelName), [slug]);
@@ -62,34 +61,20 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
       window.removeEventListener(PROVIDER_SETUP_EVENT, handleProviderSetup);
   }, []);
 
-  // Close on outside click
-  useEffect(() => {
-    if (!showSelector) return;
-    function handleClickOutside(e) {
-      // Don't close if clicking inside a modal overlay
-      if (document.querySelector(".backdrop-blur-sm")) return;
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target)
-      ) {
-        setShowSelector(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSelector]);
-
   // This feature is disabled for multi-user instances where the user is not an admin
   if (!!user && user.role !== "admin") return null;
   if (!slug) return null;
 
   return (
     <>
+      {showSelector && (
+        <div
+          className="fixed inset-0 z-20"
+          onClick={() => setShowSelector(false)}
+        />
+      )}
       <div className="hidden md:block absolute top-2 left-3 z-30">
         <button
-          ref={buttonRef}
           type="button"
           onClick={() => setShowSelector(!showSelector)}
           className={`group border-none cursor-pointer px-2.5 py-1 rounded-full transition-all ${
@@ -110,11 +95,12 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
         </button>
 
         {showSelector && (
-          <div
-            ref={menuRef}
-            className="absolute left-0 top-[40px] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-xl shadow-lg w-[620px] overflow-hidden"
-          >
-            <LLMSelectorModal workspaceSlug={slug} />
+          <div className="absolute left-0 top-[40px] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-xl shadow-lg w-[620px] overflow-hidden">
+            <LLMSelectorModal
+              key={refreshKey}
+              workspaceSlug={slug}
+              initialProvider={config.provider?.value}
+            />
           </div>
         )}
       </div>
@@ -122,7 +108,10 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
       <SetupProvider
         isOpen={isSetupProviderOpen}
         closeModal={closeSetupProviderModal}
-        postSubmit={() => closeSetupProviderModal()}
+        postSubmit={() => {
+          closeSetupProviderModal();
+          setRefreshKey((k) => k + 1);
+        }}
         settings={config.settings}
         llmProvider={config.provider}
       />
