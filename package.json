@@ -42,5 +42,8 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "@mintplex-labs/anything-llm-cli": "^0.0.13"
   }
 }
