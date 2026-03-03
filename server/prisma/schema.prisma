@@ -393,3 +393,106 @@ model workspace_parsed_files {
   @@index([workspaceId])
   @@index([userId])
 }
+
+/// Pharma domain models for vendor ↔ manufacturer ordering flows
+model pharma_manufacturers {
+  id            Int       @id @default(autoincrement())
+  workspaceId   Int
+  name          String
+  country       String    @default("Germany")
+  address       String?
+  contactEmail  String?
+  contactPhone  String?
+  createdAt     DateTime  @default(now())
+  lastUpdatedAt DateTime  @default(now())
+
+  workspace     workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  products      pharma_products[]
+  orders        pharma_orders[]
+
+  @@index([workspaceId])
+}
+
+model pharma_vendors {
+  id            Int       @id @default(autoincrement())
+  workspaceId   Int
+  userId        Int?
+  name          String
+  country       String    @default("Nigeria")
+  licenseId     String?
+  address       String?
+  contactEmail  String?
+  contactPhone  String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  lastUpdatedAt DateTime  @default(now())
+
+  workspace     workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user          users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        pharma_orders[]
+
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+model pharma_products {
+  id                Int       @id @default(autoincrement())
+  workspaceId       Int
+  manufacturerId    Int
+  name              String
+  description       String?
+  sku               String    @unique
+  unitPrice         Float
+  currency          String    @default("EUR")
+  availableQuantity Int?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  lastUpdatedAt     DateTime  @default(now())
+
+  workspace         workspaces          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  manufacturer      pharma_manufacturers @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+  orderItems        pharma_order_items[]
+
+  @@index([workspaceId])
+  @@index([manufacturerId])
+}
+
+model pharma_orders {
+  id                 Int       @id @default(autoincrement())
+  workspaceId        Int
+  vendorId           Int
+  manufacturerId     Int
+  status             String    @default("pending")
+  totalAmount        Float
+  currency           String    @default("EUR")
+  shippingAddress    String?
+  destinationCountry String    @default("Nigeria")
+  notes              String?
+  createdAt          DateTime  @default(now())
+  lastUpdatedAt      DateTime  @default(now())
+
+  workspace          workspaces          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  vendor             pharma_vendors      @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  manufacturer       pharma_manufacturers @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+  items              pharma_order_items[]
+
+  @@index([workspaceId])
+  @@index([vendorId])
+  @@index([manufacturerId])
+}
+
+model pharma_order_items {
+  id         Int           @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+  createdAt  DateTime      @default(now())
+
+  order      pharma_orders  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    pharma_products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+}
