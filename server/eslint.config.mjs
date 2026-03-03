@@ -11,7 +11,7 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js, prettier: pluginPrettier, "unused-imports": unusedImports },
     extends: ["js/recommended"],
-    languageOptions: { globals: globals.node },
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
     rules: {
       ...configPrettier.rules,
       "prettier/prettier": "error",
@@ -19,6 +19,7 @@ export default defineConfig([
       "no-prototype-builtins": "off",
       "no-async-promise-executor": "off",
       "no-extra-boolean-cast": "off",
+      "no-empty": "off",
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": [
