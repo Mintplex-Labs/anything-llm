@@ -302,11 +302,10 @@ class OpenRouterLLM {
         // before the token text.
         include_reasoning: true,
         user: user?.id ? `user_${user.id}` : "",
-        stream_options: {
-          include_usage: true,
-        },
       }),
       messages,
+      // OpenRouter returns the usage in the stream as the very last chunk **after** the finish reason.
+      // so we don't need to run the prompt token calculation.
       runPromptTokenCalculation: false,
       modelTag: this.model,
       provider: this.className,
@@ -317,6 +316,8 @@ class OpenRouterLLM {
 
   /**
    * Handles the default stream response for a chat.
+   * - Handle weird OR timeout behavior where the stream never self-closes.
+   * - Handle the usage metrics being returned in the stream as the very last chunk **after** the finish reason.
    * @param {import("express").Response} response
    * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream
    * @param {Object} responseProps
