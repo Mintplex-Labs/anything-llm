@@ -26,7 +26,7 @@ export default function ToolsMenu({
   centered = false,
 }) {
   const menuRef = useRef(null);
-  const [activeTab, setActiveTab] = useState(TABS.AGENT_SKILLS);
+  const [activeTab, setActiveTab] = useState(TABS.SLASH_COMMANDS);
   const [style, setStyle] = useState({});
 
   // Position the menu relative to the Tools button and clamp to viewport
@@ -79,16 +79,16 @@ export default function ToolsMenu({
     >
       <div className="flex gap-2.5 items-center">
         <TabButton
-          active={activeTab === TABS.AGENT_SKILLS}
-          onClick={() => setActiveTab(TABS.AGENT_SKILLS)}
-        >
-          Agent Skills
-        </TabButton>
-        <TabButton
           active={activeTab === TABS.SLASH_COMMANDS}
           onClick={() => setActiveTab(TABS.SLASH_COMMANDS)}
         >
           Slash Commands
+        </TabButton>
+        <TabButton
+          active={activeTab === TABS.AGENT_SKILLS}
+          onClick={() => setActiveTab(TABS.AGENT_SKILLS)}
+        >
+          Agent Skills
         </TabButton>
       </div>
 

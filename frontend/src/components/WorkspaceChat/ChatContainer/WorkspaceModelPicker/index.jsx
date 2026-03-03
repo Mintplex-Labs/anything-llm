@@ -112,7 +112,7 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
         {showSelector && (
           <div
             ref={menuRef}
-            className="absolute left-0 top-[34px] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-xl shadow-lg w-[620px] overflow-hidden"
+            className="absolute left-0 top-[40px] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-xl shadow-lg w-[620px] overflow-hidden"
           >
             <LLMSelectorModal workspaceSlug={slug} />
           </div>
