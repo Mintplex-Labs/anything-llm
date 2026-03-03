@@ -52,7 +52,7 @@ const EmbedConfig = {
             data?.message_limit,
             "message_limit"
           ),
-          createdBy: Number(creatorId) ?? null,
+          createdBy: creatorId != null ? Number(creatorId) : null,
           workspace: {
             connect: { id: Number(data.workspace_id) },
           },
