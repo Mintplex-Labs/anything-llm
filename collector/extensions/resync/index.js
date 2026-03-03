@@ -8,7 +8,7 @@ const { getLinkText } = require("../../processLink");
 async function resyncLink({ link }, response) {
   if (!link) throw new Error("Invalid link provided");
   try {
-    const { success, content = null } = await getLinkText(link);
+    const { success, content = null, reason } = await getLinkText(link);
     if (!success) throw new Error(`Failed to sync link content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
