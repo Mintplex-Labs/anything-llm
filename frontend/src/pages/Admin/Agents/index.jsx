@@ -612,7 +612,7 @@ export default function AdminAgents() {
 
 function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
-    <div className="relative md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-auto p-4 md:p-0 flex">
+    <div className="relative md:rounded-[16px] w-full h-full overflow-y-auto p-4 md:p-0 flex">
       {children}
       <ContextualSaveBar
         showing={hasChanges}
