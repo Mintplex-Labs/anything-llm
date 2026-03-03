@@ -263,6 +263,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     eventHandler = null
   ) {
     this.providerLog("Untooled.stream - will process this chat completion.");
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
@@ -368,6 +369,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
    */
   async complete(messages, functions = [], chatCallback = null) {
     this.providerLog("Untooled.complete - will process this chat completion.");
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
