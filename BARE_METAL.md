@@ -82,7 +82,6 @@ echo "HEAD pulled to commit $(git log -1 --pretty=format:"%h" | tail -n 1)"
 
 echo "Freezing current ENVs"
 curl -I "http://localhost:3001/api/env-dump" | head -n 1|cut -d$' ' -f2
-
 echo "Rebuilding Frontend"
 cd $HOME/anything-llm/frontend && yarn && yarn build && cd $HOME/anything-llm
 
