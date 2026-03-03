@@ -71,7 +71,7 @@ const EmbedConfig = {
       this.writable.includes(key)
     );
     if (validKeys.length === 0)
-      return { embed: { id }, message: "No valid fields to update!" };
+      return { embed: { id: embedId }, message: "No valid fields to update!" };
 
     const updates = {};
     validKeys.map((key) => {
