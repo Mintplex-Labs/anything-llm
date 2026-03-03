@@ -20,6 +20,7 @@ export default defineConfig([
       "no-async-promise-executor": "off",
       "no-extra-boolean-cast": "off",
       "no-empty": "off",
+      "no-unused-private-class-members": "warn",
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": [
