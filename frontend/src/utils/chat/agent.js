@@ -214,7 +214,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
 }
 
 export function useIsAgentSessionActive() {
-  const [activeSession, setActiveSession] = useState(false);
+  const [activeSession, setActiveSession] = useState(
+    () => !!window.__agentSessionActive
+  );
   useEffect(() => {
     function listenForAgentSession() {
       if (!window) return;
