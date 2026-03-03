@@ -10,7 +10,7 @@ const PharmaOrder = {
    * @param {Object} params
    * @param {number} params.workspaceId
    * @param {number} params.vendorId
-   * @param {number} params.manufacturerId
+   * @param {number} [params.manufacturerId] - Optional; if omitted it will be inferred from products (all items must share the same manufacturer)
    * @param {Array<{productId:number, quantity:number}>} params.items
    * @param {string} [params.currency]
    * @param {string} [params.shippingAddress]
@@ -29,8 +29,8 @@ const PharmaOrder = {
       notes = null,
     } = params;
 
-    if (!workspaceId || !vendorId || !manufacturerId) {
-      throw new Error("workspaceId, vendorId, and manufacturerId are required");
+    if (!workspaceId || !vendorId) {
+      throw new Error("workspaceId and vendorId are required");
     }
     if (!Array.isArray(items) || items.length === 0) {
       throw new Error("At least one order item is required");
@@ -51,6 +51,17 @@ const PharmaOrder = {
         throw new Error("One or more products are invalid or inactive");
       }
 
+      // Ensure all products belong to the same manufacturer and infer it if needed
+      const manufacturerIds = Array.from(
+        new Set(products.map((p) => p.manufacturerId))
+      );
+      if (manufacturerIds.length !== 1) {
+        throw new Error(
+          "All products in an order must belong to the same manufacturer"
+        );
+      }
+      const inferredManufacturerId = manufacturerIds[0];
+
       let totalAmount = 0;
       const orderItemsData = items.map((item) => {
         const product = products.find((p) => p.id === Number(item.productId));
@@ -70,7 +81,7 @@ const PharmaOrder = {
         data: {
           workspaceId: Number(workspaceId),
           vendorId: Number(vendorId),
-          manufacturerId: Number(manufacturerId),
+          manufacturerId: Number(manufacturerId || inferredManufacturerId),
           status: "pending",
           totalAmount,
           currency,

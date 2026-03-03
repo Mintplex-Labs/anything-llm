@@ -51,6 +51,33 @@ const PharmaVendor = {
   },
 
   /**
+   * Ensure there is a vendor record for the given workspace/user combo.
+   * If none exists, a minimal vendor linked to the user will be created.
+   * @param {number} workspaceId
+   * @param {{id:number, username?:string}|null} user
+   */
+  ensureForUser: async function (workspaceId, user = null) {
+    if (!workspaceId || !user?.id) return null;
+
+    const existing = await this.get({
+      workspaceId: Number(workspaceId),
+      userId: Number(user.id),
+    });
+    if (existing) return existing;
+
+    const name = user.username
+      ? `Vendor - ${user.username}`
+      : `Vendor-${user.id}`;
+    const { vendor, error } = await this.create({
+      workspaceId,
+      userId: user.id,
+      name,
+    });
+    if (error) return null;
+    return vendor;
+  },
+
+  /**
    * Find many vendors.
    * @param {Object} clause
    * @param {number|null} limit

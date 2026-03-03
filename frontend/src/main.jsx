@@ -62,6 +62,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/workspace/:slug/pharma",
+        lazy: async () => {
+          const { default: PharmaVendorPage } = await import(
+            "@/pages/Pharma/Vendor"
+          );
+          return { element: <PrivateRoute Component={PharmaVendorPage} /> };
+        },
+      },
+      {
         path: "/accept-invite/:code",
         lazy: async () => {
           const { default: InvitePage } = await import("@/pages/Invite");
