@@ -275,6 +275,7 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
+      // eslint-disable-next-line
       {}
     ) => null
   ) {
@@ -913,6 +914,7 @@ ${this.getHistory({ to: route.to })
     }
 
     // remove the last chat's that threw an error
+    // eslint-disable-next-line
     const { from, to } = this?._chats?.pop();
 
     await this.chat({ from, to });
