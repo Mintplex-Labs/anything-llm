@@ -170,6 +170,9 @@ export default {
     mobileConnections: () => {
       return `/settings/mobile-connections`;
     },
+    desktopAssistant: () => {
+      return `/settings/desktop-assistant`;
+    },
   },
   agents: {
     builder: () => {

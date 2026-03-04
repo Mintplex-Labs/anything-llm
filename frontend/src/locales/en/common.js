@@ -113,6 +113,7 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
+    "desktop-assistant": "Desktop Assistant",
   },
 
   // Page Definitions
@@ -559,6 +560,27 @@ const TRANSLATIONS = {
         description:
           "Render HTML responses in assistant responses.\nThis can result in a much higher fidelity of response quality, but can also lead to potential security risks.",
       },
+    },
+  },
+
+  "desktop-assistant": {
+    title: "Desktop Assistant",
+    description:
+      "Configure the Desktop Assistant overlay. These settings only apply when running AnythingLLM Desktop.",
+    enabled: {
+      title: "Enable Desktop Assistant",
+      description:
+        "When disabled, the Desktop Assistant overlay will not be available.",
+    },
+    "shortcut-enabled": {
+      title: "Enable keyboard shortcut",
+      description:
+        "When disabled, the keyboard shortcut will not open the Desktop Assistant.",
+    },
+    "shortcut-modifier": {
+      title: "Shortcut modifier key",
+      description:
+        "Choose which modifier key to use with the shortcut.",
     },
   },
 

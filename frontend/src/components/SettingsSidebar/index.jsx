@@ -392,6 +392,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin"],
             },
+            {
+              btnText: t("settings.desktop-assistant"),
+              href: paths.settings.desktopAssistant(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option

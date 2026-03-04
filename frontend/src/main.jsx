@@ -372,6 +372,17 @@ const router = createBrowserRouter([
           return { element: <ManagerRoute Component={MobileConnections} /> };
         },
       },
+      {
+        path: "/settings/desktop-assistant",
+        lazy: async () => {
+          const { default: DesktopAssistantSettings } = await import(
+            "@/pages/GeneralSettings/DesktopAssistant"
+          );
+          return {
+            element: <ManagerRoute Component={DesktopAssistantSettings} />,
+          };
+        },
+      },
       // Catch-all route for 404s
       {
         path: "*",
