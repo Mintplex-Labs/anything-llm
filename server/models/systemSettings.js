@@ -694,6 +694,10 @@ const SystemSettings = {
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // LLM API Keys
+      LLMApiLLMApiKey: !!process.env.LLMAPI_LLM_API_KEY,
+      LLMApiLLMModelPref: process.env.LLMAPI_LLM_MODEL_PREF,
     };
   },
 
