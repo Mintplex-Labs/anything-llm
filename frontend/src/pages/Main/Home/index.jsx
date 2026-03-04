@@ -23,6 +23,7 @@ import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
+import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -271,6 +272,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
     >
       {isMobile && <SidebarMobileHeader />}
+      <ChatTooltips />
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[750px]">
