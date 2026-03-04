@@ -188,15 +188,18 @@ const TRANSLATIONS = {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        "desc-start": "LLM'nin genel bilgisiyle yanıtlar sunar",
-        and: "ve",
-        "desc-end": "bulunan belge bağlamını ekler.",
+        description:
+          'LLM\'nin genel bilgisi ve bulunan doküman bağlamı sayesinde sorulara cevaplar verecektir. Araçları kullanmak için "@agent" komutunu kullanmanız gerekecektir.',
       },
       query: {
         title: "Sorgu",
-        "desc-start": "yanıtları",
-        only: "sadece",
-        "desc-end": "belge bağlamı bulunduğunda sunar.",
+        description:
+          "Cevapları yalnızca, belgelerin bağlamı bulunduğunda sağlayacaktır. Araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
+      },
+      automatic: {
+        title: "Otomobil",
+        description:
+          'Eğer model ve sağlayıcı, yerel araç çağırmayı destekliyorsa, araçlar otomatik olarak kullanılacaktır.\nEğer yerel araç kullanımı desteklenmiyorsa, araçları kullanmak için "@agent" komutunu kullanmanız gerekecektir.',
       },
     },
     history: {
@@ -696,7 +699,8 @@ const TRANSLATIONS = {
     edit_prompt: "Promptu düzenle",
     edit_response: "Yanıtı düzenle",
     at_agent: "@agent",
-    default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
+    default_agent_description:
+      "- Görevleri tamamlamak için araçları ve MCP'leri kullanmak.",
     custom_agents_coming_soon: "özel ajanlar yakında!",
     slash_reset: "/reset",
     preset_reset_description:

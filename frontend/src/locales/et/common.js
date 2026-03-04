@@ -271,15 +271,18 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        "desc-start": "annab vastuseid LLM-i üldteadmistest",
-        and: "ja",
-        "desc-end": "leitud dokumendikontekstist.",
+        description:
+          'teenab vastuseid, kasutades LLM-i üldist teadmist ja leida saanud dokumentide konteksti.\nEt kasutada tööriime, peate kasutama käsku "@agent".',
       },
       query: {
         title: "Päring",
-        "desc-start": "annab vastuseid",
-        only: "ainult",
-        "desc-end": "kui leitakse dokumendikontekst.",
+        description:
+          "teenab vastuseid <b/> ainult siis, kui dokumenti kontekst on leitav.<br />Kasutamiseks peate kasutama käitu @agent.",
+      },
+      automatic: {
+        title: "Automaailm",
+        description:
+          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native tööriistade kasutamist.<br />Kui native tööriistade kasutamine ei toeta, siis peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -858,7 +861,8 @@ const TRANSLATIONS = {
     edit_prompt: "Redigeeri päringut",
     edit_response: "Redigeeri vastust",
     at_agent: "@agent",
-    default_agent_description: " – selle tööruumi vaikimisi agent.",
+    default_agent_description:
+      "– kasutada töörimeid ja tegevuste haldamise süsteeme (MCP) ülesannete täitmiseks.",
     custom_agents_coming_soon: "kohandatud agendid tulekul!",
     slash_reset: "/reset",
     preset_reset_description: "Tühjenda vestlusajalugu ja alusta uut vestlust",

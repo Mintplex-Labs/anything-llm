@@ -280,15 +280,18 @@ const TRANSLATIONS = {
       title: "Chat-Modus",
       chat: {
         title: "Chat",
-        "desc-start": "wird Antworten mit dem allgemeinen Wissen des LLM",
-        and: "und",
-        "desc-end": "gefundenem Dokumentenkontext liefern.",
+        description:
+          'wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem im Dokument gefundenen Kontext liefern.\nSie müssen den Befehl "@agent" verwenden, um Tools zu nutzen.',
       },
       query: {
         title: "Abfrage",
-        "desc-start": "wird Antworten",
-        only: "nur",
-        "desc-end": "liefern, wenn Dokumentenkontext gefunden wird.",
+        description:
+          'wird Antworten <b/>nur dann<b/> bereitstellen, wenn der Kontext des Dokuments gefunden wurde.\nSie müssen den Befehl "@agent" verwenden, um die Tools zu nutzen.',
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          'wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter die native Aufruf von Werkzeugen unterstützen.\nWenn die native Verwendung von Werkzeugen nicht unterstützt wird, müssen Sie den Befehl "@agent" verwenden, um Werkzeuge zu nutzen.',
       },
     },
     history: {
@@ -899,7 +902,8 @@ const TRANSLATIONS = {
     edit_prompt: "Prompt bearbeiten",
     edit_response: "Antwort bearbeiten",
     at_agent: "@agent",
-    default_agent_description: "– Standardagent für diesen Workspace.",
+    default_agent_description:
+      "- Nutzung von Werkzeugen und Management-Control-Programmen (MCPs) zur Erledigung von Aufgaben.",
     custom_agents_coming_soon: "Eigene Agenten bald verfügbar!",
     slash_reset: "/reset",
     preset_reset_description: "Chatverlauf löschen und neuen Chat starten",

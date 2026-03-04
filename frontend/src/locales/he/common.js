@@ -271,15 +271,18 @@ const TRANSLATIONS = {
       title: "מצב צ'אט",
       chat: {
         title: "צ'אט",
-        "desc-start": "יספק תשובות עם הידע הכללי של מודל השפה",
-        and: "וכן",
-        "desc-end": "מהקשר המסמכים שנמצא.",
+        description:
+          'יוכל לספק תשובות המבוססות על הידע הכללי של ה-LLM וכן על ההקשר הרלוונטי המצוי בתיעוד.\nתצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלי.',
       },
       query: {
         title: "שאילתה",
-        "desc-start": "יספק תשובות",
-        only: "רק",
-        "desc-end": "אם נמצא הקשר במסמכים.",
+        description:
+          "יוכל לספק תשובות <b/>רק אם הקשר של המסמך נמצא.<br />תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
+      },
+      automatic: {
+        title: "רכב",
+        description:
+          'הכלי ישתמש באופן אוטומטי בכלים אם המודל והספק תומכים בהם.\nאם אין תמיכה בכלים מקומיים, תצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלים.',
       },
     },
     history: {
@@ -865,7 +868,8 @@ const TRANSLATIONS = {
     edit_prompt: "ערוך הנחיה",
     edit_response: "ערוך תגובה",
     at_agent: "@agent",
-    default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
+    default_agent_description:
+      "- שימוש בכלים ובכלים מיוחדים כדי להשלים משימות.",
     custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
     slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",

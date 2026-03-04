@@ -266,15 +266,18 @@ const TRANSLATIONS = {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        "desc-start": "将提供 LLM 的一般知识",
-        and: "和",
-        "desc-end": "找到的文档上下文的答案。",
+        description:
+          "将提供基于LLM的通用知识和文档上下文信息，以便给出答案。\n您需要使用 `@agent` 命令来使用工具。",
       },
       query: {
         title: "查询",
-        "desc-start": "将会提供答案",
-        only: "仅当",
-        "desc-end": "找到文档上下文时。",
+        description:
+          "只会提供答案，前提是能够找到文档的上下文。<br />您需要使用 `@agent` 命令来使用工具。",
+      },
+      automatic: {
+        title: "汽车",
+        description:
+          "如果模型和提供商支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，您需要使用 `@agent` 命令来使用工具。",
       },
     },
     history: {
@@ -833,7 +836,7 @@ const TRANSLATIONS = {
     edit_prompt: "编辑问题",
     edit_response: "编辑回应",
     at_agent: "@agent",
-    default_agent_description: " - 此工作区的预设代理。",
+    default_agent_description: "- 利用工具和管理控制平台（MCP）来完成任务。",
     custom_agents_coming_soon: "自定义代理功能即将推出！",
     slash_reset: "/reset",
     preset_reset_description: "清除聊天纪录并开始新的聊天",

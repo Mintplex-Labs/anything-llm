@@ -58,7 +58,8 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("bedrock");
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("bedrock") ||
+      false;
 
     if (supportsToolCalling)
       this.providerLog("AWS Bedrock native tool calling is ENABLED via ENV.");

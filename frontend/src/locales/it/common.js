@@ -190,15 +190,18 @@ const TRANSLATIONS = {
       title: "Modalità chat",
       chat: {
         title: "Chat",
-        "desc-start": "fornirà risposte con la conoscenza generale dell'LLM",
-        and: "e",
-        "desc-end": "contesto documentale associato.",
+        description:
+          'fornirà risposte basate sulla conoscenza generale dell\'LLM e sul contesto del documento rilevante.\nPer utilizzare gli strumenti, sarà necessario utilizzare il comando "@agent".',
       },
       query: {
         title: "Query",
-        "desc-start": "fornirà risposte",
-        only: "solo",
-        "desc-end": "se sarà presente un contesto documentale",
+        description:
+          'fornirà risposte solo se il contesto del documento viene identificato.\nPer utilizzare gli strumenti, sarà necessario utilizzare il comando "@agent".',
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          'utilizzerà automaticamente gli strumenti se il modello e il fornitore supportano le chiamate native agli strumenti.\nSe le chiamate native agli strumenti non sono supportate, sarà necessario utilizzare il comando "@agent" per utilizzare gli strumenti.',
       },
     },
     history: {
@@ -708,7 +711,7 @@ const TRANSLATIONS = {
     edit_response: "Modifica la risposta",
     at_agent: "@agent",
     default_agent_description:
-      "- l'agente predefinito per questo spazio di lavoro.",
+      "- utilizzare strumenti e risorse gestite centralmente per completare i compiti.",
     custom_agents_coming_soon: "Agenti personalizzati in arrivo a breve!",
     slash_reset: "/reset",
     preset_reset_description:
