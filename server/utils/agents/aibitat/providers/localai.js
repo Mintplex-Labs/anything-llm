@@ -45,8 +45,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("localai") ||
-      false;
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("localai");
 
     if (supportsToolCalling)
       this.providerLog(

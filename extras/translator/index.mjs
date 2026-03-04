@@ -52,36 +52,6 @@ function restorePlaceholders(text, placeholders) {
 }
 
 /**
- * Extract Trans component tags like <italic>, </italic>, <bold>, </bold>, etc.
- * These are used by react-i18next Trans component for rich text formatting.
- * @param {string} text
- * @returns {{ text: string, tags: string[] }}
- */
-function extractTransTags(text) {
-    const tags = [];
-    // Match opening tags <tagName> and closing tags </tagName>
-    // Also matches self-closing tags <tagName />
-    const modifiedText = text.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\s*\/?>/g, (match) => {
-        const index = tags.length;
-        tags.push(match);
-        return `__TAG_${index}__`;
-    });
-    return { text: modifiedText, tags };
-}
-
-/**
- * Restore original Trans component tags from tokens.
- * @param {string} text
- * @param {string[]} tags
- * @returns {string}
- */
-function restoreTransTags(text, tags) {
-    return text.replace(/__TAG_(\d+)__/g, (_, index) => {
-        return tags[parseInt(index, 10)] || `__TAG_${index}__`;
-    });
-}
-
-/**
  * Validate that all placeholders from source exist in translated text.
  * @param {string} sourceText
  * @param {string} translatedText
@@ -91,19 +61,6 @@ function validatePlaceholders(sourceText, translatedText) {
     const sourceMatches = sourceText.match(/\{\{([^}]+)\}\}/g) || [];
     const translatedMatches = translatedText.match(/\{\{([^}]+)\}\}/g) || [];
     const missing = sourceMatches.filter(p => !translatedMatches.includes(p));
-    return { valid: missing.length === 0, missing };
-}
-
-/**
- * Validate that all Trans component tags from source exist in translated text.
- * @param {string} sourceText
- * @param {string} translatedText
- * @returns {{ valid: boolean, missing: string[] }}
- */
-function validateTransTags(sourceText, translatedText) {
-    const sourceMatches = sourceText.match(/<\/?([a-zA-Z][a-zA-Z0-9]*)\s*\/?>/g) || [];
-    const translatedMatches = translatedText.match(/<\/?([a-zA-Z][a-zA-Z0-9]*)\s*\/?>/g) || [];
-    const missing = sourceMatches.filter(t => !translatedMatches.includes(t));
     return { valid: missing.length === 0, missing };
 }
 
@@ -130,19 +87,13 @@ class Translator {
         console.log(`\x1b[32m[Translator]\x1b[0m ${text}`, ...args);
     }
 
-    buildPrompt(text, sourceLangCode, targetLangCode, { hasPlaceholders = false, hasTags = false } = {}) {
+    buildPrompt(text, sourceLangCode, targetLangCode, hasPlaceholders = false) {
         const sourceLanguage = this.getLanguageName(sourceLangCode);
         const targetLanguage = this.getLanguageName(targetLangCode);
-        
-        let specialInstructions = '';
-        if (hasPlaceholders || hasTags) {
-            const items = [];
-            if (hasPlaceholders) items.push('__PLACEHOLDER_0__, __PLACEHOLDER_1__');
-            if (hasTags) items.push('__TAG_0__, __TAG_1__');
-            specialInstructions = `\nIMPORTANT: The text contains tokens like ${items.join(', ')}, etc. You MUST keep these tokens exactly as they are in the translation - do not translate, modify, or remove them.`;
-        }
-        
-        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${targetLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.${specialInstructions}
+        const placeholderInstruction = hasPlaceholders 
+            ? `\nIMPORTANT: The text contains placeholders like __PLACEHOLDER_0__, __PLACEHOLDER_1__, etc. You MUST keep these placeholders exactly as they are in the translation - do not translate, modify, or remove them.`
+            : '';
+        return `You are a professional ${sourceLanguage} (${sourceLangCode.toLowerCase()}) to ${targetLanguage} (${targetLangCode.toLowerCase()}) translator. Your goal is to accurately convey the meaning and nuances of the original ${sourceLanguage} text while adhering to ${targetLanguage} grammar, vocabulary, and cultural sensitivities.${placeholderInstruction}
 Produce only the ${targetLanguage} translation, without any additional explanations or commentary. Please translate the following ${sourceLanguage} text into ${targetLanguage}:
 
 
@@ -162,15 +113,11 @@ ${text}`
 
     async translate(text, sourceLangCode, targetLangCode) {
         // Extract placeholders like {{variableName}} and replace with tokens
-        const { text: textWithPlaceholders, placeholders } = extractPlaceholders(text);
+        const { text: textWithTokens, placeholders } = extractPlaceholders(text);
         const hasPlaceholders = placeholders.length > 0;
         
-        // Extract Trans component tags like <italic>, </italic>, etc.
-        const { text: textWithTokens, tags } = extractTransTags(textWithPlaceholders);
-        const hasTags = tags.length > 0;
-        
-        const prompt = this.buildPrompt(textWithTokens, sourceLangCode, targetLangCode, { hasPlaceholders, hasTags });
-        const response = await fetch(`http://127.0.0.1:11434/api/chat`, {
+        const prompt = this.buildPrompt(textWithTokens, sourceLangCode, targetLangCode, hasPlaceholders);
+        const response = await fetch(`http://localhost:11434/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -184,22 +131,6 @@ ${text}`
         if(!response.ok) throw new Error(`Failed to translate: ${response.statusText}`);
         const data = await response.json();
         let translatedText = this.cleanOutputText(data.message.content);
-        
-        // Restore Trans component tags first (order matters since tags may contain placeholders)
-        if (hasTags) {
-            translatedText = restoreTransTags(translatedText, tags);
-            
-            // Validate all tags were preserved
-            const tagValidation = validateTransTags(text, translatedText);
-            if (!tagValidation.valid) {
-                console.warn(`Warning: Missing Trans tags in translation: ${tagValidation.missing.join(', ')}`);
-                for (let i = 0; i < tags.length; i++) {
-                    if (!translatedText.includes(tags[i])) {
-                        console.warn(`  Tag ${tags[i]} was lost in translation`);
-                    }
-                }
-            }
-        }
         
         // Restore original placeholders
         if (hasPlaceholders) {
