@@ -2,27 +2,10 @@ import { useState, useEffect } from "react";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
+import { defaultSkills, configurableSkills } from "@/pages/Admin/Agents/skills";
 import paths from "@/utils/paths";
 import SkillRow from "./SkillRow";
 import BrowseButton from "../../BrowseButton";
-
-// Default skills are enabled by default; toggling adds to disabled_agent_skills
-const DEFAULT_SKILL_NAMES = [
-  "rag-memory",
-  "document-summarizer",
-  "web-scraping",
-];
-
-// All built-in skills with display names
-const ALL_SKILLS = {
-  "rag-memory": "RAG & long-term memory",
-  "document-summarizer": "View & summarize documents",
-  "web-scraping": "Scrape websites",
-  "save-file-to-browser": "Generate & save files",
-  "create-chart": "Generate charts",
-  "web-browsing": "Web Search",
-  "sql-agent": "SQL Connector",
-};
 
 export default function AgentSkillsTab() {
   const [disabledDefaults, setDisabledDefaults] = useState([]);
@@ -59,32 +42,32 @@ export default function AgentSkillsTab() {
     }
   }
 
-  function isSkillEnabled(skillName) {
-    if (DEFAULT_SKILL_NAMES.includes(skillName))
-      return !disabledDefaults.includes(skillName);
-    return enabledConfigurable.includes(skillName);
+  function toggleItem(arr, item) {
+    return arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
   }
 
-  async function toggleSkill(skillName) {
-    let newDisabled = [...disabledDefaults];
-    let newEnabled = [...enabledConfigurable];
+  function isSkillEnabled(key) {
+    return key in defaultSkills
+      ? !disabledDefaults.includes(key)
+      : enabledConfigurable.includes(key);
+  }
 
-    if (DEFAULT_SKILL_NAMES.includes(skillName)) {
-      if (newDisabled.includes(skillName))
-        newDisabled = newDisabled.filter((s) => s !== skillName);
-      else newDisabled.push(skillName);
-    } else {
-      if (newEnabled.includes(skillName))
-        newEnabled = newEnabled.filter((s) => s !== skillName);
-      else newEnabled.push(skillName);
+  async function toggleSkill(key) {
+    if (key in defaultSkills) {
+      const updated = toggleItem(disabledDefaults, key);
+      setDisabledDefaults(updated);
+      await Admin.updateSystemPreferences({
+        disabled_agent_skills: updated.join(","),
+        default_agent_skills: enabledConfigurable.join(","),
+      });
+      return;
     }
 
-    setDisabledDefaults(newDisabled);
-    setEnabledConfigurable(newEnabled);
-
+    const updated = toggleItem(enabledConfigurable, key);
+    setEnabledConfigurable(updated);
     await Admin.updateSystemPreferences({
-      disabled_agent_skills: newDisabled.join(","),
-      default_agent_skills: newEnabled.join(","),
+      disabled_agent_skills: disabledDefaults.join(","),
+      default_agent_skills: updated.join(","),
     });
   }
 
@@ -110,14 +93,16 @@ export default function AgentSkillsTab() {
 
   return (
     <>
-      {Object.entries(ALL_SKILLS).map(([key, name]) => (
-        <SkillRow
-          key={key}
-          name={name}
-          enabled={isSkillEnabled(key)}
-          onToggle={() => toggleSkill(key)}
-        />
-      ))}
+      {Object.entries({ ...defaultSkills, ...configurableSkills }).map(
+        ([key, { title }]) => (
+          <SkillRow
+            key={key}
+            name={title}
+            enabled={isSkillEnabled(key)}
+            onToggle={() => toggleSkill(key)}
+          />
+        )
+      )}
       {importedSkills.map((skill) => (
         <SkillRow
           key={skill.hubId}
