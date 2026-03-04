@@ -27,6 +27,15 @@ class AnthropicProvider extends Provider {
   }
 
   /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Anthropic always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
    * Parses the cache control ENV variable
    *
    * If caching is enabled, we can pass less than 1024 tokens and Anthropic will just

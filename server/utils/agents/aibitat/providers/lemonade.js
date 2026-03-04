@@ -66,7 +66,8 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
     // Labels can be missing for tool calling models, so we also check if ENV flag is set
     const supportsToolCallingFlag =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("lemonade");
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("lemonade") ||
+      false;
     if (supportsToolCallingFlag) {
       this.providerLog(
         "Lemonade supports native tool calling is ENABLED via ENV."
