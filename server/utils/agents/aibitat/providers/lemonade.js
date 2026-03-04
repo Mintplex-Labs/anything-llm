@@ -4,27 +4,37 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const {
+  LemonadeLLM,
+  parseLemonadeServerEndpoint,
+} = require("../../../AiProviders/lemonade/index.js");
 
 /**
- * The agent provider for the GroqAI provider.
- * Supports true OpenAI-compatible tool calling when enabled via ENV,
- * falling back to the UnTooled prompt-based approach otherwise.
+ * The agent provider for the Lemonade.
  */
-class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
+class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
+  /**
+   *
+   * @param {{model?: string}} config
+   */
   constructor(config = {}) {
-    const { model = "llama3-8b-8192" } = config;
     super();
+    const model = config?.model || process.env.LEMONADE_LLM_MODEL_PREF || null;
     const client = new OpenAI({
-      baseURL: "https://api.groq.com/openai/v1",
-      apiKey: process.env.GROQ_API_KEY,
+      baseURL: parseLemonadeServerEndpoint(
+        process.env.LEMONADE_LLM_BASE_PATH,
+        "openai"
+      ),
+      apiKey: null,
       maxRetries: 3,
     });
 
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this.preloaded = false;
     this._supportsToolCalling = null;
   }
 
@@ -36,25 +46,38 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  async preloadModel() {
+    if (this.preloaded) return;
+    await LemonadeLLM.loadModel(this.model);
+    this.preloaded = true;
+  }
+
   /**
    * Whether this provider supports native OpenAI-compatible tool calling.
-   * - Since Groq models vary in tool calling support, we check the ENV.
-   * - If the ENV is not set, we default to false.
-   * @returns {boolean}
+   * - Since Lemonade models vary in tool calling support, we check the ENV.
+   * - If the ENV is not set and the capabilities are not set, we default to false.
+   * - To enable tool calling for a model, set the ENV flag for `PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING` to include `lemonade`.
+   * - or update the label in the Lemonade server to include `tool-calling`.
+   * @returns {boolean|Promise<boolean>}
    */
-  supportsNativeToolCalling() {
+  async supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("groq");
+    const lemonade = new LemonadeLLM(null, this.model);
 
-    if (supportsToolCalling)
-      this.providerLog("Groq supports native tool calling is ENABLED via ENV.");
-    else
+    // Labels can be missing for tool calling models, so we also check if ENV flag is set
+    const supportsToolCallingFlag =
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("lemonade");
+    if (supportsToolCallingFlag) {
       this.providerLog(
-        "Groq supports native tool calling is DISABLED via ENV. Will use UnTooled instead."
+        "Lemonade supports native tool calling is ENABLED via ENV."
       );
-    this._supportsToolCalling = supportsToolCalling;
-    return supportsToolCalling;
+      this._supportsToolCalling = true;
+      return this._supportsToolCalling;
+    }
+
+    const capabilities = await lemonade.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools === true;
+    return this._supportsToolCalling;
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -65,9 +88,9 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("GroqAI chat: No results!");
+          throw new Error("Lemonade chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("GroqAI chat: No results length!");
+          throw new Error("Lemonade chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -85,9 +108,10 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Stream a chat completion with tool calling support.
-   * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
+   * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    await this.preloadModel();
     const useNative =
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
@@ -102,7 +126,7 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
     }
 
     this.providerLog(
-      "Provider.stream (tooled) - will process this chat completion."
+      "LemonadeProvider.stream (tooled) - will process this chat completion."
     );
 
     try {
@@ -129,9 +153,10 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Create a non-streaming completion with tool calling support.
-   * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
+   * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
   async complete(messages, functions = []) {
+    await this.preloadModel();
     const useNative =
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
@@ -173,12 +198,14 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Get the cost of the completion.
+   *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
+   * Stubbed since Lemonade has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = GroqProvider;
+module.exports = LemonadeProvider;
