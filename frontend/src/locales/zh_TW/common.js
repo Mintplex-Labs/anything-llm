@@ -303,10 +303,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "即時網路搜尋與瀏覽",
-        "desc-start":
-          "讓您的智慧代理人能夠透過連線到網路搜尋 (SERP) 提供者來搜尋網路以回答您的問題。",
-        "desc-end":
-          "在設定完成之前，智慧代理人工作階段期間的網路搜尋將無法運作。",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

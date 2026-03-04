@@ -403,10 +403,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "실시간 웹 검색 및 탐색",
-        "desc-start":
-          "에이전트가 웹을 검색하여 질문에 답변할 수 있도록 허용합니다.",
-        "desc-end":
-          "에이전트 세션 중 웹 검색은 설정되지 않으면 작동하지 않습니다.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

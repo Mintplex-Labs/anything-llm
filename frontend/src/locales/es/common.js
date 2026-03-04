@@ -418,10 +418,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Búsqueda y navegación web en vivo",
-        "desc-start":
-          "Habilita a tu agente para buscar en la web para responder tus preguntas conectándose a un proveedor de búsqueda web (SERP).",
-        "desc-end":
-          "La búsqueda web durante las sesiones del agente no funcionará hasta que esto esté configurado.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

@@ -319,10 +319,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "ウェブ検索と閲覧",
-        "desc-start":
-          "エージェントがウェブ検索プロバイダーに接続し、質問に答えるためにウェブ検索できるようにします。",
-        "desc-end":
-          "この設定を行うまで、エージェントセッション中のウェブ検索は利用できません。",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

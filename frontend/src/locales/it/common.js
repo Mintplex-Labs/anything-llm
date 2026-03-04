@@ -327,10 +327,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Ricerca e navigazione web in tempo reale",
-        "desc-start":
-          "Abilita il tuo agente a cercare sul web per rispondere alle tue domande connettendosi a un provider di ricerca web (SERP).",
-        "desc-end":
-          "La ricerca web durante le sessioni dell'agente non funzionerà finché non verrà impostata.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

@@ -323,10 +323,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web zoeken en browsen",
-        "desc-start":
-          "Sta je agent toe om het web te doorzoeken om je vragen te beantwoorden door verbinding te maken met een web-zoek (SERP) provider.",
-        "desc-end":
-          "Webzoeken tijdens agentensessies zal niet werken totdat dit is ingesteld.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

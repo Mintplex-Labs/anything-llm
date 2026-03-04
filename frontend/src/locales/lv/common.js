@@ -409,10 +409,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tiešsaistes tīmekļa meklēšana un pārlūkošana",
-        "desc-start":
-          "Ļaujiet savam aģentam meklēt tīmeklī, lai atbildētu uz jūsu jautājumiem, savienojoties ar tīmekļa meklēšanas (SERP) pakalpojumu sniedzēju.",
-        "desc-end":
-          "Tīmekļa meklēšana aģenta sesijās nedarbosies, līdz tas nebūs iestatīts.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

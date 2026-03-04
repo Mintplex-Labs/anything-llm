@@ -412,10 +412,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        "desc-start":
-          "Pozwól swojemu agentowi przeszukiwać Internet w celu uzyskania odpowiedzi na pytania, łącząc się z dostawcą wyszukiwania internetowego (SERP).",
-        "desc-end":
-          "Wyszukiwanie w sieci podczas sesji agenta nie będzie działać, dopóki nie zostanie to skonfigurowane.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

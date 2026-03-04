@@ -398,9 +398,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Reaalajas veebihaku tugi",
-        "desc-start":
-          "Lubab agendil kasutada veebiotsingut küsimustele vastamiseks, ühendudes SERP-teenusega.",
-        "desc-end": "Veebiotsing ei tööta enne, kui seadistus on tehtud.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

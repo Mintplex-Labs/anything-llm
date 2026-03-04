@@ -406,10 +406,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Busca na web",
-        "desc-start":
-          "Permite ao agente pesquisar na web para responder perguntas conectando-se a um provedor de busca.",
-        "desc-end":
-          "Buscas na web durante sessões de agente não funcionarão até que isso seja configurado.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

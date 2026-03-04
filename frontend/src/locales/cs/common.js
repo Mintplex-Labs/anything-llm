@@ -420,10 +420,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
-        "desc-start":
-          "Umožněte svému agentovi vyhledávat web pro odpovědi na vaše otázky připojením k poskytovateli webového vyhledávání (SERP).",
-        "desc-end":
-          "Webové vyhledávání během relací agenta nebude fungovat, dokud to nebude nastaveno.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

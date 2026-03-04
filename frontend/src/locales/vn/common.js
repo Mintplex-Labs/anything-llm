@@ -321,10 +321,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
-        "desc-start":
-          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
-        "desc-end":
-          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

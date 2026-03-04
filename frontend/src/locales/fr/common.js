@@ -324,10 +324,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Recherche web en direct et navigation",
-        "desc-start":
-          "Permettez à votre agent de rechercher sur le web pour répondre à vos questions en se connectant à un fournisseur de recherche web (SERP).",
-        "desc-end":
-          "La recherche web pendant les sessions d'agent ne fonctionnera pas tant que cela ne sera pas configuré.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

@@ -862,10 +862,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Căutare și navigare web live",
-        "desc-start":
-          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
-        "desc-end":
-          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

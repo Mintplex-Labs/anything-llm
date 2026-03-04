@@ -390,9 +390,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "实时网络搜索和浏览",
-        "desc-start":
-          "通过连接到网络搜索（搜索结果页）提供者，使你的代理能够搜索网络以回答你的问题。",
-        "desc-end": "在代理会话期间，网络搜索将不起作用，直到此设置完成。",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },

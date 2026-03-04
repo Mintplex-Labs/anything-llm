@@ -412,10 +412,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live-Websuche und -Browsing",
-        "desc-start":
-          "Ermöglichen Sie Ihrem Agenten, das Web zu durchsuchen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu einem Websuche-Anbieter (SERP) herstellen.",
-        "desc-end":
-          "Die Websuche während Agentensitzungen funktioniert erst, wenn dies eingerichtet ist.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
     "performance-warning":

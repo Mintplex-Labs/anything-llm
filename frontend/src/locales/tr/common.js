@@ -322,10 +322,11 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Canlı web araması ve gezinme",
-        "desc-start":
-          "Ajanınızın, bir web arama (SERP) sağlayıcısına bağlanarak sorularınızı yanıtlamak için web üzerinde arama yapmasına izin verin.",
-        "desc-end":
-          "Ajan oturumlarında web araması, bu ayar etkinleştirilene kadar çalışmayacaktır.",
+        description: null,
+      },
+      sql: {
+        title: null,
+        description: null,
       },
     },
   },
