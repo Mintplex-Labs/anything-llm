@@ -730,6 +730,12 @@ const TRANSLATIONS = {
       "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
     see_less: "Daha az",
     see_more: "Daha Fazla",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

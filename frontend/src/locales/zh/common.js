@@ -862,6 +862,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "您所做的修改将直接保存到此处。",
     see_less: "查看更多",
     see_more: "查看更多",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "编辑帐户",

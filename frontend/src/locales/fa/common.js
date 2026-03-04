@@ -731,6 +731,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
     see_less: "کمی بیشتر",
     see_more: "بیشتر",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

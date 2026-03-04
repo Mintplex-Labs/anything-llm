@@ -661,6 +661,12 @@ const TRANSLATIONS = {
       "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Editează contul",

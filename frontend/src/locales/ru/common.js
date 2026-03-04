@@ -737,6 +737,12 @@ const TRANSLATIONS = {
       "Ваши изменения будут сохранены непосредственно в этом ответе.",
     see_less: "Показать меньше",
     see_more: "Узнать больше",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

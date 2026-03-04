@@ -724,6 +724,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
     see_less: "詳細を見る",
     see_more: "詳細を見る",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "アカウントを編集",

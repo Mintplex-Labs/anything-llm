@@ -895,6 +895,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
     see_less: "ראה פחות",
     see_more: "לראות עוד",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

@@ -928,6 +928,12 @@ const TRANSLATIONS = {
       "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
     see_less: "Skatīt mazāk",
     see_more: "Skatīt vairāk",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

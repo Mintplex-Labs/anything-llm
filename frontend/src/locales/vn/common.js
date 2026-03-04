@@ -727,6 +727,12 @@ const TRANSLATIONS = {
       "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
     see_less: "Xem ít hơn",
     see_more: "Xem thêm",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

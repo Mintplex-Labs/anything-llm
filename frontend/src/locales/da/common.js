@@ -736,6 +736,12 @@ const TRANSLATIONS = {
       "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
     see_less: "Se mindre",
     see_more: "Se flere",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Rediger konto",

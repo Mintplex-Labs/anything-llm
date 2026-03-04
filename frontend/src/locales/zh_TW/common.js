@@ -684,6 +684,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "您的修改將直接儲存到此處。",
     see_less: "查看更多",
     see_more: "查看更多",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "編輯帳戶",

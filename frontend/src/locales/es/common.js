@@ -948,6 +948,12 @@ const TRANSLATIONS = {
       "Los cambios que realice se guardarán directamente en esta respuesta.",
     see_less: "Ver menos",
     see_more: "Ver más",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Editar cuenta",

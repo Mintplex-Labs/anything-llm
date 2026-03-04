@@ -926,6 +926,12 @@ const TRANSLATIONS = {
       "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Edytuj konto",

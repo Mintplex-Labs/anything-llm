@@ -888,6 +888,12 @@ const TRANSLATIONS = {
     edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Muuda kontot",

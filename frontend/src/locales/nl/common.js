@@ -734,6 +734,12 @@ const TRANSLATIONS = {
       "Uw wijzigingen worden direct op deze reactie opgeslagen.",
     see_less: "Minder zien",
     see_more: "Meer zien",
+    tools: null,
+    slash_commands: null,
+    agent_skills: null,
+    browse: null,
+    text_size_label: null,
+    select_model: null,
   },
   profile_settings: {
     edit_account: "Account bewerken",
