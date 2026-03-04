@@ -189,18 +189,16 @@ const TRANSLATIONS = {
       title: "Mode de chat",
       chat: {
         title: "Chat",
-        description:
-          'fournira des réponses basées sur les connaissances générales du LLM et sur le contexte des documents trouvés.\nVous devrez utiliser la commande "@agent" pour utiliser les outils.',
+        "desc-start":
+          "fournira des réponses avec les connaissances générales du LLM",
+        and: "et",
+        "desc-end": "le contexte du document trouvé.",
       },
       query: {
         title: "Requête",
-        description:
-          "fournira des réponses <b/>uniquement<b/> si le contexte du document est trouvé.\nVous devrez utiliser la commande @agent pour utiliser les outils.",
-      },
-      automatic: {
-        title: "Voiture",
-        description:
-          "il utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives.\nSi l'appel de fonctions natives n'est pas pris en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
+        "desc-start": "fournira des réponses",
+        only: "uniquement",
+        "desc-end": "si un contexte de document est trouvé.",
       },
     },
     history: {
@@ -704,8 +702,7 @@ const TRANSLATIONS = {
     edit_prompt: "Modifier le prompt",
     edit_response: "Modifier la réponse",
     at_agent: "@agent",
-    default_agent_description:
-      "- utiliser des outils et des méthodes de gestion de projet pour mener à bien les tâches.",
+    default_agent_description: "l'agent par défaut de cet espace de travail",
     custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
     slash_reset: "/reset",
     preset_reset_description:

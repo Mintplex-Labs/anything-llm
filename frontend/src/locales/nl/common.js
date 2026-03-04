@@ -188,18 +188,15 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
-        description:
-          "zal antwoorden genereren met behulp van de algemene kennis van het LLM en de documentcontext die beschikbaar is.<br />U moet het commando `@agent` gebruiken om tools te gebruiken.",
+        "desc-start": "zal antwoorden geven met de algemene kennis van de LLM",
+        and: "en",
+        "desc-end": "documentcontext die wordt gevonden.",
       },
       query: {
         title: "Query",
-        description:
-          "zal antwoorden geven <b/>alleen</b/> als de context van het document wordt gevonden.\nU moet het commando `@agent` gebruiken om de tools te gebruiken.",
-      },
-      automatic: {
-        title: "Auto",
-        description:
-          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen.<br />Als native tooling niet wordt ondersteund, moet u het `@agent`-commando gebruiken om tools te gebruiken.",
+        "desc-start": "zal antwoorden geven",
+        only: "alleen",
+        "desc-end": "als documentcontext wordt gevonden.",
       },
     },
     history: {
@@ -705,8 +702,7 @@ const TRANSLATIONS = {
     edit_prompt: "Prompt bewerken",
     edit_response: "Reactie bewerken",
     at_agent: "@agent",
-    default_agent_description:
-      "- gebruik van tools en methoden om taken te voltooien.",
+    default_agent_description: " - de standaardagent voor deze werkruimte.",
     custom_agents_coming_soon: "Aangepaste agenten komen binnenkort!",
     slash_reset: "/reset",
     preset_reset_description:

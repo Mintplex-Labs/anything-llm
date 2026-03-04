@@ -188,18 +188,15 @@ const TRANSLATIONS = {
       title: "Chế độ trò chuyện",
       chat: {
         title: "Trò chuyện",
-        description:
-          'sẽ cung cấp câu trả lời dựa trên kiến thức chung của LLM và thông tin từ tài liệu được tìm thấy. Bạn cần sử dụng lệnh "@agent" để sử dụng các công cụ.',
+        "desc-start": "sẽ cung cấp câu trả lời với kiến thức chung của LLM",
+        and: "và",
+        "desc-end": "ngữ cảnh tài liệu được tìm thấy.",
       },
       query: {
         title: "Truy vấn",
-        description:
-          "sẽ cung cấp câu trả lời <b/>chỉ khi<b/> thông tin trong tài liệu được tìm thấy.<br />Bạn cần sử dụng lệnh @agent để sử dụng các công cụ.",
-      },
-      automatic: {
-        title: "Tự động",
-        description:
-          "hệ thống sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc. Nếu không hỗ trợ công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
+        "desc-start": "sẽ cung cấp câu trả lời",
+        only: "chỉ",
+        "desc-end": "khi tìm thấy ngữ cảnh tài liệu.",
       },
     },
     history: {
@@ -697,8 +694,7 @@ const TRANSLATIONS = {
     edit_prompt: "Chỉnh sửa prompt",
     edit_response: "Chỉnh sửa phản hồi",
     at_agent: "@agent",
-    default_agent_description:
-      "- Sử dụng các công cụ và quy trình quản lý dự án (MCP) để hoàn thành công việc.",
+    default_agent_description: " - agent mặc định cho không gian làm việc này.",
     custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
     slash_reset: "/reset",
     preset_reset_description:
