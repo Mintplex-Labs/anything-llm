@@ -67,6 +67,7 @@ export const configurableSkills = {
   },
   "sql-agent": {
     titleKey: "agent.skill.sql.title",
+    descriptionKey: "agent.skill.sql.description",
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
   },
