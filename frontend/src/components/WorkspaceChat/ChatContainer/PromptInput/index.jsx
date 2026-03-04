@@ -345,7 +345,7 @@ export default function PromptInput({
                           : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
                       }`}
                     >
-                      Tools
+                      {t("chat_window.tools")}
                     </span>
                   </button>
                 </div>

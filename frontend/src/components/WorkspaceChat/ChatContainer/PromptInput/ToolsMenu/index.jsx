@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import AgentSkillsTab from "./Tabs/AgentSkills";
 import SlashCommandsTab from "./Tabs/SlashCommands";
 
 const TABS = [
   {
     key: "slash-commands",
-    label: "Slash Commands",
+    labelKey: "chat_window.slash_commands",
     component: SlashCommandsTab,
   },
-  { key: "agent-skills", label: "Agent Skills", component: AgentSkillsTab },
+  {
+    key: "agent-skills",
+    labelKey: "chat_window.agent_skills",
+    component: AgentSkillsTab,
+  },
 ];
 
 /**
@@ -25,11 +30,12 @@ export default function ToolsMenu({
   promptRef,
   centered = false,
 }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(TABS[0].key);
 
   if (!showing) return null;
 
-  const { component: ActiveTab } = TABS.find((t) => t.key === activeTab);
+  const { component: ActiveTab } = TABS.find((tab) => tab.key === activeTab);
 
   return (
     <>
@@ -42,13 +48,13 @@ export default function ToolsMenu({
         }`}
       >
         <div className="flex shrink-0 gap-2.5 items-center">
-          {TABS.map(({ key, label }) => (
+          {TABS.map(({ key, labelKey }) => (
             <TabButton
               key={key}
               active={activeTab === key}
               onClick={() => setActiveTab(key)}
             >
-              {label}
+              {t(labelKey)}
             </TabButton>
           ))}
         </div>

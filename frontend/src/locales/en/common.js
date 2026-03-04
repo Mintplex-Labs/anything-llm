@@ -983,6 +983,12 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    tools: "Tools",
+    slash_commands: "Slash Commands",
+    agent_skills: "Agent Skills",
+    browse: "Browse",
+    text_size_label: "Text Size",
+    select_model: "Select Model",
     workspace_llm_manager: {
       search: "Search",
       loading_workspace_settings: "Loading workspace settings...",

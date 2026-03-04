@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import useUser from "@/hooks/useUser";
 import { useModal } from "@/hooks/useModal";
 import LLMSelectorModal from "../PromptInput/LLMSelector/index";
@@ -22,6 +23,7 @@ function fetchModelName(slug, setModelName) {
 }
 
 export default function WorkspaceModelPicker({ workspaceSlug = null }) {
+  const { t } = useTranslation();
   const { slug: urlSlug } = useParams();
   const slug = urlSlug ?? workspaceSlug;
   const { user } = useUser();
@@ -90,7 +92,7 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
                 : "text-zinc-500 light:text-slate-500 group-hover:text-white light:group-hover:text-slate-800"
             }`}
           >
-            {modelName || "Select Model"}
+            {modelName || t("chat_window.select_model")}
           </span>
         </button>
 
