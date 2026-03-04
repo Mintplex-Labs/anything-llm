@@ -272,15 +272,18 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        "desc-start": "문서 내용을 찾습니다.",
-        and: "그리고",
-        "desc-end": "LLM의 일반 지식을 같이 사용하여 답변을 제공합니다",
+        description:
+          "LLM의 일반적인 지식과 함께, 문맥에 맞는 답변을 제공합니다. 도구를 사용하려면 @agent 명령어를 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        "desc-start": "문서 컨텍스트를 찾을 ",
-        only: "때만",
-        "desc-end": "답변을 제공합니다.",
+        description:
+          "답변은 문서의 맥락이 발견될 경우에만 제공됩니다. 도구를 사용하려면 `@agent` 명령어를 사용해야 합니다.",
+      },
+      automatic: {
+        title: "자동",
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다.\n\n네이티브 도구 호출이 지원되지 않는 경우, @agent 명령어를 사용하여 도구를 사용해야 합니다.",
       },
     },
     history: {
@@ -874,7 +877,8 @@ const TRANSLATIONS = {
     edit_prompt: "프롬프트 수정",
     edit_response: "응답 수정",
     at_agent: "@agent",
-    default_agent_description: " - 이 워크스페이스의 기본 에이전트입니다.",
+    default_agent_description:
+      "- 다양한 도구 및 MCP(관리형 서비스)를 활용하여 작업을 완료합니다.",
     custom_agents_coming_soon: "커스텀 에이전트 기능이 곧 제공됩니다!",
     slash_reset: "/reset",
     preset_reset_description: "채팅 기록을 초기화하고 새 채팅을 시작합니다",

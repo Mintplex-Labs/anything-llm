@@ -11,7 +11,11 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  getBaseLLMProviderModel,
+} = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -38,6 +42,7 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const AIbitat = require("../utils/agents/aibitat");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -1055,6 +1060,23 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/is-agent-command-available",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          showAgentCommand: await Workspace.isAgentCommandAvailable(
+            response.locals.workspace
+          ),
+        });
+      } catch (error) {
+        console.error("Error checking if agent command is available:", error);
+        response.status(500).json({ showAgentCommand: false });
       }
     }
   );

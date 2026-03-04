@@ -3,6 +3,7 @@ const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { Workspace } = require("../../models/workspace");
 
 async function grepAgents({
   uuid,
@@ -12,8 +13,15 @@ async function grepAgents({
   user = null,
   thread = null,
 }) {
+  let nativeToolingEnabled = false;
+
+  // If the workspace is in automatic mode, check if the workspace supports native tooling
+  // to determine if the agent flow should be used or not.
+  if (workspace?.chatMode === "automatic")
+    nativeToolingEnabled = await Workspace.supportsNativeToolCalling(workspace);
+
   const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
-  if (agentHandles.length > 0) {
+  if (agentHandles.length > 0 || nativeToolingEnabled) {
     const { invocation: newInvocation } = await WorkspaceAgentInvocation.new({
       prompt: message,
       workspace: workspace,

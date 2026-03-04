@@ -188,15 +188,18 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        "desc-start": "vil give svar baseret på LLM'ens generelle viden",
-        and: "og",
-        "desc-end": "dokumentkontekst der findes.",
+        description:
+          "vil give svar baseret på LLM'ens generelle viden og den dokumentkontekst, der findes.\nDu skal bruge kommandoen `@agent` for at bruge værktøjerne.",
       },
       query: {
         title: "Forespørgsel",
-        "desc-start": "vil give svar",
-        only: "kun",
-        "desc-end": "hvis dokumentkontekst findes.",
+        description:
+          'vil kun give svar, hvis dokumentets kontekst er fundet.\nDu skal bruge kommandoen "@agent" for at bruge værktøjerne.',
+      },
+      automatic: {
+        title: "Bil",
+        description:
+          "systemet vil automatisk bruge værktøjer, hvis modellen og leverandøren understøtter direkte kald af værktøjer.<br />Hvis direkte brug af værktøjer ikke understøttes, skal du bruge kommandoen `@agent` for at bruge værktøjerne.",
       },
     },
     history: {
@@ -701,7 +704,8 @@ const TRANSLATIONS = {
     edit_prompt: "Redigeringsanmodning",
     edit_response: "Rediger svar",
     at_agent: "@agent",
-    default_agent_description: "- standardagenten for dette arbejdsområde.",
+    default_agent_description:
+      "- udnytte værktøjer og metoder (MCP'er) til at gennemføre opgaver.",
     custom_agents_coming_soon: "Specialagenter kommer snart!",
     slash_reset: "/reset",
     preset_reset_description:

@@ -30,12 +30,17 @@ function ShowWorkspaceChat() {
       const _workspace = await Workspace.bySlug(slug);
       if (!_workspace) return setLoading(false);
 
-      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
-      const pfpUrl = await Workspace.fetchPfp(slug);
+      const [suggestedMessages, pfpUrl, { showAgentCommand }] =
+        await Promise.all([
+          Workspace.getSuggestedMessages(slug),
+          Workspace.fetchPfp(slug),
+          Workspace.agentCommandAvailable(slug),
+        ]);
       setWorkspace({
         ..._workspace,
         suggestedMessages,
         pfpUrl,
+        showAgentCommand,
       });
       setLoading(false);
       localStorage.setItem(

@@ -187,15 +187,18 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        "desc-start": "LLMの一般知識で回答します",
-        and: "および",
-        "desc-end": "見つかったドキュメントコンテキストを使用します。",
+        description:
+          "LLMの一般的な知識と、利用可能なドキュメントの文脈に基づいて回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        "desc-start": "回答を提供します",
-        only: "のみ",
-        "desc-end": "ドキュメントコンテキストが見つかった場合のみ。",
+        description:
+          '回答は、ドキュメントの文脈が特定された場合にのみ提供されます。\nツールを使用するには、"@agent" コマンドを使用する必要があります。',
+      },
+      automatic: {
+        title: "自動車",
+        description:
+          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。\nネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -691,7 +694,8 @@ const TRANSLATIONS = {
     edit_prompt: "編集のヒント",
     edit_response: "編集内容を保存します。",
     at_agent: "@agent",
-    default_agent_description: "- このワークスペースのデフォルトエージェント。",
+    default_agent_description:
+      "- ツールやマニュアルを活用して、タスクを完了する。",
     custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
     slash_reset: "/reset",
     preset_reset_description:

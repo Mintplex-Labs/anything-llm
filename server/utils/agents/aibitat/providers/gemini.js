@@ -35,16 +35,13 @@ class GeminiProvider extends Provider {
     return true;
   }
 
-  get supportsAgentStreaming() {
-    // Tool call streaming results in a 400/503 error for all non-gemini models
-    // using the compatible v1beta/openai/ endpoint
-    if (!this.model.startsWith("gemini")) {
-      this.providerLog(
-        `Gemini: ${this.model} does not support tool call streaming.`
-      );
-      return false;
-    }
-    return true;
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Gemini only supports tool calling for Gemini models.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return this.supportsToolCalling;
   }
 
   /**
