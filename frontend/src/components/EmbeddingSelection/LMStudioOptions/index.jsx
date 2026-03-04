@@ -233,15 +233,24 @@ function LMStudioModelSelection({ settings, basePath = null, apiKey = null }) {
           className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {!!basePath
+            {loading
               ? "--loading available models--"
+              : !!basePath
+              ? "No models found"
               : "Enter LM Studio URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Select the LM Studio model for embeddings. Models will load after
-          entering a valid LM Studio URL.
-        </p>
+        {!loading && !!basePath ? (
+          <p className="text-xs leading-[18px] font-base text-red-400 mt-2">
+            Could not reach LMStudio. Verify the URL is correct and the LMStudio
+            server is running and accessible.
+          </p>
+        ) : (
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            Select the LM Studio model for embeddings. Models will load after
+            entering a valid LM Studio URL.
+          </p>
+        )}
       </div>
     );
   }
