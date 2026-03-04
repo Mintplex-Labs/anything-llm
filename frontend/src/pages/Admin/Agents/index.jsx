@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
@@ -643,6 +644,7 @@ function SkillList({
   handleClick = null,
   activeSkills = [],
 }) {
+  const { t } = useTranslation();
   if (skills.length === 0) return null;
 
   return (
@@ -668,7 +670,9 @@ function SkillList({
             }`}
             onClick={() => handleClick?.(skill)}
           >
-            <div className="text-sm font-light">{settings.title}</div>
+            <div className="text-sm font-light">
+              {settings.titleKey ? t(settings.titleKey) : settings.title}
+            </div>
             <div className="flex items-center gap-x-2">
               {isDefault ? (
                 <DefaultBadge title={skill} />

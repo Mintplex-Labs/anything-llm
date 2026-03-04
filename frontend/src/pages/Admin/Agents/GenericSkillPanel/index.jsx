@@ -1,9 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Toggle from "@/components/lib/Toggle";
 
 export default function GenericSkillPanel({
-  title,
-  description,
+  titleKey,
+  descriptionKey,
   skill,
   toggleSkill,
   enabled = false,
@@ -11,6 +12,10 @@ export default function GenericSkillPanel({
   image,
   icon,
 }) {
+  const { t } = useTranslation();
+  const title = t(titleKey);
+  const description = t(descriptionKey);
+
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
