@@ -122,6 +122,12 @@ async function chatSync({
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
 
+  // When a sessionId is provided, this is an ephemeral API conversation
+  // that should not appear in the frontend UI. When a userId is provided
+  // without a sessionId, the caller is automating a chat on behalf of a
+  // real user and the chat should be visible in the UI.
+  const shouldIncludeInUI = !sessionId;
+
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
   // to reset the chat history only and we can exit early with a confirmation.
@@ -188,9 +194,10 @@ async function chatSync({
             type: chatMode,
             thoughts,
           },
-          include: true,
+          include: shouldIncludeInUI,
           apiSessionId: sessionId,
           threadId: thread?.id || null,
+          user,
         });
         return {
           id: uuid,
@@ -230,7 +237,7 @@ async function chatSync({
         type: chatMode,
         metrics: {},
       },
-      include: false,
+      include: shouldIncludeInUI,
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
@@ -361,7 +368,7 @@ async function chatSync({
         metrics: {},
       },
       threadId: thread?.id || null,
-      include: false,
+      include: shouldIncludeInUI,
       apiSessionId: sessionId,
       user,
     });
@@ -419,6 +426,7 @@ async function chatSync({
       type: chatMode,
       metrics: performanceMetrics,
     },
+    include: shouldIncludeInUI,
     threadId: thread?.id || null,
     apiSessionId: sessionId,
     user,
@@ -464,6 +472,12 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // When a sessionId is provided, this is an ephemeral API conversation
+  // that should not appear in the frontend UI. When a userId is provided
+  // without a sessionId, the caller is automating a chat on behalf of a
+  // real user and the chat should be visible in the UI.
+  const shouldIncludeInUI = !sessionId;
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -532,9 +546,10 @@ async function streamChat({
             type: chatMode,
             thoughts,
           },
-          include: true,
+          include: shouldIncludeInUI,
           threadId: thread?.id || null,
           apiSessionId: sessionId,
+          user,
         });
         writeResponseChunk(response, {
           uuid,
@@ -585,7 +600,7 @@ async function streamChat({
       },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
-      include: false,
+      include: shouldIncludeInUI,
       user,
     });
     return;
@@ -724,7 +739,7 @@ async function streamChat({
       },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
-      include: false,
+      include: shouldIncludeInUI,
       user,
     });
     return;
@@ -785,6 +800,7 @@ async function streamChat({
         metrics,
         attachments,
       },
+      include: shouldIncludeInUI,
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
