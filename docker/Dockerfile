@@ -37,18 +37,27 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a group and user with specific UID and GID
-# First, remove any existing user/group with the target UID/GID to avoid conflicts
+# Create a group and user with specific UID and GID.
+# The user's primary group is ARG_GID (default 1000) for Docker/Compose backward compatibility.
+# The user is also added to the root group (GID 0) as a supplementary group so that
+# OpenShift's arbitrary-UID-with-GID-0 model works via group-writable permissions.
 RUN (getent passwd "$ARG_UID" && userdel -f "$(getent passwd "$ARG_UID" | cut -d: -f1)") || true && \
-    (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
-    groupadd -g "$ARG_GID" anythingllm && \
-    useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
-    mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
+    if [ "$ARG_GID" != "0" ]; then \
+      (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
+      groupadd -g "$ARG_GID" anythingllm && \
+      useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm -G 0 anythingllm; \
+    else \
+      useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g 0 anythingllm; \
+    fi && \
+    mkdir -p /app/frontend/ /app/server/ /app/collector/ /app/.cache /app/.yarn && \
+    chown -R anythingllm:0 /app && \
+    chmod -R g+w /app && \
+    chmod g=u /etc/passwd
 
 # Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
-COPY --chown=anythingllm:anythingllm ./docker/.env.example /app/server/.env
+COPY --chown=anythingllm:0 ./docker/.env.example /app/server/.env
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
@@ -106,18 +115,27 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a group and user with specific UID and GID
-# First, remove any existing user/group with the target UID/GID to avoid conflicts
+# Create a group and user with specific UID and GID.
+# The user's primary group is ARG_GID (default 1000) for Docker/Compose backward compatibility.
+# The user is also added to the root group (GID 0) as a supplementary group so that
+# OpenShift's arbitrary-UID-with-GID-0 model works via group-writable permissions.
 RUN (getent passwd "$ARG_UID" && userdel -f "$(getent passwd "$ARG_UID" | cut -d: -f1)") || true && \
-    (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
-    groupadd -g "$ARG_GID" anythingllm && \
-    useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm anythingllm && \
-    mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
+    if [ "$ARG_GID" != "0" ]; then \
+      (getent group "$ARG_GID" && groupdel "$(getent group "$ARG_GID" | cut -d: -f1)") || true && \
+      groupadd -g "$ARG_GID" anythingllm && \
+      useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g anythingllm -G 0 anythingllm; \
+    else \
+      useradd -l -u "$ARG_UID" -m -d /app -s /bin/bash -g 0 anythingllm; \
+    fi && \
+    mkdir -p /app/frontend/ /app/server/ /app/collector/ /app/.cache /app/.yarn && \
+    chown -R anythingllm:0 /app && \
+    chmod -R g+w /app && \
+    chmod g=u /etc/passwd
 
 # Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
-COPY --chown=anythingllm:anythingllm ./docker/.env.example /app/server/.env
+COPY --chown=anythingllm:0 ./docker/.env.example /app/server/.env
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
@@ -149,13 +167,13 @@ WORKDIR /app
 # Install server layer
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
-COPY --chown=anythingllm:anythingllm ./server /app/server/
+COPY --chown=anythingllm:0 ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
 
 # Install collector dependencies
-COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
+COPY --chown=anythingllm:0 ./collector/ ./collector/
 WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
@@ -166,16 +184,29 @@ USER anythingllm
 # Since we are building from backend-build we just need to move built frontend into server/public
 FROM backend-build AS production-build
 WORKDIR /app
-COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
+COPY --chown=anythingllm:0 --from=frontend-build /app/frontend/dist /app/server/public
+
+# Ensure all app files are owned by group 0 (root) and group-writable so that:
+# - Docker/Compose: access works via user ownership (UID match)
+# - OpenShift: access works via group ownership (GID 0 match + g+w)
+# - Generic Kubernetes: access works via user ownership or fsGroup
+# This must run after all COPY and yarn install steps to cover node_modules, etc.
+USER root
+RUN chown -R anythingllm:0 /app && \
+    chmod -R g+w /app && \
+    mkdir -p /app/server/storage
 
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 ENV DEPLOYMENT_VERSION=1.12.1
+ENV HOME=/app
 
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
+
+USER anythingllm
 
 # Run the server
 # CMD ["sh", "-c", "tail -f /dev/null"] # For development: keep container open
