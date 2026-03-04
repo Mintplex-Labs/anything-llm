@@ -172,7 +172,7 @@ class OllamaAILLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
+      return Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) || 4096;
     }
 
     let userDefinedLimit = null;

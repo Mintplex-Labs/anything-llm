@@ -97,6 +97,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Lemonade by AMD](https://lemonade-server.ai)
 
 **埋め込みモデル：**
 
