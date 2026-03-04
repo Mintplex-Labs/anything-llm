@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
-import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
@@ -37,7 +36,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
   if (!workspace) return null;
 
-  if (isMobile) {
+  if (window.innerWidth < 560 || window.innerHeight < 600) {
     return (
       <ModalWrapper isOpen={true}>
         <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
@@ -82,7 +81,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
-      <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
+      <div className="absolute max-h-full w-fit transition duration-300 z-20 overflow-y-auto py-10">
         <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border">
           <div className="flex items-start justify-between p-2 rounded-t border-theme-modal-border relative">
             <button
