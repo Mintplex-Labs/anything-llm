@@ -827,6 +827,16 @@ const KEY_MAPPING = {
     envKey: "SAMBANOVA_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // LLM API Options
+  LLMApiLLMApiKey: {
+    envKey: "LLMAPI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  LLMApiLLMModelPref: {
+    envKey: "LLMAPI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -943,6 +953,7 @@ function supportedLLM(input = "") {
     "docker-model-runner",
     "privatemode",
     "sambanova",
+    "llmapi",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

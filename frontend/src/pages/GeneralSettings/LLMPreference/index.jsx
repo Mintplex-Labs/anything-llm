@@ -40,6 +40,7 @@ import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
+import LLMApiLogo from "@/media/llmprovider/llmapi.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -77,6 +78,7 @@ import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import LLMApiOptions from "@/components/LLMSelection/LLMApiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -186,6 +188,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <SambaNovaOptions settings={settings} />,
     description: "Run open source models from SambaNova.",
     requiredConfig: ["SambaNovaLLMApiKey"],
+  },
+  {
+    name: "LLM API",
+    value: "llmapi",
+    logo: LLMApiLogo,
+    options: (settings) => <LLMApiOptions settings={settings} />,
+    description:
+      "Access 100+ models from OpenAI, Anthropic, Google, and more via a single API.",
+    requiredConfig: ["LLMApiLLMApiKey"],
   },
   {
     name: "Local AI",

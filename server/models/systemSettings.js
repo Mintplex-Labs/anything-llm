@@ -688,6 +688,10 @@ const SystemSettings = {
       // SambaNova Keys
       SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
       SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
+
+      // LLM API Keys
+      LLMApiLLMApiKey: !!process.env.LLMAPI_LLM_API_KEY,
+      LLMApiLLMModelPref: process.env.LLMAPI_LLM_MODEL_PREF,
     };
   },
 

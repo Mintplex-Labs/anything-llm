@@ -168,6 +168,9 @@ function getModelTag() {
     case "sambanova":
       model = process.env.SAMBANOVA_LLM_MODEL_PREF;
       break;
+    case "llmapi":
+      model = process.env.LLMAPI_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
