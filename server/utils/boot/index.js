@@ -5,6 +5,7 @@ const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 const markOnboarded = require("./markOnboarded");
+const migrateLegacyWorkspacesToAutomatic = require("./migrateLegacyWorkspacesToAutomatic");
 const { PushNotifications } = require("../PushNotifications");
 
 // Testing SSL? You can make a self signed certificate and point the ENVs to that location
@@ -31,6 +32,8 @@ function bootSSL(app, port = 3001) {
     server
       .listen(port, async () => {
         await markOnboarded();
+        await migrateLegacyWorkspacesToAutomatic();
+
         await setupTelemetry();
         new CommunicationKey(true);
         new EncryptionManager();
@@ -63,6 +66,8 @@ function bootHTTP(app, port = 3001) {
   app
     .listen(port, async () => {
       await markOnboarded();
+      await migrateLegacyWorkspacesToAutomatic();
+
       await setupTelemetry();
       new CommunicationKey(true);
       new EncryptionManager();
