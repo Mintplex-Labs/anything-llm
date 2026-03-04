@@ -338,7 +338,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                 {t("main-page.greeting")}
               </h1>
               <PromptInput
-                workspace={workspace}
                 submit={handleSubmit}
                 isStreaming={loadingResponse}
                 sendCommand={sendCommand}
@@ -389,7 +388,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               />
             </MetricsProvider>
             <PromptInput
-              workspace={workspace}
               submit={handleSubmit}
               isStreaming={loadingResponse}
               sendCommand={sendCommand}

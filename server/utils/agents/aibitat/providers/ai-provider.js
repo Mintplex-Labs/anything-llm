@@ -83,14 +83,6 @@ class Provider {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * @returns {boolean|Promise<boolean>}
-   */
-  supportsNativeToolCalling() {
-    return false;
-  }
-
-  /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
    * @param {LangChainModelConfig} config - Config to be used to override default connection object.
