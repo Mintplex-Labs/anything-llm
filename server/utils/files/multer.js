@@ -84,6 +84,27 @@ const pfpUploadStorage = multer.diskStorage({
 });
 
 /**
+ * Handle embed logo uploads
+ */
+const embedLogoUploadStorage = multer.diskStorage({
+  destination: function (_, __, cb) {
+    const uploadOutput =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../storage/assets/embed-logos`)
+        : path.resolve(process.env.STORAGE_DIR, "assets/embed-logos");
+    fs.mkdirSync(uploadOutput, { recursive: true });
+    return cb(null, uploadOutput);
+  },
+  filename: function (req, file, cb) {
+    const randomFileName = `${v4()}${path.extname(
+      normalizePath(file.originalname)
+    )}`;
+    req.randomFileName = randomFileName;
+    cb(null, randomFileName);
+  },
+});
+
+/**
  * Handle Generic file upload as documents from the GUI
  * @param {Request} request
  * @param {Response} response
@@ -170,9 +191,38 @@ function handlePfpUpload(request, response, next) {
   });
 }
 
+/**
+ * Handle embed logo file upload (max 5MB, images only)
+ */
+function handleEmbedLogoUpload(request, response, next) {
+  const upload = multer({
+    storage: embedLogoUploadStorage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_, file, cb) => {
+      const allowed = ["image/png", "image/jpeg", "image/gif", "image/svg+xml", "image/webp"];
+      if (allowed.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image files (PNG, JPG, GIF, SVG, WebP) are allowed."), false);
+      }
+    },
+  }).single("logo");
+  upload(request, response, function (err) {
+    if (err) {
+      response
+        .status(500)
+        .json({ success: false, error: `Invalid file upload. ${err.message}` })
+        .end();
+      return;
+    }
+    next();
+  });
+}
+
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
+  handleEmbedLogoUpload,
 };

@@ -16,6 +16,7 @@ const EmbedConfig = {
     "workspace_id",
     "message_limit",
     "chat_retention_days",
+    "visual_config",
   ],
 
   new: async function (data, creatorId = null) {
@@ -56,6 +57,10 @@ const EmbedConfig = {
           chat_retention_days: validatedCreationData(
             data?.chat_retention_days,
             "chat_retention_days"
+          ),
+          visual_config: validatedCreationData(
+            data?.visual_config,
+            "visual_config"
           ),
           createdBy: Number(creatorId) ?? null,
           workspace: {
@@ -194,6 +199,20 @@ const EmbedConfig = {
     }
   },
 
+  getVisualConfig: async function (uuid) {
+    try {
+      const embed = await prisma.embed_configs.findFirst({
+        where: { uuid },
+        select: { visual_config: true },
+      });
+      if (!embed || !embed.visual_config) return {};
+      return JSON.parse(embed.visual_config);
+    } catch (error) {
+      console.error(error.message);
+      return {};
+    }
+  },
+
   // Will return null if process should be skipped
   // an empty array means the system will check. This
   // prevents a bad parse from allowing all requests
@@ -263,6 +282,19 @@ function validatedCreationData(value, field) {
 
   if (NUMBER_KEYS.includes(field)) {
     return isNaN(value) || Number(value) <= 0 ? null : Number(value);
+  }
+
+  if (field === "visual_config") {
+    try {
+      if (!value) return null;
+      if (typeof value === "string") {
+        JSON.parse(value); // validate
+        return value;
+      }
+      return JSON.stringify(value);
+    } catch {
+      return null;
+    }
   }
 
   return null;

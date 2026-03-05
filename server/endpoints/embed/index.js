@@ -8,6 +8,11 @@ const {
   canRespond,
   setConnectionMeta,
 } = require("../../utils/middleware/embedMiddleware");
+const { EmbedConfig } = require("../../models/embedConfig");
+const {
+  fetchEmbedLogo,
+  determineEmbedLogoFilepath,
+} = require("../../utils/files/embedLogo");
 const {
   convertToChatHistory,
   writeResponseChunk,
@@ -52,6 +57,92 @@ const upload = multer({
 
 function embeddedEndpoints(app) {
   if (!app) return;
+
+  // Public endpoint: Get visual configuration for an embed widget
+  app.get(
+    "/embed/:embedId/config",
+    [validEmbedConfig],
+    async (request, response) => {
+      try {
+        const embed = response.locals.embedConfig;
+        const visualConfig = await EmbedConfig.getVisualConfig(embed.uuid);
+
+        // Map simplified fields to widget data-attributes
+        const mapped = {};
+        if (visualConfig.accentColor) {
+          mapped.buttonColor = visualConfig.accentColor;
+          mapped.userBgColor = visualConfig.accentColor;
+          mapped.linkColor = visualConfig.accentColor;
+        }
+        if (visualConfig.name) {
+          mapped.brandText = visualConfig.name;
+          mapped.assistantName = visualConfig.name;
+        }
+        if (visualConfig.chatIcon) mapped.chatIcon = visualConfig.chatIcon;
+        if (visualConfig.position) mapped.position = visualConfig.position;
+        if (visualConfig.greeting) mapped.greeting = visualConfig.greeting;
+        if (visualConfig.sendMessageText) mapped.sendMessageText = visualConfig.sendMessageText;
+        if (visualConfig.supportEmail) mapped.supportEmail = visualConfig.supportEmail;
+
+        if (visualConfig.defaultMessages && visualConfig.defaultMessages.length > 0) {
+          mapped.defaultMessages = visualConfig.defaultMessages.join(",");
+        }
+        if (visualConfig.chatbotBubblesMessages && visualConfig.chatbotBubblesMessages.length > 0) {
+          mapped.chatbotBubblesMessages = visualConfig.chatbotBubblesMessages.join(",");
+        }
+
+        // Logo: serve from upload endpoint or use URL
+        if (visualConfig.logoFilename) {
+          const { embedId } = request.params;
+          const baseUrl = `${request.protocol}://${request.get("host")}`;
+          const logoUrl = `${baseUrl}/api/embed/${embedId}/logo`;
+          mapped.brandImageUrl = logoUrl;
+          mapped.assistantIcon = logoUrl;
+        } else if (visualConfig.logoUrl) {
+          mapped.brandImageUrl = visualConfig.logoUrl;
+          mapped.assistantIcon = visualConfig.logoUrl;
+        }
+
+        response.setHeader("Cache-Control", "public, max-age=300");
+        response.status(200).json(mapped);
+      } catch (e) {
+        console.error("[Embed Config]", e.message);
+        response.status(200).json({});
+      }
+    }
+  );
+
+  // Public endpoint: Serve embed logo image
+  app.get(
+    "/embed/:embedId/logo",
+    [validEmbedConfig],
+    async (request, response) => {
+      try {
+        const embed = response.locals.embedConfig;
+        const logoPath = await determineEmbedLogoFilepath(embed.id);
+        if (!logoPath) {
+          response.sendStatus(404).end();
+          return;
+        }
+
+        const { found, buffer, size, mime } = fetchEmbedLogo(logoPath);
+        if (!found) {
+          response.sendStatus(404).end();
+          return;
+        }
+
+        response.writeHead(200, {
+          "Content-Type": mime,
+          "Content-Length": size,
+          "Cache-Control": "public, max-age=3600",
+        });
+        response.end(buffer);
+      } catch (e) {
+        console.error("[Embed Logo]", e.message);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.post(
     "/embed/:embedId/stream-chat",

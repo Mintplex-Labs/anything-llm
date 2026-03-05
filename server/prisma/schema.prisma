@@ -252,6 +252,7 @@ model embed_configs {
   message_limit              Int?          @default(20)
   chat_retention_days        Int? // DSGVO: Number of days to keep chats, null = keep forever
   retention_started_at       DateTime? // DSGVO: When retention was activated, cleanup only starts after this + retention_days
+  visual_config              String? // JSON-String with visual settings (colors, logo, position, etc.)
   workspace_id               Int
   createdBy                  Int?
   usersId                    Int?

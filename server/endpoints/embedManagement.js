@@ -12,6 +12,8 @@ const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
+const { handleEmbedLogoUpload } = require("../utils/files/multer");
+const { deleteOldEmbedLogo } = require("../utils/files/embedLogo");
 
 function embedManagementEndpoints(app) {
   if (!app) return;
@@ -336,6 +338,78 @@ function embedManagementEndpoints(app) {
         );
 
         response.status(200).json({ success: true, messages });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Upload logo for an embed widget
+  app.post(
+    "/embed/:embedId/upload-logo",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default]), validEmbedConfigId, handleEmbedLogoUpload],
+    async (request, response) => {
+      try {
+        const { embedId } = request.params;
+        const newFilename = request.randomFileName;
+        if (!newFilename) {
+          return response.status(400).json({ success: false, error: "No file uploaded." });
+        }
+
+        // Get current config to delete old logo
+        const embed = await EmbedConfig.get({ id: Number(embedId) });
+        let currentConfig = {};
+        if (embed?.visual_config) {
+          try { currentConfig = JSON.parse(embed.visual_config); } catch {}
+        }
+
+        // Delete old logo file if exists
+        if (currentConfig.logoFilename) {
+          deleteOldEmbedLogo(currentConfig.logoFilename);
+        }
+
+        // Update visual_config with new logo filename
+        currentConfig.logoFilename = newFilename;
+        currentConfig.logoUrl = null; // clear URL when uploading file
+        await EmbedConfig.update(embedId, {
+          visual_config: JSON.stringify(currentConfig),
+        });
+
+        response.status(200).json({ success: true, logoFilename: newFilename });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Remove logo for an embed widget
+  app.delete(
+    "/embed/:embedId/remove-logo",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default]), validEmbedConfigId],
+    async (request, response) => {
+      try {
+        const { embedId } = request.params;
+        const embed = await EmbedConfig.get({ id: Number(embedId) });
+        let currentConfig = {};
+        if (embed?.visual_config) {
+          try { currentConfig = JSON.parse(embed.visual_config); } catch {}
+        }
+
+        // Delete logo file
+        if (currentConfig.logoFilename) {
+          deleteOldEmbedLogo(currentConfig.logoFilename);
+        }
+
+        // Clear logo from config
+        currentConfig.logoFilename = null;
+        currentConfig.logoUrl = null;
+        await EmbedConfig.update(embedId, {
+          visual_config: JSON.stringify(currentConfig),
+        });
+
+        response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

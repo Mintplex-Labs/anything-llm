@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { DotsThreeOutline } from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
+import { DotsThreeOutline, PaintBrush } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -15,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 export default function EmbedRow({ embed, isReadOnly = false, userRole = null }) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   // Set moment locale based on i18n language
   moment.locale(i18n.language);
@@ -91,6 +93,13 @@ export default function EmbedRow({ embed, isReadOnly = false, userRole = null })
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           {!isReadOnly && (
             <>
+              <button
+                onClick={() => navigate(`/settings/embed-config/${embed.id}/appearance`)}
+                className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-action-menu-item-hover"
+                title={t("embed-row.design")}
+              >
+                <PaintBrush className="h-4 w-4 group-hover:text-white" />
+              </button>
               <button
                 onClick={openSnippetModal}
                 className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-code-hover-bg"

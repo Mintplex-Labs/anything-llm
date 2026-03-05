@@ -182,6 +182,15 @@ const router = createBrowserRouter([
           return { element: <PrivateRoute Component={ChatEmbedWidgets} /> };
         },
       },
+      {
+        path: "/settings/embed-config/:embedId/appearance",
+        lazy: async () => {
+          const { default: EmbedAppearance } = await import(
+            "@/pages/GeneralSettings/ChatEmbedWidgets/EmbedAppearance"
+          );
+          return { element: <PrivateRoute Component={EmbedAppearance} /> };
+        },
+      },
       // Manager routes
       {
         path: "/settings/security",

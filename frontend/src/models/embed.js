@@ -153,6 +153,55 @@ const Embed = {
       });
   },
 
+  // Visual Config: Get embed by ID (with visual_config)
+  getEmbed: async (embedId) => {
+    const embeds = await Embed.embeds();
+    return embeds.find((e) => e.id === Number(embedId)) || null;
+  },
+
+  // Visual Config: Update visual config
+  updateVisualConfig: async (embedId, visualConfig) => {
+    return await fetch(`${API_BASE}/embed/update/${embedId}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ visual_config: JSON.stringify(visualConfig) }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  // Visual Config: Upload embed logo
+  uploadEmbedLogo: async (embedId, formData) => {
+    return await fetch(`${API_BASE}/embed/${embedId}/upload-logo`, {
+      method: "POST",
+      headers: {
+        Authorization: baseHeaders().Authorization,
+      },
+      body: formData,
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  // Visual Config: Remove embed logo
+  removeEmbedLogo: async (embedId) => {
+    return await fetch(`${API_BASE}/embed/${embedId}/remove-logo`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
   // Get conversations (global view, grouped by conversation_id)
   getConversationsGlobal: async (
     offset = 0,
