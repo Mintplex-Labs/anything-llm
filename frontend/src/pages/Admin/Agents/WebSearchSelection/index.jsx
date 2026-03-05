@@ -186,7 +186,7 @@ export default function AgentWebSearchSelection({
               htmlFor="name"
               className="text-theme-text-primary text-md font-bold"
             >
-              {titleKey ? t(titleKey) : "Live web search and browsing"}
+              {t(titleKey)}
             </label>
           </div>
           <Toggle
@@ -201,9 +201,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          {descriptionKey
-            ? t(descriptionKey)
-            : "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider. Web search during agent sessions will not work until this is set up."}
+          {t(descriptionKey)}
         </p>
         <div hidden={!enabled}>
           <div className="relative">
