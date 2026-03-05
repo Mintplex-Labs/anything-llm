@@ -25,13 +25,25 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          echo "Looking for tag: pr-${PR_NUMBER}"
+          echo "Package: /orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions"
+          
+          # Debug: show all available pr- tags
+          echo "Available PR tags:"
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
+            --jq '.[] | .metadata.container.tags[] | select(startswith("pr-"))' 2>&1 | head -20 || echo "Failed to list tags"
+          
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
             "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
-            2>/dev/null || true)
+            2>&1)
           
-          if [ -n "$VERSION_ID" ]; then
+          echo "VERSION_ID result: '${VERSION_ID}'"
+          
+          if [ -n "$VERSION_ID" ] && [ "$VERSION_ID" != "null" ]; then
             echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
             gh api \
               --method DELETE \
