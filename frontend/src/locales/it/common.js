@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Branding e personalizzazione",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Punto di riferimento della comunità",
+      trending: "Esplora le tendenze",
+      "your-account": "Il tuo account",
+      "import-item": "Importa articolo",
+    },
   },
   login: {
     "multi-user": {
