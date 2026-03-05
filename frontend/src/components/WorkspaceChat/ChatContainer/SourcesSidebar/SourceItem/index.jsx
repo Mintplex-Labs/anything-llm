@@ -1,6 +1,5 @@
 import { parseChunkSource, SourceTypeCircle } from "../../ChatHistory/Citation";
 import { useTranslation } from "react-i18next";
-import pluralize from "pluralize";
 
 export default function SourceItem({ source, onClick }) {
   const { t } = useTranslation();
@@ -21,10 +20,7 @@ export default function SourceItem({ source, onClick }) {
       </div>
       <div className="flex flex-col gap-[2px] pl-[22px] text-[10px] text-zinc-400 light:text-slate-500 leading-[14px]">
         <p>{subtitle}</p>
-        <p>
-          {source.references}{" "}
-          {pluralize("Reference", Number(source.references) || 1)}
-        </p>
+        <p>{t("chat_window.source_count", { count: source.references })}</p>
       </div>
     </button>
   );

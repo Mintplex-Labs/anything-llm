@@ -960,6 +960,8 @@ const TRANSLATIONS = {
     hide_citations: "Hide citations",
     show_citations: "Show citations",
     sources: "Sources",
+    source_count_one: "{{count}} reference",
+    source_count_other: "{{count}} references",
     document: "Document",
     similarity_match: "match",
     pause_tts_speech_message: "Pause TTS speech of message",
