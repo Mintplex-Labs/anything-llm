@@ -682,11 +682,27 @@ class AgentHandler {
     await this.#attachPlugins(args);
   }
 
+  /**
+   * Strip the @agent command from the message if it exists.
+   * Prevents hallucination by the agent when the @agent command is used from the model thinking
+   * it is an agent or something itself.
+   * If the user sent nothing after the @agent command - assume its a greeting.
+   * @param {string} message - The message to strip the @agent command from.
+   * @returns {string} The message with the @agent command stripped.
+   */
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    if (!stripped) return "Hello!";
+    return stripped;
+  }
+
   startAgentCluster() {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.invocation.prompt,
+      content: this.#stripAgentCommand(this.invocation.prompt),
       attachments: this.attachments,
     });
   }
