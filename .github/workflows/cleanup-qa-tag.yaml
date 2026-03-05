@@ -22,33 +22,26 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ inputs.pr_number }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          echo "Looking for tag: pr-${PR_NUMBER}"
-          echo "Package: /orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions"
+          # Must use lowercase - packages are published with lowercase owner
+          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO_LC="${GITHUB_REPOSITORY#*/}"
+          REPO_LC="${REPO_LC,,}"
           
-          # Debug: show all available pr- tags
-          echo "Available PR tags:"
-          gh api \
-            -H "Accept: application/vnd.github+json" \
-            "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
-            --jq '.[] | .metadata.container.tags[] | select(startswith("pr-"))' 2>&1 | head -20 || echo "Failed to list tags"
+          echo "Looking for tag: pr-${PR_NUMBER}"
+          echo "Package: /orgs/${ORG_LC}/packages/container/${REPO_LC}/versions"
           
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
-            "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
-            --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
-            2>&1)
+            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
+            --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id")
           
-          echo "VERSION_ID result: '${VERSION_ID}'"
-          
-          if [ -n "$VERSION_ID" ] && [ "$VERSION_ID" != "null" ]; then
+          if [ -n "$VERSION_ID" ]; then
             echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
             gh api \
               --method DELETE \
               -H "Accept: application/vnd.github+json" \
-              "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions/$VERSION_ID"
+              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
           else
             echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
           fi
