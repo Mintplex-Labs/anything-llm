@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
@@ -231,10 +230,7 @@ export default function AdminAgents() {
 
   if (loading) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
-      >
+      <div className="w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
@@ -242,11 +238,7 @@ export default function AdminAgents() {
 
   if (isMobile) {
     return (
-      <SkillLayout
-        hasChanges={hasChanges}
-        handleCancel={() => setHasChanges(false)}
-        handleSubmit={handleSubmit}
-      >
+      <>
         <form
           onSubmit={handleSubmit}
           onChange={() => !selectedFlow && setHasChanges(true)}
@@ -267,7 +259,7 @@ export default function AdminAgents() {
           {/* Skill settings nav */}
           <div
             hidden={showSkillModal}
-            className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
+            className="flex flex-col gap-y-[18px] overflow-y-auto no-scroll"
           >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
@@ -352,7 +344,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-auto no-scroll">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedMcpServer ? (
@@ -421,16 +413,17 @@ export default function AdminAgents() {
             </div>
           )}
         </form>
-      </SkillLayout>
+        <ContextualSaveBar
+          showing={hasChanges}
+          onSave={handleSubmit}
+          onCancel={() => setHasChanges(false)}
+        />
+      </>
     );
   }
 
   return (
-    <SkillLayout
-      hasChanges={hasChanges}
-      handleCancel={() => setHasChanges(false)}
-      handleSubmit={handleSubmit}
-    >
+    <>
       <form
         onSubmit={handleSubmit}
         onChange={() =>
@@ -544,7 +537,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-auto no-scroll">
             {SelectedSkillComponent ? (
               <>
                 {selectedMcpServer ? (
@@ -610,29 +603,12 @@ export default function AdminAgents() {
           </div>
         </div>
       </form>
-    </SkillLayout>
-  );
-}
-
-function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
-  return (
-    <div
-      id="workspace-agent-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
-    >
-      <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
-      >
-        {children}
-        <ContextualSaveBar
-          showing={hasChanges}
-          onSave={handleSubmit}
-          onCancel={handleCancel}
-        />
-      </div>
-    </div>
+      <ContextualSaveBar
+        showing={hasChanges}
+        onSave={handleSubmit}
+        onCancel={() => setHasChanges(false)}
+      />
+    </>
   );
 }
 

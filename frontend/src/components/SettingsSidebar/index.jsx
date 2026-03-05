@@ -108,7 +108,11 @@ export default function SettingsSidebar() {
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
-                    <SidebarOptions user={user} t={t} />
+                    <SidebarOptions
+                      user={user}
+                      t={t}
+                      setShowSidebar={setShowSidebar}
+                    />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                     <SupportEmail />
                     <Link
@@ -136,7 +140,7 @@ export default function SettingsSidebar() {
 
   return (
     <>
-      <div>
+      <div className="shrink-0">
         <Link
           to={paths.home()}
           className="flex shrink-0 max-w-[55%] items-center justify-start mx-[20.5px] my-[18px]"
@@ -150,9 +154,9 @@ export default function SettingsSidebar() {
         </Link>
         <div
           ref={sidebarRef}
-          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
-          <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
+          <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
@@ -211,7 +215,7 @@ function SupportEmail() {
   );
 }
 
-const SidebarOptions = ({ user = null, t }) => (
+const SidebarOptions = ({ user = null, t, setShowSidebar }) => (
   <CanViewChatHistoryProvider>
     {({ viewable: canViewChatHistory }) => (
       <>
@@ -219,6 +223,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.ai-providers")}
           icon={<Gear className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.llm"),
@@ -262,6 +267,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.admin")}
           icon={<UserCircleGear className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.users"),
@@ -304,10 +310,12 @@ const SidebarOptions = ({ user = null, t }) => (
           }
           href={paths.settings.agentSkills()}
           user={user}
+          setShowSidebar={setShowSidebar}
           flex={true}
           roles={["admin"]}
         />
         <Option
+          setShowSidebar={setShowSidebar}
           btnText={t("settings.community-hub.title")}
           icon={
             <img
@@ -341,6 +349,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.customization")}
           icon={<PencilSimpleLine className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               btnText: t("settings.interface"),
@@ -366,6 +375,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.tools")}
           icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
           user={user}
+          setShowSidebar={setShowSidebar}
           childOptions={[
             {
               hidden: !canViewChatHistory,
@@ -411,6 +421,7 @@ const SidebarOptions = ({ user = null, t }) => (
           icon={<Nut className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.security()}
           user={user}
+          setShowSidebar={setShowSidebar}
           flex={true}
           roles={["admin", "manager"]}
           hidden={user?.role}
@@ -421,6 +432,7 @@ const SidebarOptions = ({ user = null, t }) => (
             icon={<Flask className="h-5 w-5 flex-shrink-0" />}
             href={paths.settings.experimental()}
             user={user}
+            setShowSidebar={setShowSidebar}
             flex={true}
             roles={["admin"]}
           />

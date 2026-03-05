@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
@@ -37,86 +35,62 @@ export default function ExperimentalFeatures() {
 
   if (loading) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
-      >
+      <div className="w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
   }
 
   return (
-    <FeatureLayout>
-      <div className="flex-1 flex gap-x-6 p-4 mt-10">
-        {/* Feature settings nav */}
-        <div className="flex flex-col gap-y-[18px]">
-          <div className="text-white flex items-center gap-x-2">
-            <Flask size={24} />
-            <p className="text-lg font-medium">Experimental Features</p>
-          </div>
-          {/* Feature list */}
-          <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
-            {Object.values(configurableFeatures).map((feature, index) => {
-              const isFirst = index === 0;
-              const isLast =
-                index === Object.values(configurableFeatures).length - 1;
-              return (
-                <FeatureItem
-                  key={feature.key}
-                  feature={feature}
-                  isSelected={selectedFeature === feature.key}
-                  isActive={featureFlags[feature.key]}
-                  handleClick={setSelectedFeature}
-                  borderClass={[
-                    ...(isFirst ? ["rounded-t-xl"] : []),
-                    ...(isLast
-                      ? ["rounded-b-xl"]
-                      : ["border-b border-white/10"]),
-                  ].join(" ")}
-                />
-              );
-            })}
+    <div className="flex-1 flex gap-x-6 p-4 mt-10">
+      {/* Feature settings nav */}
+      <div className="flex flex-col gap-y-[18px]">
+        <div className="text-white flex items-center gap-x-2">
+          <Flask size={24} />
+          <p className="text-lg font-medium">Experimental Features</p>
+        </div>
+        {/* Feature list */}
+        <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">
+          {Object.values(configurableFeatures).map((feature, index) => {
+            const isFirst = index === 0;
+            const isLast =
+              index === Object.values(configurableFeatures).length - 1;
+            return (
+              <FeatureItem
+                key={feature.key}
+                feature={feature}
+                isSelected={selectedFeature === feature.key}
+                isActive={featureFlags[feature.key]}
+                handleClick={setSelectedFeature}
+                borderClass={[
+                  ...(isFirst ? ["rounded-t-xl"] : []),
+                  ...(isLast ? ["rounded-b-xl"] : ["border-b border-white/10"]),
+                ].join(" ")}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Selected feature setting panel */}
+      <FeatureVerification>
+        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+            {selectedFeature ? (
+              <SelectedFeatureComponent
+                feature={configurableFeatures[selectedFeature]}
+                settings={featureFlags}
+                refresh={refresh}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-white/60">
+                <Flask size={40} />
+                <p className="font-medium">Select an experimental feature</p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Selected feature setting panel */}
-        <FeatureVerification>
-          <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
-              {selectedFeature ? (
-                <SelectedFeatureComponent
-                  feature={configurableFeatures[selectedFeature]}
-                  settings={featureFlags}
-                  refresh={refresh}
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
-                  <Flask size={40} />
-                  <p className="font-medium">Select an experimental feature</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </FeatureVerification>
-      </div>
-    </FeatureLayout>
-  );
-}
-
-function FeatureLayout({ children }) {
-  return (
-    <div
-      id="workspace-feature-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
-    >
-      <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
-      >
-        {children}
-      </div>
+      </FeatureVerification>
     </div>
   );
 }
