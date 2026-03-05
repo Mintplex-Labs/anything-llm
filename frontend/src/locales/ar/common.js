@@ -727,6 +727,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "سيتم حفظ التغييرات مباشرة في هذا الرد.",
     see_less: "اقرأ المزيد",
     see_more: "عرض المزيد",
+    sources: "مصادر",
+    document: "وثيقة",
+    similarity_match: "مباراة",
+    source_count_one: "{{count}}، المرجع",
+    source_count_other: "{{count}} المرجع",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

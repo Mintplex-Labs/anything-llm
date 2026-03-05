@@ -742,6 +742,11 @@ const TRANSLATIONS = {
       "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
     see_less: "Se mindre",
     see_more: "Se flere",
+    sources: "Kilder",
+    document: "Dokument",
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
   },
   profile_settings: {
     edit_account: "Rediger konto",

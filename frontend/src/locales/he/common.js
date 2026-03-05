@@ -901,6 +901,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
     see_less: "ראה פחות",
     see_more: "לראות עוד",
+    sources: "מקורות",
+    document: "מסמך",
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

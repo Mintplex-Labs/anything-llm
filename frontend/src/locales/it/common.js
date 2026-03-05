@@ -753,6 +753,11 @@ const TRANSLATIONS = {
       "Le modifiche verranno salvate direttamente in questa risposta.",
     see_less: "Visualizza meno",
     see_more: "Visualizza altro",
+    sources: "Fonti",
+    document: "Documento",
+    similarity_match: "partita",
+    source_count_one: "Riferimento {{count}}",
+    source_count_other: "Riferimenti a {{count}}",
   },
   profile_settings: {
     edit_account: "Modifica account",

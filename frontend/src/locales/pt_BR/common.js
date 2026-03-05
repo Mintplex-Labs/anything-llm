@@ -910,6 +910,11 @@ const TRANSLATIONS = {
       "Suas alterações serão salvas diretamente nesta resposta.",
     see_less: "Ver menos",
     see_more: "Ver mais",
+    sources: "Fontes",
+    document: "Documento",
+    similarity_match: "jogo",
+    source_count_one: "Referência a {{count}}",
+    source_count_other: "Referências a {{count}}",
   },
   profile_settings: {
     edit_account: "Editar conta",

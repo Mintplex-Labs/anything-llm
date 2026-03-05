@@ -733,6 +733,11 @@ const TRANSLATIONS = {
       "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
     see_less: "Xem ít hơn",
     see_more: "Xem thêm",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

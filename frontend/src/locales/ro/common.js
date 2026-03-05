@@ -667,6 +667,11 @@ const TRANSLATIONS = {
       "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
+    sources: "Surse",
+    document: "Document",
+    similarity_match: "meci",
+    source_count_one: "{{count}} – referință",
+    source_count_other: "Referințe către {{count}}",
   },
   profile_settings: {
     edit_account: "Editează contul",

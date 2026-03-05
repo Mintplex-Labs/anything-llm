@@ -911,6 +911,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
     see_less: "더 보기",
     see_more: "더 보기",
+    sources: "출처",
+    document: "문서",
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

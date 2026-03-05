@@ -730,6 +730,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
     see_less: "詳細を見る",
     see_more: "詳細を見る",
+    sources: "出典",
+    document: "文書",
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

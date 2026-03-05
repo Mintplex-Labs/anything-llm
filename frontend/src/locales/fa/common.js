@@ -737,6 +737,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
     see_less: "کمی بیشتر",
     see_more: "بیشتر",
+    sources: "منابع",
+    document: "اسناد",
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

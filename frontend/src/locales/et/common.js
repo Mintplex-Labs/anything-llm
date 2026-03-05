@@ -894,6 +894,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
+    sources: "Allikasid",
+    document: "Dokument",
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
   },
   profile_settings: {
     edit_account: "Muuda kontot",
