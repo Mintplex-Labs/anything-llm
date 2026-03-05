@@ -22,8 +22,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ inputs.pr_number }}
-          REPO_NAME: ${{ github.event.repository.name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
             "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
