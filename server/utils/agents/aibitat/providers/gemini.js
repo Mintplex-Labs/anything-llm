@@ -30,6 +30,22 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
+  /**
+   * Whether this provider supports agent streaming.
+   * - Tool call streaming results in a 400/503 error for all non-gemini models
+   * using the compatible v1beta/openai/ endpoint
+   * @returns {boolean}
+   */
+  get supportsAgentStreaming() {
+    if (!this.model.startsWith("gemini")) {
+      this.providerLog(
+        `Gemini: ${this.model} does not support tool call streaming.`
+      );
+      return false;
+    }
+    return true;
+  }
+
   get supportsToolCalling() {
     if (!this.model.startsWith("gemini")) return false;
     return true;
