@@ -22,7 +22,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("automatic");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10"
+            className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10"
           >
             {t("chat.mode.automatic.title")}
           </button>
@@ -33,7 +33,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("chat");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
+            className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
           >
             {t("chat.mode.chat.title")}
           </button>
@@ -44,7 +44,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("query");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
+            className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
           >
             {t("chat.mode.query.title")}
           </button>
