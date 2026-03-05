@@ -904,6 +904,9 @@ const TRANSLATIONS = {
       "Suas alterações serão salvas diretamente nesta resposta.",
     see_less: "Ver menos",
     see_more: "Ver mais",
+    sources: "Fontes",
+    document: "Documento",
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Editar conta",

@@ -948,6 +948,9 @@ const TRANSLATIONS = {
       "Los cambios que realice se guardarán directamente en esta respuesta.",
     see_less: "Ver menos",
     see_more: "Ver más",
+    sources: "Fuentes",
+    document: "Documento",
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Editar cuenta",

@@ -737,6 +737,9 @@ const TRANSLATIONS = {
       "Ваши изменения будут сохранены непосредственно в этом ответе.",
     see_less: "Показать меньше",
     see_more: "Узнать больше",
+    sources: "Источники",
+    document: "Документ",
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

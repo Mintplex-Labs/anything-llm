@@ -737,6 +737,9 @@ const TRANSLATIONS = {
       "Vos modifications seront enregistrées directement dans cette réponse.",
     see_less: "Voir moins",
     see_more: "Voir plus",
+    sources: "Sources",
+    document: "Document",
+    similarity_match: null,
   },
   profile_settings: {
     edit_account: "Modifier le compte",
