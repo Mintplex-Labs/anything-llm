@@ -670,9 +670,7 @@ function SkillList({
             }`}
             onClick={() => handleClick?.(skill)}
           >
-            <div className="text-sm font-light">
-              {settings.titleKey ? t(settings.titleKey) : settings.title}
-            </div>
+            <div className="text-sm font-light">{t(settings.titleKey)}</div>
             <div className="flex items-center gap-x-2">
               {isDefault ? (
                 <DefaultBadge title={skill} />

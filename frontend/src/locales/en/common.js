@@ -437,7 +437,7 @@ const TRANSLATIONS = {
       web: {
         title: "Web Search",
         description:
-          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider. Web search during agent sessions will not work until this is set up.",
+          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
       },
       sql: {
         title: "SQL Connector",

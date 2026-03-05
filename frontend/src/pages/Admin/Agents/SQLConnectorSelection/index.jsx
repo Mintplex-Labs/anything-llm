@@ -109,7 +109,7 @@ export default function AgentSQLConnectorSelection({
                 htmlFor="name"
                 className="text-theme-text-primary text-md font-bold"
               >
-                {titleKey ? t(titleKey) : "SQL Agent"}
+                {t(titleKey)}
               </label>
             </div>
             <Toggle
@@ -124,9 +124,7 @@ export default function AgentSQLConnectorSelection({
             className="w-full rounded-md"
           />
           <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-            {descriptionKey
-              ? t(descriptionKey)
-              : "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers."}
+            {t(descriptionKey)}
           </p>
           {enabled && (
             <>
