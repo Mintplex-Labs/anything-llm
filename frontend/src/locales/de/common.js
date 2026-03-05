@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     "browser-extension": "Browser-Extension",
     "system-prompt-variables": "Systempromptvariablen",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Gemeindezentrum",
+      trending: "Entdecken Sie die aktuell beliebtesten Themen",
+      "your-account": "Ihr Konto",
+      "import-item": "Artikel importieren",
+    },
   },
   login: {
     "multi-user": {

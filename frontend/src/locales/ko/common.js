@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
     "mobile-app": "AnythingLLM 모바일",
+    "community-hub": {
+      title: "지역 커뮤니티 허브",
+      trending: "인기 트렌드 탐색",
+      "your-account": "당신의 계정",
+      "import-item": "수입 품목",
+    },
   },
   login: {
     "multi-user": {

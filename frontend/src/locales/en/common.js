@@ -106,6 +106,12 @@ const TRANSLATIONS = {
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
+    "community-hub": {
+      title: "Community Hub",
+      trending: "Explore Trending",
+      "your-account": "Your Account",
+      "import-item": "Import Item",
+    },
     admin: "Admin",
     tools: "Tools",
     "system-prompt-variables": "System Prompt Variables",

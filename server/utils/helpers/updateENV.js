@@ -562,14 +562,6 @@ const KEY_MAPPING = {
   },
 
   // Agent Integration ENVs
-  AgentGoogleSearchEngineId: {
-    envKey: "AGENT_GSE_CTX",
-    checks: [],
-  },
-  AgentGoogleSearchEngineKey: {
-    envKey: "AGENT_GSE_KEY",
-    checks: [],
-  },
   AgentSerpApiKey: {
     envKey: "AGENT_SERPAPI_API_KEY",
     checks: [],
