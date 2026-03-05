@@ -40,6 +40,7 @@ import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
+import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -77,6 +78,7 @@ import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -178,6 +180,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "DockerModelRunnerModelPref",
       "DockerModelRunnerModelTokenLimit",
     ],
+  },
+  {
+    name: "Lemonade",
+    value: "lemonade",
+    logo: LemonadeLogo,
+    options: (settings) => <LemonadeOptions settings={settings} />,
+    description:
+      "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
+    requiredConfig: ["LemonadeLLMBasePath"],
   },
   {
     name: "SambaNova",

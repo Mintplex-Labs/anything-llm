@@ -16,6 +16,7 @@ import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -31,6 +32,8 @@ import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
 import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
 import OpenRouterOptions from "@/components/EmbeddingSelection/OpenRouterOptions";
+import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
+import LemonadeOptions from "@/components/EmbeddingSelection/LemonadeOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -38,7 +41,6 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
-import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
 
 const EMBEDDERS = [
   {
@@ -91,6 +93,14 @@ const EMBEDDERS = [
     options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
     description:
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+  },
+  {
+    name: "Lemonade",
+    value: "lemonade",
+    logo: LemonadeLogo,
+    options: (settings) => <LemonadeOptions settings={settings} />,
+    description:
+      "Run embedding models locally on your own machine using Lemonade.",
   },
   {
     name: "OpenRouter",
