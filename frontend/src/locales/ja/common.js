@@ -319,11 +319,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "ウェブ検索と閲覧",
-        description: null,
+        description:
+          "エージェントがウェブ検索（SERP）プロバイダーに接続することで、あなたの質問に答えるためにウェブを検索できるようにする。",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQLコネクタ",
+        description:
+          "エージェントが、さまざまなSQLデータベースプロバイダーに接続することで、SQLを活用してお客様からの質問に回答できるようにする。",
       },
     },
   },

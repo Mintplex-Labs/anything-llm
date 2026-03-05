@@ -402,11 +402,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "חיפוש וגלישה באינטרנט בזמן אמת",
-        description: null,
+        description:
+          "אפשרו לסוכן שלכם לחפש באינטרנט כדי לענות על שאלותיכם, על ידי חיבור לספק שירותי חיפוש (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "חיבור SQL",
+        description:
+          "אפשרו לסוכן שלכם לנצל את SQL כדי לענות על שאלותיכם, על ידי חיבור למספר ספקי מסדי נתונים של SQL.",
       },
     },
   },

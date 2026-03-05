@@ -327,11 +327,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Ricerca e navigazione web in tempo reale",
-        description: null,
+        description:
+          "Permettere al vostro agente di effettuare ricerche sul web per rispondere alle vostre domande, collegandosi a un fornitore di servizi di ricerca (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "Connettore SQL",
+        description:
+          "Permetti al tuo agente di utilizzare SQL per rispondere alle tue domande, collegandosi a diversi fornitori di database SQL.",
       },
     },
   },

@@ -323,11 +323,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web zoeken en browsen",
-        description: null,
+        description:
+          "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL-connector",
+        description:
+          "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
       },
     },
   },

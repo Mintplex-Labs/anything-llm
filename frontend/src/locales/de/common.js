@@ -412,11 +412,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live-Websuche und -Browsing",
-        description: null,
+        description:
+          "Ermöglichen Sie Ihrem Agenten, das Internet zu durchsuchen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu einem Anbieter von Web-Suchdiensten (SERP) herstellen.",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, SQL zu nutzen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu verschiedenen SQL-Datenbankanbietern herstellen.",
       },
     },
     "performance-warning":

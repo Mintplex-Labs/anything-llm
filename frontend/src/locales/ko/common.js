@@ -403,11 +403,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "실시간 웹 검색 및 탐색",
-        description: null,
+        description:
+          "웹 검색 (SERP) 제공업체와 연결하여 에이전트가 웹을 검색하고 질문에 답변하도록 설정합니다.",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL 연결기",
+        description:
+          "여러 SQL 데이터베이스 제공업체에 연결하여 에이전트가 SQL을 활용하여 질문에 답변할 수 있도록 지원합니다.",
       },
     },
   },

@@ -324,11 +324,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web-søgning og browsing",
-        description: null,
+        description:
+          "Giv din agent mulighed for at søge på internettet for at besvare dine spørgsmål ved at forbinde den til en web-søgetjeneste (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL-forbindelse",
+        description:
+          "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
       },
     },
   },

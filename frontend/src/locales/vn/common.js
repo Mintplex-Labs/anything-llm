@@ -321,11 +321,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
-        description: null,
+        description:
+          "Cho phép đại lý của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "Kết nối SQL",
+        description:
+          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
       },
     },
   },

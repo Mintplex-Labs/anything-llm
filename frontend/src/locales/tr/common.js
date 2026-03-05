@@ -322,11 +322,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Canlı web araması ve gezinme",
-        description: null,
+        description:
+          "Ajantınızın, web arama (SERP) sağlayıcısıyla bağlantı kurarak, sorularınızı yanıtlamak için web'i aramasını sağlayın.",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL Bağlayıcı",
+        description:
+          "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
       },
     },
   },

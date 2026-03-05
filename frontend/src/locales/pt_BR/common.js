@@ -406,11 +406,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Busca na web",
-        description: null,
+        description:
+          "Permita que seu agente acesse a web para responder às suas perguntas, conectando-se a um provedor de pesquisa na web (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "Conector SQL",
+        description:
+          "Permita que seu agente utilize o SQL para responder às suas perguntas, conectando-se a diversos provedores de bancos de dados SQL.",
       },
     },
   },

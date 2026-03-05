@@ -420,11 +420,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
-        description: null,
+        description:
+          "Umožněte svému agentovi, aby prohledával internet a odpovídal na vaše otázky, propojením se poskytovatelem vyhledávacího servisu (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "Připojení k databázi SQL",
+        description:
+          "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
       },
     },
   },

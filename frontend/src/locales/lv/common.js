@@ -409,11 +409,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tiešsaistes tīmekļa meklēšana un pārlūkošana",
-        description: null,
+        description:
+          "Iegādājieties iespēju, lai jūsu aģents varētu meklēt informāciju internetā, lai atbildētu uz jūsu jautājumiem, pieslēdzoties tīmekļa meklēšanas (SERP) pakalpojuma sniedzējam.",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL savienotājs",
+        description:
+          "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
       },
     },
   },

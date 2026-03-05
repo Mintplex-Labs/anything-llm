@@ -412,11 +412,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        description: null,
+        description:
+          "Pozwól swojemu agentowi na wyszukiwanie informacji w Internecie, aby odpowiadał na Twoje pytania, poprzez połączenie z dostawcą usług wyszukiwania (SERP).",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "Połączenie z bazą danych SQL",
+        description:
+          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
       },
     },
   },

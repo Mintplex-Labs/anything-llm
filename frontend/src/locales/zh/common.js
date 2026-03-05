@@ -390,11 +390,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "实时网络搜索和浏览",
-        description: null,
+        description:
+          "通过连接到搜索引擎（SERP）提供商，让您的代理能够搜索互联网来回答您的问题。",
       },
       sql: {
-        title: null,
-        description: null,
+        title: "SQL 连接器",
+        description:
+          "让您的代理能够利用 SQL 来回答您的问题，只需连接到各种 SQL 数据库提供商即可。",
       },
     },
   },
