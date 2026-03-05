@@ -45,8 +45,6 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const supportsToolCalling = this.supportsNativeToolCallingViaEnv("groq");
-    false;
-
     if (supportsToolCalling)
       this.providerLog("Groq supports native tool calling is ENABLED via ENV.");
     else
