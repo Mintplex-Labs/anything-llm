@@ -9,7 +9,6 @@ on:
       pr_number:
         description: 'PR number to clean up (e.g., 123)'
         required: true
-        type: string
 
 jobs:
   cleanup:
