@@ -4,12 +4,19 @@ name: Cleanup QA GHCR Image
 on:
   pull_request:
     types: [closed, unlabeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to clean up (e.g., 123)'
+        required: true
+        type: string
 
 jobs:
   cleanup:
     name: Delete QA GHCR image tag
     runs-on: ubuntu-latest
     if: >-
+      github.event_name == 'workflow_dispatch' ||
       (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
       (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA')
     permissions:
@@ -18,19 +25,20 @@ jobs:
       - name: Delete PR tag from GHCR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number || github.event.pull_request.number }}
         run: |
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
             "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions" \
-            --jq '.[] | select(.metadata.container.tags[] == "pr-${{ github.event.pull_request.number }}") | .id' \
+            --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
             2>/dev/null || true)
           
           if [ -n "$VERSION_ID" ]; then
-            echo "Deleting package version $VERSION_ID (tag: pr-${{ github.event.pull_request.number }})"
+            echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
             gh api \
               --method DELETE \
               -H "Accept: application/vnd.github+json" \
               "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions/$VERSION_ID"
           else
-            echo "No package found with tag pr-${{ github.event.pull_request.number }}, skipping cleanup"
+            echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
           fi
