@@ -10,6 +10,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { resources } from "./resources.js";
+import DYNAMIC_KEY_ALLOWLIST from "./dynamicKeyAllowlist.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_SRC = path.resolve(__dirname, "..");
@@ -68,10 +69,40 @@ for (const file of sourceFiles) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Diff and report
+// 3b. Detect dynamic t() calls (variable references) and warn about them
 // ---------------------------------------------------------------------------
+const dynamicTCallRegex = /\bt\(\s*([a-zA-Z_$][a-zA-Z0-9_$.]*)\s*[,)]/g;
+const dynamicUsages = [];
+
+for (const file of sourceFiles) {
+  const content = fs.readFileSync(file, "utf-8");
+  let match;
+  while ((match = dynamicTCallRegex.exec(content)) !== null) {
+    const arg = match[1];
+    // Skip if the argument starts with a quote (already captured above) or is a common false positive
+    if (/^["'`]/.test(arg)) continue;
+    dynamicUsages.push({ file: path.relative(FRONTEND_SRC, file), arg });
+  }
+}
+
+if (dynamicUsages.length > 0) {
+  console.log(
+    `\nWarning: Found ${dynamicUsages.length} dynamic t() call(s) that cannot be statically analyzed:\n`
+  );
+  for (const { file, arg } of dynamicUsages) {
+    console.log(`  ${file}: t(${arg})`);
+  }
+  console.log(
+    `\nIf these reference valid keys, add them to locales/dynamicKeyAllowlist.js to prevent accidental deletion.\n`
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 4. Diff and report (excluding allowlisted keys)
+// ---------------------------------------------------------------------------
+const allowlist = new Set(DYNAMIC_KEY_ALLOWLIST);
 const unusedKeys = [...definedKeys]
-  .filter((key) => !referencedKeys.has(key))
+  .filter((key) => !referencedKeys.has(key) && !allowlist.has(key))
   .sort();
 
 if (unusedKeys.length === 0) {
