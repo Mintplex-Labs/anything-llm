@@ -138,6 +138,24 @@ class GeminiProvider extends Provider {
         return;
       }
 
+      // Handle messages with attachments (images) for multimodal support
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
+        return;
+      }
+
       formattedMessages.push({
         role: message.role,
         content: message.content,

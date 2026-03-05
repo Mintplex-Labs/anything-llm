@@ -31,11 +31,24 @@ const WORKSPACE_AGENT = {
    * @param {string} provider
    * @param {import("@prisma/client").workspaces | null} workspace
    * @param {import("@prisma/client").users | null} user
+   * @param {Array<{pageContent: string, title?: string}>} parsedFileContext - Parsed files to inject into context
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
-  getDefinition: async (provider = null, workspace = null, user = null) => {
+  getDefinition: async (
+    provider = null,
+    workspace = null,
+    user = null,
+    parsedFileContext = []
+  ) => {
+    const basePrompt = await Provider.systemPrompt({
+      provider,
+      workspace,
+      user,
+    });
+    const contextText = formatParsedFileContext(parsedFileContext);
+
     return {
-      role: await Provider.systemPrompt({ provider, workspace, user }),
+      role: contextText ? `${basePrompt}${contextText}` : basePrompt,
       functions: [
         ...(await agentSkillsFromSystemSettings()),
         ...ImportedPlugin.activeImportedPlugins(),
@@ -45,6 +58,28 @@ const WORKSPACE_AGENT = {
     };
   },
 };
+
+/**
+ * Format parsed file context for injection into the agent system prompt.
+ * Mirrors the context injection format used in regular chat flow.
+ * @param {Array<{pageContent: string, title?: string}>} parsedFileContext
+ * @returns {string}
+ */
+function formatParsedFileContext(parsedFileContext = []) {
+  if (!parsedFileContext || parsedFileContext.length === 0) return "";
+
+  const contextTexts = parsedFileContext.map((doc) => doc.pageContent);
+  if (contextTexts.length === 0) return "";
+
+  return (
+    "\nContext:\n" +
+    contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n`;
+      })
+      .join("")
+  );
+}
 
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically

@@ -562,10 +562,22 @@ ${this.getHistory({ to: route.to })
     }
 
     // This is normal chat between user<->agent
-    return this.getHistory(route).map((c) => ({
-      content: c.content,
-      role: c.from === route.to ? "user" : "assistant",
-    }));
+    // Include attachments if present (for vision/multimodal support)
+    return this.getHistory(route).map((c) => {
+      const message = {
+        content: c.content,
+        role: c.from === route.to ? "user" : "assistant",
+      };
+      // Pass attachments through for user messages that have them
+      if (
+        c.attachments &&
+        c.attachments.length > 0 &&
+        message.role === "user"
+      ) {
+        message.attachments = c.attachments;
+      }
+      return message;
+    });
   }
 
   /**
@@ -863,9 +875,10 @@ ${this.getHistory({ to: route.to })
    * Provide a feedback where it was interrupted if you want to.
    *
    * @param feedback The feedback to the interruption if any.
+   * @param attachments Optional attachments (images) to include with the feedback.
    * @returns
    */
-  async continue(feedback) {
+  async continue(feedback, attachments = []) {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "interrupt") {
       throw new Error("No chat to continue");
@@ -885,6 +898,7 @@ ${this.getHistory({ to: route.to })
         from,
         to,
         content: feedback,
+        ...(attachments?.length > 0 ? { attachments } : {}),
       };
 
       // register the message in the chat history

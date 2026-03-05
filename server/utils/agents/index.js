@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
@@ -10,6 +11,7 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { getAndClearInvocationAttachments } = require("../chats/agents");
 
 class AgentHandler {
   #invocationUUID;
@@ -19,6 +21,8 @@ class AgentHandler {
   channel = null;
   provider = null;
   model = null;
+  attachments = [];
+  parsedFileContext = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -574,7 +578,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.parsedFileContext
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
@@ -588,7 +593,40 @@ class AgentHandler {
   async init() {
     await this.#validInvocation();
     this.#providerSetupAndCheck();
+
+    // Retrieve cached attachments (images, etc.) from the HTTP request
+    this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+
+    // Fetch parsed files for context injection into system prompt
+    await this.#loadParsedFileContext();
+
     return this;
+  }
+
+  async #loadParsedFileContext() {
+    try {
+      const user = this.invocation.user_id
+        ? { id: this.invocation.user_id }
+        : null;
+      const thread = this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null;
+
+      this.parsedFileContext = await WorkspaceParsedFiles.getContextFiles(
+        this.invocation.workspace,
+        thread,
+        user
+      );
+
+      if (this.parsedFileContext.length > 0) {
+        this.log(
+          `Loaded ${this.parsedFileContext.length} parsed file(s) for context injection`
+        );
+      }
+    } catch (e) {
+      this.log("Error loading parsed file context", e.message);
+      this.parsedFileContext = [];
+    }
   }
 
   async createAIbitat(
@@ -634,6 +672,7 @@ class AgentHandler {
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
       content: this.invocation.prompt,
+      attachments: this.attachments,
     });
   }
 }

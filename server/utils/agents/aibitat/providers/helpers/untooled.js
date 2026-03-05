@@ -18,7 +18,9 @@ class UnTooled {
           `${prevMsg}\n${msg.content}`;
         return;
       }
-      modifiedMessages.push(msg);
+      // Format messages with attachments for multimodal support
+      // Uses formatMessageWithAttachments inherited from Provider base class
+      modifiedMessages.push(this.formatMessageWithAttachments(msg));
     });
     return modifiedMessages;
   }

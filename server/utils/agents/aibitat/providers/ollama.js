@@ -92,9 +92,22 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
+   * Parse a data URL into base64 data for Ollama images
+   * @param {string} dataUrl - Data URL like "data:image/jpeg;base64,/9j/..."
+   * @returns {string|null} Base64 encoded image data
+   */
+  #parseImageDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:[^;]+;base64,(.+)$/);
+    if (!matches) return null;
+    return matches[1];
+  }
+
+  /**
    * Convert aibitat's internal message history (which uses role:"function" with
    * originalFunctionCall metadata) into the Ollama tool-calling message format
    * (assistant tool_calls + role:"tool" result pairs).
+   * Handles image attachments for vision/multimodal support.
    * @param {Array} messages
    * @returns {Array}
    */
@@ -128,7 +141,23 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
               : JSON.stringify(message.content),
         });
       } else {
-        formatted.push(message);
+        // Handle messages with attachments (images) for multimodal support
+        if (message.attachments && message.attachments.length > 0) {
+          const images = [];
+          for (const attachment of message.attachments) {
+            const imageData = this.#parseImageDataUrl(attachment.contentString);
+            if (imageData) {
+              images.push(imageData);
+            }
+          }
+          const { attachments, ...restOfMessage } = message;
+          formatted.push({
+            ...restOfMessage,
+            ...(images.length > 0 ? { images } : {}),
+          });
+        } else {
+          formatted.push(message);
+        }
       }
     }
     return formatted;

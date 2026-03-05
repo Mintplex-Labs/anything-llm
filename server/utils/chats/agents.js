@@ -5,6 +5,36 @@ const {
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { Workspace } = require("../../models/workspace");
 
+/**
+ * In-memory cache for attachments associated with agent invocations.
+ * Attachments are stored here when grepAgents creates an invocation,
+ * then retrieved by AgentHandler when the websocket connects.
+ * @type {Map<string, Array>}
+ */
+const invocationAttachmentsCache = new Map();
+
+/**
+ * Store attachments for an invocation UUID
+ * @param {string} uuid - The invocation UUID
+ * @param {Array} attachments - The attachments array
+ */
+function cacheInvocationAttachments(uuid, attachments = []) {
+  if (attachments.length > 0) {
+    invocationAttachmentsCache.set(uuid, attachments);
+  }
+}
+
+/**
+ * Retrieve and remove attachments for an invocation UUID
+ * @param {string} uuid - The invocation UUID
+ * @returns {Array} The attachments array (empty if none cached)
+ */
+function getAndClearInvocationAttachments(uuid) {
+  const attachments = invocationAttachmentsCache.get(uuid) || [];
+  invocationAttachmentsCache.delete(uuid);
+  return attachments;
+}
+
 async function grepAgents({
   uuid,
   response,
@@ -12,6 +42,7 @@ async function grepAgents({
   workspace,
   user = null,
   thread = null,
+  attachments = [],
 }) {
   let nativeToolingEnabled = false;
 
@@ -47,6 +78,9 @@ async function grepAgents({
       return;
     }
 
+    // Cache attachments for the websocket handler to retrieve later
+    cacheInvocationAttachments(newInvocation.uuid, attachments);
+
     writeResponseChunk(response, {
       id: uuid,
       type: "agentInitWebsocketConnection",
@@ -78,4 +112,4 @@ async function grepAgents({
   return false;
 }
 
-module.exports = { grepAgents };
+module.exports = { grepAgents, getAndClearInvocationAttachments };
