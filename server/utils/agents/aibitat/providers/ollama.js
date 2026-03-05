@@ -82,6 +82,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    console.log("messages", JSON.stringify(messages, null, 2));
     await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
@@ -101,6 +102,34 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const matches = dataUrl.match(/^data:[^;]+;base64,(.+)$/);
     if (!matches) return null;
     return matches[1];
+  }
+
+  /**
+   * Override formatMessageWithAttachments for Ollama's specific format.
+   * Ollama expects images in a separate 'images' array with base64 data (no data URI prefix),
+   * not the OpenAI-style content array format.
+   * **This is only used for Ollama:untooled fallback mode.**
+   * @param {Object} message - Message with potential attachments
+   * @returns {Object} Formatted message for Ollama
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    const images = [];
+    for (const attachment of message.attachments) {
+      const imageData = this.#parseImageDataUrl(attachment.contentString);
+      if (imageData) {
+        images.push(imageData);
+      }
+    }
+
+    const { attachments, ...restOfMessage } = message;
+    return {
+      ...restOfMessage,
+      ...(images.length > 0 ? { images } : {}),
+    };
   }
 
   /**

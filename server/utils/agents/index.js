@@ -22,7 +22,6 @@ class AgentHandler {
   provider = null;
   model = null;
   attachments = [];
-  parsedFileContext = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -578,8 +577,7 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user,
-      this.parsedFileContext
+      user
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
@@ -597,13 +595,15 @@ class AgentHandler {
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
 
-    // Fetch parsed files for context injection into system prompt
-    await this.#loadParsedFileContext();
-
     return this;
   }
 
-  async #loadParsedFileContext() {
+  /**
+   * Fetch fresh parsed files and format them for injection into user messages.
+   * Called on every chat turn to ensure context is always up-to-date.
+   * @returns {Promise<string>} Formatted context string to append to user message
+   */
+  async #fetchParsedFileContext() {
     try {
       const user = this.invocation.user_id
         ? { id: this.invocation.user_id }
@@ -612,20 +612,31 @@ class AgentHandler {
         ? { id: this.invocation.thread_id }
         : null;
 
-      this.parsedFileContext = await WorkspaceParsedFiles.getContextFiles(
+      const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
         this.invocation.workspace,
         thread,
         user
       );
 
-      if (this.parsedFileContext.length > 0) {
-        this.log(
-          `Loaded ${this.parsedFileContext.length} parsed file(s) for context injection`
-        );
-      }
+      if (!parsedFiles || parsedFiles.length === 0) return "";
+
+      this.log(
+        `Injecting ${parsedFiles.length} parsed file(s) into user message`
+      );
+
+      return (
+        "\n\n<attached_documents>\n" +
+        parsedFiles
+          .map((doc, i) => {
+            const filename = doc.title || `Document ${i + 1}`;
+            return `<document name="${filename}">\n${doc.pageContent}\n</document>`;
+          })
+          .join("\n") +
+        "\n</attached_documents>"
+      );
     } catch (e) {
-      this.log("Error loading parsed file context", e.message);
-      this.parsedFileContext = [];
+      this.log("Error fetching parsed file context", e.message);
+      return "";
     }
   }
 
@@ -643,6 +654,10 @@ class AgentHandler {
         log: this.log,
       },
     });
+
+    // Register callback to fetch fresh parsed file context on each chat turn
+    // This injects parsed files into user messages instead of system prompt
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
