@@ -870,7 +870,9 @@ const TRANSLATIONS = {
     see_more: "查看更多",
     sources: "来源",
     document: "文件",
-    similarity_match: null,
+    similarity_match: "比赛",
+    source_count_one: "{{count}} 参考",
+    source_count_other: "{{count}} 相关资料",
   },
   profile_settings: {
     edit_account: "编辑帐户",

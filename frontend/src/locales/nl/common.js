@@ -742,7 +742,9 @@ const TRANSLATIONS = {
     see_more: "Meer zien",
     sources: "Bronnen",
     document: "Document",
-    similarity_match: null,
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
   },
   profile_settings: {
     edit_account: "Account bewerken",

@@ -903,7 +903,9 @@ const TRANSLATIONS = {
     see_more: "לראות עוד",
     sources: "מקורות",
     document: "מסמך",
-    similarity_match: null,
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

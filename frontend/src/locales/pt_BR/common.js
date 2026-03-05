@@ -912,7 +912,9 @@ const TRANSLATIONS = {
     see_more: "Ver mais",
     sources: "Fontes",
     document: "Documento",
-    similarity_match: null,
+    similarity_match: "jogo",
+    source_count_one: "Referência a {{count}}",
+    source_count_other: "Referências a {{count}}",
   },
   profile_settings: {
     edit_account: "Editar conta",

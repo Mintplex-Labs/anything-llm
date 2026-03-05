@@ -896,7 +896,9 @@ const TRANSLATIONS = {
     see_more: "Vaata rohkem",
     sources: "Allikasid",
     document: "Dokument",
-    similarity_match: null,
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

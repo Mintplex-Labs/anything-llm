@@ -735,7 +735,9 @@ const TRANSLATIONS = {
     see_more: "Xem thêm",
     sources: "Nguồn",
     document: "Tài liệu",
-    similarity_match: null,
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

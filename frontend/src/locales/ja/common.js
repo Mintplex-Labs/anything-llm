@@ -732,7 +732,9 @@ const TRANSLATIONS = {
     see_more: "詳細を見る",
     sources: "出典",
     document: "文書",
-    similarity_match: null,
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

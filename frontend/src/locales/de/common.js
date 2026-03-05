@@ -939,7 +939,9 @@ const TRANSLATIONS = {
     see_more: "Mehr anzeigen",
     sources: "Quellen",
     document: "Dokument",
-    similarity_match: null,
+    similarity_match: "Spiel",
+    source_count_one: "{{count}} Referenz",
+    source_count_other: "{{count}} Verweise",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

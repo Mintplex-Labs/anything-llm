@@ -745,7 +745,9 @@ const TRANSLATIONS = {
     see_more: "Узнать больше",
     sources: "Источники",
     document: "Документ",
-    similarity_match: null,
+    similarity_match: "соревнование; игра",
+    source_count_one: "{{count}} – ссылка",
+    source_count_other: "Ссылки на {{count}}",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

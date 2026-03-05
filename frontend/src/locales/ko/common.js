@@ -913,7 +913,9 @@ const TRANSLATIONS = {
     see_more: "더 보기",
     sources: "출처",
     document: "문서",
-    similarity_match: null,
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

@@ -934,7 +934,9 @@ const TRANSLATIONS = {
     see_more: "Zobacz więcej",
     sources: "Źródła",
     document: "Dokument",
-    similarity_match: null,
+    similarity_match: "mecz",
+    source_count_one: "{{count}} – odniesienie",
+    source_count_other: "{{count}} – odnośniki",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

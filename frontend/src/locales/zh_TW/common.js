@@ -692,7 +692,9 @@ const TRANSLATIONS = {
     see_more: "查看更多",
     sources: "來源",
     document: "文件",
-    similarity_match: null,
+    similarity_match: "比賽",
+    source_count_one: "{{count}} 參考",
+    source_count_other: "{{count}} 的相關資料",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

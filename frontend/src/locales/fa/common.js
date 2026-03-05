@@ -739,7 +739,9 @@ const TRANSLATIONS = {
     see_more: "بیشتر",
     sources: "منابع",
     document: "اسناد",
-    similarity_match: null,
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

@@ -960,7 +960,9 @@ const TRANSLATIONS = {
     see_more: "Více",
     sources: "Zdroje",
     document: "Dokument",
-    similarity_match: null,
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
   },
   profile_settings: {
     edit_account: "Upravit účet",

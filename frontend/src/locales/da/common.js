@@ -744,7 +744,9 @@ const TRANSLATIONS = {
     see_more: "Se flere",
     sources: "Kilder",
     document: "Dokument",
-    similarity_match: null,
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
   },
   profile_settings: {
     edit_account: "Rediger konto",
