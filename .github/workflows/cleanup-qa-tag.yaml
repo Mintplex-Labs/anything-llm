@@ -59,11 +59,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO_NAME: ${{ github.event.repository.name }}
         run: |
+          # Must use lowercase - packages are published with lowercase owner
+          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO_LC="${GITHUB_REPOSITORY#*/}"
+          REPO_LC="${REPO_LC,,}"
+          
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
-            "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions" \
+            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
             2>/dev/null || true)
           
@@ -72,7 +76,7 @@ jobs:
             gh api \
               --method DELETE \
               -H "Accept: application/vnd.github+json" \
-              "/orgs/${{ github.repository_owner }}/packages/container/${REPO_NAME}/versions/$VERSION_ID"
+              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
           else
             echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
           fi
