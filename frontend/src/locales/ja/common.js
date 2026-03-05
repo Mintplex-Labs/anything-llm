@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     branding: "ブランディングとホワイトレーベル化",
     chat: "チャット",
     "mobile-app": "AnythingLLM モバイル版",
+    "community-hub": {
+      title: "地域交流拠点",
+      trending: "人気のあるものを探す",
+      "your-account": "あなたのアカウント",
+      "import-item": "輸入品",
+    },
   },
   login: {
     "multi-user": {
