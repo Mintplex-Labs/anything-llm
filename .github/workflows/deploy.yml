@@ -3,6 +3,7 @@ name: Build & Push Lovora Image
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
   build:
