@@ -43,6 +43,17 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * DeepSeek models do not support vision/image inputs.
+   * Strip attachments from messages to prevent API errors.
+   * @param {Object} message - Message with potential attachments
+   * @returns {Object} Message without attachments
+   */
+  formatMessageWithAttachments(message) {
+    const { attachments, ...rest } = message;
+    return rest;
+  }
+
   get #isThinkingModel() {
     return this.model === "deepseek-reasoner";
   }
@@ -78,13 +89,37 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
+  /**
+   * Strip attachments from all messages since DeepSeek doesn't support vision.
+   * @param {Array} messages - Array of messages
+   * @returns {Array} Messages with attachments removed
+   */
+  #stripAttachments(messages) {
+    let hasAttachments = false;
+    const stripped = messages.map((msg) => {
+      if (msg.attachments && msg.attachments.length > 0) {
+        hasAttachments = true;
+        const { attachments, ...rest } = msg;
+        return rest;
+      }
+      return msg;
+    });
+    if (hasAttachments) {
+      this.providerLog(
+        "DeepSeek does not support vision - stripped image attachments from messages."
+      );
+    }
+    return stripped;
+  }
+
   async stream(messages, functions = [], eventHandler = null) {
     const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
         this,
-        messages,
+        cleanedMessages,
         functions,
         this.#handleFunctionCallStream.bind(this),
         eventHandler
@@ -99,7 +134,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       return await tooledStream(
         this.client,
         this.model,
-        messages,
+        cleanedMessages,
         functions,
         eventHandler,
         this.#tooledOptions
@@ -120,11 +155,12 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async complete(messages, functions = []) {
     const useNative = functions.length > 0 && this.supportsNativeToolCalling();
+    const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
         this,
-        messages,
+        cleanedMessages,
         functions,
         this.#handleFunctionCallChat.bind(this)
       );
@@ -134,7 +170,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       const result = await tooledComplete(
         this.client,
         this.model,
-        messages,
+        cleanedMessages,
         functions,
         this.getCost.bind(this),
         this.#tooledOptions

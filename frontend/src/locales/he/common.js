@@ -101,6 +101,12 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "מרכז קהילתי",
+      trending: "גלו את הנושאים החמים",
+      "your-account": "החשבון שלך",
+      "import-item": "ייבוא פריט",
+    },
   },
   login: {
     "multi-user": {

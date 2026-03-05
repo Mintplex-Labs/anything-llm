@@ -1076,7 +1076,7 @@ function workspaceEndpoints(app) {
         });
       } catch (error) {
         console.error("Error checking if agent command is available:", error);
-        response.status(500).json({ showAgentCommand: false });
+        response.status(500).json({ showAgentCommand: true });
       }
     }
   );

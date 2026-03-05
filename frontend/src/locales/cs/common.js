@@ -111,6 +111,12 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
   },
   login: {
     "multi-user": {

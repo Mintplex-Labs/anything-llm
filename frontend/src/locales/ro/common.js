@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
   },
   login: {
     "multi-user": {

@@ -30,6 +30,22 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
+  /**
+   * Whether this provider supports agent streaming.
+   * - Tool call streaming results in a 400/503 error for all non-gemini models
+   * using the compatible v1beta/openai/ endpoint
+   * @returns {boolean}
+   */
+  get supportsAgentStreaming() {
+    if (!this.model.startsWith("gemini")) {
+      this.providerLog(
+        `Gemini: ${this.model} does not support tool call streaming.`
+      );
+      return false;
+    }
+    return true;
+  }
+
   get supportsToolCalling() {
     if (!this.model.startsWith("gemini")) return false;
     return true;
@@ -135,6 +151,24 @@ class GeminiProvider extends Provider {
             content: message.content,
           }
         );
+        return;
+      }
+
+      // Handle messages with attachments (images) for multimodal support
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
         return;
       }
 
