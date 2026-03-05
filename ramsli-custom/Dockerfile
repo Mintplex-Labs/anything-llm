@@ -28,6 +28,8 @@ COPY --from=frontend-build /app/frontend/dist /app/server/public
 # Create log dir and set permissions
 RUN mkdir -p /var/log/supervisor && chmod 755 /var/log/supervisor && \
     chmod +x /usr/local/bin/lovora-entrypoint.sh
+    mkdir -p /collector/hotdir && \
+    chown -R anythingllm:anythingllm /collector
 
 EXPOSE 3001
 
