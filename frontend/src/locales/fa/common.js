@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "برندسازی و تولید محصولات با برچسب سفید",
     chat: "چت",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مرکز محلی",
+      trending: "بررسی ترندها",
+      "your-account": "حساب شما",
+      "import-item": "وارد کردن کالا",
+    },
   },
   login: {
     "multi-user": {

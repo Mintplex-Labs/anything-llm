@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Suporte",
     "browser-extension": "Extensão de Navegador",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centro Comunitário",
+      trending: "Explore as tendências",
+      "your-account": "Sua Conta",
+      "import-item": "Importar Item",
+    },
   },
   login: {
     "multi-user": {

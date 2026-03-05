@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     branding: "品牌與白標設定",
     chat: "聊天室",
     "mobile-app": "AnythingLLM 應用程式",
+    "community-hub": {
+      title: "社區中心",
+      trending: "探索熱門",
+      "your-account": "您的帳戶",
+      "import-item": "進口商品",
+    },
   },
   login: {
     "multi-user": {

@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
     "mobile-app": "AnythingLLM mobilā versija",
+    "community-hub": {
+      title: "Sabiedriskais centrs",
+      trending: "Izpētiet populārākās",
+      "your-account": "Jūsu konts",
+      "import-item": "Importētā prece",
+    },
   },
   login: {
     "multi-user": {

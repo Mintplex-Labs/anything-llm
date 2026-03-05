@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
     "mobile-app": "AnythingLLM mobiilversioon",
+    "community-hub": {
+      title: "Kogukonna keskpunkt",
+      trending: "Avasta populaarseid",
+      "your-account": "Teie konto",
+      "import-item": "Importeeritud toode",
+    },
   },
   login: {
     "multi-user": {
