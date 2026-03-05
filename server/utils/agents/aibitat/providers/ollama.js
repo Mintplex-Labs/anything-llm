@@ -82,7 +82,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    console.log("messages", JSON.stringify(messages, null, 2));
     await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
