@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Delete PR tag from GHCR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
           PR_NUMBER: ${{ inputs.pr_number }}
         run: |
           # Must use lowercase - packages are published with lowercase owner
@@ -33,6 +33,7 @@ jobs:
           
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
+            --paginate \
             "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id")
           
@@ -57,7 +58,7 @@ jobs:
     steps:
       - name: Delete PR tag from GHCR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           # Must use lowercase - packages are published with lowercase owner
@@ -67,6 +68,7 @@ jobs:
           
           VERSION_ID=$(gh api \
             -H "Accept: application/vnd.github+json" \
+            --paginate \
             "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
             --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
             2>/dev/null || true)
