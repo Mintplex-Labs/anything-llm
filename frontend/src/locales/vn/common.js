@@ -321,11 +321,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
-        "desc-start":
-          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
-        "desc-end":
-          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
+        description:
+          "Cho phép đại lý của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
       },
+      sql: {
+        title: "Kết nối SQL",
+        description:
+          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
+      },
+      default_skill:
+        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
     },
   },
   recorded: {
