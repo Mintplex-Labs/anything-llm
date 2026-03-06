@@ -928,7 +928,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - výchozí agent pro tento pracovní prostor.",
     custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
-    slash_reset: "/reset",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",
     add_new_preset: " Přidat novou předvolbu",
     command: "Příkaz",

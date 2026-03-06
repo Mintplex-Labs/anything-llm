@@ -663,7 +663,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 此工作區的預設代理。",
     custom_agents_coming_soon: "自訂代理功能即將推出！",
-    slash_reset: "/reset",
     preset_reset_description: "清除聊天紀錄並開始新的聊天",
     add_new_preset: "新增預設",
     command: "指令",

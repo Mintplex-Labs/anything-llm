@@ -841,7 +841,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 此工作区的预设代理。",
     custom_agents_coming_soon: "自定义代理功能即将推出！",
-    slash_reset: "/reset",
     preset_reset_description: "清除聊天纪录并开始新的聊天",
     add_new_preset: "新增预设",
     command: "指令",

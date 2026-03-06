@@ -879,7 +879,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - o agente padrão deste workspace.",
     custom_agents_coming_soon: "mais agentes personalizados em breve!",
-    slash_reset: "/reset",
     preset_reset_description: "Limpa o histórico do seu chat e inicia um novo",
     add_new_preset: " Insere um novo Preset",
     command: "Comando",

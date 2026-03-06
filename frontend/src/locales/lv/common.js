@@ -900,7 +900,6 @@ const TRANSLATIONS = {
     default_agent_description: "- noklusējuma aģents šim darba telpai.",
     custom_agents_coming_soon:
       "Nedaudz drīzumā būs pieejami individuāli pakalpojumi!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Izdzēsiet savu pastā veidoتو sarunu vēsturi un sāciet jaunu sarunu.",
     add_new_preset: "Pievienot jaunu iepriekšējo",

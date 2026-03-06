@@ -873,7 +873,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
     custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
-    slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",
     add_new_preset: " הוסף הגדרה קבועה חדשה",
     command: "פקודה",

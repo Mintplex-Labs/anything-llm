@@ -52,15 +52,17 @@ export default function SlashCommandsTab({
   };
 
   // Build the list of selectable items for keyboard navigation and rendering
+  // Command names must stay as static English strings since the backend
+  // matches against exact "/reset" and "/exit" commands.
   const items = useMemo(() => {
     const builtIn = isActiveAgentSession
       ? {
-          command: t("chat_window.slash_exit"),
+          command: "/exit",
           description: t("chat_window.preset_exit_description"),
           autoSubmit: true,
         }
       : {
-          command: t("chat_window.slash_reset"),
+          command: "/reset",
           description: t("chat_window.preset_reset_description"),
           autoSubmit: true,
         };

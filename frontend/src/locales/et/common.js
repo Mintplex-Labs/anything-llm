@@ -866,7 +866,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " – selle tööruumi vaikimisi agent.",
     custom_agents_coming_soon: "kohandatud agendid tulekul!",
-    slash_reset: "/reset",
     preset_reset_description: "Tühjenda vestlusajalugu ja alusta uut vestlust",
     add_new_preset: " Lisa uus preset",
     command: "Käsk",

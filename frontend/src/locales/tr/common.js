@@ -704,7 +704,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
     custom_agents_coming_soon: "özel ajanlar yakında!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
     add_new_preset: " Yeni Ön Ayar Ekle",

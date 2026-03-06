@@ -710,7 +710,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - de standaardagent voor deze werkruimte.",
     custom_agents_coming_soon: "Aangepaste agenten komen binnenkort!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Wis je chatgeschiedenis en begin een nieuwe chat",
     add_new_preset: "Nieuwe preset toevoegen",

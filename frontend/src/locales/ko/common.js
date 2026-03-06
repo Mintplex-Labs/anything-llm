@@ -882,7 +882,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 이 워크스페이스의 기본 에이전트입니다.",
     custom_agents_coming_soon: "커스텀 에이전트 기능이 곧 제공됩니다!",
-    slash_reset: "/reset",
     preset_reset_description: "채팅 기록을 초기화하고 새 채팅을 시작합니다",
     add_new_preset: "새 프리셋 추가",
     command: "명령어",

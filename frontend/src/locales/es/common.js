@@ -919,7 +919,6 @@ const TRANSLATIONS = {
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Borra tu historial de chat y comienza un nuevo chat",
     add_new_preset: " Agregar nuevo preajuste",

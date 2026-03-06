@@ -635,7 +635,6 @@ const TRANSLATIONS = {
     default_agent_description:
       " - agentul implicit pentru acest spațiu de lucru.",
     custom_agents_coming_soon: "agenții personalizați vin în curând!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Șterge istoricul chatului și începe o conversație nouă",
     add_new_preset: " Adaugă preset nou",

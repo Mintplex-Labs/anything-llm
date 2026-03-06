@@ -702,7 +702,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - agent mặc định cho không gian làm việc này.",
     custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Xóa lịch sử trò chuyện và bắt đầu cuộc trò chuyện mới",
     add_new_preset: " Thêm Cài đặt sẵn Mới",

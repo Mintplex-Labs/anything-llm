@@ -708,7 +708,6 @@ const TRANSLATIONS = {
     default_agent_description:
       "- это основной агент для данного рабочего пространства.",
     custom_agents_coming_soon: "Скоро появятся индивидуальные агенты!",
-    slash_reset: "/reset",
     preset_reset_description: "Очистите историю чата и начните новый чат",
     add_new_preset: "Добавить новый шаблон",
     command: "Команда",
