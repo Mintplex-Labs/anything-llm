@@ -15,6 +15,7 @@ import handleSocketResponse, {
   websocketURI,
   AGENT_SESSION_END,
   AGENT_SESSION_START,
+  setAgentSessionActive,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
@@ -24,11 +25,14 @@ import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import TextSizeMenu from "./TextSizeMenu";
+import WorkspaceModelPicker from "./WorkspaceModelPicker";
 import SourcesSidebar, { SourcesSidebarProvider } from "./SourcesSidebar";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
@@ -66,6 +70,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const currentMessage =
       document.getElementById(PROMPT_INPUT_ID)?.value || "";
     if (!currentMessage) return false;
+
+    // Clear the localStorage draft for this thread/workspace so that if the
+    // PromptInput remounts (empty→chat transition), it won't restore stale text
+    clearPromptInputDraft(threadSlug ?? workspace.slug);
 
     const prevChatHistory = [
       ...chatHistory,
@@ -145,6 +153,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
 
     if (!text || text === "") return false;
+
+    // Clear the localStorage draft so that if the PromptInput remounts
+    // (e.g. /reset causing empty→chat or chat→empty transitions),
+    // it won't restore stale text.
+    clearPromptInputDraft(threadSlug ?? workspace.slug);
+
     // If we are auto-submitting
     // Then we can replace the current text since this is not accumulating.
     let prevChatHistory;
@@ -260,6 +274,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         socket.supportsAgentStreaming = false;
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           websocket.close();
         });
@@ -270,6 +285,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             handleSocketResponse(socket, event, setChatHistory);
           } catch {
             console.error("Failed to parse data");
+            setAgentSessionActive(false);
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();
           }
@@ -277,6 +293,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
 
         socket.addEventListener("close", (_event) => {
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           setChatHistory((prev) => [
             ...prev.filter((msg) => !!msg.content),
@@ -297,6 +314,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           setSocketId(null);
         });
         setWebsocket(socket);
+        setAgentSessionActive(true);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
@@ -332,6 +350,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
       >
         {isMobile && <SidebarMobileHeader />}
+        <TextSizeMenu />
+        <WorkspaceModelPicker workspaceSlug={workspace.slug} />
         <DnDFileUploaderWrapper>
           <div className="flex flex-col h-full w-full items-center justify-center">
             <div className="flex flex-col items-center w-full max-w-[750px]">
@@ -373,10 +393,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     <SourcesSidebarProvider>
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+        className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
       >
+        <TextSizeMenu />
         <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden">
           {isMobile && <SidebarMobileHeader />}
+          <WorkspaceModelPicker workspaceSlug={workspace.slug} />
           <DnDFileUploaderWrapper>
             <div className="flex flex-col h-full w-full pb-20 md:pb-0">
               <div className="contents">

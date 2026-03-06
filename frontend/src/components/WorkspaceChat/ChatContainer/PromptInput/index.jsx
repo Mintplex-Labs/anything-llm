@@ -1,17 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import SlashCommandsButton, {
-  SlashCommands,
-  useSlashCommands,
-} from "./SlashCommands";
+import { useState, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
 import { ArrowUp } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
-import AvailableAgentsButton, {
-  AvailableAgents,
-  useAvailableAgents,
-} from "./AgentMenu";
-import TextSizeButton from "./TextSizeMenu";
-import LLMSelectorAction from "./LLMSelector/action";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
@@ -25,6 +15,8 @@ import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
 import usePromptInputStorage from "@/hooks/usePromptInputStorage";
+import ToolsMenu, { TOOLS_MENU_KEYBOARD_EVENT } from "./ToolsMenu";
+import { useSearchParams } from "react-router-dom";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -51,20 +43,32 @@ export default function PromptInput({
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
-  const { showAgents, setShowAgents } = useAvailableAgents();
-  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
+  const [showTools, setShowTools] = useState(false);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
+  const [searchParams] = useSearchParams();
 
   // Synchronizes prompt input value with localStorage, scoped to the current thread.
   usePromptInputStorage({
     promptInput,
     setPromptInput,
   });
+
+  /*
+   * @checklist-item
+   * If the URL has the agent param, open the agent menu for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (searchParams.get("action") === "set-agent-chat") {
+      sendCommand({ text: "@agent " });
+      textareaRef.current?.focus();
+    }
+  }, [textareaRef.current]);
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -107,6 +111,7 @@ export default function PromptInput({
 
   function handleSubmit(e) {
     setFocused(false);
+    setShowTools(false);
     submit(e);
   }
 
@@ -115,27 +120,46 @@ export default function PromptInput({
     textareaRef.current.style.height = "auto";
   }
 
-  function checkForSlash(e) {
-    const input = e.target.value;
-    if (input === "/") setShowSlashCommand(true);
-    if (showSlashCommand) setShowSlashCommand(false);
-    return;
-  }
-  const watchForSlash = debounce(checkForSlash, 300);
-
-  function checkForAt(e) {
-    const input = e.target.value;
-    if (input === "@") return setShowAgents(true);
-    if (showAgents) return setShowAgents(false);
-  }
-  const watchForAt = debounce(checkForAt, 300);
-
   /**
    * Capture enter key press to handle submission, redo, or undo
    * via keyboard shortcuts
    * @param {KeyboardEvent} event
    */
   function captureEnterOrUndo(event) {
+    // Forward keyboard events to the ToolsMenu when open
+    if (showTools) {
+      if (
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(
+          event.key
+        )
+      ) {
+        event.preventDefault();
+        window.dispatchEvent(
+          new CustomEvent(TOOLS_MENU_KEYBOARD_EVENT, {
+            detail: { key: event.key },
+          })
+        );
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setShowTools(false);
+        textareaRef.current?.focus();
+        return;
+      }
+    }
+
+    // "/" toggles the Tools menu only when the input is empty
+    if (
+      event.key === "/" &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      promptInput.trim() === ""
+    ) {
+      setShowTools((prev) => !prev);
+      return;
+    }
+
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
@@ -252,8 +276,6 @@ export default function PromptInput({
 
   function handleChange(e) {
     debouncedSaveState(-1);
-    watchForSlash(e);
-    watchForAt(e);
     adjustTextArea(e);
     setPromptInput(e.target.value);
   }
@@ -263,23 +285,9 @@ export default function PromptInput({
       className={
         centered
           ? "w-full relative flex justify-center items-center"
-          : "w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5"
+          : "w-full fixed md:absolute bottom-0 left-0 z-10 flex justify-center items-center pwa:pb-5"
       }
     >
-      <SlashCommands
-        showing={showSlashCommand}
-        setShowing={setShowSlashCommand}
-        sendCommand={sendCommand}
-        promptRef={textareaRef}
-        centered={centered}
-      />
-      <AvailableAgents
-        showing={showAgents}
-        setShowing={setShowAgents}
-        sendCommand={sendCommand}
-        promptRef={textareaRef}
-        centered={centered}
-      />
       <form
         onSubmit={handleSubmit}
         className={
@@ -291,80 +299,106 @@ export default function PromptInput({
         <div
           className={`flex items-center rounded-lg md:w-full ${centered ? "mb-0" : "mb-4"}`}
         >
-          <div className="w-[95vw] md:w-[750px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-[20px] pwa:rounded-3xl flex flex-col px-2 overflow-hidden">
-            <AttachmentManager attachments={attachments} />
-            <div className="flex items-center mx-[7px]">
-              <textarea
-                id={PROMPT_INPUT_ID}
-                ref={textareaRef}
-                onChange={handleChange}
-                onKeyDown={captureEnterOrUndo}
-                onPaste={(e) => {
-                  saveCurrentState();
-                  handlePasteEvent(e);
-                }}
-                required={true}
-                onFocus={() => setFocused(true)}
-                onBlur={(e) => {
-                  setFocused(false);
-                  adjustTextArea(e);
-                }}
-                value={promptInput}
-                spellCheck={Appearance.get("enableSpellCheck")}
-                className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow mb-1 pwa:!text-[16px] ${textSizeClass}`}
-                placeholder={t("chat_window.send_message")}
-              />
-            </div>
-            <div className="flex justify-between items-center pt-3.5 pb-3 mx-[7px]">
-              <div className="flex gap-x-2 items-center h-5 -ml-[4.5px]">
-                <AttachItem
-                  workspaceSlug={workspaceSlug}
-                  workspaceThreadSlug={threadSlug}
+          <div className="relative w-[95vw] md:w-[750px]">
+            <ToolsMenu
+              showing={showTools}
+              setShowing={setShowTools}
+              sendCommand={sendCommand}
+              promptRef={textareaRef}
+              centered={centered}
+            />
+            <div className="bg-zinc-800 light:bg-white light:border light:border-slate-300 rounded-[20px] pwa:rounded-3xl flex flex-col px-5 overflow-hidden">
+              <AttachmentManager attachments={attachments} />
+              <div className="flex items-center">
+                <textarea
+                  id={PROMPT_INPUT_ID}
+                  ref={textareaRef}
+                  onChange={handleChange}
+                  onKeyDown={captureEnterOrUndo}
+                  onPaste={(e) => {
+                    saveCurrentState();
+                    handlePasteEvent(e);
+                  }}
+                  required={true}
+                  onFocus={() => setFocused(true)}
+                  onBlur={(e) => {
+                    setFocused(false);
+                    adjustTextArea(e);
+                  }}
+                  value={promptInput}
+                  spellCheck={Appearance.get("enableSpellCheck")}
+                  className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[20px] w-full leading-5 text-white light:text-slate-600 bg-transparent placeholder:text-white/60 light:placeholder:text-slate-400 resize-none active:outline-none focus:outline-none flex-grow pwa:!text-[16px] ${textSizeClass}`}
+                  placeholder={t("chat_window.send_message")}
                 />
-                <SlashCommandsButton
-                  showing={showSlashCommand}
-                  setShowSlashCommand={setShowSlashCommand}
-                />
-                <AvailableAgentsButton
-                  showing={showAgents}
-                  setShowAgents={setShowAgents}
-                />
-                <TextSizeButton />
-                <LLMSelectorAction workspaceSlug={workspaceSlug} />
               </div>
-              <div className="flex gap-x-2 items-center h-5">
-                <SpeechToText sendCommand={sendCommand} />
-                {isStreaming ? (
-                  <StopGenerationButton />
-                ) : (
-                  <>
-                    <button
-                      ref={formRef}
-                      type="submit"
-                      disabled={isDisabled}
-                      className="border-none inline-flex justify-center items-center rounded-full cursor-pointer w-[20px] h-[20px] light:bg-slate-800 bg-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 transition-opacity"
-                      data-tooltip-id="send-prompt"
-                      data-tooltip-content={
-                        isDisabled
-                          ? t("chat_window.attachments_processing")
-                          : t("chat_window.send")
-                      }
-                      aria-label={t("chat_window.send")}
+              <div className="flex justify-between items-center pt-3.5 pb-3">
+                <div className="flex gap-x-0.5 items-center">
+                  <AttachItem
+                    workspaceSlug={workspaceSlug}
+                    workspaceThreadSlug={threadSlug}
+                  />
+                  <button
+                    id="tools-btn"
+                    type="button"
+                    onClick={() => {
+                      setShowTools(!showTools);
+                      textareaRef.current?.focus();
+                    }}
+                    className={`group border-none cursor-pointer flex items-center justify-center h-8 px-3 rounded-full ${
+                      showTools
+                        ? "bg-zinc-700 light:bg-slate-200"
+                        : "hover:bg-zinc-700 light:hover:bg-slate-200"
+                    }`}
+                  >
+                    <span
+                      className={`text-sm font-medium ${
+                        showTools
+                          ? "text-white light:text-slate-800"
+                          : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
+                      }`}
                     >
-                      <ArrowUp
-                        className="w-[12px] h-[12px] pointer-events-none light:text-white text-black"
-                        weight="bold"
+                      {t("chat_window.tools")}
+                    </span>
+                  </button>
+                </div>
+                <div className="flex gap-x-2 items-center">
+                  <SpeechToText sendCommand={sendCommand} />
+                  {isStreaming ? (
+                    <StopGenerationButton />
+                  ) : (
+                    <>
+                      <button
+                        ref={formRef}
+                        type="submit"
+                        disabled={isDisabled || !promptInput.trim().length}
+                        className={`border-none flex justify-center items-center rounded-full w-8 h-8 transition-all ${
+                          promptInput.trim().length && !isDisabled
+                            ? "cursor-pointer bg-white hover:bg-zinc-200 light:bg-slate-800 light:hover:bg-slate-600"
+                            : "cursor-not-allowed bg-zinc-600 light:bg-slate-400"
+                        }`}
+                        data-tooltip-id="send-prompt"
+                        data-tooltip-content={
+                          isDisabled
+                            ? t("chat_window.attachments_processing")
+                            : t("chat_window.send")
+                        }
+                        aria-label={t("chat_window.send")}
+                      >
+                        <ArrowUp
+                          className="w-[18px] h-[18px] pointer-events-none text-zinc-800 light:text-white"
+                          weight="bold"
+                        />
+                        <span className="sr-only">Send message</span>
+                      </button>
+                      <Tooltip
+                        id="send-prompt"
+                        place="bottom"
+                        delayShow={300}
+                        className="tooltip !text-xs z-99"
                       />
-                      <span className="sr-only">Send message</span>
-                    </button>
-                    <Tooltip
-                      id="send-prompt"
-                      place="bottom"
-                      delayShow={300}
-                      className="tooltip !text-xs z-99"
-                    />
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>

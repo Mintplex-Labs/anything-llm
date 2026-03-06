@@ -213,8 +213,18 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   });
 }
 
+let _agentSessionActive = false;
+export function setAgentSessionActive(value) {
+  _agentSessionActive = value;
+}
+export function getAgentSessionActive() {
+  return _agentSessionActive;
+}
+
 export function useIsAgentSessionActive() {
-  const [activeSession, setActiveSession] = useState(false);
+  const [activeSession, setActiveSession] = useState(
+    () => !!getAgentSessionActive()
+  );
   useEffect(() => {
     function listenForAgentSession() {
       if (!window) return;
