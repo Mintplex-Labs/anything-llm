@@ -183,6 +183,11 @@ function Directory({
   }, 500);
 
   const filteredFiles = filterFileSearchResults(files, searchTerm);
+  const documentCount =
+    files?.items?.reduce(
+      (sum, folder) => sum + (folder.items?.length ?? 0),
+      0
+    ) ?? 0;
 
   const handleContextMenu = (event) => {
     event.preventDefault();
@@ -199,7 +204,7 @@ function Directory({
         <div className="flex flex-col gap-y-6">
           <div className="flex items-center justify-between w-[560px] px-5 relative">
             <h3 className="text-white text-base font-bold">
-              {t("connectors.directory.my-documents")}
+              {t("connectors.directory.my-documents")} ({documentCount})
             </h3>
             <div className="relative">
               <input

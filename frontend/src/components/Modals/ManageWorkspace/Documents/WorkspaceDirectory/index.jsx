@@ -28,6 +28,11 @@ function WorkspaceDirectory({
 }) {
   const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
+  const documentCount =
+    files?.items?.reduce(
+      (sum, folder) => sum + (folder.items?.length ?? 0),
+      0
+    ) ?? 0;
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -119,7 +124,7 @@ function WorkspaceDirectory({
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
           <h3 className="text-white text-base font-bold ml-5">
-            {workspace.name}
+            {workspace.name} ({documentCount})
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] mt-5">
