@@ -901,7 +901,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
     custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
-    slash_reset: "/reset",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",
     add_new_preset: " Dodaj nowe polecenie slash",
     command: "Polecenie",

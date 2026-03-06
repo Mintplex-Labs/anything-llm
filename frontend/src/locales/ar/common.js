@@ -699,7 +699,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- الوكيل الافتراضي لهذا المساحة.",
     custom_agents_coming_soon: "سيصل وكلاء مخصصون قريباً!",
-    slash_reset: "/reset",
     preset_reset_description: "امسح سجل الدردشة الخاص بك وابدأ محادثة جديدة",
     add_new_preset: "إضافة إعداد مسبق",
     command: "أمر",

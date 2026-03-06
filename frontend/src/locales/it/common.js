@@ -716,7 +716,6 @@ const TRANSLATIONS = {
     default_agent_description:
       "- l'agente predefinito per questo spazio di lavoro.",
     custom_agents_coming_soon: "Agenti personalizzati in arrivo a breve!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Elimina la cronologia delle chat e avvia una nuova chat",
     add_new_preset: "Aggiungi nuovo preset",

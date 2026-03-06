@@ -706,7 +706,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- عامل پیش‌فرض برای این فضای کاری.",
     custom_agents_coming_soon: "نمایندگان ویژه در حال آمدن هستند!",
-    slash_reset: "/reset",
     preset_reset_description: "حذف تاریخچه چت خود و شروع یک چت جدید",
     add_new_preset: "اضافه کردن تنظیمات پیش‌فرض جدید",
     command: "دستورالعمل",

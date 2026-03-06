@@ -699,7 +699,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- このワークスペースのデフォルトエージェント。",
     custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
-    slash_reset: "/reset",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",

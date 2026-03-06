@@ -709,7 +709,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- standardagenten for dette arbejdsområde.",
     custom_agents_coming_soon: "Specialagenter kommer snart!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Rydd op i din chat-historik og start en ny samtale",
     add_new_preset: "Tilføj ny forudindstilling",
