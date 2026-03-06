@@ -441,12 +441,17 @@ const TRANSLATIONS = {
           "Enable the default agent to generate and write to files that can be saved to your computer.",
       },
       web: {
-        title: "Live web search and browsing",
-        "desc-start":
+        title: "Web Search",
+        description:
           "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
-        "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
       },
+      sql: {
+        title: "SQL Connector",
+        description:
+          "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+      },
+      default_skill:
+        "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
   },
 

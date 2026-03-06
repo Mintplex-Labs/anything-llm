@@ -95,7 +95,7 @@ function isValidUrl(urlString = "") {
     const url = new URL(urlString);
     if (!["http:", "https:"].includes(url.protocol)) return false;
     return true;
-  } catch (e) {}
+  } catch {}
   return false;
 }
 

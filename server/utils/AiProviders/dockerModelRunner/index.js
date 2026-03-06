@@ -276,7 +276,7 @@ function parseDockerModelRunnerEndpoint(basePath = null, to = "openai") {
     else if (to === "ollama") url.pathname = "api";
     else if (to === "dmr") url.pathname = "";
     return url.toString();
-  } catch (e) {
+  } catch {
     return basePath;
   }
 }
@@ -508,6 +508,7 @@ async function getDockerModels(basePath = null, task = "chat") {
   } catch (e) {
     DockerModelRunnerLLM.slog(`Error getting Docker models`, e);
   } finally {
+    // eslint-disable-next-line
     return Object.values(availableModels).flatMap((m) => m.tags);
   }
 }

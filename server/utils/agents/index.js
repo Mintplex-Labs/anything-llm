@@ -642,7 +642,7 @@ class AgentHandler {
 
   async createAIbitat(
     args = {
-      socket,
+      socket: null,
     }
   ) {
     this.aibitat = new AIbitat({
