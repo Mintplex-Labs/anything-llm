@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Thương hiệu & Nhãn trắng",
     chat: "Trò chuyện",
     "mobile-app": "AnythingLLM Di động",
+    "community-hub": {
+      title: "Trung tâm cộng đồng",
+      trending: "Khám phá các nội dung đang thịnh hành",
+      "your-account": "Tài khoản của bạn",
+      "import-item": "Nhập hàng",
+    },
   },
   login: {
     "multi-user": {
@@ -727,6 +733,11 @@ const TRANSLATIONS = {
       "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
     see_less: "Xem ít hơn",
     see_more: "Xem thêm",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

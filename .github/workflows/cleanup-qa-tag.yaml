@@ -4,23 +4,81 @@ name: Cleanup QA GHCR Image
 on:
   pull_request:
     types: [closed, unlabeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to clean up (e.g., 123)'
+        required: true
 
 jobs:
-  cleanup:
-    name: Delete QA GHCR image tag
+  cleanup-manual:
+    name: Delete QA GHCR image tag (manual)
     runs-on: ubuntu-latest
-    if: >-
-      ${{ (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
-      (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA') }}
+    if: github.event_name == 'workflow_dispatch'
     permissions:
       packages: write
     steps:
       - name: Delete PR tag from GHCR
-        uses: actions/delete-package-versions@v5
-        continue-on-error: true  # Package may not exist if build never ran
-        with:
-          owner: ${{ github.repository_owner }}
-          package-name: ${{ github.event.repository.name }}
-          package-type: container
-          min-versions-to-keep: 0
-          ignore-versions: '^(?!pr-${{ github.event.pull_request.number }}$).*$'
+        env:
+          GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          # Must use lowercase - packages are published with lowercase owner
+          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO_LC="${GITHUB_REPOSITORY#*/}"
+          REPO_LC="${REPO_LC,,}"
+          
+          echo "Looking for tag: pr-${PR_NUMBER}"
+          echo "Package: /orgs/${ORG_LC}/packages/container/${REPO_LC}/versions"
+          
+          VERSION_ID=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            --paginate \
+            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
+            --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id")
+          
+          if [ -n "$VERSION_ID" ]; then
+            echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
+            gh api \
+              --method DELETE \
+              -H "Accept: application/vnd.github+json" \
+              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
+          else
+            echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
+          fi
+
+  cleanup-auto:
+    name: Delete QA GHCR image tag (auto)
+    runs-on: ubuntu-latest
+    if: >-
+      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'PR: Ready for QA')) ||
+      (github.event.action == 'unlabeled' && github.event.label.name == 'PR: Ready for QA')
+    permissions:
+      packages: write
+    steps:
+      - name: Delete PR tag from GHCR
+        env:
+          GH_TOKEN: ${{ secrets.ALLM_RW_PACKAGES }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Must use lowercase - packages are published with lowercase owner
+          ORG_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO_LC="${GITHUB_REPOSITORY#*/}"
+          REPO_LC="${REPO_LC,,}"
+          
+          VERSION_ID=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            --paginate \
+            "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions" \
+            --jq ".[] | select(.metadata.container.tags[] == \"pr-${PR_NUMBER}\") | .id" \
+            2>/dev/null || true)
+          
+          if [ -n "$VERSION_ID" ]; then
+            echo "Deleting package version $VERSION_ID (tag: pr-${PR_NUMBER})"
+            gh api \
+              --method DELETE \
+              -H "Accept: application/vnd.github+json" \
+              "/orgs/${ORG_LC}/packages/container/${REPO_LC}/versions/$VERSION_ID"
+          else
+            echo "No package found with tag pr-${PR_NUMBER}, skipping cleanup"
+          fi

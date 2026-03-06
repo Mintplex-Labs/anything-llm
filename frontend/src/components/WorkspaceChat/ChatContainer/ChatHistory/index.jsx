@@ -50,7 +50,7 @@ export default forwardRef(function (
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop === clientHeight;
+    const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
     // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
@@ -222,22 +222,22 @@ export default forwardRef(function (
             providedSlug={workspace.slug}
           />
         )}
-        {!isAtBottom && (
-          <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
-            <div className="flex flex-col items-center">
-              <div
-                className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-                onClick={() => {
-                  scrollToBottom(isStreaming ? false : true);
-                  setIsUserScrolling(false);
-                }}
-              >
-                <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
-              </div>
+      </div>
+      {!isAtBottom && (
+        <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
+          <div className="flex flex-col items-center">
+            <div
+              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              onClick={() => {
+                scrollToBottom(isStreaming ? false : true);
+                setIsUserScrolling(false);
+              }}
+            >
+              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </ThoughtExpansionProvider>
   );
 });

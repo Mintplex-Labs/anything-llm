@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     branding: "Брендинг и создание продуктов с собственной меткой.",
     chat: "Чат",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Центр сообщества",
+      trending: "Изучите популярные темы",
+      "your-account": "Ваш аккаунт",
+      "import-item": "Импорт товара",
+    },
   },
   login: {
     "multi-user": {
@@ -737,6 +743,11 @@ const TRANSLATIONS = {
       "Ваши изменения будут сохранены непосредственно в этом ответе.",
     see_less: "Показать меньше",
     see_more: "Узнать больше",
+    sources: "Источники",
+    document: "Документ",
+    similarity_match: "соревнование; игра",
+    source_count_one: "{{count}} – ссылка",
+    source_count_other: "Ссылки на {{count}}",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

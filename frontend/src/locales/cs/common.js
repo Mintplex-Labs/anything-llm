@@ -111,6 +111,12 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
   },
   login: {
     "multi-user": {
@@ -952,6 +958,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
     see_less: "Zobrazit méně",
     see_more: "Více",
+    sources: "Zdroje",
+    document: "Dokument",
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
   },
   profile_settings: {
     edit_account: "Upravit účet",

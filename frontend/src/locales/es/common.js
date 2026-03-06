@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contactar con soporte",
     "browser-extension": "Extensión del navegador",
     "mobile-app": "AnythingLLM Móvil",
+    "community-hub": {
+      title: "Centro comunitario",
+      trending: "Explora las tendencias más populares",
+      "your-account": "Su cuenta",
+      "import-item": "Importar artículo",
+    },
   },
   login: {
     "multi-user": {
@@ -909,7 +915,7 @@ const TRANSLATIONS = {
     cancel: "Cancelar",
     edit_prompt: "Editar prompt",
     edit_response: "Editar respuesta",
-    at_agent: "@agente",
+    at_agent: "@agent",
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
@@ -948,6 +954,11 @@ const TRANSLATIONS = {
       "Los cambios que realice se guardarán directamente en esta respuesta.",
     see_less: "Ver menos",
     see_more: "Ver más",
+    sources: "Fuentes",
+    document: "Documento",
+    similarity_match: "partido",
+    source_count_one: "{{count}} de referencia",
+    source_count_other: "{{count}} referencias",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Marka & Beyaz Etiketleme",
     chat: "Sohbet",
     "mobile-app": "AnythingLLM Mobil",
+    "community-hub": {
+      title: "Topluluk Merkezi",
+      trending: "Popüler olanları keşfedin",
+      "your-account": "Hesabınız",
+      "import-item": "İthal Edilen Ürün",
+    },
   },
   login: {
     "multi-user": {
@@ -730,6 +736,11 @@ const TRANSLATIONS = {
       "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
     see_less: "Daha az",
     see_more: "Daha Fazla",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "maç",
+    source_count_one: "{{count}} ile ilgili bilgi",
+    source_count_other: "{{count}} referansları",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrum Społeczności",
+      trending: "Odkryj popularne",
+      "your-account": "Twój profil",
+      "import-item": "Importuj element",
+    },
   },
   login: {
     "multi-user": {
@@ -926,6 +932,11 @@ const TRANSLATIONS = {
       "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
+    sources: "Źródła",
+    document: "Dokument",
+    similarity_match: "mecz",
+    source_count_one: "{{count}} – odniesienie",
+    source_count_other: "{{count}} – odnośniki",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

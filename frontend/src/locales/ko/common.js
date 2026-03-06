@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
     "mobile-app": "AnythingLLM 모바일",
+    "community-hub": {
+      title: "지역 커뮤니티 허브",
+      trending: "인기 트렌드 탐색",
+      "your-account": "당신의 계정",
+      "import-item": "수입 품목",
+    },
   },
   login: {
     "multi-user": {
@@ -905,6 +911,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
     see_less: "더 보기",
     see_more: "더 보기",
+    sources: "출처",
+    document: "문서",
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

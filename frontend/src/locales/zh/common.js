@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
     "mobile-app": "AnythingLLM 移动版",
+    "community-hub": {
+      title: "社区中心",
+      trending: "探索热门",
+      "your-account": "您的账户",
+      "import-item": "进口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -862,6 +868,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "您所做的修改将直接保存到此处。",
     see_less: "查看更多",
     see_more: "查看更多",
+    sources: "来源",
+    document: "文件",
+    similarity_match: "比赛",
+    source_count_one: "{{count}} 参考",
+    source_count_other: "{{count}} 相关资料",
   },
   profile_settings: {
     edit_account: "编辑帐户",

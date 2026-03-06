@@ -101,6 +101,12 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "מרכז קהילתי",
+      trending: "גלו את הנושאים החמים",
+      "your-account": "החשבון שלך",
+      "import-item": "ייבוא פריט",
+    },
   },
   login: {
     "multi-user": {
@@ -895,6 +901,11 @@ const TRANSLATIONS = {
     edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
     see_less: "ראה פחות",
     see_more: "לראות עוד",
+    sources: "מקורות",
+    document: "מסמך",
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Suporte",
     "browser-extension": "Extensão de Navegador",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centro Comunitário",
+      trending: "Explore as tendências",
+      "your-account": "Sua Conta",
+      "import-item": "Importar Item",
+    },
   },
   login: {
     "multi-user": {
@@ -904,6 +910,11 @@ const TRANSLATIONS = {
       "Suas alterações serão salvas diretamente nesta resposta.",
     see_less: "Ver menos",
     see_more: "Ver mais",
+    sources: "Fontes",
+    document: "Documento",
+    similarity_match: "jogo",
+    source_count_one: "Referência a {{count}}",
+    source_count_other: "Referências a {{count}}",
   },
   profile_settings: {
     edit_account: "Editar conta",
