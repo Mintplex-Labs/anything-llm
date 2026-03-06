@@ -149,8 +149,14 @@ export default function PromptInput({
       }
     }
 
-    // "/" toggles the Tools menu (character still enters the input naturally)
-    if (event.key === "/" && !event.ctrlKey && !event.metaKey) {
+    // "/" toggles the Tools menu only when the input is empty
+    if (
+      event.key === "/" &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      promptInput.trim() === ""
+    ) {
+      event.preventDefault();
       setShowTools((prev) => !prev);
       return;
     }
