@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { DotsThree } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function SlashCommandRow({
   command,
@@ -10,6 +11,7 @@ export default function SlashCommandRow({
   showMenu = false,
   highlighted = false,
 }) {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const menuBtnRef = useRef(null);
@@ -76,7 +78,7 @@ export default function SlashCommandRow({
                   onEdit?.();
                 }}
               >
-                Edit
+                {t("chat_window.edit")}
               </button>
               <button
                 type="button"
@@ -87,7 +89,7 @@ export default function SlashCommandRow({
                   onPublish?.();
                 }}
               >
-                Publish
+                {t("chat_window.publish")}
               </button>
             </div>
           )}

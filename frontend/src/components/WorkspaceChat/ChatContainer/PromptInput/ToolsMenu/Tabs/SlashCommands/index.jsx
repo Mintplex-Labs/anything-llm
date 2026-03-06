@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Plus } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
 import AddPresetModal from "./SlashPresets/AddPresetModal";
@@ -20,6 +21,7 @@ export default function SlashCommandsTab({
   highlightedIndex = -1,
   registerItemCount,
 }) {
+  const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
@@ -53,13 +55,13 @@ export default function SlashCommandsTab({
   const items = useMemo(() => {
     const builtIn = isActiveAgentSession
       ? {
-          command: "/exit",
-          description: "Halt the current agent session",
+          command: t("chat_window.slash_exit"),
+          description: t("chat_window.preset_exit_description"),
           autoSubmit: true,
         }
       : {
-          command: "/reset",
-          description: "Clear your chat history and begin a new chat",
+          command: t("chat_window.slash_reset"),
+          description: t("chat_window.preset_reset_description"),
           autoSubmit: true,
         };
 
@@ -198,7 +200,7 @@ export default function SlashCommandsTab({
             className="text-white light:text-slate-900"
           />
           <span className="text-xs text-white light:text-slate-900">
-            Add new
+            {t("chat_window.add_new")}
           </span>
         </div>
       )}
