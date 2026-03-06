@@ -54,7 +54,7 @@ class PrivatemodeLLM {
       const baseURL = new URL(providedBasePath);
       const basePath = `${baseURL.origin}/v1`;
       return basePath;
-    } catch (e) {
+    } catch {
       return null;
     }
   }

@@ -410,10 +410,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Reaalajas veebihaku tugi",
-        "desc-start":
-          "Lubab agendil kasutada veebiotsingut küsimustele vastamiseks, ühendudes SERP-teenusega.",
-        "desc-end": "Veebiotsing ei tööta enne, kui seadistus on tehtud.",
+        description:
+          "Lisage oma esindajale võimalus veebis otsida, et vastata teie küsimustele, ühendades selle veebiotsingu (SERP) teenusega.",
       },
+      sql: {
+        title: "SQL-i ühendus",
+        description:
+          "Tagage, et teie esindaja saaks kasutada SQL-i, et vastata teie küsimustele, ühendades erinevate SQL andmebaasiteenustega.",
+      },
+      default_skill:
+        "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
     },
   },
   recorded: {
