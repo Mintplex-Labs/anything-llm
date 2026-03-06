@@ -55,7 +55,7 @@ class AzureOpenAiLLM {
       url.search = "";
       url.hash = "";
       return url.href;
-    } catch (error) {
+    } catch {
       throw new Error(
         `"${azureOpenAiEndpoint}" is not a valid URL. Check your settings for the Azure OpenAI provider and set a valid endpoint URL.`
       );
