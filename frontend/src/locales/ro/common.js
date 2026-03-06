@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
   },
   login: {
     "multi-user": {
@@ -667,6 +673,11 @@ const TRANSLATIONS = {
     browse: "Navigați",
     text_size_label: "Dimensiunea textului",
     select_model: "Selectați modelul",
+    sources: "Surse",
+    document: "Document",
+    similarity_match: "meci",
+    source_count_one: "{{count}} – referință",
+    source_count_other: "Referințe către {{count}}",
   },
   profile_settings: {
     edit_account: "Editează contul",

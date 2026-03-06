@@ -291,8 +291,6 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
-      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
       AgentSerpApiKey: !!process.env.AGENT_SERPAPI_API_KEY || null,
       AgentSerpApiEngine: process.env.AGENT_SERPAPI_ENGINE || "google",
       AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
@@ -688,6 +686,12 @@ const SystemSettings = {
       // SambaNova Keys
       SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
       SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
+
+      // Lemonade Keys
+      LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
+      LemonadeLLMModelTokenLimit:
+        process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
     };
   },
 

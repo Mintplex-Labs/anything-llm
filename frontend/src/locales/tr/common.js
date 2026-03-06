@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Marka & Beyaz Etiketleme",
     chat: "Sohbet",
     "mobile-app": "AnythingLLM Mobil",
+    "community-hub": {
+      title: "Topluluk Merkezi",
+      trending: "Popüler olanları keşfedin",
+      "your-account": "Hesabınız",
+      "import-item": "İthal Edilen Ürün",
+    },
   },
   login: {
     "multi-user": {
@@ -736,6 +742,11 @@ const TRANSLATIONS = {
     browse: "Gezin",
     text_size_label: "Metin Boyutu",
     select_model: "Model Seçimi",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "maç",
+    source_count_one: "{{count}} ile ilgili bilgi",
+    source_count_other: "{{count}} referansları",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

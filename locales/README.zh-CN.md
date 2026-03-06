@@ -106,6 +106,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Lemonade by AMD](https://lemonade-server.ai)
 
 **支持的嵌入模型：**
 

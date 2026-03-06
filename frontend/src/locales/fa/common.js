@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "برندسازی و تولید محصولات با برچسب سفید",
     chat: "چت",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مرکز محلی",
+      trending: "بررسی ترندها",
+      "your-account": "حساب شما",
+      "import-item": "وارد کردن کالا",
+    },
   },
   login: {
     "multi-user": {
@@ -737,6 +743,11 @@ const TRANSLATIONS = {
     browse: "جستجو",
     text_size_label: "اندازه متن",
     select_model: "انتخاب مدل",
+    sources: "منابع",
+    document: "اسناد",
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

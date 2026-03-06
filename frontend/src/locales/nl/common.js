@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Branding & Whitelabeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobiele App",
+    "community-hub": {
+      title: "Centraal punt",
+      trending: "Bekijk populaire onderwerpen",
+      "your-account": "Uw account",
+      "import-item": "Importeren",
+    },
   },
   login: {
     "multi-user": {
@@ -740,6 +746,11 @@ const TRANSLATIONS = {
     browse: "Bladeren",
     text_size_label: "Lettergrootte",
     select_model: "Kies het model",
+    sources: "Bronnen",
+    document: "Document",
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
   },
   profile_settings: {
     edit_account: "Account bewerken",

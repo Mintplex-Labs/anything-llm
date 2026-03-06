@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
     "mobile-app": "AnythingLLM mobiilversioon",
+    "community-hub": {
+      title: "Kogukonna keskpunkt",
+      trending: "Avasta populaarseid",
+      "your-account": "Teie konto",
+      "import-item": "Importeeritud toode",
+    },
   },
   login: {
     "multi-user": {
@@ -894,6 +900,11 @@ const TRANSLATIONS = {
     browse: "Sirva",
     text_size_label: "Teksti suurus",
     select_model: "Valige mudel",
+    sources: "Allikasid",
+    document: "Dokument",
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
 import { defaultSkills, configurableSkills } from "@/pages/Admin/Agents/skills";
 import paths from "@/utils/paths";
+import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
 import BrowseButton from "../../BrowseButton";
 
-export default function AgentSkillsTab() {
+export default function AgentSkillsTab({
+  highlightedIndex = -1,
+  registerItemCount,
+}) {
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
@@ -89,34 +93,57 @@ export default function AgentSkillsTab() {
     await AgentFlows.toggleFlow(flow.uuid, newActive);
   }
 
+  // Build list of all skill items for rendering/keyboard navigation
+  const items = useMemo(() => {
+    const list = [];
+    for (const [key, { title }] of Object.entries({
+      ...defaultSkills,
+      ...configurableSkills,
+    })) {
+      list.push({
+        id: key,
+        name: title,
+        enabled: isSkillEnabled(key),
+        onToggle: () => toggleSkill(key),
+      });
+    }
+    for (const skill of importedSkills) {
+      list.push({
+        id: skill.hubId,
+        name: skill.name,
+        enabled: skill.active,
+        onToggle: () => toggleImportedSkill(skill),
+      });
+    }
+    for (const flow of flows) {
+      list.push({
+        id: flow.uuid,
+        name: flow.name,
+        enabled: flow.active,
+        onToggle: () => toggleFlow(flow),
+      });
+    }
+    return list;
+  }, [disabledDefaults, enabledConfigurable, importedSkills, flows]);
+
+  useToolsMenuItems({
+    items,
+    highlightedIndex,
+    onSelect: (item) => item.onToggle(),
+    registerItemCount,
+  });
+
   if (loading) return null;
 
   return (
     <>
-      {Object.entries({ ...defaultSkills, ...configurableSkills }).map(
-        ([key, { title }]) => (
-          <SkillRow
-            key={key}
-            name={title}
-            enabled={isSkillEnabled(key)}
-            onToggle={() => toggleSkill(key)}
-          />
-        )
-      )}
-      {importedSkills.map((skill) => (
+      {items.map((item, index) => (
         <SkillRow
-          key={skill.hubId}
-          name={skill.name}
-          enabled={skill.active}
-          onToggle={() => toggleImportedSkill(skill)}
-        />
-      ))}
-      {flows.map((flow) => (
-        <SkillRow
-          key={flow.uuid}
-          name={flow.name}
-          enabled={flow.active}
-          onToggle={() => toggleFlow(flow)}
+          key={item.id}
+          name={item.name}
+          enabled={item.enabled}
+          onToggle={item.onToggle}
+          highlighted={highlightedIndex === index}
         />
       ))}
       <BrowseButton link={paths.communityHub.trending()} />

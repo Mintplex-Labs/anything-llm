@@ -8,6 +8,7 @@ export default function SlashCommandRow({
   onEdit,
   onPublish,
   showMenu = false,
+  highlighted = false,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -32,7 +33,11 @@ export default function SlashCommandRow({
   return (
     <div
       onClick={onClick}
-      className="flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 group relative"
+      className={`flex items-center justify-between px-2 py-1 rounded cursor-pointer group relative ${
+        highlighted
+          ? "bg-zinc-700/50 light:bg-slate-100"
+          : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
+      }`}
     >
       <div className="flex gap-1.5 items-center text-xs min-w-0 flex-1">
         <span className="text-white light:text-slate-900 shrink-0">

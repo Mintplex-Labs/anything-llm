@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "التسويق بالعلامة التجارية ووضع العلامات التجارية",
     chat: "دردشة",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مركز المجتمع",
+      trending: "استكشف الاتجاهات الرائجة",
+      "your-account": "حسابك",
+      "import-item": "استيراد العنصر",
+    },
   },
   login: {
     "multi-user": {
@@ -727,6 +733,11 @@ const TRANSLATIONS = {
     browse: "تصفح",
     text_size_label: "حجم النص",
     select_model: "اختر الطراز",
+    sources: "مصادر",
+    document: "وثيقة",
+    similarity_match: "مباراة",
+    source_count_one: "{{count}}، المرجع",
+    source_count_other: "{{count}} المرجع",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

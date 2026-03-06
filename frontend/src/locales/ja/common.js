@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     branding: "ブランディングとホワイトレーベル化",
     chat: "チャット",
     "mobile-app": "AnythingLLM モバイル版",
+    "community-hub": {
+      title: "地域交流拠点",
+      trending: "人気のあるものを探す",
+      "your-account": "あなたのアカウント",
+      "import-item": "輸入品",
+    },
   },
   login: {
     "multi-user": {
@@ -730,6 +736,11 @@ const TRANSLATIONS = {
     browse: "閲覧",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
+    sources: "出典",
+    document: "文書",
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

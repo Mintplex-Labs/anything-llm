@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
     "mobile-app": "AnythingLLM mobilā versija",
+    "community-hub": {
+      title: "Sabiedriskais centrs",
+      trending: "Izpētiet populārākās",
+      "your-account": "Jūsu konts",
+      "import-item": "Importētā prece",
+    },
   },
   login: {
     "multi-user": {
@@ -934,6 +940,11 @@ const TRANSLATIONS = {
     browse: "Izpētiet",
     text_size_label: "Teksta izmērs",
     select_model: "Izvēlieties modeli",
+    sources: "Avotus",
+    document: "Dokuments",
+    similarity_match: "spēle",
+    source_count_one: "{{count}} – atsauce",
+    source_count_other: "Atsauces uz {{count}}",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

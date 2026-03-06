@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     branding: "品牌與白標設定",
     chat: "聊天室",
     "mobile-app": "AnythingLLM 應用程式",
+    "community-hub": {
+      title: "社區中心",
+      trending: "探索熱門",
+      "your-account": "您的帳戶",
+      "import-item": "進口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -690,6 +696,11 @@ const TRANSLATIONS = {
     browse: "瀏覽",
     text_size_label: "文字大小",
     select_model: "選擇模型",
+    sources: "來源",
+    document: "文件",
+    similarity_match: "比賽",
+    source_count_one: "{{count}} 參考",
+    source_count_other: "{{count}} 的相關資料",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

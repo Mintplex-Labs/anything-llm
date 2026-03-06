@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Branding e personalizzazione",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Punto di riferimento della comunità",
+      trending: "Esplora le tendenze",
+      "your-account": "Il tuo account",
+      "import-item": "Importa articolo",
+    },
   },
   login: {
     "multi-user": {
@@ -753,6 +759,11 @@ const TRANSLATIONS = {
     browse: "Naviga",
     text_size_label: "Dimensione del testo",
     select_model: "Seleziona il modello",
+    sources: "Fonti",
+    document: "Documento",
+    similarity_match: "partita",
+    source_count_one: "Riferimento {{count}}",
+    source_count_other: "Riferimenti a {{count}}",
   },
   profile_settings: {
     edit_account: "Modifica account",

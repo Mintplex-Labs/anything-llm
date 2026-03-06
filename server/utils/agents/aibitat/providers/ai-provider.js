@@ -342,6 +342,14 @@ class Provider {
           apiKey: null,
           ...config,
         });
+      case "lemonade":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LEMONADE_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

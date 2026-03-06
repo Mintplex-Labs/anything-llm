@@ -109,6 +109,7 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Lemonade by AMD](https://lemonade-server.ai)
 
 <div dir="rtl">
 

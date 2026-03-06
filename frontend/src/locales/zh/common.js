@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
     "mobile-app": "AnythingLLM 移动版",
+    "community-hub": {
+      title: "社区中心",
+      trending: "探索热门",
+      "your-account": "您的账户",
+      "import-item": "进口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -868,6 +874,11 @@ const TRANSLATIONS = {
     browse: "浏览",
     text_size_label: "字体大小",
     select_model: "选择型号",
+    sources: "来源",
+    document: "文件",
+    similarity_match: "比赛",
+    source_count_one: "{{count}} 参考",
+    source_count_other: "{{count}} 相关资料",
   },
   profile_settings: {
     edit_account: "编辑帐户",

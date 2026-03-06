@@ -104,6 +104,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 - [Docker Model Runner](https://docs.docker.com/ai/model-runner/)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [Lemonade by AMD](https://lemonade-server.ai)
 
 **Embedder modelleri:**
 

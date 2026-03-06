@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     "browser-extension": "Browser-Extension",
     "system-prompt-variables": "Systempromptvariablen",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Gemeindezentrum",
+      trending: "Entdecken Sie die aktuell beliebtesten Themen",
+      "your-account": "Ihr Konto",
+      "import-item": "Artikel importieren",
+    },
   },
   login: {
     "multi-user": {
@@ -937,6 +943,11 @@ const TRANSLATIONS = {
     browse: "Durchsuchen",
     text_size_label: "Schriftgröße",
     select_model: "Modell auswählen",
+    sources: "Quellen",
+    document: "Dokument",
+    similarity_match: "Spiel",
+    source_count_one: "{{count}} Referenz",
+    source_count_other: "{{count}} Verweise",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Brandstrategi og white-labeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Fælleshus",
+      trending: "Udforsk populære emner",
+      "your-account": "Dit konti",
+      "import-item": "Importeret vare",
+    },
   },
   login: {
     "multi-user": {
@@ -742,6 +748,11 @@ const TRANSLATIONS = {
     browse: "Gennemse",
     text_size_label: "Tekststørrelse",
     select_model: "Vælg model",
+    sources: "Kilder",
+    document: "Dokument",
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
   },
   profile_settings: {
     edit_account: "Rediger konto",
