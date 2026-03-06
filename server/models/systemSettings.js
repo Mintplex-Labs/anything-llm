@@ -508,7 +508,8 @@ const SystemSettings = {
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
       AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-      AzureOpenAiModelPref: process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF,
+      AzureOpenAiModelPref:
+        process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
       AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",

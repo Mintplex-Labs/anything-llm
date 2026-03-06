@@ -268,7 +268,9 @@ class AgentHandler {
           "mistralai/Mixtral-8x7B-Instruct-v0.1"
         );
       case "azure":
-        return process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF;
+        return (
+          process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF
+        );
       case "koboldcpp":
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
       case "localai":
