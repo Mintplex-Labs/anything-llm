@@ -8,7 +8,6 @@ import {
 } from "../ChatHistory/Citation";
 import MobileCitationModal from "./MobileCitationModal";
 import SourceItem from "./SourceItem";
-import useLoginMode from "@/hooks/useLoginMode";
 
 export const SourcesSidebarContext = createContext();
 
@@ -42,8 +41,6 @@ export default function SourcesSidebar() {
   const { sources, sidebarOpen, closeSidebar } = useSourcesSidebar();
   const { t } = useTranslation();
   const [selectedSource, setSelectedSource] = useState(null);
-  const loginMode = useLoginMode();
-  const hasAuth = loginMode !== null;
 
   const combined = combineLikeSources(sources);
 
@@ -69,8 +66,8 @@ export default function SourcesSidebar() {
         style={{ width: sidebarOpen ? "366px" : "0px" }}
       >
         <div
-          className={`ml-4 w-[350px] bg-zinc-900 light:bg-white light:border-2 light:border-slate-300 md:rounded-[16px] p-4 flex flex-col gap-4 overflow-hidden ${hasAuth ? "mt-[72px]" : ""}`}
-          style={{ maxHeight: hasAuth ? "calc(100% - 88px)" : "100%" }}
+          className="ml-4 w-[350px] bg-zinc-900 light:bg-white light:border-2 light:border-slate-300 md:rounded-[16px] p-4 flex flex-col gap-4 overflow-hidden mt-[72px]"
+          style={{ maxHeight: "calc(100% - 88px)" }}
         >
           <div className="flex items-start justify-between">
             <p className="font-medium text-base leading-6 text-white light:text-slate-900">
