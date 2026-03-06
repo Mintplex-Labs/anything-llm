@@ -54,32 +54,23 @@ function collectFiles(dir, results = []) {
 const sourceFiles = collectFiles(FRONTEND_SRC);
 
 // ---------------------------------------------------------------------------
-// 3. Scan source files for t("key"), t('key'), t(`key`) references
+// 3. Scan source files for t() references (literal and dynamic)
 // ---------------------------------------------------------------------------
 const referencedKeys = new Set();
-// Matches t("..."), t('...'), t(`...`) — captures the key inside quotes
 const tCallRegex = /\bt\(\s*["'`]([^"'`]+)["'`]/g;
-
-for (const file of sourceFiles) {
-  const content = fs.readFileSync(file, "utf-8");
-  let match;
-  while ((match = tCallRegex.exec(content)) !== null) {
-    referencedKeys.add(match[1]);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 3b. Detect dynamic t() calls (variable references) and warn about them
-// ---------------------------------------------------------------------------
 const dynamicTCallRegex = /\bt\(\s*([a-zA-Z_$][a-zA-Z0-9_$.]*)\s*[,)]/g;
 const dynamicUsages = [];
 
 for (const file of sourceFiles) {
   const content = fs.readFileSync(file, "utf-8");
+
   let match;
+  while ((match = tCallRegex.exec(content)) !== null) {
+    referencedKeys.add(match[1]);
+  }
+
   while ((match = dynamicTCallRegex.exec(content)) !== null) {
     const arg = match[1];
-    // Skip if the argument starts with a quote (already captured above) or is a common false positive
     if (/^["'`]/.test(arg)) continue;
     dynamicUsages.push({ file: path.relative(FRONTEND_SRC, file), arg });
   }
@@ -145,7 +136,7 @@ function pruneEmptyObjects(obj) {
   }
 }
 
-const translations = resources.en.common;
+const translations = structuredClone(resources.en.common);
 for (const key of unusedKeys) {
   deleteKey(translations, key);
 }
