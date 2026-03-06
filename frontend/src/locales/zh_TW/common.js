@@ -701,6 +701,12 @@ const TRANSLATIONS = {
     similarity_match: "比賽",
     source_count_one: "{{count}} 參考",
     source_count_other: "{{count}} 的相關資料",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "編輯帳戶",

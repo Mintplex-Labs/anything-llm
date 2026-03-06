@@ -912,6 +912,12 @@ const TRANSLATIONS = {
     similarity_match: "משחק",
     source_count_one: "{{count}} - הפניה",
     source_count_other: "{{count}} – מקורות",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

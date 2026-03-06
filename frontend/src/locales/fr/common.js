@@ -754,6 +754,12 @@ const TRANSLATIONS = {
     similarity_match: "match",
     source_count_one: "{{count}} référence",
     source_count_other: "Références à {{count}}",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Modifier le compte",

@@ -751,6 +751,12 @@ const TRANSLATIONS = {
     similarity_match: "wedstrijd",
     source_count_one: "{{count}} verwijzing",
     source_count_other: "{{count}} referenties",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Account bewerken",

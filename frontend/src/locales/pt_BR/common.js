@@ -921,6 +921,12 @@ const TRANSLATIONS = {
     similarity_match: "jogo",
     source_count_one: "Referência a {{count}}",
     source_count_other: "Referências a {{count}}",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Editar conta",

@@ -965,6 +965,12 @@ const TRANSLATIONS = {
     similarity_match: "partido",
     source_count_one: "{{count}} de referencia",
     source_count_other: "{{count}} referencias",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Editar cuenta",

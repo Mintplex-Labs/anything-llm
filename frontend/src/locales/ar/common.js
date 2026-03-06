@@ -738,6 +738,12 @@ const TRANSLATIONS = {
     similarity_match: "مباراة",
     source_count_one: "{{count}}، المرجع",
     source_count_other: "{{count}} المرجع",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

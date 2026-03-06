@@ -754,6 +754,12 @@ const TRANSLATIONS = {
     similarity_match: "соревнование; игра",
     source_count_one: "{{count}} – ссылка",
     source_count_other: "Ссылки на {{count}}",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

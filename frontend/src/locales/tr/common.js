@@ -747,6 +747,12 @@ const TRANSLATIONS = {
     similarity_match: "maç",
     source_count_one: "{{count}} ile ilgili bilgi",
     source_count_other: "{{count}} referansları",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

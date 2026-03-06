@@ -744,6 +744,12 @@ const TRANSLATIONS = {
     similarity_match: "trận đấu",
     source_count_one: "{{count}} tham khảo",
     source_count_other: "{{count}} – Tham khảo",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

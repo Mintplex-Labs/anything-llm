@@ -753,6 +753,12 @@ const TRANSLATIONS = {
     similarity_match: "kamp",
     source_count_one: "{{count}} henvisning",
     source_count_other: "{{count}} referencer",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Rediger konto",

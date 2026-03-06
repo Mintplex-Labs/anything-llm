@@ -748,6 +748,12 @@ const TRANSLATIONS = {
     similarity_match: "مسابقه",
     source_count_one: "{{count}}، مرجع",
     source_count_other: "{{count}}، منابع",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

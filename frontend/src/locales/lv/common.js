@@ -945,6 +945,12 @@ const TRANSLATIONS = {
     similarity_match: "spēle",
     source_count_one: "{{count}} – atsauce",
     source_count_other: "Atsauces uz {{count}}",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

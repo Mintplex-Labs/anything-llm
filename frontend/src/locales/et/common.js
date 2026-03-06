@@ -905,6 +905,12 @@ const TRANSLATIONS = {
     similarity_match: "mäng",
     source_count_one: "{{count}} viidatud",
     source_count_other: "Viidatud allikad",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Muuda kontot",

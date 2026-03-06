@@ -969,6 +969,12 @@ const TRANSLATIONS = {
     similarity_match: "zápas",
     source_count_one: "{{count}} – odkaz",
     source_count_other: "{{count}} – odkazy",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "Upravit účet",

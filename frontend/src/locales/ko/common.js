@@ -922,6 +922,12 @@ const TRANSLATIONS = {
     similarity_match: "경쟁",
     source_count_one: "{{count}} 참조",
     source_count_other: "{{count}} 관련 참고 자료",
+    slash_exit: null,
+    preset_exit_description: null,
+    add_new: null,
+    edit: null,
+    publish: null,
+    stop_generating: null,
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
