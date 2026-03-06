@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "lint:check": "eslint ."
   },
   "dependencies": {
     "@langchain/community": "^0.2.23",
