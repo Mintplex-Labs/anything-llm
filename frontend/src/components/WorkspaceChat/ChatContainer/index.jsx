@@ -15,6 +15,7 @@ import handleSocketResponse, {
   websocketURI,
   AGENT_SESSION_END,
   AGENT_SESSION_START,
+  setAgentSessionActive,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
@@ -262,7 +263,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         socket.supportsAgentStreaming = false;
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
-          window.__agentSessionActive = false;
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           websocket.close();
         });
@@ -273,7 +274,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             handleSocketResponse(socket, event, setChatHistory);
           } catch {
             console.error("Failed to parse data");
-            window.__agentSessionActive = false;
+            setAgentSessionActive(false);
             window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
             socket.close();
           }
@@ -281,7 +282,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
 
         socket.addEventListener("close", (_event) => {
-          window.__agentSessionActive = false;
+          setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           setChatHistory((prev) => [
             ...prev.filter((msg) => !!msg.content),
@@ -302,7 +303,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           setSocketId(null);
         });
         setWebsocket(socket);
-        window.__agentSessionActive = true;
+        setAgentSessionActive(true);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
         window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
