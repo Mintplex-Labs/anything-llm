@@ -6,9 +6,9 @@ const { getLinkText } = require("../../processLink");
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncLink({ link }, response) {
-  if (!link) throw new Error('Invalid link provided');
+  if (!link) throw new Error("Invalid link provided");
   try {
-    const { success, content = null } = await getLinkText(link);
+    const { success, content = null, reason } = await getLinkText(link);
     if (!success) throw new Error(`Failed to sync link content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
@@ -28,11 +28,16 @@ async function resyncLink({ link }, response) {
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncYouTube({ link }, response) {
-  if (!link) throw new Error('Invalid link provided');
+  if (!link) throw new Error("Invalid link provided");
   try {
-    const { fetchVideoTranscriptContent } = require("../../utils/extensions/YoutubeTranscript");
-    const { success, reason, content } = await fetchVideoTranscriptContent({ url: link });
-    if (!success) throw new Error(`Failed to sync YouTube video transcript. ${reason}`);
+    const {
+      fetchVideoTranscriptContent,
+    } = require("../../utils/extensions/YoutubeTranscript");
+    const { success, reason, content } = await fetchVideoTranscriptContent({
+      url: link,
+    });
+    if (!success)
+      throw new Error(`Failed to sync YouTube video transcript. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
@@ -50,23 +55,26 @@ async function resyncYouTube({ link }, response) {
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncConfluence({ chunkSource }, response) {
-  if (!chunkSource) throw new Error('Invalid source property provided');
+  if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     // Confluence data is `payload` encrypted. So we need to expand its
     // encrypted payload back into query params so we can reFetch the page with same access token/params.
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const { fetchConfluencePage } = require("../../utils/extensions/Confluence");
+    const {
+      fetchConfluencePage,
+    } = require("../../utils/extensions/Confluence");
     const { success, reason, content } = await fetchConfluencePage({
       pageUrl: `https:${source.pathname}`, // need to add back the real protocol
-      baseUrl: source.searchParams.get('baseUrl'),
-      spaceKey: source.searchParams.get('spaceKey'),
-      accessToken: source.searchParams.get('token'),
-      username: source.searchParams.get('username'),
-      cloud: source.searchParams.get('cloud') === 'true',
-      bypassSSL: source.searchParams.get('bypassSSL') === 'true',
+      baseUrl: source.searchParams.get("baseUrl"),
+      spaceKey: source.searchParams.get("spaceKey"),
+      accessToken: source.searchParams.get("token"),
+      username: source.searchParams.get("username"),
+      cloud: source.searchParams.get("cloud") === "true",
+      bypassSSL: source.searchParams.get("bypassSSL") === "true",
     });
 
-    if (!success) throw new Error(`Failed to sync Confluence page content. ${reason}`);
+    if (!success)
+      throw new Error(`Failed to sync Confluence page content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
@@ -84,20 +92,23 @@ async function resyncConfluence({ chunkSource }, response) {
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncGithub({ chunkSource }, response) {
-  if (!chunkSource) throw new Error('Invalid source property provided');
+  if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     // Github file data is `payload` encrypted (might contain PAT). So we need to expand its
     // encrypted payload back into query params so we can reFetch the page with same access token/params.
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const { fetchGithubFile } = require("../../utils/extensions/RepoLoader/GithubRepo");
+    const {
+      fetchGithubFile,
+    } = require("../../utils/extensions/RepoLoader/GithubRepo");
     const { success, reason, content } = await fetchGithubFile({
       repoUrl: `https:${source.pathname}`, // need to add back the real protocol
-      branch: source.searchParams.get('branch'),
-      accessToken: source.searchParams.get('pat'),
-      sourceFilePath: source.searchParams.get('path'),
+      branch: source.searchParams.get("branch"),
+      accessToken: source.searchParams.get("pat"),
+      sourceFilePath: source.searchParams.get("path"),
     });
 
-    if (!success) throw new Error(`Failed to sync GitHub file content. ${reason}`);
+    if (!success)
+      throw new Error(`Failed to sync GitHub file content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
@@ -108,7 +119,6 @@ async function resyncGithub({ chunkSource }, response) {
   }
 }
 
-
 /**
  * Fetches the content of a specific DrupalWiki page via its chunkSource.
  * Returns the content as a text string of the page in question and only that page.
@@ -116,16 +126,16 @@ async function resyncGithub({ chunkSource }, response) {
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncDrupalWiki({ chunkSource }, response) {
-  if (!chunkSource) throw new Error('Invalid source property provided');
+  if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     // DrupalWiki data is `payload` encrypted. So we need to expand its
     // encrypted payload back into query params so we can reFetch the page with same access token/params.
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
     const { loadPage } = require("../../utils/extensions/DrupalWiki");
     const { success, reason, content } = await loadPage({
-      baseUrl: source.searchParams.get('baseUrl'),
-      pageId: source.searchParams.get('pageId'),
-      accessToken: source.searchParams.get('accessToken'),
+      baseUrl: source.searchParams.get("baseUrl"),
+      pageId: source.searchParams.get("pageId"),
+      accessToken: source.searchParams.get("accessToken"),
     });
 
     if (!success) {
@@ -153,18 +163,20 @@ async function resyncDrupalWiki({ chunkSource }, response) {
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncPaperlessNgx({ chunkSource }, response) {
-  if (!chunkSource) throw new Error('Invalid source property provided');
+  if (!chunkSource) throw new Error("Invalid source property provided");
   try {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const { PaperlessNgxLoader } = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
+    const {
+      PaperlessNgxLoader,
+    } = require("../../utils/extensions/PaperlessNgx/PaperlessNgxLoader");
     const loader = new PaperlessNgxLoader({
-      baseUrl: source.searchParams.get('baseUrl'),
-      apiToken: source.searchParams.get('token'),
+      baseUrl: source.searchParams.get("baseUrl"),
+      apiToken: source.searchParams.get("token"),
     });
-    const documentId = source.pathname.split('//')[1];
+    const documentId = source.pathname.split("//")[1];
     const content = await loader.fetchDocumentContent(documentId);
 
-    if (!content) throw new Error('Failed to fetch document content');
+    if (!content) throw new Error("Failed to fetch document content");
     response.status(200).json({ success: true, content });
   } catch (e) {
     console.error(e);
@@ -182,4 +194,4 @@ module.exports = {
   github: resyncGithub,
   drupalwiki: resyncDrupalWiki,
   "paperless-ngx": resyncPaperlessNgx,
-}
+};

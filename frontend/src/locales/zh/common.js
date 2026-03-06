@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
     "mobile-app": "AnythingLLM 移动版",
+    "community-hub": {
+      title: "社区中心",
+      trending: "探索热门",
+      "your-account": "您的账户",
+      "import-item": "进口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -387,10 +393,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "实时网络搜索和浏览",
-        "desc-start":
-          "通过连接到网络搜索（搜索结果页）提供者，使你的代理能够搜索网络以回答你的问题。",
-        "desc-end": "在代理会话期间，网络搜索将不起作用，直到此设置完成。",
+        description:
+          "通过连接到搜索引擎（SERP）提供商，让您的代理能够搜索互联网来回答您的问题。",
       },
+      sql: {
+        title: "SQL 连接器",
+        description:
+          "让您的代理能够利用 SQL 来回答您的问题，只需连接到各种 SQL 数据库提供商即可。",
+      },
+      default_skill:
+        "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
     },
   },
   recorded: {

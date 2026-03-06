@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contactar con soporte",
     "browser-extension": "Extensión del navegador",
     "mobile-app": "AnythingLLM Móvil",
+    "community-hub": {
+      title: "Centro comunitario",
+      trending: "Explora las tendencias más populares",
+      "your-account": "Su cuenta",
+      "import-item": "Importar artículo",
+    },
   },
   login: {
     "multi-user": {
@@ -416,11 +422,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Búsqueda y navegación web en vivo",
-        "desc-start":
-          "Habilita a tu agente para buscar en la web para responder tus preguntas conectándose a un proveedor de búsqueda web (SERP).",
-        "desc-end":
-          "La búsqueda web durante las sesiones del agente no funcionará hasta que esto esté configurado.",
+        description:
+          "Permita que su agente acceda a internet para responder a sus preguntas, conectándolo a un proveedor de búsqueda web (SERP).",
       },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permita que su agente pueda utilizar SQL para responder a sus preguntas, conectándose con diferentes proveedores de bases de datos SQL.",
+      },
+      default_skill:
+        "Por defecto, esta función está activada, pero puede desactivarla si no desea que esté disponible para el agente.",
     },
   },
   recorded: {
@@ -909,7 +920,7 @@ const TRANSLATIONS = {
     cancel: "Cancelar",
     edit_prompt: "Editar prompt",
     edit_response: "Editar respuesta",
-    at_agent: "@agente",
+    at_agent: "@agent",
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",

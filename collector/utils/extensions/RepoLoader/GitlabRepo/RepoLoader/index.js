@@ -53,10 +53,12 @@ class GitLabRepoLoader {
 
   #validGitlabUrl() {
     const validPatterns = [
+      //eslint-disable-next-line
       /https:\/\/gitlab\.com\/(?<author>[^\/]+)\/(?<project>.*)/,
       // This should even match the regular hosted URL, but we may want to know
       // if this was a hosted GitLab (above) or a self-hosted (below) instance
       // since the API interface could be different.
+      //eslint-disable-next-line
       /(http|https):\/\/[^\/]+\/(?<author>[^\/]+)\/(?<project>.*)/,
     ];
 
