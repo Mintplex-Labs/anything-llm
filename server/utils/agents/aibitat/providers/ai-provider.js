@@ -265,6 +265,14 @@ class Provider {
           apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "llmapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.llmapi.ai/v1",
+          },
+          apiKey: process.env.LLMAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({

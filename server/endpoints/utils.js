@@ -175,6 +175,9 @@ function getModelTag() {
     case "lemonade":
       model = process.env.LEMONADE_LLM_MODEL_PREF;
       break;
+    case "llmapi":
+      model = process.env.LLMAPI_LLM_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

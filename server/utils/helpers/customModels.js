@@ -49,6 +49,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "llmapi",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -133,6 +134,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "llmapi":
+      return await getLLMApiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -1001,6 +1004,44 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+/**
+ * Get LLM API models. The /v1/models endpoint does not require an API key,
+ * so models are available even before the user has entered their key.
+ * @param {string|null} _apiKey - The API key (optional)
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getLLMApiModels(_apiKey = null) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.LLMAPI_LLM_API_KEY
+        : _apiKey || process.env.LLMAPI_LLM_API_KEY || null;
+
+    const headers = { "Content-Type": "application/json" };
+    if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
+
+    const response = await fetch("https://api.llmapi.ai/v1/models", {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok)
+      throw new Error(`LLM API models fetch failed: ${response.statusText}`);
+
+    const data = await response.json();
+    const models = (data?.data ?? []).map((model) => ({
+      id: model.id,
+      organization: model.owned_by ?? "LLM API",
+      name: model.id,
+    }));
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`LLMApi:getLLMApiModels`, e.message);
+    return { models: [], error: "Could not fetch LLM API Models" };
   }
 }
 
