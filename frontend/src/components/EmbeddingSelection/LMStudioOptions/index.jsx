@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
-import { CaretDown, CaretUp, Info, CircleNotch } from "@phosphor-icons/react";
+import {
+  CaretDown,
+  CaretUp,
+  Info,
+  CircleNotch,
+  Warning,
+} from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
@@ -224,24 +230,51 @@ function LMStudioModelSelection({ settings, basePath = null, apiKey = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-2">
-          LM Studio Embedding Model
-        </label>
+        <div className="flex items-center mb-2 gap-x-1">
+          <label className="text-white text-sm font-semibold">
+            Embedding Model
+          </label>
+          {!loading && !!basePath && (
+            <>
+              <Warning
+                size={18}
+                className="text-red-400 cursor-pointer"
+                data-tooltip-id="lmstudio-embedding-model"
+              />
+              <Tooltip
+                id="lmstudio-embedding-model"
+                place="top"
+                delayShow={300}
+                delayHide={400}
+                clickable={true}
+                className="tooltip !text-xs !opacity-100"
+                style={{
+                  maxWidth: "250px",
+                  whiteSpace: "normal",
+                  wordWrap: "break-word",
+                }}
+              >
+                <p className="text-xs leading-[18px] font-base">
+                  Could not reach LM Studio. Verify the URL is correct and the
+                  LMStudio server is running and accessible.
+                </p>
+              </Tooltip>
+            </>
+          )}
+        </div>
         <select
           name="EmbeddingModelPref"
           disabled={true}
           className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {!!basePath
+            {loading
               ? "--loading available models--"
-              : "Enter LM Studio URL first"}
+              : !!basePath
+                ? "No models found"
+                : "Enter LM Studio URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Select the LM Studio model for embeddings. Models will load after
-          entering a valid LM Studio URL.
-        </p>
       </div>
     );
   }
