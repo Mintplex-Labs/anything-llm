@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
   },
   login: {
     "multi-user": {
@@ -280,18 +286,16 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        description:
-          'va oferi răspunsuri bazate pe cunoștințele generale ale modelului LLM și pe contextul documentului, dacă acesta este disponibil.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
+        "desc-start":
+          "oferă răspunsuri bazate pe cunoștințele generale ale LLM-ului",
+        and: "și",
+        "desc-end": "context document care este găsit.",
       },
       query: {
         title: "Interogare",
-        description:
-          "va oferi răspunsuri doar dacă contextul documentului este găsit.<br />Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
-      },
-      automatic: {
-        title: "Mașină",
-        description:
-          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor. Dacă apelarea nativă a instrumentelor nu este suportată, va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
+        "desc-start": "oferă răspunsuri",
+        only: "doar",
+        "desc-end": "dacă contextul documentului este găsit.",
       },
     },
     history: {
@@ -629,7 +633,7 @@ const TRANSLATIONS = {
     edit_response: "Editează răspuns",
     at_agent: "@agent",
     default_agent_description:
-      "- utiliza instrumente și resurse specifice pentru a finaliza sarcinile.",
+      " - agentul implicit pentru acest spațiu de lucru.",
     custom_agents_coming_soon: "agenții personalizați vin în curând!",
     slash_reset: "/reset",
     preset_reset_description:

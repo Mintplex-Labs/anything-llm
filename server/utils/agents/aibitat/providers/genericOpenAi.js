@@ -61,7 +61,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     const supportsToolCalling =
       process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
         "generic-openai"
-      ) || false;
+      );
 
     if (supportsToolCalling)
       this.providerLog(

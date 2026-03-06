@@ -45,8 +45,7 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("litellm") ||
-      false;
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("litellm");
 
     if (supportsToolCalling)
       this.providerLog(

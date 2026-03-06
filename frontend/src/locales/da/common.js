@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Brandstrategi og white-labeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Fælleshus",
+      trending: "Udforsk populære emner",
+      "your-account": "Dit konti",
+      "import-item": "Importeret vare",
+    },
   },
   login: {
     "multi-user": {
@@ -188,18 +194,15 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        description:
-          "vil give svar baseret på LLM'ens generelle viden og den dokumentkontekst, der findes.\nDu skal bruge kommandoen `@agent` for at bruge værktøjerne.",
+        "desc-start": "vil give svar baseret på LLM'ens generelle viden",
+        and: "og",
+        "desc-end": "dokumentkontekst der findes.",
       },
       query: {
         title: "Forespørgsel",
-        description:
-          'vil kun give svar, hvis dokumentets kontekst er fundet.\nDu skal bruge kommandoen "@agent" for at bruge værktøjerne.',
-      },
-      automatic: {
-        title: "Bil",
-        description:
-          "systemet vil automatisk bruge værktøjer, hvis modellen og leverandøren understøtter direkte kald af værktøjer.<br />Hvis direkte brug af værktøjer ikke understøttes, skal du bruge kommandoen `@agent` for at bruge værktøjerne.",
+        "desc-start": "vil give svar",
+        only: "kun",
+        "desc-end": "hvis dokumentkontekst findes.",
       },
     },
     history: {
@@ -709,8 +712,7 @@ const TRANSLATIONS = {
     edit_prompt: "Redigeringsanmodning",
     edit_response: "Rediger svar",
     at_agent: "@agent",
-    default_agent_description:
-      "- udnytte værktøjer og metoder (MCP'er) til at gennemføre opgaver.",
+    default_agent_description: "- standardagenten for dette arbejdsområde.",
     custom_agents_coming_soon: "Specialagenter kommer snart!",
     slash_reset: "/reset",
     preset_reset_description:

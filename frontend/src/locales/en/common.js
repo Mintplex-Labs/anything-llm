@@ -106,6 +106,12 @@ const TRANSLATIONS = {
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
+    "community-hub": {
+      title: "Community Hub",
+      trending: "Explore Trending",
+      "your-account": "Your Account",
+      "import-item": "Import Item",
+    },
     admin: "Admin",
     tools: "Tools",
     "system-prompt-variables": "System Prompt Variables",
@@ -295,20 +301,17 @@ const TRANSLATIONS = {
     },
     mode: {
       title: "Chat mode",
-      automatic: {
-        title: "Auto",
-        description:
-          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
-      },
       chat: {
         title: "Chat",
-        description:
-          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
+        "desc-start": "will provide answers with the LLM's general knowledge",
+        and: "and",
+        "desc-end": "document context that is found.",
       },
       query: {
         title: "Query",
-        description:
-          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
+        "desc-start": "will provide answers",
+        only: "only",
+        "desc-end": "if document context is found.",
       },
     },
     history: {
@@ -969,7 +972,7 @@ const TRANSLATIONS = {
     edit_prompt: "Edit prompt",
     edit_response: "Edit response",
     at_agent: "@agent",
-    default_agent_description: " - leverage tools & MCPs to complete tasks.",
+    default_agent_description: " - the default agent for this workspace.",
     custom_agents_coming_soon: "custom agents are coming soon!",
     slash_reset: "/reset",
     preset_reset_description: "Clear your chat history and begin a new chat",

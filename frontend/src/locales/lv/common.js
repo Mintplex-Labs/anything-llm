@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
     "mobile-app": "AnythingLLM mobilā versija",
+    "community-hub": {
+      title: "Sabiedriskais centrs",
+      trending: "Izpētiet populārākās",
+      "your-account": "Jūsu konts",
+      "import-item": "Importētā prece",
+    },
   },
   login: {
     "multi-user": {
@@ -276,18 +282,15 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
-        description:
-          'sniedz atbildes, izmantojot LLM (liels valodas modelis) vispārējo zināšanu un atrastos dokumentu kontekstu.\nLai izmantotu rīkus, jums būs jāizmantojat komanda "@agent".',
+        "desc-start": "sniegs atbildes ar LLM vispārējām zināšanām",
+        and: "un",
+        "desc-end": "dokumentu kontekstu, kas tiek atrasts.",
       },
       query: {
         title: "Vaicājums",
-        description:
-          'sniedz atbildes tikai, ja dokumenta konteksts ir atrasts.<br />Lai izmantotu rīkus, jums jāizmantojat komandu "@agent".',
-      },
-      automatic: {
-        title: "Automobiļs",
-        description:
-          'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izkļaušanu.<br />Ja vietējā rīku izkļaušana nav atbalstīta, jums būs jāizmantojat komanda "@agent", lai izmantotu rīkus.',
+        "desc-start": "sniegs atbildes",
+        only: "tikai",
+        "desc-end": "ja tiek atrasts dokumentu konteksts.",
       },
     },
     history: {
@@ -899,8 +902,7 @@ const TRANSLATIONS = {
     edit_prompt: "Ieslēgt",
     edit_response: "Rediģēt atbildi",
     at_agent: "@agent",
-    default_agent_description:
-      "– izmantot rīkus un MCP (personas darba plānus) lai pabeigtu uzdevumus.",
+    default_agent_description: "- noklusējuma aģents šim darba telpai.",
     custom_agents_coming_soon:
       "Nedaudz drīzumā būs pieejami individuāli pakalpojumi!",
     slash_reset: "/reset",

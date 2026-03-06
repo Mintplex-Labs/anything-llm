@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contactar con soporte",
     "browser-extension": "Extensión del navegador",
     "mobile-app": "AnythingLLM Móvil",
+    "community-hub": {
+      title: "Centro comunitario",
+      trending: "Explora las tendencias más populares",
+      "your-account": "Su cuenta",
+      "import-item": "Importar artículo",
+    },
   },
   login: {
     "multi-user": {
@@ -281,18 +287,16 @@ const TRANSLATIONS = {
       title: "Modo de chat",
       chat: {
         title: "Chat",
-        description:
-          'proporcionará respuestas basadas en el conocimiento general del LLM y en el contexto del documento que se encuentre.<br />Para utilizar las herramientas, deberá utilizar el comando "@agent".',
+        "desc-start":
+          "proporcionará respuestas con el conocimiento general del LLM",
+        and: "y",
+        "desc-end": "el contexto del documento que se encuentre.",
       },
       query: {
         title: "Consulta",
-        description:
-          'proporcionará respuestas **únicamente** si se encuentra el contexto del documento.\nDeberá utilizar el comando "@agent" para utilizar las herramientas.',
-      },
-      automatic: {
-        title: "Coche",
-        description:
-          'utilizará automáticamente las herramientas si el modelo y el proveedor admiten la llamada nativa a herramientas.\nSi no se admite la llamada nativa a herramientas, deberá utilizar el comando "@agent" para utilizar las herramientas.',
+        "desc-start": "proporcionará respuestas",
+        only: "solo",
+        "desc-end": "si se encuentra contexto del documento.",
       },
     },
     history: {
@@ -918,7 +922,7 @@ const TRANSLATIONS = {
     edit_response: "Editar respuesta",
     at_agent: "@agent",
     default_agent_description:
-      "- Utilizar herramientas y metodologías específicas para completar las tareas.",
+      " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
     slash_reset: "/reset",
     preset_reset_description:

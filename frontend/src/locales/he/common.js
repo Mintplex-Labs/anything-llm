@@ -101,6 +101,12 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "מרכז קהילתי",
+      trending: "גלו את הנושאים החמים",
+      "your-account": "החשבון שלך",
+      "import-item": "ייבוא פריט",
+    },
   },
   login: {
     "multi-user": {
@@ -271,18 +277,15 @@ const TRANSLATIONS = {
       title: "מצב צ'אט",
       chat: {
         title: "צ'אט",
-        description:
-          'יוכל לספק תשובות המבוססות על הידע הכללי של ה-LLM וכן על ההקשר הרלוונטי המצוי בתיעוד.\nתצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלי.',
+        "desc-start": "יספק תשובות עם הידע הכללי של מודל השפה",
+        and: "וכן",
+        "desc-end": "מהקשר המסמכים שנמצא.",
       },
       query: {
         title: "שאילתה",
-        description:
-          "יוכל לספק תשובות <b/>רק אם הקשר של המסמך נמצא.<br />תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
-      },
-      automatic: {
-        title: "רכב",
-        description:
-          'הכלי ישתמש באופן אוטומטי בכלים אם המודל והספק תומכים בהם.\nאם אין תמיכה בכלים מקומיים, תצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלים.',
+        "desc-start": "יספק תשובות",
+        only: "רק",
+        "desc-end": "אם נמצא הקשר במסמכים.",
       },
     },
     history: {
@@ -873,8 +876,7 @@ const TRANSLATIONS = {
     edit_prompt: "ערוך הנחיה",
     edit_response: "ערוך תגובה",
     at_agent: "@agent",
-    default_agent_description:
-      "- שימוש בכלים ובכלים מיוחדים כדי להשלים משימות.",
+    default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
     custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
     slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",

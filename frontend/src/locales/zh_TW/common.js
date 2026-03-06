@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     branding: "品牌與白標設定",
     chat: "聊天室",
     "mobile-app": "AnythingLLM 應用程式",
+    "community-hub": {
+      title: "社區中心",
+      trending: "探索熱門",
+      "your-account": "您的帳戶",
+      "import-item": "進口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -179,18 +185,15 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        description:
-          "將提供利用 LLM 的一般知識以及從文件中提取到的資訊來提供答案。<br />您需要使用 `@agent` 命令來使用工具。",
+        "desc-start": "將會利用 LLM 的一般知識",
+        and: "和",
+        "desc-end": "找到的文件內容來提供答案。",
       },
       query: {
         title: "查詢",
-        description:
-          "僅在找到文件內容時，系統才會提供答案。<br />您需要使用 `@agent` 命令來使用工具。",
-      },
-      automatic: {
-        title: "自動",
-        description:
-          "如果模型和供應商都支援原生工具呼叫，系統將自動使用這些工具。<br />如果原生工具呼叫功能未支援，您需要使用 `@agent` 命令來使用工具。",
+        "desc-start": "將",
+        only: "僅",
+        "desc-end": "在找到文件內容時提供答案。",
       },
     },
     history: {
@@ -663,7 +666,7 @@ const TRANSLATIONS = {
     edit_prompt: "編輯問題",
     edit_response: "編輯回應",
     at_agent: "@agent",
-    default_agent_description: "- 運用工具和專案管理流程，以完成任務。",
+    default_agent_description: " - 此工作區的預設代理。",
     custom_agents_coming_soon: "自訂代理功能即將推出！",
     slash_reset: "/reset",
     preset_reset_description: "清除聊天紀錄並開始新的聊天",

@@ -31,7 +31,6 @@ export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
 
 /**
- * @param {Workspace} props.workspace - workspace object
  * @param {function} props.submit - form submit handler
  * @param {boolean} props.isStreaming - disables input while streaming response
  * @param {function} props.sendCommand - handler for slash commands and agent mentions
@@ -41,7 +40,6 @@ const MAX_EDIT_STACK_SIZE = 100;
  * @param {string} [props.threadSlug] - thread slug for home page context
  */
 export default function PromptInput({
-  workspace = {},
   submit,
   isStreaming,
   sendCommand,
@@ -51,7 +49,6 @@ export default function PromptInput({
   threadSlug = null,
 }) {
   const { t } = useTranslation();
-  const { showAgentCommand = true } = workspace ?? {};
   const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
@@ -276,15 +273,13 @@ export default function PromptInput({
         promptRef={textareaRef}
         centered={centered}
       />
-      {showAgentCommand && (
-        <AvailableAgents
-          showing={showAgents}
-          setShowing={setShowAgents}
-          sendCommand={sendCommand}
-          promptRef={textareaRef}
-          centered={centered}
-        />
-      )}
+      <AvailableAgents
+        showing={showAgents}
+        setShowing={setShowAgents}
+        sendCommand={sendCommand}
+        promptRef={textareaRef}
+        centered={centered}
+      />
       <form
         onSubmit={handleSubmit}
         className={
@@ -330,14 +325,10 @@ export default function PromptInput({
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
                 />
-
-                {showAgentCommand && (
-                  <AvailableAgentsButton
-                    showing={showAgents}
-                    setShowAgents={setShowAgents}
-                  />
-                )}
-
+                <AvailableAgentsButton
+                  showing={showAgents}
+                  setShowAgents={setShowAgents}
+                />
                 <TextSizeButton />
                 <LLMSelectorAction workspaceSlug={workspaceSlug} />
               </div>

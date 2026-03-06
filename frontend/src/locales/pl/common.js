@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrum Społeczności",
+      trending: "Odkryj popularne",
+      "your-account": "Twój profil",
+      "import-item": "Importuj element",
+    },
   },
   login: {
     "multi-user": {
@@ -278,18 +284,16 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
-        description:
-          "zapewnią odpowiedzi oparte na ogólnym zasobie wiedzy LLM oraz kontekście dokumentu, w którym ta wiedza znajduje się. <br /> Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
+        "desc-start": "dostarczy odpowiedzi na podstawie wiedzy ogólnej LLM",
+        and: "oraz",
+        "desc-end": " znalezionym kontekście (dokumenty, źródła danych)",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
-        description:
-          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć polecenia `@agent` w celu korzystania z narzędzi.",
-      },
-      automatic: {
-        title: "Samochód",
-        description:
-          "automatycznie będzie korzystać z narzędzi, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. W przypadku, gdy natywne wywoływanie narzędzi nie jest obsługiwane, konieczne będzie użycie komendy `@agent` w celu korzystania z narzędzi.",
+        "desc-start": "dostarczy odpowiedzi",
+        only: "tylko",
+        "desc-end":
+          "na podstawie znalezionego kontekstu (dokumenty, źródła danych) - w przeciwnym razie odmówi odpowiedzi.",
       },
     },
     history: {
@@ -900,8 +904,7 @@ const TRANSLATIONS = {
     edit_prompt: "Edytuj prompt",
     edit_response: "Edytuj odpowiedź",
     at_agent: "@agent",
-    default_agent_description:
-      "- wykorzystywać dostępne narzędzia i zasoby, aby wykonywać zadania.",
+    default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
     custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
     slash_reset: "/reset",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",

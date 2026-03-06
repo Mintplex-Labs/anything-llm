@@ -111,6 +111,12 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
   },
   login: {
     "multi-user": {
@@ -286,18 +292,15 @@ const TRANSLATIONS = {
       title: "Režim chatu",
       chat: {
         title: "Chat",
-        description:
-          "budou poskytovat odpovědi založené na obecných znalostech LLM a kontextu dokumentu, který je k dispozici. Pro použití nástrojů budete muset použít příkaz `@agent`.",
+        "desc-start": "bude poskytovat odpovědi s obecnými znalostmi LLM",
+        and: "a",
+        "desc-end": "kontext dokumentu, který je nalezen.",
       },
       query: {
         title: "Dotaz",
-        description:
-          "budou poskytovat odpovědi <b>pouze__, pokud je nalezen kontext dokumentu.</b>Budete muset použít příkaz @agent pro použití nástrojů.",
-      },
-      automatic: {
-        title: "Auto",
-        description:
-          "automaticky použije nástroje, pokud to podporují model a poskytovatel. Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
+        "desc-start": "bude poskytovat odpovědi",
+        only: "pouze",
+        "desc-end": "pokud je nalezen kontext dokumentu.",
       },
     },
     history: {
@@ -928,8 +931,7 @@ const TRANSLATIONS = {
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
     at_agent: "@agent",
-    default_agent_description:
-      "– využívat nástroje a metodiky (MCP) k plnění úkolů.",
+    default_agent_description: " - výchozí agent pro tento pracovní prostor.",
     custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
     slash_reset: "/reset",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",

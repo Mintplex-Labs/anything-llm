@@ -291,8 +291,6 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
-      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
       AgentSerpApiKey: !!process.env.AGENT_SERPAPI_API_KEY || null,
       AgentSerpApiEngine: process.env.AGENT_SERPAPI_ENGINE || "google",
       AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,

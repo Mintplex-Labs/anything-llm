@@ -31,15 +31,6 @@ class OpenAIProvider extends Provider {
   }
 
   /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - OpenAI always supports tool calling.
-   * @returns {Promise<boolean>}
-   */
-  supportsNativeToolCalling() {
-    return true;
-  }
-
-  /**
    * Format the messages to the OpenAI API Responses format.
    * - If the message is our internal `function` type, then we need to map it to a function call + output format
    * - Otherwise, map it to the input text format for user, system, and assistant messages
