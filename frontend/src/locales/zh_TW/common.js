@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     branding: "品牌與白標設定",
     chat: "聊天室",
     "mobile-app": "AnythingLLM 應用程式",
+    "community-hub": {
+      title: "社區中心",
+      trending: "探索熱門",
+      "your-account": "您的帳戶",
+      "import-item": "進口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -300,11 +306,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "即時網路搜尋與瀏覽",
-        "desc-start":
-          "讓您的智慧代理人能夠透過連線到網路搜尋 (SERP) 提供者來搜尋網路以回答您的問題。",
-        "desc-end":
-          "在設定完成之前，智慧代理人工作階段期間的網路搜尋將無法運作。",
+        description:
+          "透過連接到網路搜尋引擎 (SERP) 提供商，讓您的代理能夠在網上搜尋，以回答您的問題。",
       },
+      sql: {
+        title: "SQL 連接器",
+        description:
+          "讓您的代理能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 數據庫提供者即可。",
+      },
+      default_skill:
+        "預設情況下，此功能已啟用，但您可以選擇關閉，以防止其被應用程式使用。",
     },
   },
   recorded: {
