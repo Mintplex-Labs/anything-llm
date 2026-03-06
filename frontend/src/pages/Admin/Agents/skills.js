@@ -15,60 +15,60 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 
-export const defaultSkills = {
+export const getDefaultSkills = (t) => ({
   "rag-memory": {
-    titleKey: "agent.skill.rag.title",
-    descriptionKey: "agent.skill.rag.description",
+    title: t("agent.skill.rag.title"),
+    description: t("agent.skill.rag.description"),
     component: DefaultSkillPanel,
     icon: Brain,
     image: RAGImage,
     skill: "rag-memory",
   },
   "document-summarizer": {
-    titleKey: "agent.skill.view.title",
-    descriptionKey: "agent.skill.view.description",
+    title: t("agent.skill.view.title"),
+    description: t("agent.skill.view.description"),
     component: DefaultSkillPanel,
     icon: File,
     image: SummarizeImage,
     skill: "document-summarizer",
   },
   "web-scraping": {
-    titleKey: "agent.skill.scrape.title",
-    descriptionKey: "agent.skill.scrape.description",
+    title: t("agent.skill.scrape.title"),
+    description: t("agent.skill.scrape.description"),
     component: DefaultSkillPanel,
     icon: Browser,
     image: ScrapeWebsitesImage,
     skill: "web-scraping",
   },
-};
+});
 
-export const configurableSkills = {
+export const getConfigurableSkills = (t) => ({
   "save-file-to-browser": {
-    titleKey: "agent.skill.save.title",
-    descriptionKey: "agent.skill.save.description",
+    title: t("agent.skill.save.title"),
+    description: t("agent.skill.save.description"),
     component: GenericSkillPanel,
     skill: "save-file-to-browser",
     icon: FileMagnifyingGlass,
     image: GenerateSaveImages,
   },
   "create-chart": {
-    titleKey: "agent.skill.generate.title",
-    descriptionKey: "agent.skill.generate.description",
+    title: t("agent.skill.generate.title"),
+    description: t("agent.skill.generate.description"),
     component: GenericSkillPanel,
     skill: "create-chart",
     icon: ChartBar,
     image: GenerateChartsImage,
   },
   "web-browsing": {
-    titleKey: "agent.skill.web.title",
-    descriptionKey: "agent.skill.web.description",
+    title: t("agent.skill.web.title"),
+    description: t("agent.skill.web.description"),
     component: AgentWebSearchSelection,
     skill: "web-browsing",
   },
   "sql-agent": {
-    titleKey: "agent.skill.sql.title",
-    descriptionKey: "agent.skill.sql.description",
+    title: t("agent.skill.sql.title"),
+    description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
   },
-};
+});
