@@ -63,6 +63,9 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Workspace automatic chat mode migration status
+    "legacy_workspaces_to_automatic_migration_status",
   ],
   validations: {
     footer_data: (updates) => {
