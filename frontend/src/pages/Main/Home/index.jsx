@@ -243,6 +243,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     writeMode = "replace",
   }) {
     if (autoSubmit) {
+      if (writeMode === "append") {
+        const currentText =
+          document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+        text = currentText + text;
+      }
+      if (!text.trim()) return;
       submitMessage(text.trim());
       return;
     }
