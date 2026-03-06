@@ -280,15 +280,18 @@ const TRANSLATIONS = {
       title: "Modo de Chat",
       chat: {
         title: "Chat",
-        "desc-start": "fornecerá respostas com conhecimento geral do LLM",
-        and: "e",
-        "desc-end": "contexto dos documentos encontrados.",
+        description:
+          'fornecerá respostas com base no conhecimento geral do LLM e no contexto do documento encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
       query: {
         title: "Consulta",
-        "desc-start": "fornecerá respostas",
-        only: "apenas",
-        "desc-end": "se contexto for encontrado nos documentos.",
+        description:
+          'fornecerá respostas <b>apenas</b> caso o contexto do documento seja encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
+      },
+      automatic: {
+        title: "Automóvel",
+        description:
+          'utilizará automaticamente as ferramentas, se o modelo e o provedor suportarem a chamada nativa de ferramentas. Se a chamada nativa de ferramentas não for suportada, você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
     },
     history: {
