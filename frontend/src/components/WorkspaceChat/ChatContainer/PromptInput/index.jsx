@@ -335,7 +335,10 @@ export default function PromptInput({
                   <button
                     id="tools-btn"
                     type="button"
-                    onClick={() => setShowTools(!showTools)}
+                    onClick={() => {
+                      setShowTools(!showTools);
+                      textareaRef.current?.focus();
+                    }}
                     className={`group border-none cursor-pointer flex items-center justify-center h-8 px-3 rounded-full ${
                       showTools
                         ? "bg-zinc-700 light:bg-slate-200"
