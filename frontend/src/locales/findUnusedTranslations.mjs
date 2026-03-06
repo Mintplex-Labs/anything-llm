@@ -59,6 +59,7 @@ const sourceFiles = collectFiles(FRONTEND_SRC);
 const referencedKeys = new Set();
 const tCallRegex = /\bt\(\s*["'`]([^"'`]+)["'`]/g;
 const dynamicTCallRegex = /\bt\(\s*([a-zA-Z_$][a-zA-Z0-9_$.]*)\s*[,)]/g;
+const templateTCallRegex = /\bt\(\s*`([^`]*\$\{[^`]*)`\s*[,)]/g;
 const dynamicUsages = [];
 
 for (const file of sourceFiles) {
@@ -73,6 +74,13 @@ for (const file of sourceFiles) {
     const arg = match[1];
     if (/^["'`]/.test(arg)) continue;
     dynamicUsages.push({ file: path.relative(FRONTEND_SRC, file), arg });
+  }
+
+  while ((match = templateTCallRegex.exec(content)) !== null) {
+    dynamicUsages.push({
+      file: path.relative(FRONTEND_SRC, file),
+      arg: `\`${match[1]}\``,
+    });
   }
 }
 
