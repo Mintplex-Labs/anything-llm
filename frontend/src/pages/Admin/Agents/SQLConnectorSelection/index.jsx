@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import DBConnection from "./DBConnection";
 import { Plus, Database, CircleNotch } from "@phosphor-icons/react";
 import NewSQLConnection from "./SQLConnectionModal";
@@ -11,14 +10,13 @@ import { Tooltip } from "react-tooltip";
 
 export default function AgentSQLConnectorSelection({
   skill,
-  titleKey,
-  descriptionKey,
+  title,
+  description,
   toggleSkill,
   enabled = false,
   setHasChanges,
   hasChanges = false,
 }) {
-  const { t } = useTranslation();
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,7 +107,7 @@ export default function AgentSQLConnectorSelection({
                 htmlFor="name"
                 className="text-theme-text-primary text-md font-bold"
               >
-                {t(titleKey)}
+                {title}
               </label>
             </div>
             <Toggle
@@ -124,7 +122,7 @@ export default function AgentSQLConnectorSelection({
             className="w-full rounded-md"
           />
           <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-            {t(descriptionKey)}
+            {description}
           </p>
           {enabled && (
             <>

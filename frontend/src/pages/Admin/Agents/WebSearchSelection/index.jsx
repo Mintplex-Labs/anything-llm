@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
@@ -123,14 +122,13 @@ const SEARCH_PROVIDERS = [
 
 export default function AgentWebSearchSelection({
   skill,
-  titleKey,
-  descriptionKey,
+  title,
+  description,
   settings,
   toggleSkill,
   enabled = false,
   setHasChanges,
 }) {
-  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("none");
@@ -186,7 +184,7 @@ export default function AgentWebSearchSelection({
               htmlFor="name"
               className="text-theme-text-primary text-md font-bold"
             >
-              {t(titleKey)}
+              {title}
             </label>
           </div>
           <Toggle
@@ -201,7 +199,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          {t(descriptionKey)}
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">

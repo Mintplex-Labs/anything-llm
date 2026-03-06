@@ -16,7 +16,7 @@ import {
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
-import { defaultSkills, configurableSkills } from "./skills";
+import { getDefaultSkills, getConfigurableSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
@@ -30,6 +30,7 @@ import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
 
 export default function AdminAgents() {
+  const { t } = useTranslation();
   const formEl = useRef(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
@@ -48,6 +49,9 @@ export default function AdminAgents() {
   // MCP Servers are lazy loaded to not block the UI thread
   const [mcpServers, setMcpServers] = useState([]);
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
+
+  const defaultSkills = getDefaultSkills(t);
+  const configurableSkills = getConfigurableSkills(t);
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -644,7 +648,6 @@ function SkillList({
   handleClick = null,
   activeSkills = [],
 }) {
-  const { t } = useTranslation();
   if (skills.length === 0) return null;
 
   return (
@@ -670,7 +673,7 @@ function SkillList({
             }`}
             onClick={() => handleClick?.(skill)}
           >
-            <div className="text-sm font-light">{t(settings.titleKey)}</div>
+            <div className="text-sm font-light">{settings.title}</div>
             <div className="flex items-center gap-x-2">
               {isDefault ? (
                 <DefaultBadge title={skill} />
