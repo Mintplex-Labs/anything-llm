@@ -428,6 +428,8 @@ const TRANSLATIONS = {
         description:
           "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
       },
+      default_skill:
+        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
     },
   },
   recorded: {

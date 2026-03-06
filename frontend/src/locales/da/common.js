@@ -332,6 +332,8 @@ const TRANSLATIONS = {
         description:
           "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
       },
+      default_skill:
+        "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
     },
   },
   recorded: {

@@ -426,6 +426,8 @@ const TRANSLATIONS = {
         description:
           "Permita que su agente pueda utilizar SQL para responder a sus preguntas, conectándose con diferentes proveedores de bases de datos SQL.",
       },
+      default_skill:
+        "Por defecto, esta función está activada, pero puede desactivarla si no desea que esté disponible para el agente.",
     },
   },
   recorded: {

@@ -311,6 +311,8 @@ const TRANSLATIONS = {
         description:
           "讓您的代理能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 數據庫提供者即可。",
       },
+      default_skill:
+        "預設情況下，此功能已啟用，但您可以選擇關閉，以防止其被應用程式使用。",
     },
   },
   recorded: {

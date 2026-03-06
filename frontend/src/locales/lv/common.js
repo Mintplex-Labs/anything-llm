@@ -417,6 +417,8 @@ const TRANSLATIONS = {
         description:
           "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
       },
+      default_skill:
+        "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
     },
   },
   recorded: {

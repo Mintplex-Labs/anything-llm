@@ -870,6 +870,8 @@ const TRANSLATIONS = {
         description:
           "Permite-ți agentului să utilizeze SQL pentru a răspunde la întrebările tale, conectându-se la diverși furnizori de baze de date SQL.",
       },
+      default_skill:
+        "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
     },
   },
   recorded: {

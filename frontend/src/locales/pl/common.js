@@ -420,6 +420,8 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
       },
+      default_skill:
+        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
     },
   },
   recorded: {
