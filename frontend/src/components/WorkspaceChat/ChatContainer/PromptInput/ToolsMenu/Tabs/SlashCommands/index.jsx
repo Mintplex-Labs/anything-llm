@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Plus } from "@phosphor-icons/react";
 import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
-import AddPresetModal from "../../../SlashCommands/SlashPresets/AddPresetModal";
-import EditPresetModal from "../../../SlashCommands/SlashPresets/EditPresetModal";
+import AddPresetModal from "./SlashPresets/AddPresetModal";
+import EditPresetModal from "./SlashPresets/EditPresetModal";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
+import useToolsMenuItems from "../../useToolsMenuItems";
 import SlashCommandRow from "./SlashCommandRow";
 import BrowseButton from "../../BrowseButton";
 
@@ -15,6 +17,8 @@ export default function SlashCommandsTab({
   sendCommand,
   setShowing,
   promptRef,
+  highlightedIndex = -1,
+  registerItemCount,
 }) {
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
@@ -45,11 +49,73 @@ export default function SlashCommandsTab({
     setPresets(presets);
   };
 
-  const handleUseCommand = (text, autoSubmit = false) => {
-    setShowing(false);
-    sendCommand({ text, autoSubmit });
-    promptRef?.current?.focus();
-  };
+  // Build the list of selectable items for keyboard navigation and rendering
+  const items = useMemo(() => {
+    const builtIn = isActiveAgentSession
+      ? {
+          command: "/exit",
+          description: "Halt the current agent session",
+          autoSubmit: true,
+        }
+      : {
+          command: "/reset",
+          description: "Clear your chat history and begin a new chat",
+          autoSubmit: true,
+        };
+
+    return [
+      builtIn,
+      ...presets.map((preset) => ({
+        command: preset.command,
+        description: preset.description,
+        autoSubmit: false,
+        preset,
+      })),
+    ];
+  }, [isActiveAgentSession, presets]);
+
+  const handleUseCommand = useCallback(
+    (command, autoSubmit = false) => {
+      setShowing(false);
+
+      // Auto-submit commands (/reset, /exit) fire immediately
+      if (autoSubmit) {
+        sendCommand({ text: command, autoSubmit: true });
+        promptRef?.current?.focus();
+        return;
+      }
+
+      // Insert the command at the cursor, replacing a trailing "/" if present
+      const textarea = promptRef?.current;
+      if (!textarea) return;
+      const cursor = textarea.selectionStart;
+      const value = textarea.value;
+      const charBefore = cursor > 0 ? value[cursor - 1] : "";
+      const insertStart = charBefore === "/" ? cursor - 1 : cursor;
+      const newValue =
+        value.slice(0, insertStart) + command + value.slice(cursor);
+
+      window.dispatchEvent(
+        new CustomEvent(PROMPT_INPUT_EVENT, {
+          detail: { messageContent: newValue },
+        })
+      );
+      textarea.focus();
+      const newCursor = insertStart + command.length;
+      setTimeout(() => textarea.setSelectionRange(newCursor, newCursor), 0);
+    },
+    [sendCommand, setShowing, promptRef]
+  );
+
+  useToolsMenuItems({
+    items,
+    highlightedIndex,
+    onSelect: (item) => {
+      const text = item.preset ? `${item.command} ` : item.command;
+      handleUseCommand(text, item.autoSubmit);
+    },
+    registerItemCount,
+  });
 
   const handleSavePreset = async (preset) => {
     const { error } = await System.createSlashCommandPreset(preset);
@@ -100,34 +166,23 @@ export default function SlashCommandsTab({
 
   return (
     <>
-      {/* Built-in /reset command */}
-      {!isActiveAgentSession && (
+      {items.map((item, index) => (
         <SlashCommandRow
-          command="/reset"
-          description="Clear your chat history and begin a new chat"
-          onClick={() => handleUseCommand("/reset", true)}
-        />
-      )}
-
-      {/* Built-in /exit command (only during agent session) */}
-      {isActiveAgentSession && (
-        <SlashCommandRow
-          command="/exit"
-          description="Halt the current agent session"
-          onClick={() => handleUseCommand("/exit", true)}
-        />
-      )}
-
-      {/* User presets */}
-      {presets.map((preset) => (
-        <SlashCommandRow
-          key={preset.id}
-          command={preset.command}
-          description={preset.description}
-          onClick={() => handleUseCommand(`${preset.command} `)}
-          onEdit={() => handleEditPreset(preset)}
-          onPublish={() => handlePublishPreset(preset)}
-          showMenu
+          key={item.preset?.id ?? item.command}
+          command={item.command}
+          description={item.description}
+          onClick={() =>
+            handleUseCommand(
+              item.preset ? `${item.command} ` : item.command,
+              item.autoSubmit
+            )
+          }
+          onEdit={item.preset ? () => handleEditPreset(item.preset) : undefined}
+          onPublish={
+            item.preset ? () => handlePublishPreset(item.preset) : undefined
+          }
+          showMenu={!!item.preset}
+          highlighted={highlightedIndex === index}
         />
       ))}
 

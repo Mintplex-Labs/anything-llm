@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import AgentSkillsTab from "./Tabs/AgentSkills";
 import SlashCommandsTab from "./Tabs/SlashCommands";
+
+export const TOOLS_MENU_KEYBOARD_EVENT = "tools-menu-keyboard";
 
 const TABS = [
   {
@@ -32,6 +34,53 @@ export default function ToolsMenu({
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(TABS[0].key);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const itemCountRef = useRef(0);
+
+  // Reset highlight when switching tabs or closing
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [activeTab, showing]);
+
+  const registerItemCount = useCallback((count) => {
+    itemCountRef.current = count;
+  }, []);
+
+  useEffect(() => {
+    if (!showing) return;
+
+    function handleKeyboard(e) {
+      const { key } = e.detail;
+
+      if (key === "ArrowLeft" || key === "ArrowRight") {
+        const currentIdx = TABS.findIndex((tab) => tab.key === activeTab);
+        const nextIdx =
+          key === "ArrowLeft"
+            ? (currentIdx - 1 + TABS.length) % TABS.length
+            : (currentIdx + 1) % TABS.length;
+        setActiveTab(TABS[nextIdx].key);
+        return;
+      }
+
+      if (key === "ArrowUp" || key === "ArrowDown") {
+        const count = itemCountRef.current;
+        if (count === 0) return;
+        setHighlightedIndex((prev) => {
+          if (key === "ArrowDown") {
+            return prev < count - 1 ? prev + 1 : 0;
+          }
+          return prev > 0 ? prev - 1 : count - 1;
+        });
+        return;
+      }
+
+      // Enter is handled by the tab components via highlightedIndex
+    }
+
+    window.addEventListener(TOOLS_MENU_KEYBOARD_EVENT, handleKeyboard);
+    return () =>
+      window.removeEventListener(TOOLS_MENU_KEYBOARD_EVENT, handleKeyboard);
+  }, [showing, activeTab]);
 
   if (!showing) return null;
 
@@ -64,6 +113,8 @@ export default function ToolsMenu({
             sendCommand={sendCommand}
             setShowing={setShowing}
             promptRef={promptRef}
+            highlightedIndex={highlightedIndex}
+            registerItemCount={registerItemCount}
           />
         </div>
       </div>

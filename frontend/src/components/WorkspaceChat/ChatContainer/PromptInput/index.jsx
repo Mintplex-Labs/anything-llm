@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { SlashCommands, useSlashCommands } from "./SlashCommands";
 import debounce from "lodash.debounce";
 import { ArrowUp } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
-import { AvailableAgents, useAvailableAgents } from "./AgentMenu";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
@@ -17,7 +15,8 @@ import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
 import usePromptInputStorage from "@/hooks/usePromptInputStorage";
-import ToolsMenu from "./ToolsMenu";
+import ToolsMenu, { TOOLS_MENU_KEYBOARD_EVENT } from "./ToolsMenu";
+import { useSearchParams } from "react-router-dom";
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -44,8 +43,6 @@ export default function PromptInput({
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
-  const { showAgents, setShowAgents } = useAvailableAgents();
-  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const [showTools, setShowTools] = useState(false);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
@@ -53,12 +50,25 @@ export default function PromptInput({
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
+  const [searchParams] = useSearchParams();
 
   // Synchronizes prompt input value with localStorage, scoped to the current thread.
   usePromptInputStorage({
     promptInput,
     setPromptInput,
   });
+
+  /*
+   * @checklist-item
+   * If the URL has the agent param, open the agent menu for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (searchParams.get("action") === "set-agent-chat") {
+      sendCommand({ text: "@agent " });
+      textareaRef.current?.focus();
+    }
+  }, [textareaRef.current]);
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -110,27 +120,41 @@ export default function PromptInput({
     textareaRef.current.style.height = "auto";
   }
 
-  function checkForSlash(e) {
-    const input = e.target.value;
-    if (input === "/") setShowSlashCommand(true);
-    if (showSlashCommand) setShowSlashCommand(false);
-    return;
-  }
-  const watchForSlash = debounce(checkForSlash, 300);
-
-  function checkForAt(e) {
-    const input = e.target.value;
-    if (input === "@") return setShowAgents(true);
-    if (showAgents) return setShowAgents(false);
-  }
-  const watchForAt = debounce(checkForAt, 300);
-
   /**
    * Capture enter key press to handle submission, redo, or undo
    * via keyboard shortcuts
    * @param {KeyboardEvent} event
    */
   function captureEnterOrUndo(event) {
+    // Forward keyboard events to the ToolsMenu when open
+    if (showTools) {
+      if (
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(
+          event.key
+        )
+      ) {
+        event.preventDefault();
+        window.dispatchEvent(
+          new CustomEvent(TOOLS_MENU_KEYBOARD_EVENT, {
+            detail: { key: event.key },
+          })
+        );
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setShowTools(false);
+        textareaRef.current?.focus();
+        return;
+      }
+    }
+
+    // "/" toggles the Tools menu (character still enters the input naturally)
+    if (event.key === "/" && !event.ctrlKey && !event.metaKey) {
+      setShowTools((prev) => !prev);
+      return;
+    }
+
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
@@ -247,8 +271,6 @@ export default function PromptInput({
 
   function handleChange(e) {
     debouncedSaveState(-1);
-    watchForSlash(e);
-    watchForAt(e);
     adjustTextArea(e);
     setPromptInput(e.target.value);
   }
@@ -261,20 +283,6 @@ export default function PromptInput({
           : "w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center pwa:pb-5"
       }
     >
-      <SlashCommands
-        showing={showSlashCommand}
-        setShowing={setShowSlashCommand}
-        sendCommand={sendCommand}
-        promptRef={textareaRef}
-        centered={centered}
-      />
-      <AvailableAgents
-        showing={showAgents}
-        setShowing={setShowAgents}
-        sendCommand={sendCommand}
-        promptRef={textareaRef}
-        centered={centered}
-      />
       <form
         onSubmit={handleSubmit}
         className={
@@ -327,11 +335,7 @@ export default function PromptInput({
                   <button
                     id="tools-btn"
                     type="button"
-                    onClick={() => {
-                      setShowTools(!showTools);
-                      setShowSlashCommand(false);
-                      setShowAgents(false);
-                    }}
+                    onClick={() => setShowTools(!showTools)}
                     className={`group border-none cursor-pointer flex items-center justify-center h-8 px-3 rounded-full ${
                       showTools
                         ? "bg-zinc-700 light:bg-slate-200"
