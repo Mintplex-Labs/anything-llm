@@ -111,6 +111,12 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
   },
   login: {
     "multi-user": {
@@ -417,11 +423,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
-        "desc-start":
-          "Umožněte svému agentovi vyhledávat web pro odpovědi na vaše otázky připojením k poskytovateli webového vyhledávání (SERP).",
-        "desc-end":
-          "Webové vyhledávání během relací agenta nebude fungovat, dokud to nebude nastaveno.",
+        description:
+          "Umožněte svému agentovi, aby prohledával internet a odpovídal na vaše otázky, propojením se poskytovatelem vyhledávacího servisu (SERP).",
       },
+      sql: {
+        title: "Připojení k databázi SQL",
+        description:
+          "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
+      },
+      default_skill:
+        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
     },
   },
   recorded: {

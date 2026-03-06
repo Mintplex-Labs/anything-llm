@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
   },
   login: {
     "multi-user": {
@@ -860,11 +866,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Căutare și navigare web live",
-        "desc-start":
-          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
-        "desc-end":
-          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
+        description:
+          "Permite-i agentului tău să caute pe internet pentru a răspunde la întrebările tale, conectându-l la un furnizor de servicii de căutare web (SERP).",
       },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permite-ți agentului să utilizeze SQL pentru a răspunde la întrebările tale, conectându-se la diverși furnizori de baze de date SQL.",
+      },
+      default_skill:
+        "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
     },
   },
   recorded: {

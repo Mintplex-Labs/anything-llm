@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrum Społeczności",
+      trending: "Odkryj popularne",
+      "your-account": "Twój profil",
+      "import-item": "Importuj element",
+    },
   },
   login: {
     "multi-user": {
@@ -410,11 +416,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        "desc-start":
-          "Pozwól swojemu agentowi przeszukiwać Internet w celu uzyskania odpowiedzi na pytania, łącząc się z dostawcą wyszukiwania internetowego (SERP).",
-        "desc-end":
-          "Wyszukiwanie w sieci podczas sesji agenta nie będzie działać, dopóki nie zostanie to skonfigurowane.",
+        description:
+          "Pozwól swojemu agentowi na wyszukiwanie informacji w Internecie, aby odpowiadał na Twoje pytania, poprzez połączenie z dostawcą usług wyszukiwania (SERP).",
       },
+      sql: {
+        title: "Połączenie z bazą danych SQL",
+        description:
+          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
+      },
+      default_skill:
+        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
     },
   },
   recorded: {
