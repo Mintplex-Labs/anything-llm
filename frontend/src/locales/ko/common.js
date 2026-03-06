@@ -921,7 +921,6 @@ const TRANSLATIONS = {
     similarity_match: "경쟁",
     source_count_one: "{{count}} 참조",
     source_count_other: "{{count}} 관련 참고 자료",
-    slash_exit: "/종료",
     preset_exit_description: "현재 에이전트 세션을 중단",
     add_new: "새로운 항목 추가",
     edit: "수정",

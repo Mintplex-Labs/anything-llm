@@ -944,7 +944,6 @@ const TRANSLATIONS = {
     similarity_match: "spēle",
     source_count_one: "{{count}} – atsauce",
     source_count_other: "Atsauces uz {{count}}",
-    slash_exit: "/iziet",
     preset_exit_description: "Aizust klientu sesiju",
     add_new: "Pievienot jaunu",
     edit: "Rediģēt",

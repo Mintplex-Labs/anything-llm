@@ -920,7 +920,6 @@ const TRANSLATIONS = {
     similarity_match: "jogo",
     source_count_one: "Referência a {{count}}",
     source_count_other: "Referências a {{count}}",
-    slash_exit: "/sair",
     preset_exit_description: "Interrompa a sessão atual do agente",
     add_new: "Adicionar novo",
     edit: "Editar",

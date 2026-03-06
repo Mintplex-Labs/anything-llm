@@ -968,7 +968,6 @@ const TRANSLATIONS = {
     similarity_match: "zápas",
     source_count_one: "{{count}} – odkaz",
     source_count_other: "{{count}} – odkazy",
-    slash_exit: "/ukončit",
     preset_exit_description: "Zastavte aktuální relaci s agentem",
     add_new: "Přidat nové",
     edit: "Upravit",

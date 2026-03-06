@@ -878,7 +878,6 @@ const TRANSLATIONS = {
     similarity_match: "比赛",
     source_count_one: "{{count}} 参考",
     source_count_other: "{{count}} 相关资料",
-    slash_exit: "/退出",
     preset_exit_description: "停止当前的代理会话",
     add_new: "添加新",
     edit: "编辑",

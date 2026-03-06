@@ -964,7 +964,6 @@ const TRANSLATIONS = {
     similarity_match: "partido",
     source_count_one: "{{count}} de referencia",
     source_count_other: "{{count}} referencias",
-    slash_exit: "/salir",
     preset_exit_description: "Detener la sesión actual del agente.",
     add_new: "Añadir nuevo",
     edit: "Editar",

@@ -904,7 +904,6 @@ const TRANSLATIONS = {
     similarity_match: "mäng",
     source_count_one: "{{count}} viidatud",
     source_count_other: "Viidatud allikad",
-    slash_exit: "/välja",
     preset_exit_description: "Lõpeta hetkeseisuga",
     add_new: "Lisada uus",
     edit: "Redigeerimine",

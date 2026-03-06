@@ -753,7 +753,6 @@ const TRANSLATIONS = {
     similarity_match: "соревнование; игра",
     source_count_one: "{{count}} – ссылка",
     source_count_other: "Ссылки на {{count}}",
-    slash_exit: "/выход",
     preset_exit_description: "Прекратить текущую сессию работы с агентом",
     add_new: "Добавить новое",
     edit: "Редактировать",

@@ -700,7 +700,6 @@ const TRANSLATIONS = {
     similarity_match: "比賽",
     source_count_one: "{{count}} 參考",
     source_count_other: "{{count}} 的相關資料",
-    slash_exit: "/退出",
     preset_exit_description: "暫停目前的工作階段",
     add_new: "新增",
     edit: "編輯",

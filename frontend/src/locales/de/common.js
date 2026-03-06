@@ -947,7 +947,6 @@ const TRANSLATIONS = {
     similarity_match: "Spiel",
     source_count_one: "{{count}} Referenz",
     source_count_other: "{{count}} Verweise",
-    slash_exit: "/beenden",
     preset_exit_description: "Behalte die aktuelle Agentensitzung",
     add_new: "Neu hinzufügen",
     edit: "Bearbeiten",

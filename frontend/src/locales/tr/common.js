@@ -746,7 +746,6 @@ const TRANSLATIONS = {
     similarity_match: "maç",
     source_count_one: "{{count}} ile ilgili bilgi",
     source_count_other: "{{count}} referansları",
-    slash_exit: "/çıkış",
     preset_exit_description: "Mevcut ajan oturumunu durdurun",
     add_new: "Yeni ekle",
     edit: "Düzenle",
