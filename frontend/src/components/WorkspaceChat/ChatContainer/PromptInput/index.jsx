@@ -156,7 +156,6 @@ export default function PromptInput({
       !event.metaKey &&
       promptInput.trim() === ""
     ) {
-      event.preventDefault();
       setShowTools((prev) => !prev);
       return;
     }
