@@ -284,18 +284,11 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
-        "desc-start": "dostarczy odpowiedzi na podstawie wiedzy ogólnej LLM",
-        and: "oraz",
-        "desc-end": " znalezionym kontekście (dokumenty, źródła danych)",
         description:
           "zapewni odpowiedzi, wykorzystując ogólną wiedzę LLM oraz kontekst dokumentu, w którym ta wiedza znajduje się.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
-        "desc-start": "dostarczy odpowiedzi",
-        only: "tylko",
-        "desc-end":
-          "na podstawie znalezionego kontekstu (dokumenty, źródła danych) - w przeciwnym razie odmówi odpowiedzi.",
         description:
           "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },

@@ -282,17 +282,11 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
-        "desc-start": "sniegs atbildes ar LLM vispārējām zināšanām",
-        and: "un",
-        "desc-end": "dokumentu kontekstu, kas tiek atrasts.",
         description:
           'sniedz atbildes, izmantojot LLM vispārīgo zināšanu un dokumenta kontekstu, kas ir pieejams.<br />Lai izmantotu rīkus, jums jāizmantojat komandu "@agent".',
       },
       query: {
         title: "Vaicājums",
-        "desc-start": "sniegs atbildes",
-        only: "tikai",
-        "desc-end": "ja tiek atrasts dokumentu konteksts.",
         description:
           'sniedz atbildes <b> tikai </b>, ja dokumenta konteksts ir atrasts. <br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
       },

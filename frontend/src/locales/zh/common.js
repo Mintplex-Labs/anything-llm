@@ -272,17 +272,11 @@ const TRANSLATIONS = {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        "desc-start": "将提供 LLM 的一般知识",
-        and: "和",
-        "desc-end": "找到的文档上下文的答案。",
         description:
           "将提供答案，利用LLM的通用知识和相关文档的上下文信息。您需要使用 `@agent` 命令来使用工具。",
       },
       query: {
         title: "查询",
-        "desc-start": "将会提供答案",
-        only: "仅当",
-        "desc-end": "找到文档上下文时。",
         description:
           "将在找到文档上下文时提供答案 <b>仅限</b>。您需要使用 @agent 命令来使用工具。",
       },

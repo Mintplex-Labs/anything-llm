@@ -287,18 +287,11 @@ const TRANSLATIONS = {
       title: "Modo de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "proporcionará respuestas con el conocimiento general del LLM",
-        and: "y",
-        "desc-end": "el contexto del documento que se encuentre.",
         description:
           'proporcionará respuestas basándose en el conocimiento general del LLM y en el contexto del documento que se encuentre disponible. Para utilizar las herramientas, deberá utilizar el comando "@agent".',
       },
       query: {
         title: "Consulta",
-        "desc-start": "proporcionará respuestas",
-        only: "solo",
-        "desc-end": "si se encuentra contexto del documento.",
         description:
           'proporcionará respuestas <b>solo</b> si se encuentra el contexto del documento.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },

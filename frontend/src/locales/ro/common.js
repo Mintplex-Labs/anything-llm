@@ -286,18 +286,11 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "oferă răspunsuri bazate pe cunoștințele generale ale LLM-ului",
-        and: "și",
-        "desc-end": "context document care este găsit.",
         description:
           'va oferi răspunsuri folosind cunoștințele generale ale modelului LLM și contextul documentului respectiv.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
-        "desc-start": "oferă răspunsuri",
-        only: "doar",
-        "desc-end": "dacă contextul documentului este găsit.",
         description:
           'vor oferi răspunsuri **doar** dacă contextul documentului este identificat. Veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },

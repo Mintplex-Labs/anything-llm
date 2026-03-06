@@ -278,17 +278,11 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        "desc-start": "문서 내용을 찾습니다.",
-        and: "그리고",
-        "desc-end": "LLM의 일반 지식을 같이 사용하여 답변을 제공합니다",
         description:
           "LLM의 일반적인 지식과 관련 문맥 정보를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령어를 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        "desc-start": "문서 컨텍스트를 찾을 ",
-        only: "때만",
-        "desc-end": "답변을 제공합니다.",
         description:
           "문서 맥락이 발견되면 <b>에만</b> 답변을 제공합니다.<br /> 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
