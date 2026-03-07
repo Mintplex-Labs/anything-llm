@@ -2298,6 +2298,13 @@ eslint-plugin-ft-flow@^3.0.0:
     lodash "^4.17.21"
     string-natural-compare "^3.0.1"
 
+eslint-plugin-i18next-no-undefined-translation-keys@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-i18next-no-undefined-translation-keys/-/eslint-plugin-i18next-no-undefined-translation-keys-3.4.0.tgz#ae385024aec44de606ecfa1d92cad0eae36080ab"
+  integrity sha512-XR1tiDAtzx4lAPz4owCXP9GoecAreyJNXxyH6KgsUIthKYwvNYPa9zoJp/5xDdheuRZpENc4ESXVvbM6oDsGmQ==
+  dependencies:
+    requireindex "^1.2.0"
+
 eslint-plugin-prettier@^5.0.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.2.1.tgz#d1c8f972d8f60e414c25465c163d16f209411f95"
@@ -4381,6 +4388,11 @@ require-directory@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/require-directory/-/require-directory-2.1.1.tgz#8c64ad5fd30dab1c976e2344ffe7f792a6a6df42"
   integrity sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==
+
+requireindex@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/requireindex/-/requireindex-1.2.0.tgz#3463cdb22ee151902635aa6c9535d4de9c2ef1ef"
+  integrity sha512-L9jEkOi3ASd9PYit2cwRfyppc9NoABujTP8/5gFcbERmo5jUoAKovIC3fsF17pkTnGsrByysqX+Kxd2OTNI1ww==
 
 resolve-from@^4.0.0:
   version "4.0.0"

@@ -65,6 +65,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-ft-flow": "^3.0.0",
+    "eslint-plugin-i18next-no-undefined-translation-keys": "^3.4.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

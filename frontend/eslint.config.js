@@ -5,7 +5,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks"
 import pluginPrettier from "eslint-plugin-prettier"
 import configPrettier from "eslint-config-prettier"
 import unusedImports from "eslint-plugin-unused-imports"
-
+import i18next from "eslint-plugin-i18next-no-undefined-translation-keys"
 export default [
   {
     ignores: ["**/*.min.js", "src/media/**/*"]
@@ -29,6 +29,7 @@ export default [
       react: pluginReact,
       "react-hooks": pluginReactHooks,
       "unused-imports": unusedImports,
+      "i18next-no-undefined-translation-keys": i18next,
       prettier: pluginPrettier
     },
     settings: {
@@ -66,6 +67,8 @@ export default [
       // Unused cleanup
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
+      "i18next-no-undefined-translation-keys/translation-key-string-literal":
+        "error",
       "unused-imports/no-unused-vars": [
         "warn",
         {
