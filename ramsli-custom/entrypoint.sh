@@ -7,19 +7,14 @@ if [ -d /workspace ]; then
 fi
 
 # ── Persist collector hotdir on /workspace ────────────────────────────────────
-# Mintplex recommendation: symlink /collector/hotdir -> /workspace/hotdir
-mkdir -p /workspace/hotdir
-if [ -L /collector/hotdir ]; then
-    : # already symlinked
-elif [ -d /collector/hotdir ]; then
-    rm -rf /collector/hotdir
-    ln -s /workspace/hotdir /collector/hotdir
-else
-    mkdir -p /collector
-    ln -s /workspace/hotdir /collector/hotdir
-fi
-chown -R anythingllm:anythingllm /collector /workspace/hotdir 2>/dev/null || true
-echo "[entrypoint] /collector/hotdir -> /workspace/hotdir"
+# The server and collector reference different hotdir paths; both must resolve
+# to the same persistent location on RunPod.
+mkdir -p /workspace/hotdir /collector /app/collector
+rm -rf /collector/hotdir /app/collector/hotdir
+ln -s /workspace/hotdir /collector/hotdir
+ln -s /workspace/hotdir /app/collector/hotdir
+chown -R anythingllm:anythingllm /collector /app/collector /workspace/hotdir 2>/dev/null || true
+echo "[entrypoint] collector hotdirs -> /workspace/hotdir"
 
 # ── Persist SQLite DB on /workspace ──────────────────────────────────────────
 DB_CONTAINER="/app/server/storage/anythingllm.db"
