@@ -194,15 +194,18 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        "desc-start": "vil give svar baseret på LLM'ens generelle viden",
-        and: "og",
-        "desc-end": "dokumentkontekst der findes.",
+        description:
+          'vil give svar baseret på LLM\'s generelle viden og den relevante kontekst fra dokumentet. Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
-        "desc-start": "vil give svar",
-        only: "kun",
-        "desc-end": "hvis dokumentkontekst findes.",
+        description:
+          "vil give svar <b>kun</b>, hvis dokumentets kontekst er fundet.<br />Du skal bruge kommandoen @agent for at bruge værktøjerne.",
+      },
+      automatic: {
+        title: "Bil",
+        description:
+          'vil automatisk bruge værktøjer, hvis modellen og leverandøren understøtter native værktøjskald.<br />Hvis native værktøjskald ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {

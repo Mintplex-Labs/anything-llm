@@ -83,6 +83,29 @@ class Provider {
   }
 
   /**
+   * Whether this provider supports native tool calling via the ENV flag.
+   * @param {string} providerTag - The tag of the provider to check (e.g. "bedrock", "openrouter", "groq", etc.).
+   * @returns {boolean}
+   */
+  supportsNativeToolCallingViaEnv(providerTag = "") {
+    if (!("PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING" in process.env)) return false;
+    if (!providerTag) return false;
+    return (
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
+        providerTag
+      ) || false
+    );
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * @returns {boolean|Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    return false;
+  }
+
+  /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
    * @param {LangChainModelConfig} config - Config to be used to override default connection object.
@@ -408,6 +431,48 @@ class Provider {
   }
 
   /**
+   * Format a single message with attachments (images) for multimodal content.
+   * Transforms a message with attachments into the OpenAI-compatible multimodal format.
+   * Can be overridden by provider subclasses for provider-specific formats.
+   * @param {Object} message - The message to format
+   * @returns {Object} - Message formatted for the API
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    // Transform message with attachments into multimodal format
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+
+    // Return message without attachments property, with content as array
+    const { attachments, ...rest } = message;
+    return {
+      ...rest,
+      content,
+    };
+  }
+
+  /**
+   * Formats an array of messages to handle attachments (images) for multimodal content.
+   * @param {Array<{role: string, content: string, attachments?: Array}>} messages
+   * @returns {Array} - Messages formatted for the API
+   */
+  formatMessagesWithAttachments(messages = []) {
+    return messages.map((message) =>
+      this.formatMessageWithAttachments(message)
+    );
+  }
+
+  /**
    * Stream a chat completion from the LLM with tool calling
    * Note: This using the OpenAI API format and may need to be adapted for other providers.
    *
@@ -419,10 +484,11 @@ class Provider {
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("Provider.stream - will process this chat completion.");
     const msgUUID = v4();
+    const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
       stream: true,
-      messages,
+      messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0
         ? { functions }
         : {}),
