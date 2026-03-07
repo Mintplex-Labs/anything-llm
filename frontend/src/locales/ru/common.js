@@ -741,6 +741,18 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Нажмите, чтобы настроить учетные данные",
     },
+    submit: "Отправить",
+    edit_info_user:
+      '"Отправить" генерирует новый ответ от ИИ. "Сохранить" обновляет только ваше сообщение.',
+    edit_info_assistant:
+      "Ваши изменения будут сохранены непосредственно в этом ответе.",
+    see_less: "Показать меньше",
+    see_more: "Узнать больше",
+    sources: "Источники",
+    document: "Документ",
+    similarity_match: "соревнование; игра",
+    source_count_one: "{{count}} – ссылка",
+    source_count_other: "Ссылки на {{count}}",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

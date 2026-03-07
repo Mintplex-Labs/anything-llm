@@ -31,7 +31,6 @@ import CustomCell from "./CustomCell.jsx";
 import Tooltip from "./CustomTooltip.jsx";
 import { safeJsonParse } from "@/utils/request.js";
 import renderMarkdown from "@/utils/chat/markdown.js";
-import { WorkspaceProfileImage } from "../PromptReply/index.jsx";
 import { memo, useCallback, useState } from "react";
 import { saveAs } from "file-saver";
 import { useGenerateImage } from "recharts-to-png";
@@ -41,7 +40,7 @@ const dataFormatter = (number) => {
   return Intl.NumberFormat("us").format(number).toString();
 };
 
-export function Chartable({ props, workspace }) {
+export function Chartable({ props }) {
   const [getDivJpeg, { ref }] = useGenerateImage({
     quality: 1,
     type: "image/jpeg",
@@ -387,20 +386,17 @@ export function Chartable({ props, workspace }) {
 
   if (!!props.chatId) {
     return (
-      <div className="flex justify-center items-end w-full">
-        <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className="flex gap-x-5">
-            <WorkspaceProfileImage workspace={workspace} />
-            <div className="relative w-full">
-              <DownloadGraph onClick={handleDownload} />
-              <div ref={ref}>{renderChart()}</div>
-              <span
-                className={`flex flex-col gap-y-1 mt-2`}
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdown(content.caption),
-                }}
-              />
-            </div>
+      <div className="flex justify-start w-full">
+        <div className="py-2 px-4 w-full flex flex-col md:max-w-[80%]">
+          <div className="relative w-full">
+            <DownloadGraph onClick={handleDownload} />
+            <div ref={ref}>{renderChart()}</div>
+            <span
+              className="flex flex-col gap-y-1 mt-2"
+              dangerouslySetInnerHTML={{
+                __html: renderMarkdown(content.caption),
+              }}
+            />
           </div>
         </div>
       </div>
@@ -408,20 +404,18 @@ export function Chartable({ props, workspace }) {
   }
 
   return (
-    <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
+    <div className="flex justify-start w-full">
+      <div className="py-2 px-4 w-full flex flex-col md:max-w-[80%]">
         <div className="relative w-full">
           <DownloadGraph onClick={handleDownload} />
           <div ref={ref}>{renderChart()}</div>
         </div>
-        <div className="flex gap-x-5">
-          <span
-            className={`flex flex-col gap-y-1 mt-2`}
-            dangerouslySetInnerHTML={{
-              __html: renderMarkdown(content.caption),
-            }}
-          />
-        </div>
+        <span
+          className="flex flex-col gap-y-1 mt-2"
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(content.caption),
+          }}
+        />
       </div>
     </div>
   );

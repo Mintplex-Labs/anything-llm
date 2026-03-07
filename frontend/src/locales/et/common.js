@@ -894,6 +894,17 @@ const TRANSLATIONS = {
       missing_credentials: "Sellel pakkujal puuduvad võtmed!",
       missing_credentials_description: "Klõpsa, et määrata võtmed",
     },
+    submit: "Saada",
+    edit_info_user:
+      '"Saada" taastab AI vastuse. "Salvesta" muudab ainult teie sõnumi.',
+    edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
+    see_less: "Näita vähem",
+    see_more: "Vaata rohkem",
+    sources: "Allikasid",
+    document: "Dokument",
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

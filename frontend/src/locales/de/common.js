@@ -935,6 +935,18 @@ const TRANSLATIONS = {
       missing_credentials: "Für diesen Anbieter fehlen Anmeldedaten!",
       missing_credentials_description: "Klicken, um Zugangsdaten einzurichten",
     },
+    submit: "Absenden",
+    edit_info_user:
+      '"Absenden" generiert die Antwort des KI-Systems neu. "Speichern" aktualisiert lediglich Ihre Nachricht.',
+    edit_info_assistant:
+      "Ihre Änderungen werden direkt in diese Antwort gespeichert.",
+    see_less: "Weniger anzeigen",
+    see_more: "Mehr anzeigen",
+    sources: "Quellen",
+    document: "Dokument",
+    similarity_match: "Spiel",
+    source_count_one: "{{count}} Referenz",
+    source_count_other: "{{count}} Verweise",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

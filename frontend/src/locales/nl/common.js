@@ -738,6 +738,18 @@ const TRANSLATIONS = {
       missing_credentials: "Deze aanbieder mist logingegevens!",
       missing_credentials_description: "Klik om logingegevens in te stellen",
     },
+    submit: "Indienen",
+    edit_info_user:
+      '"Verzenden" herstelt het antwoord van de AI. "Opslaan" wijzigt alleen uw bericht.',
+    edit_info_assistant:
+      "Uw wijzigingen worden direct op deze reactie opgeslagen.",
+    see_less: "Minder zien",
+    see_more: "Meer zien",
+    sources: "Bronnen",
+    document: "Document",
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
   },
   profile_settings: {
     edit_account: "Account bewerken",

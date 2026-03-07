@@ -952,6 +952,18 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Haz clic para configurar las credenciales",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" regenera la respuesta de la IA. "Guardar" actualiza solo tu mensaje.',
+    edit_info_assistant:
+      "Los cambios que realice se guardarán directamente en esta respuesta.",
+    see_less: "Ver menos",
+    see_more: "Ver más",
+    sources: "Fuentes",
+    document: "Documento",
+    similarity_match: "partido",
+    source_count_one: "{{count}} de referencia",
+    source_count_other: "{{count}} referencias",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

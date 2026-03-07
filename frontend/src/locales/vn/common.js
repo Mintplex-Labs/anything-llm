@@ -731,6 +731,18 @@ const TRANSLATIONS = {
       missing_credentials: "Nhà cung cấp này thiếu thông tin đăng nhập!",
       missing_credentials_description: "Nhấp để thiết lập thông tin đăng nhập",
     },
+    submit: "Gửi",
+    edit_info_user:
+      '"Gửi" sẽ tạo lại phản hồi của AI. "Lưu" chỉ cập nhật tin nhắn của bạn.',
+    edit_info_assistant:
+      "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
+    see_less: "Xem ít hơn",
+    see_more: "Xem thêm",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
