@@ -387,6 +387,7 @@ function apiWorkspaceThreadEndpoints(app) {
           message,
           mode = "query",
           userId,
+          sessionId = null,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -422,6 +423,19 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
+        if (userId && sessionId) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error:
+              "Cannot pass both userId and sessionId. Use userId to chat as a user or sessionId for ephemeral sessions.",
+          });
+          return;
+        }
+
         const user = userId ? await User.get({ id: Number(userId) }) : null;
         const result = await ApiChatHandler.chatSync({
           workspace,
@@ -429,6 +443,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
         });
@@ -555,6 +570,7 @@ function apiWorkspaceThreadEndpoints(app) {
           message,
           mode = "query",
           userId,
+          sessionId = null,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -590,6 +606,19 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
+        if (userId && sessionId) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error:
+              "Cannot pass both userId and sessionId. Use userId to chat as a user or sessionId for ephemeral sessions.",
+          });
+          return;
+        }
+
         const user = userId ? await User.get({ id: Number(userId) }) : null;
 
         response.setHeader("Cache-Control", "no-cache");
@@ -605,6 +634,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
         });
