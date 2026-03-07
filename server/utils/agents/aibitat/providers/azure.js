@@ -17,7 +17,10 @@ class AzureOpenAiProvider extends Provider {
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
-    this.model = config.model ?? process.env.OPEN_MODEL_PREF;
+    this.model =
+      config.model ||
+      process.env.AZURE_OPENAI_MODEL_PREF ||
+      process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
 

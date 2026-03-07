@@ -23,6 +23,7 @@ import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
+import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -304,6 +305,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           />
         </div>
       </DnDFileUploaderWrapper>
+      <ChatTooltips />
     </div>
   );
 }
