@@ -878,7 +878,7 @@ const TRANSLATIONS = {
       documents: "Documents",
       "data-connectors": "Data Connectors",
       "desktop-only":
-        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
+        "This panel requires a wider screen to display properly. Please use a larger device or a desktop browser to manage documents and data connectors.",
       dismiss: "Dismiss",
       editing: "Editing",
     },
