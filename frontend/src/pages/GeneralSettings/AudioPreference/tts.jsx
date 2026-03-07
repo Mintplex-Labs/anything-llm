@@ -9,12 +9,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
+import ModelsLabLogo from "@/media/ttsproviders/modelslab.png";
 
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import ModelsLabTextToSpeechOptions from "@/components/TextToSpeech/ModelsLabOptions";
 
 const PROVIDERS = [
   {
@@ -52,6 +54,14 @@ const PROVIDERS = [
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
     description:
       "Connect to an OpenAI compatible TTS service running locally or remotely.",
+  },
+  {
+    name: "ModelsLab",
+    value: "modelslab",
+    logo: ModelsLabLogo,
+    options: (settings) => <ModelsLabTextToSpeechOptions settings={settings} />,
+    description:
+      "Use ModelsLab's text-to-speech API with a wide variety of voices and languages.",
   },
 ];
 

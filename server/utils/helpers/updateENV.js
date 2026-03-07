@@ -653,6 +653,20 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // ModelsLab TTS
+  TTSModelsLabApiKey: {
+    envKey: "TTS_MODELSLAB_API_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSModelsLabVoiceId: {
+    envKey: "TTS_MODELSLAB_VOICE_ID",
+    checks: [],
+  },
+  TTSModelsLabLanguage: {
+    envKey: "TTS_MODELSLAB_LANGUAGE",
+    checks: [],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -898,6 +912,7 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "modelslab",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
