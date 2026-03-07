@@ -91,7 +91,7 @@ export default function SystemPrompts({ entity }) {
     <>
       <div className="w-full flex gap-x-2 items-center mb-3 -mt-8">
         <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3">
-          {t(`community_hub.publish.system_prompt.modal_title`)}
+          {t("community_hub.publish.system_prompt.modal_title")}
         </h3>
       </div>
       <form ref={formRef} className="flex" onSubmit={handleSubmit}>

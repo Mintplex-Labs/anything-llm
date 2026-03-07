@@ -5,45 +5,52 @@ import { TOGGLE_LLM_SELECTOR_EVENT } from "@/components/WorkspaceChat/ChatContai
 
 export const KEYBOARD_SHORTCUTS_HELP_EVENT = "keyboard-shortcuts-help";
 export const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-export const SHORTCUTS = {
+
+/**
+ * Returns an object mapping keyboard shortcuts to their translations and actions
+ * @param {import("i18next").TFunction} t - The translation function from react-i18next
+ *
+ *
+ */
+export const getShortcuts = (t) => ({
   "⌘ + ,": {
-    translationKey: "settings",
+    translation: t?.("keyboard-shortcuts.shortcuts.settings"),
     action: () => {
       window.location.href = paths.settings.interface();
     },
   },
   "⌘ + H": {
-    translationKey: "home",
+    translation: t?.("keyboard-shortcuts.shortcuts.home"),
     action: () => {
       window.location.href = paths.home();
     },
   },
   "⌘ + I": {
-    translationKey: "workspaces",
+    translation: t?.("keyboard-shortcuts.shortcuts.workspaces"),
     action: () => {
       window.location.href = paths.settings.workspaces();
     },
   },
   "⌘ + K": {
-    translationKey: "apiKeys",
+    translation: t?.("keyboard-shortcuts.shortcuts.apiKeys"),
     action: () => {
       window.location.href = paths.settings.apiKeys();
     },
   },
   "⌘ + L": {
-    translationKey: "llmPreferences",
+    translation: t?.("keyboard-shortcuts.shortcuts.llmPreferences"),
     action: () => {
       window.location.href = paths.settings.llmPreference();
     },
   },
   "⌘ + Shift + C": {
-    translationKey: "chatSettings",
+    translation: t?.("keyboard-shortcuts.shortcuts.chatSettings"),
     action: () => {
       window.location.href = paths.settings.chat();
     },
   },
   "⌘ + Shift + ?": {
-    translationKey: "help",
+    translation: t?.("keyboard-shortcuts.shortcuts.help"),
     action: () => {
       window.dispatchEvent(
         new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, {
@@ -53,7 +60,7 @@ export const SHORTCUTS = {
     },
   },
   F1: {
-    translationKey: "help",
+    translation: t?.("keyboard-shortcuts.shortcuts.help"),
     action: () => {
       window.dispatchEvent(
         new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, {
@@ -63,21 +70,22 @@ export const SHORTCUTS = {
     },
   },
   "⌘ + Shift + L": {
-    translationKey: "showLLMSelector",
+    translation: t?.("keyboard-shortcuts.shortcuts.showLLMSelector"),
     action: () => {
       window.dispatchEvent(new Event(TOGGLE_LLM_SELECTOR_EVENT));
     },
   },
-};
+});
 
 const LISTENERS = {};
 const modifier = isMac ? "meta" : "ctrl";
-for (const key in SHORTCUTS) {
+const shortcuts = getShortcuts();
+for (const key in shortcuts) {
   const listenerKey = key
     .replace("⌘", modifier)
     .replaceAll(" ", "")
     .toLowerCase();
-  LISTENERS[listenerKey] = SHORTCUTS[key].action;
+  LISTENERS[listenerKey] = shortcuts[key].action;
 }
 
 // Convert keyboard event to shortcut key

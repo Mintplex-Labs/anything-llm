@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import {
-  SHORTCUTS,
+  getShortcuts,
   isMac,
   KEYBOARD_SHORTCUTS_HELP_EVENT,
 } from "@/utils/keyboardShortcuts";
@@ -10,6 +10,8 @@ import {
 export default function KeyboardShortcutsHelp() {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
+
+  const shortcuts = getShortcuts(t);
 
   useEffect(() => {
     window.addEventListener(KEYBOARD_SHORTCUTS_HELP_EVENT, () =>
@@ -40,14 +42,12 @@ export default function KeyboardShortcutsHelp() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(SHORTCUTS).map(([key, shortcut]) => (
+          {Object.entries(shortcuts).map(([key, shortcut]) => (
             <div
               key={key}
               className="flex items-center justify-between p-3 bg-theme-bg-hover rounded-lg"
             >
-              <span className="text-white">
-                {t(`keyboard-shortcuts.shortcuts.${shortcut.translationKey}`)}
-              </span>
+              <span className="text-white">{shortcut.translation}</span>
               <kbd className="px-2 py-1 bg-theme-bg-secondary text-white rounded border border-gray-600">
                 {isMac ? key : key.replace("⌘", "Ctrl")}
               </kbd>
