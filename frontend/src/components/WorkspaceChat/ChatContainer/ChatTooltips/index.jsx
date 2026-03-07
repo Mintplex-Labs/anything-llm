@@ -90,6 +90,12 @@ export function ChatTooltips() {
         delayShow={300}
         className="tooltip !text-xs"
       />
+      <Tooltip
+        id="attach-item-btn"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
       <DocumentLevelTooltip />
     </>
   );
