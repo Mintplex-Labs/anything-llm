@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
     "mobile-app": "AnythingLLM mobilā versija",
+    "community-hub": {
+      title: "Sabiedriskais centrs",
+      trending: "Izpētiet populārākās",
+      "your-account": "Jūsu konts",
+      "import-item": "Importētā prece",
+    },
   },
   login: {
     "multi-user": {
@@ -406,11 +412,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tiešsaistes tīmekļa meklēšana un pārlūkošana",
-        "desc-start":
-          "Ļaujiet savam aģentam meklēt tīmeklī, lai atbildētu uz jūsu jautājumiem, savienojoties ar tīmekļa meklēšanas (SERP) pakalpojumu sniedzēju.",
-        "desc-end":
-          "Tīmekļa meklēšana aģenta sesijās nedarbosies, līdz tas nebūs iestatīts.",
+        description:
+          "Iegādājieties iespēju, lai jūsu aģents varētu meklēt informāciju internetā, lai atbildētu uz jūsu jautājumiem, pieslēdzoties tīmekļa meklēšanas (SERP) pakalpojuma sniedzējam.",
       },
+      sql: {
+        title: "SQL savienotājs",
+        description:
+          "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
+      },
+      default_skill:
+        "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
     },
   },
   recorded: {
@@ -894,7 +905,6 @@ const TRANSLATIONS = {
     default_agent_description: "- noklusējuma aģents šim darba telpai.",
     custom_agents_coming_soon:
       "Nedaudz drīzumā būs pieejami individuāli pakalpojumi!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Izdzēsiet savu pastā veidoتو sarunu vēsturi un sāciet jaunu sarunu.",
     add_new_preset: "Pievienot jaunu iepriekšējo",
@@ -921,6 +931,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: "Iesniegt",
+    edit_info_user:
+      '"Sūtīt" atjauno AI atbildi. "Saglabāt" atjauno tikai jūsu ziņu.',
+    edit_info_assistant:
+      "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
+    see_less: "Skatīt mazāk",
+    see_more: "Skatīt vairāk",
+    tools: "Rīki",
+    slash_commands: "Īsziņu komandas",
+    agent_skills: "Aģenta prasmes",
+    browse: "Izpētiet",
+    text_size_label: "Teksta izmērs",
+    select_model: "Izvēlieties modeli",
+    sources: "Avotus",
+    document: "Dokuments",
+    similarity_match: "spēle",
+    source_count_one: "{{count}} – atsauce",
+    source_count_other: "Atsauces uz {{count}}",
+    preset_exit_description: "Aizust klientu sesiju",
+    add_new: "Pievienot jaunu",
+    edit: "Rediģēt",
+    publish: "Publicēt",
+    stop_generating: "Atsauciet atbildes ģenerēšanu",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

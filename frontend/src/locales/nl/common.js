@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Branding & Whitelabeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobiele App",
+    "community-hub": {
+      title: "Centraal punt",
+      trending: "Bekijk populaire onderwerpen",
+      "your-account": "Uw account",
+      "import-item": "Importeren",
+    },
   },
   login: {
     "multi-user": {
@@ -320,11 +326,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web zoeken en browsen",
-        "desc-start":
-          "Sta je agent toe om het web te doorzoeken om je vragen te beantwoorden door verbinding te maken met een web-zoek (SERP) provider.",
-        "desc-end":
-          "Webzoeken tijdens agentensessies zal niet werken totdat dit is ingesteld.",
+        description:
+          "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP).",
       },
+      sql: {
+        title: "SQL-connector",
+        description:
+          "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
+      },
+      default_skill:
+        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
     },
   },
   recorded: {
@@ -704,7 +715,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - de standaardagent voor deze werkruimte.",
     custom_agents_coming_soon: "Aangepaste agenten komen binnenkort!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Wis je chatgeschiedenis en begin een nieuwe chat",
     add_new_preset: "Nieuwe preset toevoegen",
@@ -727,6 +737,29 @@ const TRANSLATIONS = {
       missing_credentials: "Deze aanbieder mist logingegevens!",
       missing_credentials_description: "Klik om logingegevens in te stellen",
     },
+    submit: "Indienen",
+    edit_info_user:
+      '"Verzenden" herstelt het antwoord van de AI. "Opslaan" wijzigt alleen uw bericht.',
+    edit_info_assistant:
+      "Uw wijzigingen worden direct op deze reactie opgeslagen.",
+    see_less: "Minder zien",
+    see_more: "Meer zien",
+    tools: "Gereedschap",
+    slash_commands: "Korte commando's",
+    agent_skills: "Vaardigheden van agenten",
+    browse: "Bladeren",
+    text_size_label: "Lettergrootte",
+    select_model: "Kies het model",
+    sources: "Bronnen",
+    document: "Document",
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
+    preset_exit_description: "Beëindig de huidige agent-sessie",
+    add_new: "Voeg toe",
+    edit: "Bewerk",
+    publish: "Publiceren",
+    stop_generating: "Stoppen met het genereren van antwoorden",
   },
   profile_settings: {
     edit_account: "Account bewerken",

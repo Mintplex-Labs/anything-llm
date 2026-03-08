@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrum Społeczności",
+      trending: "Odkryj popularne",
+      "your-account": "Twój profil",
+      "import-item": "Importuj element",
+    },
   },
   login: {
     "multi-user": {
@@ -410,11 +416,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        "desc-start":
-          "Pozwól swojemu agentowi przeszukiwać Internet w celu uzyskania odpowiedzi na pytania, łącząc się z dostawcą wyszukiwania internetowego (SERP).",
-        "desc-end":
-          "Wyszukiwanie w sieci podczas sesji agenta nie będzie działać, dopóki nie zostanie to skonfigurowane.",
+        description:
+          "Pozwól swojemu agentowi na wyszukiwanie informacji w Internecie, aby odpowiadał na Twoje pytania, poprzez połączenie z dostawcą usług wyszukiwania (SERP).",
       },
+      sql: {
+        title: "Połączenie z bazą danych SQL",
+        description:
+          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
+      },
+      default_skill:
+        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
     },
   },
   recorded: {
@@ -895,7 +906,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
     custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
-    slash_reset: "/reset",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",
     add_new_preset: " Dodaj nowe polecenie slash",
     command: "Polecenie",
@@ -919,6 +929,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kliknij, aby skonfigurować poświadczenia",
     },
+    submit: "Prześlij",
+    edit_info_user:
+      '"Wyślij" powoduje ponowne wygenerowanie odpowiedzi przez sztuczną inteligencję. "Zapisz" aktualizuje tylko Twoje wiadomości.',
+    edit_info_assistant:
+      "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
+    see_less: "Zobacz mniej",
+    see_more: "Zobacz więcej",
+    tools: "Narzędzia",
+    slash_commands: "Polecenia w skrócie",
+    agent_skills: "Umiejętności agenta",
+    browse: "Przeglądaj",
+    text_size_label: "Rozmiar czcionki",
+    select_model: "Wybierz model",
+    sources: "Źródła",
+    document: "Dokument",
+    similarity_match: "mecz",
+    source_count_one: "{{count}} – odniesienie",
+    source_count_other: "{{count}} – odnośniki",
+    preset_exit_description: "Zakończ bieżącą sesję z przedstawicielem",
+    add_new: "Dodaj nowe",
+    edit: "Edytuj",
+    publish: "Opublikować",
+    stop_generating: "Przestań generować odpowiedź",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

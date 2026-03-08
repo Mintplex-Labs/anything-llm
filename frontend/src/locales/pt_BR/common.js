@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Suporte",
     "browser-extension": "Extensão de Navegador",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centro Comunitário",
+      trending: "Explore as tendências",
+      "your-account": "Sua Conta",
+      "import-item": "Importar Item",
+    },
   },
   login: {
     "multi-user": {
@@ -403,11 +409,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Busca na web",
-        "desc-start":
-          "Permite ao agente pesquisar na web para responder perguntas conectando-se a um provedor de busca.",
-        "desc-end":
-          "Buscas na web durante sessões de agente não funcionarão até que isso seja configurado.",
+        description:
+          "Permita que seu agente acesse a web para responder às suas perguntas, conectando-se a um provedor de pesquisa na web (SERP).",
       },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permita que seu agente utilize o SQL para responder às suas perguntas, conectando-se a diversos provedores de bancos de dados SQL.",
+      },
+      default_skill:
+        "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
     },
   },
   recorded: {
@@ -873,7 +884,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - o agente padrão deste workspace.",
     custom_agents_coming_soon: "mais agentes personalizados em breve!",
-    slash_reset: "/reset",
     preset_reset_description: "Limpa o histórico do seu chat e inicia um novo",
     add_new_preset: " Insere um novo Preset",
     command: "Comando",
@@ -897,6 +907,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Configure as credenciais do LLM primeiro",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" recria a resposta da IA. "Salvar" atualiza apenas sua mensagem.',
+    edit_info_assistant:
+      "Suas alterações serão salvas diretamente nesta resposta.",
+    see_less: "Ver menos",
+    see_more: "Ver mais",
+    tools: "Ferramentas",
+    slash_commands: "Comandos Rápidos",
+    agent_skills: "Habilidades do Agente",
+    browse: "Navegar",
+    text_size_label: "Tamanho do texto",
+    select_model: "Selecione o modelo",
+    sources: "Fontes",
+    document: "Documento",
+    similarity_match: "jogo",
+    source_count_one: "Referência a {{count}}",
+    source_count_other: "Referências a {{count}}",
+    preset_exit_description: "Interrompa a sessão atual do agente",
+    add_new: "Adicionar novo",
+    edit: "Editar",
+    publish: "Publicar",
+    stop_generating: "Pare de gerar respostas",
   },
   profile_settings: {
     edit_account: "Editar conta",

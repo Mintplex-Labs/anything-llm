@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "برندسازی و تولید محصولات با برچسب سفید",
     chat: "چت",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مرکز محلی",
+      trending: "بررسی ترندها",
+      "your-account": "حساب شما",
+      "import-item": "وارد کردن کالا",
+    },
   },
   login: {
     "multi-user": {
@@ -319,11 +325,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "جستجو و مرور زنده وب",
-        "desc-start":
-          "با اتصال به یک ارائه‌دهنده جستجوی وب (SERP)، به عامل خود امکان جستجو در وب برای پاسخ به سؤالات خود را بدهید.",
-        "desc-end":
-          "جستجوی وب در طول جلسات عامل تا زمانی که این تنظیم نشود، کار نخواهد کرد.",
+        description:
+          "با اتصال به یک ارائه‌دهنده خدمات جستجوی وب (SERP)، به نماینده خود این امکان را بدهید تا از طریق اینترنت، به سوالات شما پاسخ دهد.",
       },
+      sql: {
+        title: "اتصال دهنده SQL",
+        description:
+          "به اپراتور خود اجازه دهید تا با اتصال به ارائه‌دهندگان مختلف پایگاه داده SQL، از SQL برای پاسخگویی به سوالات شما استفاده کند.",
+      },
+      default_skill:
+        "به طور پیش‌فرض، این قابلیت فعال است، اما می‌توانید آن را غیرفعال کنید اگر نمی‌خواهید این قابلیت برای نمایندگی در دسترس باشد.",
     },
   },
   recorded: {
@@ -700,7 +711,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- عامل پیش‌فرض برای این فضای کاری.",
     custom_agents_coming_soon: "نمایندگان ویژه در حال آمدن هستند!",
-    slash_reset: "/reset",
     preset_reset_description: "حذف تاریخچه چت خود و شروع یک چت جدید",
     add_new_preset: "اضافه کردن تنظیمات پیش‌فرض جدید",
     command: "دستورالعمل",
@@ -725,6 +735,28 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "برای تنظیم اعتبارها، اینجا را کلیک کنید",
     },
+    submit: "ارسال",
+    edit_info_user:
+      '"ارسال" پاسخ تولید شده توسط هوش مصنوعی را دوباره ایجاد می‌کند. "ذخیره" فقط پیام شما را به‌روز می‌کند.',
+    edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
+    see_less: "کمی بیشتر",
+    see_more: "بیشتر",
+    tools: "ابزارها",
+    slash_commands: "دستورات مختصر",
+    agent_skills: "مهارت‌های کارگزار",
+    browse: "جستجو",
+    text_size_label: "اندازه متن",
+    select_model: "انتخاب مدل",
+    sources: "منابع",
+    document: "اسناد",
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
+    preset_exit_description: "متوقف کردن جلسه فعلی با نمایندگی",
+    add_new: "اضافه کردن موارد جدید",
+    edit: "ویرایش",
+    publish: "انتشار",
+    stop_generating: "متوقف کردن تولید پاسخ",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
     "mobile-app": "AnythingLLM mobiilversioon",
+    "community-hub": {
+      title: "Kogukonna keskpunkt",
+      trending: "Avasta populaarseid",
+      "your-account": "Teie konto",
+      "import-item": "Importeeritud toode",
+    },
   },
   login: {
     "multi-user": {
@@ -395,10 +401,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Reaalajas veebihaku tugi",
-        "desc-start":
-          "Lubab agendil kasutada veebiotsingut küsimustele vastamiseks, ühendudes SERP-teenusega.",
-        "desc-end": "Veebiotsing ei tööta enne, kui seadistus on tehtud.",
+        description:
+          "Lisage oma esindajale võimalus veebis otsida, et vastata teie küsimustele, ühendades selle veebiotsingu (SERP) teenusega.",
       },
+      sql: {
+        title: "SQL-i ühendus",
+        description:
+          "Tagage, et teie esindaja saaks kasutada SQL-i, et vastata teie küsimustele, ühendades erinevate SQL andmebaasiteenustega.",
+      },
+      default_skill:
+        "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
     },
   },
   recorded: {
@@ -860,7 +872,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " – selle tööruumi vaikimisi agent.",
     custom_agents_coming_soon: "kohandatud agendid tulekul!",
-    slash_reset: "/reset",
     preset_reset_description: "Tühjenda vestlusajalugu ja alusta uut vestlust",
     add_new_preset: " Lisa uus preset",
     command: "Käsk",
@@ -882,6 +893,28 @@ const TRANSLATIONS = {
       missing_credentials: "Sellel pakkujal puuduvad võtmed!",
       missing_credentials_description: "Klõpsa, et määrata võtmed",
     },
+    submit: "Saada",
+    edit_info_user:
+      '"Saada" taastab AI vastuse. "Salvesta" muudab ainult teie sõnumi.',
+    edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
+    see_less: "Näita vähem",
+    see_more: "Vaata rohkem",
+    tools: "Vahendid",
+    slash_commands: "Lihtsasti kasutatavad käsud",
+    agent_skills: "Agentide oskused",
+    browse: "Sirva",
+    text_size_label: "Teksti suurus",
+    select_model: "Valige mudel",
+    sources: "Allikasid",
+    document: "Dokument",
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
+    preset_exit_description: "Lõpeta hetkeseisuga",
+    add_new: "Lisada uus",
+    edit: "Redigeerimine",
+    publish: "Avaldada",
+    stop_generating: "Lõpeta vastuste genereerimine",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

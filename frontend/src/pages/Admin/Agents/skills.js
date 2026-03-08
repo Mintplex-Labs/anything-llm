@@ -15,62 +15,60 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 
-export const defaultSkills = {
+export const getDefaultSkills = (t) => ({
   "rag-memory": {
-    title: "RAG & long-term memory",
-    description:
-      'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+    title: t("agent.skill.rag.title"),
+    description: t("agent.skill.rag.description"),
     component: DefaultSkillPanel,
     icon: Brain,
     image: RAGImage,
     skill: "rag-memory",
   },
   "document-summarizer": {
-    title: "View & summarize documents",
-    description:
-      "Allow the agent to list and summarize the content of workspace files currently embedded.",
+    title: t("agent.skill.view.title"),
+    description: t("agent.skill.view.description"),
     component: DefaultSkillPanel,
     icon: File,
     image: SummarizeImage,
     skill: "document-summarizer",
   },
   "web-scraping": {
-    title: "Scrape websites",
-    description: "Allow the agent to visit and scrape the content of websites.",
+    title: t("agent.skill.scrape.title"),
+    description: t("agent.skill.scrape.description"),
     component: DefaultSkillPanel,
     icon: Browser,
     image: ScrapeWebsitesImage,
     skill: "web-scraping",
   },
-};
+});
 
-export const configurableSkills = {
+export const getConfigurableSkills = (t) => ({
   "save-file-to-browser": {
-    title: "Generate & save files",
-    description:
-      "Enable the default agent to generate and write to files that can be saved to your computer.",
+    title: t("agent.skill.save.title"),
+    description: t("agent.skill.save.description"),
     component: GenericSkillPanel,
     skill: "save-file-to-browser",
     icon: FileMagnifyingGlass,
     image: GenerateSaveImages,
   },
   "create-chart": {
-    title: "Generate charts",
-    description:
-      "Enable the default agent to generate various types of charts from data provided or given in chat.",
+    title: t("agent.skill.generate.title"),
+    description: t("agent.skill.generate.description"),
     component: GenericSkillPanel,
     skill: "create-chart",
     icon: ChartBar,
     image: GenerateChartsImage,
   },
   "web-browsing": {
-    title: "Web Search",
+    title: t("agent.skill.web.title"),
+    description: t("agent.skill.web.description"),
     component: AgentWebSearchSelection,
     skill: "web-browsing",
   },
   "sql-agent": {
-    title: "SQL Connector",
+    title: t("agent.skill.sql.title"),
+    description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
   },
-};
+});

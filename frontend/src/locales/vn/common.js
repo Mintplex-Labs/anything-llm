@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Thương hiệu & Nhãn trắng",
     chat: "Trò chuyện",
     "mobile-app": "AnythingLLM Di động",
+    "community-hub": {
+      title: "Trung tâm cộng đồng",
+      trending: "Khám phá các nội dung đang thịnh hành",
+      "your-account": "Tài khoản của bạn",
+      "import-item": "Nhập hàng",
+    },
   },
   login: {
     "multi-user": {
@@ -318,11 +324,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
-        "desc-start":
-          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
-        "desc-end":
-          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
+        description:
+          "Cho phép đại lý của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
       },
+      sql: {
+        title: "Kết nối SQL",
+        description:
+          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
+      },
+      default_skill:
+        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
     },
   },
   recorded: {
@@ -696,7 +707,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - agent mặc định cho không gian làm việc này.",
     custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Xóa lịch sử trò chuyện và bắt đầu cuộc trò chuyện mới",
     add_new_preset: " Thêm Cài đặt sẵn Mới",
@@ -720,6 +730,29 @@ const TRANSLATIONS = {
       missing_credentials: "Nhà cung cấp này thiếu thông tin đăng nhập!",
       missing_credentials_description: "Nhấp để thiết lập thông tin đăng nhập",
     },
+    submit: "Gửi",
+    edit_info_user:
+      '"Gửi" sẽ tạo lại phản hồi của AI. "Lưu" chỉ cập nhật tin nhắn của bạn.',
+    edit_info_assistant:
+      "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
+    see_less: "Xem ít hơn",
+    see_more: "Xem thêm",
+    tools: "Dụng cụ",
+    slash_commands: "Lệnh tắt/bật",
+    agent_skills: "Kỹ năng của đại lý",
+    browse: "Duyệt",
+    text_size_label: "Kích thước văn bản",
+    select_model: "Chọn mẫu",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
+    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
+    add_new: "Thêm mới",
+    edit: "Chỉnh sửa",
+    publish: "Đăng tải",
+    stop_generating: "Dừng tạo ra phản hồi",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

@@ -51,8 +51,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "Create your first workspace",
-      description:
-        "Create your first workspace and get started with Lovora.",
+      description: "Create your first workspace and get started with Lovora.",
     },
   },
   common: {
@@ -106,6 +105,12 @@ const TRANSLATIONS = {
     privacy: "Privacy & Data",
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
+    "community-hub": {
+      title: "Community Hub",
+      trending: "Explore Trending",
+      "your-account": "Your Account",
+      "import-item": "Import Item",
+    },
     admin: "Admin",
     tools: "Tools",
     "system-prompt-variables": "System Prompt Variables",
@@ -432,12 +437,17 @@ const TRANSLATIONS = {
           "Enable the default agent to generate and write to files that can be saved to your computer.",
       },
       web: {
-        title: "Live web search and browsing",
-        "desc-start":
+        title: "Web Search",
+        description:
           "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
-        "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
       },
+      sql: {
+        title: "SQL Connector",
+        description:
+          "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+      },
+      default_skill:
+        "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
   },
 
@@ -464,8 +474,7 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Branding & Whitelabeling",
-      description:
-        "White-label your Lovora instance with custom branding.",
+      description: "White-label your Lovora instance with custom branding.",
     },
     chat: {
       title: "Chat",
@@ -953,19 +962,35 @@ const TRANSLATIONS = {
     more_actions: "More actions",
     hide_citations: "Hide citations",
     show_citations: "Show citations",
+    sources: "Sources",
+    source_count_one: "{{count}} reference",
+    source_count_other: "{{count}} references",
+    document: "Document",
+    similarity_match: "match",
     pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     save_submit: "Save & Submit",
     cancel: "Cancel",
+    submit: "Submit",
     edit_prompt: "Edit prompt",
     edit_response: "Edit response",
+    edit_info_user:
+      '"Submit" regenerates the AI response. "Save" updates your message only.',
+    edit_info_assistant:
+      "Your changes will be saved directly to this response.",
+    see_less: "See Less",
+    see_more: "See More",
     at_agent: "@agent",
     default_agent_description: " - the default agent for this workspace.",
     custom_agents_coming_soon: "custom agents are coming soon!",
-    slash_reset: "/reset",
     preset_reset_description: "Clear your chat history and begin a new chat",
+    preset_exit_description: "Halt the current agent session",
     add_new_preset: " Add New Preset",
+    add_new: "Add new",
+    edit: "Edit",
+    publish: "Publish",
+    stop_generating: "Stop generating response",
     command: "Command",
     your_command: "your-command",
     placeholder_prompt:
@@ -976,15 +1001,21 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    tools: "Tools",
+    slash_commands: "Slash Commands",
+    agent_skills: "Agent Skills",
+    browse: "Browse",
+    text_size_label: "Text Size",
+    select_model: "Select Model",
     workspace_llm_manager: {
-      search: "Search LLM providers",
+      search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
       available_models: "Available Models for {{provider}}",
       available_models_description: "Select a model to use for this workspace.",
       save: "Use this model",
       saving: "Setting model as workspace default...",
       missing_credentials: "This provider is missing credentials!",
-      missing_credentials_description: "Click to set up credentials",
+      missing_credentials_description: "Set up now",
     },
   },
 

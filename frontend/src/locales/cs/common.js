@@ -111,6 +111,12 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
   },
   login: {
     "multi-user": {
@@ -417,11 +423,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
-        "desc-start":
-          "Umožněte svému agentovi vyhledávat web pro odpovědi na vaše otázky připojením k poskytovateli webového vyhledávání (SERP).",
-        "desc-end":
-          "Webové vyhledávání během relací agenta nebude fungovat, dokud to nebude nastaveno.",
+        description:
+          "Umožněte svému agentovi, aby prohledával internet a odpovídal na vaše otázky, propojením se poskytovatelem vyhledávacího servisu (SERP).",
       },
+      sql: {
+        title: "Připojení k databázi SQL",
+        description:
+          "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
+      },
+      default_skill:
+        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
     },
   },
   recorded: {
@@ -922,7 +933,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - výchozí agent pro tento pracovní prostor.",
     custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
-    slash_reset: "/reset",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",
     add_new_preset: " Přidat novou předvolbu",
     command: "Příkaz",
@@ -946,6 +956,28 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klikněte pro nastavení přihlašovacích údajů",
     },
+    submit: "Odeslat",
+    edit_info_user:
+      "„Odeslat“ znovu vygeneruje odpověď od AI. „Uložit“ aktualizuje pouze vaši zprávu.",
+    edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
+    see_less: "Zobrazit méně",
+    see_more: "Více",
+    tools: "Nářadí",
+    slash_commands: "Příkazy (skratky)",
+    agent_skills: "Dovednosti agenta",
+    browse: "Prohlédněte si",
+    text_size_label: "Velikost písma",
+    select_model: "Vyberte model",
+    sources: "Zdroje",
+    document: "Dokument",
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
+    preset_exit_description: "Zastavte aktuální relaci s agentem",
+    add_new: "Přidat nové",
+    edit: "Upravit",
+    publish: "Publikovat",
+    stop_generating: "Zastavte generování odpovědi",
   },
   profile_settings: {
     edit_account: "Upravit účet",

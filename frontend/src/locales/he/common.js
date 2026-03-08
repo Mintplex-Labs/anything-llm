@@ -101,6 +101,12 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "מרכז קהילתי",
+      trending: "גלו את הנושאים החמים",
+      "your-account": "החשבון שלך",
+      "import-item": "ייבוא פריט",
+    },
   },
   login: {
     "multi-user": {
@@ -399,11 +405,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "חיפוש וגלישה באינטרנט בזמן אמת",
-        "desc-start":
-          "אפשר לסוכן שלך לחפש באינטרנט כדי לענות על שאלותיך על ידי התחברות לספק חיפוש אינטרנטי (SERP).",
-        "desc-end":
-          "חיפוש אינטרנטי במהלך סשנים של סוכן לא יעבוד עד שהגדרה זו תבוצע.",
+        description:
+          "אפשרו לסוכן שלכם לחפש באינטרנט כדי לענות על שאלותיכם, על ידי חיבור לספק שירותי חיפוש (SERP).",
       },
+      sql: {
+        title: "חיבור SQL",
+        description:
+          "אפשרו לסוכן שלכם לנצל את SQL כדי לענות על שאלותיכם, על ידי חיבור למספר ספקי מסדי נתונים של SQL.",
+      },
+      default_skill:
+        "כברירת מחדל, הכישורים הזה מופעל, אך ניתן להשבית אותו אם אינכם רוצים שהוא יהיה זמין עבור הסוכן.",
     },
   },
   recorded: {
@@ -867,7 +878,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
     custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
-    slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",
     add_new_preset: " הוסף הגדרה קבועה חדשה",
     command: "פקודה",
@@ -889,6 +899,28 @@ const TRANSLATIONS = {
       missing_credentials: "חסרים אישורים לספק זה!",
       missing_credentials_description: "לחץ להגדרת אישורים",
     },
+    submit: "הגש",
+    edit_info_user:
+      '"שלח" מחזיר את התגובה של הבינה המלאכותית. "שמור" מעדכן רק את ההודעה שלך.',
+    edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
+    see_less: "ראה פחות",
+    see_more: "לראות עוד",
+    tools: "כלים",
+    slash_commands: "פקודות קיצור",
+    agent_skills: "כישורים של סוכן",
+    browse: "גלו",
+    text_size_label: "גודל הטקסט",
+    select_model: "בחר מודל",
+    sources: "מקורות",
+    document: "מסמך",
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
+    preset_exit_description: "עצירת הפעולה הנוכחית של המשתמש",
+    add_new: "הוסף חדש",
+    edit: "עריכה",
+    publish: "להוציא לאור",
+    stop_generating: "הפסיקו ליצור תגובה",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

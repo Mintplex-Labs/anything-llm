@@ -355,7 +355,7 @@ class EphemeralAgentHandler extends AgentHandler {
 
   async createAIbitat(
     args = {
-      handler,
+      handler: null,
     }
   ) {
     this.aibitat = new AIbitat({

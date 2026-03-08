@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Brandstrategi og white-labeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Fælleshus",
+      trending: "Udforsk populære emner",
+      "your-account": "Dit konti",
+      "import-item": "Importeret vare",
+    },
   },
   login: {
     "multi-user": {
@@ -321,11 +327,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web-søgning og browsing",
-        "desc-start":
-          "Gør det muligt for din agent at søge på internettet for at besvare dine spørgsmål ved at forbinde til en web-søgeudbyder (SERP).",
-        "desc-end":
-          "Web-søgning under agent-sessioner vil ikke fungere, før dette er opsat.",
+        description:
+          "Giv din agent mulighed for at søge på internettet for at besvare dine spørgsmål ved at forbinde den til en web-søgetjeneste (SERP).",
       },
+      sql: {
+        title: "SQL-forbindelse",
+        description:
+          "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
+      },
+      default_skill:
+        "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
     },
   },
   recorded: {
@@ -703,7 +714,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- standardagenten for dette arbejdsområde.",
     custom_agents_coming_soon: "Specialagenter kommer snart!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Rydd op i din chat-historik og start en ny samtale",
     add_new_preset: "Tilføj ny forudindstilling",
@@ -729,6 +739,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klik for at oprette legitimationsoplysninger",
     },
+    submit: "Indsend",
+    edit_info_user:
+      '"Send" genopretter AI-responsen. "Gem" opdaterer kun dit budskab.',
+    edit_info_assistant:
+      "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
+    see_less: "Se mindre",
+    see_more: "Se flere",
+    tools: "Værktøj",
+    slash_commands: "Kommandoer",
+    agent_skills: "Agenters kompetencer",
+    browse: "Gennemse",
+    text_size_label: "Tekststørrelse",
+    select_model: "Vælg model",
+    sources: "Kilder",
+    document: "Dokument",
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
+    preset_exit_description: "Afslut den aktuelle agent-session",
+    add_new: "Tilføj nyt",
+    edit: "Rediger",
+    publish: "Udgive",
+    stop_generating: "Stop med at generere svar",
   },
   profile_settings: {
     edit_account: "Rediger konto",

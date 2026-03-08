@@ -103,6 +103,12 @@ const TRANSLATIONS = {
     branding: "ブランディングとホワイトレーベル化",
     chat: "チャット",
     "mobile-app": "AnythingLLM モバイル版",
+    "community-hub": {
+      title: "地域交流拠点",
+      trending: "人気のあるものを探す",
+      "your-account": "あなたのアカウント",
+      "import-item": "輸入品",
+    },
   },
   login: {
     "multi-user": {
@@ -316,11 +322,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "ウェブ検索と閲覧",
-        "desc-start":
-          "エージェントがウェブ検索プロバイダーに接続し、質問に答えるためにウェブ検索できるようにします。",
-        "desc-end":
-          "この設定を行うまで、エージェントセッション中のウェブ検索は利用できません。",
+        description:
+          "エージェントがウェブ検索（SERP）プロバイダーに接続することで、あなたの質問に答えるためにウェブを検索できるようにする。",
       },
+      sql: {
+        title: "SQLコネクタ",
+        description:
+          "エージェントが、さまざまなSQLデータベースプロバイダーに接続することで、SQLを活用してお客様からの質問に回答できるようにする。",
+      },
+      default_skill:
+        "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
     },
   },
   recorded: {
@@ -693,7 +704,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- このワークスペースのデフォルトエージェント。",
     custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
-    slash_reset: "/reset",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -718,6 +728,28 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "認証情報を設定するには、ここをクリックしてください。",
     },
+    submit: "送信",
+    edit_info_user:
+      "「送信」はAIの応答を再生成します。「保存」は、あなたのメッセージのみを更新します。",
+    edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
+    see_less: "詳細を見る",
+    see_more: "詳細を見る",
+    tools: "道具",
+    slash_commands: "スラッシュコマンド",
+    agent_skills: "エージェントのスキル",
+    browse: "閲覧",
+    text_size_label: "文字サイズ",
+    select_model: "モデルを選択",
+    sources: "出典",
+    document: "文書",
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
+    preset_exit_description: "現在のエージェントセッションを停止する",
+    add_new: "新しいものを追加する",
+    edit: "編集",
+    publish: "出版",
+    stop_generating: "応答の生成を停止する",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

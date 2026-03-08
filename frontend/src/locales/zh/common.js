@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
     "mobile-app": "AnythingLLM 移动版",
+    "community-hub": {
+      title: "社区中心",
+      trending: "探索热门",
+      "your-account": "您的账户",
+      "import-item": "进口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -387,10 +393,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "实时网络搜索和浏览",
-        "desc-start":
-          "通过连接到网络搜索（搜索结果页）提供者，使你的代理能够搜索网络以回答你的问题。",
-        "desc-end": "在代理会话期间，网络搜索将不起作用，直到此设置完成。",
+        description:
+          "通过连接到搜索引擎（SERP）提供商，让您的代理能够搜索互联网来回答您的问题。",
       },
+      sql: {
+        title: "SQL 连接器",
+        description:
+          "让您的代理能够利用 SQL 来回答您的问题，只需连接到各种 SQL 数据库提供商即可。",
+      },
+      default_skill:
+        "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
     },
   },
   recorded: {
@@ -835,7 +847,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 此工作区的预设代理。",
     custom_agents_coming_soon: "自定义代理功能即将推出！",
-    slash_reset: "/reset",
     preset_reset_description: "清除聊天纪录并开始新的聊天",
     add_new_preset: "新增预设",
     command: "指令",
@@ -857,6 +868,27 @@ const TRANSLATIONS = {
       missing_credentials: "缺少凭证",
       missing_credentials_description: "缺少凭证说明",
     },
+    submit: "提交",
+    edit_info_user: "“提交”会重新生成 AI 的回复。 “保存”只会更新您的消息。",
+    edit_info_assistant: "您所做的修改将直接保存到此处。",
+    see_less: "查看更多",
+    see_more: "查看更多",
+    tools: "工具",
+    slash_commands: "快捷命令",
+    agent_skills: "代理商技能",
+    browse: "浏览",
+    text_size_label: "字体大小",
+    select_model: "选择型号",
+    sources: "来源",
+    document: "文件",
+    similarity_match: "比赛",
+    source_count_one: "{{count}} 参考",
+    source_count_other: "{{count}} 相关资料",
+    preset_exit_description: "停止当前的代理会话",
+    add_new: "添加新",
+    edit: "编辑",
+    publish: "出版",
+    stop_generating: "停止生成回复",
   },
   profile_settings: {
     edit_account: "编辑帐户",

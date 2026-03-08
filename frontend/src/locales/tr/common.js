@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     branding: "Marka & Beyaz Etiketleme",
     chat: "Sohbet",
     "mobile-app": "AnythingLLM Mobil",
+    "community-hub": {
+      title: "Topluluk Merkezi",
+      trending: "Popüler olanları keşfedin",
+      "your-account": "Hesabınız",
+      "import-item": "İthal Edilen Ürün",
+    },
   },
   login: {
     "multi-user": {
@@ -319,11 +325,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Canlı web araması ve gezinme",
-        "desc-start":
-          "Ajanınızın, bir web arama (SERP) sağlayıcısına bağlanarak sorularınızı yanıtlamak için web üzerinde arama yapmasına izin verin.",
-        "desc-end":
-          "Ajan oturumlarında web araması, bu ayar etkinleştirilene kadar çalışmayacaktır.",
+        description:
+          "Ajantınızın, web arama (SERP) sağlayıcısıyla bağlantı kurarak, sorularınızı yanıtlamak için web'i aramasını sağlayın.",
       },
+      sql: {
+        title: "SQL Bağlayıcı",
+        description:
+          "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
+      },
+      default_skill:
+        "Varsayılan olarak bu özellik etkinleştirilmiştir, ancak ajanın kullanmasına izin vermek istemiyorsanız, bu özelliği devre dışı bırakabilirsiniz.",
     },
   },
   recorded: {
@@ -698,7 +709,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
     custom_agents_coming_soon: "özel ajanlar yakında!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
     add_new_preset: " Yeni Ön Ayar Ekle",
@@ -723,6 +733,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kimlik bilgilerini ayarlamak için tıklayın",
     },
+    submit: "Gönder",
+    edit_info_user:
+      '"Gönder" seçeneği, yapay zeka yanıtını yeniden oluşturur. "Kaydet" seçeneği, yalnızca sizin mesajınızı günceller.',
+    edit_info_assistant:
+      "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
+    see_less: "Daha az",
+    see_more: "Daha Fazla",
+    tools: "Araçlar",
+    slash_commands: "Komut satırı komutları",
+    agent_skills: "Ajansın Becerileri",
+    browse: "Gezin",
+    text_size_label: "Metin Boyutu",
+    select_model: "Model Seçimi",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "maç",
+    source_count_one: "{{count}} ile ilgili bilgi",
+    source_count_other: "{{count}} referansları",
+    preset_exit_description: "Mevcut ajan oturumunu durdurun",
+    add_new: "Yeni ekle",
+    edit: "Düzenle",
+    publish: "Yayınla",
+    stop_generating: "Yanıt üretmeyi durdurun",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

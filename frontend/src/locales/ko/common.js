@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
     "mobile-app": "AnythingLLM 모바일",
+    "community-hub": {
+      title: "지역 커뮤니티 허브",
+      trending: "인기 트렌드 탐색",
+      "your-account": "당신의 계정",
+      "import-item": "수입 품목",
+    },
   },
   login: {
     "multi-user": {
@@ -400,11 +406,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "실시간 웹 검색 및 탐색",
-        "desc-start":
-          "에이전트가 웹을 검색하여 질문에 답변할 수 있도록 허용합니다.",
-        "desc-end":
-          "에이전트 세션 중 웹 검색은 설정되지 않으면 작동하지 않습니다.",
+        description:
+          "웹 검색 (SERP) 제공업체와 연결하여 에이전트가 웹을 검색하고 질문에 답변하도록 설정합니다.",
       },
+      sql: {
+        title: "SQL 연결기",
+        description:
+          "여러 SQL 데이터베이스 제공업체에 연결하여 에이전트가 SQL을 활용하여 질문에 답변할 수 있도록 지원합니다.",
+      },
+      default_skill:
+        "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
     },
   },
   recorded: {
@@ -876,7 +887,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 이 워크스페이스의 기본 에이전트입니다.",
     custom_agents_coming_soon: "커스텀 에이전트 기능이 곧 제공됩니다!",
-    slash_reset: "/reset",
     preset_reset_description: "채팅 기록을 초기화하고 새 채팅을 시작합니다",
     add_new_preset: "새 프리셋 추가",
     command: "명령어",
@@ -899,6 +909,28 @@ const TRANSLATIONS = {
       missing_credentials: "이 제공자의 인증 정보가 없습니다!",
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
     },
+    submit: "제출",
+    edit_info_user:
+      '"제출"은 AI 응답을 다시 생성합니다. "저장"은 사용자 메시지만 업데이트합니다.',
+    edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
+    see_less: "더 보기",
+    see_more: "더 보기",
+    tools: "도구",
+    slash_commands: "슬래시 명령",
+    agent_skills: "에이전트의 역량",
+    browse: "검색",
+    text_size_label: "글자 크기",
+    select_model: "모델 선택",
+    sources: "출처",
+    document: "문서",
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
+    preset_exit_description: "현재 에이전트 세션을 중단",
+    add_new: "새로운 항목 추가",
+    edit: "수정",
+    publish: "출판",
+    stop_generating: "응답 생성 중단",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

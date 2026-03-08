@@ -104,6 +104,12 @@ const TRANSLATIONS = {
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
   },
   login: {
     "multi-user": {
@@ -629,7 +635,6 @@ const TRANSLATIONS = {
     default_agent_description:
       " - agentul implicit pentru acest spațiu de lucru.",
     custom_agents_coming_soon: "agenții personalizați vin în curând!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Șterge istoricul chatului și începe o conversație nouă",
     add_new_preset: " Adaugă preset nou",
@@ -654,6 +659,29 @@ const TRANSLATIONS = {
       missing_credentials: "Acest furnizor lipsește credențiale!",
       missing_credentials_description: "Click pentru a configura credențialele",
     },
+    submit: "Trimite",
+    edit_info_user:
+      "„Trimite” recreează răspunsul generat de inteligența artificială. „Salvează” actualizează doar mesajul dumneavoastră.",
+    edit_info_assistant:
+      "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
+    see_less: "Vezi mai puțin",
+    see_more: "Vezi mai multe",
+    tools: "Unelte",
+    slash_commands: "Comenzi scurte",
+    agent_skills: "Abilități ale agenților",
+    browse: "Navigați",
+    text_size_label: "Dimensiunea textului",
+    select_model: "Selectați modelul",
+    sources: "Surse",
+    document: "Document",
+    similarity_match: "meci",
+    source_count_one: "{{count}} – referință",
+    source_count_other: "Referințe către {{count}}",
+    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
+    add_new: "Adaugă",
+    edit: "Editează",
+    publish: "Publica",
+    stop_generating: "Opriți generarea răspunsului",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -860,11 +888,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Căutare și navigare web live",
-        "desc-start":
-          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
-        "desc-end":
-          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
+        description:
+          "Permite-i agentului tău să caute pe internet pentru a răspunde la întrebările tale, conectându-l la un furnizor de servicii de căutare web (SERP).",
       },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permite-ți agentului să utilizeze SQL pentru a răspunde la întrebările tale, conectându-se la diverși furnizori de baze de date SQL.",
+      },
+      default_skill:
+        "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
     },
   },
   recorded: {

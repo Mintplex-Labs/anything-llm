@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
-import { X } from "@phosphor-icons/react";
+import { X, WarningCircle } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useTranslation } from "react-i18next";
@@ -93,17 +93,23 @@ export function NoSetupWarning({ showing, onSetupClick }) {
   if (!showing) return null;
 
   return (
-    <button
-      type="button"
-      onClick={onSetupClick}
-      className="border border-blue-500 rounded-lg p-2 flex flex-col items-center gap-y-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 transition-all duration-300"
-    >
-      <p className="text-sm text-center">
-        <b>{t("chat_window.workspace_llm_manager.missing_credentials")}</b>
+    <div className="flex items-start gap-1.5">
+      <WarningCircle
+        size={16}
+        className="text-white light:text-slate-800 shrink-0 mt-0.5"
+      />
+      <p className="text-[13px] text-white light:text-slate-800 leading-5">
+        {t("chat_window.workspace_llm_manager.missing_credentials")}{" "}
+        <span
+          onClick={onSetupClick}
+          className="text-sky-400 font-semibold cursor-pointer hover:underline"
+          role="button"
+        >
+          {t(
+            "chat_window.workspace_llm_manager.missing_credentials_description"
+          )}
+        </span>
       </p>
-      <p className="text-xs text-center">
-        {t("chat_window.workspace_llm_manager.missing_credentials_description")}
-      </p>
-    </button>
+    </div>
   );
 }

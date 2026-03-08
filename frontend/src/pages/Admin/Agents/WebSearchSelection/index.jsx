@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Admin from "@/models/admin";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import GoogleSearchIcon from "./icons/google.png";
 import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
@@ -24,7 +23,6 @@ import {
   SerpApiOptions,
   SearchApiOptions,
   SerperDotDevOptions,
-  GoogleSearchOptions,
   BingSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
@@ -48,13 +46,6 @@ const SEARCH_PROVIDERS = [
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
     description: "Free and privacy-focused web search using DuckDuckGo.",
-  },
-  {
-    name: "Google Search Engine",
-    value: "google-search-engine",
-    logo: GoogleSearchIcon,
-    options: (settings) => <GoogleSearchOptions settings={settings} />,
-    description: "Web search powered by a custom Google Search Engine.",
   },
   {
     name: "SerpApi",
@@ -122,6 +113,8 @@ const SEARCH_PROVIDERS = [
 
 export default function AgentWebSearchSelection({
   skill,
+  title,
+  description,
   settings,
   toggleSkill,
   enabled = false,
@@ -164,9 +157,9 @@ export default function AgentWebSearchSelection({
       .catch(() => setSelectedProvider("none"));
   }, []);
 
-  const selectedSearchProviderObject = SEARCH_PROVIDERS.find(
-    (provider) => provider.value === selectedProvider
-  );
+  const selectedSearchProviderObject =
+    SEARCH_PROVIDERS.find((provider) => provider.value === selectedProvider) ??
+    SEARCH_PROVIDERS[1];
 
   return (
     <div className="p-2">
@@ -182,7 +175,7 @@ export default function AgentWebSearchSelection({
               htmlFor="name"
               className="text-theme-text-primary text-md font-bold"
             >
-              Live web search and browsing
+              {title}
             </label>
           </div>
           <Toggle
@@ -197,9 +190,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider. Web search during agent
-          sessions will not work until this is set up.
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">

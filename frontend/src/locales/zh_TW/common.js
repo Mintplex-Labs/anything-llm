@@ -99,6 +99,12 @@ const TRANSLATIONS = {
     branding: "品牌與白標設定",
     chat: "聊天室",
     "mobile-app": "AnythingLLM 應用程式",
+    "community-hub": {
+      title: "社區中心",
+      trending: "探索熱門",
+      "your-account": "您的帳戶",
+      "import-item": "進口商品",
+    },
   },
   login: {
     "multi-user": {
@@ -300,11 +306,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "即時網路搜尋與瀏覽",
-        "desc-start":
-          "讓您的智慧代理人能夠透過連線到網路搜尋 (SERP) 提供者來搜尋網路以回答您的問題。",
-        "desc-end":
-          "在設定完成之前，智慧代理人工作階段期間的網路搜尋將無法運作。",
+        description:
+          "透過連接到網路搜尋引擎 (SERP) 提供商，讓您的代理能夠在網上搜尋，以回答您的問題。",
       },
+      sql: {
+        title: "SQL 連接器",
+        description:
+          "讓您的代理能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 數據庫提供者即可。",
+      },
+      default_skill:
+        "預設情況下，此功能已啟用，但您可以選擇關閉，以防止其被應用程式使用。",
     },
   },
   recorded: {
@@ -657,7 +668,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - 此工作區的預設代理。",
     custom_agents_coming_soon: "自訂代理功能即將推出！",
-    slash_reset: "/reset",
     preset_reset_description: "清除聊天紀錄並開始新的聊天",
     add_new_preset: "新增預設",
     command: "指令",
@@ -679,6 +689,27 @@ const TRANSLATIONS = {
       missing_credentials: "缺少憑證",
       missing_credentials_description: "缺少憑證說明",
     },
+    submit: "提交",
+    edit_info_user: "「提交」會重新產生 AI 的回覆。 「儲存」僅會更新您的訊息。",
+    edit_info_assistant: "您的修改將直接儲存到此處。",
+    see_less: "查看更多",
+    see_more: "查看更多",
+    tools: "工具",
+    slash_commands: "簡短指令",
+    agent_skills: "代理人技能",
+    browse: "瀏覽",
+    text_size_label: "文字大小",
+    select_model: "選擇模型",
+    sources: "來源",
+    document: "文件",
+    similarity_match: "比賽",
+    source_count_one: "{{count}} 參考",
+    source_count_other: "{{count}} 的相關資料",
+    preset_exit_description: "暫停目前的工作階段",
+    add_new: "新增",
+    edit: "編輯",
+    publish: "發行",
+    stop_generating: "停止生成回應",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

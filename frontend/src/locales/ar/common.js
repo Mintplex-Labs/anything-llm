@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "التسويق بالعلامة التجارية ووضع العلامات التجارية",
     chat: "دردشة",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مركز المجتمع",
+      trending: "استكشف الاتجاهات الرائجة",
+      "your-account": "حسابك",
+      "import-item": "استيراد العنصر",
+    },
   },
   login: {
     "multi-user": {
@@ -317,11 +323,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "البحث والتصفح المباشر على الويب",
-        "desc-start":
-          "قم بتمكين الوكيل الخاص بك من البحث في الويب للإجابة على أسئلتك من خلال الاتصال بموفر البحث على الويب.",
-        "desc-end":
-          "لن يعمل البحث على الويب أثناء حصص المحادثة بواسطة الوكيل حتى يتم إعداد ذلك.",
+        description:
+          "اسمح لمسؤولك بالبحث على الإنترنت للإجابة على أسئلتك من خلال الاتصال بمزود خدمة البحث على الإنترنت (SERP).",
       },
+      sql: {
+        title: "موصل SQL",
+        description:
+          "اسمح لمسؤولك بالاستفادة من SQL للإجابة على أسئلتك من خلال الاتصال بمقدمي قواعد البيانات المختلفة.",
+      },
+      default_skill:
+        "افتراضيًا، يتم تفعيل هذه الميزة، ولكن يمكنك تعطيلها إذا لم ترغب في أن تكون متاحة للممثل.",
     },
   },
   recorded: {
@@ -693,7 +704,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "- الوكيل الافتراضي لهذا المساحة.",
     custom_agents_coming_soon: "سيصل وكلاء مخصصون قريباً!",
-    slash_reset: "/reset",
     preset_reset_description: "امسح سجل الدردشة الخاص بك وابدأ محادثة جديدة",
     add_new_preset: "إضافة إعداد مسبق",
     command: "أمر",
@@ -715,6 +725,28 @@ const TRANSLATIONS = {
       missing_credentials: "هذا المزود لا يمتلك المؤهلات اللازمة!",
       missing_credentials_description: "انقر لإعداد بيانات الاعتماد",
     },
+    submit: "إرسال",
+    edit_info_user:
+      '"إرسال" يعيد إنشاء استجابة الذكاء الاصطناعي. "حفظ" يقوم بتحديث رسالتك فقط.',
+    edit_info_assistant: "سيتم حفظ التغييرات مباشرة في هذا الرد.",
+    see_less: "اقرأ المزيد",
+    see_more: "عرض المزيد",
+    tools: "الأدوات",
+    slash_commands: "أوامر مختصرة",
+    agent_skills: "مهارات الوكيل",
+    browse: "تصفح",
+    text_size_label: "حجم النص",
+    select_model: "اختر الطراز",
+    sources: "مصادر",
+    document: "وثيقة",
+    similarity_match: "مباراة",
+    source_count_one: "{{count}}، المرجع",
+    source_count_other: "{{count}} المرجع",
+    preset_exit_description: "إيقاف الجلسة الحالية للمتصفح",
+    add_new: "أضف جديدًا",
+    edit: "تحرير",
+    publish: "نشر",
+    stop_generating: "توقف عن إنشاء رد",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

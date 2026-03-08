@@ -105,6 +105,12 @@ const TRANSLATIONS = {
     branding: "Branding e personalizzazione",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Punto di riferimento della comunità",
+      trending: "Esplora le tendenze",
+      "your-account": "Il tuo account",
+      "import-item": "Importa articolo",
+    },
   },
   login: {
     "multi-user": {
@@ -324,11 +330,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Ricerca e navigazione web in tempo reale",
-        "desc-start":
-          "Abilita il tuo agente a cercare sul web per rispondere alle tue domande connettendosi a un provider di ricerca web (SERP).",
-        "desc-end":
-          "La ricerca web durante le sessioni dell'agente non funzionerà finché non verrà impostata.",
+        description:
+          "Permettere al vostro agente di effettuare ricerche sul web per rispondere alle vostre domande, collegandosi a un fornitore di servizi di ricerca (SERP).",
       },
+      sql: {
+        title: "Connettore SQL",
+        description:
+          "Permetti al tuo agente di utilizzare SQL per rispondere alle tue domande, collegandosi a diversi fornitori di database SQL.",
+      },
+      default_skill:
+        "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
     },
   },
   recorded: {
@@ -710,7 +721,6 @@ const TRANSLATIONS = {
     default_agent_description:
       "- l'agente predefinito per questo spazio di lavoro.",
     custom_agents_coming_soon: "Agenti personalizzati in arrivo a breve!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Elimina la cronologia delle chat e avvia una nuova chat",
     add_new_preset: "Aggiungi nuovo preset",
@@ -740,6 +750,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Fare clic per configurare le credenziali",
     },
+    submit: "Invia",
+    edit_info_user:
+      '"Invia" rigenera la risposta dell\'IA. "Salva" aggiorna solo il tuo messaggio.',
+    edit_info_assistant:
+      "Le modifiche verranno salvate direttamente in questa risposta.",
+    see_less: "Visualizza meno",
+    see_more: "Visualizza altro",
+    tools: "Strumenti",
+    slash_commands: "Comandi abbreviati",
+    agent_skills: "Competenze dell'agente",
+    browse: "Naviga",
+    text_size_label: "Dimensione del testo",
+    select_model: "Seleziona il modello",
+    sources: "Fonti",
+    document: "Documento",
+    similarity_match: "partita",
+    source_count_one: "Riferimento {{count}}",
+    source_count_other: "Riferimenti a {{count}}",
+    preset_exit_description: "Interrompere la sessione corrente con l'agente.",
+    add_new: "Aggiungi nuovo",
+    edit: "Modifica",
+    publish: "Pubblicare",
+    stop_generating: "Interrompi la generazione della risposta",
   },
   profile_settings: {
     edit_account: "Modifica account",
