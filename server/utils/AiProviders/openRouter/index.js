@@ -238,26 +238,25 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
+    const requestBody = {
+      model: this.model,
+      messages,
+      temperature,
+      // This is an OpenRouter specific option that allows us to get the reasoning text
+      // before the token text.
+      include_reasoning: true,
+    };
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.chat.completions
-        .create({
-          model: this.model,
-          messages,
-          temperature,
-          // This is an OpenRouter specific option that allows us to get the reasoning text
-          // before the token text.
-          include_reasoning: true,
-          user: user?.id ? `user_${user.id}` : "",
-        })
-        .catch((e) => {
-          throw new Error(e.message);
-        })
+      this.openai.chat.completions.create(requestBody).catch((e) => {
+        throw new Error(e.message);
+      })
     );
 
     if (
@@ -283,26 +282,24 @@ class OpenRouterLLM {
     };
   }
 
-  async streamGetChatCompletion(
-    messages = null,
-    { temperature = 0.7, user = null }
-  ) {
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
+    const requestBody = {
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+      // This is an OpenRouter specific option that allows us to get the reasoning text
+      // before the token text.
+      include_reasoning: true,
+    };
+
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.openai.chat.completions.create({
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-        // This is an OpenRouter specific option that allows us to get the reasoning text
-        // before the token text.
-        include_reasoning: true,
-        user: user?.id ? `user_${user.id}` : "",
-      }),
+      func: this.openai.chat.completions.create(requestBody),
       messages,
       // OpenRouter returns the usage in the stream as the very last chunk **after** the finish reason.
       // so we don't need to run the prompt token calculation.

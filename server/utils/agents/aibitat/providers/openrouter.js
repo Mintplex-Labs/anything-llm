@@ -70,7 +70,6 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         messages,
-        user: this.executingUserId,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -89,7 +88,6 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       stream: true,
       messages,
-      user: this.executingUserId,
     });
   }
 
