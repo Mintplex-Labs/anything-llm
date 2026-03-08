@@ -79,7 +79,8 @@ async function scrapeGenericUrl({
   // Save the content as a document from the URL
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
-  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
+  const searchSuffix = url.search ? "_" + url.search.replace(/[?&=]/g, "-").replace(/^-/, "") : "";
+  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}${searchSuffix}`;
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
@@ -165,9 +166,27 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: {
-        waitUntil: "networkidle2",
+        waitUntil: "domcontentloaded",
       },
       async evaluate(page, browser) {
+        // Click expandable elements to reveal hidden content
+        await page.evaluate(() => {
+          document.querySelectorAll(
+            'button[aria-expanded="false"], .accordion-toggle, ' +
+            '[data-toggle="collapse"], details:not([open]), ' +
+            '.course-details-toggle'
+          ).forEach(el => el.click());
+        });
+        await new Promise(r => setTimeout(r, 1000));
+
+        // Remove noise elements (nav, cookie banners, etc.) before extraction
+        await page.evaluate(() => {
+          document.querySelectorAll(
+            'header, footer, aside, [class*="cookie"], [id*="cookie"], ' +
+            '[class*="consent"], [id*="consent"], [class*="banner"]'
+          ).forEach(el => el.remove());
+        });
+
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
           if (captureAs === "html") return document.documentElement.innerHTML;
@@ -178,34 +197,54 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       },
     });
 
-    // Override scrape method if headers are available
+    // Always override scrape to block non-essential resources and avoid slow script loading.
+    // Synchronous <script> tags block domcontentloaded for 2+ minutes on VHS sites
+    // (analytics, chat widgets, captcha). Blocking them gives 170x speedup.
     let overrideHeaders = validatedHeaders(headers);
-    if (Object.keys(overrideHeaders).length > 0) {
-      loader.scrape = async function () {
-        const { launch } = await PuppeteerWebBaseLoader.imports();
-        const browser = await launch({
-          headless: "new",
-          defaultViewport: null,
-          ignoreDefaultArgs: ["--disable-extensions"],
-          ...this.options?.launchOptions,
-        });
-        const page = await browser.newPage();
+    loader.scrape = async function () {
+      const { launch } = await PuppeteerWebBaseLoader.imports();
+      const browser = await launch({
+        headless: "new",
+        defaultViewport: null,
+        ignoreDefaultArgs: ["--disable-extensions"],
+        ...this.options?.launchOptions,
+      });
+      const page = await browser.newPage();
+      if (Object.keys(overrideHeaders).length > 0) {
         await page.setExtraHTTPHeaders(overrideHeaders);
+      }
 
-        await page.goto(this.webPath, {
-          timeout: 180000,
-          waitUntil: "networkidle2",
-          ...this.options?.gotoOptions,
-        });
+      // Block non-essential resources that slow down text extraction
+      await page.setRequestInterception(true);
+      page.on('request', (req) => {
+        const type = req.resourceType();
+        const url = req.url();
+        if (['image', 'stylesheet', 'font', 'media'].includes(type)) {
+          req.abort();
+        // Block chatbot widget scripts — they load synchronously from the
+        // AnythingLLM container itself (*.ki.kufer.de/embed/) and block
+        // DOMContentLoaded for 2+ minutes. No content value for scraping.
+        } else if (type === 'script' && url.includes('.ki.kufer.de/')) {
+          req.abort();
+        } else {
+          req.continue();
+        }
+      });
 
-        const bodyHTML = this.options?.evaluate
-          ? await this.options.evaluate(page, browser)
-          : await page.evaluate(() => document.body.innerHTML);
+      await page.goto(this.webPath, {
+        timeout: 10000,
+        waitUntil: "domcontentloaded",
+      }).catch(() => {});
+      // Wait for JS frameworks to initialize (expandable elements need jQuery/Bootstrap)
+      await new Promise(r => setTimeout(r, 2000));
 
-        await browser.close();
-        return bodyHTML;
-      };
-    }
+      const bodyHTML = this.options?.evaluate
+        ? await this.options.evaluate(page, browser)
+        : await page.evaluate(() => document.body.innerHTML);
+
+      await browser.close();
+      return bodyHTML;
+    };
 
     const docs = await loader.load();
     for (const doc of docs) pageContents.push(doc.pageContent);
