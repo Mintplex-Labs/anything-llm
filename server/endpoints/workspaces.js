@@ -42,6 +42,24 @@ const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 function workspaceEndpoints(app) {
   if (!app) return;
   const responseCache = new Map();
+  const defaultWorkspaceChatClause = ({
+    response,
+    workspaceId,
+    chatId,
+    user,
+  }) =>
+    multiUserMode(response)
+      ? {
+          id: Number(chatId),
+          workspaceId,
+          user_id: user?.id ?? null,
+          thread_id: null,
+        }
+      : {
+          id: Number(chatId),
+          workspaceId,
+          thread_id: null,
+        };
 
   app.post(
     "/workspace/new",
@@ -493,9 +511,14 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
+        const user = await userFromSession(request, response);
         const existingChat = await WorkspaceChats.get({
-          id: Number(chatId),
-          workspaceId: response.locals.workspace.id,
+          ...defaultWorkspaceChatClause({
+            response,
+            workspaceId: response.locals.workspace.id,
+            chatId,
+            user,
+          }),
         });
 
         if (!existingChat) {
@@ -595,12 +618,20 @@ function workspaceEndpoints(app) {
     async function (request, response) {
       try {
         const { chatId } = request.params;
+        const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
-        const cacheKey = `${workspace.slug}:${chatId}`;
+        const cacheKey = multiUserMode(response)
+          ? `${workspace.slug}:${user?.id ?? "anon"}:${chatId}`
+          : `${workspace.slug}:${chatId}`;
         const wsChat = await WorkspaceChats.get({
-          id: Number(chatId),
-          workspaceId: workspace.id,
+          ...defaultWorkspaceChatClause({
+            response,
+            workspaceId: workspace.id,
+            chatId,
+            user,
+          }),
         });
+        if (!wsChat) return response.sendStatus(404).end();
 
         const cachedResponse = responseCache.get(cacheKey);
         if (cachedResponse) {
