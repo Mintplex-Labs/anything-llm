@@ -1,8 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
-import { defaultSkills, configurableSkills } from "@/pages/Admin/Agents/skills";
+import {
+  getDefaultSkills,
+  getConfigurableSkills,
+} from "@/pages/Admin/Agents/skills";
 import paths from "@/utils/paths";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
@@ -12,11 +16,14 @@ export default function AgentSkillsTab({
   highlightedIndex = -1,
   registerItemCount,
 }) {
+  const { t } = useTranslation();
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const defaultSkills = useMemo(() => getDefaultSkills(t), [t]);
+  const configurableSkills = useMemo(() => getConfigurableSkills(t), [t]);
 
   useEffect(() => {
     fetchSkillSettings();
