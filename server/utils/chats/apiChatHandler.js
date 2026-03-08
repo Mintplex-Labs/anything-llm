@@ -13,6 +13,7 @@ const {
   EphemeralAgentHandler,
   EphemeralEventListener,
 } = require("../agents/ephemeral");
+const { rewriteQueryForSearch } = require("../helpers/chat/queryRewriter");
 const { Telemetry } = require("../../models/telemetry");
 const { CollectorApi } = require("../collectorApi");
 const fs = require("fs");
@@ -307,11 +308,17 @@ async function chatSync({
     }
   });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: message,
+    chatHistory,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: message,
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -693,11 +700,17 @@ async function streamChat({
     }
   });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: message,
+    chatHistory,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: message,
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,

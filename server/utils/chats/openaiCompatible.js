@@ -4,6 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { rewriteQueryForSearch } = require("../helpers/chat/queryRewriter");
 
 const { PassThrough } = require("stream");
 
@@ -125,11 +126,17 @@ async function chatSync({
       });
     });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: String(prompt),
+    chatHistory: history,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: String(prompt),
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -421,11 +428,17 @@ async function streamChat({
       });
     });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: String(prompt),
+    chatHistory: history,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: String(prompt),
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
