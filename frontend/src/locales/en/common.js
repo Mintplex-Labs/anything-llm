@@ -51,8 +51,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "Create your first workspace",
-      description:
-        "Create your first workspace and get started with Lovora.",
+      description: "Create your first workspace and get started with Lovora.",
     },
   },
   common: {
@@ -475,8 +474,7 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Branding & Whitelabeling",
-      description:
-        "White-label your Lovora instance with custom branding.",
+      description: "White-label your Lovora instance with custom branding.",
     },
     chat: {
       title: "Chat",
