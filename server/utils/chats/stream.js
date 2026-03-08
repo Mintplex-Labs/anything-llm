@@ -12,6 +12,7 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const { rewriteQueryForSearch } = require("../helpers/chat/queryRewriter");
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
@@ -147,11 +148,17 @@ async function streamChatWithWorkspace(
     });
   });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: updatedMessage,
+    chatHistory,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: updatedMessage,
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,

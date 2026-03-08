@@ -7,6 +7,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { rewriteQueryForSearch } = require("../helpers/chat/queryRewriter");
 
 async function streamChatWithForEmbed(
   response,
@@ -84,11 +85,17 @@ async function streamChatWithForEmbed(
       });
     });
 
+  const searchQuery = await rewriteQueryForSearch({
+    userQuery: message,
+    chatHistory,
+    LLMConnector,
+  });
+
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: embed.workspace.slug,
-          input: message,
+          input: searchQuery,
           LLMConnector,
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
