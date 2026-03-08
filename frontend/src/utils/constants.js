@@ -62,6 +62,13 @@ export const DOCKER_MODEL_RUNNER_COMMON_URLS = [
   "http://172.17.0.1:12434/engines/llama.cpp/v1",
 ];
 
+export const LEMONADE_COMMON_URLS = [
+  "http://localhost:8000/live",
+  "http://127.0.0.1:8000/live",
+  "http://host.docker.internal:8000/live",
+  "http://172.17.0.1:8000/live",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;

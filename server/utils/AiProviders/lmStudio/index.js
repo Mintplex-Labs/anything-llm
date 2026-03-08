@@ -356,7 +356,7 @@ function parseLMStudioBasePath(providedBasePath = "", apiVersion = "legacy") {
     if (apiVersion === "legacy") basePath += `/v1`;
     if (apiVersion === "v1") basePath += `/api/v1`;
     return basePath;
-  } catch (e) {
+  } catch {
     return providedBasePath;
   }
 }

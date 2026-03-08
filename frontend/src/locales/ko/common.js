@@ -102,6 +102,12 @@ const TRANSLATIONS = {
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
     "mobile-app": "AnythingLLM 모바일",
+    "community-hub": {
+      title: "지역 커뮤니티 허브",
+      trending: "인기 트렌드 탐색",
+      "your-account": "당신의 계정",
+      "import-item": "수입 품목",
+    },
   },
   login: {
     "multi-user": {
@@ -400,11 +406,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "실시간 웹 검색 및 탐색",
-        "desc-start":
-          "에이전트가 웹을 검색하여 질문에 답변할 수 있도록 허용합니다.",
-        "desc-end":
-          "에이전트 세션 중 웹 검색은 설정되지 않으면 작동하지 않습니다.",
+        description:
+          "웹 검색 (SERP) 제공업체와 연결하여 에이전트가 웹을 검색하고 질문에 답변하도록 설정합니다.",
       },
+      sql: {
+        title: "SQL 연결기",
+        description:
+          "여러 SQL 데이터베이스 제공업체에 연결하여 에이전트가 SQL을 활용하여 질문에 답변할 수 있도록 지원합니다.",
+      },
+      default_skill:
+        "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
     },
   },
   recorded: {

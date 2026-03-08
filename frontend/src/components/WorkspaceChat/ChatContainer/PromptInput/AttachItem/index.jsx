@@ -88,7 +88,12 @@ export default function AttachItem({
     <>
       <button
         id="attach-item-btn"
-        data-tooltip-id="tooltip-attach-item-btn"
+        data-tooltip-id={
+          showTooltip ? "tooltip-attach-item-btn" : "attach-item-btn"
+        }
+        data-tooltip-content={
+          !showTooltip ? t("chat_window.attach_file") : undefined
+        }
         aria-label={t("chat_window.attach_file")}
         type="button"
         onClick={handleClick}

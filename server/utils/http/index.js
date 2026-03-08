@@ -95,13 +95,29 @@ function isValidUrl(urlString = "") {
     const url = new URL(urlString);
     if (!["http:", "https:"].includes(url.protocol)) return false;
     return true;
-  } catch (e) {}
+  } catch {}
   return false;
 }
 
 function toValidNumber(number = null, fallback = null) {
   if (isNaN(Number(number))) return fallback;
   return Number(number);
+}
+
+/**
+ * Decode HTML entities from a string.
+ * The DMR response is encoded with HTML entities, so we need to decode them
+ * so we can parse the JSON and report the progress percentage.
+ * @param {string} str - The string to decode.
+ * @returns {string} The decoded string.
+ */
+function decodeHtmlEntities(str) {
+  return str
+    .replace(/&#34;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
 }
 
 module.exports = {
@@ -115,4 +131,5 @@ module.exports = {
   safeJsonParse,
   isValidUrl,
   toValidNumber,
+  decodeHtmlEntities,
 };
