@@ -715,7 +715,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: "l'agent par défaut de cet espace de travail",
     custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
-    slash_reset: "/reset",
     preset_reset_description:
       "Efface l'historique du chat actuel et commence une nouvelle conversation.",
     add_new_preset: "Ajouter une nouvelle commande preset",
@@ -741,6 +740,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Vous devez configurer vos identifiants de fournisseur LLM avant de pouvoir sélectionner un modèle.",
     },
+    submit: "Soumettre",
+    edit_info_user:
+      '"Soumettre" permet de régénérer la réponse de l\'IA. "Enregistrer" met uniquement à jour votre message.',
+    edit_info_assistant:
+      "Vos modifications seront enregistrées directement dans cette réponse.",
+    see_less: "Voir moins",
+    see_more: "Voir plus",
+    tools: "Outils",
+    slash_commands: "Commandes abrégées",
+    agent_skills: "Compétences des agents",
+    browse: "Parcourir",
+    text_size_label: "Taille du texte",
+    select_model: "Sélectionner le modèle",
+    sources: "Sources",
+    document: "Document",
+    similarity_match: "match",
+    source_count_one: "{{count}} référence",
+    source_count_other: "Références à {{count}}",
+    preset_exit_description: "Arrêter la session actuelle de l'agent",
+    add_new: "Ajouter",
+    edit: "Modifier",
+    publish: "Publier",
+    stop_generating: "Arrêtez de générer des réponses",
   },
   profile_settings: {
     edit_account: "Modifier le compte",

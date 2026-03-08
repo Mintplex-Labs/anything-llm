@@ -713,7 +713,6 @@ const TRANSLATIONS = {
     default_agent_description:
       "- это основной агент для данного рабочего пространства.",
     custom_agents_coming_soon: "Скоро появятся индивидуальные агенты!",
-    slash_reset: "/reset",
     preset_reset_description: "Очистите историю чата и начните новый чат",
     add_new_preset: "Добавить новый шаблон",
     command: "Команда",
@@ -741,6 +740,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Нажмите, чтобы настроить учетные данные",
     },
+    submit: "Отправить",
+    edit_info_user:
+      '"Отправить" генерирует новый ответ от ИИ. "Сохранить" обновляет только ваше сообщение.',
+    edit_info_assistant:
+      "Ваши изменения будут сохранены непосредственно в этом ответе.",
+    see_less: "Показать меньше",
+    see_more: "Узнать больше",
+    tools: "Инструменты",
+    slash_commands: "Команды, вводимые сокращенной формой",
+    agent_skills: "Навыки агента",
+    browse: "Просматривать",
+    text_size_label: "Размер текста",
+    select_model: "Выберите модель",
+    sources: "Источники",
+    document: "Документ",
+    similarity_match: "соревнование; игра",
+    source_count_one: "{{count}} – ссылка",
+    source_count_other: "Ссылки на {{count}}",
+    preset_exit_description: "Прекратить текущую сессию работы с агентом",
+    add_new: "Добавить новое",
+    edit: "Редактировать",
+    publish: "Опубликовать",
+    stop_generating: "Прекратите генерацию ответа",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

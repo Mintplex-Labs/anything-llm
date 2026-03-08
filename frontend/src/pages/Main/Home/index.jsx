@@ -24,6 +24,8 @@ import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
+import TextSizeMenu from "@/components/WorkspaceChat/ChatContainer/TextSizeMenu";
+import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -129,7 +131,7 @@ export default function Home() {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
       />
     );
   }
@@ -242,6 +244,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
     writeMode = "replace",
   }) {
     if (autoSubmit) {
+      if (writeMode === "append") {
+        const currentText =
+          document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+        text = currentText + text;
+      }
+      if (!text.trim()) return;
       submitMessage(text.trim());
       return;
     }
@@ -269,9 +277,11 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
     >
       {isMobile && <SidebarMobileHeader />}
+      <TextSizeMenu />
+      <WorkspaceModelPicker workspaceSlug={workspace?.slug} />
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex flex-col items-center w-full max-w-[750px]">
@@ -315,7 +325,7 @@ function NoWorkspacesAssigned() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
     >
       <div className="flex flex-col h-full w-full items-center justify-center">
         <p className="text-white/60 text-sm text-center whitespace-pre-line">

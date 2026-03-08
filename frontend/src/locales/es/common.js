@@ -924,7 +924,6 @@ const TRANSLATIONS = {
     default_agent_description:
       " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Borra tu historial de chat y comienza un nuevo chat",
     add_new_preset: " Agregar nuevo preajuste",
@@ -952,6 +951,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Haz clic para configurar las credenciales",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" regenera la respuesta de la IA. "Guardar" actualiza solo tu mensaje.',
+    edit_info_assistant:
+      "Los cambios que realice se guardarán directamente en esta respuesta.",
+    see_less: "Ver menos",
+    see_more: "Ver más",
+    tools: "Herramientas",
+    slash_commands: "Comandos abreviados",
+    agent_skills: "Habilidades del agente",
+    browse: "Explorar",
+    text_size_label: "Tamaño del texto",
+    select_model: "Seleccionar modelo",
+    sources: "Fuentes",
+    document: "Documento",
+    similarity_match: "partido",
+    source_count_one: "{{count}} de referencia",
+    source_count_other: "{{count}} referencias",
+    preset_exit_description: "Detener la sesión actual del agente.",
+    add_new: "Añadir nuevo",
+    edit: "Editar",
+    publish: "Publicar",
+    stop_generating: "Dejar de generar respuestas",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

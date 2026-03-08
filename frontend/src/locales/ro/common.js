@@ -635,7 +635,6 @@ const TRANSLATIONS = {
     default_agent_description:
       " - agentul implicit pentru acest spațiu de lucru.",
     custom_agents_coming_soon: "agenții personalizați vin în curând!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Șterge istoricul chatului și începe o conversație nouă",
     add_new_preset: " Adaugă preset nou",
@@ -660,6 +659,29 @@ const TRANSLATIONS = {
       missing_credentials: "Acest furnizor lipsește credențiale!",
       missing_credentials_description: "Click pentru a configura credențialele",
     },
+    submit: "Trimite",
+    edit_info_user:
+      "„Trimite” recreează răspunsul generat de inteligența artificială. „Salvează” actualizează doar mesajul dumneavoastră.",
+    edit_info_assistant:
+      "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
+    see_less: "Vezi mai puțin",
+    see_more: "Vezi mai multe",
+    tools: "Unelte",
+    slash_commands: "Comenzi scurte",
+    agent_skills: "Abilități ale agenților",
+    browse: "Navigați",
+    text_size_label: "Dimensiunea textului",
+    select_model: "Selectați modelul",
+    sources: "Surse",
+    document: "Document",
+    similarity_match: "meci",
+    source_count_one: "{{count}} – referință",
+    source_count_other: "Referințe către {{count}}",
+    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
+    add_new: "Adaugă",
+    edit: "Editează",
+    publish: "Publica",
+    stop_generating: "Opriți generarea răspunsului",
   },
   profile_settings: {
     edit_account: "Editează contul",

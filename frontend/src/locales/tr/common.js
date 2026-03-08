@@ -709,7 +709,6 @@ const TRANSLATIONS = {
     at_agent: "@agent",
     default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
     custom_agents_coming_soon: "özel ajanlar yakında!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
     add_new_preset: " Yeni Ön Ayar Ekle",
@@ -734,6 +733,29 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kimlik bilgilerini ayarlamak için tıklayın",
     },
+    submit: "Gönder",
+    edit_info_user:
+      '"Gönder" seçeneği, yapay zeka yanıtını yeniden oluşturur. "Kaydet" seçeneği, yalnızca sizin mesajınızı günceller.',
+    edit_info_assistant:
+      "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
+    see_less: "Daha az",
+    see_more: "Daha Fazla",
+    tools: "Araçlar",
+    slash_commands: "Komut satırı komutları",
+    agent_skills: "Ajansın Becerileri",
+    browse: "Gezin",
+    text_size_label: "Metin Boyutu",
+    select_model: "Model Seçimi",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "maç",
+    source_count_one: "{{count}} ile ilgili bilgi",
+    source_count_other: "{{count}} referansları",
+    preset_exit_description: "Mevcut ajan oturumunu durdurun",
+    add_new: "Yeni ekle",
+    edit: "Düzenle",
+    publish: "Yayınla",
+    stop_generating: "Yanıt üretmeyi durdurun",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",
