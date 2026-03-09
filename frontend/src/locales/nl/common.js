@@ -326,11 +326,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web zoeken en browsen",
-        "desc-start":
-          "Sta je agent toe om het web te doorzoeken om je vragen te beantwoorden door verbinding te maken met een web-zoek (SERP) provider.",
-        "desc-end":
-          "Webzoeken tijdens agentensessies zal niet werken totdat dit is ingesteld.",
+        description:
+          "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP).",
       },
+      sql: {
+        title: "SQL-connector",
+        description:
+          "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
+      },
+      default_skill:
+        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
     },
   },
   recorded: {

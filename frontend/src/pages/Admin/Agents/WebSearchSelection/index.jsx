@@ -113,6 +113,8 @@ const SEARCH_PROVIDERS = [
 
 export default function AgentWebSearchSelection({
   skill,
+  title,
+  description,
   settings,
   toggleSkill,
   enabled = false,
@@ -173,7 +175,7 @@ export default function AgentWebSearchSelection({
               htmlFor="name"
               className="text-theme-text-primary text-md font-bold"
             >
-              Live web search and browsing
+              {title}
             </label>
           </div>
           <Toggle
@@ -188,9 +190,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider. Web search during agent
-          sessions will not work until this is set up.
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">

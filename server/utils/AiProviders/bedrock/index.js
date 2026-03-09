@@ -170,7 +170,7 @@ class AWSBedrockLLM {
     const numericLimit = Number(limit);
     if (isNaN(numericLimit) || numericLimit <= 0) {
       this.#slog(
-        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limitSourceValue}". Must be a positive number - returning default ${DEFAULT_CONTEXT_WINDOW_TOKENS}.`
+        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limit}". Must be a positive number - returning default ${DEFAULT_CONTEXT_WINDOW_TOKENS}.`
       );
       return DEFAULT_CONTEXT_WINDOW_TOKENS;
     }
