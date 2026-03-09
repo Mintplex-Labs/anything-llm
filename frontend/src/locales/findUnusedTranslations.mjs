@@ -97,11 +97,28 @@ if (dynamicUsages.length > 0) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Diff and report (excluding allowlisted keys)
+// 4. Diff and report (excluding allowlisted keys and i18n plural forms)
 // ---------------------------------------------------------------------------
 const allowlist = new Set(DYNAMIC_KEY_ALLOWLIST);
+const PLURAL_SUFFIXES = ["_zero", "_one", "_two", "_few", "_many", "_other"];
+
+function isPluralFormOfReferencedKey(key) {
+  for (const suffix of PLURAL_SUFFIXES) {
+    if (key.endsWith(suffix)) {
+      const baseKey = key.slice(0, -suffix.length);
+      if (referencedKeys.has(baseKey)) return true;
+    }
+  }
+  return false;
+}
+
 const unusedKeys = [...definedKeys]
-  .filter((key) => !referencedKeys.has(key) && !allowlist.has(key))
+  .filter(
+    (key) =>
+      !referencedKeys.has(key) &&
+      !allowlist.has(key) &&
+      !isPluralFormOfReferencedKey(key)
+  )
   .sort();
 
 if (unusedKeys.length === 0) {

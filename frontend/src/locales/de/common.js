@@ -157,13 +157,6 @@ const TRANSLATIONS = {
       heading: "Erkläre mir",
       body: "die Vorteile von AnythingLLM",
     },
-    pfp: {
-      title: "Assistent-Profilbild",
-      description:
-        "Passen Sie das Profilbild des Assistenten für diesen Workspace an.",
-      image: "Workspace-Bild",
-      remove: "Workspace-Bild entfernen",
-    },
     delete: {
       title: "Workspace löschen",
       description:
@@ -391,11 +384,6 @@ const TRANSLATIONS = {
         title: "Name",
         description:
           "Geben Sie einen Anwendungsnamen ein, der auf der Login-Seite erscheint.",
-      },
-      "chat-message-alignment": {
-        title: "Nachrichtenanordnung im Chat",
-        description:
-          "Bestimmen Sie den Ausrichtungsmodus der Chat-Nachrichten.",
       },
       "display-language": {
         title: "Sprache",
@@ -772,8 +760,6 @@ const TRANSLATIONS = {
     attachments_processing: "Anhänge werden verarbeitet. Bitte warten...",
     send_message: "Schreibe eine Nachricht",
     attach_file: "Füge eine Datei zum Chat hinzu",
-    slash: "Schau dir alle verfügbaren Slash Befehle für den Chat an.",
-    agents: "Schau dir alle verfugbaren Agentenfähigkeiten für den Chat an.",
     text_size: "Ändere die Größe des Textes.",
     microphone: "Spreche deinen Prompt ein.",
     send: "Versende den Prompt an den Workspace.",
@@ -783,17 +769,11 @@ const TRANSLATIONS = {
     regenerate_response: "Antwort neu generieren",
     good_response: "Gute Antwort",
     more_actions: "Weitere Aktionen",
-    hide_citations: "Quellenangaben ausblenden",
-    show_citations: "Quellenangaben anzeigen",
     fork: "Abzweigen",
     delete: "Löschen",
-    save_submit: "Speichern und Senden",
     cancel: "Abbrechen",
     edit_prompt: "Prompt bearbeiten",
     edit_response: "Antwort bearbeiten",
-    at_agent: "@agent",
-    default_agent_description: "– Standardagent für diesen Workspace.",
-    custom_agents_coming_soon: "Eigene Agenten bald verfügbar!",
     preset_reset_description: "Chatverlauf löschen und neuen Chat starten",
     add_new_preset: "Neues Preset anlegen",
     command: "Befehl",
@@ -824,8 +804,6 @@ const TRANSLATIONS = {
     see_less: "Weniger anzeigen",
     see_more: "Mehr anzeigen",
     tools: "Werkzeuge",
-    slash_commands: "Befehlszeilen",
-    agent_skills: "Fähigkeiten von Agenten",
     browse: "Durchsuchen",
     text_size_label: "Schriftgröße",
     select_model: "Modell auswählen",

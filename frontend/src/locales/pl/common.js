@@ -156,12 +156,6 @@ const TRANSLATIONS = {
       heading: "Wyjaśnij mi",
       body: "Korzyści z AnythingLLM",
     },
-    pfp: {
-      title: "Logo obszaru roboczego",
-      description: "Dostosuj logo asystenta dla tego obszaru roboczego.",
-      image: "Logo obszaru roboczego",
-      remove: "Usuń logo obszaru roboczego",
-    },
     delete: {
       title: "Usuń obszar roboczy",
       description:
@@ -389,11 +383,6 @@ const TRANSLATIONS = {
         title: "Nazwa",
         description:
           "Ustawienie nazwy wyświetlanej na stronie logowania dla wszystkich użytkowników.",
-      },
-      "chat-message-alignment": {
-        title: "Wyrównanie wiadomości czatu",
-        description:
-          "Wybór trybu wyrównania wiadomości podczas korzystania z interfejsu czatu.",
       },
       "display-language": {
         title: "Język",
@@ -767,8 +756,6 @@ const TRANSLATIONS = {
     attachments_processing: "Załączniki są przetwarzane. Proszę czekać...",
     send_message: "Wyślij wiadomość",
     attach_file: "Dołącz plik do tego czatu",
-    slash: "Wyświetl wszystkie dostępne polecenia slash do czatowania.",
-    agents: "Wyświetl wszystkich dostępnych agentów.",
     text_size: "Zmiana rozmiaru tekstu.",
     microphone: "Wypowiedz swoją prośbę.",
     send: "Wyślij wiadomość do obszaru roboczego",
@@ -778,17 +765,11 @@ const TRANSLATIONS = {
     regenerate_response: "Wygeneruj ponownie odpowiedź",
     good_response: "Dobra odpowiedź",
     more_actions: "Więcej działań",
-    hide_citations: "Ukryj cytaty",
-    show_citations: "Pokaż cytaty",
     fork: "Utwórz rozgałęzienie",
     delete: "Usuń",
-    save_submit: "Zapisz i prześlij",
     cancel: "Anuluj",
     edit_prompt: "Edytuj prompt",
     edit_response: "Edytuj odpowiedź",
-    at_agent: "@agent",
-    default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
-    custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",
     add_new_preset: " Dodaj nowe polecenie slash",
     command: "Polecenie",
@@ -820,8 +801,6 @@ const TRANSLATIONS = {
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
     tools: "Narzędzia",
-    slash_commands: "Polecenia w skrócie",
-    agent_skills: "Umiejętności agenta",
     browse: "Przeglądaj",
     text_size_label: "Rozmiar czcionki",
     select_model: "Wybierz model",

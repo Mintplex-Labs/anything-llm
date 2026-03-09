@@ -148,13 +148,6 @@ const TRANSLATIONS = {
       heading: "説明してください",
       body: "AnythingLLMの利点",
     },
-    pfp: {
-      title: "アシスタントのプロフィール画像",
-      description:
-        "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
-      image: "ワークスペース画像",
-      remove: "ワークスペース画像を削除",
-    },
     delete: {
       title: "ワークスペースを削除",
       description:
@@ -646,8 +639,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
-    slash: "チャットで使えるスラッシュコマンドをすべて表示",
-    agents: "利用可能なエージェントをすべて表示",
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
@@ -660,17 +651,11 @@ const TRANSLATIONS = {
     good_response: "良い反応",
     more_actions:
       "さらに詳細な情報が必要な場合は、お気軽にお問い合わせください。",
-    hide_citations: "参考文献を隠す",
-    show_citations: "引用元を表示する",
     fork: "フォーク",
     delete: "削除",
-    save_submit: "保存して送信",
     cancel: "キャンセル",
     edit_prompt: "編集のヒント",
     edit_response: "編集内容を保存します。",
-    at_agent: "@agent",
-    default_agent_description: "- このワークスペースのデフォルトエージェント。",
-    custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -702,8 +687,6 @@ const TRANSLATIONS = {
     see_less: "詳細を見る",
     see_more: "詳細を見る",
     tools: "道具",
-    slash_commands: "スラッシュコマンド",
-    agent_skills: "エージェントのスキル",
     browse: "閲覧",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
@@ -784,11 +767,6 @@ const TRANSLATIONS = {
         title: "名前",
         description:
           "ログインページに表示される名前を、すべてのユーザーに設定する。",
-      },
-      "chat-message-alignment": {
-        title: "チャットメッセージの整合性を確認する",
-        description:
-          "チャットインターフェースを使用する場合、メッセージの配置モードを選択してください。",
       },
       "display-language": {
         title: "表示言語",

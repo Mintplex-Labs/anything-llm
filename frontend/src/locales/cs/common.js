@@ -164,13 +164,6 @@ const TRANSLATIONS = {
       heading: "Vysvětlit mi",
       body: "výhody AnythingLLM",
     },
-    pfp: {
-      title: "Profilový obrázek asistenta",
-      description:
-        "Přizpůsobte profilový obrázek asistenta pro tento pracovní prostor.",
-      image: "Obrázek pracovního prostoru",
-      remove: "Odebrat obrázek pracovního prostoru",
-    },
     delete: {
       title: "Smazat pracovní prostor",
       description:
@@ -397,11 +390,6 @@ const TRANSLATIONS = {
         title: "Název",
         description:
           "Nastavte název, který je zobrazen na přihlašovací stránce všem uživatelům.",
-      },
-      "chat-message-alignment": {
-        title: "Zarovnání zpráv chatu",
-        description:
-          "Vyberte režim zarovnání zpráv při použití rozhraní chatu.",
       },
       "display-language": {
         title: "Zobrazovací jazyk",
@@ -794,9 +782,6 @@ const TRANSLATIONS = {
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",
-    slash: "Zobrazit všechny dostupné lomítkové příkazy pro chatování.",
-    agents:
-      "Zobrazit všechny dostupné agenty, které můžete použít pro chatování.",
     text_size: "Změnit velikost textu.",
     microphone: "Mluvit svou výzvu.",
     send: "Odeslat zprávu výzvy do pracovního prostoru",
@@ -806,17 +791,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerovat odpověď",
     good_response: "Dobrá odpověď",
     more_actions: "Další akce",
-    hide_citations: "Skrýt citace",
-    show_citations: "Zobrazit citace",
     fork: "Rozdělit",
     delete: "Smazat",
-    save_submit: "Uložit a odeslat",
     cancel: "Zrušit",
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
-    at_agent: "@agent",
-    default_agent_description: " - výchozí agent pro tento pracovní prostor.",
-    custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",
     add_new_preset: " Přidat novou předvolbu",
     command: "Příkaz",
@@ -847,8 +826,6 @@ const TRANSLATIONS = {
     see_less: "Zobrazit méně",
     see_more: "Více",
     tools: "Nářadí",
-    slash_commands: "Příkazy (skratky)",
-    agent_skills: "Dovednosti agenta",
     browse: "Prohlédněte si",
     text_size_label: "Velikost písma",
     select_model: "Vyberte model",

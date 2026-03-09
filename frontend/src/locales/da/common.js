@@ -150,12 +150,6 @@ const TRANSLATIONS = {
       heading: "Forklar mig",
       body: "fordelene ved AnythingLLM",
     },
-    pfp: {
-      title: "Assistentens profilbillede",
-      description: "Tilpas assistentens profilbillede for dette arbejdsområde.",
-      image: "Arbejdsområdebillede",
-      remove: "Fjern arbejdsområdebillede",
-    },
     delete: {
       title: "Slet arbejdsområde",
       description:
@@ -656,8 +650,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Send en besked",
     attach_file: "Vedhæft en fil til denne chat",
-    slash: "Vis alle tilgængelige skråstreg-kommandoer til chat.",
-    agents: "Vis alle tilgængelige agenter, du kan bruge til chat.",
     text_size: "Ændr tekststørrelse.",
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
@@ -669,17 +661,11 @@ const TRANSLATIONS = {
     regenerate_response: "Genopbyg svar",
     good_response: "Godt svar",
     more_actions: "Flere handlinger",
-    hide_citations: "Skjul henvisninger",
-    show_citations: "Vis henvisninger",
     fork: "Fork",
     delete: "Slet",
-    save_submit: "Gem og indsende",
     cancel: "Annullér",
     edit_prompt: "Redigeringsanmodning",
     edit_response: "Rediger svar",
-    at_agent: "@agent",
-    default_agent_description: "- standardagenten for dette arbejdsområde.",
-    custom_agents_coming_soon: "Specialagenter kommer snart!",
     preset_reset_description:
       "Rydd op i din chat-historik og start en ny samtale",
     add_new_preset: "Tilføj ny forudindstilling",
@@ -713,8 +699,6 @@ const TRANSLATIONS = {
     see_less: "Se mindre",
     see_more: "Se flere",
     tools: "Værktøj",
-    slash_commands: "Kommandoer",
-    agent_skills: "Agenters kompetencer",
     browse: "Gennemse",
     text_size_label: "Tekststørrelse",
     select_model: "Vælg model",
@@ -794,10 +778,6 @@ const TRANSLATIONS = {
         title: "Navn",
         description:
           "Angiv et navn, der vises på login-siden for alle brugere.",
-      },
-      "chat-message-alignment": {
-        title: "Sammenstillet samtale",
-        description: "Vælg alignmentsmoden, når du bruger chat-grænsefladen.",
       },
       "display-language": {
         title: "Visningssprog",

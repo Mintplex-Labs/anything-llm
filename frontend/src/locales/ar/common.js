@@ -148,12 +148,6 @@ const TRANSLATIONS = {
       heading: "اشرح لي",
       body: "فوائد برنامج إيني ثينك إلْلْمْ",
     },
-    pfp: {
-      title: "صورة الملف الشخصي للمساعد",
-      description: "تخصيص صورة الملف الشخصي للمساعد لمساحة العمل هذه.",
-      image: "صورة مساحة العمل",
-      remove: "إزالة صورة مساحة العمل",
-    },
     delete: {
       title: "حذف مساحة العمل",
       description:
@@ -648,8 +642,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "أرسل رسالة",
     attach_file: "أرفق ملفًا بهذا الدردشة",
-    slash: "عرض جميع الأوامر المتاحة للتواصل.",
-    agents: "عرض جميع الوكلاء المتاحين الذين يمكنك استخدامهم للمحادثة.",
     text_size: "تغيير حجم النص.",
     microphone: "اذكر طلبك.",
     send: "أرسل رسالة فورية إلى مساحة العمل",
@@ -660,17 +652,11 @@ const TRANSLATIONS = {
     regenerate_response: "أعد الرد",
     good_response: "رد جيد",
     more_actions: "إجراءات إضافية",
-    hide_citations: "إخفاء المراجع",
-    show_citations: "عرض المراجع",
     fork: "شوكة",
     delete: "حذف",
-    save_submit: "حفظ وإرسال",
     cancel: "إلغاء",
     edit_prompt: "اقتراح التحرير",
     edit_response: "عدّل الرد",
-    at_agent: "@agent",
-    default_agent_description: "- الوكيل الافتراضي لهذا المساحة.",
-    custom_agents_coming_soon: "سيصل وكلاء مخصصون قريباً!",
     preset_reset_description: "امسح سجل الدردشة الخاص بك وابدأ محادثة جديدة",
     add_new_preset: "إضافة إعداد مسبق",
     command: "أمر",
@@ -699,8 +685,6 @@ const TRANSLATIONS = {
     see_less: "اقرأ المزيد",
     see_more: "عرض المزيد",
     tools: "الأدوات",
-    slash_commands: "أوامر مختصرة",
-    agent_skills: "مهارات الوكيل",
     browse: "تصفح",
     text_size_label: "حجم النص",
     select_model: "اختر الطراز",
@@ -778,10 +762,6 @@ const TRANSLATIONS = {
       "app-name": {
         title: "اسم",
         description: "حدد اسمًا يظهر في صفحة تسجيل الدخول لجميع المستخدمين.",
-      },
-      "chat-message-alignment": {
-        title: "مواءمة رسائل الدردشة",
-        description: "حدد وضع محاذاة الرسائل عند استخدام واجهة الدردشة.",
       },
       "display-language": {
         title: "اللغة المعروضة",

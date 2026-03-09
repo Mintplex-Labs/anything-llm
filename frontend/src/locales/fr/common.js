@@ -150,13 +150,6 @@ const TRANSLATIONS = {
       heading: "Expliquez-moi",
       body: "les avantages de AnythingLLM",
     },
-    pfp: {
-      title: "Image de profil de l'assistant",
-      description:
-        "Personnalisez l'image de profil de l'assistant pour cet espace de travail.",
-      image: "Image de l'espace de travail",
-      remove: "Supprimer l'image de l'espace de travail",
-    },
     delete: {
       title: "Supprimer l'Espace de Travail",
       description:
@@ -656,8 +649,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Envoyer un message",
     attach_file: "Joindre un fichier",
-    slash: "Voir les commandes slash disponibles",
-    agents: "Voir les agents disponibles",
     text_size: "Modifier la taille du texte",
     microphone: "Enregistrer un message vocal",
     send: "Envoyer le message au chatbot",
@@ -669,17 +660,11 @@ const TRANSLATIONS = {
     regenerate_response: "Régénérer la réponse",
     good_response: "Bonne réponse",
     more_actions: "Plus d'actions",
-    hide_citations: "Masquer les citations",
-    show_citations: "Afficher les citations",
     fork: "Dupliquer",
     delete: "Supprimer",
-    save_submit: "Sauvegarder et envoyer",
     cancel: "Annuler",
     edit_prompt: "Modifier le prompt",
     edit_response: "Modifier la réponse",
-    at_agent: "@agent",
-    default_agent_description: "l'agent par défaut de cet espace de travail",
-    custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
     preset_reset_description:
       "Efface l'historique du chat actuel et commence une nouvelle conversation.",
     add_new_preset: "Ajouter une nouvelle commande preset",
@@ -713,8 +698,6 @@ const TRANSLATIONS = {
     see_less: "Voir moins",
     see_more: "Voir plus",
     tools: "Outils",
-    slash_commands: "Commandes abrégées",
-    agent_skills: "Compétences des agents",
     browse: "Parcourir",
     text_size_label: "Taille du texte",
     select_model: "Sélectionner le modèle",
@@ -794,10 +777,6 @@ const TRANSLATIONS = {
       "app-name": {
         title: "Nom de l'application",
         description: "Définissez le nom affiché dans l'interface.",
-      },
-      "chat-message-alignment": {
-        title: "Alignement des messages",
-        description: "Choisissez l'alignement des messages dans le chat.",
       },
       "display-language": {
         title: "Langue d'affichage",

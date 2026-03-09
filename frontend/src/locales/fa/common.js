@@ -149,12 +149,6 @@ const TRANSLATIONS = {
       heading: "برایم توضیح بده",
       body: "مزایای AnythingLLM را",
     },
-    pfp: {
-      title: "تصویر پروفایل دستیار",
-      description: "تصویر پروفایل دستیار را برای این فضای کاری شخصی‌سازی کنید.",
-      image: "تصویر فضای کاری",
-      remove: "حذف تصویر فضای کاری",
-    },
     delete: {
       title: "حذف فضای کاری",
       description:
@@ -654,9 +648,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "یک پیام ارسال کنید",
     attach_file: "لطفاً یک فایل را به این چت پیوست کنید.",
-    slash: "برای مشاهده تمام دستورات Slash موجود برای چت.",
-    agents:
-      "تمام عوامل موجود را که می‌توانید برای گفتگو استفاده کنید، مشاهده کنید.",
     text_size: "تغییر اندازه متن.",
     microphone: "سوال خود را بپرسید.",
     send: "پیام فوری را برای فضای کاری ارسال کنید",
@@ -667,17 +658,11 @@ const TRANSLATIONS = {
     regenerate_response: "بازسازی پاسخ",
     good_response: "پاسخ خوب",
     more_actions: "اقدامات بیشتر",
-    hide_citations: "پنهان کردن ارجاعات",
-    show_citations: "نمایش ارجاعات",
     fork: "چنگال",
     delete: "حذف",
-    save_submit: "ذخیره و ارسال",
     cancel: "ยกد",
     edit_prompt: "لطفاً دستور ویرایش را ارائه دهید.",
     edit_response: "لطفا پاسخ را ویرایش کنید.",
-    at_agent: "@agent",
-    default_agent_description: "- عامل پیش‌فرض برای این فضای کاری.",
-    custom_agents_coming_soon: "نمایندگان ویژه در حال آمدن هستند!",
     preset_reset_description: "حذف تاریخچه چت خود و شروع یک چت جدید",
     add_new_preset: "اضافه کردن تنظیمات پیش‌فرض جدید",
     command: "دستورالعمل",
@@ -709,8 +694,6 @@ const TRANSLATIONS = {
     see_less: "کمی بیشتر",
     see_more: "بیشتر",
     tools: "ابزارها",
-    slash_commands: "دستورات مختصر",
-    agent_skills: "مهارت‌های کارگزار",
     browse: "جستجو",
     text_size_label: "اندازه متن",
     select_model: "انتخاب مدل",
@@ -788,11 +771,6 @@ const TRANSLATIONS = {
       "app-name": {
         title: "نام",
         description: "یک نام را برای تمام کاربران در صفحه ورود مشخص کنید.",
-      },
-      "chat-message-alignment": {
-        title: "همراه‌بودن پیام‌ها در چت",
-        description:
-          "هنگام استفاده از رابط چت، حالت هم‌تراز کردن پیام را انتخاب کنید.",
       },
       "display-language": {
         title: "زبان نمایش",

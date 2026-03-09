@@ -149,13 +149,6 @@ const TRANSLATIONS = {
       heading: "Bana açıkla",
       body: "AnythingLLM'nin faydalarını",
     },
-    pfp: {
-      title: "Asistan Profil Görseli",
-      description:
-        "Bu çalışma alanı için asistanın profil resmini özelleştirin.",
-      image: "Çalışma Alanı Görseli",
-      remove: "Çalışma Alanı Görselini Kaldır",
-    },
     delete: {
       title: "Çalışma Alanını Sil",
       description:
@@ -653,8 +646,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Mesaj gönderin",
     attach_file: "Bu sohbete bir dosya ekleyin",
-    slash: "Sohbet için mevcut tüm eğik çizgi komutlarını görüntüleyin.",
-    agents: "Sohbet için kullanabileceğiniz tüm ajanları görüntüleyin.",
     text_size: "Metin boyutunu değiştirin.",
     microphone: "Promptunuzu söyleyin.",
     send: "Çalışma alanına prompt mesajı gönderin",
@@ -665,17 +656,11 @@ const TRANSLATIONS = {
     regenerate_response: "Yanıtı yeniden oluştur",
     good_response: "İyi yanıt",
     more_actions: "Daha fazla eylem",
-    hide_citations: "Alıntıları gizle",
-    show_citations: "Alıntıları göster",
     fork: "Çatalla",
     delete: "Sil",
-    save_submit: "Kaydet & Gönder",
     cancel: "İptal",
     edit_prompt: "Promptu düzenle",
     edit_response: "Yanıtı düzenle",
-    at_agent: "@agent",
-    default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
-    custom_agents_coming_soon: "özel ajanlar yakında!",
     preset_reset_description:
       "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
     add_new_preset: " Yeni Ön Ayar Ekle",
@@ -708,8 +693,6 @@ const TRANSLATIONS = {
     see_less: "Daha az",
     see_more: "Daha Fazla",
     tools: "Araçlar",
-    slash_commands: "Komut satırı komutları",
-    agent_skills: "Ajansın Becerileri",
     browse: "Gezin",
     text_size_label: "Metin Boyutu",
     select_model: "Model Seçimi",
@@ -791,11 +774,6 @@ const TRANSLATIONS = {
         title: "Ad",
         description:
           "Giriş sayfasında tüm kullanıcılara gösterilen bir ad ayarlayın.",
-      },
-      "chat-message-alignment": {
-        title: "Sohbet Mesajı Hizalaması",
-        description:
-          "Sohbet arayüzünü kullanırken mesaj hizalama modunu seçin.",
       },
       "display-language": {
         title: "Görüntüleme Dili",
