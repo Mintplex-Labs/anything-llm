@@ -3,15 +3,23 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { defaultNS, resources } from "./locales/resources";
 
+const supportedLngs = [...Object.keys(resources), "no"];
+
 i18next
   // https://github.com/i18next/i18next-browser-languageDetector/blob/9efebe6ca0271c3797bc09b84babf1ba2d9b4dbb/src/index.js#L11
   .use(initReactI18next) // Initialize i18n for React
   .use(LanguageDetector)
   .init({
-    fallbackLng: "en",
+    fallbackLng: {
+      no: ["nb"],
+      default: ["en"],
+    },
     debug: import.meta.env.DEV,
     defaultNS,
     resources,
+    supportedLngs,
+    nonExplicitSupportedLngs: true,
+    load: "languageOnly",
     lowerCaseLng: true,
     interpolation: {
       escapeValue: false,
