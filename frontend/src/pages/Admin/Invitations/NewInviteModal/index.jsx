@@ -3,6 +3,7 @@ import { X, Copy, Check } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 export default function NewInviteModal({ closeModal, onSuccess }) {
   const [invite, setInvite] = useState(null);
@@ -210,7 +211,7 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
         }`}
       ></div>
       <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-        {workspace.name}
+        {getWorkspaceDisplayName(workspace)}
       </div>
     </button>
   );

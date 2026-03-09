@@ -4,6 +4,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 export default function DeleteWorkspace({ workspace }) {
   const { slug } = useParams();
@@ -13,9 +14,9 @@ export default function DeleteWorkspace({ workspace }) {
   const deleteWorkspace = async () => {
     if (
       !window.confirm(
-        `${t("general.delete.confirm-start")} ${workspace.name} ${t(
-          "general.delete.confirm-end"
-        )}`
+        `${t("general.delete.confirm-start")} ${getWorkspaceDisplayName(
+          workspace
+        )} ${t("general.delete.confirm-end")}`
       )
     )
       return false;

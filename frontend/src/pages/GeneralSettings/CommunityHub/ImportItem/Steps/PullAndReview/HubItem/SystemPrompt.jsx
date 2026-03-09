@@ -5,6 +5,7 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import CommunityHub from "@/models/communityHub";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 export default function SystemPrompt({ item, setStep }) {
   const [destinationWorkspaceSlug, setDestinationWorkspaceSlug] =
@@ -86,7 +87,7 @@ export default function SystemPrompt({ item, setStep }) {
             <optgroup label="Available workspaces">
               {workspaces.map((workspace) => (
                 <option key={workspace.id} value={workspace.slug}>
-                  {workspace.name}
+                  {getWorkspaceDisplayName(workspace)}
                 </option>
               ))}
             </optgroup>

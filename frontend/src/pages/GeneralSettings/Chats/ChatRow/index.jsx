@@ -5,6 +5,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -38,7 +39,7 @@ export default function ChatRow({ chat, onDelete }) {
         <td className="px-6 font-medium whitespace-nowrap text-white">
           {chat.user?.username}
         </td>
-        <td className="px-6">{chat.workspace?.name}</td>
+        <td className="px-6">{getWorkspaceDisplayName(chat.workspace)}</td>
         <td
           onClick={openPromptModal}
           className="px-6 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"

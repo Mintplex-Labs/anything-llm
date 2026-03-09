@@ -355,9 +355,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         <DnDFileUploaderWrapper>
           <div className="flex flex-col h-full w-full items-center justify-center">
             <div className="flex flex-col items-center w-full max-w-[750px]">
-              <p className="text-amber-400 text-sm font-medium text-center mb-2">
-                Happy Birthday, PJ!
-              </p>
               <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
                 {t("main-page.greeting")}
               </h1>

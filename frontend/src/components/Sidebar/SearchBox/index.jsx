@@ -7,6 +7,7 @@ import Preloader from "@/components/Preloader";
 import debounce from "lodash.debounce";
 import Workspace from "@/models/workspace";
 import { Tooltip } from "react-tooltip";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 const DEFAULT_SEARCH_RESULTS = {
   workspaces: [],
@@ -131,7 +132,7 @@ function SearchResults({ searchResults, searchTerm, loading }) {
         items={searchResults.workspaces?.map((workspace) => ({
           id: workspace.slug,
           to: paths.workspace.chat(workspace.slug),
-          name: workspace.name,
+          name: getWorkspaceDisplayName(workspace),
         }))}
       />
       <SearchResultCategory
@@ -140,7 +141,7 @@ function SearchResults({ searchResults, searchTerm, loading }) {
           id: thread.slug,
           to: paths.workspace.thread(thread.workspace.slug, thread.slug),
           name: thread.name,
-          hint: thread.workspace.name,
+          hint: getWorkspaceDisplayName(thread.workspace),
         }))}
       />
     </SearchResultWrapper>

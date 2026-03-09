@@ -299,9 +299,6 @@ export default function MultiUserAuth() {
             <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "Lovora" })}
             </p>
-            <p className="text-amber-400 text-sm font-medium text-center mt-1">
-              Happy Birthday, PJ!
-            </p>
           </div>
         </div>
         <div className="w-full px-12">

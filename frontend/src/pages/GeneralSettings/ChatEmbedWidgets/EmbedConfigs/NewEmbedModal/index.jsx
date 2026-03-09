@@ -4,6 +4,7 @@ import Workspace from "@/models/workspace";
 import { TagsInput } from "react-tag-input-component";
 import Embed from "@/models/embed";
 import Toggle from "@/components/lib/Toggle";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 export function enforceSubmissionSchema(form) {
   const data = {};
@@ -162,7 +163,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
               selected={defaultValue === workspace.id}
               value={workspace.id}
             >
-              {workspace.name}
+              {getWorkspaceDisplayName(workspace)}
             </option>
           );
         })}
