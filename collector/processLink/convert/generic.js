@@ -173,15 +173,28 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         waitUntil: "domcontentloaded",
       },
       async evaluate(page, browser) {
+        // Measure text length before clicking expandables
+        const beforeLength = await page.evaluate(() => document.body.innerText.length);
+
         // Click expandable elements to reveal hidden content
-        await page.evaluate(() => {
-          document.querySelectorAll(
+        const clicked = await page.evaluate(() => {
+          const els = document.querySelectorAll(
             'button[aria-expanded="false"], .accordion-toggle, ' +
             '[data-toggle="collapse"], details:not([open]), ' +
             '.course-details-toggle'
-          ).forEach(el => el.click());
+          );
+          els.forEach(el => el.click());
+          return els.length;
         });
-        await new Promise(r => setTimeout(r, 1000));
+
+        // Only wait if expandables were clicked — wait until new text appears (max 1s)
+        if (clicked > 0) {
+          await page.waitForFunction(
+            (before) => document.body.innerText.length > before,
+            { timeout: 1000 },
+            beforeLength
+          ).catch(() => {});
+        }
 
         // Remove noise elements (nav, cookie banners, etc.) before extraction
         await page.evaluate(() => {
@@ -239,8 +252,11 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         timeout: 30000,
         waitUntil: "domcontentloaded",
       }).catch(() => {});
-      // Wait for JS frameworks to initialize (expandable elements need jQuery/Bootstrap)
-      await new Promise(r => setTimeout(r, 2000));
+      // Wait for JS frameworks to finish (readyState=complete), max 2s
+      await page.waitForFunction(
+        () => document.readyState === 'complete',
+        { timeout: 2000 }
+      ).catch(() => {});
 
       const bodyHTML = this.options?.evaluate
         ? await this.options.evaluate(page, browser)
