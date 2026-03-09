@@ -1,5 +1,6 @@
-/**
- * Base class for all Vector Database providers.
+/* eslint-disable unused-imports/no-unused-vars */
+
+/* Base class for all Vector Database providers.
  * All vector database providers should extend this class and implement/override the necessary methods.
  */
 class VectorDatabase {

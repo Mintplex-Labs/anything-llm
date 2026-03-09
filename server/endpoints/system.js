@@ -1506,8 +1506,8 @@ function systemEndpoints(app) {
     "/system/validate-sql-connection",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
+      const { engine, connectionString } = reqBody(request);
       try {
-        const { engine, connectionString } = reqBody(request);
         if (!engine || !connectionString) {
           return response.status(400).json({
             success: false,

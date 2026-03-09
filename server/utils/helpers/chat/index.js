@@ -384,7 +384,7 @@ function fillSourceWindow({
   searchResults = [], // Sources from similarity search
   history = [], // Raw history
   filterIdentifiers = [], // pinned document sources
-} = config) {
+} = {}) {
   const sources = [...searchResults];
 
   if (sources.length >= nDocs || history.length === 0) {

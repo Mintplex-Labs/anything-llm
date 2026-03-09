@@ -307,6 +307,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "OllamaProvider.stream - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
@@ -469,6 +470,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "OllamaProvider.complete - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {

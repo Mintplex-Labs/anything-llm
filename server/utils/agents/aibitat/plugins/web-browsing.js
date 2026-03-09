@@ -196,6 +196,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_maps":
                 response.local_results?.slice(0, 10).forEach((searchResult) => {
                   const {
@@ -217,6 +218,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_images_light":
                 response.images_results
                   ?.slice(0, 10)
@@ -229,6 +231,7 @@ const webBrowsing = {
                       thumbnail,
                     });
                   });
+                break;
               case "google_shopping_light":
                 response.shopping_results
                   ?.slice(0, 10)
@@ -254,6 +257,7 @@ const webBrowsing = {
                       product_link,
                     });
                   });
+                break;
               case "google_news_light":
                 response.news_results?.slice(0, 10).forEach((searchResult) => {
                   const { title, link, source, thumbnail, snippet, date } =
@@ -267,6 +271,7 @@ const webBrowsing = {
                     date,
                   });
                 });
+                break;
               case "google_jobs":
                 response.jobs_results?.forEach((searchResult) => {
                   const {
@@ -286,6 +291,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_patents":
                 response.organic_results?.forEach((searchResult) => {
                   const {
@@ -305,6 +311,7 @@ const webBrowsing = {
                     publication_number,
                   });
                 });
+                break;
               case "google_scholar":
                 response.organic_results?.forEach((searchResult) => {
                   const { title, link, snippet, publication_info } =
@@ -316,6 +323,7 @@ const webBrowsing = {
                     publication_info,
                   });
                 });
+                break;
               case "baidu":
                 if (response.hasOwnProperty("answer_box"))
                   data.push(response.answer_box);
@@ -327,6 +335,7 @@ const webBrowsing = {
                     snippet,
                   });
                 });
+                break;
               case "amazon":
                 response.organic_results
                   ?.slice(0, 10)
@@ -560,6 +569,7 @@ const webBrowsing = {
             query,
             language = "en",
             hl = "us",
+            //eslint-disable-next-line
             limit = 100,
             device_type = "desktop",
             proxy_location = "US"

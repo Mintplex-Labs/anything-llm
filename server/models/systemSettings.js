@@ -5,7 +5,6 @@ process.env.NODE_ENV === "development"
 const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
-const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
@@ -72,7 +71,7 @@ const SystemSettings = {
           .filter((setting) => isValidUrl(setting.url))
           .slice(0, 3); // max of 3 items in footer.
         return JSON.stringify(array);
-      } catch (e) {
+      } catch {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
       }
@@ -138,7 +137,7 @@ const SystemSettings = {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
       }
@@ -147,7 +146,7 @@ const SystemSettings = {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate disabled agent skills.`);
         return JSON.stringify([]);
       }
@@ -163,7 +162,7 @@ const SystemSettings = {
           safeJsonParse(updates, [])
         );
         return JSON.stringify(updatedConnections);
-      } catch (e) {
+      } catch {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
@@ -509,7 +508,8 @@ const SystemSettings = {
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
       AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+      AzureOpenAiModelPref:
+        process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
       AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",

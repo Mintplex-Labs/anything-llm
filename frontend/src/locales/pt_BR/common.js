@@ -409,11 +409,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Busca na web",
-        "desc-start":
-          "Permite ao agente pesquisar na web para responder perguntas conectando-se a um provedor de busca.",
-        "desc-end":
-          "Buscas na web durante sessões de agente não funcionarão até que isso seja configurado.",
+        description:
+          "Permita que seu agente acesse a web para responder às suas perguntas, conectando-se a um provedor de pesquisa na web (SERP).",
       },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permita que seu agente utilize o SQL para responder às suas perguntas, conectando-se a diversos provedores de bancos de dados SQL.",
+      },
+      default_skill:
+        "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
     },
   },
   recorded: {

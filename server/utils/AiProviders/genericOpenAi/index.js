@@ -7,6 +7,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 

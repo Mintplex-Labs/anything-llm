@@ -52,7 +52,7 @@ const EmbedConfig = {
             data?.message_limit,
             "message_limit"
           ),
-          createdBy: Number(creatorId) ?? null,
+          createdBy: creatorId != null ? Number(creatorId) : null,
           workspace: {
             connect: { id: Number(data.workspace_id) },
           },
@@ -71,7 +71,7 @@ const EmbedConfig = {
       this.writable.includes(key)
     );
     if (validKeys.length === 0)
-      return { embed: { id }, message: "No valid fields to update!" };
+      return { embed: { id: embedId }, message: "No valid fields to update!" };
 
     const updates = {};
     validKeys.map((key) => {
