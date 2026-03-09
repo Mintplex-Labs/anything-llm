@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       skip: "Přeskočit průzkum",
       thankYou: "Děkujeme za vaši zpětnou vazbu!",
     },
-    workspace: {
-      title: "Vytvořte svůj první pracovní prostor",
-      description:
-        "Vytvořte svůj první pracovní prostor a začněte s AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Název pracovního prostoru",
-    error: "chyba",
-    success: "úspěch",
     user: "Uživatel",
     selection: "Výběr modelu",
     saving: "Ukládání...",
@@ -81,7 +74,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Nastavení instance",
-    system: "Obecná nastavení",
     invites: "Pozvánky",
     users: "Uživatelé",
     workspaces: "Pracovní prostory",
@@ -98,7 +90,6 @@ const TRANSLATIONS = {
     "voice-speech": "Hlas a řeč",
     "vector-database": "Vektorová databáze",
     embeds: "Vložený chat",
-    "embed-chats": "Historie vložených chatů",
     security: "Zabezpečení",
     "event-logs": "Protokoly událostí",
     privacy: "Soukromí a data",
@@ -133,94 +124,10 @@ const TRANSLATIONS = {
       title: "Reset hesla",
       description: "Níže uveďte potřebné informace pro resetování hesla.",
       "recovery-codes": "Záchranné kódy",
-      "recovery-code": "Záchranný kód {{index}}",
       "back-to-login": "Zpět k přihlášení",
     },
   },
   "main-page": {
-    noWorkspaceError: "Před zahájením chatu prosím vytvořte pracovní prostor.",
-    checklist: {
-      title: "Začínáme",
-      tasksLeft: "zbylých úkolů",
-      completed: "Jste na cestě stát se odborníkem na AnythingLLM!",
-      dismiss: "zavřít",
-      tasks: {
-        create_workspace: {
-          title: "Vytvořit pracovní prostor",
-          description: "Vytvořte svůj první pracovní prostor pro začátek",
-          action: "Vytvořit",
-        },
-        send_chat: {
-          title: "Odeslat chat",
-          description: "Začněte konverzaci se svým asistentem AI",
-          action: "Chatovat",
-        },
-        embed_document: {
-          title: "Vložit dokument",
-          description:
-            "Přidejte svůj první dokument do svého pracovního prostoru",
-          action: "Vložit",
-        },
-        setup_system_prompt: {
-          title: "Nastavit systémovou výzvu",
-          description: "Nakonfigurujte chování svého asistenta AI",
-          action: "Nastavit",
-        },
-        define_slash_command: {
-          title: "Definovat lomítkový příkaz",
-          description: "Vytvořte vlastní příkazy pro svého asistenta",
-          action: "Definovat",
-        },
-        visit_community: {
-          title: "Navštívit komunitní centrum",
-          description: "Prozkoumejte komunitní zdroje a šablony",
-          action: "Procházet",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Rychlé odkazy",
-      sendChat: "Odeslat chat",
-      embedDocument: "Vložit dokument",
-      createWorkspace: "Vytvořit pracovní prostor",
-    },
-    exploreMore: {
-      title: "Prozkoumat další funkce",
-      features: {
-        customAgents: {
-          title: "Vlastní agenti AI",
-          description:
-            "Vytvářejte výkonné agenty AI a automatizace bez kódování.",
-          primaryAction: "Chatovat pomocí @agenta",
-          secondaryAction: "Sestavit tok agenta",
-        },
-        slashCommands: {
-          title: "Lomítkové příkazy",
-          description:
-            "Ušetřete čas a vkládejte výzvy pomocí vlastních lomítkových příkazů.",
-          primaryAction: "Vytvořit lomítkový příkaz",
-          secondaryAction: "Prozkoumat v centru",
-        },
-        systemPrompts: {
-          title: "Systémové výzvy",
-          description:
-            "Upravte systémovou výzvu pro přizpůsobení odpovědí AI pracovního prostoru.",
-          primaryAction: "Upravit systémovou výzvu",
-          secondaryAction: "Spravovat proměnné výzvy",
-        },
-      },
-    },
-    announcements: {
-      title: "Aktualizace a oznámení",
-    },
-    resources: {
-      title: "Zdroje",
-      links: {
-        docs: "Dokumentace",
-        star: "Označit hvězdou na Githubu",
-      },
-      keyboardShortcuts: "Klávesové zkratky",
-    },
     quickActions: {
       createAgent: "Vytvořte agenta",
       editWorkspace: "Upravit pracovní prostor",
@@ -286,7 +193,6 @@ const TRANSLATIONS = {
       title: "Chatovací model pracovního prostoru",
       description:
         "Konkrétní chatovací model, který bude použit pro tento pracovní prostor. Pokud je prázdné, použije se systémová preference LLM.",
-      wait: "-- čekání na modely --",
     },
     mode: {
       title: "Režim chatu",
@@ -393,9 +299,6 @@ const TRANSLATIONS = {
       wait: "-- čekání na modely --",
     },
     skill: {
-      title: "Výchozí dovednosti agenta",
-      description:
-        "Vylepšte přirozené schopnosti výchozího agenta pomocí těchto předpřipravených dovedností. Toto nastavení se vztahuje na všechny pracovní prostory.",
       rag: {
         title: "RAG a dlouhodobá paměť",
         description:
@@ -694,17 +597,12 @@ const TRANSLATIONS = {
     title: "Soukromí a zpracování dat",
     description:
       "Toto je vaše konfigurace, jak připojené třetí strany a AnythingLLM zpracovávají vaše data.",
-    llm: "Poskytovatel LLM",
-    embedding: "Preferovaný embedding",
-    vector: "Vektorová databáze",
     anonymous: "Anonymní telemetrie je povolena",
   },
   connectors: {
     "search-placeholder": "Hledat datové konektory",
     "no-connectors": "Nebyly nalezeny žádné datové konektory.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importovat trezor Obsidian jedním kliknutím.",
       vault_location: "Umístění trezoru",
       vault_description:
         "Vyberte složku trezoru Obsidian pro import všech poznámek a jejich spojení.",
@@ -752,7 +650,6 @@ const TRANSLATIONS = {
       URL_explained: "URL úložiště GitLab, které chcete sbírat.",
       token: "Přístupový token GitLab",
       optional: "volitelné",
-      token_explained: "Přístupový token pro prevenci omezení rychlosti.",
       token_description: "Vyberte další entity k načtení z API GitLab.",
       token_explained_start: "Bez ",
       token_explained_link1: "Osobního přístupového tokenu",
@@ -784,9 +681,6 @@ const TRANSLATIONS = {
       URL_explained_end: " k dispozici.",
       task_explained:
         "Po dokončení bude přepis k dispozici pro vložení do pracovních prostorů ve výběru dokumentů.",
-      language: "Jazyk přepisu",
-      language_explained: "Vyberte jazyk přepisu, který chcete sbírat.",
-      loading_languages: "-- načítání dostupných jazyků --",
     },
     "website-depth": {
       name: "Hromadný stahovač odkazů",
@@ -847,14 +741,11 @@ const TRANSLATIONS = {
       "search-document": "Hledat dokument",
       "no-documents": "Žádné dokumenty",
       "move-workspace": "Přesunout do pracovního prostoru",
-      name: "Název",
       "delete-confirmation":
         "Jste si jisti, že chcete smazat tyto soubory a složky?\nToto odstraní soubory ze systému a automaticky je odstraní ze všech existujících pracovních prostorů.\nTato akce je nevratná.",
       "removing-message":
         "Odstraňování {{count}} dokumentů a {{folderCount}} složek. Prosím čekejte.",
       "move-success": "Úspěšně přesunuto {{count}} dokumentů.",
-      date: "Datum",
-      type: "Typ",
       no_docs: "Žádné dokumenty",
       select_all: "Vybrat vše",
       deselect_all: "Zrušit výběr všeho",
@@ -900,13 +791,7 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Vítejte ve svém novém pracovním prostoru.",
-    get_started: "Začněte buď",
-    get_started_default: "Začněte",
-    upload: "nahrát dokument",
-    or: "nebo",
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
-    send_chat: "odeslat chat.",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",
     slash: "Zobrazit všechny dostupné lomítkové příkazy pro chatování.",
@@ -923,7 +808,6 @@ const TRANSLATIONS = {
     more_actions: "Další akce",
     hide_citations: "Skrýt citace",
     show_citations: "Zobrazit citace",
-    pause_tts_speech_message: "Pozastavit TTS čtení zprávy",
     fork: "Rozdělit",
     delete: "Smazat",
     save_submit: "Uložit a odeslat",
@@ -1017,15 +901,12 @@ const TRANSLATIONS = {
           "Soukromé systémové výzvy jsou viditelné pouze vám.",
         publish_button: "Publikovat do komunitního centra",
         submitting: "Publikování...",
-        submit: "Publikovat do komunitního centra",
         prompt_label: "Výzva",
         prompt_description:
           "Toto je skutečná systémová výzva, která bude použita k vedení LLM.",
         prompt_placeholder: "Zadejte svou systémovou výzvu zde...",
       },
       agent_flow: {
-        public_description: "Veřejné toky agentů jsou viditelné všem.",
-        private_description: "Soukromé toky agentů jsou viditelné pouze vám.",
         success_title: "Úspěch!",
         success_description:
           "Váš tok agenta byl publikován do komunitního centra!",
@@ -1043,7 +924,6 @@ const TRANSLATIONS = {
           "Štítky slouží k označení vašeho toku agenta pro snadnější vyhledávání. Můžete přidat více štítků. Max 5 štítků. Max 20 znaků na štítek.",
         tags_placeholder: "Zadejte a stiskněte Enter pro přidání štítků",
         visibility_label: "Viditelnost",
-        publish_button: "Publikovat do komunitního centra",
         submitting: "Publikování...",
         submit: "Publikovat do komunitního centra",
         privacy_note:
@@ -1063,10 +943,6 @@ const TRANSLATIONS = {
         description_label: "Popis",
         description_description:
           "Toto je popis vašeho lomítkového příkazu. Použijte k popisu účelu vašeho lomítkového příkazu.",
-        command_label: "Příkaz",
-        command_description:
-          "Toto je lomítkový příkaz, který uživatelé zadají pro spuštění této předvolby.",
-        command_placeholder: "můj-příkaz",
         tags_label: "Štítky",
         tags_description:
           "Štítky slouží k označení vašeho lomítkového příkazu pro snadnější vyhledávání. Můžete přidat více štítků. Max 5 štítků. Max 20 znaků na štítek.",

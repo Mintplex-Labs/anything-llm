@@ -45,15 +45,9 @@ const TRANSLATIONS = {
       skip: "跳过调查",
       thankYou: "感谢你的反馈！",
     },
-    workspace: {
-      title: "创建你的第一个工作区",
-      description: "创建你的第一个工作区并开始使用 AnythingLLM。",
-    },
   },
   common: {
     "workspaces-name": "工作区名称",
-    error: "错误",
-    success: "成功",
     user: "用户",
     selection: "模型选择",
     save: "保存更改",
@@ -69,7 +63,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "设置",
-    system: "系统",
     invites: "邀请",
     users: "用户",
     workspaces: "工作区",
@@ -86,7 +79,6 @@ const TRANSLATIONS = {
     "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
-    "embed-chats": "嵌入式对话历史记录",
     security: "用户与安全",
     "event-logs": "事件日志",
     privacy: "隐私与数据",
@@ -121,90 +113,10 @@ const TRANSLATIONS = {
       title: "重置密码",
       description: "请提供以下必要信息以重置你的密码。",
       "recovery-codes": "恢复代码",
-      "recovery-code": "恢复代码 {{index}}",
       "back-to-login": "返回登录",
     },
   },
   "main-page": {
-    noWorkspaceError: "请在开始聊天前创建一个工作区。",
-    checklist: {
-      title: "入门指南",
-      tasksLeft: "剩余任务",
-      completed: "你正在成为AnythingLLM专家的路上！",
-      dismiss: "关闭",
-      tasks: {
-        create_workspace: {
-          title: "创建工作区",
-          description: "创建你的第一个工作区以开始使用",
-          action: "创建",
-        },
-        send_chat: {
-          title: "发送聊天",
-          description: "开始与你的AI助手对话",
-          action: "聊天",
-        },
-        embed_document: {
-          title: "嵌入文档",
-          description: "添加你的第一个文档到工作区",
-          action: "嵌入",
-        },
-        setup_system_prompt: {
-          title: "设置系统提示",
-          description: "配置你的AI助手的行为",
-          action: "设置",
-        },
-        define_slash_command: {
-          title: "定义斜杠命令",
-          description: "为你的助手创建自定义命令",
-          action: "定义",
-        },
-        visit_community: {
-          title: "访问社区中心",
-          description: "探索社区资源和模板",
-          action: "浏览",
-        },
-      },
-    },
-    quickLinks: {
-      title: "快捷链接",
-      sendChat: "发送聊天",
-      embedDocument: "嵌入文档",
-      createWorkspace: "创建工作区",
-    },
-    exploreMore: {
-      title: "探索更多功能",
-      features: {
-        customAgents: {
-          title: "自定义AI代理",
-          description: "无需编程即可构建强大的AI代理和自动化流程。",
-          primaryAction: "使用@agent聊天",
-          secondaryAction: "构建代理流程",
-        },
-        slashCommands: {
-          title: "斜杠命令",
-          description: "使用自定义斜杠命令节省时间并注入提示。",
-          primaryAction: "创建斜杠命令",
-          secondaryAction: "在中心探索",
-        },
-        systemPrompts: {
-          title: "系统提示",
-          description: "修改系统提示以自定义工作区的AI回复。",
-          primaryAction: "修改系统提示",
-          secondaryAction: "管理提示变量",
-        },
-      },
-    },
-    announcements: {
-      title: "更新与公告",
-    },
-    resources: {
-      title: "资源",
-      links: {
-        docs: "文档",
-        star: "在Github上加星标",
-      },
-      keyboardShortcuts: "键盘快捷键",
-    },
     quickActions: {
       createAgent: "创建代理",
       editWorkspace: "编辑工作区",
@@ -266,7 +178,6 @@ const TRANSLATIONS = {
       title: "工作区聊天模型",
       description:
         "将用于此工作区的特定聊天模型。如果为空，将使用系统 LLM 首选项。",
-      wait: "-- 等待模型 --",
     },
     mode: {
       title: "聊天模式",
@@ -366,9 +277,6 @@ const TRANSLATIONS = {
       wait: "-- 等待模型 --",
     },
     skill: {
-      title: "默认代理技能",
-      description:
-        "使用这些预构建的技能提高默认代理的自然能力。此设置适用于所有工作区。",
       rag: {
         title: "检索增强生成和长期记忆",
         description:
@@ -624,9 +532,6 @@ const TRANSLATIONS = {
     title: "隐私和数据处理",
     description:
       "这是你对如何处理连接的第三方提供商和AnythingLLM的数据的配置。",
-    llm: "LLM 选择",
-    embedding: "嵌入首选项",
-    vector: "向量数据库",
     anonymous: "启用匿名遥测",
   },
   connectors: {
@@ -664,7 +569,6 @@ const TRANSLATIONS = {
       URL_explained: "您希望收集的 GitLab 仓库链接。",
       token: "GitLab 访问令牌",
       optional: "可选",
-      token_explained: "用于避免速率限制的访问令牌。",
       token_description: "选择要从 GitLab API 获取的额外实体。",
       token_explained_start: "如果没有 ",
       token_explained_link1: "个人访问令牌",
@@ -693,9 +597,6 @@ const TRANSLATIONS = {
       URL_explained_link: "隐藏字幕",
       URL_explained_end: " 功能。",
       task_explained: "完成后，转录内容将可用于在文档选择器中嵌入至工作区。",
-      language: "字幕语言",
-      language_explained: "选择您希望收集的字幕语言。",
-      loading_languages: "-- 正在加载可用语言 --",
     },
     "website-depth": {
       name: "批量链接爬虫",
@@ -752,14 +653,11 @@ const TRANSLATIONS = {
       "search-document": "搜索文档",
       "no-documents": "暂无文档",
       "move-workspace": "移动到工作区",
-      name: "名称",
       "delete-confirmation":
         "您确定要删除这些文件和文件夹吗？\n这将从系统中移除这些文件，并自动将其从所有关联工作区中移除。\n此操作无法撤销。",
       "removing-message":
         "正在删除 {{count}} 个文档和 {{folderCount}} 个文件夹，请稍候。",
       "move-success": "成功移动了 {{count}} 个文档。",
-      date: "日期",
-      type: "类型",
       no_docs: "暂无文档",
       select_all: "全选",
       deselect_all: "取消全选",
@@ -802,8 +700,6 @@ const TRANSLATIONS = {
       accept: "好的，知道了",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "一键导入 Obsidian 仓库。",
       vault_location: "仓库位置",
       vault_description:
         "选择你的 Obsidian 仓库文件夹，以导入所有笔记及其关联。",
@@ -815,12 +711,6 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "欢迎来到你的新工作区。",
-    get_started: "开始使用，请先",
-    get_started_default: "开始使用",
-    upload: "上传文档",
-    or: "或",
-    send_chat: "发送一条对话。",
     send_message: "发送消息",
     attach_file: "向此对话附加文件",
     slash: "查看所有可用的聊天斜杠命令。",
@@ -837,7 +727,6 @@ const TRANSLATIONS = {
     more_actions: "更多操作",
     hide_citations: "隐藏引文",
     show_citations: "显示引文",
-    pause_tts_speech_message: "暂停 TTS 语音播报",
     fork: "分叉",
     delete: "删除",
     save_submit: "提交保存",
@@ -927,14 +816,11 @@ const TRANSLATIONS = {
         private_description: "私人系统提示仅对您可见。",
         publish_button: "发布到社区中心",
         submitting: "发布中...",
-        submit: "发布到社区中心",
         prompt_label: "提示",
         prompt_description: "这是将用于引导 LLM 的实际系统提示。",
         prompt_placeholder: "在此输入您的系统提示...",
       },
       agent_flow: {
-        public_description: "公共代理流程对所有人可见。",
-        private_description: "私人代理流程仅对您可见。",
         success_title: "成功！",
         success_description: "您的代理流程已发布到社区中心！",
         success_thank_you: "感谢您分享到社群！",
@@ -951,7 +837,6 @@ const TRANSLATIONS = {
           "标签用于标记您的代理流程，以便于搜索。您可以添加多个标签。最多 5 个标签。每个标签最多 20 个字符。",
         tags_placeholder: "输入并按 Enter 键添加标签",
         visibility_label: "可见性",
-        publish_button: "发布到社区中心",
         submitting: "发布中...",
         submit: "发布到社区中心",
         privacy_note:
@@ -977,9 +862,6 @@ const TRANSLATIONS = {
         description_label: "描述",
         description_description:
           "这是您斜线指令的描述。用它来描述您斜线指令的目的。",
-        command_label: "指令",
-        command_description: "这是使用者将输入以触发此预设的斜线指令。",
-        command_placeholder: "我的命令",
         tags_label: "标签",
         tags_description:
           "标签用于标记您的斜线指令，以便于搜索。您可以添加多个标签。最多 5 个标签。每个标签最多 20 个字符。",
