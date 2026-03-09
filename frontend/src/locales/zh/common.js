@@ -758,6 +758,10 @@ const TRANSLATIONS = {
     edit: "编辑",
     publish: "出版",
     stop_generating: "停止生成回复",
+    pause_tts_speech_message: "暂停消息的语音合成（TTS）功能",
+    slash_commands: "快捷命令",
+    agent_skills: "代理人技能",
+    manage_agent_skills: "管理代理人技能",
   },
   profile_settings: {
     edit_account: "编辑帐户",

@@ -698,6 +698,10 @@ const TRANSLATIONS = {
     edit: "تحرير",
     publish: "نشر",
     stop_generating: "توقف عن إنشاء رد",
+    pause_tts_speech_message: "توقف عن قراءة النص بصوت مسجل.",
+    slash_commands: "أوامر مختصرة",
+    agent_skills: "مهارات الوكيل",
+    manage_agent_skills: "إدارة مهارات الوكلاء",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

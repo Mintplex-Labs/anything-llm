@@ -816,6 +816,11 @@ const TRANSLATIONS = {
     edit: "Rediģēt",
     publish: "Publicēt",
     stop_generating: "Atsauciet atbildes ģenerēšanu",
+    pause_tts_speech_message:
+      "Pārtrauciet TTS (teksta-izrunas) žēstā vēstījuma izrunu.",
+    slash_commands: "Īs termini komandās",
+    agent_skills: "Aģenta prasmes",
+    manage_agent_skills: "Iesaista aģenta prasmes",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

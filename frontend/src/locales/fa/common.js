@@ -707,6 +707,10 @@ const TRANSLATIONS = {
     edit: "ویرایش",
     publish: "انتشار",
     stop_generating: "متوقف کردن تولید پاسخ",
+    pause_tts_speech_message: "مکث در پخش صدای متن",
+    slash_commands: "دستورات کوتاه‌شده",
+    agent_skills: "مهارت‌های کارگزار",
+    manage_agent_skills: "مدیریت مهارت‌های نمایندگان",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

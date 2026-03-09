@@ -662,6 +662,10 @@ const TRANSLATIONS = {
     edit: "編輯",
     publish: "發行",
     stop_generating: "停止生成回應",
+    pause_tts_speech_message: "暫停語音合成的訊息",
+    slash_commands: "簡短指令",
+    agent_skills: "代理人技能",
+    manage_agent_skills: "管理代理人技能",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

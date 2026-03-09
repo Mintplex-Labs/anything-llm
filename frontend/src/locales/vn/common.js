@@ -703,6 +703,10 @@ const TRANSLATIONS = {
     edit: "Chỉnh sửa",
     publish: "Đăng tải",
     stop_generating: "Dừng tạo ra phản hồi",
+    pause_tts_speech_message: "Tạm dừng phát giọng đọc của tin nhắn",
+    slash_commands: "Lệnh tắt/bật",
+    agent_skills: "Kỹ năng của đại lý",
+    manage_agent_skills: "Quản lý kỹ năng của đại lý",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

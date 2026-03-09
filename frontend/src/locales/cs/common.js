@@ -839,6 +839,11 @@ const TRANSLATIONS = {
     edit: "Upravit",
     publish: "Publikovat",
     stop_generating: "Zastavte generování odpovědi",
+    pause_tts_speech_message:
+      "Zastavte čtení textu pomocí syntetické řeči z tohoto zprávy.",
+    slash_commands: "Příkazy v řádku",
+    agent_skills: "Dovednosti agenta",
+    manage_agent_skills: "Řízení dovedností agentů",
   },
   profile_settings: {
     edit_account: "Upravit účet",

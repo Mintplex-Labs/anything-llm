@@ -706,6 +706,10 @@ const TRANSLATIONS = {
     edit: "Düzenle",
     publish: "Yayınla",
     stop_generating: "Yanıt üretmeyi durdurun",
+    pause_tts_speech_message: "Mesajın metin okuma (TTS) özelliğini durdur",
+    slash_commands: "Komut Satırı Komutları",
+    agent_skills: "Ajansın Yetenekleri",
+    manage_agent_skills: "Temsilcinin becerilerini yönetin",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

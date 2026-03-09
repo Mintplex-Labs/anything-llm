@@ -796,6 +796,10 @@ const TRANSLATIONS = {
     edit: "Editar",
     publish: "Publicar",
     stop_generating: "Pare de gerar respostas",
+    pause_tts_speech_message: "Pausar a leitura de voz da mensagem",
+    slash_commands: "Comandos Rápidos",
+    agent_skills: "Habilidades do Agente",
+    manage_agent_skills: "Gerenciar as habilidades dos agentes",
   },
   profile_settings: {
     edit_account: "Editar conta",

@@ -787,6 +787,11 @@ const TRANSLATIONS = {
     edit: "עריכה",
     publish: "להוציא לאור",
     stop_generating: "הפסיקו ליצור תגובה",
+    pause_tts_speech_message:
+      "השהייה של קריאת טקסט באמצעות תוכנת TTS (Text-to-Speech)",
+    slash_commands: "פקודות קיצור",
+    agent_skills: "כישורים של סוכן",
+    manage_agent_skills: "ניהול מיומנויות של סוכנים",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

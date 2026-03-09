@@ -700,6 +700,10 @@ const TRANSLATIONS = {
     edit: "編集",
     publish: "出版",
     stop_generating: "応答の生成を停止する",
+    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
+    slash_commands: "スラッシュコマンド",
+    agent_skills: "エージェントのスキル",
+    manage_agent_skills: "エージェントのスキル管理",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

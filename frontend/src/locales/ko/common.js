@@ -797,6 +797,10 @@ const TRANSLATIONS = {
     edit: "수정",
     publish: "출판",
     stop_generating: "응답 생성 중단",
+    pause_tts_speech_message: "메시지의 텍스트 음성 변환(TTS) 기능을 일시 중지",
+    slash_commands: "슬래시 명령어",
+    agent_skills: "에이전트의 역량",
+    manage_agent_skills: "에이전트 역량 관리",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

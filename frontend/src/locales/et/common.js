@@ -783,6 +783,10 @@ const TRANSLATIONS = {
     edit: "Redigeerimine",
     publish: "Avaldada",
     stop_generating: "Lõpeta vastuste genereerimine",
+    pause_tts_speech_message: "Peata sõna-sünteesi (TTS) rääkimine sõnumis",
+    slash_commands: "Lihtsasti kasutatavad käsud",
+    agent_skills: "Agentide oskused",
+    manage_agent_skills: "Halda agentide oskusi",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

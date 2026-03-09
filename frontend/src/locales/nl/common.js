@@ -708,6 +708,10 @@ const TRANSLATIONS = {
     edit: "Bewerk",
     publish: "Publiceren",
     stop_generating: "Stoppen met het genereren van antwoorden",
+    pause_tts_speech_message: "Pauzeer de spraak van de tekstberichten.",
+    slash_commands: "Korte commando's",
+    agent_skills: "Vaardigheden van agenten",
+    manage_agent_skills: "Beheer van de vaardigheden van de agent",
   },
   profile_settings: {
     edit_account: "Account bewerken",

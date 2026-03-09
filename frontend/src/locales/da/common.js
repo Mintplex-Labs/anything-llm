@@ -712,6 +712,10 @@ const TRANSLATIONS = {
     edit: "Rediger",
     publish: "Udgive",
     stop_generating: "Stop med at generere svar",
+    pause_tts_speech_message: "Pause TTS-læsningen af beskeden",
+    slash_commands: "Kommandoer",
+    agent_skills: "Agenters kompetencer",
+    manage_agent_skills: "Administrer agenters kompetencer",
   },
   profile_settings: {
     edit_account: "Rediger konto",

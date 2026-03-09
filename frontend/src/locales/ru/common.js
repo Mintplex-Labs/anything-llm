@@ -711,6 +711,11 @@ const TRANSLATIONS = {
     edit: "Редактировать",
     publish: "Опубликовать",
     stop_generating: "Прекратите генерацию ответа",
+    pause_tts_speech_message:
+      "Приостановить чтение текста с помощью синтезатора речи.",
+    slash_commands: "Команды, введенные сокращенной формой",
+    agent_skills: "Навыки агента",
+    manage_agent_skills: "Управление навыками агентов",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

@@ -550,6 +550,11 @@ const TRANSLATIONS = {
     edit: "Editează",
     publish: "Publica",
     stop_generating: "Opriți generarea răspunsului",
+    pause_tts_speech_message:
+      "Pauză în redarea vocii prin Text-to-Speech (TTS) a mesajului.",
+    slash_commands: "Comenzi scurte",
+    agent_skills: "Abilități ale agentului",
+    manage_agent_skills: "Gestionarea competențelor agenților",
   },
   profile_settings: {
     edit_account: "Editează contul",
