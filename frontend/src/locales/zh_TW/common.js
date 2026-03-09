@@ -45,15 +45,9 @@ const TRANSLATIONS = {
       skip: "跳過調查",
       thankYou: "感謝您的反饋！",
     },
-    workspace: {
-      title: "創建您的第一個工作區",
-      description: "創建您的第一個工作區並開始使用 AnythingLLM。",
-    },
   },
   common: {
     "workspaces-name": "工作區名稱",
-    error: "錯誤",
-    success: "成功",
     user: "使用者",
     selection: "模型選擇",
     saving: "儲存中...",
@@ -69,7 +63,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "系統設定",
-    system: "一般設定",
     invites: "邀請管理",
     users: "使用者管理",
     workspaces: "工作區管理",
@@ -83,7 +76,6 @@ const TRANSLATIONS = {
     "voice-speech": "語音與發音",
     "vector-database": "向量資料庫",
     embeds: "對話嵌入",
-    "embed-chats": "對話嵌入紀錄",
     security: "安全性設定",
     "event-logs": "事件記錄",
     privacy: "隱私與資料",
@@ -121,7 +113,6 @@ const TRANSLATIONS = {
       title: "重設密碼",
       description: "請在下方提供必要資訊以重設您的密碼。",
       "recovery-codes": "復原碼",
-      "recovery-code": "復原碼 {{index}}",
       "back-to-login": "返回登入頁面",
     },
   },
@@ -179,7 +170,6 @@ const TRANSLATIONS = {
       title: "工作區對話模型",
       description:
         "此工作區將使用的特定對話模型。如果空白，將使用系統 LLM 偏好設定。",
-      wait: "-- 等待模型中 --",
     },
     mode: {
       title: "對話模式",
@@ -278,9 +268,6 @@ const TRANSLATIONS = {
       wait: "-- 等待模型中 --",
     },
     skill: {
-      title: "預設智慧代理人技能",
-      description:
-        "使用這些預先建置的技能來強化預設智慧代理人的自然能力。此設定適用於所有工作區。",
       rag: {
         title: "RAG 與長期記憶體",
         description:
@@ -445,9 +432,6 @@ const TRANSLATIONS = {
     title: "隱私與資料處理",
     description:
       "這是您針對已連線的第三方供應商和 AnythingLLM 如何處理您的資料的設定。",
-    llm: "LLM 選擇",
-    embedding: "向量嵌入偏好設定",
-    vector: "向量資料庫",
     anonymous: "已啟用匿名統計資訊",
   },
   connectors: {
@@ -485,7 +469,6 @@ const TRANSLATIONS = {
       URL_explained: "您希望收集的 GitLab 倉庫網址。",
       token: "GitLab 存取權杖",
       optional: "可選",
-      token_explained: "存取權杖以防止速率限制。",
       token_description: "選擇要從 GitLab API 中擷取的其他實體。",
       token_explained_start: "若沒有 ",
       token_explained_link1: "個人存取權杖",
@@ -514,9 +497,6 @@ const TRANSLATIONS = {
       URL_explained_link: "字幕",
       URL_explained_end: " 來提供文字稿。",
       task_explained: "完成後，文字稿將可供嵌入到工作區中的檔案選擇器。",
-      language: "文字稿語言",
-      language_explained: "選擇您希望收集的文字稿語言。",
-      loading_languages: "-- 載入可用語言 --",
     },
     "website-depth": {
       name: "批量鏈接抓取器",
@@ -573,14 +553,11 @@ const TRANSLATIONS = {
       "search-document": "搜尋文件",
       "no-documents": "無文件",
       "move-workspace": "移動到工作區",
-      name: "名稱",
       "delete-confirmation":
         "您確定要刪除這些檔案和資料夾嗎？\n這將從系統中刪除這些檔案並自動從任何現有工作區中移除它們。\n此操作無法還原。",
       "removing-message":
         "正在刪除 {{count}} 文件和 {{folderCount}} 資料夾。請稍候。",
       "move-success": "成功移動 {{count}} 文件。",
-      date: "日期",
-      type: "類型",
       no_docs: "無文件",
       select_all: "全選",
       deselect_all: "取消全選",
@@ -623,8 +600,6 @@ const TRANSLATIONS = {
       accept: "好的，明白了",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "一鍵匯入 Obsidian 保險庫。",
       vault_location: "保險庫位置",
       vault_description:
         "選擇您的 Obsidian 保險庫資料夾以匯入所有筆記及其連接。",
@@ -636,12 +611,6 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "歡迎使用您的新工作區。",
-    get_started: "開始使用，您可以",
-    get_started_default: "開始使用",
-    upload: "上傳文件",
-    or: "或",
-    send_chat: "發送訊息。",
     send_message: "發送訊息",
     attach_file: "附加檔案到此對話",
     slash: "查看所有可用的斜線指令。",
@@ -658,7 +627,6 @@ const TRANSLATIONS = {
     more_actions: "更多操作",
     hide_citations: "隱藏引文",
     show_citations: "顯示引文",
-    pause_tts_speech_message: "暫停訊息撥放 TTS 語音 ",
     fork: "分叉",
     delete: "刪除",
     save_submit: "提交保存",
@@ -826,85 +794,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "請先建立工作空間才能開始對話。",
-    checklist: {
-      title: "開始使用",
-      tasksLeft: "個任務未完成",
-      completed: "你已經走在成為AnythingLLM專家的路上！",
-      dismiss: "關閉",
-      tasks: {
-        create_workspace: {
-          title: "建立工作空間",
-          description: "建立你的第一個工作空間來開始使用",
-          action: "建立",
-        },
-        send_chat: {
-          title: "發送對話",
-          description: "開始與你的AI助理對話",
-          action: "對話",
-        },
-        embed_document: {
-          title: "嵌入文件",
-          description: "將你的第一個文件添加到工作空間",
-          action: "嵌入",
-        },
-        setup_system_prompt: {
-          title: "設置系統提示",
-          description: "設定你的AI助理的行為模式",
-          action: "設置",
-        },
-        define_slash_command: {
-          title: "定義斜線命令",
-          description: "為你的助理創建自定義命令",
-          action: "定義",
-        },
-        visit_community: {
-          title: "訪問社群中心",
-          description: "探索社群資源和模板",
-          action: "瀏覽",
-        },
-      },
-    },
-    quickLinks: {
-      title: "快速連結",
-      sendChat: "發送對話",
-      embedDocument: "嵌入文件",
-      createWorkspace: "建立工作空間",
-    },
-    exploreMore: {
-      title: "探索更多功能",
-      features: {
-        customAgents: {
-          title: "自定義AI代理",
-          description: "無需編碼即可建立強大的AI代理和自動化流程。",
-          primaryAction: "使用@代理進行對話",
-          secondaryAction: "建立代理流程",
-        },
-        slashCommands: {
-          title: "斜線命令",
-          description: "節省時間並使用自定義斜線命令注入提示。",
-          primaryAction: "創建斜線命令",
-          secondaryAction: "在中心探索",
-        },
-        systemPrompts: {
-          title: "系統提示",
-          description: "修改系統提示以自定義工作空間的AI回覆。",
-          primaryAction: "修改系統提示",
-          secondaryAction: "管理提示變數",
-        },
-      },
-    },
-    announcements: {
-      title: "更新與公告",
-    },
-    resources: {
-      title: "資源",
-      links: {
-        docs: "文檔",
-        star: "在Github上加星標",
-      },
-      keyboardShortcuts: "鍵盤快捷鍵",
-    },
     quickActions: {
       createAgent: "建立一個代理",
       editWorkspace: "編輯工作區",
@@ -949,14 +838,11 @@ const TRANSLATIONS = {
         private_description: "私人系統提示僅對您可見。",
         publish_button: "發布到社群中心",
         submitting: "發布中...",
-        submit: "發布到社群中心",
         prompt_label: "提示",
         prompt_description: "這是將用於引導 LLM 的實際系統提示。",
         prompt_placeholder: "在此輸入您的系統提示...",
       },
       agent_flow: {
-        public_description: "公共代理流程對所有人可見。",
-        private_description: "私人代理流程僅對您可見。",
         success_title: "成功！",
         success_description: "您的代理流程已發布到社群中心！",
         success_thank_you: "感謝您分享到社群！",
@@ -973,7 +859,6 @@ const TRANSLATIONS = {
           "標籤用於標記您的代理流程，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
         tags_placeholder: "輸入並按 Enter 鍵添加標籤",
         visibility_label: "可見性",
-        publish_button: "發布到社群中心",
         submitting: "發布中...",
         submit: "發布到社群中心",
         privacy_note:
@@ -999,9 +884,6 @@ const TRANSLATIONS = {
         description_label: "描述",
         description_description:
           "這是您斜線指令的描述。用它來描述您斜線指令的目的。",
-        command_label: "指令",
-        command_description: "這是使用者將輸入以觸發此預設的斜線指令。",
-        command_placeholder: "我的命令",
         tags_label: "標籤",
         tags_description:
           "標籤用於標記您的斜線指令，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",

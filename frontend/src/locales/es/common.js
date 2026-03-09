@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       skip: "Omitir encuesta",
       thankYou: "¡Gracias por tus comentarios!",
     },
-    workspace: {
-      title: "Crea tu primer espacio de trabajo",
-      description:
-        "Crea tu primer espacio de trabajo y comienza a usar AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nombre de los espacios de trabajo",
-    error: "error",
-    success: "éxito",
     user: "Usuario",
     selection: "Selección de modelo",
     saving: "Guardando...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Ajustes de la instancia",
-    system: "Ajustes generales",
     invites: "Invitaciones",
     users: "Usuarios",
     workspaces: "Espacios de trabajo",
@@ -91,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voz y habla",
     "vector-database": "Base de datos vectorial",
     embeds: "Incrustaciones de chat",
-    "embed-chats": "Historial de incrustaciones de chat",
     security: "Seguridad",
     "event-logs": "Registros de eventos",
     privacy: "Privacidad y datos",
@@ -127,95 +118,10 @@ const TRANSLATIONS = {
       description:
         "Proporciona la información necesaria a continuación para restablecer tu contraseña.",
       "recovery-codes": "Códigos de recuperación",
-      "recovery-code": "Código de recuperación {{index}}",
       "back-to-login": "Volver al inicio de sesión",
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Por favor, crea un espacio de trabajo antes de iniciar un chat.",
-    checklist: {
-      title: "Primeros pasos",
-      tasksLeft: "tareas restantes",
-      completed:
-        "¡Estás en camino de convertirte en un experto en AnythingLLM!",
-      dismiss: "cerrar",
-      tasks: {
-        create_workspace: {
-          title: "Crear un espacio de trabajo",
-          description: "Crea tu primer espacio de trabajo para comenzar",
-          action: "Crear",
-        },
-        send_chat: {
-          title: "Enviar un chat",
-          description: "Inicia una conversación con tu asistente de IA",
-          action: "Chatear",
-        },
-        embed_document: {
-          title: "Incrustar un documento",
-          description: "Agrega tu primer documento a tu espacio de trabajo",
-          action: "Incrustar",
-        },
-        setup_system_prompt: {
-          title: "Configurar un prompt del sistema",
-          description: "Configura el comportamiento de tu asistente de IA",
-          action: "Configurar",
-        },
-        define_slash_command: {
-          title: "Definir un comando de barra",
-          description: "Crea comandos personalizados para tu asistente",
-          action: "Definir",
-        },
-        visit_community: {
-          title: "Visitar el Centro de la Comunidad",
-          description: "Explora los recursos y plantillas de la comunidad",
-          action: "Explorar",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Enlaces rápidos",
-      sendChat: "Enviar chat",
-      embedDocument: "Incrustar un documento",
-      createWorkspace: "Crear espacio de trabajo",
-    },
-    exploreMore: {
-      title: "Explorar más funciones",
-      features: {
-        customAgents: {
-          title: "Agentes de IA personalizados",
-          description:
-            "Crea potentes agentes y automatizaciones de IA sin código.",
-          primaryAction: "Chatear usando @agent",
-          secondaryAction: "Crear un flujo de agente",
-        },
-        slashCommands: {
-          title: "Comandos de barra",
-          description:
-            "Ahorra tiempo e inyecta prompts usando comandos de barra personalizados.",
-          primaryAction: "Crear un comando de barra",
-          secondaryAction: "Explorar en el Centro",
-        },
-        systemPrompts: {
-          title: "Prompts del sistema",
-          description:
-            "Modifica el prompt del sistema para personalizar las respuestas de IA de un espacio de trabajo.",
-          primaryAction: "Modificar un prompt del sistema",
-          secondaryAction: "Administrar variables de prompt",
-        },
-      },
-    },
-    announcements: {
-      title: "Actualizaciones y anuncios",
-    },
-    resources: {
-      title: "Recursos",
-      links: {
-        docs: "Documentación",
-        star: "Marcar con una estrella en Github",
-      },
-      keyboardShortcuts: "Atajos de teclado",
-    },
     quickActions: {
       createAgent: "Crear un agente",
       editWorkspace: "Editar espacio de trabajo",
@@ -281,7 +187,6 @@ const TRANSLATIONS = {
       title: "Modelo de chat del espacio de trabajo",
       description:
         "El modelo de chat específico que se utilizará para este espacio de trabajo. Si está vacío, utilizará la preferencia de LLM del sistema.",
-      wait: "-- esperando modelos --",
     },
     mode: {
       title: "Modo de chat",
@@ -392,9 +297,6 @@ const TRANSLATIONS = {
       wait: "-- esperando modelos --",
     },
     skill: {
-      title: "Habilidades predeterminadas del agente",
-      description:
-        "Mejora las habilidades naturales del agente predeterminado con estas habilidades preconstruidas. Esta configuración se aplica a todos los espacios de trabajo.",
       rag: {
         title: "RAG y memoria a largo plazo",
         description:
@@ -678,17 +580,12 @@ const TRANSLATIONS = {
     title: "Privacidad y manejo de datos",
     description:
       "Esta es tu configuración sobre cómo los proveedores de terceros conectados y AnythingLLM manejan tus datos.",
-    llm: "Selección de LLM",
-    embedding: "Preferencia de incrustación",
-    vector: "Base de datos vectorial",
     anonymous: "Telemetría anónima habilitada",
   },
   connectors: {
     "search-placeholder": "Buscar conectores de datos",
     "no-connectors": "No se encontraron conectores de datos.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importa el vault de Obsidian con un solo clic.",
       vault_location: "Ubicación del vault",
       vault_description:
         "Selecciona la carpeta de tu vault de Obsidian para importar todas las notas y sus conexiones.",
@@ -737,8 +634,6 @@ const TRANSLATIONS = {
       URL_explained: "URL del repositorio de GitLab que deseas recopilar.",
       token: "Token de acceso de GitLab",
       optional: "opcional",
-      token_explained:
-        "Token de acceso para evitar la limitación de velocidad.",
       token_description:
         "Selecciona entidades adicionales para obtener de la API de GitLab.",
       token_explained_start: "Sin un ",
@@ -772,10 +667,6 @@ const TRANSLATIONS = {
       URL_explained_end: " disponibles.",
       task_explained:
         "Una vez completada, la transcripción estará disponible para incrustar en los espacios de trabajo en el selector de documentos.",
-      language: "Idioma de la transcripción",
-      language_explained:
-        "Selecciona el idioma de la transcripción que deseas recopilar.",
-      loading_languages: "-- cargando idiomas disponibles --",
     },
     "website-depth": {
       name: "Extractor de enlaces en masa",
@@ -837,14 +728,11 @@ const TRANSLATIONS = {
       "search-document": "Buscar documento",
       "no-documents": "Sin documentos",
       "move-workspace": "Mover al espacio de trabajo",
-      name: "Nombre",
       "delete-confirmation":
         "¿Estás seguro de que quieres eliminar estos archivos y carpetas?\nEsto eliminará los archivos del sistema y los eliminará de cualquier espacio de trabajo existente automáticamente.\nEsta acción no es reversible.",
       "removing-message":
         "Eliminando {{count}} documentos y {{folderCount}} carpetas. Por favor, espera.",
       "move-success": "Se movieron {{count}} documentos con éxito.",
-      date: "Fecha",
-      type: "Tipo",
       no_docs: "Sin documentos",
       select_all: "Seleccionar todo",
       deselect_all: "Deseleccionar todo",
@@ -890,14 +778,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Bienvenido a tu nuevo espacio de trabajo.",
-    get_started: "Para comenzar, puedes",
-    get_started_default: "Para comenzar",
-    upload: "subir un documento",
-    or: "o",
     attachments_processing:
       "Los archivos adjuntos se están procesando. Por favor, espera...",
-    send_chat: "enviar un chat.",
     send_message: "Enviar un mensaje",
     attach_file: "Adjuntar un archivo a este chat",
     slash: "Ver todos los comandos de barra disponibles para chatear.",
@@ -913,7 +795,6 @@ const TRANSLATIONS = {
     more_actions: "Más acciones",
     hide_citations: "Ocultar citas",
     show_citations: "Mostrar citas",
-    pause_tts_speech_message: "Pausar el mensaje de voz TTS",
     fork: "Bifurcar",
     delete: "Eliminar",
     save_submit: "Guardar y enviar",
@@ -1036,17 +917,12 @@ const TRANSLATIONS = {
           "Los prompts del sistema privados solo son visibles para ti.",
         publish_button: "Publicar en el Centro de la Comunidad",
         submitting: "Publicando...",
-        submit: "Publicar en el Centro de la Comunidad",
         prompt_label: "Prompt",
         prompt_description:
           "Este es el prompt del sistema real que se utilizará para guiar al LLM.",
         prompt_placeholder: "Ingresa tu prompt del sistema aquí...",
       },
       agent_flow: {
-        public_description:
-          "Los flujos de agente públicos son visibles para todos.",
-        private_description:
-          "Los flujos de agente privados solo son visibles para ti.",
         success_title: "¡Éxito!",
         success_description:
           "¡Tu flujo de agente ha sido publicado en el Centro de la Comunidad!",
@@ -1065,7 +941,6 @@ const TRANSLATIONS = {
           "Las etiquetas se utilizan para identificar tu flujo de agente para una búsqueda más fácil. Puedes agregar varias etiquetas. Máximo 5 etiquetas. Máximo 20 caracteres por etiqueta.",
         tags_placeholder: "Escribe y presiona Enter para agregar etiquetas",
         visibility_label: "Visibilidad",
-        publish_button: "Publicar en el Centro de la Comunidad",
         submitting: "Publicando...",
         submit: "Publicar en el Centro de la Comunidad",
         privacy_note:
@@ -1085,10 +960,6 @@ const TRANSLATIONS = {
         description_label: "Descripción",
         description_description:
           "Esta es la descripción de tu comando de barra. Úsala para describir el propósito de tu comando de barra.",
-        command_label: "Comando",
-        command_description:
-          "Este es el comando de barra que los usuarios escribirán para activar este preajuste.",
-        command_placeholder: "mi-comando",
         tags_label: "Etiquetas",
         tags_description:
           "Las etiquetas se utilizan para identificar tu comando de barra para una búsqueda más fácil. Puedes agregar varias etiquetas. Máximo 5 etiquetas. Máximo 20 caracteres por etiqueta.",

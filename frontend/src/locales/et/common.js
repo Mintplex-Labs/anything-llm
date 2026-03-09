@@ -48,15 +48,9 @@ const TRANSLATIONS = {
       skip: "Jäta vahele",
       thankYou: "Aitäh tagasiside eest!",
     },
-    workspace: {
-      title: "Loo oma esimene tööruum",
-      description: "Loo esimene tööruum ja alusta AnythingLLM-iga.",
-    },
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    error: "viga",
-    success: "õnnestus",
     user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
@@ -72,7 +66,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Instantsi seaded",
-    system: "Üldseaded",
     invites: "Kutsed",
     users: "Kasutajad",
     workspaces: "Tööruumid",
@@ -89,7 +82,6 @@ const TRANSLATIONS = {
     "voice-speech": "Hääle ja kõne seaded",
     "vector-database": "Vektoriandmebaas",
     embeds: "Vestluse embed",
-    "embed-chats": "Embed-vestluste ajalugu",
     security: "Turvalisus",
     "event-logs": "Sündmuste logid",
     privacy: "Privaatsus ja andmed",
@@ -124,91 +116,10 @@ const TRANSLATIONS = {
       title: "Parooli lähtestamine",
       description: "Sisesta all vajalik info, et parool lähtestada.",
       "recovery-codes": "Taastamiskoodid",
-      "recovery-code": "Taastamiskood {{index}}",
       "back-to-login": "Tagasi sisselogimisele",
     },
   },
   "main-page": {
-    noWorkspaceError: "Enne vestlust loo tööruum.",
-    checklist: {
-      title: "Alustamine",
-      tasksLeft: "ülesannet jäänud",
-      completed: "Oled teel AnythingLLM-i eksperdiks saama!",
-      dismiss: "sulge",
-      tasks: {
-        create_workspace: {
-          title: "Loo tööruum",
-          description: "Loo esimene tööruum alustamiseks",
-          action: "Loo",
-        },
-        send_chat: {
-          title: "Saada vestlus",
-          description: "Alusta vestlust oma AI-abilisega",
-          action: "Vestle",
-        },
-        embed_document: {
-          title: "Põimi dokument",
-          description: "Lisa esimene dokument oma tööruumi",
-          action: "Põimi",
-        },
-        setup_system_prompt: {
-          title: "Seadista süsteemprompt",
-          description: "Määra AI-abilise käitumine",
-          action: "Seadista",
-        },
-        define_slash_command: {
-          title: "Loo kaldkriipskäsk",
-          description: "Tee oma abilise jaoks kohandatud käsud",
-          action: "Loo",
-        },
-        visit_community: {
-          title: "Külasta kogukonna keskust",
-          description: "Uuri kogukonna ressursse ja malle",
-          action: "Sirvi",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Kiirlingid",
-      sendChat: "Saada vestlus",
-      embedDocument: "Põimi dokument",
-      createWorkspace: "Loo tööruum",
-    },
-    exploreMore: {
-      title: "Avasta rohkem funktsioone",
-      features: {
-        customAgents: {
-          title: "Kohandatud AI-agendid",
-          description: "Ehita võimsaid agente ja automatsioone ilma koodita.",
-          primaryAction: "Vestle @agent abil",
-          secondaryAction: "Loo agendivoog",
-        },
-        slashCommands: {
-          title: "Kaldkriipskäsklused",
-          description: "Säästa aega ja lisa käske kohandatud käskudega.",
-          primaryAction: "Loo kaldkriipskäsk",
-          secondaryAction: "Sirvi Hubs",
-        },
-        systemPrompts: {
-          title: "Süsteempromptid",
-          description:
-            "Muuda süsteemprompti, et kohandada AI vastuseid tööruumis.",
-          primaryAction: "Muuda süsteemprompti",
-          secondaryAction: "Halda prompt-muutujaid",
-        },
-      },
-    },
-    announcements: {
-      title: "Uuendused ja teadaanded",
-    },
-    resources: {
-      title: "Ressursid",
-      links: {
-        docs: "Dokumentatsioon",
-        star: "GitHubi tärn",
-      },
-      keyboardShortcuts: "Klaviatuuri otseteed",
-    },
     quickActions: {
       createAgent: "Loo agent",
       editWorkspace: "Redige tööruum",
@@ -271,7 +182,6 @@ const TRANSLATIONS = {
       title: "Tööruumi vestlusmudel",
       description:
         "Vestlusmudel, mida tööruumis kasutatakse. Kui tühi, kasutatakse süsteemi LLM-eelistust.",
-      wait: "-- laadib mudeleid --",
     },
     mode: {
       title: "Vestlusrežiim",
@@ -373,9 +283,6 @@ const TRANSLATIONS = {
       wait: "-- laadib mudeleid --",
     },
     skill: {
-      title: "Agendi vaikimisi oskused",
-      description:
-        "Paranda vaikimisi agendi loomulikke oskusi nende eelnevalt ehitatud võimetega. Kehtib kõikidele tööruumidele.",
       rag: {
         title: "RAG ja pikaajaline mälu",
         description:
@@ -640,17 +547,12 @@ const TRANSLATIONS = {
     title: "Privaatsus ja andmetöötlus",
     description:
       "Konfiguratsioon kolmandate osapoolte ja AnythingLLM-i andmekäitluse kohta.",
-    llm: "LLM-i valik",
-    embedding: "Embedding-i eelistus",
-    vector: "Vektoriandmebaas",
     anonymous: "Anonüümne telemeetria lubatud",
   },
   connectors: {
     "search-placeholder": "Otsi andmepistikuid",
     "no-connectors": "Andmepistikuid ei leitud.",
     obsidian: {
-      name: "Obsidian",
-      description: "Impordi Obsidiani vault ühe klõpsuga.",
       vault_location: "Vaulti asukoht",
       vault_description:
         "Vali oma Obsidiani vaulti kaust, et importida kõik märkmed ja nende seosed.",
@@ -696,7 +598,6 @@ const TRANSLATIONS = {
       URL_explained: "Repo URL, mida soovid koguda.",
       token: "GitLabi juurdepääsuvõti",
       optional: "valikuline",
-      token_explained: "Võti API piirangute vältimiseks.",
       token_description: "Vali täiendavad objektid, mida GitLabi API-st tuua.",
       token_explained_start: "Ilma ",
       token_explained_link1: "isikliku juurdepääsuvõtmeta",
@@ -727,9 +628,6 @@ const TRANSLATIONS = {
       URL_explained_end: " saadaval.",
       task_explained:
         "Kui valmis, on transkript dokumentide valijas tööruumidesse põimimiseks saadaval.",
-      language: "Transkripti keel",
-      language_explained: "Vali transkripti keel, mida soovid koguda.",
-      loading_languages: "-- keelte laadimine --",
     },
     "website-depth": {
       name: "Massiline linkide kraapija",
@@ -788,14 +686,11 @@ const TRANSLATIONS = {
       "search-document": "Otsi dokumenti",
       "no-documents": "Dokumendid puuduvad",
       "move-workspace": "Liiguta tööruumi",
-      name: "Nimi",
       "delete-confirmation":
         "Kas oled kindel, et soovid need failid ja kaustad kustutada?\nFailid eemaldatakse süsteemist ning kõigist tööruumidest.\nTegevust ei saa tagasi võtta.",
       "removing-message":
         "Eemaldan {{count}} dokumenti ja {{folderCount}} kausta. Palun oota.",
       "move-success": "Liigutatud edukalt {{count}} dokumenti.",
-      date: "Kuupäev",
-      type: "Tüüp",
       no_docs: "Dokumendid puuduvad",
       select_all: "Vali kõik",
       deselect_all: "Tühista valik",
@@ -840,13 +735,7 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Tere tulemast oma uude tööruumi.",
-    get_started: "Alustamiseks",
-    get_started_default: "Alustamiseks",
-    upload: "laadi dokument üles",
-    or: "või",
     attachments_processing: "Manused töötlevad. Palun oota…",
-    send_chat: "saada vestlus.",
     send_message: "Saada sõnum",
     attach_file: "Lisa fail vestlusele",
     slash: "Vaata kõiki slash-käske.",
@@ -862,7 +751,6 @@ const TRANSLATIONS = {
     more_actions: "Rohkem toiminguid",
     hide_citations: "Peida viited",
     show_citations: "Näita viiteid",
-    pause_tts_speech_message: "Pausi TTS kõne",
     fork: "Hargnemine",
     delete: "Kustuta",
     save_submit: "Salvesta ja saada",
@@ -973,14 +861,11 @@ const TRANSLATIONS = {
         private_description: "Privaatseid prompte näed vaid sina.",
         publish_button: "Avalda Community Hubis",
         submitting: "Avaldan…",
-        submit: "Avalda Community Hubis",
         prompt_label: "Prompt",
         prompt_description: "Süsteemprompt, mis juhendab LLM-i.",
         prompt_placeholder: "Sisesta süsteemprompt siia…",
       },
       agent_flow: {
-        public_description: "Avalikud agendi vood on kõigile nähtavad.",
-        private_description: "Privaatseid agendi vooge näed vaid sina.",
         success_title: "Edu!",
         success_description: "Sinu agendi voog avaldati Community Hubis!",
         success_thank_you: "Aitäh jagamast!",
@@ -996,7 +881,6 @@ const TRANSLATIONS = {
           "Lisa kuni 5 silti (kuni 20 tähemärki) otsingu lihtsustamiseks.",
         tags_placeholder: "Kirjuta ja vajuta Enter, et lisada silte",
         visibility_label: "Nähtavus",
-        publish_button: "Avalda Community Hubis",
         submitting: "Avaldan…",
         submit: "Avalda Community Hubis",
         privacy_note:
@@ -1014,10 +898,6 @@ const TRANSLATIONS = {
         description_label: "Kirjeldus",
         description_description:
           "Kirjeldus, mis selgitab slash-käsku eesmärki.",
-        command_label: "Käsk",
-        command_description:
-          "Käsk, mille kasutajad sisestavad selle preseti käivitamiseks.",
-        command_placeholder: "minu-käsk",
         tags_label: "Sildid",
         tags_description:
           "Lisa kuni 5 silti (kuni 20 tähemärki) otsingu lihtsustamiseks.",

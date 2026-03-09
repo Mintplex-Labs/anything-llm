@@ -48,15 +48,9 @@ const TRANSLATIONS = {
       skip: "Pular Pesquisa",
       thankYou: "Obrigado pelo seu feedback!",
     },
-    workspace: {
-      title: "Crie seu primeiro workspace",
-      description: "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nome do Workspace",
-    error: "erro",
-    success: "sucesso",
     user: "Usuário",
     selection: "Seleção de Modelo",
     saving: "Salvando...",
@@ -72,7 +66,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Configurações da Instância",
-    system: "Configurações Gerais",
     invites: "Convites",
     users: "Usuários",
     workspaces: "Workspaces",
@@ -89,7 +82,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voz e Fala",
     "vector-database": "Banco de Dados Vetorial",
     embeds: "Vinculador de Chat",
-    "embed-chats": "Histórico de vínculos",
     security: "Segurança",
     "event-logs": "Logs de Eventos",
     privacy: "Privacidade e Dados",
@@ -125,92 +117,10 @@ const TRANSLATIONS = {
       description:
         "Forneça as informações necessárias para redefinir sua senha.",
       "recovery-codes": "Códigos de Recuperação",
-      "recovery-code": "Código de Recuperação {{index}}",
       "back-to-login": "Voltar ao Login",
     },
   },
   "main-page": {
-    noWorkspaceError: "Por favor, crie um workspace antes de iniciar um chat.",
-    checklist: {
-      title: "Primeiros Passos",
-      tasksLeft: "tarefas restantes",
-      completed:
-        "Você está no caminho para se tornar um expert em AnythingLLM!",
-      dismiss: "fechar",
-      tasks: {
-        create_workspace: {
-          title: "Criar workspace",
-          description: "Crie seu primeiro workspace para começar",
-          action: "Criar",
-        },
-        send_chat: {
-          title: "Enviar chat",
-          description: "Inicie uma conversa com seu assistente de IA",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Inserir documento",
-          description: "Adicione seu primeiro documento ao workspace",
-          action: "Inserir",
-        },
-        setup_system_prompt: {
-          title: "Configurar prompt",
-          description: "Defina o comportamento do seu assistente de IA",
-          action: "Configurar",
-        },
-        define_slash_command: {
-          title: "Definir comando",
-          description: "Crie comandos personalizados para seu assistente",
-          action: "Definir",
-        },
-        visit_community: {
-          title: "Visitar Comunidade",
-          description: "Explore recursos e templates da comunidade",
-          action: "Explorar",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Links Rápidos",
-      sendChat: "Enviar Chat",
-      embedDocument: "Vincular Documento",
-      createWorkspace: "Criar Workspace",
-    },
-    exploreMore: {
-      title: "Explore mais recursos",
-      features: {
-        customAgents: {
-          title: "Agentes Personalizados",
-          description: "Crie agentes de IA poderosos sem código.",
-          primaryAction: "Chat com @agent",
-          secondaryAction: "Criar fluxo de agente",
-        },
-        slashCommands: {
-          title: "Comandos de Barra",
-          description: "Economize tempo com comandos personalizados de barra.",
-          primaryAction: "Criar Comando",
-          secondaryAction: "Explorar no Hub",
-        },
-        systemPrompts: {
-          title: "Prompts de Sistema",
-          description:
-            "Modifique o prompt para personalizar as respostas da IA.",
-          primaryAction: "Modificar Prompt",
-          secondaryAction: "Gerenciar variáveis",
-        },
-      },
-    },
-    announcements: {
-      title: "Atualizações e Anúncios",
-    },
-    resources: {
-      title: "Recursos",
-      links: {
-        docs: "Documentação",
-        star: "Avalie-nos no Github",
-      },
-      keyboardShortcuts: "Atalhos de Teclado",
-    },
     quickActions: {
       createAgent: "Criar um Agente",
       editWorkspace: "Editar o Espaço de Trabalho",
@@ -274,7 +184,6 @@ const TRANSLATIONS = {
       title: "Modelo de Chat",
       description:
         "O modelo específico para este workspace. Se vazio, usará a preferência do sistema.",
-      wait: "-- aguardando modelos --",
     },
     mode: {
       title: "Modo de Chat",
@@ -380,9 +289,6 @@ const TRANSLATIONS = {
       wait: "-- aguardando modelos --",
     },
     skill: {
-      title: "Habilidades padrão do agente",
-      description:
-        "Melhore as habilidades naturais do agente com estas funções pré-configuradas. Aplica-se a todos os workspaces.",
       rag: {
         title: "RAG & memória longa duração",
         description:
@@ -648,17 +554,12 @@ const TRANSLATIONS = {
     title: "Privacidade & Dados",
     description:
       "Configurações de como provedores terceiros e o AnythingLLM lidam com seus dados.",
-    llm: "Seleção de LLM",
-    embedding: "Preferência de Vínculo",
-    vector: "Banco de Dados Vetorial",
     anonymous: "Telemetria Anônima Ativa",
   },
   connectors: {
     "search-placeholder": "Buscar conectores",
     "no-connectors": "Nenhum conector encontrado.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importe um vault do Obsidian com um clique.",
       vault_location: "Local do Cofre",
       vault_description:
         "Selecione sua pasta do Obsidian para importar todas as notas.",
@@ -704,7 +605,6 @@ const TRANSLATIONS = {
       URL_explained: "URL do repositório que deseja coletar.",
       token: "Token de Acesso",
       optional: "opcional",
-      token_explained: "Token para evitar limitação de taxa.",
       token_description: "Selecione entidades adicionais para buscar na API.",
       token_explained_start: "Sem um ",
       token_explained_link1: "Token de Acesso Pessoal",
@@ -736,10 +636,6 @@ const TRANSLATIONS = {
       URL_explained_end: " disponíveis.",
       task_explained:
         "Após conclusão, a transcrição estará disponível para vínculo.",
-      language: "Idioma da Transcrição",
-      language_explained:
-        "Selecione o idioma da transcrição que deseja coletar.",
-      loading_languages: "-- carregando idiomas --",
     },
     "website-depth": {
       name: "Coletor de Links",
@@ -800,14 +696,11 @@ const TRANSLATIONS = {
       "search-document": "Buscar documento",
       "no-documents": "Nenhum Documento",
       "move-workspace": "Mover para Workspace",
-      name: "Nome",
       "delete-confirmation":
         "Tem certeza que deseja excluir estes arquivos e pastas?\nIsso removerá os arquivos do sistema e de todos os workspaces automaticamente.\nEsta ação é irreversível.",
       "removing-message":
         "Removendo {{count}} documentos e {{folderCount}} pastas. Aguarde.",
       "move-success": "{{count}} documentos movidos com sucesso.",
-      date: "Data",
-      type: "Tipo",
       no_docs: "Nenhum Documento",
       select_all: "Selecionar Tudo",
       deselect_all: "Desmarcar Tudo",
@@ -852,13 +745,7 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Bem-vindo ao novo workspace.",
-    get_started: "Para começar,",
-    get_started_default: "Para começar",
-    upload: "envie um documento",
-    or: "ou",
     attachments_processing: "Anexos em processamento. Aguarde...",
-    send_chat: "envie uma mensagem.",
     send_message: "Enviar mensagem",
     attach_file: "Anexar arquivo ao chat",
     slash: "Veja todos os comandos disponíveis.",
@@ -874,7 +761,6 @@ const TRANSLATIONS = {
     more_actions: "Mais ações",
     hide_citations: "Esconder citações",
     show_citations: "Exibir citações",
-    pause_tts_speech_message: "Pausar a leitura em voz alta",
     fork: "Fork",
     delete: "Excluir",
     save_submit: "Alterar",
@@ -988,15 +874,11 @@ const TRANSLATIONS = {
         private_description: "Apenas você pode ver e usar este prompt",
         publish_button: "Publicar prompt de sistema",
         submitting: "Publicando...",
-        submit: "Publicar",
         prompt_label: "Prompt de sistema",
         prompt_description: "O conteúdo do seu prompt de sistema",
         prompt_placeholder: "Você é um assistente útil que...",
       },
       agent_flow: {
-        public_description:
-          "Qualquer pessoa pode ver e usar este fluxo de agente",
-        private_description: "Apenas você pode ver e usar este fluxo de agente",
         success_title: "Fluxo de agente publicado!",
         success_description:
           "Seu fluxo de agente foi publicado com sucesso no Hub da Comunidade.",
@@ -1013,7 +895,6 @@ const TRANSLATIONS = {
           "Adicione tags para ajudar outros a encontrar seu fluxo",
         tags_placeholder: "agente, automação, fluxo de trabalho",
         visibility_label: "Visibilidade",
-        publish_button: "Publicar fluxo de agente",
         submitting: "Publicando...",
         submit: "Publicar",
         privacy_note:
@@ -1039,9 +920,6 @@ const TRANSLATIONS = {
         name_placeholder: "Meu comando incrível",
         description_label: "Descrição",
         description_description: "Descreva o que seu comando faz",
-        command_label: "Comando",
-        command_description: "O comando que os usuários digitarão",
-        command_placeholder: "/meu-comando",
         tags_label: "Tags",
         tags_description:
           "Adicione tags para ajudar outros a encontrar seu comando",
