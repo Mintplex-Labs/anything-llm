@@ -3,7 +3,10 @@ import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
-import { getDefaultSkills, getConfigurableSkills } from "@/pages/Admin/Agents/skills";
+import {
+  getDefaultSkills,
+  getConfigurableSkills,
+} from "@/pages/Admin/Agents/skills";
 import paths from "@/utils/paths";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
