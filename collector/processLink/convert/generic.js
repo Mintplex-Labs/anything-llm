@@ -226,9 +226,9 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         if (['image', 'stylesheet', 'font', 'media'].includes(type)) {
           req.abort();
         // Block chatbot widget scripts — they load synchronously from the
-        // AnythingLLM container itself (*.ki.kufer.de/embed/) and block
-        // DOMContentLoaded for 2+ minutes. No content value for scraping.
-        } else if (type === 'script' && url.includes('.ki.kufer.de/')) {
+        // AnythingLLM container itself and block DOMContentLoaded indefinitely
+        // (self-connection deadlock). Matches both ki.kufer.de and ki.kufer-test.de.
+        } else if (type === 'script' && /\.ki\.kufer(-test)?\.de\//.test(url)) {
           req.abort();
         } else {
           req.continue();
@@ -236,7 +236,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       });
 
       await page.goto(this.webPath, {
-        timeout: 10000,
+        timeout: 30000,
         waitUntil: "domcontentloaded",
       }).catch(() => {});
       // Wait for JS frameworks to initialize (expandable elements need jQuery/Bootstrap)
