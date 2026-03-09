@@ -45,7 +45,7 @@ const PromptReply = ({ uuid, reply, pending, error, sources = [] }) => {
           message={reply}
           messageId={uuid}
         />
-        <Citations sources={sources} />
+        <Citations sources={sources} citationId={uuid} />
       </div>
     </div>
   );

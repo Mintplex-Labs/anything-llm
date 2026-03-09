@@ -64,8 +64,9 @@ export function combineLikeSources(sources) {
   return Object.values(combined);
 }
 
-export default function Citations({ sources = [] }) {
-  const { sidebarOpen, openSidebar, closeSidebar } = useSourcesSidebar();
+export default function Citations({ sources = [], citationId }) {
+  const { sidebarOpen, activeCitationId, openSidebar, closeSidebar } =
+    useSourcesSidebar();
   const { t } = useTranslation();
   if (sources.length === 0) return null;
 
@@ -75,7 +76,11 @@ export default function Citations({ sources = [] }) {
 
   return (
     <button
-      onClick={() => (sidebarOpen ? closeSidebar() : openSidebar(sources))}
+      onClick={() =>
+        sidebarOpen && activeCitationId === citationId
+          ? closeSidebar()
+          : openSidebar(sources, citationId)
+      }
       className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >

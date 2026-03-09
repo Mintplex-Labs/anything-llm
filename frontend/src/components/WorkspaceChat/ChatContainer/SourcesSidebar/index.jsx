@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 import { X } from "@phosphor-icons/react";
@@ -14,19 +14,28 @@ export const SourcesSidebarContext = createContext();
 export function SourcesSidebarProvider({ children }) {
   const [sources, setSources] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeCitationId, setActiveCitationId] = useState(null);
 
-  function openSidebar(newSources) {
+  function openSidebar(newSources, citationId = null) {
     setSources(newSources);
+    setActiveCitationId(citationId);
     setSidebarOpen(true);
   }
 
   function closeSidebar() {
     setSidebarOpen(false);
+    setActiveCitationId(null);
   }
 
   return (
     <SourcesSidebarContext.Provider
-      value={{ sources, sidebarOpen, openSidebar, closeSidebar }}
+      value={{
+        sources,
+        sidebarOpen,
+        activeCitationId,
+        openSidebar,
+        closeSidebar,
+      }}
     >
       {children}
     </SourcesSidebarContext.Provider>
@@ -41,6 +50,10 @@ export default function SourcesSidebar() {
   const { sources, sidebarOpen, closeSidebar } = useSourcesSidebar();
   const { t } = useTranslation();
   const [selectedSource, setSelectedSource] = useState(null);
+
+  useEffect(() => {
+    setSelectedSource(null);
+  }, [sources, sidebarOpen]);
 
   const combined = combineLikeSources(sources);
 
