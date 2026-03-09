@@ -1,22 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import AgentSkillsTab from "./Tabs/AgentSkills";
 import SlashCommandsTab from "./Tabs/SlashCommands";
 
 export const TOOLS_MENU_KEYBOARD_EVENT = "tools-menu-keyboard";
-
-const TABS = [
-  {
-    key: "slash-commands",
-    labelKey: "chat_window.slash_commands",
-    component: SlashCommandsTab,
-  },
-  {
-    key: "agent-skills",
-    labelKey: "chat_window.agent_skills",
-    component: AgentSkillsTab,
-  },
-];
+function getTabs(t) {
+  return [
+    {
+      key: "slash-commands",
+      labelKey: t("chat_window.slash_commands"),
+      component: SlashCommandsTab,
+    },
+    {
+      key: "agent-skills",
+      labelKey: t("chat_window.agent_skills"),
+      component: AgentSkillsTab,
+    },
+  ];
+}
 
 /**
  * @param {boolean} props.showing
@@ -33,6 +34,7 @@ export default function ToolsMenu({
   centered = false,
 }) {
   const { t } = useTranslation();
+  const TABS = useMemo(() => getTabs(t), [t]);
   const [activeTab, setActiveTab] = useState(TABS[0].key);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemCountRef = useRef(0);
@@ -127,7 +129,7 @@ function TabButton({ active, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className={`border-none cursor-pointer px-1.5 py-0.5 rounded text-[10px] font-medium text-center whitespace-nowrap ${
+      className={`border-none cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-medium text-center whitespace-nowrap ${
         active
           ? "bg-zinc-700 text-white light:bg-slate-200 light:text-slate-800"
           : "text-zinc-400 light:text-slate-800"

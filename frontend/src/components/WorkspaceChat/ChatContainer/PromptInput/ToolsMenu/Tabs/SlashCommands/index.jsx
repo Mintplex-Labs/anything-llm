@@ -6,13 +6,11 @@ import { useModal } from "@/hooks/useModal";
 import AddPresetModal from "./SlashPresets/AddPresetModal";
 import EditPresetModal from "./SlashPresets/EditPresetModal";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
-import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { PROMPT_INPUT_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SlashCommandRow from "./SlashCommandRow";
-import BrowseButton from "../../BrowseButton";
 
 export default function SlashCommandsTab({
   sendCommand,
@@ -206,9 +204,6 @@ export default function SlashCommandsTab({
           </span>
         </div>
       )}
-
-      {/* Browse community hub */}
-      <BrowseButton link={paths.communityHub.trending()} />
 
       {/* Modals */}
       <AddPresetModal

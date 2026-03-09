@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
@@ -7,10 +9,9 @@ import {
   getDefaultSkills,
   getConfigurableSkills,
 } from "@/pages/Admin/Agents/skills";
-import paths from "@/utils/paths";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
-import BrowseButton from "../../BrowseButton";
+import { Wrench } from "@phosphor-icons/react";
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
@@ -153,7 +154,14 @@ export default function AgentSkillsTab({
           highlighted={highlightedIndex === index}
         />
       ))}
-      <BrowseButton link={paths.communityHub.trending()} />
+      <Link to={paths.settings.agentSkills()}>
+        <button className="flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">
+          <Wrench size={12} className="text-theme-text-primary" />
+          <span className="text-xs text-theme-text-primary">
+            {t("chat_window.manage_agent_skills")}
+          </span>
+        </button>
+      </Link>
     </>
   );
 }

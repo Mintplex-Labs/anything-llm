@@ -830,6 +830,9 @@ const TRANSLATIONS = {
     browse: "Browse",
     text_size_label: "Text Size",
     select_model: "Select Model",
+    slash_commands: "Slash Commands",
+    agent_skills: "Agent Skills",
+    manage_agent_skills: "Manage Agent Skills",
     workspace_llm_manager: {
       search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
