@@ -1,16 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { SlidersHorizontal } from "@phosphor-icons/react";
 import useLoginMode from "@/hooks/useLoginMode";
 import { useTranslation } from "react-i18next";
 
-const TEXT_SIZES = [
-  { key: "small", labelKey: "chat_window.small", textClass: "text-xs" },
-  { key: "normal", labelKey: "chat_window.normal", textClass: "text-sm" },
-  { key: "large", labelKey: "chat_window.large", textClass: "text-base" },
-];
+function getTextSizes(t) {
+  return [
+    { key: "small", label: t("chat_window.small"), textClass: "text-xs" },
+    { key: "normal", label: t("chat_window.normal"), textClass: "text-sm" },
+    { key: "large", label: t("chat_window.large"), textClass: "text-base" },
+  ];
+}
 
 export default function TextSizeMenu() {
   const { t } = useTranslation();
+  const TEXT_SIZES = useMemo(() => getTextSizes(t), [t]);
   const mode = useLoginMode();
   const [showMenu, setShowMenu] = useState(false);
   const [selectedSize, setSelectedSize] = useState(
@@ -76,7 +79,7 @@ export default function TextSizeMenu() {
           <p className="text-[10px] font-medium text-zinc-400 light:text-slate-500 px-2 mb-0.5">
             {t("chat_window.text_size_label")}
           </p>
-          {TEXT_SIZES.map(({ key, labelKey, textClass }) => (
+          {TEXT_SIZES.map(({ key, label, textClass }) => (
             <div
               key={key}
               onClick={() => handleTextSizeChange(key)}
@@ -87,7 +90,7 @@ export default function TextSizeMenu() {
               }`}
             >
               <span className={`${textClass} text-white light:text-slate-900`}>
-                {t(labelKey)}
+                {label}
               </span>
             </div>
           ))}

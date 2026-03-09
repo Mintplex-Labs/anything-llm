@@ -8,12 +8,12 @@ function getTabs(t) {
   return [
     {
       key: "slash-commands",
-      labelKey: t("chat_window.slash_commands"),
+      label: t("chat_window.slash_commands"),
       component: SlashCommandsTab,
     },
     {
       key: "agent-skills",
-      labelKey: t("chat_window.agent_skills"),
+      label: t("chat_window.agent_skills"),
       component: AgentSkillsTab,
     },
   ];
@@ -99,13 +99,13 @@ export default function ToolsMenu({
         }`}
       >
         <div className="flex shrink-0 gap-2.5 items-center">
-          {TABS.map(({ key, labelKey }) => (
+          {TABS.map((tab) => (
             <TabButton
-              key={key}
-              active={activeTab === key}
-              onClick={() => setActiveTab(key)}
+              key={tab.key}
+              active={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
             >
-              {t(labelKey)}
+              {tab.label}
             </TabButton>
           ))}
         </div>
