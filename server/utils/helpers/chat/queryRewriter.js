@@ -86,7 +86,18 @@ async function rewriteQueryForSearch({ userQuery, chatHistory, LLMConnector }) {
       .toLowerCase()
       .split(/\s+/)
       .filter((w) => w.length > 3);
-    const hasOverlap = rewriteWords.some((w) => contextWords.has(w));
+    let hasOverlap = rewriteWords.some((w) => contextWords.has(w));
+
+    // Fallback for non-space-separated scripts (CJK, Thai, etc.):
+    // Word-level matching fails because these languages don't use spaces.
+    // Individual characters carry meaning, so check for shared characters.
+    if (!hasOverlap) {
+      const contextChars = new Set([...(userQuery + historyText)]);
+      hasOverlap = [...rewritten].some(
+        (c) => c.charCodeAt(0) > 127 && contextChars.has(c)
+      );
+    }
+
     if (!hasOverlap) {
       console.log(
         `\x1b[35m[QueryRewrite]\x1b[0m Rejected meta-response: "${rewritten}"`
