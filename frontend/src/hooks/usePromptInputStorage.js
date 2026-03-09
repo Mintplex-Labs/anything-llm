@@ -32,7 +32,7 @@ import { safeJsonParse } from "@/utils/request";
  */
 export function clearPromptInputDraft(storageKey) {
   try {
-    const map = JSON.parse(localStorage.getItem(USER_PROMPT_INPUT_MAP) || "{}");
+    const map = safeJsonParse(localStorage.getItem(USER_PROMPT_INPUT_MAP), {});
     map[storageKey] = "";
     localStorage.setItem(USER_PROMPT_INPUT_MAP, JSON.stringify(map));
   } catch {}
