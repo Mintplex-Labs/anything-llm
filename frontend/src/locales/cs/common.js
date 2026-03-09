@@ -841,6 +841,17 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klikněte pro nastavení přihlašovacích údajů",
     },
+    submit: "Odeslat",
+    edit_info_user:
+      "„Odeslat“ znovu vygeneruje odpověď od AI. „Uložit“ aktualizuje pouze vaši zprávu.",
+    edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
+    see_less: "Zobrazit méně",
+    see_more: "Více",
+    sources: "Zdroje",
+    document: "Dokument",
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
   },
   profile_settings: {
     edit_account: "Upravit účet",

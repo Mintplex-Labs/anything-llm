@@ -816,6 +816,18 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: "Iesniegt",
+    edit_info_user:
+      '"Sūtīt" atjauno AI atbildi. "Saglabāt" atjauno tikai jūsu ziņu.',
+    edit_info_assistant:
+      "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
+    see_less: "Skatīt mazāk",
+    see_more: "Skatīt vairāk",
+    sources: "Avotus",
+    document: "Dokuments",
+    similarity_match: "spēle",
+    source_count_one: "{{count}} – atsauce",
+    source_count_other: "Atsauces uz {{count}}",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

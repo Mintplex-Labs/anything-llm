@@ -693,6 +693,17 @@ const TRANSLATIONS = {
       missing_credentials: "هذا المزود لا يمتلك المؤهلات اللازمة!",
       missing_credentials_description: "انقر لإعداد بيانات الاعتماد",
     },
+    submit: "إرسال",
+    edit_info_user:
+      '"إرسال" يعيد إنشاء استجابة الذكاء الاصطناعي. "حفظ" يقوم بتحديث رسالتك فقط.',
+    edit_info_assistant: "سيتم حفظ التغييرات مباشرة في هذا الرد.",
+    see_less: "اقرأ المزيد",
+    see_more: "عرض المزيد",
+    sources: "مصادر",
+    document: "وثيقة",
+    similarity_match: "مباراة",
+    source_count_one: "{{count}}، المرجع",
+    source_count_other: "{{count}} المرجع",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
