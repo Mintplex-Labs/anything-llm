@@ -80,7 +80,11 @@ async function scrapeGenericUrl({
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
   const searchSuffix = url.search ? "_" + url.search.replace(/[?&=]/g, "-").replace(/^-/, "") : "";
-  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}${searchSuffix}`;
+  const hostname = url.hostname.replace(/^www\./, "");
+  const rawFilename = `${hostname}${decodedPathname.replace(/\//g, "_")}${searchSuffix}`;
+  // Truncate to avoid ENAMETOOLONG (ext4 limit: 255 bytes).
+  // Final: "url-" (4) + slug + "-" (1) + UUID (36) + ".json" (5) = 46 chars overhead
+  const filename = rawFilename.length > 200 ? rawFilename.substring(0, 200) : rawFilename;
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
