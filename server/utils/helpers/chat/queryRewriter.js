@@ -1,11 +1,16 @@
-const REWRITE_PROMPT = `Given the conversation history and the user's latest message, rewrite the message into a standalone search query that captures the full intent. The query will be used for semantic document search.
+const REWRITE_PROMPT = `You are a search query rewriter. Given conversation history and the user's latest message, decide whether the message needs rewriting to work as a standalone search query.
 
-Rules:
-- Output ONLY the rewritten search query, nothing else
-- Keep it concise (max 15 words)
-- Include the key subject/topic from the conversation context
-- If the message is already self-contained, return it unchanged
-- Write in the same language as the user's message`;
+DEFAULT BEHAVIOR: Respond with UNCHANGED if the message does not need rewriting.
+
+Only rewrite when the message DEPENDS on conversation context and cannot be understood alone:
+- Pronouns without antecedent: "Is that available online?", "Tell me more about it"
+- Incomplete references: "Yes, the first option", "The second one", "What about weekends?"
+- Demonstratives: "How much does that cost?", "Are there more like that?"
+
+Do NOT rewrite when the message contains its own subject/topic — respond with just UNCHANGED.
+
+When rewriting IS needed, respond with ONLY the rewritten query (max 15 words).
+Include the key subject/topic from conversation history. Write in the same language as the user.`;
 
 function shouldRewrite(userQuery, chatHistory) {
   if (!chatHistory || chatHistory.length === 0) return false;
@@ -23,8 +28,8 @@ async function rewriteQueryForSearch({ userQuery, chatHistory, LLMConnector }) {
     const recentHistory = chatHistory.slice(-maxTurns * 2); // 2 msgs per turn
     const historyText = recentHistory
       .map((m) => {
-        // Truncate assistant messages to 150 words (keep beginning — topic + course titles)
-        // End contains follow-up questions and later courses, less relevant for context
+        // Truncate long assistant messages to keep the rewrite prompt compact
+        // Keep the beginning — it usually contains the most relevant topic context
         let content = m.content;
         if (m.role === "assistant") {
           const words = content.split(/\s+/);
@@ -58,7 +63,38 @@ async function rewriteQueryForSearch({ userQuery, chatHistory, LLMConnector }) {
       `\x1b[35m[QueryRewrite]\x1b[0m "${userQuery}" → "${rewritten}" (${elapsed}ms)`
     );
 
-    return rewritten || userQuery;
+    // --- Output validation (3 layers) ---
+    // Guarantee: only return original query or a valid rewrite. Never meta-text.
+
+    // Layer 1: Explicit UNCHANGED signal from LLM (fast path, 1 token)
+    if (!rewritten || rewritten.toUpperCase().startsWith("UNCHANGED"))
+      return userQuery;
+
+    // Layer 2: LLM copied the query verbatim (fallback for less capable models)
+    if (rewritten.trim().toLowerCase() === userQuery.trim().toLowerCase())
+      return userQuery;
+
+    // Layer 3: Content validation — a valid rewrite shares topic words with
+    // the conversation context. Meta-responses ("no rewrite needed") do not.
+    const contextWords = new Set(
+      (userQuery + " " + historyText)
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((w) => w.length > 3)
+    );
+    const rewriteWords = rewritten
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 3);
+    const hasOverlap = rewriteWords.some((w) => contextWords.has(w));
+    if (!hasOverlap) {
+      console.log(
+        `\x1b[35m[QueryRewrite]\x1b[0m Rejected meta-response: "${rewritten}"`
+      );
+      return userQuery;
+    }
+
+    return rewritten;
   } catch (error) {
     console.error(
       "[QueryRewrite] Failed, using original query:",
