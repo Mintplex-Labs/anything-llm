@@ -797,6 +797,7 @@ const TRANSLATIONS = {
     source_count_other: "{{count}} references",
     document: "Document",
     similarity_match: "match",
+    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     cancel: "Cancel",
