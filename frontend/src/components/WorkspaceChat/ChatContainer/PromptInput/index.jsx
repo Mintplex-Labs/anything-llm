@@ -111,6 +111,8 @@ export default function PromptInput({
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
   function handleSubmit(e) {
+    // Ignore submits from portaled modals (slash command preset forms)
+    if (e.target !== e.currentTarget) return;
     setFocused(false);
     setShowTools(false);
     submit(e);
