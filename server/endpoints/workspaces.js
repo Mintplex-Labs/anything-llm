@@ -11,11 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const {
-  getVectorDbClass,
-  getLLMProvider,
-  getBaseLLMProviderModel,
-} = require("../utils/helpers");
+const { getVectorDbClass } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -42,7 +38,6 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
-const AIbitat = require("../utils/agents/aibitat");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -54,7 +49,7 @@ function workspaceEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name = null, onboardingComplete = false } = reqBody(request);
+        const { name = null } = reqBody(request);
         const { workspace, message } = await Workspace.new(name, user?.id);
         await Telemetry.sendTelemetry(
           "workspace_created",
@@ -459,9 +454,9 @@ function workspaceEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
-        const { chatId, newText = null } = reqBody(request);
+        const { chatId, newText = null, role = "assistant" } = reqBody(request);
         if (!newText || !String(newText).trim())
-          throw new Error("Cannot save empty response");
+          throw new Error("Cannot save empty edit");
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
@@ -473,15 +468,20 @@ function workspaceEndpoints(app) {
         });
         if (!existingChat) throw new Error("Invalid chat.");
 
-        const chatResponse = safeJsonParse(existingChat.response, null);
-        if (!chatResponse) throw new Error("Failed to parse chat response");
-
-        await WorkspaceChats._update(existingChat.id, {
-          response: JSON.stringify({
-            ...chatResponse,
-            text: String(newText),
-          }),
-        });
+        if (role === "user") {
+          await WorkspaceChats._update(existingChat.id, {
+            prompt: String(newText),
+          });
+        } else {
+          const chatResponse = safeJsonParse(existingChat.response, null);
+          if (!chatResponse) throw new Error("Failed to parse chat response");
+          await WorkspaceChats._update(existingChat.id, {
+            response: JSON.stringify({
+              ...chatResponse,
+              text: String(newText),
+            }),
+          });
+        }
 
         response.sendStatus(200).end();
       } catch (e) {

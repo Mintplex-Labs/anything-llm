@@ -238,7 +238,7 @@ function validBaseUrl(baseUrl) {
   try {
     new URL(baseUrl);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

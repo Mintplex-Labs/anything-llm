@@ -50,7 +50,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Object} Message without attachments
    */
   formatMessageWithAttachments(message) {
-    const { attachments, ...rest } = message;
+    const { attachments: _, ...rest } = message;
     return rest;
   }
 
@@ -99,7 +99,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     const stripped = messages.map((msg) => {
       if (msg.attachments && msg.attachments.length > 0) {
         hasAttachments = true;
-        const { attachments, ...rest } = msg;
+        const { attachments: _, ...rest } = msg;
         return rest;
       }
       return msg;

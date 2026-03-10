@@ -178,7 +178,7 @@ class AnthropicProvider extends Provider {
           lastMessage.content.push(...content);
         } else {
           // Don't pass attachments to the final message object
-          const { attachments, ...restOfMessage } = message;
+          const { attachments: _, ...restOfMessage } = message;
           processedMessages.push({ ...restOfMessage, content });
         }
 

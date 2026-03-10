@@ -28,7 +28,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: this.#applyFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
     this.verbose = true;
@@ -124,7 +124,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       }
     }
 
-    const { attachments, ...restOfMessage } = message;
+    const { attachments: _, ...restOfMessage } = message;
     return {
       ...restOfMessage,
       ...(images.length > 0 ? { images } : {}),
@@ -174,11 +174,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
           const images = [];
           for (const attachment of message.attachments) {
             const imageData = this.#parseImageDataUrl(attachment.contentString);
-            if (imageData) {
-              images.push(imageData);
-            }
+            if (imageData) images.push(imageData);
           }
-          const { attachments, ...restOfMessage } = message;
+          const { attachments: _, ...restOfMessage } = message;
           formatted.push({
             ...restOfMessage,
             ...(images.length > 0 ? { images } : {}),
@@ -364,6 +362,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "OllamaProvider.stream - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
@@ -526,6 +525,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "OllamaProvider.complete - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
@@ -580,46 +580,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   getCost(_usage) {
     return 0;
-  }
-
-  /**
-   * Apply a custom fetch function to the Ollama client.
-   * This is useful when we want to bypass the default 5m timeout for global fetch
-   * for machines which run responses very slowly.
-   * @returns {Function} The custom fetch function.
-   */
-  #applyFetch() {
-    try {
-      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
-      const { Agent } = require("undici");
-      const moment = require("moment");
-      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
-
-      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        this.providerLog(
-          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
-          { timeout }
-        );
-        return fetch;
-      } else timeout = Number(timeout);
-
-      const noTimeoutFetch = (input, init = {}) => {
-        return fetch(input, {
-          ...init,
-          dispatcher: new Agent({ headersTimeout: timeout }),
-        });
-      };
-
-      const humanDiff = moment.duration(timeout).humanize();
-      this.providerLog(`Applying custom fetch w/timeout of ${humanDiff}.`);
-      return noTimeoutFetch;
-    } catch (error) {
-      this.providerLog(
-        "Error applying custom fetch - using default fetch",
-        error
-      );
-      return fetch;
-    }
   }
 }
 

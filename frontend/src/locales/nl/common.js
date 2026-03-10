@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Deze instellingen kunnen op elk moment opnieuw worden geconfigureerd in de instellingen.",
     },
-    workspace: {
-      title: "Maak je eerste werkruimte aan",
-      description:
-        "Maak je eerste werkruimte aan en ga aan de slag met AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Werkruimten Naam",
-    error: "fout",
-    success: "succes",
     user: "Gebruiker",
     selection: "Model Selectie",
     saving: "Opslaan...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Instelling Instanties",
-    system: "Algemene Instellingen",
     invites: "Uitnodigingen",
     users: "Gebruikers",
     workspaces: "Werkruimten",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "Stem & Spraak",
     "vector-database": "Vector Database",
     embeds: "Chat Inbedden",
-    "embed-chats": "Ingebedde Chat Geschiedenis",
     security: "Veiligheid",
     "event-logs": "Gebeurtenislogboeken",
     privacy: "Privacy & Gegevens",
@@ -127,7 +118,6 @@ const TRANSLATIONS = {
       description:
         "Geef de benodigde informatie hieronder om je wachtwoord te resetten.",
       "recovery-codes": "Herstelcodes",
-      "recovery-code": "Herstelcode {{index}}",
       "back-to-login": "Terug naar Inloggen",
     },
   },
@@ -159,13 +149,6 @@ const TRANSLATIONS = {
       heading: "Leg me uit",
       body: "de voordelen van AnythingLLM",
     },
-    pfp: {
-      title: "Assistent Profielfoto",
-      description:
-        "Pas de profielfoto van de assistent voor deze werkruimte aan.",
-      image: "Werkruimte Afbeelding",
-      remove: "Werkruimte Afbeelding Verwijderen",
-    },
     delete: {
       title: "Werkruimte Verwijderen",
       description:
@@ -188,7 +171,6 @@ const TRANSLATIONS = {
       title: "Werkruimte Chatmodel",
       description:
         "Het specifieke chatmodel dat voor deze werkruimte zal worden gebruikt. Indien leeg, wordt de systeem LLM-voorkeur gebruikt.",
-      wait: "-- wachten op modellen --",
     },
     mode: {
       title: "Chatmodus",
@@ -296,9 +278,6 @@ const TRANSLATIONS = {
       wait: "-- wachten op modellen --",
     },
     skill: {
-      title: "Standaard agentvaardigheden",
-      description:
-        "Verbeter de natuurlijke vaardigheden van de standaardagent met deze vooraf gebouwde vaardigheden. Deze opstelling is van toepassing op alle werkruimten.",
       rag: {
         title: "RAG & langetermijngeheugen",
         description:
@@ -326,11 +305,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web zoeken en browsen",
-        "desc-start":
-          "Sta je agent toe om het web te doorzoeken om je vragen te beantwoorden door verbinding te maken met een web-zoek (SERP) provider.",
-        "desc-end":
-          "Webzoeken tijdens agentensessies zal niet werken totdat dit is ingesteld.",
+        description:
+          "Maak het mogelijk voor uw agent om het internet te doorzoeken om uw vragen te beantwoorden, door een verbinding te maken met een webzoekprovider (SERP).",
       },
+      sql: {
+        title: "SQL-connector",
+        description:
+          "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
+      },
+      default_skill:
+        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
     },
   },
   recorded: {
@@ -467,9 +451,6 @@ const TRANSLATIONS = {
     title: "Privacy & Gegevensverwerking",
     description:
       "Dit is je configuratie voor hoe verbonden derden en AnythingLLM je gegevens verwerken.",
-    llm: "LLM Selectie",
-    embedding: "Inbedding Voorkeur",
-    vector: "Vector Database",
     anonymous: "Anonieme Telemetrie Ingeschakeld",
   },
   connectors: {
@@ -511,7 +492,6 @@ const TRANSLATIONS = {
       URL_explained: "URL van de GitLab-repository die u wilt verzamelen.",
       token: "GitLab-toegangstoken",
       optional: "optioneel",
-      token_explained: "Toegangstoken om rate limiting te voorkomen.",
       token_description:
         "Selecteer extra entiteiten om op te halen via de GitLab API.",
       token_explained_start: "Zonder een ",
@@ -545,10 +525,6 @@ const TRANSLATIONS = {
       URL_explained_end: "beschikbaar zijn.",
       task_explained:
         "Zodra de transcriptie is voltooid, kan deze worden ingesloten in werkruimtes in de documentkiezer.",
-      language: "Transcriptietaal",
-      language_explained:
-        "Selecteer de taal van de transcriptie die u wilt verzamelen.",
-      loading_languages: "-- beschikbare talen laden --",
     },
     "website-depth": {
       name: "Bulk Link Scraper",
@@ -609,14 +585,11 @@ const TRANSLATIONS = {
       "search-document": "Zoek naar een document",
       "no-documents": "Geen documenten",
       "move-workspace": "Verplaatsen naar werkruimte",
-      name: "Naam",
       "delete-confirmation":
         "Weet u zeker dat u deze bestanden en mappen wilt verwijderen?\nHiermee worden de bestanden automatisch uit het systeem en alle bestaande werkruimten verwijderd.\nDeze actie is niet onomkeerbaar.",
       "removing-message":
         "{{count}} documenten en {{folderCount}} mappen worden verwijderd. Even geduld alstublieft.",
       "move-success": "{{count}} documenten succesvol verplaatst.",
-      date: "Datum",
-      type: "Type",
       no_docs: "Geen documenten",
       select_all: "Alles selecteren",
       deselect_all: "Alles deselecteren",
@@ -661,8 +634,6 @@ const TRANSLATIONS = {
       accept: "Oké, begrepen",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Importeer een Obsidian-kluis met één klik.",
       vault_location: "Locatie van de kluis",
       vault_description:
         "Selecteer uw Obsidian-kluismap om alle notities en hun koppelingen te importeren.",
@@ -676,17 +647,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Welkom in je nieuwe werkruimte.",
-    get_started: "Om te beginnen, of",
-    get_started_default: "Om te beginnen",
-    upload: "Een document uploaden",
-    or: "of",
-    send_chat: "Een chatbericht verzenden.",
     send_message: "Een bericht verzenden",
     attach_file: "Een bestand aan deze chat toevoegen",
-    slash: "Alle beschikbare slash-opdrachten voor chatten bekijken.",
-    agents:
-      "Alle beschikbare agents bekijken die je kunt gebruiken om te chatten.",
     text_size: "Tekstgrootte wijzigen.",
     microphone: "Spreek je prompt uit.",
     send: "Promptbericht naar werkruimte verzenden",
@@ -698,19 +660,11 @@ const TRANSLATIONS = {
     regenerate_response: "Reactie opnieuw genereren",
     good_response: "Goede reactie",
     more_actions: "Meer acties",
-    hide_citations: "Citaten verbergen",
-    show_citations: "Citaten weergeven",
-    pause_tts_speech_message: "TTS-spraak van bericht pauzeren",
     fork: "Fork",
     delete: "Verwijderen",
-    save_submit: "Opslaan en verzenden",
     cancel: "Annuleren",
     edit_prompt: "Prompt bewerken",
     edit_response: "Reactie bewerken",
-    at_agent: "@agent",
-    default_agent_description: " - de standaardagent voor deze werkruimte.",
-    custom_agents_coming_soon: "Aangepaste agenten komen binnenkort!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Wis je chatgeschiedenis en begin een nieuwe chat",
     add_new_preset: "Nieuwe preset toevoegen",
@@ -733,6 +687,36 @@ const TRANSLATIONS = {
       missing_credentials: "Deze aanbieder mist logingegevens!",
       missing_credentials_description: "Klik om logingegevens in te stellen",
     },
+    submit: "Indienen",
+    edit_info_user:
+      '"Verzenden" herstelt het antwoord van de AI. "Opslaan" wijzigt alleen uw bericht.',
+    edit_info_assistant:
+      "Uw wijzigingen worden direct op deze reactie opgeslagen.",
+    see_less: "Minder zien",
+    see_more: "Meer zien",
+    tools: "Gereedschap",
+    browse: "Bladeren",
+    text_size_label: "Lettergrootte",
+    select_model: "Kies het model",
+    sources: "Bronnen",
+    document: "Document",
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
+    preset_exit_description: "Beëindig de huidige agent-sessie",
+    add_new: "Voeg toe",
+    edit: "Bewerk",
+    publish: "Publiceren",
+    stop_generating: "Stoppen met het genereren van antwoorden",
+    pause_tts_speech_message: "Pauzeer de spraak van de tekstberichten.",
+    slash_commands: "Korte commando's",
+    agent_skills: "Vaardigheden van agenten",
+    manage_agent_skills: "Beheer van de vaardigheden van de agent",
+    agent_skills_disabled_in_session:
+      "Het is niet mogelijk om vaardigheden aan te passen tijdens een actieve sessie. Gebruik eerst de commando `/exit` om de sessie te beëindigen.",
+    start_agent_session: "Start Agent Sessie",
+    use_agent_session_to_use_tools:
+      'U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met "@agent" aan het begin van uw bericht.',
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -801,11 +785,6 @@ const TRANSLATIONS = {
         description:
           "Stel een naam in die op de inlogpagina voor alle gebruikers wordt weergegeven.",
       },
-      "chat-message-alignment": {
-        title: "Uitlijning van chatberichten",
-        description:
-          "Selecteer de uitlijningsmodus voor berichten bij gebruik van de chatinterface.",
-      },
       "display-language": {
         title: "Weergavetaal",
         description:
@@ -861,88 +840,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "Maak een werkruimte aan voordat u een chat start.",
-    checklist: {
-      title: "Aan de slag",
-      tasksLeft: "resterende taken",
-      completed: "U bent op weg om een ​​AnythingLLM-expert te worden!",
-      dismiss: "sluiten",
-      tasks: {
-        create_workspace: {
-          title: "Een werkruimte aanmaken",
-          description: "Maak uw eerste werkruimte aan om te beginnen",
-          action: "Aanmaken",
-        },
-        send_chat: {
-          title: "Een chatbericht verzenden",
-          description: "Start een gesprek met uw AI-assistent",
-          action: "Chatten",
-        },
-        embed_document: {
-          title: "Een document embedden",
-          description: "Voeg uw eerste document toe aan uw werkruimte",
-          action: "Embedden",
-        },
-        setup_system_prompt: {
-          title: "Een systeemprompt instellen",
-          description: "Configureer het gedrag van uw AI-assistent",
-          action: "Instellen",
-        },
-        define_slash_command: {
-          title: "Definieer een slash-opdracht",
-          description: "Maak aangepaste opdrachten voor je assistent",
-          action: "Definieer",
-        },
-        visit_community: {
-          title: "Bezoek de communityhub",
-          description: "Verken communitybronnen en -sjablonen",
-          action: "Bladeren",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Snelle links",
-      sendChat: "Chat verzenden",
-      embedDocument: "Een document embedden",
-      createWorkspace: "Werkruimte maken",
-    },
-    exploreMore: {
-      title: "Meer functies ontdekken",
-      features: {
-        customAgents: {
-          title: "Aangepaste AI-agenten",
-          description:
-            "Bouw krachtige AI-agenten en automatiseringen zonder code.",
-          primaryAction: "Chatten met @agent",
-          secondaryAction: "Een agentflow bouwen",
-        },
-        slashCommands: {
-          title: "Slash-opdrachten",
-          description:
-            "Bespaar tijd en voeg prompts toe met aangepaste slash-opdrachten.",
-          primaryAction: "Een slash-opdracht maken",
-          secondaryAction: "Verkennen op Hub",
-        },
-        systemPrompts: {
-          title: "Systeemprompts",
-          description:
-            "Wijzig de systeemprompt om de AI-antwoorden van een werkruimte aan te passen.",
-          primaryAction: "Een systeemprompt wijzigen",
-          secondaryAction: "Promptvariabelen beheren",
-        },
-      },
-    },
-    announcements: {
-      title: "Updates & aankondigingen",
-    },
-    resources: {
-      title: "Bronnen",
-      links: {
-        docs: "Documentatie",
-        star: "Ster op Github",
-      },
-      keyboardShortcuts: "Sneltoetsen",
-    },
     quickActions: {
       createAgent: "Maak een agent",
       editWorkspace: "Werkruimte bewerken",
@@ -990,15 +887,12 @@ const TRANSLATIONS = {
           "Privé systeemprompts zijn alleen voor jou zichtbaar.",
         publish_button: "Publiceren naar Community Hub",
         submitting: "Publiceren...",
-        submit: "Publiceren naar Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Dit is de daadwerkelijke systeemprompt die gebruikt zal worden om de LLM te begeleiden.",
         prompt_placeholder: "Voer hier uw systeemprompt in...",
       },
       agent_flow: {
-        public_description: "Openbare agentflows zijn voor iedereen zichtbaar.",
-        private_description: "Privé agentflows zijn alleen voor jou zichtbaar.",
         success_title: "Succes!",
         success_description:
           "Je agentflow is gepubliceerd op de Community Hub!",
@@ -1016,7 +910,6 @@ const TRANSLATIONS = {
           "Tags worden gebruikt om je agentflow te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Maximaal 5 tags. Maximaal 20 tekens per tag.",
         tags_placeholder: "Typ en druk op Enter om tags toe te voegen",
         visibility_label: "Zichtbaarheid",
-        publish_button: "Publiceren naar Community Hub",
         submitting: "Publiceren...",
         submit: "Publiceren naar Community Hub",
         privacy_note:
@@ -1043,10 +936,6 @@ const TRANSLATIONS = {
         description_label: "Beschrijving",
         description_description:
           "Dit is de beschrijving van je slash-commando. Gebruik dit om het doel van je slash-commando te beschrijven.",
-        command_label: "Commando",
-        command_description:
-          "Dit is het slash-commando dat gebruikers moeten typen om deze preset te activeren.",
-        command_placeholder: "mijn-commando",
         tags_label: "Tags",
         tags_description:
           "Tags worden gebruikt om je slash-commando te labelen voor eenvoudiger zoeken. Je kunt meerdere tags toevoegen. Max 5 tags. Maximaal 20 tekens per tag.",

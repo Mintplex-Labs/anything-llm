@@ -58,7 +58,7 @@ function formatMessageWithAttachments(message) {
   }
 
   // Return message without attachments property, with content as array
-  const { attachments, ...rest } = message;
+  const { attachments: _, ...rest } = message;
   return {
     ...rest,
     content,

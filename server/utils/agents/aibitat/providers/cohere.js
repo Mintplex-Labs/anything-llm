@@ -62,7 +62,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
       });
     }
 
-    const { attachments, ...rest } = message;
+    const { attachments: _, ...rest } = message;
     return {
       ...rest,
       content,
@@ -169,6 +169,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "CohereProvider.stream - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
