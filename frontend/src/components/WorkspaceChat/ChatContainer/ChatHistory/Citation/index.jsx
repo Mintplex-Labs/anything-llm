@@ -65,7 +65,12 @@ export function combineLikeSources(sources) {
 }
 
 export default function Citations({ sources = [] }) {
-  const { sidebarOpen, openSidebar, closeSidebar } = useSourcesSidebar();
+  const {
+    sidebarOpen,
+    openSidebar,
+    closeSidebar,
+    sources: currentSources,
+  } = useSourcesSidebar();
   const { t } = useTranslation();
   if (sources.length === 0) return null;
 
@@ -73,9 +78,17 @@ export default function Citations({ sources = [] }) {
   const visibleSources = combined.slice(0, 3);
   const remainingCount = Math.max(0, combined.length - 3);
 
+  function handleOpenSourcesSidebar() {
+    if (sidebarOpen && sources === currentSources) {
+      closeSidebar();
+    } else {
+      openSidebar(sources);
+    }
+  }
+
   return (
     <button
-      onClick={() => (sidebarOpen ? closeSidebar() : openSidebar(sources))}
+      onClick={handleOpenSourcesSidebar}
       className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >
