@@ -12,12 +12,17 @@ import {
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
 import { Wrench } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
+
+const AGENT_SKILL_DISABLED_TOOLTIP_ID = "agent-skill-disabled-tooltip";
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
   registerItemCount,
 }) {
   const { t } = useTranslation();
+  const agentSessionActive = useIsAgentSessionActive();
   const defaultSkills = getDefaultSkills(t);
   const configurableSkills = getConfigurableSkills(t);
   const [disabledDefaults, setDisabledDefaults] = useState([]);
@@ -137,7 +142,7 @@ export default function AgentSkillsTab({
   useToolsMenuItems({
     items,
     highlightedIndex,
-    onSelect: (item) => item.onToggle(),
+    onSelect: agentSessionActive ? () => {} : (item) => item.onToggle(),
     registerItemCount,
   });
 
@@ -152,6 +157,13 @@ export default function AgentSkillsTab({
           enabled={item.enabled}
           onToggle={item.onToggle}
           highlighted={highlightedIndex === index}
+          disabled={agentSessionActive}
+          disabledTooltipId={AGENT_SKILL_DISABLED_TOOLTIP_ID}
+          disabledTooltip={
+            agentSessionActive
+              ? t("chat_window.agent_skills_disabled_in_session")
+              : null
+          }
         />
       ))}
       <Link to={paths.settings.agentSkills()}>
@@ -162,6 +174,14 @@ export default function AgentSkillsTab({
           </span>
         </button>
       </Link>
+      {agentSessionActive && (
+        <Tooltip
+          id={AGENT_SKILL_DISABLED_TOOLTIP_ID}
+          place="top"
+          delayShow={150}
+          className="tooltip !text-xs z-99 !max-w-[250px]"
+        />
+      )}
     </>
   );
 }

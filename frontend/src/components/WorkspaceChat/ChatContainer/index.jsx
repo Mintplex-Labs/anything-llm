@@ -265,10 +265,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   // TODO: Simplify this WSS stuff
   useEffect(() => {
+    let socket = null;
+
     function handleWSS() {
       try {
         if (!socketId || !!websocket) return;
-        const socket = new WebSocket(
+        socket = new WebSocket(
           `${websocketURI()}/api/agent-invocation/${socketId}`
         );
         socket.supportsAgentStreaming = false;
@@ -276,7 +278,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         window.addEventListener(ABORT_STREAM_EVENT, () => {
           setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          websocket.close();
+          socket?.close();
         });
 
         socket.addEventListener("message", (event) => {
@@ -338,6 +340,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       }
     }
     handleWSS();
+
+    return () => {
+      if (socket) {
+        setAgentSessionActive(false);
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+        socket.close();
+      }
+    };
   }, [socketId]);
 
   const isEmpty =

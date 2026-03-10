@@ -834,6 +834,8 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    agent_skills_disabled_in_session:
+      "Can't modify skills during an active agent session. Use /exit to end the session first.",
     workspace_llm_manager: {
       search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
