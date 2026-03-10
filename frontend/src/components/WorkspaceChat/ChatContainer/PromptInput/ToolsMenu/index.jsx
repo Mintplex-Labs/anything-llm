@@ -1,22 +1,31 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import useUser from "@/hooks/useUser";
 import AgentSkillsTab from "./Tabs/AgentSkills";
 import SlashCommandsTab from "./Tabs/SlashCommands";
 
 export const TOOLS_MENU_KEYBOARD_EVENT = "tools-menu-keyboard";
-function getTabs(t) {
-  return [
+function getTabs(t, user) {
+  const tabs = [
     {
       key: "slash-commands",
       label: t("chat_window.slash_commands"),
       component: SlashCommandsTab,
     },
-    {
+  ];
+
+  // Only show agent skills tab for admins or when multiuser mode is off
+  const canSeeAgentSkills =
+    !user?.hasOwnProperty("role") || user.role === "admin";
+  if (canSeeAgentSkills) {
+    tabs.push({
       key: "agent-skills",
       label: t("chat_window.agent_skills"),
       component: AgentSkillsTab,
-    },
-  ];
+    });
+  }
+
+  return tabs;
 }
 
 /**
@@ -35,7 +44,8 @@ export default function ToolsMenu({
   highlightedIndexRef,
 }) {
   const { t } = useTranslation();
-  const TABS = useMemo(() => getTabs(t), [t]);
+  const { user } = useUser();
+  const TABS = useMemo(() => getTabs(t, user), [t, user]);
   const [activeTab, setActiveTab] = useState(TABS[0].key);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemCountRef = useRef(0);
