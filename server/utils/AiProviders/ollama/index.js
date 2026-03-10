@@ -277,7 +277,6 @@ class OllamaAILLM {
           keep_alive: this.keepAlive,
           options: {
             temperature,
-            use_mlock: true,
             num_ctx: this.promptWindowLimit(),
           },
         })
@@ -330,7 +329,6 @@ class OllamaAILLM {
         keep_alive: this.keepAlive,
         options: {
           temperature,
-          use_mlock: true,
           num_ctx: this.promptWindowLimit(),
         },
       }),
