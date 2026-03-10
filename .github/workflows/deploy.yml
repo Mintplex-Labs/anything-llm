@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set image tags
+        id: vars
+        run: |
+          SHORT_SHA="${GITHUB_SHA::8}"
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -22,9 +28,19 @@ jobs:
 
       - name: Build & push
         uses: docker/build-push-action@v6
+        id: build
         with:
           context: .
-          file: ./ramsli-custom/Dockerfile
+          file: ./ramsli-custom/full-source.Dockerfile
           push: true
-          tags: andreasramsli/lovora:latest
+          platforms: linux/amd64
+          tags: |
+            andreasramsli/lovora:latest
+            andreasramsli/lovora:${{ steps.vars.outputs.short_sha }}
           no-cache: true
+
+      - name: Verify backend code in built image
+        run: |
+          docker pull andreasramsli/lovora:${{ steps.vars.outputs.short_sha }}
+          docker run --rm --entrypoint /bin/bash andreasramsli/lovora:${{ steps.vars.outputs.short_sha }} -lc \
+            "grep -n 'VALID_CHAT_MODES' /app/server/models/workspace.js && grep -n 'automatic' /app/server/models/workspace.js"
