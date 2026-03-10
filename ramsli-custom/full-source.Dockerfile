@@ -64,6 +64,7 @@ RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
 FROM base AS production-build
 WORKDIR /app
+USER root
 
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
 COPY --chown=anythingllm:anythingllm --from=backend-build /app/server /app/server
@@ -72,7 +73,7 @@ COPY --chown=anythingllm:anythingllm --from=backend-build /app/collector /app/co
 COPY ramsli-custom/supervisord.conf /etc/supervisor/conf.d/lovora.conf
 COPY ramsli-custom/entrypoint.sh /usr/local/bin/lovora-entrypoint.sh
 
-RUN mkdir -p /var/log/supervisor /collector/hotdir && \
+RUN mkdir -p /var/log/supervisor /collector /collector/hotdir && \
     chmod 755 /var/log/supervisor && \
     chmod +x /usr/local/bin/lovora-entrypoint.sh && \
     chown -R anythingllm:anythingllm /collector /app/collector
