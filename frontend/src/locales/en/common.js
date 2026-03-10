@@ -163,13 +163,6 @@ const TRANSLATIONS = {
       heading: "Explain to me",
       body: "the benefits of AnythingLLM",
     },
-    pfp: {
-      title: "Assistant Profile Image",
-      description:
-        "Customize the profile image of the assistant for this workspace.",
-      image: "Workspace Image",
-      remove: "Remove Workspace Image",
-    },
     delete: {
       title: "Delete Workspace",
       description:
@@ -396,11 +389,6 @@ const TRANSLATIONS = {
         title: "Name",
         description:
           "Set a name that is displayed on the login page to all users.",
-      },
-      "chat-message-alignment": {
-        title: "Chat Message Alignment",
-        description:
-          "Select the message alignment mode when using the chat interface.",
       },
       "display-language": {
         title: "Display Language",
@@ -795,8 +783,6 @@ const TRANSLATIONS = {
     attachments_processing: "Attachments are processing. Please wait...",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
-    slash: "View all available slash commands for chatting.",
-    agents: "View all available agents you can use for chatting.",
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
     send: "Send prompt message to workspace",
@@ -806,8 +792,6 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerate response",
     good_response: "Good response",
     more_actions: "More actions",
-    hide_citations: "Hide citations",
-    show_citations: "Show citations",
     sources: "Sources",
     source_count_one: "{{count}} reference",
     source_count_other: "{{count}} references",
@@ -816,7 +800,6 @@ const TRANSLATIONS = {
     pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
-    save_submit: "Save & Submit",
     cancel: "Cancel",
     submit: "Submit",
     edit_prompt: "Edit prompt",
@@ -827,12 +810,13 @@ const TRANSLATIONS = {
       "Your changes will be saved directly to this response.",
     see_less: "See Less",
     see_more: "See More",
-    at_agent: "@agent",
-    default_agent_description: " - the default agent for this workspace.",
-    custom_agents_coming_soon: "custom agents are coming soon!",
-    slash_reset: "/reset",
     preset_reset_description: "Clear your chat history and begin a new chat",
+    preset_exit_description: "Halt the current agent session",
     add_new_preset: " Add New Preset",
+    add_new: "Add new",
+    edit: "Edit",
+    publish: "Publish",
+    stop_generating: "Stop generating response",
     command: "Command",
     your_command: "your-command",
     placeholder_prompt:
@@ -843,15 +827,24 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    tools: "Tools",
+    browse: "Browse",
+    text_size_label: "Text Size",
+    select_model: "Select Model",
+    slash_commands: "Slash Commands",
+    agent_skills: "Agent Skills",
+    manage_agent_skills: "Manage Agent Skills",
+    agent_skills_disabled_in_session:
+      "Can't modify skills during an active agent session. Use /exit to end the session first.",
     workspace_llm_manager: {
-      search: "Search LLM providers",
+      search: "Search",
       loading_workspace_settings: "Loading workspace settings...",
       available_models: "Available Models for {{provider}}",
       available_models_description: "Select a model to use for this workspace.",
       save: "Use this model",
       saving: "Setting model as workspace default...",
       missing_credentials: "This provider is missing credentials!",
-      missing_credentials_description: "Click to set up credentials",
+      missing_credentials_description: "Set up now",
     },
   },
   profile_settings: {

@@ -658,7 +658,7 @@ dialog::backdrop {
 }
 
 .tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+  @apply !bg-black !text-white !py-2 !px-3 !rounded-md !z-10;
 }
 
 .Toastify__toast-body {

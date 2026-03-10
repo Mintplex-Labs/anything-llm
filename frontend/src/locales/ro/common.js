@@ -158,13 +158,6 @@ const TRANSLATIONS = {
       heading: "Explică-mi",
       body: "beneficiile AnythingLLM",
     },
-    pfp: {
-      title: "Imagine profil asistent",
-      description:
-        "Personalizează imaginea de profil a asistentului pentru acest spațiu de lucru.",
-      image: "Imagine spațiu de lucru",
-      remove: "Șterge imaginea spațiului de lucru",
-    },
     delete: {
       title: "Șterge spațiul de lucru",
       description:
@@ -498,8 +491,6 @@ const TRANSLATIONS = {
       "Fișierele atașate se procesează. Te rugăm să aștepți...",
     send_message: "Trimite mesaj",
     attach_file: "Atașează un fișier la acest chat",
-    slash: "Vizualizează toate comenzile slash disponibile pentru chat.",
-    agents: "Vezi toți agenții disponibili pentru chat.",
     text_size: "Schimbă dimensiunea textului.",
     microphone: "Vorbește promptul tău.",
     send: "Trimite prompt către spațiul de lucru",
@@ -509,19 +500,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerare răspuns",
     good_response: "Răspuns bun",
     more_actions: "Mai multe acțiuni",
-    hide_citations: "Ascunde citările",
-    show_citations: "Arată citările",
     fork: "Fork",
     delete: "Șterge",
-    save_submit: "Salvează & Trimite",
     cancel: "Anulează",
     edit_prompt: "Editează prompt",
     edit_response: "Editează răspuns",
-    at_agent: "@agent",
-    default_agent_description:
-      " - agentul implicit pentru acest spațiu de lucru.",
-    custom_agents_coming_soon: "agenții personalizați vin în curând!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Șterge istoricul chatului și începe o conversație nouă",
     add_new_preset: " Adaugă preset nou",
@@ -553,11 +536,27 @@ const TRANSLATIONS = {
       "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
+    tools: "Unelte",
+    browse: "Navigați",
+    text_size_label: "Dimensiunea textului",
+    select_model: "Selectați modelul",
     sources: "Surse",
     document: "Document",
     similarity_match: "meci",
     source_count_one: "{{count}} – referință",
     source_count_other: "Referințe către {{count}}",
+    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
+    add_new: "Adaugă",
+    edit: "Editează",
+    publish: "Publica",
+    stop_generating: "Opriți generarea răspunsului",
+    pause_tts_speech_message:
+      "Pauză în redarea vocii prin Text-to-Speech (TTS) a mesajului.",
+    slash_commands: "Comenzi scurte",
+    agent_skills: "Abilități ale agentului",
+    manage_agent_skills: "Gestionarea competențelor agenților",
+    agent_skills_disabled_in_session:
+      "Nu este posibil să modificați abilitățile în timpul unei sesiuni cu un agent activ. Pentru a încheia sesiunea, utilizați comanda /exit.",
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -826,11 +825,6 @@ const TRANSLATIONS = {
         title: "Nume aplicație",
         description:
           "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
-      },
-      "chat-message-alignment": {
-        title: "Alinierea mesajelor de chat",
-        description:
-          "Selectează modul de aliniere a mesajelor când folosești interfața de chat.",
       },
       "display-language": {
         title: "Limba de afișare",

@@ -148,13 +148,6 @@ const TRANSLATIONS = {
       heading: "説明してください",
       body: "AnythingLLMの利点",
     },
-    pfp: {
-      title: "アシスタントのプロフィール画像",
-      description:
-        "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
-      image: "ワークスペース画像",
-      remove: "ワークスペース画像を削除",
-    },
     delete: {
       title: "ワークスペースを削除",
       description:
@@ -646,8 +639,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
-    slash: "チャットで使えるスラッシュコマンドをすべて表示",
-    agents: "利用可能なエージェントをすべて表示",
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
@@ -660,18 +651,11 @@ const TRANSLATIONS = {
     good_response: "良い反応",
     more_actions:
       "さらに詳細な情報が必要な場合は、お気軽にお問い合わせください。",
-    hide_citations: "参考文献を隠す",
-    show_citations: "引用元を表示する",
     fork: "フォーク",
     delete: "削除",
-    save_submit: "保存して送信",
     cancel: "キャンセル",
     edit_prompt: "編集のヒント",
     edit_response: "編集内容を保存します。",
-    at_agent: "@agent",
-    default_agent_description: "- このワークスペースのデフォルトエージェント。",
-    custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
-    slash_reset: "/reset",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -702,11 +686,26 @@ const TRANSLATIONS = {
     edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
     see_less: "詳細を見る",
     see_more: "詳細を見る",
+    tools: "道具",
+    browse: "閲覧",
+    text_size_label: "文字サイズ",
+    select_model: "モデルを選択",
     sources: "出典",
     document: "文書",
     similarity_match: "試合",
     source_count_one: "{{count}} 参照",
     source_count_other: "{{count}} への参照",
+    preset_exit_description: "現在のエージェントセッションを停止する",
+    add_new: "新しいものを追加する",
+    edit: "編集",
+    publish: "出版",
+    stop_generating: "応答の生成を停止する",
+    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
+    slash_commands: "スラッシュコマンド",
+    agent_skills: "エージェントのスキル",
+    manage_agent_skills: "エージェントのスキル管理",
+    agent_skills_disabled_in_session:
+      "アクティブなセッション中にスキルを変更することはできません。まず、`/exit`コマンドを使用してセッションを終了してください。",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -774,11 +773,6 @@ const TRANSLATIONS = {
         title: "名前",
         description:
           "ログインページに表示される名前を、すべてのユーザーに設定する。",
-      },
-      "chat-message-alignment": {
-        title: "チャットメッセージの整合性を確認する",
-        description:
-          "チャットインターフェースを使用する場合、メッセージの配置モードを選択してください。",
       },
       "display-language": {
         title: "表示言語",

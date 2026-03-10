@@ -151,13 +151,6 @@ const TRANSLATIONS = {
       heading: "Spiegami",
       body: "i vantaggi di AnythingLLM",
     },
-    pfp: {
-      title: "Immagine del profilo dell'assistente",
-      description:
-        "Personalizza l'immagine del profilo dell'assistente per quest'area di lavoro.",
-      image: "Immagine dell'area di lavoro",
-      remove: "Rimuovi immagine dell'area di lavoro",
-    },
     delete: {
       title: "Elimina area di lavoro",
       description:
@@ -660,9 +653,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Invia un messaggio",
     attach_file: "Allega un file a questa chat.",
-    slash: "Visualizza tutti i comandi disponibili per la chat.",
-    agents:
-      "Visualizza tutti gli agenti disponibili che puoi utilizzare per la chat.",
     text_size: "Modifica la dimensione del testo.",
     microphone: "Formula la tua richiesta.",
     send: "Invia un messaggio immediato allo spazio di lavoro",
@@ -674,19 +664,11 @@ const TRANSLATIONS = {
       "Per favore, fornisci il testo originale che desideri che venga riformulato.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per ricoprire la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser>Regenerate response\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.",
     good_response: "Ottima risposta.",
     more_actions: "Ulteriori azioni",
-    hide_citations: "Nascondi le citazioni",
-    show_citations: "Mostra citazioni",
     fork: "Forchetta",
     delete: "Elimina",
-    save_submit: "Salva e invia",
     cancel: "Annulla",
     edit_prompt: "Suggerimento di modifica:",
     edit_response: "Modifica la risposta",
-    at_agent: "@agent",
-    default_agent_description:
-      "- l'agente predefinito per questo spazio di lavoro.",
-    custom_agents_coming_soon: "Agenti personalizzati in arrivo a breve!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Elimina la cronologia delle chat e avvia una nuova chat",
     add_new_preset: "Aggiungi nuovo preset",
@@ -723,11 +705,27 @@ const TRANSLATIONS = {
       "Le modifiche verranno salvate direttamente in questa risposta.",
     see_less: "Visualizza meno",
     see_more: "Visualizza altro",
+    tools: "Strumenti",
+    browse: "Naviga",
+    text_size_label: "Dimensione del testo",
+    select_model: "Seleziona il modello",
     sources: "Fonti",
     document: "Documento",
     similarity_match: "partita",
     source_count_one: "Riferimento {{count}}",
     source_count_other: "Riferimenti a {{count}}",
+    preset_exit_description: "Interrompere la sessione corrente con l'agente.",
+    add_new: "Aggiungi nuovo",
+    edit: "Modifica",
+    publish: "Pubblicare",
+    stop_generating: "Interrompi la generazione della risposta",
+    pause_tts_speech_message:
+      "Mettere in pausa la lettura vocale del messaggio",
+    slash_commands: "Comandi abbreviati",
+    agent_skills: "Competenze dell'agente",
+    manage_agent_skills: "Gestire le competenze degli agenti",
+    agent_skills_disabled_in_session:
+      "Non è possibile modificare le competenze durante una sessione di agente attivo. Per terminare la sessione, utilizzare il comando `/exit`.",
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -799,11 +797,6 @@ const TRANSLATIONS = {
         title: "Nome",
         description:
           "Definisci un nome che verrà visualizzato sulla pagina di accesso per tutti gli utenti.",
-      },
-      "chat-message-alignment": {
-        title: "Allignment di conversazioni",
-        description:
-          "Seleziona la modalità di allineamento del messaggio quando utilizzi l'interfaccia di chat.",
       },
       "display-language": {
         title: "Lingua da visualizzare",
