@@ -32,6 +32,7 @@ export default function ToolsMenu({
   sendCommand,
   promptRef,
   centered = false,
+  highlightedIndexRef,
 }) {
   const { t } = useTranslation();
   const TABS = useMemo(() => getTabs(t), [t]);
@@ -43,6 +44,11 @@ export default function ToolsMenu({
   useEffect(() => {
     setHighlightedIndex(-1);
   }, [activeTab, showing]);
+
+  // Keep the parent ref in sync so PromptInput can check it on Enter
+  useEffect(() => {
+    if (highlightedIndexRef) highlightedIndexRef.current = highlightedIndex;
+  }, [highlightedIndex]);
 
   const registerItemCount = useCallback((count) => {
     itemCountRef.current = count;
@@ -90,8 +96,13 @@ export default function ToolsMenu({
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={() => setShowing(false)} />
       <div
+        className="fixed inset-0 z-40"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setShowing(false)}
+      />
+      <div
+        onMouseDown={(e) => e.preventDefault()}
         className={`absolute left-2 right-2 md:left-14 md:right-auto md:w-[400px] z-50 bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg p-3 flex flex-col gap-2.5 shadow-lg overflow-hidden ${
           centered
             ? "top-full mt-2 max-h-[min(360px,calc(100dvh-25rem))]"
