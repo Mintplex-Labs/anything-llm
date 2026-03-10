@@ -50,6 +50,11 @@ export default function ToolsMenu({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemCountRef = useRef(0);
 
+  // Always open to the slash commands
+  useEffect(() => {
+    if (showing) setActiveTab(TABS[0].key);
+  }, [showing]);
+
   // Reset highlight when switching tabs or closing
   useEffect(() => {
     setHighlightedIndex(-1);

@@ -46,6 +46,7 @@ export default function PromptInput({
   const agentSessionActive = useIsAgentSessionActive();
   const [promptInput, setPromptInput] = useState("");
   const [showTools, setShowTools] = useState(false);
+  const autoOpenedToolsRef = useRef(false);
   const toolsHighlightRef = useRef(-1);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
@@ -172,7 +173,10 @@ export default function PromptInput({
       !event.metaKey &&
       promptInput.trim() === ""
     ) {
-      setShowTools((prev) => !prev);
+      setShowTools((prev) => {
+        autoOpenedToolsRef.current = !prev;
+        return !prev;
+      });
       return;
     }
 
@@ -294,7 +298,14 @@ export default function PromptInput({
   function handleChange(e) {
     debouncedSaveState(-1);
     adjustTextArea(e);
-    setPromptInput(e.target.value);
+    const value = e.target.value;
+    setPromptInput(value);
+
+    // Auto-dismiss the tools menu when the "/" that opened it is modified
+    if (autoOpenedToolsRef.current && showTools && value !== "/") {
+      setShowTools(false);
+      autoOpenedToolsRef.current = false;
+    }
   }
 
   return (
@@ -367,6 +378,7 @@ export default function PromptInput({
                     showTools={showTools}
                     setShowTools={setShowTools}
                     textareaRef={textareaRef}
+                    autoOpenedToolsRef={autoOpenedToolsRef}
                   />
                 </div>
                 <div className="flex gap-x-2 items-center">
@@ -433,7 +445,12 @@ function AgentSessionButton({
   );
 }
 
-function ToolsButton({ showTools, setShowTools, textareaRef }) {
+function ToolsButton({
+  showTools,
+  setShowTools,
+  textareaRef,
+  autoOpenedToolsRef,
+}) {
   const { t } = useTranslation();
 
   return (
@@ -441,6 +458,7 @@ function ToolsButton({ showTools, setShowTools, textareaRef }) {
       id="tools-btn"
       type="button"
       onClick={() => {
+        autoOpenedToolsRef.current = false;
         setShowTools(!showTools);
         textareaRef.current?.focus();
       }}
