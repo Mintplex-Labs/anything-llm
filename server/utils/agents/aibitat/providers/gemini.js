@@ -35,6 +35,10 @@ class GeminiProvider extends Provider {
     return true;
   }
 
+  supportsNativeToolCalling() {
+    return this.supportsToolCalling;
+  }
+
   get supportsAgentStreaming() {
     // Tool call streaming results in a 400/503 error for all non-gemini models
     // using the compatible v1beta/openai/ endpoint
@@ -138,6 +142,23 @@ class GeminiProvider extends Provider {
             content: message.content,
           }
         );
+        return;
+      }
+
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
         return;
       }
 

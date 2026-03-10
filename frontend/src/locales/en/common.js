@@ -300,6 +300,11 @@ const TRANSLATIONS = {
     },
     mode: {
       title: "Chat mode",
+      automatic: {
+        title: "Auto",
+        description:
+          "will automatically use tools if the model and provider support native tool calling. If native tooling is not supported, you will need to use the @agent command to use tools.",
+      },
       chat: {
         title: "Chat",
         "desc-start": "will provide answers with the LLM's general knowledge",

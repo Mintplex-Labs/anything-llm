@@ -91,6 +91,33 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
+  #parseImageDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:[^;]+;base64,(.+)$/);
+    if (!matches) return null;
+    return matches[1];
+  }
+
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    const images = [];
+    for (const attachment of message.attachments) {
+      const imageData = this.#parseImageDataUrl(attachment.contentString);
+      if (imageData) {
+        images.push(imageData);
+      }
+    }
+
+    const { attachments: _attachments, ...restOfMessage } = message;
+    return {
+      ...restOfMessage,
+      ...(images.length > 0 ? { images } : {}),
+    };
+  }
+
   /**
    * Convert aibitat's internal message history (which uses role:"function" with
    * originalFunctionCall metadata) into the Ollama tool-calling message format
@@ -128,7 +155,22 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
               : JSON.stringify(message.content),
         });
       } else {
-        formatted.push(message);
+        if (message.attachments && message.attachments.length > 0) {
+          const images = [];
+          for (const attachment of message.attachments) {
+            const imageData = this.#parseImageDataUrl(attachment.contentString);
+            if (imageData) {
+              images.push(imageData);
+            }
+          }
+          const { attachments: _attachments, ...restOfMessage } = message;
+          formatted.push({
+            ...restOfMessage,
+            ...(images.length > 0 ? { images } : {}),
+          });
+        } else {
+          formatted.push(message);
+        }
       }
     }
     return formatted;

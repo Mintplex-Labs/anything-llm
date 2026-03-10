@@ -26,6 +26,10 @@ class AnthropicProvider extends Provider {
     this.model = model;
   }
 
+  supportsNativeToolCalling() {
+    return true;
+  }
+
   /**
    * Parses the cache control ENV variable
    *
@@ -70,6 +74,13 @@ class AnthropicProvider extends Provider {
         cache_control: this.cacheControl,
       },
     ];
+  }
+
+  #parseDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) return null;
+    return { mediaType: matches[1], data: matches[2] };
   }
 
   #prepareMessages(messages = []) {
@@ -120,6 +131,22 @@ class AnthropicProvider extends Provider {
             item.type !== "text" || (item.text && item.text.trim().length > 0)
         );
 
+        if (message.attachments && message.attachments.length > 0) {
+          for (const attachment of message.attachments) {
+            const parsed = this.#parseDataUrl(attachment.contentString);
+            if (parsed) {
+              content.push({
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: parsed.mediaType,
+                  data: parsed.data,
+                },
+              });
+            }
+          }
+        }
+
         if (content.length === 0) return processedMessages;
 
         // Add a text block to assistant messages with tool use if one doesn't exist.
@@ -139,7 +166,8 @@ class AnthropicProvider extends Provider {
           // Merge consecutive messages from the same role.
           lastMessage.content.push(...content);
         } else {
-          processedMessages.push({ ...message, content });
+          const { attachments: _attachments, ...restOfMessage } = message;
+          processedMessages.push({ ...restOfMessage, content });
         }
 
         return processedMessages;

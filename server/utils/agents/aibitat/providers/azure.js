@@ -28,6 +28,10 @@ class AzureOpenAiProvider extends Provider {
     return true;
   }
 
+  supportsNativeToolCalling() {
+    return true;
+  }
+
   /**
    * Stream a chat completion from Azure OpenAI with tool calling.
    *

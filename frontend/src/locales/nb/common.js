@@ -289,6 +289,11 @@ const TRANSLATIONS = {
     },
     mode: {
       title: "Chat-modus",
+      automatic: {
+        title: "Auto",
+        description:
+          "vil automatisk bruke verktøy hvis modellen og leverandøren støtter innebygd verktøykalling. Hvis innebygd verktøykalling ikke støttes, må du bruke @agent-kommandoen for å bruke verktøy.",
+      },
       chat: {
         title: "Chat",
         "desc-start": "vil gi svar med LLMs generelle kunnskap",

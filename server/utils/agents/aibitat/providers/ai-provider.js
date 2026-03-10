@@ -82,6 +82,20 @@ class Provider {
     return this._client;
   }
 
+  supportsNativeToolCallingViaEnv(providerTag = "") {
+    if (!("PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING" in process.env)) return false;
+    if (!providerTag) return false;
+    return (
+      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
+        providerTag
+      ) || false
+    );
+  }
+
+  supportsNativeToolCalling() {
+    return false;
+  }
+
   /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
@@ -407,6 +421,34 @@ class Provider {
     return false;
   }
 
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+
+    const { attachments: _attachments, ...rest } = message;
+    return {
+      ...rest,
+      content,
+    };
+  }
+
+  formatMessagesWithAttachments(messages = []) {
+    return messages.map((message) =>
+      this.formatMessageWithAttachments(message)
+    );
+  }
+
   /**
    * Stream a chat completion from the LLM with tool calling
    * Note: This using the OpenAI API format and may need to be adapted for other providers.
@@ -419,10 +461,11 @@ class Provider {
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("Provider.stream - will process this chat completion.");
     const msgUUID = v4();
+    const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
       stream: true,
-      messages,
+      messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0
         ? { functions }
         : {}),

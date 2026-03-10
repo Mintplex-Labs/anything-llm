@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
@@ -10,6 +11,7 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { getAndClearInvocationAttachments } = require("../chats/agents");
 
 class AgentHandler {
   #invocationUUID;
@@ -19,6 +21,7 @@ class AgentHandler {
   channel = null;
   provider = null;
   model = null;
+  attachments = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -587,9 +590,53 @@ class AgentHandler {
     ];
   }
 
+  async #fetchParsedFileContext() {
+    try {
+      const user = this.invocation.user_id
+        ? { id: this.invocation.user_id }
+        : null;
+      const thread = this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null;
+      const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
+        this.invocation.workspace,
+        thread,
+        user
+      );
+
+      if (!parsedFiles || parsedFiles.length === 0) return "";
+
+      this.log(
+        `Injecting ${parsedFiles.length} parsed file(s) into the agent turn`
+      );
+
+      return (
+        "\n\n<attached_documents>\n" +
+        parsedFiles
+          .map((doc, index) => {
+            const filename = doc.title || `Document ${index + 1}`;
+            return `<document name="${filename}">\n${doc.pageContent}\n</document>`;
+          })
+          .join("\n") +
+        "\n</attached_documents>"
+      );
+    } catch (error) {
+      this.log("Error fetching parsed file context", error.message);
+      return "";
+    }
+  }
+
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    return stripped || "Hello!";
+  }
+
   async init() {
     await this.#validInvocation();
     this.#providerSetupAndCheck();
+    this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
     return this;
   }
 
@@ -607,6 +654,7 @@ class AgentHandler {
         log: this.log,
       },
     });
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
@@ -635,7 +683,8 @@ class AgentHandler {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.invocation.prompt,
+      content: this.#stripAgentCommand(this.invocation.prompt),
+      ...(this.attachments.length > 0 ? { attachments: this.attachments } : {}),
     });
   }
 }

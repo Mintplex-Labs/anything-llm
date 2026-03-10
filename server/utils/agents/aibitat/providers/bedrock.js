@@ -57,8 +57,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("bedrock");
+    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("bedrock");
 
     if (supportsToolCalling)
       this.providerLog("AWS Bedrock native tool calling is ENABLED via ENV.");
@@ -95,19 +94,39 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   // or otherwise absorb headaches that can arise from Ollama models
   #convertToLangchainPrototypes(chats = []) {
     const langchainChats = [];
-    const roleToMessageMap = {
-      system: SystemMessage,
-      user: HumanMessage,
-      assistant: AIMessage,
-    };
 
     for (const chat of chats) {
-      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
-      const MessageClass = roleToMessageMap[chat.role];
-      langchainChats.push(new MessageClass({ content: chat.content }));
+      if (chat.role === "system") {
+        langchainChats.push(new SystemMessage({ content: chat.content }));
+      } else if (chat.role === "user") {
+        langchainChats.push(
+          new HumanMessage({
+            content: this.#formatContentWithAttachments(chat),
+          })
+        );
+      } else if (chat.role === "assistant") {
+        langchainChats.push(new AIMessage({ content: chat.content }));
+      }
     }
 
     return langchainChats;
+  }
+
+  #formatContentWithAttachments(chat) {
+    if (!chat.attachments || chat.attachments.length === 0) {
+      return chat.content;
+    }
+
+    const content = [{ type: "text", text: chat.content }];
+    for (const attachment of chat.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content;
   }
 
   /**
@@ -176,7 +195,11 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       } else if (chat.role === "system") {
         langchainChats.push(new SystemMessage({ content: chat.content }));
       } else if (chat.role === "user") {
-        langchainChats.push(new HumanMessage({ content: chat.content }));
+        langchainChats.push(
+          new HumanMessage({
+            content: this.#formatContentWithAttachments(chat),
+          })
+        );
       } else if (chat.role === "assistant") {
         langchainChats.push(new AIMessage({ content: chat.content }));
       }

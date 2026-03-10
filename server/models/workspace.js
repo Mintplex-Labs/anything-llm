@@ -33,6 +33,7 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
+  VALID_CHAT_MODES: ["chat", "query", "automatic"],
   defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
@@ -93,7 +94,7 @@ const Workspace = {
       return n;
     },
     chatMode: (value) => {
-      if (!value || !["chat", "query"].includes(value)) return "chat";
+      if (!value || !Workspace.VALID_CHAT_MODES.includes(value)) return "chat";
       return value;
     },
     chatProvider: (value) => {
@@ -608,6 +609,55 @@ const Workspace = {
       console.error(error.message);
       return false;
     }
+  },
+
+  /**
+   * Checks if the workspace's configured provider/model can use native tool calling.
+   * Falls back to the workspace chat model or system defaults when agent settings are unset.
+   * @param {Workspace} workspace
+   * @returns {Promise<boolean>}
+   */
+  supportsNativeToolCalling: async function (workspace = {}) {
+    if (!workspace) return false;
+
+    try {
+      const { getBaseLLMProviderModel } = require("../utils/helpers");
+      const AIbitat = require("../utils/agents/aibitat");
+      const provider =
+        workspace?.agentProvider ??
+        workspace?.chatProvider ??
+        process.env.LLM_PROVIDER;
+      if (!provider) return false;
+
+      const model =
+        workspace?.agentModel ??
+        workspace?.chatModel ??
+        getBaseLLMProviderModel({ provider });
+
+      const agentProvider = new AIbitat({
+        provider,
+        model,
+      }).getProviderForConfig({ provider, model });
+
+      return (await agentProvider.supportsNativeToolCalling?.()) === true;
+    } catch (error) {
+      console.error(
+        "Failed to determine native tool calling support:",
+        error.message
+      );
+      return false;
+    }
+  },
+
+  /**
+   * Returns whether the legacy @agent command affordance is needed for a workspace.
+   * Automatic mode hides that need when native tool calling is available.
+   * @param {Workspace} workspace
+   * @returns {Promise<boolean>}
+   */
+  isAgentCommandAvailable: async function (workspace = {}) {
+    if (workspace?.chatMode !== "automatic") return true;
+    return !(await this.supportsNativeToolCalling(workspace));
   },
 };
 

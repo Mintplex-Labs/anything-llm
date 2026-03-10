@@ -35,6 +35,28 @@ function formatFunctionsToTools(functions) {
   }));
 }
 
+function formatMessageWithAttachments(message) {
+  if (!message.attachments || message.attachments.length === 0) {
+    return message;
+  }
+
+  const content = [{ type: "text", text: message.content }];
+  for (const attachment of message.attachments) {
+    content.push({
+      type: "image_url",
+      image_url: {
+        url: attachment.contentString,
+      },
+    });
+  }
+
+  const { attachments: _attachments, ...rest } = message;
+  return {
+    ...rest,
+    content,
+  };
+}
+
 /**
  * Convert the aibitat message history (which uses role:"function" with
  * `originalFunctionCall` metadata) into the OpenAI tool-calling message
@@ -112,9 +134,11 @@ function formatMessagesForTools(messages, options = {}) {
       message.role === "assistant" &&
       !("reasoning_content" in message)
     ) {
-      formattedMessages.push({ ...message, reasoning_content: "" });
+      formattedMessages.push(
+        formatMessageWithAttachments({ ...message, reasoning_content: "" })
+      );
     } else {
-      formattedMessages.push(message);
+      formattedMessages.push(formatMessageWithAttachments(message));
     }
   }
 
