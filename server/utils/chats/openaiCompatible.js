@@ -87,6 +87,7 @@ async function chatSync({
     userQuery: String(prompt),
     chatHistory: history,
     LLMConnector,
+    workspace,
   });
 
   const vectorSearchResults =
@@ -319,6 +320,7 @@ async function streamChat({
     userQuery: String(prompt),
     chatHistory: history,
     LLMConnector,
+    workspace,
   });
 
   const vectorSearchResults =
