@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 export default function ChatModeSelection({ workspace, setHasChanges }) {
-  const [chatMode, setChatMode] = useState(workspace?.chatMode || "automatic");
   const { t } = useTranslation();
+  const [chatMode, setChatMode] = useState(workspace?.chatMode || "chat");
+
   return (
     <div>
       <div className="flex flex-col">

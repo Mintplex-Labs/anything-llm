@@ -431,6 +431,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                   />
                 </MetricsProvider>
                 <PromptInput
+                  workspace={workspace}
                   submit={handleSubmit}
                   isStreaming={loadingResponse}
                   sendCommand={sendCommand}

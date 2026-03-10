@@ -19,7 +19,7 @@ async function streamChatWithWorkspace(
   response,
   workspace,
   message,
-  chatMode = "automatic",
+  chatMode = "chat",
   user = null,
   thread = null,
   attachments = []
