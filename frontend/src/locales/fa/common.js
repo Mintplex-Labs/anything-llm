@@ -711,6 +711,8 @@ const TRANSLATIONS = {
     slash_commands: "دستورات کوتاه‌شده",
     agent_skills: "مهارت‌های کارگزار",
     manage_agent_skills: "مدیریت مهارت‌های نمایندگان",
+    agent_skills_disabled_in_session:
+      "امکان تغییر مهارت‌ها در حین یک جلسه فعال با یک عامل وجود ندارد. ابتدا با استفاده از دستور /exit، جلسه را به پایان برسانید.",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

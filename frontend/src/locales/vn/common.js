@@ -707,6 +707,8 @@ const TRANSLATIONS = {
     slash_commands: "Lệnh tắt/bật",
     agent_skills: "Kỹ năng của đại lý",
     manage_agent_skills: "Quản lý kỹ năng của đại lý",
+    agent_skills_disabled_in_session:
+      "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

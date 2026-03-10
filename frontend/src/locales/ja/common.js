@@ -704,6 +704,8 @@ const TRANSLATIONS = {
     slash_commands: "スラッシュコマンド",
     agent_skills: "エージェントのスキル",
     manage_agent_skills: "エージェントのスキル管理",
+    agent_skills_disabled_in_session:
+      "アクティブなセッション中にスキルを変更することはできません。まず、`/exit`コマンドを使用してセッションを終了してください。",
   },
   profile_settings: {
     edit_account: "アカウントを編集",

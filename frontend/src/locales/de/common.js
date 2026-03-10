@@ -821,6 +821,8 @@ const TRANSLATIONS = {
     slash_commands: "Befehlszeilen",
     agent_skills: "Fähigkeiten von Agenten",
     manage_agent_skills: "Verwalten Sie die Fähigkeiten von Agenten",
+    agent_skills_disabled_in_session:
+      "Es ist nicht möglich, während einer aktiven Sitzung die Fähigkeiten zu ändern. Verwenden Sie zuerst den Befehl `/exit`, um die Sitzung zu beenden.",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

@@ -716,6 +716,8 @@ const TRANSLATIONS = {
     slash_commands: "Kommandoer",
     agent_skills: "Agenters kompetencer",
     manage_agent_skills: "Administrer agenters kompetencer",
+    agent_skills_disabled_in_session:
+      "Det er ikke muligt at ændre færdigheder under en aktiv agent-session. Brug kommandoen `/exit` for at afslutte sessionen først.",
   },
   profile_settings: {
     edit_account: "Rediger konto",

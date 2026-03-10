@@ -762,6 +762,8 @@ const TRANSLATIONS = {
     slash_commands: "快捷命令",
     agent_skills: "代理人技能",
     manage_agent_skills: "管理代理人技能",
+    agent_skills_disabled_in_session:
+      "在活动会话期间，无法修改技能。首先使用 /exit 命令结束会话。",
   },
   profile_settings: {
     edit_account: "编辑帐户",

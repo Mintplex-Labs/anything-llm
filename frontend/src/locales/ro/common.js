@@ -555,6 +555,8 @@ const TRANSLATIONS = {
     slash_commands: "Comenzi scurte",
     agent_skills: "Abilități ale agentului",
     manage_agent_skills: "Gestionarea competențelor agenților",
+    agent_skills_disabled_in_session:
+      "Nu este posibil să modificați abilitățile în timpul unei sesiuni cu un agent activ. Pentru a încheia sesiunea, utilizați comanda /exit.",
   },
   profile_settings: {
     edit_account: "Editează contul",

@@ -801,6 +801,8 @@ const TRANSLATIONS = {
     slash_commands: "슬래시 명령어",
     agent_skills: "에이전트의 역량",
     manage_agent_skills: "에이전트 역량 관리",
+    agent_skills_disabled_in_session:
+      "활성 에이전트 세션 중에 기술을 변경할 수 없습니다. 먼저 /exit 명령을 사용하여 세션을 종료하십시오.",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

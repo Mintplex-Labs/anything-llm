@@ -666,6 +666,8 @@ const TRANSLATIONS = {
     slash_commands: "簡短指令",
     agent_skills: "代理人技能",
     manage_agent_skills: "管理代理人技能",
+    agent_skills_disabled_in_session:
+      "在執行代理時，無法修改技能。請先使用 /exit 命令結束本次執行。",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

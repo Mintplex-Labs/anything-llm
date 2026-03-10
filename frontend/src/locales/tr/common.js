@@ -710,6 +710,8 @@ const TRANSLATIONS = {
     slash_commands: "Komut Satırı Komutları",
     agent_skills: "Ajansın Yetenekleri",
     manage_agent_skills: "Temsilcinin becerilerini yönetin",
+    agent_skills_disabled_in_session:
+      "Aktif bir ajan oturumunda becerileri değiştirilemez. İlk olarak /exit komutunu kullanarak oturumu sonlandırın.",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

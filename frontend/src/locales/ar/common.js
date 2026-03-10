@@ -702,6 +702,8 @@ const TRANSLATIONS = {
     slash_commands: "أوامر مختصرة",
     agent_skills: "مهارات الوكيل",
     manage_agent_skills: "إدارة مهارات الوكلاء",
+    agent_skills_disabled_in_session:
+      'لا يمكن تعديل المهارات أثناء جلسة مع عامل. يجب عليك أولاً استخدام الأمر "/exit" لإنهاء الجلسة.',
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

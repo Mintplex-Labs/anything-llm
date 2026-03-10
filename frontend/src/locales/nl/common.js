@@ -712,6 +712,8 @@ const TRANSLATIONS = {
     slash_commands: "Korte commando's",
     agent_skills: "Vaardigheden van agenten",
     manage_agent_skills: "Beheer van de vaardigheden van de agent",
+    agent_skills_disabled_in_session:
+      "Het is niet mogelijk om vaardigheden aan te passen tijdens een actieve sessie. Gebruik eerst de commando `/exit` om de sessie te beëindigen.",
   },
   profile_settings: {
     edit_account: "Account bewerken",

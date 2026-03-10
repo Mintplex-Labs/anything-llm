@@ -844,6 +844,8 @@ const TRANSLATIONS = {
     slash_commands: "Příkazy v řádku",
     agent_skills: "Dovednosti agenta",
     manage_agent_skills: "Řízení dovedností agentů",
+    agent_skills_disabled_in_session:
+      "Není možné upravovat dovednosti během aktivního sezení s agentem. Nejprve použijte příkaz `/exit` pro ukončení sezení.",
   },
   profile_settings: {
     edit_account: "Upravit účet",

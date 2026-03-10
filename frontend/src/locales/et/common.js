@@ -787,6 +787,8 @@ const TRANSLATIONS = {
     slash_commands: "Lihtsasti kasutatavad käsud",
     agent_skills: "Agentide oskused",
     manage_agent_skills: "Halda agentide oskusi",
+    agent_skills_disabled_in_session:
+      "Ei ole võimalik muuta oskusi aktiivse agenti seanssi ajal. Enne seanssi lõpetamist kasutage käsku /exit.",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

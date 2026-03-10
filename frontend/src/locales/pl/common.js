@@ -818,6 +818,8 @@ const TRANSLATIONS = {
     slash_commands: "Polecenia skrótowe",
     agent_skills: "Umiejętności agenta",
     manage_agent_skills: "Zarządzanie umiejętnościami agentów",
+    agent_skills_disabled_in_session:
+      "Nie można modyfikować umiejętności podczas trwającej sesji. Aby zakończyć sesję, należy najpierw użyć komendy /exit.",
   },
   profile_settings: {
     edit_account: "Edytuj konto",

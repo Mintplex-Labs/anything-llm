@@ -821,6 +821,8 @@ const TRANSLATIONS = {
     slash_commands: "Īs termini komandās",
     agent_skills: "Aģenta prasmes",
     manage_agent_skills: "Iesaista aģenta prasmes",
+    agent_skills_disabled_in_session:
+      "Nav iespējams mainīt prasmes aktīvā lietotāja sesijā. Pirmais, jāizmanto komandu `/exit`, lai beigtu sesiju.",
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

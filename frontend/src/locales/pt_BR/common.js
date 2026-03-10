@@ -800,6 +800,8 @@ const TRANSLATIONS = {
     slash_commands: "Comandos Rápidos",
     agent_skills: "Habilidades do Agente",
     manage_agent_skills: "Gerenciar as habilidades dos agentes",
+    agent_skills_disabled_in_session:
+      "Não é possível modificar as habilidades durante uma sessão de agente ativa. Utilize o comando `/exit` para encerrar a sessão primeiro.",
   },
   profile_settings: {
     edit_account: "Editar conta",

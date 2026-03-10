@@ -792,6 +792,8 @@ const TRANSLATIONS = {
     slash_commands: "פקודות קיצור",
     agent_skills: "כישורים של סוכן",
     manage_agent_skills: "ניהול מיומנויות של סוכנים",
+    agent_skills_disabled_in_session:
+      'לא ניתן לשנות כישורים במהלך סשן פעיל. יש להשתמש בפקודה "/exit" כדי לסיים את הסשן תחילה.',
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

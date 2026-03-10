@@ -716,6 +716,8 @@ const TRANSLATIONS = {
     slash_commands: "Команды, введенные сокращенной формой",
     agent_skills: "Навыки агента",
     manage_agent_skills: "Управление навыками агентов",
+    agent_skills_disabled_in_session:
+      "Невозможно изменять навыки во время активной сессии. Для завершения сессии сначала используйте команду /exit.",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",
