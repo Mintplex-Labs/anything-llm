@@ -332,6 +332,7 @@ export default function PromptInput({
         >
           <div className="relative w-[95vw] md:w-[750px]">
             <ToolsMenu
+              workspace={workspace}
               showing={showTools}
               setShowing={setShowTools}
               sendCommand={sendCommand}
