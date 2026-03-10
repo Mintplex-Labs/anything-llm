@@ -147,6 +147,11 @@ export default function AgentSkillsTab({
 
   return (
     <>
+      {!agentSessionActive && (
+        <p className="text-xs text-theme-text-secondary text-center py-1">
+          {t("chat_window.use_agent_session_to_use_tools")}
+        </p>
+      )}
       {items.map((item, index) => (
         <SkillRow
           key={item.id}

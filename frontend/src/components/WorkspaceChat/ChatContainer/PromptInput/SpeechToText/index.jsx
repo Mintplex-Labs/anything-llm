@@ -131,7 +131,8 @@ export default function SpeechToText({ sendCommand }) {
     >
       <Microphone
         weight="regular"
-        className={`w-[18px] h-[18px] pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 ${
+        size={18}
+        className={`pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 shrink-0 ${
           listening
             ? "animate-pulse-glow !text-white light:!text-slate-800"
             : ""
