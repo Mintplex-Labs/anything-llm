@@ -47,16 +47,9 @@ const TRANSLATIONS = {
       skip: "تخطي الاستطلاع",
       thankYou: "شكرا على تقييماتك!",
     },
-    workspace: {
-      title: "قم بإنشاء مساحة العمل الأولى الخاصة بك",
-      description:
-        "قم بإنشاء مساحة العمل الأولى الخاصة بك وابدأ مع إيني ثينك إلْلْمْ.",
-    },
   },
   common: {
     "workspaces-name": "اسم مساحة العمل",
-    error: "خطأ",
-    success: "موفّق",
     user: "مستعمِل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
@@ -72,7 +65,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "إعدادات المثيل",
-    system: "الإعدادات العامة",
     invites: "دعوات",
     users: "مستعملون",
     workspaces: "مساحات العمل",
@@ -86,7 +78,6 @@ const TRANSLATIONS = {
     "voice-speech": "الصوت والخطاب",
     "vector-database": "قاعدة بيانات المتجهات",
     embeds: "تضمين المحادثة",
-    "embed-chats": "سجل تضمين المحادثة",
     security: "حماية",
     "event-logs": "سجلات الأحداث",
     privacy: "الخصوصية والبيانات",
@@ -125,7 +116,6 @@ const TRANSLATIONS = {
       description:
         "قم بإدخال المعلومات اللازمة أدناه لإعادة تعيين كلمة المرور الخاصة بك.",
       "recovery-codes": "رموز الاسترداد",
-      "recovery-code": " {{index}} رمز الاسترداد",
       "back-to-login": "العودة إلى تسجيل الدخول",
     },
   },
@@ -186,7 +176,6 @@ const TRANSLATIONS = {
       title: "نموذج محادثة مساحة العمل",
       description:
         "نموذج المحادثة المحدد الذي سيتم استخدامه لمساحة العمل هذه. إذا كان غير محدد، فسيتم استخدام نموذج التعلم العميق الافتراضي للنظام.",
-      wait: "-- في انتظار النماذج --",
     },
     mode: {
       title: "وضع المحادثة",
@@ -297,9 +286,6 @@ const TRANSLATIONS = {
       wait: "-- في انتظار النماذج --",
     },
     skill: {
-      title: "مهارات الوكيل الافتراضية",
-      description:
-        "قم بتحسين القدرات الطبيعية للوكيل الافتراضي باستخدام هذه المهارات المعدة مسبقًا. ينطبق هذا الإعداد على جميع مساحات العمل.",
       rag: {
         title: "التوليد المعزز بالاسترجاع والذاكرة طويلة المدى",
         description:
@@ -471,9 +457,6 @@ const TRANSLATIONS = {
     title: "الخصوصية ومعالجة البيانات",
     description:
       "هذا هو التكوين الخاص بك لكيفية تعامل موفري الطرف الثالث المتصلين و إني ثينك إلْلْمْ مع بياناتك.",
-    llm: "اختيار نموذج التعلم العميق",
-    embedding: "تفضيلات التضمين",
-    vector: "قاعدة بيانات المتجهة",
     anonymous: "تم تمكين القياس المستتر عن بعد ",
   },
   connectors: {
@@ -514,7 +497,6 @@ const TRANSLATIONS = {
       URL_explained: "عنوان مستودع GitLab الذي ترغب في جمعه.",
       token: "رمز الوصول إلى GitLab",
       optional: "اختياري",
-      token_explained: "رمز الوصول لمنع تحديد السرعة.",
       token_description:
         "حدد الكيانات الإضافية التي تريد استردادها من واجهة برمجة التطبيقات الخاصة بـ GitLab.",
       token_explained_start: "بدون مساعدة.",
@@ -546,9 +528,6 @@ const TRANSLATIONS = {
       URL_explained_end: "متاح.",
       task_explained:
         "بمجرد الانتهاء، سيكون النص متاحًا لإدراجه في مساحات العمل في أداة اختيار المستندات.",
-      language: "لغة التسجيل",
-      language_explained: "حدد لغة النص الذي ترغب في جمعه.",
-      loading_languages: "-- تحميل اللغات المتاحة --",
     },
     "website-depth": {
       name: "أداة لجمع الروابط بكميات كبيرة",
@@ -609,14 +588,11 @@ const TRANSLATIONS = {
       "search-document": "البحث عن المستند",
       "no-documents": "لا توجد مستندات.",
       "move-workspace": "انتقل إلى مساحة العمل",
-      name: "الاسم",
       "delete-confirmation":
         "هل أنت متأكد من أنك تريد حذف هذه الملفات والمجلدات؟\nسيؤدي ذلك إلى إزالة الملفات من النظام وإزالتها تلقائيًا من أي مساحات عمل موجودة.\nهذا الإجراء غير قابل للتراجع.",
       "removing-message":
         "حذف {{count}} مستندًا و {{folderCount}} مجلدًا. يرجى الانتظار.",
       "move-success": "تم نقل {{count}} مستندات بنجاح.",
-      date: "التاريخ",
-      type: "نوع",
       no_docs: "لا توجد مستندات.",
       select_all: "حدد الكل",
       deselect_all: "إلغاء التحديد الكل",
@@ -661,8 +637,6 @@ const TRANSLATIONS = {
       accept: "حسناً، فهمت.",
     },
     obsidian: {
-      name: "أوبشيان",
-      description: "استورد مجلد Obsidian بنقرة واحدة.",
       vault_location: "موقع الخزانة",
       vault_description:
         'حدد مجلد "Obsidian" الخاص بك لاستيراد جميع الملاحظات وعلاقاتها.',
@@ -675,12 +649,6 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "مرحبًا بكم في مساحة عملكم الجديدة.",
-    get_started: "للبدء، يمكنك:",
-    get_started_default: "للبدء",
-    upload: "تحميل مستند",
-    or: "أو",
-    send_chat: "أرسل رسالة.",
     send_message: "أرسل رسالة",
     attach_file: "أرفق ملفًا بهذا الدردشة",
     slash: "عرض جميع الأوامر المتاحة للتواصل.",
@@ -697,7 +665,6 @@ const TRANSLATIONS = {
     more_actions: "إجراءات إضافية",
     hide_citations: "إخفاء المراجع",
     show_citations: "عرض المراجع",
-    pause_tts_speech_message: "إيقاف قراءة النص بصوت التحدث الآلي",
     fork: "شوكة",
     delete: "حذف",
     save_submit: "حفظ وإرسال",
@@ -850,87 +817,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "يرجى إنشاء مساحة عمل قبل البدء في الدردشة.",
-    checklist: {
-      title: "البدء",
-      tasksLeft: "المهام المتبقية",
-      completed: "أنت على طريق أن تصبح خبيرًا في مجال نماذج لغة AnythingLLM!",
-      dismiss: "أغلق",
-      tasks: {
-        create_workspace: {
-          title: "إنشاء مساحة عمل",
-          description: "إنشاء مساحة عمل أولية للبدء",
-          action: "إنشاء",
-        },
-        send_chat: {
-          title: "أرسل رسالة",
-          description: "ابدأ محادثة مع مساعدك الذكي",
-          action: "دردشة",
-        },
-        embed_document: {
-          title: "إدراج مستند",
-          description: "أضف المستند الأول الخاص بك إلى مساحة العمل الخاصة بك",
-          action: "دمج",
-        },
-        setup_system_prompt: {
-          title: "قم بإنشاء نظام موجه.",
-          description: "قم بتكوين سلوك مساعدك الذكي.",
-          action: "إعداد",
-        },
-        define_slash_command: {
-          title: "حدد أمر القطع",
-          description: "إنشاء أوامر مخصصة لمساعدك",
-          action: "عرف",
-        },
-        visit_community: {
-          title: "زيارة مركز المجتمع",
-          description: "استكشف موارد المجتمع وقوالبها",
-          action: "تصفح",
-        },
-      },
-    },
-    quickLinks: {
-      title: "روابط سريعة",
-      sendChat: "أرسل الدردشة",
-      embedDocument: "إدراج مستند",
-      createWorkspace: "إنشاء مساحة عمل",
-    },
-    exploreMore: {
-      title: "استكشف المزيد من الميزات",
-      features: {
-        customAgents: {
-          title: "وكلاء الذكاء الاصطناعي المخصصين",
-          description:
-            "قم ببناء وكلاء ذكاء اصطناعي قويين وأتمتيات بدون الحاجة إلى كتابة التعليمات البرمجية.",
-          primaryAction: "استخدم الدردشة مع @agent",
-          secondaryAction: "صمم مسارًا لعميل",
-        },
-        slashCommands: {
-          title: "أوامر السطر الأوامر",
-          description: "وفر الوقت وأدخل الأوامر باستخدام أوامر مخصصة.",
-          primaryAction: "إنشاء أمر سطر أوامر",
-          secondaryAction: "استكشف على Hub",
-        },
-        systemPrompts: {
-          title: "مطالبات النظام",
-          description:
-            "عدّل مطالبة النظام لتخصيص ردود الذكاء الاصطناعي في مساحة العمل.",
-          primaryAction: "عدّل مطالبة النظام",
-          secondaryAction: "إدارة المتغيرات المحددة",
-        },
-      },
-    },
-    announcements: {
-      title: "التحديثات والإعلانات",
-    },
-    resources: {
-      title: "الموارد",
-      links: {
-        docs: "وثائق",
-        star: "نجمة على GitHub",
-      },
-      keyboardShortcuts: "اختصارات لوحة المفاتيح",
-    },
     quickActions: {
       createAgent: "إنشاء وكيل",
       editWorkspace: "تعديل مساحة العمل",
@@ -975,7 +861,6 @@ const TRANSLATIONS = {
         private_description: "رسائل التذكير الخاصة مرئية فقط لك.",
         publish_button: "نشر في مركز المجتمع",
         submitting: "نشر...",
-        submit: "نشر في مركز المجتمع",
         prompt_label:
           "الرجاء تقديم معلومات حول كيفية الحصول على شهادة في مجال تكنولوجيا المعلومات.",
         prompt_description:
@@ -983,8 +868,6 @@ const TRANSLATIONS = {
         prompt_placeholder: "أدخل تعليمات النظام هنا...",
       },
       agent_flow: {
-        public_description: "يمكن رؤية تدفقات الوكلاء العامة للجميع.",
-        private_description: "تدفقات الوكلاء الخاصة مرئية فقط لك.",
         success_title: "نجاح!",
         success_description: 'تم نشر "Agent Flow" الخاص بك في مركز المجتمع!',
         success_thank_you: "شكراً لمشاركتكم في المجتمع!",
@@ -1001,7 +884,6 @@ const TRANSLATIONS = {
           "تُستخدم العلامات لتصنيف مسارات عملك لتسهيل البحث. يمكنك إضافة عدة علامات. الحد الأقصى لعدد العلامات هو 5. الحد الأقصى لعدد الأحرف في كل علامة هو 20 حرفًا.",
         tags_placeholder: "أدخل النص واضغط على مفتاح الإدخال لإضافة العلامات",
         visibility_label: "رؤية",
-        publish_button: "نشر في مركز المجتمع",
         submitting: "نشر...",
         submit: "نشر في مركز المجتمع",
         privacy_note:
@@ -1027,10 +909,6 @@ const TRANSLATIONS = {
         description_label: "وصف",
         description_description:
           "هذا هو وصف أمر السلايش الخاص بك. استخدم هذا لوصف الغرض من أمر السلايش الخاص بك.",
-        command_label: "أمر",
-        command_description:
-          "هذا هو الأمر الذي سيدخله المستخدمون لتفعيل هذا الإعداد المسبق.",
-        command_placeholder: "أمرى",
         tags_label: "الوسوم",
         tags_description:
           "تُستخدم العلامات لتسمية أوامر سلاش الخاصة بك لتسهيل البحث عنها. يمكنك إضافة عدة علامات. الحد الأقصى لعدد العلامات هو 5. الحد الأقصى لعدد الأحرف في كل علامة هو 20 حرفًا.",

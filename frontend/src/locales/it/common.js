@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Queste impostazioni possono essere riconfigurate in qualsiasi momento nelle impostazioni.",
     },
-    workspace: {
-      title: "Crea il tuo primo spazio di lavoro",
-      description:
-        "Crea il tuo primo spazio di lavoro e inizia a utilizzare AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nome delle aree di lavoro",
-    error: "errore",
-    success: "successo",
     user: "Utente",
     selection: "Selezione del modello",
     saving: "Salvo...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Impostazioni istanza",
-    system: "Impostazioni generali",
     invites: "Inviti",
     users: "Utenti",
     workspaces: "Aree di lavoro",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voce & discorso",
     "vector-database": "Database Vettoriale",
     embeds: "Chat incorporata",
-    "embed-chats": "Storico chat incorporata",
     security: "Sicurezza",
     "event-logs": "Log degli eventi",
     privacy: "Privacy & Dati",
@@ -128,7 +119,6 @@ const TRANSLATIONS = {
       description:
         "Fornisci le informazioni necessarie qui sotto per reimpostare la tua password.",
       "recovery-codes": "Codici di recupero",
-      "recovery-code": "Codice di recupero {{index}}",
       "back-to-login": "Torna al Login",
     },
   },
@@ -190,7 +180,6 @@ const TRANSLATIONS = {
       title: "Modello di chat dell'area di lavoro",
       description:
         "Il modello di chat specifico che verrà utilizzato per quest'area di lavoro. Se vuoto, utilizzerà l'LLM di sistema.",
-      wait: "-- in attesa dei modelli --",
     },
     mode: {
       title: "Modalità chat",
@@ -303,9 +292,6 @@ const TRANSLATIONS = {
       wait: "-- in attesa dei modelli --",
     },
     skill: {
-      title: "Abilità predefinite dell'agente",
-      description:
-        "Migliora le capacità naturali dell'agente predefinito con queste abilità predefinite. Questa configurazione si applica a tutte le aree di lavoro.",
       rag: {
         title: "RAG e memoria a lungo termine",
         description:
@@ -479,9 +465,6 @@ const TRANSLATIONS = {
     title: "Privacy e gestione dei dati",
     description:
       "Questa è la tua configurazione per il modo in cui i provider terzi connessi e AnythingLLM gestiscono i tuoi dati.",
-    llm: "Selezione LLM",
-    embedding: "Preferenza di embedding",
-    vector: "Database vettoriale",
     anonymous: "Telemetria anonima abilitata",
   },
   connectors: {
@@ -523,7 +506,6 @@ const TRANSLATIONS = {
       URL_explained: "URL del repository di GitLab a cui desideri accedere.",
       token: "Token di accesso a GitLab",
       optional: "Opzionale",
-      token_explained: "Token di accesso per prevenire il limite di velocità.",
       token_description:
         "Selezionare ulteriori entità da recuperare dall'API di GitLab.",
       token_explained_start: "Senza",
@@ -557,10 +539,6 @@ const TRANSLATIONS = {
       URL_explained_end: "Disponibile.",
       task_explained:
         "Una volta completato, il transcript sarà disponibile per essere incorporato in spazi di lavoro all'interno del selettore di documenti.",
-      language: "Trascrizione della lingua",
-      language_explained:
-        "Seleziona la lingua del testo che desideri raccogliere.",
-      loading_languages: "-- Caricamento delle lingue disponibili --",
     },
     "website-depth": {
       name: "Scraping di link in blocco",
@@ -621,14 +599,11 @@ const TRANSLATIONS = {
       "search-document": "Cerca documento",
       "no-documents": "Nessun documento.",
       "move-workspace": "Vai a Workspace",
-      name: "Nome",
       "delete-confirmation":
         "È sicuro che desideri eliminare questi file e cartelle?\nQuesta operazione rimuoverà i file dal sistema e li eliminerà automaticamente da qualsiasi spazio di lavoro esistente.\nQuesta operazione non è reversibile.",
       "removing-message":
         "Eliminazione di {{count}} documenti e {{folderCount}} cartelle. Si prega di attendere.",
       "move-success": "Trasferiti con successo {{count}} documenti.",
-      date: "Data",
-      type: "Tipo",
       no_docs: "Nessun documento.",
       select_all: "Seleziona tutto",
       deselect_all: "Deselect All",
@@ -673,8 +648,6 @@ const TRANSLATIONS = {
       accept: "Ok, ho capito.",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Importa il vault di Obsidian con un solo clic.",
       vault_location: "Posizione del deposito",
       vault_description:
         "Seleziona la cartella del tuo archivio Obsidian per importare tutte le note e le loro relazioni.",
@@ -688,12 +661,6 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Benvenuti nel vostro nuovo spazio di lavoro.",
-    get_started: "Per iniziare, si può fare:",
-    get_started_default: "Per iniziare",
-    upload: "caricare un documento",
-    or: "oppure",
-    send_chat: "Invia un messaggio.",
     send_message: "Invia un messaggio",
     attach_file: "Allega un file a questa chat.",
     slash: "Visualizza tutti i comandi disponibili per la chat.",
@@ -712,8 +679,6 @@ const TRANSLATIONS = {
     more_actions: "Ulteriori azioni",
     hide_citations: "Nascondi le citazioni",
     show_citations: "Mostra citazioni",
-    pause_tts_speech_message:
-      "Mettere in pausa la sintesi vocale del messaggio.",
     fork: "Forchetta",
     delete: "Elimina",
     save_submit: "Salva e invia",
@@ -887,92 +852,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Si prega di creare uno spazio di lavoro prima di iniziare una conversazione.",
-    checklist: {
-      title: "Come iniziare",
-      tasksLeft: "compiti rimanenti",
-      completed: "Stai per diventare un esperto di AnythingLLM!",
-      dismiss: "chiudi",
-      tasks: {
-        create_workspace: {
-          title: "Crea uno spazio di lavoro",
-          description: "Crea il tuo primo spazio di lavoro per iniziare",
-          action: "Crea",
-        },
-        send_chat: {
-          title: "Invia una chat",
-          description: "Inizia una conversazione con il tuo assistente AI",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Incorporare un documento",
-          description:
-            "Aggiungi il tuo primo documento al tuo spazio di lavoro.",
-          action: "Incorporare",
-        },
-        setup_system_prompt: {
-          title: "Definisci un prompt di sistema",
-          description: "Configura il comportamento del tuo assistente AI",
-          action: "Configurazione",
-        },
-        define_slash_command: {
-          title: "Definire un comando slash",
-          description: "Crea comandi personalizzati per il tuo assistente",
-          action: "Definire",
-        },
-        visit_community: {
-          title: "Visita il centro comunitario",
-          description:
-            "Esplorate le risorse e i modelli disponibili nella comunità.",
-          action: "Esplora",
-        },
-      },
-    },
-    quickLinks: {
-      title:
-        "Link to the website\nLink to the online store\nLink to the contact form\nLink to the FAQ\nLink to the privacy policy\nLink to the terms and conditions\nLink to the blog\nLink to the social media profiles",
-      sendChat: "Invia chat",
-      embedDocument: "Incorporare un documento",
-      createWorkspace: "Creare uno spazio di lavoro",
-    },
-    exploreMore: {
-      title: "Esplora le altre funzionalità",
-      features: {
-        customAgents: {
-          title: "Agenti AI personalizzati",
-          description:
-            "Creare potenti agenti di intelligenza artificiale e automazioni senza codice.",
-          primaryAction: "Chatta usando @agent",
-          secondaryAction: "Costruisci un flusso di lavoro per un agente.",
-        },
-        slashCommands: {
-          title: "Comandi Slash",
-          description:
-            "Risparmia tempo e utilizza comandi personalizzati per l'inserimento di prompt.",
-          primaryAction: "Creare un comando Slash",
-          secondaryAction: "Esplora su Hub",
-        },
-        systemPrompts: {
-          title: "Prompt di sistema",
-          description:
-            "Modifica l'istruzione del sistema per personalizzare le risposte dell'IA in un ambiente di lavoro.",
-          primaryAction: "Modifica un prompt di sistema",
-          secondaryAction: "Gestire le variabili di prompt",
-        },
-      },
-    },
-    announcements: {
-      title: "Aggiornamenti e comunicazioni",
-    },
-    resources: {
-      title: "Risorse",
-      links: {
-        docs: "Documenti",
-        star: "Star on Github",
-      },
-      keyboardShortcuts: "Combinazioni di tasti",
-    },
     quickActions: {
       createAgent: "Creare un agente",
       editWorkspace: "Modifica l'area di lavoro",
@@ -1021,17 +900,12 @@ const TRANSLATIONS = {
           "I messaggi di sistema privati sono visibili solo a te.",
         publish_button: "Pubblica su Community Hub",
         submitting: "Pubblicazione...",
-        submit: "Pubblica su Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Questo è il prompt di sistema effettivo che verrà utilizzato per guidare il modello linguistico.",
         prompt_placeholder: "Inserisci il prompt del tuo sistema qui...",
       },
       agent_flow: {
-        public_description:
-          "Tutti possono visualizzare i flussi di dati pubblici.",
-        private_description:
-          "Solo gli utenti autorizzati possono visualizzare i flussi di dati privati.",
         success_title: "Successo!",
         success_description:
           "Il tuo flusso di lavoro è stato pubblicato nella Community Hub!",
@@ -1051,7 +925,6 @@ const TRANSLATIONS = {
           "Le etichette vengono utilizzate per identificare il flusso di lavoro del tuo agente, facilitando la ricerca. È possibile aggiungere più etichette. Massimo 5 etichette. Massimo 20 caratteri per etichetta.",
         tags_placeholder: "Inserisci il testo e premi Invio per aggiungere tag",
         visibility_label: "Visibilità",
-        publish_button: "Pubblica su Community Hub",
         submitting: "Pubblicazione...",
         submit: "Pubblica su Community Hub",
         privacy_note:
@@ -1079,10 +952,6 @@ const TRANSLATIONS = {
         description_label: "Descrizione",
         description_description:
           "Questa è la descrizione del tuo comando slash. Utilizzala per descrivere lo scopo del tuo comando slash.",
-        command_label: "Comando",
-        command_description:
-          "Questo è il comando da utilizzare dagli utenti per attivare questa impostazione predefinita.",
-        command_placeholder: "my-command",
         tags_label: "Etichette",
         tags_description:
           "Le etichette vengono utilizzate per identificare il tuo comando slash, facilitando la ricerca. È possibile aggiungere più etichette. Massimo 5 etichette. Massimo 20 caratteri per etichetta.",

@@ -20,7 +20,6 @@ const TRANSLATIONS = {
       passwordReq: "Passwords must be at least 8 characters.",
       passwordWarn:
         "It's important to save this password because there is no recovery method.",
-
       adminUsername: "Admin account username",
       adminPassword: "Admin account password",
       adminPasswordReq: "Passwords must be at least 8 characters.",
@@ -37,7 +36,6 @@ const TRANSLATIONS = {
     survey: {
       title: "Welcome to AnythingLLM",
       description: "Help us make AnythingLLM built for your needs. Optional.",
-
       email: "What's your email?",
       useCase: "What will you use AnythingLLM for?",
       useCaseWork: "For work",
@@ -49,16 +47,9 @@ const TRANSLATIONS = {
       skip: "Skip Survey",
       thankYou: "Thank you for your feedback!",
     },
-    workspace: {
-      title: "Create your first workspace",
-      description:
-        "Create your first workspace and get started with AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Workspace Name",
-    error: "error",
-    success: "success",
     user: "User",
     selection: "Model Selection",
     saving: "Saving...",
@@ -79,11 +70,8 @@ const TRANSLATIONS = {
       "You currently aren't assigned to any workspaces.\nPlease contact your administrator to request access to a workspace.",
     goToWorkspace: 'Go to "{{workspace}}"',
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instance Settings",
-    system: "General Settings",
     invites: "Invites",
     users: "Users",
     workspaces: "Workspaces",
@@ -100,7 +88,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
-    "embed-chats": "Chat Embed History",
     security: "Security",
     "event-logs": "Event Logs",
     privacy: "Privacy & Data",
@@ -120,8 +107,6 @@ const TRANSLATIONS = {
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Welcome",
@@ -139,107 +124,21 @@ const TRANSLATIONS = {
       description:
         "Provide the necessary information below to reset your password.",
       "recovery-codes": "Recovery Codes",
-      "recovery-code": "Recovery Code {{index}}",
       "back-to-login": "Back to Login",
     },
   },
-
   "main-page": {
     greeting: "How can I help you today?",
-    noWorkspaceError: "Please create a workspace before starting a chat.",
-    checklist: {
-      title: "Getting Started",
-      tasksLeft: "tasks left",
-      completed: "You're on your way to becoming an AnythingLLM expert!",
-      dismiss: "close",
-      tasks: {
-        create_workspace: {
-          title: "Create a workspace",
-          description: "Create your first workspace to get started",
-          action: "Create",
-        },
-        send_chat: {
-          title: "Send a chat",
-          description: "Start a conversation with your AI assistant",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Embed a document",
-          description: "Add your first document to your workspace",
-          action: "Embed",
-        },
-        setup_system_prompt: {
-          title: "Set up a system prompt",
-          description: "Configure your AI assistant's behavior",
-          action: "Set Up",
-        },
-        define_slash_command: {
-          title: "Define a slash command",
-          description: "Create custom commands for your assistant",
-          action: "Define",
-        },
-        visit_community: {
-          title: "Visit Community Hub",
-          description: "Explore community resources and templates",
-          action: "Browse",
-        },
-      },
-    },
     quickActions: {
       createAgent: "Create an Agent",
       editWorkspace: "Edit Workspace",
       uploadDocument: "Upload a Document",
     },
-    quickLinks: {
-      title: "Quick Links",
-      sendChat: "Send Chat",
-      embedDocument: "Embed a Document",
-      createWorkspace: "Create Workspace",
-    },
-    exploreMore: {
-      title: "Explore more features",
-      features: {
-        customAgents: {
-          title: "Custom AI Agents",
-          description: "Build powerful AI Agents and automations with no code.",
-          primaryAction: "Chat using @agent",
-          secondaryAction: "Build an agent flow",
-        },
-        slashCommands: {
-          title: "Slash Commands",
-          description:
-            "Save time and inject prompts using custom slash commands.",
-          primaryAction: "Create a Slash Command",
-          secondaryAction: "Explore on Hub",
-        },
-        systemPrompts: {
-          title: "System Prompts",
-          description:
-            "Modify the system prompt to customize the AI replies of a workspace.",
-          primaryAction: "Modify a System Prompt",
-          secondaryAction: "Manage prompt variables",
-        },
-      },
-    },
-    announcements: {
-      title: "Updates & Announcements",
-    },
-    resources: {
-      title: "Resources",
-      links: {
-        docs: "Docs",
-        star: "Star on Github",
-      },
-      keyboardShortcuts: "Keyboard Shortcuts",
-    },
   },
-
   "new-workspace": {
     title: "New Workspace",
     placeholder: "My Workspace",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "General Settings",
     chat: "Chat Settings",
@@ -247,8 +146,6 @@ const TRANSLATIONS = {
     members: "Members",
     agent: "Agent Configuration",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Vector Count",
@@ -284,8 +181,6 @@ const TRANSLATIONS = {
         "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Workspace LLM Provider",
@@ -297,7 +192,6 @@ const TRANSLATIONS = {
       title: "Workspace Chat model",
       description:
         "The specific chat model that will be used for this workspace. If empty, will use the system LLM preference.",
-      wait: "-- waiting for models --",
     },
     mode: {
       title: "Chat mode",
@@ -361,8 +255,6 @@ const TRANSLATIONS = {
       hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Vector database identifier",
     snippets: {
@@ -389,8 +281,6 @@ const TRANSLATIONS = {
       success: "Workspace vector database was reset!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
@@ -410,11 +300,7 @@ const TRANSLATIONS = {
         "The specific LLM model that will be used for this workspace's @agent agent.",
       wait: "-- waiting for models --",
     },
-
     skill: {
-      title: "Default agent skills",
-      description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
       rag: {
         title: "RAG & long-term memory",
         description:
@@ -454,8 +340,6 @@ const TRANSLATIONS = {
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Workspace Chats",
     description:
@@ -470,7 +354,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
   customization: {
     interface: {
       title: "UI Preferences",
@@ -575,8 +458,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // API Keys
   api: {
     title: "API Keys",
     description:
@@ -589,7 +470,6 @@ const TRANSLATIONS = {
       created: "Created",
     },
   },
-
   llm: {
     title: "LLM Preference",
     description:
@@ -609,7 +489,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   transcription: {
     title: "Transcription Model Preference",
     description:
@@ -622,7 +501,6 @@ const TRANSLATIONS = {
     "warn-end":
       "The built-in model will automatically download on the first use.",
   },
-
   embedding: {
     title: "Embedding Preference",
     "desc-start":
@@ -633,7 +511,6 @@ const TRANSLATIONS = {
       title: "Embedding Provider",
     },
   },
-
   text: {
     title: "Text splitting & Chunking Preferences",
     "desc-start":
@@ -646,15 +523,12 @@ const TRANSLATIONS = {
         "This is the maximum length of characters that can be present in a single vector.",
       recommend: "Embed model maximum length is",
     },
-
     overlap: {
       title: "Text Chunk Overlap",
       description:
         "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vector Database",
     description:
@@ -664,8 +538,6 @@ const TRANSLATIONS = {
       description: "There is no configuration needed for LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Embeddable Chat Widgets",
     description:
@@ -678,7 +550,6 @@ const TRANSLATIONS = {
       created: "Created",
     },
   },
-
   "embed-chats": {
     title: "Embed Chat History",
     export: "Export",
@@ -692,7 +563,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
   security: {
     title: "Security",
     multiuser: {
@@ -715,8 +585,6 @@ const TRANSLATIONS = {
       "password-label": "Instance Password",
     },
   },
-
-  // Event Logs
   event: {
     title: "Event Logs",
     description:
@@ -728,24 +596,16 @@ const TRANSLATIONS = {
       occurred: "Occurred At",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacy & Data-Handling",
     description:
       "This is your configuration for how connected third party providers and AnythingLLM handle your data.",
-    llm: "LLM Provider",
-    embedding: "Embedding Preference",
-    vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
   },
-
   connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
     obsidian: {
-      name: "Obsidian",
-      description: "Import Obsidian vault in a single click.",
       vault_location: "Vault Location",
       vault_description:
         "Select your Obsidian vault folder to import all notes and their connections.",
@@ -793,7 +653,6 @@ const TRANSLATIONS = {
       URL_explained: "URL of the GitLab repo you wish to collect.",
       token: "GitLab Access Token",
       optional: "optional",
-      token_explained: "Access Token to prevent rate limiting.",
       token_description:
         "Select additional entities to fetch from the GitLab API.",
       token_explained_start: "Without a ",
@@ -827,10 +686,6 @@ const TRANSLATIONS = {
       URL_explained_end: " available.",
       task_explained:
         "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
-      language: "Transcript Language",
-      language_explained:
-        "Select the language of the transcript you want to collect.",
-      loading_languages: "-- loading available languages --",
     },
     "website-depth": {
       name: "Bulk Link Scraper",
@@ -876,7 +731,6 @@ const TRANSLATIONS = {
       task_explained:
         "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
-
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
@@ -891,14 +745,11 @@ const TRANSLATIONS = {
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
-      name: "Name",
       "delete-confirmation":
         "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
       "removing-message":
         "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
       "move-success": "Successfully moved {{count}} documents.",
-      date: "Date",
-      type: "Type",
       no_docs: "No Documents",
       select_all: "Select All",
       deselect_all: "Deselect All",
@@ -943,15 +794,8 @@ const TRANSLATIONS = {
       accept: "Okay, got it",
     },
   },
-
   chat_window: {
-    welcome: "Welcome to your new workspace.",
-    get_started: "To get started either",
-    get_started_default: "To get started",
-    upload: "upload a document",
-    or: "or",
     attachments_processing: "Attachments are processing. Please wait...",
-    send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
     slash: "View all available slash commands for chatting.",
@@ -967,7 +811,6 @@ const TRANSLATIONS = {
     more_actions: "More actions",
     hide_citations: "Hide citations",
     show_citations: "Show citations",
-    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     save_submit: "Save & Submit",
@@ -1001,7 +844,6 @@ const TRANSLATIONS = {
       missing_credentials_description: "Click to set up credentials",
     },
   },
-
   profile_settings: {
     edit_account: "Edit Account",
     profile_picture: "Profile Picture",
@@ -1022,7 +864,6 @@ const TRANSLATIONS = {
     support: "Support",
     signout: "Sign out",
   },
-
   "keyboard-shortcuts": {
     title: "Keyboard Shortcuts",
     shortcuts: {
@@ -1061,15 +902,12 @@ const TRANSLATIONS = {
         private_description: "Private system prompts are only visible to you.",
         publish_button: "Publish to Community Hub",
         submitting: "Publishing...",
-        submit: "Publish to Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "This is the actual system prompt that will be used to guide the LLM.",
         prompt_placeholder: "Enter your system prompt here...",
       },
       agent_flow: {
-        public_description: "Public agent flows are visible to everyone.",
-        private_description: "Private agent flows are only visible to you.",
         success_title: "Success!",
         success_description:
           "Your Agent Flow has been published to the Community Hub!",
@@ -1087,7 +925,6 @@ const TRANSLATIONS = {
           "Tags are used to label your agent flow for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
         tags_placeholder: "Type and press Enter to add tags",
         visibility_label: "Visibility",
-        publish_button: "Publish to Community Hub",
         submitting: "Publishing...",
         submit: "Publish to Community Hub",
         privacy_note:
@@ -1106,10 +943,6 @@ const TRANSLATIONS = {
         description_label: "Description",
         description_description:
           "This is the description of your slash command. Use this to describe the purpose of your slash command.",
-        command_label: "Command",
-        command_description:
-          "This is the slash command that users will type to trigger this preset.",
-        command_placeholder: "my-command",
         tags_label: "Tags",
         tags_description:
           "Tags are used to label your slash command for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
