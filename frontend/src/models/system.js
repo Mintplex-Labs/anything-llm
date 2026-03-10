@@ -33,7 +33,7 @@ const System = {
       .catch(() => 0);
   },
 
-  /***
+  /**
    * Checks if the onboarding is complete.
    * @returns {Promise<boolean>}
    */
