@@ -1,13 +1,13 @@
-const oracledb = require("oracledb");
+
 
 const { ConnectionStringParser } = require("./utils");
 
 // -- oracledb.initOracleClient({libDir: "/opt/oracle/instantclient_23_26",});
 // Thin mode: DO NOT call initOracleClient()
 
-console.log("Oracle driver thin mode:", oracledb.thin);
 
-oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+
+
 
 class OracleConnector {
   #connected = false;
@@ -18,6 +18,16 @@ class OracleConnector {
       connectionString: null,
     }
   ) {
+        // Load the Oracle driver on demand when this constructor is called
+    this.oracledb = require("oracledb");
+
+    // Set global output format once (will be set each time an instance is created,
+    // but that's harmless due to caching)
+    this.oracledb.outFormat = this.oracledb.OUT_FORMAT_OBJECT;
+    
+    // Log thin mode status when an instance is created
+    console.log("Oracle driver thin mode:", oracledb.thin);
+    
     this.className = "OracleConnector";
     this.connectionString = config.connectionString;
     this._client = null;
