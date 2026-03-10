@@ -6,18 +6,17 @@ export default function SkillRow({
   onToggle,
   highlighted = false,
   disabled = false,
-  disabledTooltipId = null,
-  disabledTooltip = null,
 }) {
+  let classNames = "flex items-center justify-between px-2 py-1 rounded";
+  if (highlighted) classNames += " bg-zinc-700/50 light:bg-slate-100";
+  else classNames += " hover:bg-zinc-700/50 light:hover:bg-slate-100";
+
+  if (disabled) classNames += " opacity-60 cursor-not-allowed";
+  else classNames += " cursor-pointer";
   return (
     <div
-      className={`flex items-center justify-between px-2 py-1 rounded ${
-        highlighted
-          ? "bg-zinc-700/50 light:bg-slate-100"
-          : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
-      }`}
-      data-tooltip-id={disabled ? disabledTooltipId : undefined}
-      data-tooltip-content={disabledTooltip}
+      className={classNames}
+      data-tooltip-id={disabled ? "agent-skill-disabled-tooltip" : undefined}
     >
       <span className="text-xs text-white light:text-slate-900">{name}</span>
       <Toggle
