@@ -55,6 +55,89 @@ class LLMPerformanceMonitor {
   }
 
   /**
+   * HTTP status codes that indicate a transient failure worth retrying.
+   * @type {Set<number>}
+   */
+  static RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
+
+  /**
+   * Determines whether an error is transient and worth retrying.
+   * @param {Error} error
+   * @returns {boolean}
+   */
+  static isRetryableError(error) {
+    const name = error?.constructor?.name || "";
+    if (
+      name === "RateLimitError" ||
+      name === "APIConnectionError" ||
+      name === "APITimeoutError" ||
+      name === "InternalServerError"
+    )
+      return true;
+
+    const status = error?.status ?? error?.statusCode ?? null;
+    if (status && this.RETRYABLE_STATUS_CODES.has(status)) return true;
+
+    const msg = (error?.message || "").toLowerCase();
+    if (
+      msg.includes("timeout") ||
+      msg.includes("econnreset") ||
+      msg.includes("econnrefused") ||
+      msg.includes("temporarily unavailable") ||
+      msg.includes("rate limit")
+    )
+      return true;
+
+    return false;
+  }
+
+  /**
+   * Like `measureAsyncFunction` but accepts a **function** (thunk) that returns
+   * a promise, enabling automatic retry with exponential backoff on transient
+   * errors such as rate limits (429), server errors (5xx), and timeouts.
+   *
+   * Permanent errors (401 auth, 400 bad request) are thrown immediately.
+   *
+   * @param {() => Promise<any>} fn - A function that initiates the API request.
+   * @param {Object} [opts]
+   * @param {number} [opts.maxRetries=3] - Maximum number of retry attempts.
+   * @param {number} [opts.baseDelay=1000] - Initial delay in ms before the first retry.
+   * @returns {Promise<{output: any, duration: number}>}
+   */
+  static async measureWithRetry(fn, { maxRetries = 3, baseDelay = 1000 } = {}) {
+    const start = Date.now();
+    let lastError;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const output = await fn();
+        const end = Date.now();
+        const duration = output?.usage?.duration ?? (end - start) / 1000;
+        return { output, duration };
+      } catch (error) {
+        lastError = error;
+
+        if (attempt >= maxRetries || !this.isRetryableError(error)) {
+          throw error;
+        }
+
+        const delay = Math.min(baseDelay * 2 ** attempt, 60000);
+        const jitter = Math.random() * delay * 0.5;
+        console.log(
+          `\x1b[33m[LLMRetry]\x1b[0m ${error?.constructor?.name || "Error"}: ${
+            (error?.message || "").slice(0, 120)
+          }. Retrying in ${((delay + jitter) / 1000).toFixed(1)}s (attempt ${
+            attempt + 1
+          }/${maxRetries})`
+        );
+        await new Promise((r) => setTimeout(r, delay + jitter));
+      }
+    }
+
+    throw lastError;
+  }
+
+  /**
    * Wraps a completion stream and and attaches a start time and duration property to the stream.
    * Also attaches an `endMeasurement` method to the stream that will calculate the duration of the stream and metrics.
    * @param {Object} opts
