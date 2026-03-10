@@ -265,10 +265,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   // TODO: Simplify this WSS stuff
   useEffect(() => {
+    let socket = null;
+
     function handleWSS() {
       try {
         if (!socketId || !!websocket) return;
-        const socket = new WebSocket(
+        socket = new WebSocket(
           `${websocketURI()}/api/agent-invocation/${socketId}`
         );
         socket.supportsAgentStreaming = false;
@@ -276,7 +278,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         window.addEventListener(ABORT_STREAM_EVENT, () => {
           setAgentSessionActive(false);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          websocket.close();
+          socket?.close();
         });
 
         socket.addEventListener("message", (event) => {
@@ -338,6 +340,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       }
     }
     handleWSS();
+
+    return () => {
+      if (socket) {
+        setAgentSessionActive(false);
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+        socket.close();
+      }
+    };
   }, [socketId]);
 
   const isEmpty =
@@ -396,7 +406,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
       >
         <TextSizeMenu />
-        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden">
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
           {isMobile && <SidebarMobileHeader />}
           <WorkspaceModelPicker workspaceSlug={workspace.slug} />
           <DnDFileUploaderWrapper>

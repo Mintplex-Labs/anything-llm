@@ -1,8 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Wrench } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import Admin from "@/models/admin";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import {
   getDefaultSkills,
   getConfigurableSkills,
@@ -10,20 +14,22 @@ import {
 import paths from "@/utils/paths";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
-import BrowseButton from "../../BrowseButton";
+
+const AGENT_SKILL_DISABLED_TOOLTIP_ID = "agent-skill-disabled-tooltip";
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
   registerItemCount,
 }) {
   const { t } = useTranslation();
+  const agentSessionActive = useIsAgentSessionActive();
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const defaultSkills = useMemo(() => getDefaultSkills(t), [t]);
-  const configurableSkills = useMemo(() => getConfigurableSkills(t), [t]);
+  const defaultSkills = getDefaultSkills(t);
+  const configurableSkills = getConfigurableSkills(t);
 
   useEffect(() => {
     fetchSkillSettings();
@@ -136,7 +142,7 @@ export default function AgentSkillsTab({
   useToolsMenuItems({
     items,
     highlightedIndex,
-    onSelect: (item) => item.onToggle(),
+    onSelect: agentSessionActive ? () => {} : (item) => item.onToggle(),
     registerItemCount,
   });
 
@@ -151,9 +157,31 @@ export default function AgentSkillsTab({
           enabled={item.enabled}
           onToggle={item.onToggle}
           highlighted={highlightedIndex === index}
+          disabled={agentSessionActive}
+          disabledTooltipId={AGENT_SKILL_DISABLED_TOOLTIP_ID}
+          disabledTooltip={
+            agentSessionActive
+              ? t("chat_window.agent_skills_disabled_in_session")
+              : null
+          }
         />
       ))}
-      <BrowseButton link={paths.communityHub.trending()} />
+      <Link to={paths.settings.agentSkills()}>
+        <button className="flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">
+          <Wrench size={12} className="text-theme-text-primary" />
+          <span className="text-xs text-theme-text-primary">
+            {t("chat_window.manage_agent_skills")}
+          </span>
+        </button>
+      </Link>
+      {agentSessionActive && (
+        <Tooltip
+          id={AGENT_SKILL_DISABLED_TOOLTIP_ID}
+          place="top"
+          delayShow={150}
+          className="tooltip !text-xs z-99 !max-w-[250px]"
+        />
+      )}
     </>
   );
 }

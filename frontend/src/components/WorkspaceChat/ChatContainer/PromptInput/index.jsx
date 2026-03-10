@@ -44,6 +44,7 @@ export default function PromptInput({
   const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
   const [showTools, setShowTools] = useState(false);
+  const toolsHighlightRef = useRef(-1);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
@@ -110,6 +111,7 @@ export default function PromptInput({
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
   function handleSubmit(e) {
+    if (e.target !== e.currentTarget) return;
     setFocused(false);
     setShowTools(false);
     submit(e);
@@ -129,14 +131,21 @@ export default function PromptInput({
     // Forward keyboard events to the ToolsMenu when open
     if (showTools) {
       if (
-        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(
-          event.key
-        )
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)
       ) {
         event.preventDefault();
         window.dispatchEvent(
           new CustomEvent(TOOLS_MENU_KEYBOARD_EVENT, {
             detail: { key: event.key },
+          })
+        );
+        return;
+      }
+      if (event.key === "Enter" && toolsHighlightRef.current >= 0) {
+        event.preventDefault();
+        window.dispatchEvent(
+          new CustomEvent(TOOLS_MENU_KEYBOARD_EVENT, {
+            detail: { key: "Enter" },
           })
         );
         return;
@@ -164,6 +173,7 @@ export default function PromptInput({
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
       if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
+      setShowTools(false);
       return submit(event);
     }
 
@@ -306,6 +316,7 @@ export default function PromptInput({
               sendCommand={sendCommand}
               promptRef={textareaRef}
               centered={centered}
+              highlightedIndexRef={toolsHighlightRef}
             />
             <div className="bg-zinc-800 light:bg-white light:border light:border-slate-300 rounded-[20px] pwa:rounded-3xl flex flex-col px-5 overflow-hidden">
               <AttachmentManager attachments={attachments} />

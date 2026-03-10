@@ -1,22 +1,32 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import useUser from "@/hooks/useUser";
 import AgentSkillsTab from "./Tabs/AgentSkills";
 import SlashCommandsTab from "./Tabs/SlashCommands";
 
 export const TOOLS_MENU_KEYBOARD_EVENT = "tools-menu-keyboard";
 
-const TABS = [
-  {
-    key: "slash-commands",
-    labelKey: "chat_window.slash_commands",
-    component: SlashCommandsTab,
-  },
-  {
-    key: "agent-skills",
-    labelKey: "chat_window.agent_skills",
-    component: AgentSkillsTab,
-  },
-];
+function getTabs(t, user) {
+  const tabs = [
+    {
+      key: "slash-commands",
+      label: t("chat_window.slash_commands"),
+      component: SlashCommandsTab,
+    },
+  ];
+
+  const canSeeAgentSkills =
+    !user?.hasOwnProperty("role") || user.role === "admin";
+  if (canSeeAgentSkills) {
+    tabs.push({
+      key: "agent-skills",
+      label: t("chat_window.agent_skills"),
+      component: AgentSkillsTab,
+    });
+  }
+
+  return tabs;
+}
 
 /**
  * @param {boolean} props.showing
@@ -31,8 +41,11 @@ export default function ToolsMenu({
   sendCommand,
   promptRef,
   centered = false,
+  highlightedIndexRef,
 }) {
   const { t } = useTranslation();
+  const { user } = useUser();
+  const TABS = useMemo(() => getTabs(t, user), [t, user]);
   const [activeTab, setActiveTab] = useState(TABS[0].key);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemCountRef = useRef(0);
@@ -41,6 +54,10 @@ export default function ToolsMenu({
   useEffect(() => {
     setHighlightedIndex(-1);
   }, [activeTab, showing]);
+
+  useEffect(() => {
+    if (highlightedIndexRef) highlightedIndexRef.current = highlightedIndex;
+  }, [highlightedIndex, highlightedIndexRef]);
 
   const registerItemCount = useCallback((count) => {
     itemCountRef.current = count;
@@ -88,8 +105,15 @@ export default function ToolsMenu({
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={() => setShowing(false)} />
       <div
+        className="fixed inset-0 z-40"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setShowing(false)}
+      />
+      <div
+        onMouseDown={(e) => {
+          if (e.currentTarget.contains(e.target)) e.preventDefault();
+        }}
         className={`absolute left-2 right-2 md:left-14 md:right-auto md:w-[400px] z-50 bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg p-3 flex flex-col gap-2.5 shadow-lg overflow-hidden ${
           centered
             ? "top-full mt-2 max-h-[min(360px,calc(100dvh-25rem))]"
@@ -97,13 +121,13 @@ export default function ToolsMenu({
         }`}
       >
         <div className="flex shrink-0 gap-2.5 items-center">
-          {TABS.map(({ key, labelKey }) => (
+          {TABS.map((tab) => (
             <TabButton
-              key={key}
-              active={activeTab === key}
-              onClick={() => setActiveTab(key)}
+              key={tab.key}
+              active={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
             >
-              {t(labelKey)}
+              {tab.label}
             </TabButton>
           ))}
         </div>
@@ -127,7 +151,7 @@ function TabButton({ active, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className={`border-none cursor-pointer px-1.5 py-0.5 rounded text-[10px] font-medium text-center whitespace-nowrap ${
+      className={`border-none cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-medium text-center whitespace-nowrap ${
         active
           ? "bg-zinc-700 text-white light:bg-slate-200 light:text-slate-800"
           : "text-zinc-400 light:text-slate-800"

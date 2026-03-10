@@ -964,6 +964,9 @@ const TRANSLATIONS = {
     tools: "Verktøy",
     slash_commands: "Slash-kommandoer",
     agent_skills: "Agentferdigheter",
+    manage_agent_skills: "Administrer agentferdigheter",
+    agent_skills_disabled_in_session:
+      "Kan ikke endre ferdigheter under en aktiv agentøkt. Bruk /exit for å avslutte økten først.",
     browse: "Bla gjennom",
     text_size_label: "Tekststørrelse",
     select_model: "Velg modell",

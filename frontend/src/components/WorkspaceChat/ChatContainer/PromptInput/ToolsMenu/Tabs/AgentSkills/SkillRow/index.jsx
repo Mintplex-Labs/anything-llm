@@ -5,6 +5,9 @@ export default function SkillRow({
   enabled,
   onToggle,
   highlighted = false,
+  disabled = false,
+  disabledTooltipId = null,
+  disabledTooltip = null,
 }) {
   return (
     <div
@@ -13,9 +16,16 @@ export default function SkillRow({
           ? "bg-zinc-700/50 light:bg-slate-100"
           : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
       }`}
+      data-tooltip-id={disabled ? disabledTooltipId : undefined}
+      data-tooltip-content={disabledTooltip}
     >
       <span className="text-xs text-white light:text-slate-900">{name}</span>
-      <Toggle size="sm" enabled={enabled} onChange={onToggle} />
+      <Toggle
+        size="sm"
+        enabled={enabled}
+        onChange={onToggle}
+        disabled={disabled}
+      />
     </div>
   );
 }
