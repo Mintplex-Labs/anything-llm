@@ -36,6 +36,10 @@ class MistralEmbedder {
       return new Array(textChunks.length).fill([]);
     }
   }
+
+  async queuedEmbedChunks(textChunks = [], _jobContext = {}) {
+    return this.embedChunks(textChunks);
+  }
 }
 
 module.exports = {

@@ -277,6 +277,21 @@ class NativeEmbedder {
     fs.rmSync(tmpFilePath, { force: true });
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
+
+  /**
+   * Queue embedding in an isolated worker process to prevent OOM from crashing the main server.
+   * Only used for document ingestion (bulk embedding). Query embedding still uses in-process embedChunks.
+   * @param {string[]} textChunks - The text chunks to embed.
+   * @param {object} jobContext - Optional context for progress tracking (workspaceSlug, userId).
+   * @returns {Promise<Array<number[]>>} The embedding vectors.
+   */
+  async queuedEmbedChunks(textChunks = [], jobContext = {}) {
+    const { queueEmbedding } = require("../../WorkerQueue");
+    return await queueEmbedding(
+      { textChunks, modelConfig: { model: this.model } },
+      jobContext
+    );
+  }
 }
 
 module.exports = {

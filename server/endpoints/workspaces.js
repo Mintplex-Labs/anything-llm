@@ -224,7 +224,11 @@ function workspaceEndpoints(app) {
           deletes,
           response.locals?.user?.id
         );
-        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
+        const {
+          failedToEmbed = [],
+          errors = [],
+          embedded = [],
+        } = await Document.addDocuments(
           currWorkspace,
           adds,
           response.locals?.user?.id
@@ -232,6 +236,8 @@ function workspaceEndpoints(app) {
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({
           workspace: updatedWorkspace,
+          failedToEmbed,
+          embedded,
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
@@ -1060,6 +1066,54 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // SSE endpoint for embedding progress
+  // EventSource doesn't support custom headers, so we accept the token as a query param
+  // and inject it into the Authorization header before the middleware runs.
+  app.get(
+    "/workspace/:slug/embed-progress",
+    [
+      (req, _res, next) => {
+        if (!req.headers.authorization && req.query.token) {
+          req.headers.authorization = `Bearer ${req.query.token}`;
+        }
+        next();
+      },
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const user = await userFromSession(request, response);
+        const userId = user?.id ?? null;
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        const {
+          embeddingProgressBus,
+        } = require("../utils/WorkerQueue");
+        const unsubscribe = embeddingProgressBus.subscribe(
+          { workspaceSlug: workspace.slug, userId },
+          (event) => {
+            response.write(`data: ${JSON.stringify(event)}\n\n`);
+          }
+        );
+
+        request.on("close", () => {
+          unsubscribe();
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
       }
     }
   );

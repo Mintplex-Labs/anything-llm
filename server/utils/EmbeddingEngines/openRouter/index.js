@@ -92,6 +92,10 @@ class OpenRouterEmbedder {
       ? data.map((embd) => embd.embedding)
       : null;
   }
+
+  async queuedEmbedChunks(textChunks = [], _jobContext = {}) {
+    return this.embedChunks(textChunks);
+  }
 }
 
 async function fetchOpenRouterEmbeddingModels() {

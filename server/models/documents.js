@@ -84,11 +84,15 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
+    const {
+      embeddingProgressBus,
+    } = require("../utils/WorkerQueue/EmbeddingProgressBus");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
+    const totalDocs = additions.length;
 
-    for (const path of additions) {
+    for (const [index, path] of additions.entries()) {
       const data = await fileData(path);
       if (!data) continue;
 
@@ -101,6 +105,16 @@ const Document = {
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
       };
+
+      // Emit doc-starting event for SSE listeners
+      embeddingProgressBus.emit("progress", {
+        type: "doc_starting",
+        workspaceSlug: workspace.slug,
+        userId,
+        filename: path,
+        docIndex: index,
+        totalDocs,
+      });
 
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
@@ -115,6 +129,16 @@ const Document = {
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
         errors.add(error);
+
+        embeddingProgressBus.emit("progress", {
+          type: "doc_failed",
+          workspaceSlug: workspace.slug,
+          userId,
+          filename: path,
+          docIndex: index,
+          totalDocs,
+          error: error || "Unknown error",
+        });
         continue;
       }
 
@@ -124,7 +148,26 @@ const Document = {
       } catch (error) {
         console.error(error.message);
       }
+
+      embeddingProgressBus.emit("progress", {
+        type: "doc_complete",
+        workspaceSlug: workspace.slug,
+        userId,
+        filename: path,
+        docIndex: index,
+        totalDocs,
+      });
     }
+
+    // Signal that all documents have been processed
+    embeddingProgressBus.emit("progress", {
+      type: "all_complete",
+      workspaceSlug: workspace.slug,
+      userId,
+      totalDocs,
+      embedded: embedded.length,
+      failed: failedToEmbed.length,
+    });
 
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",

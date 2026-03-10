@@ -222,6 +222,23 @@ class NativeEmbeddingReranker {
    * @returns {Promise<any[]>} - The reranked list of documents.
    */
   async rerank(query, documents, options = { topK: 4 }) {
+    // If we're inside a worker process (process.send exists), run directly
+    if (typeof process.send === "function") {
+      return this._rerankDirect(query, documents, options);
+    }
+    // Otherwise, queue it in an isolated worker process
+    const { queueReranking } = require("../../WorkerQueue");
+    return await queueReranking({
+      query,
+      documents,
+      topK: options.topK,
+    });
+  }
+
+  /**
+   * Direct reranking logic — called inside the worker process.
+   */
+  async _rerankDirect(query, documents, options = { topK: 4 }) {
     await this.initClient();
     const model = NativeEmbeddingReranker.#model;
     const tokenizer = NativeEmbeddingReranker.#tokenizer;
