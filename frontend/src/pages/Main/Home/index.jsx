@@ -64,13 +64,15 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const [suggestedMessages, pfpUrl, { showAgentCommand }] =
-          await Promise.all([
-            Workspace.getSuggestedMessages(ws.slug),
-            Workspace.fetchPfp(ws.slug),
-            Workspace.agentCommandAvailable(ws.slug),
-          ]);
-        setWorkspace({ ...ws, suggestedMessages, pfpUrl, showAgentCommand });
+        const [suggestedMessages, { showAgentCommand }] = await Promise.all([
+          Workspace.getSuggestedMessages(ws.slug),
+          Workspace.agentCommandAvailable(ws.slug),
+        ]);
+        setWorkspace({
+          ...ws,
+          suggestedMessages,
+          showAgentCommand,
+        });
       }
       setWorkspaceLoading(false);
     }
