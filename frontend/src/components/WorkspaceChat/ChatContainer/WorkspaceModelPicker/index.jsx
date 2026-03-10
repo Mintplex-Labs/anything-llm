@@ -11,6 +11,7 @@ import {
 } from "../PromptInput/LLMSelector/action";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
+import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
 
 function fetchModelName(slug, setModelName) {
   if (!slug) return;
@@ -36,6 +37,15 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   } = useModal();
   const [config, setConfig] = useState({ settings: {}, provider: null });
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.localStorage.getItem("anythingllm_sidebar_toggle") !== "closed"
+  );
+
+  useEffect(() => {
+    const handleToggle = (e) => setSidebarOpen(e.detail.open);
+    window.addEventListener(SIDEBAR_TOGGLE_EVENT, handleToggle);
+    return () => window.removeEventListener(SIDEBAR_TOGGLE_EVENT, handleToggle);
+  }, []);
 
   // Fetch current model name for display
   useEffect(() => fetchModelName(slug, setModelName), [slug]);
@@ -75,7 +85,11 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
           onClick={() => setShowSelector(false)}
         />
       )}
-      <div className="hidden md:block absolute top-2 left-3 z-30">
+      <div
+        className={`hidden md:block absolute top-2 z-30 transition-all duration-500 ${
+          sidebarOpen ? "left-3" : "left-11"
+        }`}
+      >
         <button
           type="button"
           onClick={() => setShowSelector(!showSelector)}
