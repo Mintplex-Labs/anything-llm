@@ -176,15 +176,18 @@ const TRANSLATIONS = {
       title: "Chế độ trò chuyện",
       chat: {
         title: "Trò chuyện",
-        "desc-start": "sẽ cung cấp câu trả lời với kiến thức chung của LLM",
-        and: "và",
-        "desc-end": "ngữ cảnh tài liệu được tìm thấy.",
+        description:
+          "sẽ cung cấp câu trả lời dựa trên kiến thức chung của LLM và ngữ cảnh tài liệu được cung cấp.<br />Bạn cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       query: {
         title: "Truy vấn",
-        "desc-start": "sẽ cung cấp câu trả lời",
-        only: "chỉ",
-        "desc-end": "khi tìm thấy ngữ cảnh tài liệu.",
+        description:
+          "sẽ cung cấp câu trả lời <b>chỉ</b> khi ngữ cảnh của tài liệu được tìm thấy.<br />Bạn cần sử dụng lệnh @agent để sử dụng các công cụ.",
+      },
+      automatic: {
+        title: "Tự động",
+        description:
+          "sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc.<br />Nếu không hỗ trợ gọi công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
       },
     },
     history: {
