@@ -36,9 +36,40 @@ function formatFunctionsToTools(functions) {
 }
 
 /**
+ * Format message content with attachments (images) for multimodal support.
+ * Transforms a message with attachments into the OpenAI-compatible format.
+ * @param {Object} message - The message to format
+ * @returns {Object} Message with content formatted for the API
+ */
+function formatMessageWithAttachments(message) {
+  if (!message.attachments || message.attachments.length === 0) {
+    return message;
+  }
+
+  // Transform message with attachments into multimodal format
+  const content = [{ type: "text", text: message.content }];
+  for (const attachment of message.attachments) {
+    content.push({
+      type: "image_url",
+      image_url: {
+        url: attachment.contentString,
+      },
+    });
+  }
+
+  // Return message without attachments property, with content as array
+  const { attachments: _, ...rest } = message;
+  return {
+    ...rest,
+    content,
+  };
+}
+
+/**
  * Convert the aibitat message history (which uses role:"function" with
  * `originalFunctionCall` metadata) into the OpenAI tool-calling message
  * format (assistant `tool_calls` + role:"tool" pairs).
+ * Also handles image attachments for multimodal support.
  * @param {Array} messages
  * @param {{injectReasoningContent?: boolean}} options
  *   - injectReasoningContent: when true, ensures every assistant message has
@@ -112,9 +143,11 @@ function formatMessagesForTools(messages, options = {}) {
       message.role === "assistant" &&
       !("reasoning_content" in message)
     ) {
-      formattedMessages.push({ ...message, reasoning_content: "" });
+      formattedMessages.push(
+        formatMessageWithAttachments({ ...message, reasoning_content: "" })
+      );
     } else {
-      formattedMessages.push(message);
+      formattedMessages.push(formatMessageWithAttachments(message));
     }
   }
 

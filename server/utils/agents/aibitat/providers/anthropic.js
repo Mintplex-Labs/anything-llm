@@ -27,6 +27,15 @@ class AnthropicProvider extends Provider {
   }
 
   /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Anthropic always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
    * Parses the cache control ENV variable
    *
    * If caching is enabled, we can pass less than 1024 tokens and Anthropic will just
@@ -70,6 +79,18 @@ class AnthropicProvider extends Provider {
         cache_control: this.cacheControl,
       },
     ];
+  }
+
+  /**
+   * Parse a data URL into media type and base64 data
+   * @param {string} dataUrl - Data URL like "data:image/jpeg;base64,/9j/..."
+   * @returns {{mediaType: string, data: string}|null}
+   */
+  #parseDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) return null;
+    return { mediaType: matches[1], data: matches[2] };
   }
 
   #prepareMessages(messages = []) {
@@ -120,6 +141,23 @@ class AnthropicProvider extends Provider {
             item.type !== "text" || (item.text && item.text.trim().length > 0)
         );
 
+        // Add image attachments if present (for vision/multimodal support)
+        if (message.attachments && message.attachments.length > 0) {
+          for (const attachment of message.attachments) {
+            const parsed = this.#parseDataUrl(attachment.contentString);
+            if (parsed) {
+              content.push({
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: parsed.mediaType,
+                  data: parsed.data,
+                },
+              });
+            }
+          }
+        }
+
         if (content.length === 0) return processedMessages;
 
         // Add a text block to assistant messages with tool use if one doesn't exist.
@@ -139,7 +177,9 @@ class AnthropicProvider extends Provider {
           // Merge consecutive messages from the same role.
           lastMessage.content.push(...content);
         } else {
-          processedMessages.push({ ...message, content });
+          // Don't pass attachments to the final message object
+          const { attachments: _, ...restOfMessage } = message;
+          processedMessages.push({ ...restOfMessage, content });
         }
 
         return processedMessages;

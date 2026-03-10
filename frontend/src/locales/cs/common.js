@@ -191,15 +191,18 @@ const TRANSLATIONS = {
       title: "Režim chatu",
       chat: {
         title: "Chat",
-        "desc-start": "bude poskytovat odpovědi s obecnými znalostmi LLM",
-        and: "a",
-        "desc-end": "kontext dokumentu, který je nalezen.",
+        description:
+          "poskytne odpovědi založené na obecných znalostech LLM a kontextu dokumentu, který je k dispozici.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
       },
       query: {
         title: "Dotaz",
-        "desc-start": "bude poskytovat odpovědi",
-        only: "pouze",
-        "desc-end": "pokud je nalezen kontext dokumentu.",
+        description:
+          "budou poskytovat odpovědi <b>pouze</b>, pokud je nalezen kontext dokumentu.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          "automaticky použije nástroje, pokud to podporují jak model, tak poskytovatel. Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
       },
     },
     history: {

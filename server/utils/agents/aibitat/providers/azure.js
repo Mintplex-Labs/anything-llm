@@ -29,6 +29,15 @@ class AzureOpenAiProvider extends Provider {
   }
 
   /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Azure OpenAI always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
    * Stream a chat completion from Azure OpenAI with tool calling.
    *
    * @param {any[]} messages
