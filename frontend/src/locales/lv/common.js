@@ -156,12 +156,6 @@ const TRANSLATIONS = {
       heading: "Izskaidro man",
       body: "AnythingLLM priekšrocības",
     },
-    pfp: {
-      title: "Asistenta profila attēls",
-      description: "Pielāgojiet asistenta profila attēlu šai darba telpai.",
-      image: "Darba telpas attēls",
-      remove: "Noņemt darba telpas attēlu",
-    },
     delete: {
       title: "Dzēst darba telpu",
       description:
@@ -387,11 +381,6 @@ const TRANSLATIONS = {
         title: "Nosaukums",
         description:
           "Iestatiet nosaukumu, kas tiek rādīts pieteikšanās lapā visiem lietotājiem.",
-      },
-      "chat-message-alignment": {
-        title: "Sarunas ziņu līdzinājums",
-        description:
-          "Izvēlieties ziņu līdzinājuma režīmu, izmantojot sarunas saskarni.",
       },
       "display-language": {
         title: "Displeja valoda",
@@ -765,8 +754,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Sūtīt ziņojumu",
     attach_file: "Pievienot failu šim čatam",
-    slash: "Skatīt visas pieejamās slīpsvītras komandas čatošanai.",
-    agents: "Skatīt visus pieejamos aģentus, kurus varat izmantot čatošanai.",
     text_size: "Mainīt teksta izmēru.",
     microphone: "Izrunājiet savu uzvedni.",
     send: "Nosūtīt uzvednes ziņojumu uz darba vietu",
@@ -777,19 +764,11 @@ const TRANSLATIONS = {
     regenerate_response: "Atjaunot atbildi",
     good_response: "Laba atbilde",
     more_actions: "Vairāk darbību",
-    hide_citations: "Izvākt atsaukmes",
-    show_citations: "Rādīt atsauces",
     fork: "Klūtis",
     delete: "Dzēst",
-    save_submit: "Saglabāt un iesūt",
     cancel: "Atcelt",
     edit_prompt: "Ieslēgt",
     edit_response: "Rediģēt atbildi",
-    at_agent: "@agent",
-    default_agent_description: "- noklusējuma aģents šim darba telpai.",
-    custom_agents_coming_soon:
-      "Nedaudz drīzumā būs pieejami individuāli pakalpojumi!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Izdzēsiet savu pastā veidoتو sarunu vēsturi un sāciet jaunu sarunu.",
     add_new_preset: "Pievienot jaunu iepriekšējo",
@@ -816,6 +795,37 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: "Iesniegt",
+    edit_info_user:
+      '"Sūtīt" atjauno AI atbildi. "Saglabāt" atjauno tikai jūsu ziņu.',
+    edit_info_assistant:
+      "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
+    see_less: "Skatīt mazāk",
+    see_more: "Skatīt vairāk",
+    tools: "Rīki",
+    browse: "Izpētiet",
+    text_size_label: "Teksta izmērs",
+    select_model: "Izvēlieties modeli",
+    sources: "Avotus",
+    document: "Dokuments",
+    similarity_match: "spēle",
+    source_count_one: "{{count}} – atsauce",
+    source_count_other: "Atsauces uz {{count}}",
+    preset_exit_description: "Aizust klientu sesiju",
+    add_new: "Pievienot jaunu",
+    edit: "Rediģēt",
+    publish: "Publicēt",
+    stop_generating: "Atsauciet atbildes ģenerēšanu",
+    pause_tts_speech_message:
+      "Pārtrauciet TTS (teksta-izrunas) žēstā vēstījuma izrunu.",
+    slash_commands: "Īs termini komandās",
+    agent_skills: "Aģenta prasmes",
+    manage_agent_skills: "Iesaista aģenta prasmes",
+    agent_skills_disabled_in_session:
+      "Nav iespējams mainīt prasmes aktīvā lietotāja sesijā. Pirmais, jāizmanto komandu `/exit`, lai beigtu sesiju.",
+    start_agent_session: "Sākt aģenta sesiju",
+    use_agent_session_to_use_tools:
+      'Jūs varat izmantot rīkus čatā, sākot aģenta sesiju, ievietojot "@agent" jūsu iniciālajā tekstā.',
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

@@ -150,13 +150,6 @@ const TRANSLATIONS = {
       heading: "Expliquez-moi",
       body: "les avantages de AnythingLLM",
     },
-    pfp: {
-      title: "Image de profil de l'assistant",
-      description:
-        "Personnalisez l'image de profil de l'assistant pour cet espace de travail.",
-      image: "Image de l'espace de travail",
-      remove: "Supprimer l'image de l'espace de travail",
-    },
     delete: {
       title: "Supprimer l'Espace de Travail",
       description:
@@ -656,8 +649,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Envoyer un message",
     attach_file: "Joindre un fichier",
-    slash: "Voir les commandes slash disponibles",
-    agents: "Voir les agents disponibles",
     text_size: "Modifier la taille du texte",
     microphone: "Enregistrer un message vocal",
     send: "Envoyer le message au chatbot",
@@ -669,18 +660,11 @@ const TRANSLATIONS = {
     regenerate_response: "Régénérer la réponse",
     good_response: "Bonne réponse",
     more_actions: "Plus d'actions",
-    hide_citations: "Masquer les citations",
-    show_citations: "Afficher les citations",
     fork: "Dupliquer",
     delete: "Supprimer",
-    save_submit: "Sauvegarder et envoyer",
     cancel: "Annuler",
     edit_prompt: "Modifier le prompt",
     edit_response: "Modifier la réponse",
-    at_agent: "@agent",
-    default_agent_description: "l'agent par défaut de cet espace de travail",
-    custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
-    slash_reset: "/reset",
     preset_reset_description:
       "Efface l'historique du chat actuel et commence une nouvelle conversation.",
     add_new_preset: "Ajouter une nouvelle commande preset",
@@ -706,6 +690,37 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Vous devez configurer vos identifiants de fournisseur LLM avant de pouvoir sélectionner un modèle.",
     },
+    submit: "Soumettre",
+    edit_info_user:
+      '"Soumettre" permet de régénérer la réponse de l\'IA. "Enregistrer" met uniquement à jour votre message.',
+    edit_info_assistant:
+      "Vos modifications seront enregistrées directement dans cette réponse.",
+    see_less: "Voir moins",
+    see_more: "Voir plus",
+    tools: "Outils",
+    browse: "Parcourir",
+    text_size_label: "Taille du texte",
+    select_model: "Sélectionner le modèle",
+    sources: "Sources",
+    document: "Document",
+    similarity_match: "match",
+    source_count_one: "{{count}} référence",
+    source_count_other: "Références à {{count}}",
+    preset_exit_description: "Arrêter la session actuelle de l'agent",
+    add_new: "Ajouter",
+    edit: "Modifier",
+    publish: "Publier",
+    stop_generating: "Arrêtez de générer des réponses",
+    pause_tts_speech_message:
+      "Mettre en pause la lecture de la voix synthétique du message",
+    slash_commands: "Commandes abrégées",
+    agent_skills: "Compétences des agents",
+    manage_agent_skills: "Gérer les compétences des agents",
+    agent_skills_disabled_in_session:
+      "Il n'est pas possible de modifier les compétences pendant une session avec un agent actif. Utilisez la commande `/exit` pour terminer la session en premier.",
+    start_agent_session: "Démarrer la session de l'agent",
+    use_agent_session_to_use_tools:
+      'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
   },
   profile_settings: {
     edit_account: "Modifier le compte",
@@ -772,10 +787,6 @@ const TRANSLATIONS = {
       "app-name": {
         title: "Nom de l'application",
         description: "Définissez le nom affiché dans l'interface.",
-      },
-      "chat-message-alignment": {
-        title: "Alignement des messages",
-        description: "Choisissez l'alignement des messages dans le chat.",
       },
       "display-language": {
         title: "Langue d'affichage",

@@ -164,13 +164,6 @@ const TRANSLATIONS = {
       heading: "Vysvětlit mi",
       body: "výhody AnythingLLM",
     },
-    pfp: {
-      title: "Profilový obrázek asistenta",
-      description:
-        "Přizpůsobte profilový obrázek asistenta pro tento pracovní prostor.",
-      image: "Obrázek pracovního prostoru",
-      remove: "Odebrat obrázek pracovního prostoru",
-    },
     delete: {
       title: "Smazat pracovní prostor",
       description:
@@ -397,11 +390,6 @@ const TRANSLATIONS = {
         title: "Název",
         description:
           "Nastavte název, který je zobrazen na přihlašovací stránce všem uživatelům.",
-      },
-      "chat-message-alignment": {
-        title: "Zarovnání zpráv chatu",
-        description:
-          "Vyberte režim zarovnání zpráv při použití rozhraní chatu.",
       },
       "display-language": {
         title: "Zobrazovací jazyk",
@@ -794,9 +782,6 @@ const TRANSLATIONS = {
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",
-    slash: "Zobrazit všechny dostupné lomítkové příkazy pro chatování.",
-    agents:
-      "Zobrazit všechny dostupné agenty, které můžete použít pro chatování.",
     text_size: "Změnit velikost textu.",
     microphone: "Mluvit svou výzvu.",
     send: "Odeslat zprávu výzvy do pracovního prostoru",
@@ -806,18 +791,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerovat odpověď",
     good_response: "Dobrá odpověď",
     more_actions: "Další akce",
-    hide_citations: "Skrýt citace",
-    show_citations: "Zobrazit citace",
     fork: "Rozdělit",
     delete: "Smazat",
-    save_submit: "Uložit a odeslat",
     cancel: "Zrušit",
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
-    at_agent: "@agent",
-    default_agent_description: " - výchozí agent pro tento pracovní prostor.",
-    custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
-    slash_reset: "/reset",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",
     add_new_preset: " Přidat novou předvolbu",
     command: "Příkaz",
@@ -841,6 +819,36 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klikněte pro nastavení přihlašovacích údajů",
     },
+    submit: "Odeslat",
+    edit_info_user:
+      "„Odeslat“ znovu vygeneruje odpověď od AI. „Uložit“ aktualizuje pouze vaši zprávu.",
+    edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
+    see_less: "Zobrazit méně",
+    see_more: "Více",
+    tools: "Nářadí",
+    browse: "Prohlédněte si",
+    text_size_label: "Velikost písma",
+    select_model: "Vyberte model",
+    sources: "Zdroje",
+    document: "Dokument",
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
+    preset_exit_description: "Zastavte aktuální relaci s agentem",
+    add_new: "Přidat nové",
+    edit: "Upravit",
+    publish: "Publikovat",
+    stop_generating: "Zastavte generování odpovědi",
+    pause_tts_speech_message:
+      "Zastavte čtení textu pomocí syntetické řeči z tohoto zprávy.",
+    slash_commands: "Příkazy v řádku",
+    agent_skills: "Dovednosti agenta",
+    manage_agent_skills: "Řízení dovedností agentů",
+    agent_skills_disabled_in_session:
+      "Není možné upravovat dovednosti během aktivního sezení s agentem. Nejprve použijte příkaz `/exit` pro ukončení sezení.",
+    start_agent_session: "Spustit relaci s agentem",
+    use_agent_session_to_use_tools:
+      "Můžete využít nástroje v chatu spuštěním sezení s agentem pomocí příkazu '@agent' na začátku vašeho vstupu.",
   },
   profile_settings: {
     edit_account: "Upravit účet",

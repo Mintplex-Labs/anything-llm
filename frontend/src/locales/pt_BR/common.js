@@ -156,12 +156,6 @@ const TRANSLATIONS = {
       heading: "Explique para mim",
       body: "os benefícios do AnythingLLM",
     },
-    pfp: {
-      title: "Imagem do Assistente",
-      description: "Personalize a imagem do assistente para este workspace.",
-      image: "Imagem do Workspace",
-      remove: "Remover Imagem",
-    },
     delete: {
       title: "Excluir Workspace",
       description:
@@ -383,10 +377,6 @@ const TRANSLATIONS = {
         title: "Nome",
         description:
           "Defina um nome exibido na página de login para todos os usuários.",
-      },
-      "chat-message-alignment": {
-        title: "Alinhamento de Mensagens",
-        description: "Selecione o alinhamento das mensagens no chat.",
       },
       "display-language": {
         title: "Idioma",
@@ -748,8 +738,6 @@ const TRANSLATIONS = {
     attachments_processing: "Anexos em processamento. Aguarde...",
     send_message: "Enviar mensagem",
     attach_file: "Anexar arquivo ao chat",
-    slash: "Veja todos os comandos disponíveis.",
-    agents: "Veja todos os agentes disponíveis.",
     text_size: "Alterar tamanho do texto.",
     microphone: "Fale seu prompt.",
     send: "Enviar prompt para o workspace",
@@ -759,18 +747,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regerar resposta",
     good_response: "Resposta satisfatória",
     more_actions: "Mais ações",
-    hide_citations: "Esconder citações",
-    show_citations: "Exibir citações",
     fork: "Fork",
     delete: "Excluir",
-    save_submit: "Alterar",
     cancel: "Cancelar",
     edit_prompt: "Editar prompt",
     edit_response: "Editar resposta",
-    at_agent: "@agent",
-    default_agent_description: " - o agente padrão deste workspace.",
-    custom_agents_coming_soon: "mais agentes personalizados em breve!",
-    slash_reset: "/reset",
     preset_reset_description: "Limpa o histórico do seu chat e inicia um novo",
     add_new_preset: " Insere um novo Preset",
     command: "Comando",
@@ -794,6 +775,36 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Configure as credenciais do LLM primeiro",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" recria a resposta da IA. "Salvar" atualiza apenas sua mensagem.',
+    edit_info_assistant:
+      "Suas alterações serão salvas diretamente nesta resposta.",
+    see_less: "Ver menos",
+    see_more: "Ver mais",
+    tools: "Ferramentas",
+    browse: "Navegar",
+    text_size_label: "Tamanho do texto",
+    select_model: "Selecione o modelo",
+    sources: "Fontes",
+    document: "Documento",
+    similarity_match: "jogo",
+    source_count_one: "Referência a {{count}}",
+    source_count_other: "Referências a {{count}}",
+    preset_exit_description: "Interrompa a sessão atual do agente",
+    add_new: "Adicionar novo",
+    edit: "Editar",
+    publish: "Publicar",
+    stop_generating: "Pare de gerar respostas",
+    pause_tts_speech_message: "Pausar a leitura de voz da mensagem",
+    slash_commands: "Comandos Rápidos",
+    agent_skills: "Habilidades do Agente",
+    manage_agent_skills: "Gerenciar as habilidades dos agentes",
+    agent_skills_disabled_in_session:
+      "Não é possível modificar as habilidades durante uma sessão de agente ativa. Utilize o comando `/exit` para encerrar a sessão primeiro.",
+    start_agent_session: "Iniciar Sessão de Agente",
+    use_agent_session_to_use_tools:
+      'Você pode utilizar as ferramentas disponíveis no chat iniciando uma sessão com um agente, adicionando "@agent" no início da sua mensagem.',
   },
   profile_settings: {
     edit_account: "Editar conta",

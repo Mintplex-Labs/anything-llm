@@ -149,13 +149,6 @@ const TRANSLATIONS = {
       heading: "Giải thích cho tôi",
       body: "các lợi ích của AnythingLLM",
     },
-    pfp: {
-      title: "Hình đại diện trợ lý",
-      description:
-        "Tùy chỉnh hình ảnh hồ sơ của trợ lý cho không gian làm việc này.",
-      image: "Hình ảnh Không gian làm việc",
-      remove: "Xóa Hình ảnh Không gian làm việc",
-    },
     delete: {
       title: "Xóa không gian làm việc",
       description:
@@ -651,8 +644,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Gửi tin nhắn",
     attach_file: "Đính kèm tệp vào cuộc trò chuyện này",
-    slash: "Xem tất cả các lệnh gạch chéo có sẵn để trò chuyện.",
-    agents: "Xem tất cả các agent có sẵn bạn có thể sử dụng để trò chuyện.",
     text_size: "Thay đổi kích thước văn bản.",
     microphone: "Nói prompt của bạn.",
     send: "Gửi tin nhắn prompt đến không gian làm việc",
@@ -663,18 +654,11 @@ const TRANSLATIONS = {
     regenerate_response: "Tạo lại phản hồi",
     good_response: "Phản hồi tốt",
     more_actions: "Thêm hành động",
-    hide_citations: "Ẩn trích dẫn",
-    show_citations: "Hiện trích dẫn",
     fork: "Rẽ nhánh",
     delete: "Xóa",
-    save_submit: "Lưu & Gửi",
     cancel: "Hủy",
     edit_prompt: "Chỉnh sửa prompt",
     edit_response: "Chỉnh sửa phản hồi",
-    at_agent: "@agent",
-    default_agent_description: " - agent mặc định cho không gian làm việc này.",
-    custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Xóa lịch sử trò chuyện và bắt đầu cuộc trò chuyện mới",
     add_new_preset: " Thêm Cài đặt sẵn Mới",
@@ -698,6 +682,36 @@ const TRANSLATIONS = {
       missing_credentials: "Nhà cung cấp này thiếu thông tin đăng nhập!",
       missing_credentials_description: "Nhấp để thiết lập thông tin đăng nhập",
     },
+    submit: "Gửi",
+    edit_info_user:
+      '"Gửi" sẽ tạo lại phản hồi của AI. "Lưu" chỉ cập nhật tin nhắn của bạn.',
+    edit_info_assistant:
+      "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
+    see_less: "Xem ít hơn",
+    see_more: "Xem thêm",
+    tools: "Dụng cụ",
+    browse: "Duyệt",
+    text_size_label: "Kích thước văn bản",
+    select_model: "Chọn mẫu",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
+    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
+    add_new: "Thêm mới",
+    edit: "Chỉnh sửa",
+    publish: "Đăng tải",
+    stop_generating: "Dừng tạo ra phản hồi",
+    pause_tts_speech_message: "Tạm dừng phát giọng đọc của tin nhắn",
+    slash_commands: "Lệnh tắt/bật",
+    agent_skills: "Kỹ năng của đại lý",
+    manage_agent_skills: "Quản lý kỹ năng của đại lý",
+    agent_skills_disabled_in_session:
+      "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
+    start_agent_session: "Bắt đầu phiên làm việc với đại lý",
+    use_agent_session_to_use_tools:
+      "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -765,11 +779,6 @@ const TRANSLATIONS = {
         title: "Tên",
         description:
           "Đặt tên được hiển thị trên trang đăng nhập cho tất cả người dùng.",
-      },
-      "chat-message-alignment": {
-        title: "Căn chỉnh Tin nhắn Trò chuyện",
-        description:
-          "Chọn chế độ căn chỉnh tin nhắn khi sử dụng giao diện trò chuyện.",
       },
       "display-language": {
         title: "Ngôn ngữ Hiển thị",

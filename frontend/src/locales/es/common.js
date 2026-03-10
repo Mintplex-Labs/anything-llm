@@ -158,13 +158,6 @@ const TRANSLATIONS = {
       heading: "Explícame",
       body: "los beneficios de AnythingLLM",
     },
-    pfp: {
-      title: "Imagen de perfil del asistente",
-      description:
-        "Personaliza la imagen de perfil del asistente para este espacio de trabajo.",
-      image: "Imagen del espacio de trabajo",
-      remove: "Eliminar imagen del espacio de trabajo",
-    },
     delete: {
       title: "Eliminar espacio de trabajo",
       description:
@@ -399,11 +392,6 @@ const TRANSLATIONS = {
         title: "Nombre",
         description:
           "Establece un nombre que se mostrará en la página de inicio de sesión para todos los usuarios.",
-      },
-      "chat-message-alignment": {
-        title: "Alineación de mensajes de chat",
-        description:
-          "Selecciona el modo de alineación de mensajes cuando utilices la interfaz de chat.",
       },
       "display-language": {
         title: "Idioma de visualización",
@@ -782,8 +770,6 @@ const TRANSLATIONS = {
       "Los archivos adjuntos se están procesando. Por favor, espera...",
     send_message: "Enviar un mensaje",
     attach_file: "Adjuntar un archivo a este chat",
-    slash: "Ver todos los comandos de barra disponibles para chatear.",
-    agents: "Ver todos los agentes disponibles que puedes usar para chatear.",
     text_size: "Cambiar tamaño del texto.",
     microphone: "Habla tu prompt.",
     send: "Enviar mensaje de prompt al espacio de trabajo",
@@ -793,19 +779,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerar respuesta",
     good_response: "Buena respuesta",
     more_actions: "Más acciones",
-    hide_citations: "Ocultar citas",
-    show_citations: "Mostrar citas",
     fork: "Bifurcar",
     delete: "Eliminar",
-    save_submit: "Guardar y enviar",
     cancel: "Cancelar",
     edit_prompt: "Editar prompt",
     edit_response: "Editar respuesta",
-    at_agent: "@agent",
-    default_agent_description:
-      " - el agente predeterminado para este espacio de trabajo.",
-    custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Borra tu historial de chat y comienza un nuevo chat",
     add_new_preset: " Agregar nuevo preajuste",
@@ -833,6 +811,36 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Haz clic para configurar las credenciales",
     },
+    submit: "Enviar",
+    edit_info_user:
+      '"Enviar" regenera la respuesta de la IA. "Guardar" actualiza solo tu mensaje.',
+    edit_info_assistant:
+      "Los cambios que realice se guardarán directamente en esta respuesta.",
+    see_less: "Ver menos",
+    see_more: "Ver más",
+    tools: "Herramientas",
+    browse: "Explorar",
+    text_size_label: "Tamaño del texto",
+    select_model: "Seleccionar modelo",
+    sources: "Fuentes",
+    document: "Documento",
+    similarity_match: "partido",
+    source_count_one: "{{count}} de referencia",
+    source_count_other: "{{count}} referencias",
+    preset_exit_description: "Detener la sesión actual del agente.",
+    add_new: "Añadir nuevo",
+    edit: "Editar",
+    publish: "Publicar",
+    stop_generating: "Dejar de generar respuestas",
+    pause_tts_speech_message: "Pausa la lectura de voz del mensaje.",
+    slash_commands: "Comandos abreviados",
+    agent_skills: "Habilidades del agente",
+    manage_agent_skills: "Gestionar las habilidades del agente.",
+    agent_skills_disabled_in_session:
+      "No es posible modificar las habilidades durante una sesión con un agente activo. Primero, utilice el comando `/exit` para finalizar la sesión.",
+    start_agent_session: "Iniciar sesión como agente",
+    use_agent_session_to_use_tools:
+      "Puede utilizar las herramientas disponibles en el chat iniciando una sesión con un agente utilizando el prefijo '@agent' al principio de su mensaje.",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

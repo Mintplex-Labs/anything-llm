@@ -149,13 +149,6 @@ const TRANSLATIONS = {
       heading: "Leg me uit",
       body: "de voordelen van AnythingLLM",
     },
-    pfp: {
-      title: "Assistent Profielfoto",
-      description:
-        "Pas de profielfoto van de assistent voor deze werkruimte aan.",
-      image: "Werkruimte Afbeelding",
-      remove: "Werkruimte Afbeelding Verwijderen",
-    },
     delete: {
       title: "Werkruimte Verwijderen",
       description:
@@ -656,9 +649,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "Een bericht verzenden",
     attach_file: "Een bestand aan deze chat toevoegen",
-    slash: "Alle beschikbare slash-opdrachten voor chatten bekijken.",
-    agents:
-      "Alle beschikbare agents bekijken die je kunt gebruiken om te chatten.",
     text_size: "Tekstgrootte wijzigen.",
     microphone: "Spreek je prompt uit.",
     send: "Promptbericht naar werkruimte verzenden",
@@ -670,18 +660,11 @@ const TRANSLATIONS = {
     regenerate_response: "Reactie opnieuw genereren",
     good_response: "Goede reactie",
     more_actions: "Meer acties",
-    hide_citations: "Citaten verbergen",
-    show_citations: "Citaten weergeven",
     fork: "Fork",
     delete: "Verwijderen",
-    save_submit: "Opslaan en verzenden",
     cancel: "Annuleren",
     edit_prompt: "Prompt bewerken",
     edit_response: "Reactie bewerken",
-    at_agent: "@agent",
-    default_agent_description: " - de standaardagent voor deze werkruimte.",
-    custom_agents_coming_soon: "Aangepaste agenten komen binnenkort!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Wis je chatgeschiedenis en begin een nieuwe chat",
     add_new_preset: "Nieuwe preset toevoegen",
@@ -704,6 +687,36 @@ const TRANSLATIONS = {
       missing_credentials: "Deze aanbieder mist logingegevens!",
       missing_credentials_description: "Klik om logingegevens in te stellen",
     },
+    submit: "Indienen",
+    edit_info_user:
+      '"Verzenden" herstelt het antwoord van de AI. "Opslaan" wijzigt alleen uw bericht.',
+    edit_info_assistant:
+      "Uw wijzigingen worden direct op deze reactie opgeslagen.",
+    see_less: "Minder zien",
+    see_more: "Meer zien",
+    tools: "Gereedschap",
+    browse: "Bladeren",
+    text_size_label: "Lettergrootte",
+    select_model: "Kies het model",
+    sources: "Bronnen",
+    document: "Document",
+    similarity_match: "wedstrijd",
+    source_count_one: "{{count}} verwijzing",
+    source_count_other: "{{count}} referenties",
+    preset_exit_description: "Beëindig de huidige agent-sessie",
+    add_new: "Voeg toe",
+    edit: "Bewerk",
+    publish: "Publiceren",
+    stop_generating: "Stoppen met het genereren van antwoorden",
+    pause_tts_speech_message: "Pauzeer de spraak van de tekstberichten.",
+    slash_commands: "Korte commando's",
+    agent_skills: "Vaardigheden van agenten",
+    manage_agent_skills: "Beheer van de vaardigheden van de agent",
+    agent_skills_disabled_in_session:
+      "Het is niet mogelijk om vaardigheden aan te passen tijdens een actieve sessie. Gebruik eerst de commando `/exit` om de sessie te beëindigen.",
+    start_agent_session: "Start Agent Sessie",
+    use_agent_session_to_use_tools:
+      'U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met "@agent" aan het begin van uw bericht.',
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -771,11 +784,6 @@ const TRANSLATIONS = {
         title: "Naam",
         description:
           "Stel een naam in die op de inlogpagina voor alle gebruikers wordt weergegeven.",
-      },
-      "chat-message-alignment": {
-        title: "Uitlijning van chatberichten",
-        description:
-          "Selecteer de uitlijningsmodus voor berichten bij gebruik van de chatinterface.",
       },
       "display-language": {
         title: "Weergavetaal",

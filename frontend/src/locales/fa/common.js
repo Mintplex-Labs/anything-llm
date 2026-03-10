@@ -149,12 +149,6 @@ const TRANSLATIONS = {
       heading: "برایم توضیح بده",
       body: "مزایای AnythingLLM را",
     },
-    pfp: {
-      title: "تصویر پروفایل دستیار",
-      description: "تصویر پروفایل دستیار را برای این فضای کاری شخصی‌سازی کنید.",
-      image: "تصویر فضای کاری",
-      remove: "حذف تصویر فضای کاری",
-    },
     delete: {
       title: "حذف فضای کاری",
       description:
@@ -654,9 +648,6 @@ const TRANSLATIONS = {
   chat_window: {
     send_message: "یک پیام ارسال کنید",
     attach_file: "لطفاً یک فایل را به این چت پیوست کنید.",
-    slash: "برای مشاهده تمام دستورات Slash موجود برای چت.",
-    agents:
-      "تمام عوامل موجود را که می‌توانید برای گفتگو استفاده کنید، مشاهده کنید.",
     text_size: "تغییر اندازه متن.",
     microphone: "سوال خود را بپرسید.",
     send: "پیام فوری را برای فضای کاری ارسال کنید",
@@ -667,18 +658,11 @@ const TRANSLATIONS = {
     regenerate_response: "بازسازی پاسخ",
     good_response: "پاسخ خوب",
     more_actions: "اقدامات بیشتر",
-    hide_citations: "پنهان کردن ارجاعات",
-    show_citations: "نمایش ارجاعات",
     fork: "چنگال",
     delete: "حذف",
-    save_submit: "ذخیره و ارسال",
     cancel: "ยกد",
     edit_prompt: "لطفاً دستور ویرایش را ارائه دهید.",
     edit_response: "لطفا پاسخ را ویرایش کنید.",
-    at_agent: "@agent",
-    default_agent_description: "- عامل پیش‌فرض برای این فضای کاری.",
-    custom_agents_coming_soon: "نمایندگان ویژه در حال آمدن هستند!",
-    slash_reset: "/reset",
     preset_reset_description: "حذف تاریخچه چت خود و شروع یک چت جدید",
     add_new_preset: "اضافه کردن تنظیمات پیش‌فرض جدید",
     command: "دستورالعمل",
@@ -703,6 +687,35 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "برای تنظیم اعتبارها، اینجا را کلیک کنید",
     },
+    submit: "ارسال",
+    edit_info_user:
+      '"ارسال" پاسخ تولید شده توسط هوش مصنوعی را دوباره ایجاد می‌کند. "ذخیره" فقط پیام شما را به‌روز می‌کند.',
+    edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
+    see_less: "کمی بیشتر",
+    see_more: "بیشتر",
+    tools: "ابزارها",
+    browse: "جستجو",
+    text_size_label: "اندازه متن",
+    select_model: "انتخاب مدل",
+    sources: "منابع",
+    document: "اسناد",
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
+    preset_exit_description: "متوقف کردن جلسه فعلی با نمایندگی",
+    add_new: "اضافه کردن موارد جدید",
+    edit: "ویرایش",
+    publish: "انتشار",
+    stop_generating: "متوقف کردن تولید پاسخ",
+    pause_tts_speech_message: "مکث در پخش صدای متن",
+    slash_commands: "دستورات کوتاه‌شده",
+    agent_skills: "مهارت‌های کارگزار",
+    manage_agent_skills: "مدیریت مهارت‌های نمایندگان",
+    agent_skills_disabled_in_session:
+      "امکان تغییر مهارت‌ها در حین یک جلسه فعال با یک عامل وجود ندارد. ابتدا با استفاده از دستور /exit، جلسه را به پایان برسانید.",
+    start_agent_session: "شروع جلسه با نماینده",
+    use_agent_session_to_use_tools:
+      "شما می‌توانید از ابزارهای موجود در چت با شروع یک جلسه با یک عامل از طریق استفاده از '@agent' در ابتدای پیام خود استفاده کنید.",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
@@ -767,11 +780,6 @@ const TRANSLATIONS = {
       "app-name": {
         title: "نام",
         description: "یک نام را برای تمام کاربران در صفحه ورود مشخص کنید.",
-      },
-      "chat-message-alignment": {
-        title: "همراه‌بودن پیام‌ها در چت",
-        description:
-          "هنگام استفاده از رابط چت، حالت هم‌تراز کردن پیام را انتخاب کنید.",
       },
       "display-language": {
         title: "زبان نمایش",
