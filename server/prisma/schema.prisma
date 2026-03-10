@@ -145,6 +145,7 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  queryRewriteMode             String?                        @default("off")
   messagesLimit                Int? // Maximum number of messages allowed in the chat history (null means unlimited)
   cycleStartDate               DateTime? // Enterprise: Start date for billing cycle
   cycleDurationMonths          Int? // Enterprise: Cycle duration in months (1, 2, 3, 4, 6, or 12)

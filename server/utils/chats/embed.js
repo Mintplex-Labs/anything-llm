@@ -110,6 +110,7 @@ async function streamChatWithForEmbed(
     userQuery: message,
     chatHistory,
     LLMConnector,
+    workspace: embed.workspace,
   });
 
   const vectorSearchResults =

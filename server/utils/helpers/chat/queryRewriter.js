@@ -8,16 +8,22 @@ When reformulating, respond with ONLY the reformulated question (max 15 words).
 Include the key subject/topic from conversation history. Do NOT add information not present in the conversation.
 Write in the same language as the user.`;
 
-function shouldRewrite(userQuery, chatHistory) {
+function shouldRewrite(userQuery, chatHistory, workspace) {
   if (!chatHistory || chatHistory.length === 0) return false;
-  if (process.env.DISABLE_QUERY_REWRITING === "true") return false;
+  const mode = workspace?.queryRewriteMode ?? "off";
+  if (mode !== "on") return false;
   const wordCount = userQuery.trim().split(/\s+/).length;
   const threshold = parseInt(process.env.QUERY_REWRITE_WORD_THRESHOLD) || 12;
   return wordCount <= threshold;
 }
 
-async function rewriteQueryForSearch({ userQuery, chatHistory, LLMConnector }) {
-  if (!shouldRewrite(userQuery, chatHistory)) return userQuery;
+async function rewriteQueryForSearch({
+  userQuery,
+  chatHistory,
+  LLMConnector,
+  workspace,
+}) {
+  if (!shouldRewrite(userQuery, chatHistory, workspace)) return userQuery;
 
   try {
     const maxTurns = parseInt(process.env.QUERY_REWRITE_MAX_HISTORY) || 2;

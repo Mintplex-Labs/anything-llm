@@ -151,6 +151,7 @@ async function streamChatWithWorkspace(
     userQuery: updatedMessage,
     chatHistory,
     LLMConnector,
+    workspace,
   });
 
   const vectorSearchResults =

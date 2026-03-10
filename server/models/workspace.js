@@ -70,6 +70,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "queryRewriteMode",
     "cycleStartDate",
     "cycleDurationMonths",
   ],
@@ -152,6 +153,15 @@ const Workspace = {
         !["default", "rerank"].includes(value)
       )
         return Workspace.defaults.vectorSearchMode;
+      return value;
+    },
+    queryRewriteMode: (value) => {
+      if (
+        !value ||
+        typeof value !== "string" ||
+        !["on", "off"].includes(value)
+      )
+        return process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off";
       return value;
     },
     messagesLimit: (value) => {
