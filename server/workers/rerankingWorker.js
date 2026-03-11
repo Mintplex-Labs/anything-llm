@@ -37,7 +37,7 @@ process.on("message", async (msg) => {
       if (!reranker) reranker = new NativeEmbeddingReranker();
 
       const { query, documents, topK = 4 } = msg.payload;
-      const result = await reranker.rerank(query, documents, { topK });
+      const result = await reranker._rerankDirect(query, documents, { topK });
 
       process.send({
         type: "result",
