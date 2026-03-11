@@ -94,7 +94,6 @@ class LanceDb extends VectorDatabase {
     similarityThreshold = 0.25,
     filterIdentifiers = [],
   }) {
-    // Use static method to avoid constructing in the parent process — actual work happens in the worker
     const collection = await client.openTable(namespace);
     const totalEmbeddings = await this.namespaceCount(namespace);
     const result = {
@@ -359,7 +358,7 @@ class LanceDb extends VectorDatabase {
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await EmbedderEngine.queuedEmbedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {

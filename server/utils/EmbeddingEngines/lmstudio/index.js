@@ -112,10 +112,6 @@ class LMStudioEmbedder {
     const data = results.map((res) => res?.data || []);
     return data.length > 0 ? data : null;
   }
-
-  async queuedEmbedChunks(textChunks = [], _jobContext = {}) {
-    return this.embedChunks(textChunks);
-  }
 }
 
 module.exports = {

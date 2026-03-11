@@ -223,10 +223,13 @@ class NativeEmbedder {
    */
   async embedTextInput(textInput) {
     textInput = this.#applyQueryPrefix(textInput);
-    const result = await this.embedChunks(
-      Array.isArray(textInput) ? textInput : [textInput]
-    );
-    return result?.[0] || [];
+    const input = Array.isArray(textInput) ? textInput : [textInput];
+    const pipeline = await this.embedderClient();
+    const output = await pipeline(input, {
+      pooling: "mean",
+      normalize: true,
+    });
+    return output.length > 0 ? output.tolist()[0] : [];
   }
 
   // If you are thinking you want to edit this function - you probably don't.
@@ -241,6 +244,17 @@ class NativeEmbedder {
   // While this does take a while, it is zero set up and is 100% free and on-instance.
   // It still may crash depending on other elements at play - so no promises it works under all conditions.
   async embedChunks(textChunks = []) {
+    // If running in the main process, route through the worker queue
+    // to isolate OOM risk. The worker calls embedChunks directly, so
+    // process.send (IPC channel) distinguishes worker from main.
+    if (typeof process.send !== "function") {
+      const { queueEmbedding } = require("../../WorkerQueue");
+      return await queueEmbedding({
+        textChunks,
+        modelConfig: { model: this.model },
+      });
+    }
+
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;
@@ -276,20 +290,6 @@ class NativeEmbedder {
     );
     fs.rmSync(tmpFilePath, { force: true });
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
-  }
-
-  /**
-   * Queue embedding in an isolated worker process to prevent OOM from crashing the main server.
-   * Only used for document ingestion (bulk embedding). Query embedding still uses in-process embedChunks.
-   * @param {string[]} textChunks - The text chunks to embed.
-   * @returns {Promise<Array<number[]>>} The embedding vectors.
-   */
-  async queuedEmbedChunks(textChunks = []) {
-    const { queueEmbedding } = require("../../WorkerQueue");
-    return await queueEmbedding({
-      textChunks,
-      modelConfig: { model: this.model },
-    });
   }
 }
 

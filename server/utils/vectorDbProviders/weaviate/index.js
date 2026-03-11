@@ -290,7 +290,7 @@ class Weaviate extends VectorDatabase {
       this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await EmbedderEngine.queuedEmbedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
       const submission = {
         ids: [],
         vectors: [],

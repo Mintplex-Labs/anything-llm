@@ -106,10 +106,6 @@ class LocalAiEmbedder {
       ? data.map((embd) => embd.embedding)
       : null;
   }
-
-  async queuedEmbedChunks(textChunks = [], _jobContext = {}) {
-    return this.embedChunks(textChunks);
-  }
 }
 
 module.exports = {
