@@ -6,10 +6,28 @@ import {
   useRef,
   useState,
 } from "react";
-import { API_BASE, AUTH_TOKEN } from "@/utils/constants";
+import { API_BASE, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
 const EmbeddingProgressContext = createContext();
-const STORAGE_KEY = "anythingllm_embedding_progress";
+const STORAGE_KEY_PREFIX = "anythingllm_embedding_progress";
+
+/**
+ * Returns a user-scoped sessionStorage key so that different users
+ * on the same browser tab don't see each other's embedding progress.
+ * Falls back to the base key in single-user mode.
+ */
+function storageKey() {
+  try {
+    const raw = localStorage.getItem(AUTH_USER);
+    if (raw) {
+      const user = JSON.parse(raw);
+      if (user?.id) return `${STORAGE_KEY_PREFIX}_${user.id}`;
+    }
+  } catch {
+    // parse failure — fall through
+  }
+  return STORAGE_KEY_PREFIX;
+}
 
 /**
  * Read persisted progress from sessionStorage.
@@ -21,7 +39,7 @@ const STORAGE_KEY = "anythingllm_embedding_progress";
  */
 function loadPersistedProgress(sanitize = false) {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(storageKey());
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     if (!sanitize) return parsed;
@@ -62,9 +80,9 @@ function loadPersistedProgress(sanitize = false) {
 function persistProgress(map) {
   try {
     if (Object.keys(map).length === 0) {
-      sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(storageKey());
     } else {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+      sessionStorage.setItem(storageKey(), JSON.stringify(map));
     }
   } catch {
     // storage full or unavailable — non-critical

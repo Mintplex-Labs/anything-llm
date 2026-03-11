@@ -35,13 +35,19 @@ class EmbeddingProgressBus extends EventEmitter {
    * @param {function} callback - receives the progress event payload
    * @returns {function} unsubscribe
    */
+  /**
+   * @returns {{ unsubscribe: function, hadHistory: boolean }}
+   */
   subscribe(filter, callback) {
+    let hadHistory = false;
+
     // Replay buffered events so reconnecting clients catch up.
     if (filter.workspaceSlug && this.#history.has(filter.workspaceSlug)) {
       for (const event of this.#history.get(filter.workspaceSlug)) {
         if (filter.userId && event.userId && event.userId !== filter.userId)
           continue;
         callback(event);
+        hadHistory = true;
       }
     }
 
@@ -53,7 +59,10 @@ class EmbeddingProgressBus extends EventEmitter {
       callback(event);
     };
     this.on("progress", handler);
-    return () => this.off("progress", handler);
+    return {
+      unsubscribe: () => this.off("progress", handler),
+      hadHistory,
+    };
   }
 }
 
