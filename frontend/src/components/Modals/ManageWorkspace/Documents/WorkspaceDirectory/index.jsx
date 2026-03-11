@@ -527,10 +527,7 @@ function EmbeddingFileRow({ filename, status }) {
 
   const statusLabel = {
     pending: "Queued",
-    embedding:
-      status.chunksCompleted != null
-        ? `Chunk ${status.chunksCompleted}/${status.totalChunks}`
-        : "Embedding...",
+    embedding: "Embedding...",
     complete: "Complete",
     failed: "Failed",
   };
@@ -549,20 +546,6 @@ function EmbeddingFileRow({ filename, status }) {
         </p>
       </div>
       <div className="col-span-4 flex justify-end items-center gap-x-2">
-        {status.status === "embedding" &&
-          status.chunksCompleted != null &&
-          status.totalChunks != null && (
-            <div className="w-[60px] h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-sky-400 rounded-full transition-all duration-300"
-                style={{
-                  width: `${Math.round(
-                    (status.chunksCompleted / status.totalChunks) * 100
-                  )}%`,
-                }}
-              />
-            </div>
-          )}
         <p
           className={`text-[10px] whitespace-nowrap ${
             status.status === "failed"

@@ -15,9 +15,8 @@ class EmbeddingProgressBus extends EventEmitter {
     this.setMaxListeners(50);
 
     // Buffer progress events so late-joining SSE clients can catch up.
-    // Skip chunk_progress — high volume and redundant for state reconstruction.
     this.on("progress", (event) => {
-      if (!event.workspaceSlug || event.type === "chunk_progress") return;
+      if (!event.workspaceSlug) return;
       const slug = event.workspaceSlug;
       if (!this.#history.has(slug)) this.#history.set(slug, []);
       this.#history.get(slug).push(event);
@@ -242,17 +241,6 @@ class WorkerQueue {
         this.#processNext();
         break;
       }
-
-      case "progress":
-        if (this.#activeJob) {
-          embeddingProgressBus.emit("progress", {
-            type: "chunk_progress",
-            workspaceSlug: this.#activeJob.workspaceSlug,
-            userId: this.#activeJob.userId,
-            ...msg.progress,
-          });
-        }
-        break;
 
       default:
         console.warn(`[WorkerQueue] Unknown message type: ${msg.type}`);

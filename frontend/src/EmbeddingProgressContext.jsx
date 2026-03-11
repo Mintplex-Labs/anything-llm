@@ -86,7 +86,6 @@ export function EmbeddingProgressProvider({ children }) {
   );
   const eventSourcesRef = useRef({});
   const cleanupTimeoutsRef = useRef({});
-  const currentFileRef = useRef({});
 
   // Persist to sessionStorage whenever the map changes
   useEffect(() => {
@@ -117,7 +116,6 @@ export function EmbeddingProgressProvider({ children }) {
 
           switch (data.type) {
             case "doc_starting":
-              currentFileRef.current[slug] = data.filename;
               setEmbeddingProgressMap((prev) => ({
                 ...prev,
                 [slug]: {
@@ -127,24 +125,6 @@ export function EmbeddingProgressProvider({ children }) {
               }));
               break;
 
-            case "chunk_progress": {
-              const cf = currentFileRef.current[slug];
-              if (cf) {
-                setEmbeddingProgressMap((prev) => ({
-                  ...prev,
-                  [slug]: {
-                    ...prev[slug],
-                    [cf]: {
-                      status: "embedding",
-                      chunksCompleted: data.chunksCompleted,
-                      totalChunks: data.totalChunks,
-                    },
-                  },
-                }));
-              }
-              break;
-            }
-
             case "doc_complete":
               setEmbeddingProgressMap((prev) => ({
                 ...prev,
@@ -153,7 +133,7 @@ export function EmbeddingProgressProvider({ children }) {
                   [data.filename]: { status: "complete" },
                 },
               }));
-              currentFileRef.current[slug] = null;
+
               break;
 
             case "doc_failed":
@@ -167,7 +147,7 @@ export function EmbeddingProgressProvider({ children }) {
                   },
                 },
               }));
-              currentFileRef.current[slug] = null;
+
               break;
 
             case "all_complete":
@@ -254,7 +234,6 @@ export function EmbeddingProgressProvider({ children }) {
         [slug]: { ...initialProgress },
       }));
 
-      currentFileRef.current[slug] = null;
       connectSSE(slug);
     },
     [connectSSE]
