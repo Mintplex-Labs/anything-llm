@@ -64,8 +64,6 @@ const SystemSettings = {
     // Hub settings
     "hub_api_key",
 
-    // Worker settings
-    "embedding_worker_timeout",
   ],
   validations: {
     footer_data: (updates) => {
@@ -197,21 +195,6 @@ const SystemSettings = {
         new MetaGenerator().clearConfig();
       }
     },
-    embedding_worker_timeout: (update) => {
-      try {
-        const value = Number(update);
-        if (isNullOrNaN(value)) throw new Error("Value is not a number.");
-        if (value < 30) return 30;
-        if (value > 3600) return 3600;
-        return value;
-      } catch (e) {
-        console.error(
-          `Failed to run validation function on embedding_worker_timeout`,
-          e.message
-        );
-        return 300;
-      }
-    },
     hub_api_key: (apiKey) => {
       if (!apiKey) return null;
       return String(apiKey);
@@ -254,6 +237,8 @@ const SystemSettings = {
         process.env.EMBEDDING_OUTPUT_DIMENSIONS || null,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      NativeEmbeddingWorkerTimeout:
+        process.env.NATIVE_EMBEDDING_WORKER_TIMEOUT || null,
       OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:

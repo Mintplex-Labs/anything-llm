@@ -281,13 +281,19 @@ class WorkerQueue {
 // ---------------------------------------------------------------------------
 // Queue instances
 // ---------------------------------------------------------------------------
-const IS_DEV = process.env.NODE_ENV === "development";
-const DEFAULT_EMBEDDING_TIMEOUT_SEC = IS_DEV ? 30 : 300;
-const RERANKING_TIMEOUT_MS = IS_DEV ? 30_000 : 900_000;
+const DEFAULT_EMBEDDING_TIMEOUT_SEC = 300;
+const DEFAULT_RERANKING_TIMEOUT_SEC = 900;
+
+function envTimeoutSec(envKey, fallback) {
+  const raw = process.env[envKey];
+  if (raw === undefined || raw === "") return fallback;
+  const val = Number(raw);
+  return !isNaN(val) && val >= 0 ? val : fallback;
+}
 
 const embeddingQueue = new WorkerQueue({
   workerScript: "../../workers/embeddingWorker.js",
-  idleTimeout: DEFAULT_EMBEDDING_TIMEOUT_SEC * 1000,
+  idleTimeout: envTimeoutSec("NATIVE_EMBEDDING_WORKER_TIMEOUT", DEFAULT_EMBEDDING_TIMEOUT_SEC) * 1000,
   onProgress: (data) => {
     embeddingProgressBus.emit("progress", {
       type: "chunk_progress",
@@ -301,25 +307,8 @@ const embeddingQueue = new WorkerQueue({
 
 const rerankingQueue = new WorkerQueue({
   workerScript: "../../workers/rerankingWorker.js",
-  idleTimeout: RERANKING_TIMEOUT_MS,
+  idleTimeout: envTimeoutSec("NATIVE_RERANKING_WORKER_TIMEOUT", DEFAULT_RERANKING_TIMEOUT_SEC) * 1000,
 });
-
-/**
- * Reads the embedding worker timeout from SystemSettings.
- * Falls back to DEFAULT_EMBEDDING_TIMEOUT_SEC if not set.
- */
-async function getEmbeddingWorkerTimeoutMs() {
-  try {
-    const { SystemSettings } = require("../../models/systemSettings");
-    const value = await SystemSettings.getValueOrFallback(
-      { label: "embedding_worker_timeout" },
-      DEFAULT_EMBEDDING_TIMEOUT_SEC
-    );
-    return Number(value) * 1000;
-  } catch {
-    return DEFAULT_EMBEDDING_TIMEOUT_SEC * 1000;
-  }
-}
 
 /**
  * Queue an embedding job for the native embedder worker.
@@ -328,7 +317,9 @@ async function getEmbeddingWorkerTimeoutMs() {
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
 async function queueEmbedding(payload, context = {}) {
-  embeddingQueue.idleTimeout = await getEmbeddingWorkerTimeoutMs();
+  // Re-read env in case it was changed via settings UI
+  embeddingQueue.idleTimeout =
+    envTimeoutSec("NATIVE_EMBEDDING_WORKER_TIMEOUT", DEFAULT_EMBEDDING_TIMEOUT_SEC) * 1000;
   const { result } = await embeddingQueue.enqueue({
     payload,
     workspaceSlug: context.workspaceSlug,
