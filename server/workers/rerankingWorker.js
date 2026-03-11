@@ -14,7 +14,10 @@
 
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({
-      path: require("path").resolve(__dirname, `../.env.${process.env.NODE_ENV}`),
+      path: require("path").resolve(
+        __dirname,
+        `../.env.${process.env.NODE_ENV}`
+      ),
     })
   : require("dotenv").config({
       path: require("path").resolve(__dirname, "../.env"),

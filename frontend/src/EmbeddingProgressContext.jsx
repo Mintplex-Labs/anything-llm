@@ -38,7 +38,10 @@ function loadPersistedProgress(sanitize = false) {
       if (!hasActiveWork) continue;
       const resetFiles = {};
       for (const [filename, fileStatus] of Object.entries(files)) {
-        if (fileStatus.status === "complete" || fileStatus.status === "failed") {
+        if (
+          fileStatus.status === "complete" ||
+          fileStatus.status === "failed"
+        ) {
           resetFiles[filename] = fileStatus;
         } else {
           resetFiles[filename] = { status: "pending" };
@@ -266,7 +269,10 @@ export function EmbeddingProgressProvider({ children }) {
         if (embeddedPaths.has(name)) {
           slugProgress[name] = { status: "complete" };
         } else {
-          const displayName = name.split("/").pop()?.replace(/\.json$/, "");
+          const displayName = name
+            .split("/")
+            .pop()
+            ?.replace(/\.json$/, "");
           const didFail =
             failedNames.length > 0 &&
             failedNames.some(

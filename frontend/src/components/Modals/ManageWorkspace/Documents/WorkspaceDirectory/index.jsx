@@ -496,7 +496,11 @@ function WorkspaceDocumentTooltips() {
 function EmbeddingFileRow({ filename, status }) {
   // Extract a readable display name from the filename path
   // e.g. "custom-documents/my-doc.json" -> "my-doc"
-  const displayName = filename.split("/").pop()?.replace(/\.json$/, "") || filename;
+  const displayName =
+    filename
+      .split("/")
+      .pop()
+      ?.replace(/\.json$/, "") || filename;
 
   const statusIcon = {
     pending: (

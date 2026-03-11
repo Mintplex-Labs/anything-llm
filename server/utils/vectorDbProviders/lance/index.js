@@ -126,8 +126,9 @@ class LanceDb extends VectorDatabase {
       .limit(searchLimit)
       .toArray();
 
-    await NativeEmbeddingReranker
-      .rerankViaWorker(query, vectorSearchResults, { topK: topN })
+    await NativeEmbeddingReranker.rerankViaWorker(query, vectorSearchResults, {
+      topK: topN,
+    })
       .then((rerankResults) => {
         rerankResults.forEach((item) => {
           if (this.distanceToSimilarity(item._distance) < similarityThreshold)

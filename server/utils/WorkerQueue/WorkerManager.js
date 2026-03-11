@@ -45,17 +45,19 @@ class WorkerManager {
         });
       } catch (err) {
         this.#readyResolve = null;
-        return reject(
-          new Error(`Failed to fork worker: ${err.message}`)
-        );
+        return reject(new Error(`Failed to fork worker: ${err.message}`));
       }
 
       // Pipe worker stdout/stderr to main process for logging
       this.#worker.stdout?.on("data", (data) =>
-        process.stdout.write(`[Worker:${path.basename(this.workerScript)}] ${data}`)
+        process.stdout.write(
+          `[Worker:${path.basename(this.workerScript)}] ${data}`
+        )
       );
       this.#worker.stderr?.on("data", (data) =>
-        process.stderr.write(`[Worker:${path.basename(this.workerScript)}] ${data}`)
+        process.stderr.write(
+          `[Worker:${path.basename(this.workerScript)}] ${data}`
+        )
       );
 
       this.#worker.on("message", (msg) => this.#onWorkerMessage(msg));
@@ -63,9 +65,7 @@ class WorkerManager {
         this.#onWorkerExit(code, signal)
       );
       this.#worker.on("error", (err) => {
-        console.error(
-          `[WorkerManager] Worker error: ${err.message}`
-        );
+        console.error(`[WorkerManager] Worker error: ${err.message}`);
         if (this.#readyResolve) {
           this.#readyResolve = null;
           reject(err);

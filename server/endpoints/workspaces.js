@@ -1098,9 +1098,7 @@ function workspaceEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        const {
-          embeddingProgressBus,
-        } = require("../utils/WorkerQueue");
+        const { embeddingProgressBus } = require("../utils/WorkerQueue");
         const unsubscribe = embeddingProgressBus.subscribe(
           { workspaceSlug: workspace.slug, userId },
           (event) => {
