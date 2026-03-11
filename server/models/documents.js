@@ -92,7 +92,18 @@ const Document = {
 
     for (const [index, path] of additions.entries()) {
       const data = await fileData(path);
-      if (!data) continue;
+      if (!data) {
+        embeddingProgressBus.emit("progress", {
+          type: "doc_failed",
+          workspaceSlug: workspace.slug,
+          userId,
+          filename: path,
+          docIndex: index,
+          totalDocs,
+          error: "Failed to load file data",
+        });
+        continue;
+      }
 
       const docId = uuidv4();
       const { pageContent: _pageContent, ...metadata } = data;
