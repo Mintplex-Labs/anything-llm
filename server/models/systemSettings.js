@@ -238,6 +238,8 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       NativeEmbeddingWorkerTimeout:
         process.env.NATIVE_EMBEDDING_WORKER_TIMEOUT || null,
+      NativeRerankingWorkerTimeout:
+        process.env.NATIVE_RERANKING_WORKER_TIMEOUT || null,
       OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:

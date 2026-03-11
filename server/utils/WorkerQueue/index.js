@@ -341,6 +341,12 @@ async function queueEmbedding(payload, context = {}) {
  * @returns {Promise<Array>} The reranked documents
  */
 async function queueReranking(payload) {
+  // Re-read env in case it was changed via settings UI
+  rerankingQueue.idleTimeout =
+    envTimeoutSec(
+      "NATIVE_RERANKING_WORKER_TIMEOUT",
+      DEFAULT_RERANKING_TIMEOUT_SEC
+    ) * 1000;
   const { result } = await rerankingQueue.enqueue({ payload });
   return result.reranked;
 }

@@ -311,6 +311,10 @@ const KEY_MAPPING = {
     envKey: "NATIVE_EMBEDDING_WORKER_TIMEOUT",
     checks: [isInteger],
   },
+  NativeRerankingWorkerTimeout: {
+    envKey: "NATIVE_RERANKING_WORKER_TIMEOUT",
+    checks: [isInteger],
+  },
   EmbeddingOutputDimensions: {
     envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
     checks: [],
