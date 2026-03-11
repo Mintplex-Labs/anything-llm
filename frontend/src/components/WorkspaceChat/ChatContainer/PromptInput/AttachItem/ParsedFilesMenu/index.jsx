@@ -9,7 +9,7 @@ import useUser from "@/hooks/useUser";
 
 export default function ParsedFilesMenu({
   onEmbeddingChange,
-  tooltipRef,
+  onClose,
   files,
   setFiles,
   currentTokens,
@@ -93,7 +93,7 @@ export default function ParsedFilesMenu({
         `${files.length} ${pluralize("file", files.length)} embedded successfully`,
         "success"
       );
-      tooltipRef?.current?.close();
+      onClose?.();
     } catch (error) {
       console.error("Failed to embed files:", error);
       showToast("Failed to embed files", "error");
