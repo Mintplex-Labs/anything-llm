@@ -47,14 +47,12 @@ class WorkerQueue {
    * @param {Object} options
    * @param {string} options.workerScript - Path to worker JS file (relative to this file or absolute)
    * @param {number} options.idleTimeout - Ms of inactivity before killing the worker
-   * @param {function} [options.onProgress] - Called with (progressData) when the worker reports progress
    */
-  constructor({ workerScript, idleTimeout = 300_000, onProgress = null }) {
+  constructor({ workerScript, idleTimeout = 300_000 }) {
     this.workerScript = path.isAbsolute(workerScript)
       ? workerScript
       : path.resolve(__dirname, workerScript);
     this.idleTimeout = idleTimeout;
-    this.onProgress = onProgress;
   }
 
   get isRunning() {
@@ -212,28 +210,20 @@ class WorkerQueue {
         this.#activeJob = null;
         this.#resetIdleTimer();
         if (job && job.jobId === msg.jobId) {
-          job.reject(
-            msg.error instanceof Error
-              ? msg.error
-              : new Error(String(msg.error))
-          );
+          job.reject(new Error(String(msg.error)));
         }
         this.#processNext();
         break;
       }
 
       case "progress":
-        if (this.onProgress && this.#activeJob) {
-          try {
-            this.onProgress({
-              jobId: msg.jobId,
-              ...msg.progress,
-              workspaceSlug: this.#activeJob.workspaceSlug,
-              userId: this.#activeJob.userId,
-            });
-          } catch {
-            // Don't let a failing listener break the queue
-          }
+        if (this.#activeJob) {
+          embeddingProgressBus.emit("progress", {
+            type: "chunk_progress",
+            workspaceSlug: this.#activeJob.workspaceSlug,
+            userId: this.#activeJob.userId,
+            ...msg.progress,
+          });
         }
         break;
 
@@ -293,16 +283,11 @@ function envTimeoutSec(envKey, fallback) {
 
 const embeddingQueue = new WorkerQueue({
   workerScript: "../../workers/embeddingWorker.js",
-  idleTimeout: envTimeoutSec("NATIVE_EMBEDDING_WORKER_TIMEOUT", DEFAULT_EMBEDDING_TIMEOUT_SEC) * 1000,
-  onProgress: (data) => {
-    embeddingProgressBus.emit("progress", {
-      type: "chunk_progress",
-      workspaceSlug: data.workspaceSlug,
-      userId: data.userId,
-      chunksCompleted: data.chunksCompleted,
-      totalChunks: data.totalChunks,
-    });
-  },
+  idleTimeout:
+    envTimeoutSec(
+      "NATIVE_EMBEDDING_WORKER_TIMEOUT",
+      DEFAULT_EMBEDDING_TIMEOUT_SEC
+    ) * 1000,
 });
 
 const rerankingQueue = new WorkerQueue({
