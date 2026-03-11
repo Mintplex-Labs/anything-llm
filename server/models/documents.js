@@ -84,9 +84,7 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
-    const {
-      embeddingProgressBus,
-    } = require("../utils/WorkerQueue/EmbeddingProgressBus");
+    const { embeddingProgressBus } = require("../utils/WorkerQueue");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
