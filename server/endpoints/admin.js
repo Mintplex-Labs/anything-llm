@@ -28,18 +28,6 @@ const {
   simpleSSOLoginDisabledMiddleware,
 } = require("../utils/middleware/simpleSSOEnabled");
 
-function sample() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve("Hello, world!");
-    }, 1000);
-  });
-}
-
-sample().then((result) => {
-  console.log(result);
-});
-
 function adminEndpoints(app) {
   if (!app) return;
 
