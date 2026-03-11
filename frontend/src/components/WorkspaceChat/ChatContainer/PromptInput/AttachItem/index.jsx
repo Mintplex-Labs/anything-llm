@@ -1,6 +1,7 @@
 import { Plus } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import {
@@ -21,12 +22,16 @@ export default function AttachItem({
   const params = useParams();
   const slug = workspaceSlug || params.slug;
   const threadSlug = workspaceThreadSlug ?? params.threadSlug ?? null;
+  const tooltipRef = useRef(null);
+  const anchorRef = useRef(null);
+  const closeTimerRef = useRef(null);
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [files, setFiles] = useState([]);
   const [currentTokens, setCurrentTokens] = useState(0);
   const [contextWindow, setContextWindow] = useState(Infinity);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [isAnchorHovered, setIsAnchorHovered] = useState(false);
+  const [isTooltipHovered, setIsTooltipHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchFiles = () => {
@@ -69,14 +74,22 @@ export default function AttachItem({
     return;
   }
 
-  function handlePointerEnter() {
-    setIsHovering(true);
-    fetchFiles();
+  function clearCloseTimer() {
+    if (!closeTimerRef.current) return;
+    window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
   }
 
-  function handlePointerLeave() {
-    setIsHovering(false);
-    if (!isEmbedding) setIsMenuOpen(false);
+  function scheduleClose() {
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      if (!isEmbedding) setIsTooltipOpen(false);
+    }, 120);
+  }
+
+  function openTooltip() {
+    fetchFiles();
+    setIsTooltipOpen(true);
   }
 
   useEffect(() => {
@@ -93,31 +106,69 @@ export default function AttachItem({
   }, [slug, threadSlug]);
 
   useEffect(() => {
-    if (isHovering && hasParsedFiles) {
-      setIsMenuOpen(true);
+    if (!hasParsedFiles && !isEmbedding) {
+      setIsTooltipOpen(false);
+    }
+  }, [hasParsedFiles, isEmbedding]);
+
+  useEffect(() => {
+    if (hasParsedFiles && (isAnchorHovered || isTooltipHovered)) {
+      clearCloseTimer();
+      setIsTooltipOpen(true);
       return;
     }
 
-    if ((!hasParsedFiles || !isHovering) && !isEmbedding) {
-      setIsMenuOpen(false);
+    if (!isEmbedding) {
+      scheduleClose();
     }
-  }, [hasParsedFiles, isHovering, isEmbedding]);
+  }, [hasParsedFiles, isAnchorHovered, isTooltipHovered, isEmbedding]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape" && !isEmbedding) {
+        clearCloseTimer();
+        setIsTooltipOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isEmbedding]);
+
+  useEffect(() => {
+    clearCloseTimer();
+    setIsTooltipOpen(false);
+    setIsAnchorHovered(false);
+    setIsTooltipHovered(false);
+  }, [slug, threadSlug]);
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
 
   return (
-    <div
-      className="relative"
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-    >
+    <>
       <button
+        ref={anchorRef}
         id="attach-item-btn"
-        data-tooltip-id={!hasParsedFiles ? "attach-item-btn" : undefined}
+        data-tooltip-id={
+          !hasParsedFiles ? "attach-item-btn" : "tooltip-attach-item-btn"
+        }
         data-tooltip-content={
           !hasParsedFiles ? t("chat_window.attach_file") : undefined
         }
         aria-label={t("chat_window.attach_file")}
         type="button"
         onClick={handleClick}
+        onPointerEnter={() => {
+          setIsAnchorHovered(true);
+          if (hasParsedFiles) openTooltip();
+        }}
+        onPointerLeave={() => {
+          setIsAnchorHovered(false);
+        }}
         className="group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200"
       >
         <div className="relative">
@@ -132,22 +183,54 @@ export default function AttachItem({
           )}
         </div>
       </button>
-      {isMenuOpen && hasParsedFiles && (
-        <div className="absolute bottom-full left-0 mb-2 z-[99] w-[400px] rounded-lg bg-theme-bg-primary px-[5px] light:border-2 light:border-theme-modal-border shadow-xl">
-          <ParsedFilesMenu
-            onEmbeddingChange={setIsEmbedding}
-            onClose={() => setIsMenuOpen(false)}
-            isLoading={isLoading}
-            files={files}
-            setFiles={setFiles}
-            currentTokens={currentTokens}
-            setCurrentTokens={setCurrentTokens}
-            contextWindow={contextWindow}
-            workspaceSlug={slug}
-            threadSlug={threadSlug}
-          />
-        </div>
+
+      {hasParsedFiles && (
+        <Tooltip
+          ref={tooltipRef}
+          id="tooltip-attach-item-btn"
+          anchorSelect="#attach-item-btn"
+          place="top"
+          opacity={1}
+          isOpen={isTooltipOpen}
+          clickable
+          delayShow={0}
+          delayHide={0}
+          noArrow
+          className="z-[99] !w-[400px] !bg-theme-bg-primary !px-[5px] !rounded-lg !pointer-events-auto light:!border-2 light:!border-theme-modal-border shadow-xl"
+          positionStrategy="fixed"
+          afterShow={() => clearCloseTimer()}
+          afterHide={() => {
+            setIsTooltipHovered(false);
+          }}
+        >
+          <div
+            onPointerEnter={() => {
+              clearCloseTimer();
+              setIsTooltipHovered(true);
+            }}
+            onPointerLeave={() => {
+              setIsTooltipHovered(false);
+            }}
+          >
+            <ParsedFilesMenu
+              onEmbeddingChange={setIsEmbedding}
+              onClose={() => {
+                clearCloseTimer();
+                setIsTooltipOpen(false);
+                setIsTooltipHovered(false);
+              }}
+              isLoading={isLoading}
+              files={files}
+              setFiles={setFiles}
+              currentTokens={currentTokens}
+              setCurrentTokens={setCurrentTokens}
+              contextWindow={contextWindow}
+              workspaceSlug={slug}
+              threadSlug={threadSlug}
+            />
+          </div>
+        </Tooltip>
       )}
-    </div>
+    </>
   );
 }
