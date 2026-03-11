@@ -10,3 +10,8 @@ aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
 .idea
+.local-storage/
+.local-dev/
+frontend/.env
+server/.env.development
+collector/.env.development

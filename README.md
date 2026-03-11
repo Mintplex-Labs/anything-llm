@@ -182,6 +182,21 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - `yarn dev:frontend` To boot the frontend locally (from root of repo).
 - `yarn dev:collector` To then run the document collector (from root of repo).
 
+### Faster local Lovora workflow
+
+For day-to-day Lovora iteration, use the helper scripts from the repo root:
+
+- `yarn local:setup` clones env templates, creates local storage, installs dependencies, and runs Prisma generate/migrate.
+- `yarn local:start` starts `server`, `frontend`, and `collector` together.
+
+If you want the setup script to clone the repo into a fresh directory first:
+
+```bash
+bash ./scripts/local-dev-setup.sh --clone-dir /path/to/lovora-local --repo-url https://github.com/AndreasRamsli/lovora.git
+```
+
+After setup, add your real provider keys to `server/.env.development` if you want local agent/model behavior to match production.
+
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
