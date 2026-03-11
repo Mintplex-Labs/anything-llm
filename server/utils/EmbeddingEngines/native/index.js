@@ -286,7 +286,10 @@ class NativeEmbedder {
    */
   async queuedEmbedChunks(textChunks = []) {
     const { queueEmbedding } = require("../../WorkerQueue");
-    return await queueEmbedding({ textChunks, modelConfig: { model: this.model } });
+    return await queueEmbedding({
+      textChunks,
+      modelConfig: { model: this.model },
+    });
   }
 }
 
