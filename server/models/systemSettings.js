@@ -789,6 +789,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       originalDatabaseId,
       connectionString,
       engine,
+      schema,
     } = update;
 
     switch (action) {
@@ -822,6 +823,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: newId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }
@@ -842,6 +844,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: slugifiedId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }
