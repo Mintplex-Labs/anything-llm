@@ -223,8 +223,7 @@ const TRANSLATIONS = {
     identifier: "向量資料庫識別碼",
     snippets: {
       title: "最大內容片段數",
-      description:
-        "這項設定會控制每次對話或查詢送給 LLM 的內容片段上限。",
+      description: "這項設定會控制每次對話或查詢送給 LLM 的內容片段上限。",
       recommend: "建議值：4",
     },
     doc: {
@@ -282,8 +281,7 @@ const TRANSLATIONS = {
       },
       save: {
         title: "產生並儲存檔案",
-        description:
-          "讓預設智慧代理人產生並寫入檔案，之後可儲存到電腦。",
+        description: "讓預設智慧代理人產生並寫入檔案，之後可儲存到電腦。",
       },
       web: {
         title: "網頁搜尋",
@@ -295,8 +293,7 @@ const TRANSLATIONS = {
         description:
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
-      default_skill:
-        "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
     },
   },
   recorded: {
@@ -424,8 +421,7 @@ const TRANSLATIONS = {
   },
   privacy: {
     title: "隱私與資料處理",
-    description:
-      "這裡設定已連線的第三方提供者與 AnythingLLM 會如何處理資料。",
+    description: "這裡設定已連線的第三方提供者與 AnythingLLM 會如何處理資料。",
     anonymous: "已啟用匿名遙測",
   },
   connectors: {
@@ -747,7 +743,8 @@ const TRANSLATIONS = {
       },
       "welcome-messages": {
         title: "歡迎訊息",
-        description: "自訂要顯示給使用者的歡迎訊息。只有非管理員使用者看得到這些訊息。",
+        description:
+          "自訂要顯示給使用者的歡迎訊息。只有非管理員使用者看得到這些訊息。",
         new: "新增",
         system: "系統",
         user: "使用者",
@@ -815,8 +812,7 @@ const TRANSLATIONS = {
         name_description: "這是系統提示詞的顯示名稱。",
         name_placeholder: "我的系統提示詞",
         description_label: "描述",
-        description_description:
-          "這是系統提示詞的描述，可用來說明用途。",
+        description_description: "這是系統提示詞的描述，可用來說明用途。",
         tags_label: "標籤",
         tags_description:
           "標籤用來標示系統提示詞，方便搜尋。可新增多個標籤，最多 5 個，每個標籤最多 20 個字元。",
@@ -840,8 +836,7 @@ const TRANSLATIONS = {
         name_description: "這是代理流程的顯示名稱。",
         name_placeholder: "我的代理流程",
         description_label: "描述",
-        description_description:
-          "這是代理流程的描述，可用來說明用途。",
+        description_description: "這是代理流程的描述，可用來說明用途。",
         tags_label: "標籤",
         tags_description:
           "標籤用來標示代理流程，方便搜尋。可新增多個標籤，最多 5 個，每個標籤最多 20 個字元。",
@@ -855,8 +850,7 @@ const TRANSLATIONS = {
       generic: {
         unauthenticated: {
           title: "需要驗證",
-          description:
-            "發布項目前，需先完成 AnythingLLM 社群中心驗證。",
+          description: "發布項目前，需先完成 AnythingLLM 社群中心驗證。",
           button: "連接到社群中心",
         },
       },
@@ -870,8 +864,7 @@ const TRANSLATIONS = {
         name_description: "這是斜線指令的顯示名稱。",
         name_placeholder: "我的斜線指令",
         description_label: "描述",
-        description_description:
-          "這是斜線指令的描述，可用來說明用途。",
+        description_description: "這是斜線指令的描述，可用來說明用途。",
         tags_label: "標籤",
         tags_description:
           "標籤用來標示斜線指令，方便搜尋。可新增多個標籤，最多 5 個，每個標籤最多 20 個字元。",
