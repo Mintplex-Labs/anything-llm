@@ -87,17 +87,15 @@ class WorkerQueue {
 
   /**
    * Add a job to the queue. Returns a promise that resolves with the worker's result.
-   * @param {{ payload: object, workspaceSlug?: string, userId?: number }} jobData
+   * @param {{ payload: object }} jobData
    * @returns {Promise<{ jobId: string, result: any }>}
    */
-  enqueue({ payload, workspaceSlug = null, userId = null }) {
+  enqueue({ payload }) {
     const jobId = uuidv4();
     return new Promise((resolve, reject) => {
       this.#queue.push({
         jobId,
         payload,
-        workspaceSlug,
-        userId,
         resolve,
         reject,
       });
@@ -317,21 +315,16 @@ const rerankingQueue = new WorkerQueue({
 /**
  * Queue an embedding job for the native embedder worker.
  * @param {{ textChunks: string[], modelConfig?: object }} payload
- * @param {{ workspaceSlug?: string, userId?: number }} context
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
-async function queueEmbedding(payload, context = {}) {
+async function queueEmbedding(payload) {
   // Re-read env in case it was changed via settings UI
   embeddingQueue.idleTimeout =
     envTimeoutSec(
       "NATIVE_EMBEDDING_WORKER_TIMEOUT",
       DEFAULT_EMBEDDING_TIMEOUT_SEC
     ) * 1000;
-  const { result } = await embeddingQueue.enqueue({
-    payload,
-    workspaceSlug: context.workspaceSlug,
-    userId: context.userId,
-  });
+  const { result } = await embeddingQueue.enqueue({ payload });
   return result.vectors;
 }
 
