@@ -2,8 +2,9 @@ const { WorkerManager } = require("./WorkerManager");
 const { JobQueue } = require("./JobQueue");
 const { embeddingProgressBus } = require("./EmbeddingProgressBus");
 
-const DEFAULT_EMBEDDING_TIMEOUT_SEC = 300;
-const RERANKING_TIMEOUT_MS = 900_000; // 15 minutes — keep hot for frequent chat reranking
+const IS_DEV = process.env.NODE_ENV === "development";
+const DEFAULT_EMBEDDING_TIMEOUT_SEC = IS_DEV ? 30 : 300;
+const RERANKING_TIMEOUT_MS = IS_DEV ? 30_000 : 900_000; // dev: 30s, prod: 15min
 
 /**
  * Reads the embedding worker timeout from SystemSettings.
