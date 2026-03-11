@@ -39,8 +39,6 @@ class JobQueue {
 
       this.#queue.push(job);
       if (!this.#activeJob) this.#processNext();
-
-      return jobId;
     });
   }
 
@@ -78,9 +76,7 @@ class JobQueue {
   #onJobError(jobId, error) {
     const job = this.#activeJob;
     if (job && job.jobId === jobId) {
-      job.reject(
-        error instanceof Error ? error : new Error(String(error))
-      );
+      job.reject(error instanceof Error ? error : new Error(String(error)));
     }
     this.#activeJob = null;
     this.#processNext();
