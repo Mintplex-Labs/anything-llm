@@ -1,7 +1,3 @@
-const https = require("https");
-const http = require("http");
-const { URL } = require("url");
-
 class ModelsLabTTS {
   static VOICES = [
     "en_us_001",
@@ -36,44 +32,50 @@ class ModelsLabTTS {
    * @param {string} url
    * @returns {Promise<Buffer>}
    */
-  #fetchUrl(url) {
-    return new Promise((resolve, reject) => {
-      const parsedUrl = new URL(url);
-      const transport = parsedUrl.protocol === "https:" ? https : http;
-      transport.get(url, (res) => {
-        const chunks = [];
-        res.on("data", (chunk) => chunks.push(chunk));
-        res.on("end", () => resolve(Buffer.concat(chunks)));
-        res.on("error", reject);
-      }).on("error", reject);
-    });
+  async #fetchUrl(url) {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch audio: ${response.statusText}`);
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   }
 
   /**
    * Polls the ModelsLab fetch endpoint until the audio is ready.
+   * Uses exponential backoff for better performance.
    * @param {string|number} requestId
    * @param {number} maxAttempts
    * @returns {Promise<Buffer|null>}
    */
   async #pollForResult(requestId, maxAttempts = 20) {
     const fetchUrl = "https://modelslab.com/api/v6/voice/fetch";
+    let delayMs = 1000; // Start with 1 second
+    
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, delayMs));
+      
       const response = await fetch(fetchUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: this.apiKey, request_id: String(requestId) }),
       });
+      
       const data = await response.json();
+      
       if (data.status === "success" && data.output?.length > 0) {
         return await this.#fetchUrl(data.output[0]);
       }
+      
       if (data.status === "error") {
         this.#log("Poll error:", data.message || data.messege || "Unknown error");
         return null;
       }
+      
       this.#log(`Polling attempt ${attempt + 1}/${maxAttempts}...`);
+      
+      // Exponential backoff: 1s, 2s, 3s, 4s... up to 5s max
+      delayMs = Math.min(delayMs + 1000, 5000);
     }
+    
     this.#log("Timed out waiting for audio generation.");
     return null;
   }
