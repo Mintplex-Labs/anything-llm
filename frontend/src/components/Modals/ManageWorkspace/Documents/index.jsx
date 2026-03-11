@@ -32,7 +32,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     startEmbedding,
     updateProgressFromApi,
     updateProgressWithError,
-    clearProgress,
   } = useEmbeddingProgress();
 
   const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
