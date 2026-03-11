@@ -96,7 +96,7 @@ function WorkspaceDirectory({
     saveChanges(e);
   };
 
-  if (loading) {
+  if (loading || embeddingProgress) {
     return (
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
