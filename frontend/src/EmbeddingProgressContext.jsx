@@ -215,6 +215,7 @@ export function EmbeddingProgressProvider({ children }) {
     return () => {
       for (const slug of Object.keys(eventSourcesRef.current)) {
         eventSourcesRef.current[slug]?.close();
+        delete eventSourcesRef.current[slug];
       }
     };
   }, [connectSSE]);
