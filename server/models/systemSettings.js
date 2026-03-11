@@ -63,7 +63,6 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
-
   ],
   validations: {
     footer_data: (updates) => {

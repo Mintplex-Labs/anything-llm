@@ -307,7 +307,11 @@ const embeddingQueue = new WorkerQueue({
 
 const rerankingQueue = new WorkerQueue({
   workerScript: "../../workers/rerankingWorker.js",
-  idleTimeout: envTimeoutSec("NATIVE_RERANKING_WORKER_TIMEOUT", DEFAULT_RERANKING_TIMEOUT_SEC) * 1000,
+  idleTimeout:
+    envTimeoutSec(
+      "NATIVE_RERANKING_WORKER_TIMEOUT",
+      DEFAULT_RERANKING_TIMEOUT_SEC
+    ) * 1000,
 });
 
 /**
@@ -319,7 +323,10 @@ const rerankingQueue = new WorkerQueue({
 async function queueEmbedding(payload, context = {}) {
   // Re-read env in case it was changed via settings UI
   embeddingQueue.idleTimeout =
-    envTimeoutSec("NATIVE_EMBEDDING_WORKER_TIMEOUT", DEFAULT_EMBEDDING_TIMEOUT_SEC) * 1000;
+    envTimeoutSec(
+      "NATIVE_EMBEDDING_WORKER_TIMEOUT",
+      DEFAULT_EMBEDDING_TIMEOUT_SEC
+    ) * 1000;
   const { result } = await embeddingQueue.enqueue({
     payload,
     workspaceSlug: context.workspaceSlug,
