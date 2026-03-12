@@ -44,18 +44,20 @@ const chatHistory = {
       _store: async function (aibitat, { prompt, response } = {}) {
         const invocation = aibitat.handlerProps.invocation;
         const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const citations = aibitat._pendingCitations ?? [];
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
           response: {
             text: response,
-            sources: [],
+            sources: citations,
             type: "chat",
             metrics,
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
         });
+        aibitat.clearCitations?.();
       },
       _storeSpecial: async function (
         aibitat,
@@ -63,11 +65,13 @@ const chatHistory = {
       ) {
         const invocation = aibitat.handlerProps.invocation;
         const metrics = aibitat.provider?.getUsage?.() ?? {};
+        const citations = aibitat._pendingCitations ?? [];
+        const existingSources = options?.sources ?? [];
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
           response: {
-            sources: options?.sources ?? [],
+            sources: [...existingSources, ...citations],
             // when we have a _storeSpecial called the options param can include a storedResponse() function
             // that will override the text property to store extra information in, depending on the special type of chat.
             text: options.hasOwnProperty("storedResponse")
@@ -79,6 +83,7 @@ const chatHistory = {
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
         });
+        aibitat.clearCitations?.();
         options?.postSave();
       },
     };

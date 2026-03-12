@@ -13,7 +13,12 @@ export default function SourceItem({ source, onClick }) {
       className="flex flex-col gap-[2px] items-start w-full text-left hover:opacity-75 transition-opacity"
     >
       <div className="flex gap-[6px] items-start w-full">
-        <SourceTypeCircle type={info.icon} size={16} iconSize={10} />
+        <SourceTypeCircle
+          type={info.icon}
+          size={16}
+          iconSize={10}
+          url={info.href}
+        />
         <p className="flex-1 font-medium text-sm text-white light:text-slate-900 leading-[15px] truncate">
           {source.title}
         </p>
