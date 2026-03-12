@@ -123,7 +123,10 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     // Fire the embed POST first so the server is already processing the job
     // by the time the SSE connection opens. This avoids the server sending
     // idle (no active job) before embedding has started.
-    const embedPromise = Workspace.modifyEmbeddings(workspace.slug, changesToSend);
+    const embedPromise = Workspace.modifyEmbeddings(
+      workspace.slug,
+      changesToSend
+    );
     startEmbedding(workspace.slug, filenames);
 
     embedPromise
