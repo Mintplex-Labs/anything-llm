@@ -148,11 +148,14 @@ const Document = {
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
+        emitProgress("doc_complete", docProgress);
       } catch (error) {
         console.error(error.message);
+        emitProgress("doc_failed", {
+          ...docProgress,
+          error: "Failed to save document record",
+        });
       }
-
-      emitProgress("doc_complete", docProgress);
     }
 
     // Signal that all documents have been processed
