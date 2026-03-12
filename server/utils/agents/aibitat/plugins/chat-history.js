@@ -43,6 +43,7 @@ const chatHistory = {
       },
       _store: async function (aibitat, { prompt, response } = {}) {
         const invocation = aibitat.handlerProps.invocation;
+        const metrics = aibitat.provider?.getUsage?.() ?? {};
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -50,6 +51,7 @@ const chatHistory = {
             text: response,
             sources: [],
             type: "chat",
+            metrics,
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
@@ -60,6 +62,7 @@ const chatHistory = {
         { prompt, response, options = {} } = {}
       ) {
         const invocation = aibitat.handlerProps.invocation;
+        const metrics = aibitat.provider?.getUsage?.() ?? {};
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -71,6 +74,7 @@ const chatHistory = {
               ? options.storedResponse(response)
               : response,
             type: options?.saveAsType ?? "chat",
+            metrics,
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
