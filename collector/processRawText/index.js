@@ -60,7 +60,7 @@ async function processRawText(textContent, metadata) {
 
   // Truncate to avoid ENAMETOOLONG (ext4 limit: 255 bytes).
   // Final: "raw-" (4) + slug + "-" (1) + UUID (36) + ".json" (5) = 46 chars overhead
-  const rawSlug = stripAndSlug(metadata.title);
+  const rawSlug = stripAndSlug(metadata.title).replace(/^www-/, "");
   const slug = rawSlug.length > 200 ? rawSlug.substring(0, 200) : rawSlug;
   const document = writeToServerDocuments({
     data,
