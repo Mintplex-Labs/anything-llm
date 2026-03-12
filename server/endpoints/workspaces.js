@@ -1101,9 +1101,8 @@ function workspaceEndpoints(app) {
         );
 
         // If there's no buffered history for this workspace, no embedding
-        // is in progress. Send all_complete so the frontend clears any
-        // stale progress state left in sessionStorage (e.g. from a
-        // previous session where the job finished while logged out).
+        // is in progress. Send all_complete so the frontend knows there's
+        // nothing to display.
         if (!hadHistory) {
           response.write(
             `data: ${JSON.stringify({ type: "all_complete", workspaceSlug: workspace.slug })}\n\n`
