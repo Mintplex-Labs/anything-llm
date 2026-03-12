@@ -23,6 +23,11 @@ export function EmbeddingProgressProvider({ children }) {
   const [embeddingProgressMap, setEmbeddingProgressMap] = useState({});
   const eventSourcesRef = useRef({});
   const cleanupTimeoutsRef = useRef({});
+  // Tracks slugs where startEmbedding was called but no real progress event
+  // (batch_starting/doc_starting) has arrived yet. Prevents a premature
+  // all_complete (sent by the server when SSE connects before the API call
+  // starts the embedding) from closing the connection.
+  const awaitingProgressRef = useRef(new Set());
 
   // Cleanup all EventSources on unmount
   useEffect(() => {
@@ -57,6 +62,7 @@ export function EmbeddingProgressProvider({ children }) {
 
           switch (data.type) {
             case "batch_starting": {
+              awaitingProgressRef.current.delete(slug);
               const initial = {};
               for (const name of data.filenames || []) {
                 initial[name] = { status: "pending" };
@@ -69,6 +75,7 @@ export function EmbeddingProgressProvider({ children }) {
             }
 
             case "doc_starting":
+              awaitingProgressRef.current.delete(slug);
               setEmbeddingProgressMap((prev) => ({
                 ...prev,
                 [slug]: {
@@ -102,6 +109,15 @@ export function EmbeddingProgressProvider({ children }) {
               break;
 
             case "all_complete":
+              // If we just called startEmbedding but the server hasn't
+              // received the API call yet, it sends all_complete because
+              // there's no history. Ignore it — keep the connection open
+              // so real progress events arrive once embedding begins.
+              if (awaitingProgressRef.current.has(slug)) {
+                awaitingProgressRef.current.delete(slug);
+                break;
+              }
+
               eventSource.close();
               delete eventSourcesRef.current[slug];
               // Auto-clear progress after 5s
@@ -163,6 +179,9 @@ export function EmbeddingProgressProvider({ children }) {
         [slug]: { ...initialProgress },
       }));
 
+      // Mark this slug so that a premature all_complete (from the server
+      // seeing no history before the API call starts) is ignored.
+      awaitingProgressRef.current.add(slug);
       connectSSE(slug);
     },
     [connectSSE]
