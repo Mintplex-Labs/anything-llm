@@ -61,7 +61,7 @@ export function CommunityHubImportItemLayout({ setStep, children }) {
 
   return (
     <>
-      <div className="relative md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-auto p-4 md:p-0 flex">
+      <div className="relative md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden p-4 md:p-0 flex">
         {children(settings, setSettings, setStep)}
       </div>
     </>
