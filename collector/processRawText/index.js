@@ -58,9 +58,13 @@ async function processRawText(textContent, metadata) {
     token_count_estimate: tokenizeString(textContent),
   };
 
+  // Truncate to avoid ENAMETOOLONG (ext4 limit: 255 bytes).
+  // Final: "raw-" (4) + slug + "-" (1) + UUID (36) + ".json" (5) = 46 chars overhead
+  const rawSlug = stripAndSlug(metadata.title);
+  const slug = rawSlug.length > 200 ? rawSlug.substring(0, 200) : rawSlug;
   const document = writeToServerDocuments({
     data,
-    filename: `raw-${stripAndSlug(metadata.title)}-${data.id}`,
+    filename: `raw-${slug}-${data.id}`,
   });
   console.log(`[SUCCESS]: Raw text and metadata saved & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
