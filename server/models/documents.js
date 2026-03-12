@@ -90,26 +90,24 @@ const Document = {
     const errors = new Set();
     const totalDocs = additions.length;
 
+    const emitProgress = (type, extra = {}) =>
+      embeddingProgressBus.emit("progress", {
+        type,
+        workspaceSlug: workspace.slug,
+        userId,
+        ...extra,
+      });
+
     // Signal the full batch so SSE clients (including late-joining ones
     // via history replay) can seed the complete file list as "pending".
-    embeddingProgressBus.emit("progress", {
-      type: "batch_starting",
-      workspaceSlug: workspace.slug,
-      userId,
-      filenames: additions,
-      totalDocs,
-    });
+    emitProgress("batch_starting", { filenames: additions, totalDocs });
 
     for (const [index, path] of additions.entries()) {
+      const docProgress = { filename: path, docIndex: index, totalDocs };
       const data = await fileData(path);
       if (!data) {
-        embeddingProgressBus.emit("progress", {
-          type: "doc_failed",
-          workspaceSlug: workspace.slug,
-          userId,
-          filename: path,
-          docIndex: index,
-          totalDocs,
+        emitProgress("doc_failed", {
+          ...docProgress,
           error: "Failed to load file data",
         });
         continue;
@@ -125,15 +123,7 @@ const Document = {
         metadata: JSON.stringify(metadata),
       };
 
-      // Emit doc-starting event for SSE listeners
-      embeddingProgressBus.emit("progress", {
-        type: "doc_starting",
-        workspaceSlug: workspace.slug,
-        userId,
-        filename: path,
-        docIndex: index,
-        totalDocs,
-      });
+      emitProgress("doc_starting", docProgress);
 
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
@@ -148,14 +138,8 @@ const Document = {
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
         errors.add(error);
-
-        embeddingProgressBus.emit("progress", {
-          type: "doc_failed",
-          workspaceSlug: workspace.slug,
-          userId,
-          filename: path,
-          docIndex: index,
-          totalDocs,
+        emitProgress("doc_failed", {
+          ...docProgress,
           error: error || "Unknown error",
         });
         continue;
@@ -168,21 +152,11 @@ const Document = {
         console.error(error.message);
       }
 
-      embeddingProgressBus.emit("progress", {
-        type: "doc_complete",
-        workspaceSlug: workspace.slug,
-        userId,
-        filename: path,
-        docIndex: index,
-        totalDocs,
-      });
+      emitProgress("doc_complete", docProgress);
     }
 
     // Signal that all documents have been processed
-    embeddingProgressBus.emit("progress", {
-      type: "all_complete",
-      workspaceSlug: workspace.slug,
-      userId,
+    emitProgress("all_complete", {
       totalDocs,
       embedded: embedded.length,
       failed: failedToEmbed.length,
