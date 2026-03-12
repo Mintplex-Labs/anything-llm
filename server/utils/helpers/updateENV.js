@@ -666,6 +666,10 @@ const KEY_MAPPING = {
     envKey: "TTS_MODELSLAB_LANGUAGE",
     checks: [],
   },
+  TTSModelsLabSpeed: {
+    envKey: "TTS_MODELSLAB_SPEED",
+    checks: [],
+  },
 
   // DeepSeek Options
   DeepSeekApiKey: {

@@ -21,6 +21,15 @@ const MODELSLAB_LANGUAGES = [
   { value: "hindi", label: "Hindi" },
 ];
 
+const MODELSLAB_SPEEDS = [
+  { value: "0.5", label: "0.5x (Slow)" },
+  { value: "0.75", label: "0.75x" },
+  { value: "1", label: "1x (Normal)" },
+  { value: "1.25", label: "1.25x" },
+  { value: "1.5", label: "1.5x (Fast)" },
+  { value: "2", label: "2x (Very Fast)" },
+];
+
 export default function ModelsLabTextToSpeechOptions({ settings }) {
   return (
     <div className="flex flex-col gap-y-4">
@@ -79,6 +88,22 @@ export default function ModelsLabTextToSpeechOptions({ settings }) {
             {MODELSLAB_LANGUAGES.map((lang) => (
               <option key={lang.value} value={lang.value}>
                 {lang.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col w-40">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Speed
+          </label>
+          <select
+            name="TTSModelsLabSpeed"
+            defaultValue={settings?.TTSModelsLabSpeed ?? "1"}
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          >
+            {MODELSLAB_SPEEDS.map((speed) => (
+              <option key={speed.value} value={speed.value}>
+                {speed.label}
               </option>
             ))}
           </select>
