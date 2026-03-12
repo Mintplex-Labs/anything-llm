@@ -129,18 +129,6 @@ export function EmbeddingProgressProvider({ children }) {
     }
   }, []);
 
-  const clearProgress = useCallback((slug) => {
-    setEmbeddingProgressMap((prev) => {
-      const next = { ...prev };
-      delete next[slug];
-      return next;
-    });
-    if (cleanupTimeoutsRef.current[slug]) {
-      clearTimeout(cleanupTimeoutsRef.current[slug]);
-      delete cleanupTimeoutsRef.current[slug];
-    }
-  }, []);
-
   const startEmbedding = useCallback(
     (slug, filenames) => {
       // Close any existing EventSource for this slug
@@ -173,7 +161,6 @@ export function EmbeddingProgressProvider({ children }) {
       value={{
         embeddingProgressMap,
         startEmbedding,
-        clearProgress,
         connectSSE,
       }}
     >
