@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 const { EventEmitter } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
@@ -275,6 +276,7 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
+      // eslint-disable-next-line
       {}
     ) => null
   ) {
@@ -624,6 +626,8 @@ ${this.getHistory({ to: route.to })
       );
     }
 
+    // Store the active provider so plugins can access usage metrics
+    this.provider = provider;
     this.newMessage({ ...route, content });
     return content;
   }
@@ -650,7 +654,7 @@ ${this.getHistory({ to: route.to })
       this?.socket?.send(type, data);
     };
 
-    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
+    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string, uuid: string }} */
     const completionStream = await provider.stream(
       messages,
       functions,
@@ -667,6 +671,11 @@ ${this.getHistory({ to: route.to })
         );
 
         const finalStream = await provider.stream(messages, [], eventHandler);
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: finalStream?.uuid || v4(),
+          metrics: provider.getUsage(),
+        });
         const finalResponse =
           finalStream?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
@@ -724,10 +733,16 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        const directOutputUUID = completionStream?.uuid || v4();
         eventHandler?.("reportStreamEvent", {
           type: "fullTextResponse",
-          uuid: v4(),
+          uuid: directOutputUUID,
           content: result,
+        });
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: directOutputUUID,
+          metrics: provider.getUsage(),
         });
         return result;
       }
@@ -749,6 +764,11 @@ ${this.getHistory({ to: route.to })
       );
     }
 
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: completionStream?.uuid || v4(),
+      metrics: provider.getUsage(),
+    });
     return completionStream?.textResponse;
   }
 
@@ -760,6 +780,8 @@ ${this.getHistory({ to: route.to })
    * @param messages
    * @param functions
    * @param byAgent
+   * @param depth
+   * @param msgUUID - The message UUID to use for event correlation (created at depth=0)
    *
    * @returns {Promise<string>}
    */
@@ -768,8 +790,15 @@ ${this.getHistory({ to: route.to })
     messages = [],
     functions = [],
     byAgent = null,
-    depth = 0
+    depth = 0,
+    msgUUID = null
   ) {
+    // Create a stable UUID at the start of execution for event correlation
+    if (!msgUUID) msgUUID = v4();
+    const eventHandler = (type, data) => {
+      this?.socket?.send(type, data);
+    };
+
     // get the chat completion
     const completion = await provider.complete(messages, functions);
 
@@ -783,6 +812,11 @@ ${this.getHistory({ to: route.to })
         );
 
         const finalCompletion = await provider.complete(messages, []);
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: provider.getUsage(),
+        });
         return (
           finalCompletion?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
@@ -806,7 +840,8 @@ ${this.getHistory({ to: route.to })
           ],
           functions,
           byAgent,
-          depth + 1
+          depth + 1,
+          msgUUID
         );
       }
 
@@ -834,6 +869,11 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: provider.getUsage(),
+        });
         return result;
       }
 
@@ -850,10 +890,16 @@ ${this.getHistory({ to: route.to })
         ],
         functions,
         byAgent,
-        depth + 1
+        depth + 1,
+        msgUUID
       );
     }
 
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: msgUUID,
+      metrics: provider.getUsage(),
+    });
     return completion?.textResponse;
   }
 
@@ -913,6 +959,7 @@ ${this.getHistory({ to: route.to })
     }
 
     // remove the last chat's that threw an error
+    // eslint-disable-next-line
     const { from, to } = this?._chats?.pop();
 
     await this.chat({ from, to });

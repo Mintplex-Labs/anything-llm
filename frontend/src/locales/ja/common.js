@@ -48,16 +48,9 @@ const TRANSLATIONS = {
       skip: "アンケートをスキップ",
       thankYou: "フィードバックありがとうございます！",
     },
-    workspace: {
-      title: "最初のワークスペースを作成する",
-      description:
-        "最初のワークスペースを作成して、AnythingLLMを始めましょう。",
-    },
   },
   common: {
     "workspaces-name": "ワークスペース名",
-    error: "エラー",
-    success: "成功",
     user: "ユーザー",
     selection: "モデル選択",
     saving: "保存中...",
@@ -73,7 +66,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "インスタンス設定",
-    system: "一般設定",
     invites: "招待",
     users: "ユーザー",
     workspaces: "ワークスペース",
@@ -87,7 +79,6 @@ const TRANSLATIONS = {
     "voice-speech": "音声とスピーチ",
     "vector-database": "ベクターデータベース",
     embeds: "チャット埋め込み",
-    "embed-chats": "チャット埋め込み履歴",
     security: "セキュリティ",
     "event-logs": "イベントログ",
     privacy: "プライバシーとデータ",
@@ -126,7 +117,6 @@ const TRANSLATIONS = {
       description:
         "以下に必要な情報を入力してパスワードをリセットしてください。",
       "recovery-codes": "回復コード",
-      "recovery-code": "回復コード {{index}}",
       "back-to-login": "ログイン画面に戻る",
     },
   },
@@ -158,13 +148,6 @@ const TRANSLATIONS = {
       heading: "説明してください",
       body: "AnythingLLMの利点",
     },
-    pfp: {
-      title: "アシスタントのプロフィール画像",
-      description:
-        "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
-      image: "ワークスペース画像",
-      remove: "ワークスペース画像を削除",
-    },
     delete: {
       title: "ワークスペースを削除",
       description:
@@ -187,7 +170,6 @@ const TRANSLATIONS = {
       title: "ワークスペースチャットモデル",
       description:
         "このワークスペースで使用するチャットモデルを指定します。空の場合はシステムのLLM設定が使用されます。",
-      wait: "-- waiting for models --",
     },
     mode: {
       title: "チャットモード",
@@ -292,9 +274,6 @@ const TRANSLATIONS = {
       wait: "-- モデルを読み込み中 --",
     },
     skill: {
-      title: "デフォルトエージェントのスキル",
-      description:
-        "これらのスキルでデフォルトエージェントの能力を強化できます。設定はすべてのワークスペースに適用されます。",
       rag: {
         title: "RAGと長期記憶",
         description:
@@ -322,11 +301,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "ウェブ検索と閲覧",
-        "desc-start":
-          "エージェントがウェブ検索プロバイダーに接続し、質問に答えるためにウェブ検索できるようにします。",
-        "desc-end":
-          "この設定を行うまで、エージェントセッション中のウェブ検索は利用できません。",
+        description:
+          "エージェントがウェブ検索（SERP）プロバイダーに接続することで、あなたの質問に答えるためにウェブを検索できるようにする。",
       },
+      sql: {
+        title: "SQLコネクタ",
+        description:
+          "エージェントが、さまざまなSQLデータベースプロバイダーに接続することで、SQLを活用してお客様からの質問に回答できるようにする。",
+      },
+      default_skill:
+        "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
     },
   },
   recorded: {
@@ -461,9 +445,6 @@ const TRANSLATIONS = {
     title: "プライバシーとデータ処理",
     description:
       "これは、接続されているサードパーティプロバイダーとAnythingLLMがデータをどのように処理するかの設定です。",
-    llm: "LLM選択",
-    embedding: "埋め込み設定",
-    vector: "ベクターデータベース",
     anonymous: "匿名テレメトリが有効",
   },
   connectors: {
@@ -505,7 +486,6 @@ const TRANSLATIONS = {
       URL_explained: "収集したいGitLabリポジトリのURLです。",
       token: "GitLabアクセストークン",
       optional: "任意",
-      token_explained: "レート制限を回避するためのアクセストークンです。",
       token_description: "GitLab APIから取得する追加エンティティを選択します。",
       token_explained_start: "アクセストークンがない場合、",
       token_explained_link1: "パーソナルアクセストークン",
@@ -537,9 +517,6 @@ const TRANSLATIONS = {
       URL_explained_end: "が必要です。",
       task_explained:
         "完了後、文字起こしがドキュメントピッカーからワークスペースに埋め込めるようになります。",
-      language: "文字起こしの言語",
-      language_explained: "取得したい文字起こしの言語を選択してください。",
-      loading_languages: "-- 利用可能な言語を読み込み中 --",
     },
     "website-depth": {
       name: "ウェブサイト一括スクレイパー",
@@ -598,14 +575,11 @@ const TRANSLATIONS = {
       "search-document": "ドキュメントを検索",
       "no-documents": "ドキュメントがありません",
       "move-workspace": "ワークスペースへ移動",
-      name: "名前",
       "delete-confirmation":
         "これらのファイルやフォルダーを削除してもよろしいですか？\nシステムから削除され、既存のワークスペースからも自動的に削除されます。\nこの操作は元に戻せません。",
       "removing-message":
         "{{count}}件のドキュメントと{{folderCount}}件のフォルダーを削除中です。しばらくお待ちください。",
       "move-success": "{{count}}件のドキュメントを移動しました。",
-      date: "日付",
-      type: "種類",
       no_docs: "ドキュメントがありません",
       select_all: "すべて選択",
       deselect_all: "すべて選択解除",
@@ -650,8 +624,6 @@ const TRANSLATIONS = {
       accept: "わかりました",
     },
     obsidian: {
-      name: "オキシジン",
-      description: "ワンクリックでObsidianの vault をインポートする。",
       vault_location: "保管場所",
       vault_description:
         "Obsidianの vault フォルダを選択して、すべてのメモとそれらの関連をインポートします。",
@@ -665,16 +637,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "新しいワークスペースへようこそ。",
-    get_started: "まずはじめに、",
-    get_started_default: "はじめに",
-    upload: "ドキュメントをアップロード",
-    or: "または",
-    send_chat: "チャットを送信",
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
-    slash: "チャットで使えるスラッシュコマンドをすべて表示",
-    agents: "利用可能なエージェントをすべて表示",
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
@@ -687,19 +651,11 @@ const TRANSLATIONS = {
     good_response: "良い反応",
     more_actions:
       "さらに詳細な情報が必要な場合は、お気軽にお問い合わせください。",
-    hide_citations: "参考文献を隠す",
-    show_citations: "引用元を表示する",
-    pause_tts_speech_message: "メッセージのテキスト読み上げを一時停止する。",
     fork: "フォーク",
     delete: "削除",
-    save_submit: "保存して送信",
     cancel: "キャンセル",
     edit_prompt: "編集のヒント",
     edit_response: "編集内容を保存します。",
-    at_agent: "@agent",
-    default_agent_description: "- このワークスペースのデフォルトエージェント。",
-    custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
-    slash_reset: "/reset",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -724,6 +680,35 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "認証情報を設定するには、ここをクリックしてください。",
     },
+    submit: "送信",
+    edit_info_user:
+      "「送信」はAIの応答を再生成します。「保存」は、あなたのメッセージのみを更新します。",
+    edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
+    see_less: "詳細を見る",
+    see_more: "詳細を見る",
+    tools: "道具",
+    browse: "閲覧",
+    text_size_label: "文字サイズ",
+    select_model: "モデルを選択",
+    sources: "出典",
+    document: "文書",
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
+    preset_exit_description: "現在のエージェントセッションを停止する",
+    add_new: "新しいものを追加する",
+    edit: "編集",
+    publish: "出版",
+    stop_generating: "応答の生成を停止する",
+    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
+    slash_commands: "スラッシュコマンド",
+    agent_skills: "エージェントのスキル",
+    manage_agent_skills: "エージェントのスキル管理",
+    agent_skills_disabled_in_session:
+      "アクティブなセッション中にスキルを変更することはできません。まず、`/exit`コマンドを使用してセッションを終了してください。",
+    start_agent_session: "エージェントセッションを開始",
+    use_agent_session_to_use_tools:
+      "チャットでツールを使用するには、プロンプトの冒頭に'@agent'を使用してエージェントセッションを開始してください。",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -792,11 +777,6 @@ const TRANSLATIONS = {
         description:
           "ログインページに表示される名前を、すべてのユーザーに設定する。",
       },
-      "chat-message-alignment": {
-        title: "チャットメッセージの整合性を確認する",
-        description:
-          "チャットインターフェースを使用する場合、メッセージの配置モードを選択してください。",
-      },
       "display-language": {
         title: "表示言語",
         description:
@@ -852,88 +832,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "チャットを開始する前にワークスペースを作成してください。",
-    checklist: {
-      title: "はじめに",
-      tasksLeft: "残りのタスク",
-      completed: "AnythingLLMの達人への道を進んでいます！",
-      dismiss: "閉じる",
-      tasks: {
-        create_workspace: {
-          title: "ワークスペースを作成する",
-          description: "始めるには最初のワークスペースを作成してください",
-          action: "作成",
-        },
-        send_chat: {
-          title: "チャットを送信する",
-          description: "AIアシスタントとの会話を開始する",
-          action: "チャット",
-        },
-        embed_document: {
-          title: "ドキュメントを埋め込む",
-          description: "ワークスペースに最初のドキュメントを追加する",
-          action: "埋め込む",
-        },
-        setup_system_prompt: {
-          title: "システムプロンプトを設定する",
-          description: "AIアシスタントの動作を設定する",
-          action: "設定",
-        },
-        define_slash_command: {
-          title: "スラッシュコマンドを定義する",
-          description: "アシスタント用のカスタムコマンドを作成する",
-          action: "定義",
-        },
-        visit_community: {
-          title: "コミュニティハブを訪問する",
-          description: "コミュニティリソースとテンプレートを探索する",
-          action: "閲覧",
-        },
-      },
-    },
-    quickLinks: {
-      title: "クイックリンク",
-      sendChat: "チャットを送信",
-      embedDocument: "ドキュメントを埋め込む",
-      createWorkspace: "ワークスペースを作成",
-    },
-    exploreMore: {
-      title: "その他の機能を探索",
-      features: {
-        customAgents: {
-          title: "カスタムAIエージェント",
-          description: "コードなしで強力なAIエージェントと自動化を構築。",
-          primaryAction: "@agentを使用してチャット",
-          secondaryAction: "エージェントフローを構築",
-        },
-        slashCommands: {
-          title: "スラッシュコマンド",
-          description:
-            "カスタムスラッシュコマンドで時間を節約しプロンプトを挿入。",
-          primaryAction: "スラッシュコマンドを作成",
-          secondaryAction: "ハブで探索",
-        },
-        systemPrompts: {
-          title: "システムプロンプト",
-          description:
-            "システムプロンプトを変更してワークスペースのAI返答をカスタマイズ。",
-          primaryAction: "システムプロンプトを変更",
-          secondaryAction: "プロンプト変数を管理",
-        },
-      },
-    },
-    announcements: {
-      title: "更新とお知らせ",
-    },
-    resources: {
-      title: "リソース",
-      links: {
-        docs: "ドキュメント",
-        star: "Githubでスター",
-      },
-      keyboardShortcuts: "キーボードショートカット",
-    },
     quickActions: {
       createAgent: "エージェントを作成する",
       editWorkspace: "ワークスペースの編集",
@@ -982,17 +880,12 @@ const TRANSLATIONS = {
           "プライベートなシステムからのメッセージは、あなただけが見ることができます。",
         publish_button: "コミュニティハブに公開する",
         submitting: "出版...",
-        submit: "コミュニティハブに公開する",
         prompt_label: "プロンプト",
         prompt_description:
           "これは、大規模言語モデル（LLM）を誘導するために使用される実際のシステムプロンプトです。",
         prompt_placeholder: "ここにシステムプロンプトを入力してください...",
       },
       agent_flow: {
-        public_description:
-          "一般の利用者は、これらの流れをすべて把握することができます。",
-        private_description:
-          "あなただけが確認できるプライベートな取引フローのみが表示されます。",
         success_title: "成功！",
         success_description:
           "あなたのエージェントフローがコミュニティハブに公開されました。",
@@ -1012,7 +905,6 @@ const TRANSLATIONS = {
         tags_placeholder:
           "タグを追加するには、タイプしてEnterキーを押してください。",
         visibility_label: "視界",
-        publish_button: "コミュニティハブに公開する",
         submitting: "出版...",
         submit: "コミュニティハブに公開する",
         privacy_note:
@@ -1039,10 +931,6 @@ const TRANSLATIONS = {
         description_label: "説明",
         description_description:
           "これは、スラッシュコマンドの説明です。スラッシュコマンドの目的を記述するために使用してください。",
-        command_label: "命令",
-        command_description:
-          "これは、ユーザーがこのプリセットを起動するために入力するスラッシュコマンドです。",
-        command_placeholder: "my-command",
         tags_label: "タグ",
         tags_description:
           "スラッシュコマンドをより簡単に検索できるように、タグを使用してコマンドを分類します。複数のタグを追加できます。最大5つのタグ。各タグは最大20文字です。",

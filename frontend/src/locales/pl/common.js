@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       skip: "Pomiń ankietę",
       thankYou: "Dziękujemy za opinię!",
     },
-    workspace: {
-      title: "Utwórz swój pierwszy obszar roboczy",
-      description:
-        "Stwórz swój pierwszy obszar roboczy i zacznij korzystać z AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nazwa obszaru roboczego",
-    error: "błąd",
-    success: "sukces",
     user: "Użytkownik",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Ustawienia instancji",
-    system: "Ustawienia ogólne",
     invites: "Zaproszenia",
     users: "Użytkownicy",
     workspaces: "Obszary robocze",
@@ -91,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "Głos i mowa",
     "vector-database": "Wektorowa baza danych",
     embeds: "Osadzone czaty",
-    "embed-chats": "Historia osadzonych czatów",
     security: "Bezpieczeństwo",
     "event-logs": "Dzienniki zdarzeń",
     privacy: "Prywatność i dane",
@@ -126,95 +117,10 @@ const TRANSLATIONS = {
       title: "Resetowanie hasła",
       description: "Podaj poniżej niezbędne informacje, aby zresetować hasło.",
       "recovery-codes": "Kody odzyskiwania",
-      "recovery-code": "Kod odzyskiwania {{index}}",
       "back-to-login": "Powrót do logowania",
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Przed rozpoczęciem czatu należy utworzyć obszar roboczy.",
-    checklist: {
-      title: "Pierwsze kroki",
-      tasksLeft: "- zadania do wykonania",
-      completed:
-        "Jesteś na najlepszej drodze do zostania ekspertem AnythingLLM!",
-      dismiss: "zamknij",
-      tasks: {
-        create_workspace: {
-          title: "Utwórz obszar roboczy",
-          description: "Utwórz swój pierwszy obszar roboczy, aby rozpocząć",
-          action: "Utwórz",
-        },
-        send_chat: {
-          title: "Wyślij wiadomość",
-          description: "Rozpocznij rozmowę z asystentem AI",
-          action: "Czat",
-        },
-        embed_document: {
-          title: "Dodaj źródło danych",
-          description: "Dodaj swoje pierwsze dane",
-          action: "Dodaj",
-        },
-        setup_system_prompt: {
-          title: "Konfiguracja instrukcji systemowej",
-          description: "Konfiguracja zachowania asystenta AI",
-          action: "Konfiguruj",
-        },
-        define_slash_command: {
-          title: "Stwórz polecenie slash",
-          description: "Tworzenie niestandardowych poleceń dla asystenta",
-          action: "Stwórz",
-        },
-        visit_community: {
-          title: "Odwiedź Community Hub",
-          description: "Przeglądaj zasoby i szablony społeczności",
-          action: "Przeglądaj",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Szybkie akcje",
-      sendChat: "Wyślij wiadomość",
-      embedDocument: "Dodaj swoje dane",
-      createWorkspace: "Utwórz obszar roboczy",
-    },
-    exploreMore: {
-      title: "Poznaj więcej funkcji",
-      features: {
-        customAgents: {
-          title: "Niestandardowi agenci AI",
-          description:
-            "Twórz potężnych agentów AI i automatyzacje bez użycia kodu.",
-          primaryAction: "Czat przy użyciu @agent",
-          secondaryAction: "Zbuduj Agents Flow",
-        },
-        slashCommands: {
-          title: "Polecenia slash",
-          description:
-            "Oszczędzaj czas i dodawaj prompty dzięki niestandardowym poleceniom slash.",
-          primaryAction: "Utwórz polecenie slash",
-          secondaryAction: "Przeglądaj Community Hub",
-        },
-        systemPrompts: {
-          title: "Instrukcje systemowe",
-          description:
-            "Zmodyfikuj instrukcję systemową, aby dostosować odpowiedzi AI.",
-          primaryAction: "Modyfikuj instrukcję systemową",
-          secondaryAction: "Zarządzaj zmiennymi",
-        },
-      },
-    },
-    announcements: {
-      title: "Aktualizacje i ogłoszenia",
-    },
-    resources: {
-      title: "Zasoby",
-      links: {
-        docs: "Dokumenty",
-        star: "Star on GitHub",
-      },
-      keyboardShortcuts: "Skróty klawiaturowe",
-    },
     quickActions: {
       createAgent: "Utwórz agenta",
       editWorkspace: "Edytuj przestrzeń roboczą",
@@ -250,12 +156,6 @@ const TRANSLATIONS = {
       heading: "Wyjaśnij mi",
       body: "Korzyści z AnythingLLM",
     },
-    pfp: {
-      title: "Logo obszaru roboczego",
-      description: "Dostosuj logo asystenta dla tego obszaru roboczego.",
-      image: "Logo obszaru roboczego",
-      remove: "Usuń logo obszaru roboczego",
-    },
     delete: {
       title: "Usuń obszar roboczy",
       description:
@@ -278,7 +178,6 @@ const TRANSLATIONS = {
       title: "Model językowy dla obszaru roboczego",
       description:
         "Określony model, który będzie używany w tym obszarze roboczym. Jeśli pole jest puste, użyty zostanie model z preferencji systemowych.",
-      wait: "-- oczekiwanie na modele",
     },
     mode: {
       title: "Tryb czatu",
@@ -386,9 +285,6 @@ const TRANSLATIONS = {
       wait: "-- oczekiwanie na modele",
     },
     skill: {
-      title: "Domyślne umiejętności agenta",
-      description:
-        "Ulepsz naturalne zdolności domyślnego agenta za pomocą tych gotowych umiejętności. Ta konfiguracja dotyczy wszystkich obszarów roboczych.",
       rag: {
         title: "RAG i pamięć długotrwała",
         description:
@@ -416,11 +312,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        "desc-start":
-          "Pozwól swojemu agentowi przeszukiwać Internet w celu uzyskania odpowiedzi na pytania, łącząc się z dostawcą wyszukiwania internetowego (SERP).",
-        "desc-end":
-          "Wyszukiwanie w sieci podczas sesji agenta nie będzie działać, dopóki nie zostanie to skonfigurowane.",
+        description:
+          "Pozwól swojemu agentowi na wyszukiwanie informacji w Internecie, aby odpowiadał na Twoje pytania, poprzez połączenie z dostawcą usług wyszukiwania (SERP).",
       },
+      sql: {
+        title: "Połączenie z bazą danych SQL",
+        description:
+          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
+      },
+      default_skill:
+        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
     },
   },
   recorded: {
@@ -482,11 +383,6 @@ const TRANSLATIONS = {
         title: "Nazwa",
         description:
           "Ustawienie nazwy wyświetlanej na stronie logowania dla wszystkich użytkowników.",
-      },
-      "chat-message-alignment": {
-        title: "Wyrównanie wiadomości czatu",
-        description:
-          "Wybór trybu wyrównania wiadomości podczas korzystania z interfejsu czatu.",
       },
       "display-language": {
         title: "Język",
@@ -661,17 +557,12 @@ const TRANSLATIONS = {
     title: "Prywatność i obsługa danych",
     description:
       "Jest to konfiguracja sposobu, w jaki połączeni dostawcy zewnętrzni i AnythingLLM przetwarzają dane użytkownika.",
-    llm: "Wybór LLM",
-    embedding: "Preferencje dotyczące osadzania",
-    vector: "Wektorowa baza danych",
     anonymous: "Włączona anonimowa telemetria",
   },
   connectors: {
     "search-placeholder": "Wyszukaj źródła danych",
     "no-connectors": "Nie znaleziono źródeł danych.",
     obsidian: {
-      name: "Obsidian",
-      description: "Zaimportuj folder Obsidian jednym kliknięciem.",
       vault_location: "Lokalizacja folderu Obsidian",
       vault_description:
         "Wybierz folder Obsidian, aby zaimportować wszystkie notatki i ich połączenia.",
@@ -719,7 +610,6 @@ const TRANSLATIONS = {
       URL_explained: "Adres URL repozytorium GitLab, które chcesz pobrać.",
       token: "Token dostępu GitLab",
       optional: "opcjonalny",
-      token_explained: "Token dostępu, zapobiegający ograniczeniu szybkości.",
       token_description:
         "Wybierz dodatkowe elementy do pobrania z interfejsu API GitLab.",
       token_explained_start: "Bez ",
@@ -752,9 +642,6 @@ const TRANSLATIONS = {
       URL_explained_end: ".",
       task_explained:
         "Po zakończeniu transkrypcja będzie dostępna do osadzenia w obszarach roboczych w selektorze dokumentów.",
-      language: "Język transkrypcji",
-      language_explained: "Wybierz język transkrypcji, którą chcesz pobrać.",
-      loading_languages: "-- wczytywanie dostępnych języków",
     },
     "website-depth": {
       name: "Masowe pobieranie zawartości web",
@@ -816,14 +703,11 @@ const TRANSLATIONS = {
       "search-document": "Wyszukiwanie dokumentu",
       "no-documents": "Brak dokumentów",
       "move-workspace": "Przenieś do obszaru roboczego",
-      name: "Nazwa",
       "delete-confirmation":
         "Czy na pewno chcesz usunąć te pliki i foldery? Spowoduje to usunięcie plików z systemu i automatyczne usunięcie ich z istniejących obszarów roboczych. Działanie to nie jest odwracalne.",
       "removing-message":
         "Usuwanie dokumentów {{count}} i folderów {{folderCount}}. Proszę czekać.",
       "move-success": "Pomyślnie przeniesiono {{count}} dokumentów.",
-      date: "Data",
-      type: "Typ",
       no_docs: "Brak dokumentów",
       select_all: "Wybierz wszystko",
       deselect_all: "Odznacz wszystko",
@@ -869,17 +753,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Witamy w nowym obszarze roboczym.",
-    get_started: "Aby rozpocząć",
-    get_started_default: "Aby rozpocząć",
-    upload: "Prześlij dokument",
-    or: "lub",
     attachments_processing: "Załączniki są przetwarzane. Proszę czekać...",
-    send_chat: "wyślij wiadomość.",
     send_message: "Wyślij wiadomość",
     attach_file: "Dołącz plik do tego czatu",
-    slash: "Wyświetl wszystkie dostępne polecenia slash do czatowania.",
-    agents: "Wyświetl wszystkich dostępnych agentów.",
     text_size: "Zmiana rozmiaru tekstu.",
     microphone: "Wypowiedz swoją prośbę.",
     send: "Wyślij wiadomość do obszaru roboczego",
@@ -889,19 +765,11 @@ const TRANSLATIONS = {
     regenerate_response: "Wygeneruj ponownie odpowiedź",
     good_response: "Dobra odpowiedź",
     more_actions: "Więcej działań",
-    hide_citations: "Ukryj cytaty",
-    show_citations: "Pokaż cytaty",
-    pause_tts_speech_message: "Wstrzymaj głosowe wypowiadanie komunikatu",
     fork: "Utwórz rozgałęzienie",
     delete: "Usuń",
-    save_submit: "Zapisz i prześlij",
     cancel: "Anuluj",
     edit_prompt: "Edytuj prompt",
     edit_response: "Edytuj odpowiedź",
-    at_agent: "@agent",
-    default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
-    custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
-    slash_reset: "/reset",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",
     add_new_preset: " Dodaj nowe polecenie slash",
     command: "Polecenie",
@@ -925,6 +793,36 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kliknij, aby skonfigurować poświadczenia",
     },
+    submit: "Prześlij",
+    edit_info_user:
+      '"Wyślij" powoduje ponowne wygenerowanie odpowiedzi przez sztuczną inteligencję. "Zapisz" aktualizuje tylko Twoje wiadomości.',
+    edit_info_assistant:
+      "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
+    see_less: "Zobacz mniej",
+    see_more: "Zobacz więcej",
+    tools: "Narzędzia",
+    browse: "Przeglądaj",
+    text_size_label: "Rozmiar czcionki",
+    select_model: "Wybierz model",
+    sources: "Źródła",
+    document: "Dokument",
+    similarity_match: "mecz",
+    source_count_one: "{{count}} – odniesienie",
+    source_count_other: "{{count}} – odnośniki",
+    preset_exit_description: "Zakończ bieżącą sesję z przedstawicielem",
+    add_new: "Dodaj nowe",
+    edit: "Edytuj",
+    publish: "Opublikować",
+    stop_generating: "Przestań generować odpowiedź",
+    pause_tts_speech_message: "Wstrzymać odtwarzanie mowy z wiadomości",
+    slash_commands: "Polecenia skrótowe",
+    agent_skills: "Umiejętności agenta",
+    manage_agent_skills: "Zarządzanie umiejętnościami agentów",
+    agent_skills_disabled_in_session:
+      "Nie można modyfikować umiejętności podczas trwającej sesji. Aby zakończyć sesję, należy najpierw użyć komendy /exit.",
+    start_agent_session: "Rozpocznij sesję dla agenta",
+    use_agent_session_to_use_tools:
+      "Możesz korzystać z narzędzi w czacie, inicjując sesję z agentem, wpisując '@agent' na początku swojego zapytania.",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
@@ -986,17 +884,12 @@ const TRANSLATIONS = {
           "Prywatne instrukcje systemowe są widoczne tylko dla użytkownika.",
         publish_button: "Opublikuj w Community Hub",
         submitting: "Publikacja...",
-        submit: "Opublikuj w Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Jest to rzeczywista instrukcja systemowa, która będzie używana do kierowania LLM.",
         prompt_placeholder: "Wprowadź tutaj instrukcję systemową...",
       },
       agent_flow: {
-        public_description:
-          "Przepływy agentów publicznych są widoczne dla wszystkich.",
-        private_description:
-          "Przepływy prywatnych agentów są widoczne tylko dla użytkownika.",
         success_title: "Sukces!",
         success_description:
           "Twój Agent Flow został opublikowany w Community Hub!",
@@ -1014,7 +907,6 @@ const TRANSLATIONS = {
           "Tagi służą do oznaczania przepływów agentów w celu łatwiejszego wyszukiwania. Można dodać wiele tagów. Maksymalnie 5 tagów. Maksymalnie 20 znaków na tag.",
         tags_placeholder: "Wpisz i naciśnij Enter, aby dodać tagi",
         visibility_label: "Widoczność",
-        publish_button: "Opublikuj w Community Hub",
         submitting: "Publikacja...",
         submit: "Opublikuj w Community Hub",
         privacy_note:
@@ -1033,10 +925,6 @@ const TRANSLATIONS = {
         description_label: "Opis",
         description_description:
           "To jest opis polecenia slash. Użyj tego, aby opisać cel polecenia slash.",
-        command_label: "Polecenie",
-        command_description:
-          "Jest to polecenie slash, które użytkownicy będą wpisywać, aby uruchomić to ustawienie wstępne.",
-        command_placeholder: "moje-polecenie",
         tags_label: "Tagi",
         tags_description:
           "Tagi są używane do oznaczania poleceń slash w celu łatwiejszego wyszukiwania. Można dodać wiele tagów. Maksymalnie 5 tagów. Maksymalnie 20 znaków na tag.",

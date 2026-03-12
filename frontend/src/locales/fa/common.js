@@ -50,16 +50,9 @@ const TRANSLATIONS = {
       settingsHint:
         "این تنظیمات می‌توانند در هر زمان در بخش تنظیمات تغییر داده شوند.",
     },
-    workspace: {
-      title: "ایجاد فضای کاری اول خود",
-      description:
-        "فضای کاری خود را ایجاد کنید و با AnythingLLM شروع به کار کنید.",
-    },
   },
   common: {
     "workspaces-name": "نام فضای کار",
-    error: "خطا",
-    success: "موفق",
     user: "کاربر",
     selection: "انتخاب مدل",
     saving: "در حال ذخیره...",
@@ -75,7 +68,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "تنظیمات سامانه",
-    system: "تنظیمات عمومی",
     invites: "دعوت‌نامه‌ها",
     users: "کاربران",
     workspaces: "فضاهای کاری",
@@ -89,7 +81,6 @@ const TRANSLATIONS = {
     "voice-speech": "صدا و گفتار",
     "vector-database": "پایگاه داده برداری",
     embeds: "جاسازی گفتگو",
-    "embed-chats": "تاریخچه گفتگوهای جاسازی شده",
     security: "امنیت",
     "event-logs": "گزارش رویدادها",
     privacy: "حریم خصوصی و داده‌ها",
@@ -127,7 +118,6 @@ const TRANSLATIONS = {
       title: "بازنشانی رمز عبور",
       description: "برای بازنشانی رمز عبور خود، اطلاعات لازم را وارد کنید.",
       "recovery-codes": "کدهای بازیابی",
-      "recovery-code": "کد بازیابی {{index}}",
       "back-to-login": "بازگشت به صفحه ورود",
     },
   },
@@ -159,12 +149,6 @@ const TRANSLATIONS = {
       heading: "برایم توضیح بده",
       body: "مزایای AnythingLLM را",
     },
-    pfp: {
-      title: "تصویر پروفایل دستیار",
-      description: "تصویر پروفایل دستیار را برای این فضای کاری شخصی‌سازی کنید.",
-      image: "تصویر فضای کاری",
-      remove: "حذف تصویر فضای کاری",
-    },
     delete: {
       title: "حذف فضای کاری",
       description:
@@ -187,7 +171,6 @@ const TRANSLATIONS = {
       title: "مدل گفتگوی فضای کاری",
       description:
         "مدل گفتگوی خاصی که برای این فضای کاری استفاده خواهد شد. اگر خالی باشد، از ترجیحات LLM سیستم استفاده خواهد کرد.",
-      wait: "-- در انتظار مدل‌ها --",
     },
     mode: {
       title: "حالت گفتگو",
@@ -295,9 +278,6 @@ const TRANSLATIONS = {
       wait: "-- در انتظار مدل‌ها --",
     },
     skill: {
-      title: "مهارت‌های پیش‌فرض عامل",
-      description:
-        "توانایی‌های طبیعی عامل پیش‌فرض را با این مهارت‌های از پیش ساخته شده بهبود دهید. این تنظیمات برای تمام فضاهای کاری اعمال می‌شود.",
       rag: {
         title: "RAG و حافظه بلندمدت",
         description:
@@ -325,11 +305,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "جستجو و مرور زنده وب",
-        "desc-start":
-          "با اتصال به یک ارائه‌دهنده جستجوی وب (SERP)، به عامل خود امکان جستجو در وب برای پاسخ به سؤالات خود را بدهید.",
-        "desc-end":
-          "جستجوی وب در طول جلسات عامل تا زمانی که این تنظیم نشود، کار نخواهد کرد.",
+        description:
+          "با اتصال به یک ارائه‌دهنده خدمات جستجوی وب (SERP)، به نماینده خود این امکان را بدهید تا از طریق اینترنت، به سوالات شما پاسخ دهد.",
       },
+      sql: {
+        title: "اتصال دهنده SQL",
+        description:
+          "به اپراتور خود اجازه دهید تا با اتصال به ارائه‌دهندگان مختلف پایگاه داده SQL، از SQL برای پاسخگویی به سوالات شما استفاده کند.",
+      },
+      default_skill:
+        "به طور پیش‌فرض، این قابلیت فعال است، اما می‌توانید آن را غیرفعال کنید اگر نمی‌خواهید این قابلیت برای نمایندگی در دسترس باشد.",
     },
   },
   recorded: {
@@ -465,9 +450,6 @@ const TRANSLATIONS = {
     title: "حریم خصوصی و مدیریت داده‌ها",
     description:
       "این پیکربندی شما برای نحوه مدیریت داده‌ها توسط ارائه‌دهندگان شخص ثالث متصل و AnythingLLM است.",
-    llm: "انتخاب مدل زبانی",
-    embedding: "ترجیحات جاسازی",
-    vector: "پایگاه داده برداری",
     anonymous: "ارسال تله‌متری ناشناس فعال است",
   },
   connectors: {
@@ -509,7 +491,6 @@ const TRANSLATIONS = {
         "آدرس مخزن GitLab که می‌خواهید از آن اطلاعات جمع‌آوری کنید.",
       token: "توکن دسترسی GitLab",
       optional: "اختیاری",
-      token_explained: "توکنی برای جلوگیری از محدودیت سرعت.",
       token_description:
         "برای دریافت اطلاعات از API GitLab، موجودیت‌های اضافی را انتخاب کنید.",
       token_explained_start: "بدون",
@@ -542,9 +523,6 @@ const TRANSLATIONS = {
       URL_explained_end: "در دسترس است.",
       task_explained:
         "پس از اتمام، این متن می‌تواند در ابزارهای کاری مختلف، از طریق انتخاب فایل، قرار داده شود.",
-      language: "ترجمه زبان",
-      language_explained: "زبان مورد نظر برای جمع‌آوری متن را انتخاب کنید.",
-      loading_languages: "-- زبان‌های موجود را بارگذاری می‌کنیم --",
     },
     "website-depth": {
       name: "ابزار جمع‌آوری لینک‌های حجمی",
@@ -605,14 +583,11 @@ const TRANSLATIONS = {
       "search-document": "جستجو در مستند",
       "no-documents": "بدون مدارک",
       "move-workspace": "رفتن به فضای کاری",
-      name: "نام",
       "delete-confirmation":
         "آیا مطمئن هستید که می‌خواهید این فایل‌ها و پوشه‌ها را حذف کنید؟\nاین کار باعث حذف فایل‌ها از سیستم و حذف خودکار آن‌ها از هر فضای کاری موجود می‌شود.\nاین اقدام غیرقابل بازگشت است.",
       "removing-message":
         "حذف {{count}} سند و {{folderCount}} پوشه. لطفاً منتظر بمانید.",
       "move-success": "انتقال موفقیت‌آمیز {{count}} سند.",
-      date: "تاریخ",
-      type: "نوع",
       no_docs: "بدون مدارک",
       select_all: "انتخاب همه",
       deselect_all: "انتخاب همه را لغو کنید",
@@ -659,8 +634,6 @@ const TRANSLATIONS = {
       accept: "باشه، متوجه شدم.",
     },
     obsidian: {
-      name: "آوبیشین",
-      description: "وارد کردن دیسک Obsidian با یک کلیک.",
       vault_location: "موقعیت گاوصندوق",
       vault_description:
         'برای وارد کردن تمام یادداشت‌ها و ارتباطات آن‌ها، پوشه مربوط به "Obsidian" خود را انتخاب کنید.',
@@ -673,17 +646,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "به فضای کاری جدید خود خوش آمدید.",
-    get_started: "برای شروع، می‌توانید",
-    get_started_default: "برای شروع",
-    upload: "ارسال یک سند",
-    or: "یا",
-    send_chat: "ارسال یک پیام چت.",
     send_message: "یک پیام ارسال کنید",
     attach_file: "لطفاً یک فایل را به این چت پیوست کنید.",
-    slash: "برای مشاهده تمام دستورات Slash موجود برای چت.",
-    agents:
-      "تمام عوامل موجود را که می‌توانید برای گفتگو استفاده کنید، مشاهده کنید.",
     text_size: "تغییر اندازه متن.",
     microphone: "سوال خود را بپرسید.",
     send: "پیام فوری را برای فضای کاری ارسال کنید",
@@ -694,19 +658,11 @@ const TRANSLATIONS = {
     regenerate_response: "بازسازی پاسخ",
     good_response: "پاسخ خوب",
     more_actions: "اقدامات بیشتر",
-    hide_citations: "پنهان کردن ارجاعات",
-    show_citations: "نمایش ارجاعات",
-    pause_tts_speech_message: "مکالمه را متوقف کنید",
     fork: "چنگال",
     delete: "حذف",
-    save_submit: "ذخیره و ارسال",
     cancel: "ยกد",
     edit_prompt: "لطفاً دستور ویرایش را ارائه دهید.",
     edit_response: "لطفا پاسخ را ویرایش کنید.",
-    at_agent: "@agent",
-    default_agent_description: "- عامل پیش‌فرض برای این فضای کاری.",
-    custom_agents_coming_soon: "نمایندگان ویژه در حال آمدن هستند!",
-    slash_reset: "/reset",
     preset_reset_description: "حذف تاریخچه چت خود و شروع یک چت جدید",
     add_new_preset: "اضافه کردن تنظیمات پیش‌فرض جدید",
     command: "دستورالعمل",
@@ -731,6 +687,35 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "برای تنظیم اعتبارها، اینجا را کلیک کنید",
     },
+    submit: "ارسال",
+    edit_info_user:
+      '"ارسال" پاسخ تولید شده توسط هوش مصنوعی را دوباره ایجاد می‌کند. "ذخیره" فقط پیام شما را به‌روز می‌کند.',
+    edit_info_assistant: "تغییرات شما مستقیماً در این پاسخ ذخیره خواهند شد.",
+    see_less: "کمی بیشتر",
+    see_more: "بیشتر",
+    tools: "ابزارها",
+    browse: "جستجو",
+    text_size_label: "اندازه متن",
+    select_model: "انتخاب مدل",
+    sources: "منابع",
+    document: "اسناد",
+    similarity_match: "مسابقه",
+    source_count_one: "{{count}}، مرجع",
+    source_count_other: "{{count}}، منابع",
+    preset_exit_description: "متوقف کردن جلسه فعلی با نمایندگی",
+    add_new: "اضافه کردن موارد جدید",
+    edit: "ویرایش",
+    publish: "انتشار",
+    stop_generating: "متوقف کردن تولید پاسخ",
+    pause_tts_speech_message: "مکث در پخش صدای متن",
+    slash_commands: "دستورات کوتاه‌شده",
+    agent_skills: "مهارت‌های کارگزار",
+    manage_agent_skills: "مدیریت مهارت‌های نمایندگان",
+    agent_skills_disabled_in_session:
+      "امکان تغییر مهارت‌ها در حین یک جلسه فعال با یک عامل وجود ندارد. ابتدا با استفاده از دستور /exit، جلسه را به پایان برسانید.",
+    start_agent_session: "شروع جلسه با نماینده",
+    use_agent_session_to_use_tools:
+      "شما می‌توانید از ابزارهای موجود در چت با شروع یک جلسه با یک عامل از طریق استفاده از '@agent' در ابتدای پیام خود استفاده کنید.",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
@@ -796,11 +781,6 @@ const TRANSLATIONS = {
         title: "نام",
         description: "یک نام را برای تمام کاربران در صفحه ورود مشخص کنید.",
       },
-      "chat-message-alignment": {
-        title: "همراه‌بودن پیام‌ها در چت",
-        description:
-          "هنگام استفاده از رابط چت، حالت هم‌تراز کردن پیام را انتخاب کنید.",
-      },
       "display-language": {
         title: "زبان نمایش",
         description:
@@ -855,89 +835,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "لطفاً قبل از شروع گفتگو، یک فضای کاری ایجاد کنید.",
-    checklist: {
-      title: "شروع کار",
-      tasksLeft: "وظایف باقی‌مانده",
-      completed:
-        "شما در مسیر تبدیل شدن به یک متخصص در زمینه مدل‌های LLM هستید!",
-      dismiss: "بستن",
-      tasks: {
-        create_workspace: {
-          title: "ایجاد یک فضای کاری",
-          description: "برای شروع، فضای کاری خود را ایجاد کنید",
-          action: "ایجاد",
-        },
-        send_chat: {
-          title: "ارسال یک پیام چت",
-          description: "با دستیار هوش مصنوعی خود صحبت کنید",
-          action: "چت",
-        },
-        embed_document: {
-          title: "ذخیره یک سند",
-          description: "اضافه کردن اولین سند خود به فضای کاری",
-          action: "قرار دادن",
-        },
-        setup_system_prompt: {
-          title: "یک سیستم راهنما راه‌اندازی کنید.",
-          description: "تنظیم رفتار دستیار هوش مصنوعی خود",
-          action: "راه‌اندازی",
-        },
-        define_slash_command: {
-          title: "یک دستور (slash command) را تعریف کنید.",
-          description: "ایجاد دستورات سفارشی برای دستیار خود",
-          action: "تعریف کنید",
-        },
-        visit_community: {
-          title: "بازدید از مرکز محلی",
-          description: "بررسی منابع و الگوهای موجود در جامعه",
-          action: "مرور کنید",
-        },
-      },
-    },
-    quickLinks: {
-      title: "لینک‌های سریع",
-      sendChat: "ارسال چت",
-      embedDocument: "ذخیره یک سند",
-      createWorkspace: "ایجاد فضای کاری",
-    },
-    exploreMore: {
-      title: "ویژگی‌های بیشتر را کشف کنید",
-      features: {
-        customAgents: {
-          title: "آژانتهای هوش مصنوعی سفارشی",
-          description:
-            "ایجاد عوامل هوش مصنوعی و اتوماسیون قدرتمند بدون نیاز به کد.",
-          primaryAction: "با استفاده از @agent\n\nبا استفاده از @agent",
-          secondaryAction: "طراحی یک جریان برای یک عامل",
-        },
-        slashCommands: {
-          title: "دستورات کوتاه",
-          description:
-            "با استفاده از دستورات سفارشی، زمان را صرفه‌جویی کنید و اعلان‌ها را فعال کنید.",
-          primaryAction: "ایجاد یک دستور Slash",
-          secondaryAction: "کاوش در هاب",
-        },
-        systemPrompts: {
-          title: "دستورالعمل‌های سیستم",
-          description:
-            "برای سفارشی‌سازی پاسخ‌های هوش مصنوعی در یک محیط کاری، دستورالعمل سیستم را تغییر دهید.",
-          primaryAction: "تغییر یک دستورالعمل سیستم",
-          secondaryAction: "مدیریت متغیرهای پویا",
-        },
-      },
-    },
-    announcements: {
-      title: "اخبار و اطلاعیه‌ها",
-    },
-    resources: {
-      title: "منابع",
-      links: {
-        docs: "اسناد",
-        star: "ستاره‌گذاری در گیت‌هاب",
-      },
-      keyboardShortcuts: "کلیدهای میانبر",
-    },
     quickActions: {
       createAgent: "ایجاد یک عامل",
       editWorkspace: "ویرایش فضای کاری",
@@ -983,17 +880,12 @@ const TRANSLATIONS = {
         private_description: "پیام‌های خصوصی فقط برای شما قابل مشاهده هستند.",
         publish_button: "انتشار در مرکز جامعه",
         submitting: "انتشار...",
-        submit: "انتشار در مرکز جامعه",
         prompt_label: "شروع",
         prompt_description:
           "این دستورالعمل اصلی است که برای هدایت مدل زبان بزرگ (LLM) استفاده خواهد شد.",
         prompt_placeholder: "لطفاً دستور خود را در اینجا وارد کنید...",
       },
       agent_flow: {
-        public_description:
-          "دسترسی به جریان‌های اطلاعاتی برای عموم مردم امکان‌پذیر است.",
-        private_description:
-          "فقط شما می‌توانید جریان‌های مربوط به نمایندگان خصوصی را مشاهده کنید.",
         success_title: "موفقیت!",
         success_description:
           'پلتفرم "Agent Flow" شما در مرکز جامعه منتشر شده است!',
@@ -1012,7 +904,6 @@ const TRANSLATIONS = {
         tags_placeholder:
           "برای افزودن برچسب‌ها، نوع را وارد کنید و Enter را فشار دهید.",
         visibility_label: "دیده‌شدن",
-        publish_button: "انتشار در مرکز جامعه",
         submitting: "انتشار...",
         submit: "انتشار در مرکز جامعه",
         privacy_note:
@@ -1038,10 +929,6 @@ const TRANSLATIONS = {
         description_label: "توضیحات",
         description_description:
           "این، توضیحی برای دستور slash شما است. از این برای توضیح هدف دستور slash خود استفاده کنید.",
-        command_label: "دستورالعمل",
-        command_description:
-          "این دستور، همان کدی است که کاربران برای فعال کردن این تنظیمات از آن استفاده می‌کنند.",
-        command_placeholder: "دستور من",
         tags_label: "برچسب‌ها",
         tags_description:
           "برچسب‌ها برای شناسایی دستورات Slash Command به منظور جستجوی آسان‌تر استفاده می‌شوند. شما می‌توانید چندین برچسب را اضافه کنید. حداکثر 5 برچسب. حداکثر 20 کاراکتر برای هر برچسب.",
