@@ -214,18 +214,6 @@ class NativeEmbeddingReranker {
   }
 
   /**
-   * Reranks a list of documents based on the query.
-   * @param {string} query - The query to rerank the documents against.
-   * @param {{text: string}[]} documents - The list of document text snippets to rerank. Should be output from a vector search.
-   * @param {Object} options - The options for the reranking.
-   * @param {number} options.topK - The number of top documents to return.
-   * @returns {Promise<any[]>} - The reranked list of documents.
-   */
-  async rerank(query, documents, options = { topK: 4 }) {
-    return NativeEmbeddingReranker.rerankViaWorker(query, documents, options);
-  }
-
-  /**
    * Routes reranking to the worker process (from main) or runs directly (inside worker).
    * Can be called statically without instantiating in the parent process.
    */
@@ -233,7 +221,7 @@ class NativeEmbeddingReranker {
     // If we're inside a worker process (process.send exists), run directly
     if (typeof process.send === "function") {
       const instance = new NativeEmbeddingReranker();
-      return instance._rerankDirect(query, documents, options);
+      return instance.rerank(query, documents, options);
     }
     // Otherwise, queue it in an isolated worker process
     const { queueReranking } = require("../../WorkerQueue");
@@ -245,9 +233,14 @@ class NativeEmbeddingReranker {
   }
 
   /**
-   * Direct reranking logic — called inside the worker process.
+   * Reranks a list of documents based on the query.
+   * @param {string} query - The query to rerank the documents against.
+   * @param {{text: string}[]} documents - The list of document text snippets to rerank. Should be output from a vector search.
+   * @param {Object} options - The options for the reranking.
+   * @param {number} options.topK - The number of top documents to return.
+   * @returns {Promise<any[]>} - The reranked list of documents.
    */
-  async _rerankDirect(query, documents, options = { topK: 4 }) {
+  async rerank(query, documents, options = { topK: 4 }) {
     await this.initClient();
     const model = NativeEmbeddingReranker.#model;
     const tokenizer = NativeEmbeddingReranker.#tokenizer;
