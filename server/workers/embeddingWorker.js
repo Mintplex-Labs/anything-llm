@@ -5,7 +5,7 @@
  * document batches only kills this worker, not the main server.
  *
  * Communicates with the main process via IPC messages:
- * - Receives: { type: "job", jobId, payload: { textChunks, modelConfig } }
+ * - Receives: { type: "job", jobId, payload: { textChunks } }
  * - Sends: { type: "ready" }
  * - Sends: { type: "result", jobId, result: { vectors } }
  * - Sends: { type: "error", jobId, error: string }

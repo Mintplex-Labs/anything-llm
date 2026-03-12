@@ -249,10 +249,7 @@ class NativeEmbedder {
     // process.send (IPC channel) distinguishes worker from main.
     if (typeof process.send !== "function") {
       const { queueEmbedding } = require("../../WorkerQueue");
-      return await queueEmbedding({
-        textChunks,
-        modelConfig: { model: this.model },
-      });
+      return await queueEmbedding({ textChunks });
     }
 
     const tmpFilePath = this.#tempfilePath();

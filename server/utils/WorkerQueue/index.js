@@ -175,7 +175,6 @@ class WorkerQueue {
       try {
         this.#worker = fork(this.workerScript, [], {
           stdio: ["pipe", "pipe", "pipe", "ipc"],
-          env: { ...process.env },
         });
       } catch (err) {
         this.#readyResolve = null;
@@ -320,7 +319,7 @@ const rerankingQueue = new WorkerQueue({
 
 /**
  * Queue an embedding job for the native embedder worker.
- * @param {{ textChunks: string[], modelConfig?: object }} payload
+ * @param {{ textChunks: string[] }} payload
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
 async function queueEmbedding(payload) {
