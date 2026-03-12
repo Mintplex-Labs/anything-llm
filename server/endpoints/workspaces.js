@@ -224,11 +224,7 @@ function workspaceEndpoints(app) {
           deletes,
           response.locals?.user?.id
         );
-        const {
-          failedToEmbed = [],
-          errors = [],
-          embedded = [],
-        } = await Document.addDocuments(
+        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds,
           response.locals?.user?.id
@@ -236,8 +232,6 @@ function workspaceEndpoints(app) {
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({
           workspace: updatedWorkspace,
-          failedToEmbed,
-          embedded,
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors

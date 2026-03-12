@@ -40,22 +40,20 @@ const Workspace = {
     return { workspace, message };
   },
   modifyEmbeddings: async function (slug, changes = {}) {
-    const {
-      workspace,
-      message,
-      failedToEmbed = [],
-      embedded = [],
-    } = await fetch(`${API_BASE}/workspace/${slug}/update-embeddings`, {
-      method: "POST",
-      body: JSON.stringify(changes),
-      headers: baseHeaders(),
-    })
+    const { workspace, message } = await fetch(
+      `${API_BASE}/workspace/${slug}/update-embeddings`,
+      {
+        method: "POST",
+        body: JSON.stringify(changes), // contains 'adds' and 'removes' keys that are arrays of filepaths
+        headers: baseHeaders(),
+      }
+    )
       .then((res) => res.json())
       .catch((e) => {
         return { workspace: null, message: e.message };
       });
 
-    return { workspace, message, failedToEmbed, embedded };
+    return { workspace, message };
   },
   chatHistory: async function (slug) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {

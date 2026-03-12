@@ -257,56 +257,11 @@ export function EmbeddingProgressProvider({ children }) {
     [connectSSE]
   );
 
-  const updateProgressFromApi = useCallback((slug, filenames, res) => {
-    const embeddedPaths = new Set(res.embedded || []);
-    const failedNames = res.failedToEmbed || [];
-
-    setEmbeddingProgressMap((prev) => {
-      const slugProgress = { ...prev[slug] };
-      for (const name of filenames) {
-        if (embeddedPaths.has(name)) {
-          slugProgress[name] = { status: "complete" };
-        } else {
-          const displayName = name
-            .split("/")
-            .pop()
-            ?.replace(/\.json$/, "");
-          const didFail =
-            failedNames.length > 0 &&
-            failedNames.some(
-              (f) => f === displayName || f === name || name.includes(f)
-            );
-          if (didFail) {
-            slugProgress[name] = { status: "failed", error: res.message };
-          } else if (
-            slugProgress[name]?.status !== "complete" &&
-            slugProgress[name]?.status !== "failed"
-          ) {
-            slugProgress[name] = { status: "complete" };
-          }
-        }
-      }
-      return { ...prev, [slug]: slugProgress };
-    });
-  }, []);
-
-  const updateProgressWithError = useCallback((slug, filenames, error) => {
-    setEmbeddingProgressMap((prev) => {
-      const slugProgress = { ...prev[slug] };
-      for (const name of filenames) {
-        slugProgress[name] = { status: "failed", error: String(error) };
-      }
-      return { ...prev, [slug]: slugProgress };
-    });
-  }, []);
-
   return (
     <EmbeddingProgressContext.Provider
       value={{
         embeddingProgressMap,
         startEmbedding,
-        updateProgressFromApi,
-        updateProgressWithError,
         clearProgress,
       }}
     >

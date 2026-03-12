@@ -27,12 +27,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
 
-  const {
-    embeddingProgressMap,
-    startEmbedding,
-    updateProgressFromApi,
-    updateProgressWithError,
-  } = useEmbeddingProgress();
+  const { embeddingProgressMap, startEmbedding } = useEmbeddingProgress();
 
   const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
 
@@ -122,8 +117,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
     Workspace.modifyEmbeddings(workspace.slug, changesToSend)
       .then(async (res) => {
-        updateProgressFromApi(workspace.slug, filenames, res);
-
         if (res.message) {
           showToast(`Error: ${res.message}`, "error", { clear: true });
         } else {
@@ -132,12 +125,11 @@ export default function DocumentSettings({ workspace, systemSettings }) {
           });
         }
 
-        // Refresh file lists after API responds (embedding may still be running).
-        // Progress UI is driven by embeddingProgress from context, not loading.
+        // Refresh file lists after API responds.
+        // Progress UI is driven by SSE via embeddingProgress context.
         await fetchKeys(true);
       })
       .catch((error) => {
-        updateProgressWithError(workspace.slug, filenames, error);
         showToast(`Workspace update failed: ${error}`, "error", {
           clear: true,
         });
