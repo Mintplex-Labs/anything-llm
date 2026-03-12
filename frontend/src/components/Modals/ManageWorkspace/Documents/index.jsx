@@ -118,13 +118,17 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     );
     const changesToSend = { adds: filenames };
 
-    startEmbedding(workspace.slug, filenames);
-
     setSelectedItems({});
     setHasChanges(false);
     setHighlightWorkspace(false);
 
-    Workspace.modifyEmbeddings(workspace.slug, changesToSend)
+    // Fire the embed POST first so the server is already processing the job
+    // by the time the SSE connection opens. This avoids the server sending
+    // idle (no active job) before embedding has started.
+    const embedPromise = Workspace.modifyEmbeddings(workspace.slug, changesToSend);
+    startEmbedding(workspace.slug, filenames);
+
+    embedPromise
       .then(async (res) => {
         if (res.message) {
           showToast(`Error: ${res.message}`, "error", { clear: true });

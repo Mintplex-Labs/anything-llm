@@ -1093,22 +1093,17 @@ function workspaceEndpoints(app) {
         response.flushHeaders();
 
         const { embeddingProgressBus } = require("../utils/WorkerQueue");
-        const { unsubscribe, hadHistory } = embeddingProgressBus.subscribe(
+        const { unsubscribe } = embeddingProgressBus.subscribe(
           { workspaceSlug: workspace.slug, userId },
           (event) => {
             response.write(`data: ${JSON.stringify(event)}\n\n`);
           }
         );
 
-        // If there's no buffered history for this workspace, no embedding
-        // is in progress. Send all_complete so the frontend knows there's
-        // nothing to display.
-        if (!hadHistory) {
-          response.write(
-            `data: ${JSON.stringify({ type: "all_complete", workspaceSlug: workspace.slug })}\n\n`
-          );
-        }
-
+        // If there's no history, no embedding is in progress right now.
+        // We intentionally send nothing and keep the connection open —
+        // events will flow if embedding starts, and the connection is
+        // cleaned up when the client disconnects (modal close / unmount).
         request.on("close", () => {
           unsubscribe();
         });

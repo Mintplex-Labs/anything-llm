@@ -33,7 +33,7 @@ class EmbeddingProgressBus extends EventEmitter {
    * Replays any buffered events for the workspace before subscribing to live events.
    * @param {{ workspaceSlug: string, userId?: number }} filter
    * @param {function} callback - receives the progress event payload
-   * @returns {{ unsubscribe: function, hadHistory: boolean }}
+   * @returns {{ unsubscribe: function }}
    */
   subscribe(filter, callback) {
     let hadHistory = false;
