@@ -32,10 +32,8 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
   const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
 
-  // On mount, check if there's an active embedding job for this workspace.
-  // If there is, the server replays buffered history (including batch_starting)
-  // so we catch up. If not, the server sends all_complete immediately and
-  // nothing visible happens.
+  // On mount, connect SSE so we catch up on any active embedding job
+  // via the server's buffered history replay.
   useEffect(() => {
     connectSSE(workspace.slug);
   }, [workspace.slug, connectSSE]);
