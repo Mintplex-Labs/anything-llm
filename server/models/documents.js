@@ -90,6 +90,16 @@ const Document = {
     const errors = new Set();
     const totalDocs = additions.length;
 
+    // Signal the full batch so SSE clients (including late-joining ones
+    // via history replay) can seed the complete file list as "pending".
+    embeddingProgressBus.emit("progress", {
+      type: "batch_starting",
+      workspaceSlug: workspace.slug,
+      userId,
+      filenames: additions,
+      totalDocs,
+    });
+
     for (const [index, path] of additions.entries()) {
       const data = await fileData(path);
       if (!data) {

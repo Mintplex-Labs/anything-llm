@@ -6,88 +6,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { API_BASE, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { API_BASE, AUTH_TOKEN } from "@/utils/constants";
 
 const EmbeddingProgressContext = createContext();
-const STORAGE_KEY_PREFIX = "anythingllm_embedding_progress";
-
-/**
- * Returns a user-scoped sessionStorage key so that different users
- * on the same browser tab don't see each other's embedding progress.
- * Falls back to the base key in single-user mode.
- */
-function storageKey() {
-  try {
-    const raw = localStorage.getItem(AUTH_USER);
-    if (raw) {
-      const user = JSON.parse(raw);
-      if (user?.id) return `${STORAGE_KEY_PREFIX}_${user.id}`;
-    }
-  } catch {
-    // parse failure — fall through
-  }
-  return STORAGE_KEY_PREFIX;
-}
-
-/**
- * Read persisted progress from sessionStorage.
- * Returns {} if nothing is stored or on parse failure.
- *
- * When `sanitize` is true (used for initial state), slugs with no active work
- * are dropped entirely, and all remaining file statuses are reset to "pending"
- * so the SSE stream provides the real current state after reconnection.
- */
-function loadPersistedProgress(sanitize = false) {
-  try {
-    const raw = sessionStorage.getItem(storageKey());
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!sanitize) return parsed;
-
-    // Only keep slugs that still have active work.
-    // Preserve "complete"/"failed" statuses (already confirmed by SSE before
-    // the reload). Reset "pending"/"embedding" to "pending" — SSE will
-    // provide real current state for those after reconnection.
-    const cleaned = {};
-    for (const [slug, files] of Object.entries(parsed)) {
-      const hasActiveWork = Object.values(files).some(
-        (f) => f.status === "pending" || f.status === "embedding"
-      );
-      if (!hasActiveWork) continue;
-      const resetFiles = {};
-      for (const [filename, fileStatus] of Object.entries(files)) {
-        if (
-          fileStatus.status === "complete" ||
-          fileStatus.status === "failed"
-        ) {
-          resetFiles[filename] = fileStatus;
-        } else {
-          resetFiles[filename] = { status: "pending" };
-        }
-      }
-      cleaned[slug] = resetFiles;
-    }
-    return cleaned;
-  } catch {
-    return {};
-  }
-}
-
-/**
- * Write progress map to sessionStorage.
- * Removes the key entirely when the map is empty.
- */
-function persistProgress(map) {
-  try {
-    if (Object.keys(map).length === 0) {
-      sessionStorage.removeItem(storageKey());
-    } else {
-      sessionStorage.setItem(storageKey(), JSON.stringify(map));
-    }
-  } catch {
-    // storage full or unavailable — non-critical
-  }
-}
 
 export function useEmbeddingProgress() {
   const ctx = useContext(EmbeddingProgressContext);
@@ -99,16 +20,18 @@ export function useEmbeddingProgress() {
 }
 
 export function EmbeddingProgressProvider({ children }) {
-  const [embeddingProgressMap, setEmbeddingProgressMap] = useState(() =>
-    loadPersistedProgress(true)
-  );
+  const [embeddingProgressMap, setEmbeddingProgressMap] = useState({});
   const eventSourcesRef = useRef({});
   const cleanupTimeoutsRef = useRef({});
 
-  // Persist to sessionStorage whenever the map changes
+  // Cleanup all EventSources on unmount
   useEffect(() => {
-    persistProgress(embeddingProgressMap);
-  }, [embeddingProgressMap]);
+    return () => {
+      for (const slug of Object.keys(eventSourcesRef.current)) {
+        eventSourcesRef.current[slug]?.close();
+      }
+    };
+  }, []);
 
   /**
    * Open (or reconnect) an SSE EventSource for a given workspace slug.
@@ -133,6 +56,18 @@ export function EmbeddingProgressProvider({ children }) {
           const data = JSON.parse(event.data);
 
           switch (data.type) {
+            case "batch_starting": {
+              const initial = {};
+              for (const name of data.filenames || []) {
+                initial[name] = { status: "pending" };
+              }
+              setEmbeddingProgressMap((prev) => ({
+                ...prev,
+                [slug]: { ...initial, ...prev[slug] },
+              }));
+              break;
+            }
+
             case "doc_starting":
               setEmbeddingProgressMap((prev) => ({
                 ...prev,
@@ -151,7 +86,6 @@ export function EmbeddingProgressProvider({ children }) {
                   [data.filename]: { status: "complete" },
                 },
               }));
-
               break;
 
             case "doc_failed":
@@ -165,7 +99,6 @@ export function EmbeddingProgressProvider({ children }) {
                   },
                 },
               }));
-
               break;
 
             case "all_complete":
@@ -195,28 +128,6 @@ export function EmbeddingProgressProvider({ children }) {
       // SSE is optional — embedding still works without it
     }
   }, []);
-
-  // On provider mount, reconnect SSE for any slugs that still have active work
-  // (i.e. progress was persisted from before a page reload).
-  useEffect(() => {
-    const persisted = loadPersistedProgress();
-    for (const slug of Object.keys(persisted)) {
-      const progress = persisted[slug];
-      const hasActiveWork = Object.values(progress).some(
-        (f) => f.status === "pending" || f.status === "embedding"
-      );
-      if (hasActiveWork) {
-        connectSSE(slug);
-      }
-    }
-    // Cleanup all EventSources on unmount
-    return () => {
-      for (const slug of Object.keys(eventSourcesRef.current)) {
-        eventSourcesRef.current[slug]?.close();
-        delete eventSourcesRef.current[slug];
-      }
-    };
-  }, [connectSSE]);
 
   const clearProgress = useCallback((slug) => {
     setEmbeddingProgressMap((prev) => {
@@ -263,6 +174,7 @@ export function EmbeddingProgressProvider({ children }) {
         embeddingProgressMap,
         startEmbedding,
         clearProgress,
+        connectSSE,
       }}
     >
       {children}
