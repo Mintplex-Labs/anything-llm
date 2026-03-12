@@ -37,6 +37,13 @@ class AIbitat {
   channels = new Map();
   functions = new Map();
 
+  /**
+   * Buffer for citations collected during tool execution.
+   * Citations are flushed to the frontend when the response is finalized.
+   * @type {Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>}
+   */
+  _pendingCitations = [];
+
   constructor(props = {}) {
     const {
       chats = [],
@@ -74,6 +81,41 @@ class AIbitat {
   use(plugin) {
     plugin.setup(this);
     return this;
+  }
+
+  /**
+   * Add citation(s) to be reported when the response is finalized.
+   * Citations are buffered and flushed with the correct message UUID.
+   * @param {{id: string, title: string, text: string, chunkSource?: string, score?: number}|Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>} citations - Citation object or array of citation objects
+   */
+  addCitation(citations) {
+    if (!citations) return;
+    if (Array.isArray(citations))
+      this._pendingCitations.push(...citations.filter(Boolean));
+    else if (typeof citations === "object")
+      this._pendingCitations.push(citations);
+  }
+
+  /**
+   * Flush all pending citations to the frontend with the given message UUID.
+   * Called automatically when the agent response is finalized.
+   * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.
+   * @param {string} messageUuid - The UUID of the message to attach citations to
+   */
+  flushCitations(messageUuid) {
+    if (!messageUuid || this._pendingCitations.length === 0) return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "citations",
+      uuid: messageUuid,
+      citations: this._pendingCitations,
+    });
+  }
+
+  /**
+   * Clear all pending citations. Called after citations have been persisted.
+   */
+  clearCitations() {
+    this._pendingCitations = [];
   }
 
   /**
@@ -671,11 +713,13 @@ ${this.getHistory({ to: route.to })
         );
 
         const finalStream = await provider.stream(messages, [], eventHandler);
+        const finalUuid = finalStream?.uuid || v4();
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
-          uuid: finalStream?.uuid || v4(),
+          uuid: finalUuid,
           metrics: provider.getUsage(),
         });
+        this?.flushCitations?.(finalUuid);
         const finalResponse =
           finalStream?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
@@ -744,6 +788,7 @@ ${this.getHistory({ to: route.to })
           uuid: directOutputUUID,
           metrics: provider.getUsage(),
         });
+        this?.flushCitations?.(directOutputUUID);
         return result;
       }
 
@@ -764,11 +809,13 @@ ${this.getHistory({ to: route.to })
       );
     }
 
+    const responseUuid = completionStream?.uuid || v4();
     eventHandler?.("reportStreamEvent", {
       type: "usageMetrics",
-      uuid: completionStream?.uuid || v4(),
+      uuid: responseUuid,
       metrics: provider.getUsage(),
     });
+    this?.flushCitations?.(responseUuid);
     return completionStream?.textResponse;
   }
 
@@ -817,6 +864,7 @@ ${this.getHistory({ to: route.to })
           uuid: msgUUID,
           metrics: provider.getUsage(),
         });
+        this?.flushCitations?.(msgUUID);
         return (
           finalCompletion?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
@@ -874,6 +922,7 @@ ${this.getHistory({ to: route.to })
           uuid: msgUUID,
           metrics: provider.getUsage(),
         });
+        this?.flushCitations?.(msgUUID);
         return result;
       }
 
@@ -900,6 +949,7 @@ ${this.getHistory({ to: route.to })
       uuid: msgUUID,
       metrics: provider.getUsage(),
     });
+    this?.flushCitations?.(msgUUID);
     return completion?.textResponse;
   }
 
