@@ -1,6 +1,10 @@
 const { ExternalConnector } = require("../models/externalConnector");
 const { SystemSettings } = require("../models/systemSettings");
 const { TelegramBotService } = require("../utils/telegramBot");
+const {
+  encryptToken,
+  decryptToken,
+} = require("../utils/telegramBot/encryption");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -32,14 +36,13 @@ function telegramEndpoints(app) {
           return response.status(200).json({ config: null });
         }
 
+        const plainToken = decryptToken(connector.config.bot_token);
         return response.status(200).json({
           config: {
             active: connector.active,
             bot_username: connector.config.bot_username || null,
             default_workspace: connector.config.default_workspace || null,
-            bot_token_masked: ExternalConnector.maskToken(
-              connector.config.bot_token
-            ),
+            bot_token_masked: ExternalConnector.maskToken(plainToken),
           },
         });
       } catch (e) {
@@ -81,26 +84,26 @@ function telegramEndpoints(app) {
           });
         }
 
-        const config = {
-          bot_token,
+        const storedConfig = {
+          bot_token: encryptToken(bot_token),
           bot_username: verification.username,
           default_workspace,
           owner_chat_id: null,
         };
 
-        // Save config and set active
+        // Save config with encrypted token
         const { error } = await ExternalConnector.upsert(
           "telegram",
-          config,
+          storedConfig,
           true
         );
         if (error) {
           return response.status(500).json({ success: false, error });
         }
 
-        // Start the bot
+        // Start the bot with the plaintext token
         const service = new TelegramBotService();
-        await service.start(config);
+        await service.start({ ...storedConfig, bot_token });
 
         await EventLogs.logEvent("telegram_bot_connected", {
           bot_username: verification.username,
