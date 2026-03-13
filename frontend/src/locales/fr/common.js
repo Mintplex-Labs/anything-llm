@@ -800,18 +800,6 @@ const TRANSLATIONS = {
         remove: "Supprimer",
         replace: "Remplacer",
       },
-      "welcome-messages": {
-        title: "Messages de bienvenue",
-        description:
-          "Personnalisez les messages affichés aux nouveaux utilisateurs.",
-        new: "Nouveau",
-        system: "système",
-        user: "utilisateur",
-        message: "message",
-        assistant: "assistant",
-        "double-click": "Double-cliquez pour modifier.",
-        save: "Sauvegarder les messages",
-      },
       "browser-appearance": {
         title: "Apparence du navigateur",
         description: "Personnalisez l'apparence de l'onglet du navigateur.",

@@ -794,18 +794,6 @@ const TRANSLATIONS = {
         remove: "Xóa",
         replace: "Thay thế",
       },
-      "welcome-messages": {
-        title: "Tin nhắn Chào mừng",
-        description:
-          "Tùy chỉnh các tin nhắn chào mừng hiển thị cho người dùng của bạn. Chỉ người dùng không phải quản trị viên mới thấy các tin nhắn này.",
-        new: "Mới",
-        system: "hệ thống",
-        user: "người dùng",
-        message: "tin nhắn",
-        assistant: "Trợ lý Trò chuyện AnythingLLM",
-        "double-click": "Nhấp đúp để chỉnh sửa...",
-        save: "Lưu Tin nhắn",
-      },
       "browser-appearance": {
         title: "Giao diện Trình duyệt",
         description:
