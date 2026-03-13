@@ -1,0 +1,507 @@
+const { WorkspaceChats } = require("../../models/workspaceChats");
+const {
+  WorkspaceAgentInvocation,
+} = require("../../models/workspaceAgentInvocation");
+const { getLLMProvider, getVectorDbClass } = require("../helpers");
+const { DocumentManager } = require("../DocumentManager");
+const { sourceIdentifier, recentChatHistory, chatPrompt } = require("../chats");
+const { AgentHandler } = require("../agents");
+const { v4: uuidv4 } = require("uuid");
+const { STREAM_EDIT_INTERVAL } = require("./constants");
+const { editMessage } = require("./chatActions");
+
+/**
+ * Stream a response to Telegram by running the full RAG pipeline.
+ * Uses the same pipeline as the web UI (RAG, pinned docs, etc.)
+ * and stores chats with thread_id so they appear in the AnythingLLM UI.
+ * @param {BotContext} ctx
+ * @param {number} chatId
+ * @param {object} workspace
+ * @param {object|null} thread
+ * @param {string} message
+ */
+async function streamResponse(ctx, chatId, workspace, thread, message) {
+  // Show typing indicator while we prepare the response
+  await ctx.bot.sendChatAction(chatId, "typing");
+
+  // Handle @agent invocations via the agent pipeline
+  const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+  if (agentHandles.length > 0) {
+    await handleAgentResponse(ctx, chatId, workspace, thread, message);
+    return;
+  }
+
+  const chatMode = workspace.chatMode || "chat";
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
+  const VectorDb = getVectorDbClass();
+  const messageLimit = workspace?.openAiHistory || 20;
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+
+  if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    await ctx.bot.sendMessage(
+      chatId,
+      workspace?.queryRefusalResponse ??
+        "There is no relevant information in this workspace to answer your query."
+    );
+    return;
+  }
+
+  const { rawHistory, chatHistory } = await recentChatHistory({
+    user: null,
+    workspace,
+    thread,
+    messageLimit,
+    apiSessionId: null,
+  });
+
+  let contextTexts = [];
+  let sources = [];
+  let pinnedDocIdentifiers = [];
+
+  await new DocumentManager({
+    workspace,
+    maxTokens: LLMConnector.promptWindowLimit(),
+  })
+    .pinnedDocs()
+    .then((pinnedDocs) => {
+      pinnedDocs.forEach((doc) => {
+        const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
+        contextTexts.push(doc.pageContent);
+        sources.push({
+          text:
+            pageContent.slice(0, 1_000) +
+            "...continued on in source document...",
+          ...metadata,
+        });
+      });
+    });
+
+  const vectorSearchResults =
+    embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+          namespace: workspace.slug,
+          input: message,
+          LLMConnector,
+          similarityThreshold: workspace?.similarityThreshold,
+          topN: workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
+        })
+      : { contextTexts: [], sources: [], message: null };
+
+  if (vectorSearchResults.message) {
+    await ctx.bot.sendMessage(
+      chatId,
+      "Vector search failed. Please try again."
+    );
+    return;
+  }
+
+  const { fillSourceWindow } = require("../helpers/chat");
+  const filledSources = fillSourceWindow({
+    nDocs: workspace?.topN || 4,
+    searchResults: vectorSearchResults.sources,
+    history: rawHistory,
+    filterIdentifiers: pinnedDocIdentifiers,
+  });
+
+  contextTexts = [...contextTexts, ...filledSources.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
+
+  if (chatMode === "query" && contextTexts.length === 0) {
+    await ctx.bot.sendMessage(
+      chatId,
+      workspace?.queryRefusalResponse ??
+        "There is no relevant information in this workspace to answer your query."
+    );
+    return;
+  }
+
+  // Keep typing indicator alive while LLM prepares the stream
+  const typingInterval = setInterval(() => {
+    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
+  }, 4000);
+
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: await chatPrompt(workspace, null),
+      userPrompt: message,
+      contextTexts,
+      chatHistory,
+      attachments: [],
+    },
+    rawHistory
+  );
+
+  let completeText = "";
+  let metrics = {};
+
+  try {
+    if (LLMConnector.streamingEnabled() === true) {
+      const stream = await LLMConnector.streamGetChatCompletion(messages, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+        user: null,
+      });
+
+      completeText = await handleStreamToTelegram(
+        ctx,
+        chatId,
+        stream,
+        LLMConnector
+      );
+      metrics = stream.metrics || {};
+    } else {
+      const { textResponse, metrics: performanceMetrics } =
+        await LLMConnector.getChatCompletion(messages, {
+          temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+          user: null,
+        });
+      completeText = textResponse;
+      metrics = performanceMetrics || {};
+
+      if (completeText?.length > 0) {
+        await ctx.bot.sendMessage(chatId, completeText);
+      }
+    }
+  } finally {
+    clearInterval(typingInterval);
+  }
+
+  if (!completeText?.length) {
+    await ctx.bot.sendMessage(chatId, "No response generated.");
+  }
+
+  if (completeText?.length > 0) {
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: completeText,
+        sources,
+        type: chatMode,
+        metrics,
+        attachments: [],
+      },
+      threadId: thread?.id || null,
+      apiSessionId: null,
+      user: null,
+    });
+  }
+}
+
+/**
+ * Run the agent pipeline for @agent messages and send the result to Telegram.
+ * Creates a socket adapter so the existing AgentHandler/AIbitat system works
+ * without a real WebSocket connection.
+ * @param {BotContext} ctx
+ * @param {number} chatId
+ * @param {object} workspace
+ * @param {object|null} thread
+ * @param {string} message
+ */
+async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
+  const { invocation } = await WorkspaceAgentInvocation.new({
+    prompt: message,
+    workspace,
+    user: null,
+    thread,
+  });
+
+  if (!invocation) {
+    await ctx.bot.sendMessage(
+      chatId,
+      "Failed to start agent. Try sending your message without @agent."
+    );
+    return;
+  }
+
+  let finalResponse = "";
+  const thoughts = [];
+  const charts = [];
+  const files = [];
+  let thoughtMsgId = null;
+  let lastThoughtText = "";
+
+  const socket = {
+    send(data) {
+      const parsed = JSON.parse(data);
+
+      // Introspection / thinking updates
+      if (parsed.type === "statusResponse" && parsed.content) {
+        thoughts.push(parsed.content);
+        return;
+      }
+
+      // Chart visualization
+      if (parsed.type === "rechartVisualize" && parsed.content) {
+        charts.push(parsed.content);
+        return;
+      }
+
+      // File download
+      if (parsed.type === "fileDownload" && parsed.content) {
+        files.push(parsed.content);
+        return;
+      }
+
+      // Streaming agent response
+      if (parsed.type === "reportStreamEvent") {
+        const inner = parsed.content;
+        if (inner?.type === "fullTextResponse" && inner?.content) {
+          finalResponse = inner.content;
+        }
+        return;
+      }
+
+      // Non-streaming agent response (fallback)
+      if (parsed.from && parsed.from !== "USER" && parsed.content) {
+        finalResponse = parsed.content;
+      }
+    },
+    close() {},
+  };
+
+  // Periodically flush thoughts as a single live-updating message
+  const thoughtFlush = setInterval(async () => {
+    if (thoughts.length === 0) return;
+    const text = thoughts.map((t) => `⏳ ${t}`).join("\n");
+    if (text === lastThoughtText) return;
+    lastThoughtText = text;
+    try {
+      if (!thoughtMsgId) {
+        const sent = await ctx.bot.sendMessage(chatId, text);
+        thoughtMsgId = sent.message_id;
+      } else {
+        await editMessage(ctx.bot, chatId, thoughtMsgId, text, ctx.log);
+      }
+    } catch {}
+  }, 1500);
+
+  const typingInterval = setInterval(() => {
+    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
+  }, 4000);
+
+  try {
+    const agentHandler = await new AgentHandler({
+      uuid: invocation.uuid,
+    }).init();
+    await agentHandler.createAIbitat({ socket });
+    // End on interrupts — Telegram can't provide interactive feedback and
+    // auto-continuing would accumulate tool results across cycles, risking token limits.
+    socket.askForFeedback = () => Promise.resolve("exit");
+    agentHandler.aibitat.onError((_error, chat) => {
+      if (!finalResponse && chat?.content) finalResponse = chat.content;
+    });
+    await agentHandler.startAgentCluster();
+  } finally {
+    clearInterval(typingInterval);
+    clearInterval(thoughtFlush);
+    // Close the invocation via the main process's DB connection since
+    // child processes (Bree jobs) can't share the SQLite connection pool.
+    if (typeof process.send === "function") {
+      process.send({ type: "closeInvocation", uuid: invocation.uuid });
+    } else {
+      try {
+        await WorkspaceAgentInvocation.close(invocation.uuid);
+      } catch {}
+    }
+  }
+
+  // Final thought update — mark as completed
+  if (thoughtMsgId && thoughts.length > 0) {
+    const doneText = thoughts.map((t) => `✓ ${t}`).join("\n");
+    await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log);
+  }
+
+  // Send charts as locally rendered images
+  for (const chart of charts) {
+    try {
+      const buffer = await renderChartToBuffer(chart);
+      await ctx.bot.sendPhoto(
+        chatId,
+        buffer,
+        { caption: chart.title },
+        {
+          filename: "chart.png",
+          contentType: "image/png",
+          knownLength: buffer.length,
+        }
+      );
+    } catch {
+      await ctx.bot.sendMessage(
+        chatId,
+        `${chart.title}: failed to render chart.`
+      );
+    }
+  }
+
+  // Send files as Telegram documents
+  for (const file of files) {
+    try {
+      const base64Data = file.b64Content.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      await ctx.bot.sendDocument(
+        chatId,
+        buffer,
+        {},
+        {
+          filename: file.filename,
+          contentType: "application/octet-stream",
+        }
+      );
+    } catch {}
+  }
+
+  if (finalResponse) {
+    await ctx.bot.sendMessage(chatId, finalResponse);
+  } else if (charts.length === 0 && files.length === 0) {
+    await ctx.bot.sendMessage(
+      chatId,
+      "Agent completed but no response was generated."
+    );
+  }
+}
+
+/**
+ * Render a Recharts dataset locally as a PNG buffer using chartjs-node-canvas.
+ * @param {object} chart - { type, title, dataset }
+ * @returns {Promise<Buffer>}
+ */
+async function renderChartToBuffer(chart) {
+  const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
+  const canvas = new ChartJSNodeCanvas({ width: 600, height: 400 });
+
+  const data = JSON.parse(chart.dataset);
+  const labels = data.map((d) => d.name);
+  const valueKey = Object.keys(data[0]).find((k) => k !== "name");
+  const values = data.map((d) => d[valueKey]);
+
+  const config = {
+    type: chart.type === "area" ? "line" : chart.type,
+    data: {
+      labels,
+      datasets: [
+        {
+          label: chart.title,
+          data: values,
+          fill: chart.type === "area",
+          borderColor: "rgb(59, 130, 246)",
+          backgroundColor: "rgba(59, 130, 246, 0.2)",
+        },
+      ],
+    },
+    options: {
+      plugins: { title: { display: true, text: chart.title } },
+    },
+  };
+
+  return await canvas.renderToBuffer(config);
+}
+
+/**
+ * Handle a stream from an LLM provider by periodically editing a Telegram message.
+ * Waits for the first chunk before sending any message (typing indicator shows until then).
+ * @param {BotContext} ctx
+ * @param {number} chatId
+ * @param {AsyncIterable} stream
+ * @param {object} LLMConnector
+ * @returns {Promise<string>} The complete response text.
+ */
+async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
+  let fullText = "";
+  let messageId = null;
+  let lastEditTime = 0;
+  let editTimer = null;
+
+  const mockResponse = {
+    write: () => {},
+    on: () => {},
+    removeListener: () => {},
+  };
+
+  try {
+    if (typeof stream[Symbol.asyncIterator] === "function") {
+      for await (const chunk of stream) {
+        const token = extractToken(chunk);
+        if (!token) continue;
+
+        fullText += token;
+
+        // Send the first message when the first token arrives
+        if (messageId === null) {
+          const sent = await ctx.bot.sendMessage(chatId, fullText + " \u258d");
+          messageId = sent.message_id;
+          lastEditTime = Date.now();
+          continue;
+        }
+
+        const now = Date.now();
+        if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
+          clearTimeout(editTimer);
+          lastEditTime = now;
+          editMessage(
+            ctx.bot,
+            chatId,
+            messageId,
+            fullText + " \u258d",
+            ctx.log
+          ).catch(() => {});
+        } else if (!editTimer) {
+          editTimer = setTimeout(() => {
+            lastEditTime = Date.now();
+            editMessage(
+              ctx.bot,
+              chatId,
+              messageId,
+              fullText + " \u258d",
+              ctx.log
+            ).catch(() => {});
+            editTimer = null;
+          }, STREAM_EDIT_INTERVAL);
+        }
+      }
+    } else {
+      ctx.log(`Using fallback stream for ${LLMConnector.constructor.name}`);
+      fullText = await LLMConnector.handleStream(mockResponse, stream, {
+        uuid: uuidv4(),
+      });
+    }
+  } catch (error) {
+    ctx.log("Stream error:", error.message);
+  }
+
+  clearTimeout(editTimer);
+
+  // Final edit to remove the cursor and show the complete text
+  if (messageId && fullText.length > 0) {
+    await editMessage(ctx.bot, chatId, messageId, fullText, ctx.log);
+  } else if (!messageId && fullText.length > 0) {
+    // Fallback stream path — never created a message via streaming
+    await ctx.bot.sendMessage(chatId, fullText);
+  }
+
+  return fullText;
+}
+
+/**
+ * Extract a text token from various LLM streaming chunk formats.
+ * Supports OpenAI Responses API, Chat Completions, Anthropic, and generic strings.
+ * @param {object|string} chunk
+ * @returns {string|null}
+ */
+function extractToken(chunk) {
+  if (chunk?.type === "response.output_text.delta") return chunk.delta;
+  if (chunk?.choices?.[0]?.delta?.content)
+    return chunk.choices[0].delta.content;
+  if (chunk?.type === "content_block_delta" && chunk?.delta?.text)
+    return chunk.delta.text;
+  if (typeof chunk === "string") return chunk;
+  return null;
+}
+
+module.exports = { streamResponse };
