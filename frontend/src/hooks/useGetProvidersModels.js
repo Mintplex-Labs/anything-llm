@@ -54,6 +54,7 @@ const groupedProviders = [
   "ppio",
   "docker-model-runner",
   "sambanova",
+  "llmapi",
 ];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);

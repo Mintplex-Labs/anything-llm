@@ -45,6 +45,7 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import LLMApiLogo from "@/media/llmprovider/llmapi.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -251,6 +252,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
       "Your model and chats are only accessible on the machine running the Lemonade server.",
     ],
     logo: LemonadeLogo,
+  },
+  llmapi: {
+    name: "LLM API",
+    policyUrl: "https://llmapi.ai/privacy-policy",
+    logo: LLMApiLogo,
   },
 };
 
