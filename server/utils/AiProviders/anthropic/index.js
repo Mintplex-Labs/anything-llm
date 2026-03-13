@@ -150,7 +150,7 @@ class AnthropicLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     try {
       const systemContent = messages[0].content;
-      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      const result = await LLMPerformanceMonitor.measureWithRetry(() =>
         this.anthropic.messages.create({
           model: this.model,
           max_tokens: 4096,
