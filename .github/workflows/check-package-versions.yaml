@@ -12,12 +12,11 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  check-changes:
+  run-script:
     runs-on: ubuntu-latest
-    outputs:
-      packages_changed: ${{ steps.filter.outputs.packages }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -26,33 +25,18 @@ jobs:
               - 'server/package.json'
               - 'collector/package.json'
 
-  verify-versions:
-    needs: check-changes
-    if: needs.check-changes.outputs.packages_changed == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Set up Node.js
+        if: steps.filter.outputs.packages == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
       - name: Run verifyPackageVersions.mjs script
+        if: steps.filter.outputs.packages == 'true'
         run: |
           cd extras/scripts
           node verifyPackageVersions.mjs
 
-  check-result:
-    if: always()
-    needs: [check-changes, verify-versions]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Determine result
-        run: |
-          if [ "${{ needs.verify-versions.result }}" == "failure" ]; then
-            echo "Version check failed"
-            exit 1
-          fi
-          echo "Check passed (or skipped - no package changes)"
+      - name: Skip message
+        if: steps.filter.outputs.packages != 'true'
+        run: echo "No package.json changes detected, skipping version check"
