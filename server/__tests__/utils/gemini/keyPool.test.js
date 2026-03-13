@@ -88,4 +88,19 @@ describe("Gemini key pool", () => {
       isRetryableGeminiKeyError({ status: 500, message: "internal server error" })
     ).toBe(false);
   });
+
+  test("treats missing env keys as no configured Gemini keys", () => {
+    delete process.env.GEMINI_API_KEYS;
+    delete process.env.GEMINI_API_KEY;
+
+    const {
+      getConfiguredGeminiKeyCount,
+      getGeminiApiKeys,
+      hasConfiguredGeminiApiKeys,
+    } = require("../../../utils/gemini/keyPool");
+
+    expect(getGeminiApiKeys("llm")).toEqual([]);
+    expect(getConfiguredGeminiKeyCount("llm")).toBe(0);
+    expect(hasConfiguredGeminiApiKeys("llm")).toBe(false);
+  });
 });

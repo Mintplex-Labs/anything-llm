@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
@@ -12,10 +13,17 @@ const DEFAULT_MODELS = [
   },
 ];
 
-export default function GeminiOptions({ settings }) {
+export default function GeminiOptions({ settings, onDirty = () => {} }) {
   const configuredKeyCount =
     settings?.GeminiEmbeddingApiKeysCount ||
     (settings?.GeminiEmbeddingApiKey ? 1 : 0);
+  const [inputValue, setInputValue] = useState("");
+  const [clearRequested, setClearRequested] = useState(false);
+
+  useEffect(() => {
+    setInputValue("");
+    setClearRequested(false);
+  }, [configuredKeyCount]);
 
   return (
     <div className="w-full flex flex-col gap-y-6">
@@ -30,15 +38,48 @@ export default function GeminiOptions({ settings }) {
               rows={4}
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y min-h-[112px]"
               placeholder="Paste one Gemini key per line"
-              defaultValue=""
+              value={inputValue}
               required={configuredKeyCount === 0}
               autoComplete="off"
               spellCheck={false}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                setInputValue(nextValue);
+                if (clearRequested && nextValue.trim().length > 0)
+                  setClearRequested(false);
+              }}
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
               Enter one key per line. Saved keys stay hidden.
               {configuredKeyCount > 0 ? ` ${configuredKeyCount} key(s) saved.` : ""}
             </p>
+            {configuredKeyCount > 0 && (
+              <>
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-white text-opacity-80 hover:text-white mt-2 text-left"
+                  onClick={() => {
+                    setInputValue("");
+                    setClearRequested((currentValue) => !currentValue);
+                    onDirty();
+                  }}
+                >
+                  {clearRequested ? "Keep saved keys" : "Clear saved keys"}
+                </button>
+                {clearRequested && (
+                  <p className="text-xs leading-[18px] font-base text-[#FBBF24] mt-2">
+                    Saved Gemini embedding keys will be removed when you save changes.
+                  </p>
+                )}
+              </>
+            )}
+            {clearRequested && (
+              <input
+                type="hidden"
+                name="ClearGeminiEmbeddingApiKeys"
+                value="true"
+              />
+            )}
           </div>
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-3">

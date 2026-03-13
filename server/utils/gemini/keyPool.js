@@ -29,6 +29,14 @@ function parseGeminiApiKeys(input = null) {
   const keys = [];
 
   for (const value of values) {
+    if (
+      value === null ||
+      typeof value === "undefined" ||
+      value === true ||
+      value === false
+    )
+      continue;
+
     for (const part of String(value).split(/[\n,]+/)) {
       const key = part.trim();
       if (!key || seen.has(key)) continue;
@@ -97,6 +105,13 @@ function syncGeminiLegacyKey(provider = "llm", input = null) {
   if (!apiKey) return null;
   promoteGeminiKey(provider, apiKey, 0);
   return apiKey;
+}
+
+function clearGeminiApiKeys(provider = "llm") {
+  const { singleEnvKey, multiEnvKey } = getProviderConfig(provider);
+  preferredIndexes[provider] = 0;
+  delete process.env[multiEnvKey];
+  delete process.env[singleEnvKey];
 }
 
 function normalizeGeminiError(error = null) {
@@ -184,6 +199,7 @@ async function withGeminiKeyFallback({
 }
 
 module.exports = {
+  clearGeminiApiKeys,
   firstGeminiApiKey,
   getConfiguredGeminiKeyCount,
   getGeminiApiKeys,

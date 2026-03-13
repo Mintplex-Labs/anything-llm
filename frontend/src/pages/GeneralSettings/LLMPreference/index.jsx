@@ -114,7 +114,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     name: "Gemini",
     value: "gemini",
     logo: GeminiLogo,
-    options: (settings) => <GeminiLLMOptions settings={settings} />,
+    options: (settings, optionProps = {}) => (
+      <GeminiLLMOptions settings={settings} {...optionProps} />
+    ),
     description: "Google's largest and most capable AI model",
     requiredConfig: ["GeminiLLMApiKey"],
   },
@@ -431,6 +433,14 @@ export default function GeneralLLMPreference() {
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
 
+  async function refreshSettings() {
+    const nextSettings = await System.keys();
+    if (!nextSettings) return null;
+    setSettings(nextSettings);
+    setSelectedLLM(nextSettings?.LLMProvider);
+    return nextSettings;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -439,12 +449,13 @@ export default function GeneralLLMPreference() {
 
     for (var [key, value] of formData.entries()) data[key] = value;
     applyNormalizedGeminiKeyFields(data, ["GeminiLLMApiKeys"]);
-    const { error } = await System.updateSystem(data);
     setSaving(true);
+    const { error } = await System.updateSystem(data);
 
     if (error) {
       showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
+      await refreshSettings();
       showToast("LLM preferences saved successfully.", "success");
     }
     setSaving(false);
@@ -469,9 +480,7 @@ export default function GeneralLLMPreference() {
 
   useEffect(() => {
     async function fetchKeys() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider);
+      await refreshSettings();
       setLoading(false);
     }
     fetchKeys();
@@ -533,10 +542,7 @@ export default function GeneralLLMPreference() {
               </div>
               <div className="w-full justify-end flex">
                 {hasChanges && (
-                  <CTAButton
-                    onClick={() => handleSubmit()}
-                    className="mt-3 mr-0 -mb-14 z-10"
-                  >
+                  <CTAButton className="mt-3 mr-0 -mb-14 z-10">
                     {saving ? "Saving..." : "Save changes"}
                   </CTAButton>
                 )}
@@ -633,7 +639,9 @@ export default function GeneralLLMPreference() {
                 {selectedLLM &&
                   AVAILABLE_LLM_PROVIDERS.find(
                     (llm) => llm.value === selectedLLM
-                  )?.options?.(settings)}
+                  )?.options?.(settings, {
+                    onDirty: () => setHasChanges(true),
+                  })}
               </div>
             </div>
           </form>

@@ -70,7 +70,9 @@ const EMBEDDERS = [
     name: "Gemini",
     value: "gemini",
     logo: GeminiAiLogo,
-    options: (settings) => <GeminiOptions settings={settings} />,
+    options: (settings, optionProps = {}) => (
+      <GeminiOptions settings={settings} {...optionProps} />
+    ),
     description: "Run powerful embedding models from Google AI.",
   },
   {
@@ -164,6 +166,16 @@ export default function GeneralEmbeddingPreference() {
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
+  async function refreshSettings() {
+    const nextSettings = await System.keys();
+    if (!nextSettings) return null;
+    setSettings(nextSettings);
+    setSelectedEmbedder(nextSettings?.EmbeddingEngine || "native");
+    setHasEmbeddings(nextSettings?.HasExistingEmbeddings || false);
+    setHasCachedEmbeddings(nextSettings?.HasCachedEmbeddings || false);
+    return nextSettings;
+  }
+
   function embedderModelChanged(formEl) {
     try {
       const newModel = new FormData(formEl).get("EmbeddingModelPref") ?? null;
@@ -203,6 +215,7 @@ export default function GeneralEmbeddingPreference() {
       showToast(`Failed to save embedding settings: ${error}`, "error");
       setHasChanges(true);
     } else {
+      await refreshSettings();
       showToast("Embedding preferences saved successfully.", "success");
       setHasChanges(false);
     }
@@ -228,11 +241,7 @@ export default function GeneralEmbeddingPreference() {
 
   useEffect(() => {
     async function fetchKeys() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
-      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
-      setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
+      await refreshSettings();
       setLoading(false);
     }
     fetchKeys();
@@ -286,10 +295,7 @@ export default function GeneralEmbeddingPreference() {
               </div>
               <div className="w-full justify-end flex">
                 {hasChanges && (
-                  <CTAButton
-                    onClick={() => handleSubmit()}
-                    className="mt-3 mr-0 -mb-14 z-10"
-                  >
+                  <CTAButton className="mt-3 mr-0 -mb-14 z-10">
                     {saving ? t("common.saving") : t("common.save")}
                   </CTAButton>
                 )}
@@ -383,7 +389,9 @@ export default function GeneralEmbeddingPreference() {
                 {selectedEmbedder &&
                   EMBEDDERS.find(
                     (embedder) => embedder.value === selectedEmbedder
-                  )?.options(settings)}
+                  )?.options(settings, {
+                    onDirty: () => setHasChanges(true),
+                  })}
               </div>
             </div>
           </form>

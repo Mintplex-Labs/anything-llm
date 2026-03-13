@@ -1,13 +1,20 @@
 import System from "@/models/system";
 import { useEffect, useState } from "react";
 
-export default function GeminiLLMOptions({ settings }) {
+export default function GeminiLLMOptions({ settings, onDirty = () => {} }) {
   const configuredKeyCount =
     settings?.GeminiLLMApiKeysCount || (settings?.GeminiLLMApiKey ? 1 : 0);
   const [inputValue, setInputValue] = useState("");
+  const [clearRequested, setClearRequested] = useState(false);
   const [geminiApiKey, setGeminiApiKey] = useState(
     configuredKeyCount > 0 ? true : null
   );
+
+  useEffect(() => {
+    setInputValue("");
+    setClearRequested(false);
+    setGeminiApiKey(configuredKeyCount > 0 ? true : null);
+  }, [configuredKeyCount]);
 
   return (
     <div className="w-full flex flex-col">
@@ -21,11 +28,16 @@ export default function GeminiLLMOptions({ settings }) {
             rows={4}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y min-h-[112px]"
             placeholder="Paste one Gemini key per line"
-            defaultValue=""
+            value={inputValue}
             required={configuredKeyCount === 0}
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const nextValue = e.target.value;
+              setInputValue(nextValue);
+              if (clearRequested && nextValue.trim().length > 0)
+                setClearRequested(false);
+            }}
             onBlur={() =>
               setGeminiApiKey(
                 inputValue.trim().length > 0
@@ -40,6 +52,30 @@ export default function GeminiLLMOptions({ settings }) {
             Enter one key per line. Saved keys stay hidden.
             {configuredKeyCount > 0 ? ` ${configuredKeyCount} key(s) saved.` : ""}
           </p>
+          {configuredKeyCount > 0 && (
+            <>
+              <button
+                type="button"
+                className="text-xs font-semibold text-white text-opacity-80 hover:text-white mt-2 text-left"
+                onClick={() => {
+                  setInputValue("");
+                  setClearRequested((currentValue) => !currentValue);
+                  setGeminiApiKey(true);
+                  onDirty();
+                }}
+              >
+                {clearRequested ? "Keep saved keys" : "Clear saved keys"}
+              </button>
+              {clearRequested && (
+                <p className="text-xs leading-[18px] font-base text-[#FBBF24] mt-2">
+                  Saved Gemini chat keys will be removed when you save changes.
+                </p>
+              )}
+            </>
+          )}
+          {clearRequested && (
+            <input type="hidden" name="ClearGeminiLLMApiKeys" value="true" />
+          )}
         </div>
 
         {!settings?.credentialsOnly && (

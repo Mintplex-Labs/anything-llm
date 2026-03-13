@@ -4,6 +4,7 @@ const {
 } = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 const {
+  clearGeminiApiKeys,
   normalizeGeminiApiKeysForStorage,
   syncGeminiLegacyKey,
 } = require("../gemini/keyPool");
@@ -80,6 +81,12 @@ const KEY_MAPPING = {
     envKey: "GEMINI_API_KEYS",
     checks: [isNotEmpty],
     postUpdate: [normalizeStoredGeminiKeys, syncGeminiLlmLegacyKey],
+  },
+  ClearGeminiLLMApiKeys: {
+    envKey: "GEMINI_API_KEYS",
+    checks: [],
+    instructionOnly: true,
+    postSettled: [clearGeminiLlmKeysIfRequested],
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
@@ -334,6 +341,12 @@ const KEY_MAPPING = {
     envKey: "GEMINI_EMBEDDING_API_KEYS",
     checks: [isNotEmpty],
     postUpdate: [normalizeStoredGeminiKeys, syncGeminiEmbeddingLegacyKey],
+  },
+  ClearGeminiEmbeddingApiKeys: {
+    envKey: "GEMINI_EMBEDDING_API_KEYS",
+    checks: [],
+    instructionOnly: true,
+    postSettled: [clearGeminiEmbeddingKeysIfRequested],
   },
 
   // Generic OpenAI Embedding Settings
@@ -1204,6 +1217,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     const {
       envKey,
       checks,
+      instructionOnly = false,
       preUpdate = [], // Functions to run before updating a specific ENV variable
       postUpdate = [], // Functions to run after updating a specific ENV variable
       postSettled = [], // Functions to run after all ENV variables have been updated
@@ -1235,7 +1249,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     }
 
     newValues[key] = nextValue;
-    process.env[envKey] = nextValue;
+    if (!instructionOnly) process.env[envKey] = nextValue;
 
     for (const postUpdateFunc of postUpdate)
       await postUpdateFunc(key, prevValue, nextValue);
@@ -1270,6 +1284,38 @@ async function syncGeminiLlmLegacyKey(_key, _prevValue, nextValue) {
 
 async function syncGeminiEmbeddingLegacyKey(_key, _prevValue, nextValue) {
   syncGeminiLegacyKey("embedding", nextValue);
+  return null;
+}
+
+function shouldApplyClearInstruction(value = null) {
+  if (typeof value === "boolean") return value;
+  return ["true", "1", "yes", "on"].includes(
+    String(value ?? "")
+      .trim()
+      .toLowerCase()
+  );
+}
+
+async function clearGeminiLlmKeysIfRequested(newValues = {}) {
+  if (!shouldApplyClearInstruction(newValues.ClearGeminiLLMApiKeys)) return null;
+  if (
+    typeof newValues.GeminiLLMApiKeys === "string" &&
+    newValues.GeminiLLMApiKeys.trim().length > 0
+  )
+    return null;
+  clearGeminiApiKeys("llm");
+  return null;
+}
+
+async function clearGeminiEmbeddingKeysIfRequested(newValues = {}) {
+  if (!shouldApplyClearInstruction(newValues.ClearGeminiEmbeddingApiKeys))
+    return null;
+  if (
+    typeof newValues.GeminiEmbeddingApiKeys === "string" &&
+    newValues.GeminiEmbeddingApiKeys.trim().length > 0
+  )
+    return null;
+  clearGeminiApiKeys("embedding");
   return null;
 }
 
