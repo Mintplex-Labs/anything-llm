@@ -163,6 +163,11 @@ export default function ActiveWorkspaces() {
                               >
                                 <button
                                   type="button"
+                                  onTouchEnd={(e) => {
+                                    e.preventDefault();
+                                    setSelectedWs(workspace);
+                                    showModal();
+                                  }}
                                   onClick={(e) => {
                                     e.preventDefault();
                                     setSelectedWs(workspace);
