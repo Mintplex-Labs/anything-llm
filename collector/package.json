@@ -54,6 +54,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-unused-imports": "^4.0.0",
     "globals": "^17.4.0",

@@ -1,5 +1,3 @@
-const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
-
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],
   "text/html": [".html"],
@@ -77,6 +75,5 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
 
 module.exports = {
   SUPPORTED_FILETYPE_CONVERTERS,
-  WATCH_DIRECTORY,
   ACCEPTED_MIMES,
 };

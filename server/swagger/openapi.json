@@ -859,7 +859,7 @@
                       {
                         "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                         "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                        "url": "file://absolute/path/to/anythingllm.txt",
                         "title": "anythingllm.txt",
                         "docAuthor": "Unknown",
                         "description": "Unknown",
@@ -966,7 +966,7 @@
                       {
                         "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                         "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                        "url": "file://absolute/path/to/anythingllm.txt",
                         "title": "anythingllm.txt",
                         "docAuthor": "Unknown",
                         "description": "Unknown",

@@ -8,11 +8,8 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const cacheFolder = path.resolve(
-  process.env.STORAGE_DIR
-    ? path.resolve(process.env.STORAGE_DIR, "models", "ppio")
-    : path.resolve(__dirname, `../../../storage/models/ppio`)
-);
+const { baseStoragePath } = require("../../files");
+const cacheFolder = path.resolve(baseStoragePath, "models/ppio");
 
 class PPIOLLM {
   constructor(embedder = null, modelPreference = null) {

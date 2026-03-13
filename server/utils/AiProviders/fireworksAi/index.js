@@ -8,12 +8,8 @@ const {
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
-
-const cacheFolder = path.resolve(
-  process.env.STORAGE_DIR
-    ? path.resolve(process.env.STORAGE_DIR, "models", "fireworks")
-    : path.resolve(__dirname, `../../../storage/models/fireworks`)
-);
+const { baseStoragePath } = require("../../files");
+const cacheFolder = path.resolve(baseStoragePath, "models/fireworks");
 
 class FireworksAiLLM {
   constructor(embedder = null, modelPreference = null) {

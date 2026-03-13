@@ -44,6 +44,7 @@
   "private": false,
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "eslint-plugin-import": "^2.32.0",
     "jest": "^29.7.0"
   }
 }

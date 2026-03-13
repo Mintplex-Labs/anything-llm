@@ -3,23 +3,46 @@ const path = require("path");
 const { MimeDetector } = require("./mime");
 
 /**
+ * The base storage path for the server - where all primary storage is stored.
+ */
+const basePrimaryStoragePath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, "../../../server/storage")
+    : path.resolve(process.env.STORAGE_DIR);
+
+/**
+ * The folder where temporary files are stored by the collector.
+ * In development points to a storage folder in the collector directory - not the main storage directory.
+ */
+const tmpStorage =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, "../../storage/tmp")
+    : path.resolve(process.env.STORAGE_DIR, "tmp");
+
+/**
+ * The folder where files are watched for and processed by the collector.
+ * In development points to a storage folder in the collector directory - not the main storage directory.
+ */
+const WATCH_DIRECTORY =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, "../../storage/hotdir")
+    : path.resolve(process.env.STORAGE_DIR, "hotdir");
+
+/**
  * The folder where documents are stored to be stored when
  * processed by the collector.
  */
-const documentsFolder =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/documents`)
-    : path.resolve(process.env.STORAGE_DIR, `documents`);
+const documentsFolder = path.resolve(basePrimaryStoragePath, "documents");
 
 /**
  * The folder where direct uploads are stored to be stored when
  * processed by the collector. These are files that were DnD'd into UI
  * and are not to be embedded or selectable from the file picker.
  */
-const directUploadsFolder =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/direct-uploads`)
-    : path.resolve(process.env.STORAGE_DIR, `direct-uploads`);
+const directUploadsFolder = path.resolve(
+  basePrimaryStoragePath,
+  "direct-uploads"
+);
 
 /**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
@@ -150,43 +173,42 @@ function writeToServerDocuments({
   };
 }
 
-// When required we can wipe the entire collector hotdir and tmp storage in case
-// there were some large file failures that we unable to be removed a reboot will
-// force remove them.
-async function wipeCollectorStorage() {
-  const cleanHotDir = new Promise((resolve) => {
-    const directory = path.resolve(__dirname, "../../hotdir");
-    fs.readdir(directory, (err, files) => {
-      if (err) resolve();
+/**
+ * Wipes the entire collector hotdir and tmp storage in case
+ * there were some large file failures that we unable to be removed a reboot will
+ * force remove them.
+ */
+function wipeCollectorStorage() {
+  const dirs = [
+    { path: WATCH_DIRECTORY, keep: ["__HOTDIR__.md"] },
+    { path: tmpStorage, keep: [".placeholder"] },
+  ];
 
-      for (const file of files) {
-        if (file === "__HOTDIR__.md") continue;
-        try {
-          fs.rmSync(path.join(directory, file));
-        } catch {}
-      }
-      resolve();
-    });
-  });
-
-  const cleanTmpDir = new Promise((resolve) => {
-    const directory = path.resolve(__dirname, "../../storage/tmp");
-    fs.readdir(directory, (err, files) => {
-      if (err) resolve();
-
-      for (const file of files) {
-        if (file === ".placeholder") continue;
-        try {
-          fs.rmSync(path.join(directory, file));
-        } catch {}
-      }
-      resolve();
-    });
-  });
-
-  await Promise.all([cleanHotDir, cleanTmpDir]);
+  for (const { path: directory, keep } of dirs) {
+    if (!fs.existsSync(directory)) continue;
+    for (const file of fs.readdirSync(directory)) {
+      if (keep.includes(file)) continue;
+      try {
+        fs.rmSync(path.join(directory, file));
+      } catch {}
+    }
+  }
   console.log(`Collector hot directory and tmp storage wiped!`);
-  return;
+}
+
+/**
+ * Ensures that all required directories exist and are created if they do not.
+ * @returns {void} - Returns void.
+ */
+function ensureRequiredDirectoriesExist() {
+  const directories = [
+    WATCH_DIRECTORY,
+    tmpStorage,
+    documentsFolder,
+    directUploadsFolder,
+  ];
+  for (const directory of directories)
+    fs.mkdirSync(directory, { recursive: true });
 }
 
 /**
@@ -221,10 +243,13 @@ module.exports = {
   isTextType,
   createdDate,
   writeToServerDocuments,
+  ensureRequiredDirectoriesExist,
   wipeCollectorStorage,
   normalizePath,
   isWithin,
   sanitizeFileName,
   documentsFolder,
   directUploadsFolder,
+  WATCH_DIRECTORY,
+  basePrimaryStoragePath,
 };

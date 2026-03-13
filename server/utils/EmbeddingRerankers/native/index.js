@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const { baseStoragePath } = require("../../files");
 
 class NativeEmbeddingReranker {
   static #model = null;
@@ -16,11 +17,7 @@ class NativeEmbeddingReranker {
     // An alternative model to the mixedbread-ai/mxbai-rerank-xsmall-v1 model (speed on CPU is much slower for this model @ 18docs = 6s)
     // Model Card: https://huggingface.co/Xenova/ms-marco-MiniLM-L-6-v2 (speed on CPU is much faster @ 18docs = 1.6s)
     this.model = "Xenova/ms-marco-MiniLM-L-6-v2";
-    this.cacheDir = path.resolve(
-      process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, `models`)
-        : path.resolve(__dirname, `../../../storage/models`)
-    );
+    this.cacheDir = path.resolve(baseStoragePath, "models");
     this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);

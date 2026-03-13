@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
-const { normalizePath } = require(".");
+const { hotdirPath, normalizePath, baseStoragePath } = require(".");
 
 /**
  * Handle File uploads for auto-uploading.
@@ -10,11 +10,7 @@ const { normalizePath } = require(".");
  */
 const fileUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../collector/hotdir`)
-        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
-    cb(null, uploadOutput);
+    cb(null, hotdirPath);
   },
   filename: function (_, file, cb) {
     file.originalname = normalizePath(
@@ -30,11 +26,7 @@ const fileUploadStorage = multer.diskStorage({
  */
 const fileAPIUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../collector/hotdir`)
-        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
-    cb(null, uploadOutput);
+    cb(null, hotdirPath);
   },
   filename: function (_, file, cb) {
     file.originalname = normalizePath(
@@ -47,12 +39,9 @@ const fileAPIUploadStorage = multer.diskStorage({
 // Asset storage for logos
 const assetUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../storage/assets`)
-        : path.resolve(process.env.STORAGE_DIR, "assets");
-    fs.mkdirSync(uploadOutput, { recursive: true });
-    return cb(null, uploadOutput);
+    const ASSETS_PATH = path.resolve(baseStoragePath, "assets");
+    fs.mkdirSync(ASSETS_PATH, { recursive: true });
+    return cb(null, ASSETS_PATH);
   },
   filename: function (_, file, cb) {
     file.originalname = normalizePath(
@@ -67,12 +56,9 @@ const assetUploadStorage = multer.diskStorage({
  */
 const pfpUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../storage/assets/pfp`)
-        : path.resolve(process.env.STORAGE_DIR, "assets/pfp");
-    fs.mkdirSync(uploadOutput, { recursive: true });
-    return cb(null, uploadOutput);
+    const PFP_PATH = path.resolve(baseStoragePath, "assets/pfp");
+    fs.mkdirSync(PFP_PATH, { recursive: true });
+    return cb(null, PFP_PATH);
   },
   filename: function (req, file, cb) {
     const randomFileName = `${v4()}${path.extname(

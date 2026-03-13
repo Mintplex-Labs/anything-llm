@@ -8,6 +8,7 @@
 const { htmlToText } = require("html-to-text");
 const { tokenizeString } = require("../../../tokenizer");
 const {
+  WATCH_DIRECTORY,
   sanitizeFileName,
   writeToServerDocuments,
   documentsFolder,
@@ -18,10 +19,7 @@ const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");
 const { processSingleFile } = require("../../../../processSingleFile");
-const {
-  WATCH_DIRECTORY,
-  SUPPORTED_FILETYPE_CONVERTERS,
-} = require("../../../constants");
+const { SUPPORTED_FILETYPE_CONVERTERS } = require("../../../constants");
 
 class Page {
   /**

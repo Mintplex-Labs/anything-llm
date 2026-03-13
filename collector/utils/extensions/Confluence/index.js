@@ -2,7 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments, sanitizeFileName } = require("../../files");
+const {
+  writeToServerDocuments,
+  sanitizeFileName,
+  documentsFolder,
+} = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { ConfluencePagesLoader } = require("./ConfluenceLoader");
 
@@ -80,14 +84,7 @@ async function loadConfluence(
     `confluence-${hostname}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
 

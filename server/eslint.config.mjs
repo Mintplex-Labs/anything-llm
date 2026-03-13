@@ -4,14 +4,23 @@ import { defineConfig } from "eslint/config";
 import pluginPrettier from "eslint-plugin-prettier";
 import configPrettier from "eslint-config-prettier";
 import unusedImports from "eslint-plugin-unused-imports";
+import pluginImport from "eslint-plugin-import";
 
 export default defineConfig([
   { ignores: ["__tests__/**", "**/syncStaticLists.mjs"] },
   {
-    files: ["**/*.{js,mjs,cjs}"],
-    plugins: { js, prettier: pluginPrettier, "unused-imports": unusedImports },
+    files: ["**/*.js"],
+    plugins: {
+      js,
+      prettier: pluginPrettier,
+      "unused-imports": unusedImports,
+      import: pluginImport,
+    },
     extends: ["js/recommended"],
-    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: { ...globals.node, ...globals.browser },
+    },
     rules: {
       ...configPrettier.rules,
       "prettier/prettier": "error",
@@ -32,7 +41,48 @@ export default defineConfig([
           argsIgnorePattern: "^_",
         },
       ],
+      "import/no-unresolved": [
+        "error",
+        { commonjs: true, ignore: ["^@modelcontextprotocol/sdk"] },
+      ],
+      "import/named": "error",
+    },
+    settings: {
+      "import/resolver": {
+        node: true,
+      },
+      "import/core-modules": ["eslint/config"],
     },
   },
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
+  {
+    files: ["**/*.mjs"],
+    plugins: {
+      js,
+      prettier: pluginPrettier,
+      "unused-imports": unusedImports,
+      import: pluginImport,
+    },
+    extends: ["js/recommended"],
+    languageOptions: {
+      sourceType: "module",
+      globals: { ...globals.node },
+    },
+    rules: {
+      ...configPrettier.rules,
+      "prettier/prettier": "error",
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "import/no-unresolved": [
+        "error",
+        { ignore: ["^@modelcontextprotocol/sdk"] },
+      ],
+      "import/named": "error",
+    },
+    settings: {
+      "import/resolver": {
+        node: true,
+      },
+      "import/core-modules": ["eslint/config"],
+    },
+  },
 ]);

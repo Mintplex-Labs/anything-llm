@@ -11,7 +11,10 @@ const { ACCEPTED_MIMES } = require("./utils/constants");
 const { reqBody } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
 const { processLink, getLinkText } = require("./processLink");
-const { wipeCollectorStorage } = require("./utils/files");
+const {
+  ensureRequiredDirectoriesExist,
+  wipeCollectorStorage,
+} = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
@@ -186,8 +189,9 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(8888, async () => {
-    await wipeCollectorStorage();
+  .listen(8888, () => {
+    ensureRequiredDirectoriesExist();
+    wipeCollectorStorage();
     console.log(`Document processor app listening on port 8888`);
   })
   .on("error", function (_) {

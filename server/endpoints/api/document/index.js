@@ -15,10 +15,7 @@ const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
-const documentsPath =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, "../../../storage/documents")
-    : path.resolve(process.env.STORAGE_DIR, `documents`);
+const { documentsPath } = require("../../../utils/files");
 
 /**
  * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.
@@ -93,7 +90,7 @@ function apiDocumentEndpoints(app) {
                 {
                   "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                   "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                  "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                  "url": "file:///absolute/path/to/anythingllm.txt",
                   "title": "anythingllm.txt",
                   "docAuthor": "Unknown",
                   "description": "Unknown",
@@ -223,7 +220,7 @@ function apiDocumentEndpoints(app) {
                 documents: [{
                   "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                   "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                  "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                  "url": "file:///absolute/path/to/anythingllm.txt",
                   "title": "anythingllm.txt",
                   "docAuthor": "Unknown",
                   "description": "Unknown",

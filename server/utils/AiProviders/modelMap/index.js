@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const LEGACY_MODEL_MAP = require("./legacy");
+const { baseStoragePath } = require("../../files");
 
 class ContextWindowFinder {
   static instance = null;
@@ -26,11 +27,7 @@ class ContextWindowFinder {
   static remoteUrl =
     "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
 
-  cacheLocation = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "context-windows")
-      : path.resolve(__dirname, `../../../storage/models/context-windows`)
-  );
+  cacheLocation = path.resolve(baseStoragePath, "models/context-windows");
   cacheFilePath = path.resolve(this.cacheLocation, "context-windows.json");
   cacheFileExpiryPath = path.resolve(this.cacheLocation, ".cached_at");
   seenStaleCacheWarning = false;

@@ -12,6 +12,7 @@ const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
+const { baseStoragePath } = require("../../files");
 
 /**
  * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes
@@ -65,17 +66,10 @@ class MCPHypervisor {
    * Will create the file/directory if it doesn't exist already in storage/plugins with blank options
    */
   #setupConfigFile() {
-    this.mcpServerJSONPath =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(
-            __dirname,
-            `../../../storage/plugins/anythingllm_mcp_servers.json`
-          )
-        : path.resolve(
-            process.env.STORAGE_DIR ??
-              path.resolve(__dirname, `../../../storage`),
-            `plugins/anythingllm_mcp_servers.json`
-          );
+    this.mcpServerJSONPath = path.resolve(
+      baseStoragePath,
+      "plugins/anythingllm_mcp_servers.json"
+    );
 
     if (!fs.existsSync(this.mcpServerJSONPath)) {
       fs.mkdirSync(path.dirname(this.mcpServerJSONPath), { recursive: true });

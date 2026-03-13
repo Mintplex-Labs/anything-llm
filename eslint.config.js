@@ -7,6 +7,7 @@ import reactRefresh from "./server/node_modules/eslint-plugin-react-refresh/inde
 import reactHooks from "./server/node_modules/eslint-plugin-react-hooks/index.js"
 import ftFlow from "./server/node_modules/eslint-plugin-ft-flow/dist/index.js"
 import hermesParser from "./server/node_modules/hermes-eslint/dist/index.js"
+import pluginImport from "./server/node_modules/eslint-plugin-import/lib/index.js"
 
 const reactRecommended = react.configs.recommended
 const jsxRuntime = react.configs["jsx-runtime"]
@@ -36,7 +37,13 @@ export default [
       react,
       "jsx-runtime": jsxRuntime,
       "react-hooks": reactHooks,
-      prettier
+      prettier,
+      import: pluginImport
+    },
+    settings: {
+      "import/resolver": {
+        node: true
+      }
     },
     rules: {
       ...reactRecommended.rules,
@@ -47,7 +54,9 @@ export default [
       "no-empty": "warn",
       "no-extra-boolean-cast": "warn",
       "no-prototype-builtins": "off",
-      "prettier/prettier": "warn"
+      "prettier/prettier": "warn",
+      "import/no-unresolved": "error",
+      "import/named": "error"
     }
   },
   {

@@ -3,6 +3,7 @@ const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
 const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
+const { baseStoragePath } = require("../../files");
 
 class NativeEmbedder {
   static defaultModel = "Xenova/all-MiniLM-L6-v2";
@@ -33,11 +34,7 @@ class NativeEmbedder {
     this.className = "NativeEmbedder";
     this.model = this.getEmbeddingModel();
     this.modelInfo = this.getEmbedderInfo();
-    this.cacheDir = path.resolve(
-      process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, `models`)
-        : path.resolve(__dirname, `../../../storage/models`)
-    );
+    this.cacheDir = path.resolve(baseStoragePath, "models");
     this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     this.modelDownloaded = fs.existsSync(this.modelPath);
 
@@ -113,9 +110,7 @@ class NativeEmbedder {
 
   #tempfilePath() {
     const filename = `${v4()}.tmp`;
-    const tmpPath = process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "tmp")
-      : path.resolve(__dirname, `../../../storage/tmp`);
+    const tmpPath = path.resolve(baseStoragePath, "tmp");
     if (!fs.existsSync(tmpPath)) fs.mkdirSync(tmpPath, { recursive: true });
     return path.resolve(tmpPath, filename);
   }

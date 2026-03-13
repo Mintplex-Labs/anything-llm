@@ -12,6 +12,7 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
+const { baseStoragePath } = require("../utils/files");
 const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
@@ -775,7 +776,7 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = path.join(baseStoragePath, "assets/pfp");
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(userRecord.pfpFilename)
@@ -862,7 +863,7 @@ function systemEndpoints(app) {
         const oldPfpFilename = userRecord.pfpFilename;
 
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = path.join(baseStoragePath, "assets/pfp");
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(oldPfpFilename)

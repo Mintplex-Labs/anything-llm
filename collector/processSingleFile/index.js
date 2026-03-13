@@ -1,14 +1,12 @@
 const path = require("path");
 const fs = require("fs");
-const {
-  WATCH_DIRECTORY,
-  SUPPORTED_FILETYPE_CONVERTERS,
-} = require("../utils/constants");
+const { SUPPORTED_FILETYPE_CONVERTERS } = require("../utils/constants");
 const {
   trashFile,
   isTextType,
   normalizePath,
   isWithin,
+  WATCH_DIRECTORY,
 } = require("../utils/files");
 const RESERVED_FILES = ["__HOTDIR__.md"];
 

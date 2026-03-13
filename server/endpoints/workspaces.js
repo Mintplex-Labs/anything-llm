@@ -32,12 +32,12 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
-
-const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const { baseStoragePath } = require("../utils/files");
+const truncate = require("truncate");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -700,7 +700,7 @@ function workspaceEndpoints(app) {
 
         const oldPfpFilename = workspaceRecord.pfpFilename;
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = path.join(baseStoragePath, "assets/pfp");
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(workspaceRecord.pfpFilename)
@@ -741,7 +741,7 @@ function workspaceEndpoints(app) {
         const oldPfpFilename = workspaceRecord.pfpFilename;
 
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = path.join(baseStoragePath, "assets/pfp");
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(oldPfpFilename)

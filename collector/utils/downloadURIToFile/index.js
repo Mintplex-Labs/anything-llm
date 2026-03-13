@@ -1,4 +1,9 @@
-const { WATCH_DIRECTORY } = require("../constants");
+const {
+  isWithin,
+  WATCH_DIRECTORY,
+  normalizePath,
+  sanitizeFileName,
+} = require("../files");
 const fs = require("fs");
 const path = require("path");
 const { pipeline } = require("stream/promises");
@@ -37,7 +42,23 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
       urlObj.pathname.replace(/\//g, "-"),
       { lower: true }
     )}`;
-    const localFilePath = path.join(WATCH_DIRECTORY, filename);
+    const localFilePath = normalizePath(
+      path.resolve(WATCH_DIRECTORY, sanitizeFileName(filename))
+    );
+
+    if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
+      console.error(
+        `[DownloadURIToFile]: File name ${localFilePath} is not within the storage path ${path.resolve(
+          WATCH_DIRECTORY
+        )}`
+      );
+      return {
+        success: false,
+        reason: "File name is not within the storage path.",
+        fileLocation: null,
+      };
+    }
+
     const writeStream = fs.createWriteStream(localFilePath);
     await pipeline(res.body, writeStream);
 
