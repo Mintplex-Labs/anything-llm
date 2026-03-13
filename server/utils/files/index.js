@@ -8,10 +8,9 @@ const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
  * The base storage path for the server.
  * In development points to a storage folder in the server directory - not the main storage directory.
  */
-const baseStoragePath =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../storage`)
-    : path.resolve(process.env.STORAGE_DIR);
+const baseStoragePath = ["development", "test"].includes(process.env.NODE_ENV)
+  ? path.resolve(__dirname, `../../storage`)
+  : path.resolve(process.env.STORAGE_DIR);
 
 /**
  * The folder where documents are stored to be stored when
@@ -40,10 +39,9 @@ const vectorCachePath = path.resolve(baseStoragePath, `vector-cache`);
  * should always be pointing to the same folder as WATCH_DIRECTORY in the collector.
  * @typedef {import("../../../collector/utils/files/index.js").WATCH_DIRECTORY}
  */
-const hotdirPath =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../collector/storage/hotdir`)
-    : path.resolve(process.env.STORAGE_DIR, "hotdir");
+const hotdirPath = ["development", "test"].includes(process.env.NODE_ENV)
+  ? path.resolve(__dirname, `../../../collector/storage/hotdir`)
+  : path.resolve(process.env.STORAGE_DIR, "hotdir");
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
