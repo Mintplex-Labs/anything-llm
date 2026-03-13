@@ -6,7 +6,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { API_BASE, AUTH_TOKEN } from "@/utils/constants";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { API_BASE } from "@/utils/constants";
+import { baseHeaders } from "@/utils/request";
 
 const EmbeddingProgressContext = createContext();
 
@@ -21,39 +23,35 @@ export function useEmbeddingProgress() {
 
 export function EmbeddingProgressProvider({ children }) {
   const [embeddingProgressMap, setEmbeddingProgressMap] = useState({});
-  const eventSourcesRef = useRef({});
+  const abortControllersRef = useRef({});
   const cleanupTimeoutsRef = useRef({});
 
-  // Cleanup all EventSources on unmount
   useEffect(() => {
     return () => {
-      for (const slug of Object.keys(eventSourcesRef.current)) {
-        eventSourcesRef.current[slug]?.close();
+      for (const slug of Object.keys(abortControllersRef.current)) {
+        abortControllersRef.current[slug]?.abort();
       }
     };
   }, []);
 
   /**
-   * Open (or reconnect) an SSE EventSource for a given workspace slug.
+   * Open (or reconnect) an SSE connection for a given workspace slug.
    * Updates embeddingProgressMap in real time as events arrive.
    */
   const connectSSE = useCallback((slug) => {
-    // Don't double-connect
-    if (eventSourcesRef.current[slug]) return;
+    if (abortControllersRef.current[slug]) return;
 
-    try {
-      const token = window.localStorage.getItem(AUTH_TOKEN);
-      const progressUrl = new URL(
-        `${API_BASE}/workspace/${slug}/embed-progress`
-      );
-      if (token) progressUrl.searchParams.set("token", token);
+    const ctrl = new AbortController();
+    abortControllersRef.current[slug] = ctrl;
 
-      const eventSource = new EventSource(progressUrl.toString());
-      eventSourcesRef.current[slug] = eventSource;
-
-      eventSource.onmessage = (event) => {
+    fetchEventSource(`${API_BASE}/workspace/${slug}/embed-progress`, {
+      method: "GET",
+      headers: baseHeaders(),
+      signal: ctrl.signal,
+      openWhenHidden: true,
+      onmessage(msg) {
         try {
-          const data = JSON.parse(event.data);
+          const data = JSON.parse(msg.data);
 
           switch (data.type) {
             case "batch_starting": {
@@ -102,9 +100,8 @@ export function EmbeddingProgressProvider({ children }) {
               break;
 
             case "all_complete":
-              // A real embedding job just finished — close and schedule cleanup.
-              eventSource.close();
-              delete eventSourcesRef.current[slug];
+              ctrl.abort();
+              delete abortControllersRef.current[slug];
               cleanupTimeoutsRef.current[slug] = setTimeout(() => {
                 setEmbeddingProgressMap((prev) => {
                   const next = { ...prev };
@@ -118,30 +115,30 @@ export function EmbeddingProgressProvider({ children }) {
         } catch {
           // ignore parse errors
         }
-      };
-
-      eventSource.onerror = () => {
-        eventSource.close();
-        delete eventSourcesRef.current[slug];
-      };
-    } catch {
+      },
+      onclose() {
+        delete abortControllersRef.current[slug];
+      },
+      onerror() {
+        delete abortControllersRef.current[slug];
+        throw new Error("SSE connection error");
+      },
+    }).catch(() => {
       // SSE is optional — embedding still works without it
-    }
+    });
   }, []);
 
   const startEmbedding = useCallback(
     (slug, filenames) => {
-      // Close any existing EventSource for this slug
-      if (eventSourcesRef.current[slug]) {
-        eventSourcesRef.current[slug].close();
-        delete eventSourcesRef.current[slug];
+      if (abortControllersRef.current[slug]) {
+        abortControllersRef.current[slug].abort();
+        delete abortControllersRef.current[slug];
       }
       if (cleanupTimeoutsRef.current[slug]) {
         clearTimeout(cleanupTimeoutsRef.current[slug]);
         delete cleanupTimeoutsRef.current[slug];
       }
 
-      // Set all filenames to pending
       const initialProgress = {};
       for (const name of filenames) {
         initialProgress[name] = { status: "pending" };

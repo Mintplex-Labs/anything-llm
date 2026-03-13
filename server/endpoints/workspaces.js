@@ -1065,21 +1065,9 @@ function workspaceEndpoints(app) {
   );
 
   // SSE endpoint for embedding progress
-  // EventSource doesn't support custom headers, so we accept the token as a query param
-  // and inject it into the Authorization header before the middleware runs.
   app.get(
     "/workspace/:slug/embed-progress",
-    [
-      (req, _res, next) => {
-        if (!req.headers.authorization && req.query.token) {
-          req.headers.authorization = `Bearer ${req.query.token}`;
-        }
-        next();
-      },
-      validatedRequest,
-      flexUserRoleValid([ROLES.all]),
-      validWorkspaceSlug,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
         const workspace = response.locals.workspace;
