@@ -798,18 +798,6 @@ const TRANSLATIONS = {
         remove: "Verwijderen",
         replace: "Vervangen",
       },
-      "welcome-messages": {
-        title: "Welkomstberichten",
-        description:
-          "Pas de welkomstberichten aan die aan uw gebruikers worden getoond. Alleen niet-beheerders zien deze berichten.",
-        new: "Nieuw",
-        system: "systeem",
-        user: "gebruiker",
-        message: "bericht",
-        assistant: "AnythingLLM Chatassistent",
-        "double-click": "Dubbelklik om te bewerken...",
-        save: "Berichten opslaan",
-      },
       "browser-appearance": {
         title: "Browserweergave",
         description:

@@ -391,18 +391,6 @@ const TRANSLATIONS = {
         remove: "Remover",
         replace: "Substituir",
       },
-      "welcome-messages": {
-        title: "Mensagens de Boas-vindas",
-        description:
-          "Personalize as mensagens exibidas aos usuários que não são administradores.",
-        new: "Novo",
-        system: "sistema",
-        user: "usuário",
-        message: "mensagem",
-        assistant: "Assistente de Chat",
-        "double-click": "Clique duas vezes para editar...",
-        save: "Salvar Mensagens",
-      },
       "browser-appearance": {
         title: "Aparência no Navegador",
         description: "Personalize a aparência da aba e título no navegador.",

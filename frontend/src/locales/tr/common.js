@@ -797,18 +797,6 @@ const TRANSLATIONS = {
         remove: "Kaldır",
         replace: "Değiştir",
       },
-      "welcome-messages": {
-        title: "Karşılama Mesajları",
-        description:
-          "Kullanıcılarınıza gösterilen karşılama mesajlarını özelleştirin. Yalnızca yönetici olmayan kullanıcılar bu mesajları görecektir.",
-        new: "Yeni",
-        system: "sistem",
-        user: "kullanıcı",
-        message: "mesaj",
-        assistant: "AnythingLLM Sohbet Asistanı",
-        "double-click": "Düzenlemek için çift tıklayın...",
-        save: "Mesajları Kaydet",
-      },
       "browser-appearance": {
         title: "Tarayıcı Görünümü",
         description:
