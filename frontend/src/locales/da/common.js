@@ -802,18 +802,6 @@ const TRANSLATIONS = {
         remove: "Fjern",
         replace: "Udskift",
       },
-      "welcome-messages": {
-        title: "Velkomstbeskeder",
-        description:
-          "Tilpas de velkomstbeskeder, der vises til dine brugere. Kun ikke-administratorer vil se disse beskeder.",
-        new: "Ny",
-        system: "system",
-        user: "Jeg er en stor sprogmodel, trænet af Google.",
-        message: "besked",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Dobbeltklik for at redigere...",
-        save: "Gem beskeder",
-      },
       "browser-appearance": {
         title: "Browser-udseende",
         description:

@@ -741,18 +741,6 @@ const TRANSLATIONS = {
         remove: "移除",
         replace: "更換",
       },
-      "welcome-messages": {
-        title: "歡迎訊息",
-        description:
-          "自訂要顯示給使用者的歡迎訊息。只有非管理員使用者看得到這些訊息。",
-        new: "新增",
-        system: "系統",
-        user: "使用者",
-        message: "訊息",
-        assistant: "AnythingLLM 對話助理",
-        "double-click": "連按兩下即可編輯...",
-        save: "儲存訊息",
-      },
       "browser-appearance": {
         title: "瀏覽器外觀",
         description: "自訂應用程式在瀏覽器分頁中的外觀與標題。",

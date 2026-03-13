@@ -386,18 +386,6 @@ const TRANSLATIONS = {
         remove: "הסר",
         replace: "החלף",
       },
-      "welcome-messages": {
-        title: "הודעות פתיחה",
-        description:
-          "התאם אישית את הודעות הפתיחה המוצגות למשתמשים שלך. רק משתמשים שאינם מנהלים יראו הודעות אלה.",
-        new: "חדש",
-        system: "מערכת",
-        user: "משתמש",
-        message: "הודעה",
-        assistant: "עוזר הצ'אט של AnythingLLM",
-        "double-click": "לחץ פעמיים לעריכה...",
-        save: "שמור הודעות",
-      },
       "browser-appearance": {
         title: "מראה הדפדפן",
         description:

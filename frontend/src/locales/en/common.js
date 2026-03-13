@@ -403,18 +403,6 @@ const TRANSLATIONS = {
         remove: "Remove",
         replace: "Replace",
       },
-      "welcome-messages": {
-        title: "Welcome Messages",
-        description:
-          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
-        new: "New",
-        system: "system",
-        user: "user",
-        message: "message",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Double click to edit...",
-        save: "Save Messages",
-      },
       "browser-appearance": {
         title: "Browser Appearance",
         description:

@@ -843,18 +843,6 @@ const TRANSLATIONS = {
         remove: "Elimină",
         replace: "Înlocuiește",
       },
-      "welcome-messages": {
-        title: "Mesaje de bun venit",
-        description:
-          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
-        new: "Nou",
-        system: "sistem",
-        user: "utilizator",
-        message: "mesaj",
-        assistant: "Asistent Chat AnythingLLM",
-        "double-click": "Dublu clic pentru a edita...",
-        save: "Salvează mesajele",
-      },
       "browser-appearance": {
         title: "Aspect browser",
         description:

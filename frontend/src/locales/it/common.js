@@ -815,18 +815,6 @@ const TRANSLATIONS = {
         remove: "Rimuovi",
         replace: "Sostituire",
       },
-      "welcome-messages": {
-        title: "Messaggi di benvenuto",
-        description:
-          "Personalizza i messaggi di benvenuto visualizzati ai tuoi utenti. Solo gli utenti non amministrativi vedranno questi messaggi.",
-        new: "Nuovo",
-        system: "sistema",
-        user: "utente",
-        message: "messaggio",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Fare doppio clic per modificare...",
-        save: "Salva i messaggi",
-      },
       "browser-appearance": {
         title: "Aspetto del browser",
         description:
