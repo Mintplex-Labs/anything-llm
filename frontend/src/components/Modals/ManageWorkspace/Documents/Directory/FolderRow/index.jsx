@@ -5,6 +5,7 @@ import { middleTruncate } from "@/utils/directories";
 
 export default function FolderRow({
   item,
+  totalItems,
   selected,
   onRowClick,
   toggleSelection,
@@ -61,7 +62,7 @@ export default function FolderRow({
             {middleTruncate(item.name, 35)}
           </p>
           <span className="text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0">
-            ({item.items.length})
+            ({totalItems ?? item.items.length})
           </span>
         </div>
         <p className="col-span-2 pl-3.5" />

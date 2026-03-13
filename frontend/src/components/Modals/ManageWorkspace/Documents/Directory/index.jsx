@@ -193,8 +193,8 @@ function Directory({
     setContextMenu({ visible: false, x: 0, y: 0 });
   };
 
-  const totalDocCount = filteredFiles.reduce((acc, item) => {
-    if (item.type === "folder") return item.items.length + acc;
+  const totalDocCount = (files?.items ?? []).reduce((acc, folder) => {
+    if (folder.type === "folder") return folder.items.length + acc;
     return acc;
   }, 0);
 
@@ -257,6 +257,10 @@ function Directory({
                       <FolderRow
                         key={index}
                         item={item}
+                        totalItems={
+                          files?.items?.find((f) => f.name === item.name)?.items
+                            ?.length ?? item.items.length
+                        }
                         selected={isSelected(
                           item.id,
                           item.type === "folder" ? item : null
