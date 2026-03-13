@@ -3,6 +3,7 @@ const { RetryError } = require("../error.js");
 const Provider = require("./ai-provider.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 
 /**
  * The agent provider for the Anthropic API.
@@ -20,7 +21,13 @@ class AnthropicProvider extends Provider {
       model = "claude-3-5-sonnet-20240620",
     } = config;
 
-    const client = new Anthropic(options);
+    const client = new Anthropic({
+      ...options,
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+        ...options?.defaultHeaders,
+      },
+    });
 
     super(client);
     this.model = model;
