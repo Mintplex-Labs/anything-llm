@@ -493,52 +493,64 @@ function WorkspaceDocumentTooltips() {
   );
 }
 
-function EmbeddingFileRow({ filename, status }) {
-  // Extract a readable display name from the filename path
-  // e.g. "custom-documents/my-doc.json" -> "my-doc"
-  const displayName =
-    filename
-      .split("/")
-      .pop()
-      ?.replace(/\.json$/, "") || filename;
+/**
+ * @param {string} filename
+ */
+const getDisplayName = (filename) =>
+  filename
+    .split("/")
+    .pop()
+    ?.replace(/\.json$/, "") || filename;
 
-  const statusIcon = {
-    pending: (
+const getStatusStyles = () => ({
+  pending: {
+    icon: (
       <Clock size={16} className="text-white/40 shrink-0" weight="regular" />
     ),
-    embedding: (
+    textColor: "",
+    label: "Queued",
+  },
+
+  embedding: {
+    icon: (
       <CircleNotch
         size={16}
         className="text-sky-400 animate-spin shrink-0"
         weight="bold"
       />
     ),
-    complete: (
+    textColor: "text-sky-400",
+    label: "Embedding",
+  },
+
+  complete: {
+    icon: (
       <CheckCircle
         size={16}
         className="text-green-400 shrink-0"
         weight="fill"
       />
     ),
-    failed: (
-      <XCircle size={16} className="text-red-400 shrink-0" weight="fill" />
-    ),
-  };
-
-  const statusLabel = {
-    pending: "Queued",
-    embedding: "Embedding...",
-    complete: "Complete",
-    failed: "Failed",
-  };
+    textColor: "text-green-400",
+    label: "Complete",
+  },
+  failed: {
+    icon: <XCircle size={16} className="text-red-400 shrink-0" weight="fill" />,
+    textColor: "text-red-400",
+    label: "Failed",
+  },
+});
+function EmbeddingFileRow({ filename, status: { status } }) {
+  const displayName = getDisplayName(filename);
+  const statusStyles = getStatusStyles();
 
   return (
     <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
       <div className="col-span-8 flex items-center gap-x-2 overflow-hidden">
-        {statusIcon[status.status] || statusIcon.pending}
+        {statusStyles[status].icon || statusStyles.pending.icon}
         <p
           className={`whitespace-nowrap overflow-hidden text-ellipsis ${
-            status.status === "failed" ? "text-red-400" : ""
+            status === "failed" ? "text-red-400" : ""
           }`}
           title={displayName}
         >
@@ -547,17 +559,9 @@ function EmbeddingFileRow({ filename, status }) {
       </div>
       <div className="col-span-4 flex justify-end items-center gap-x-2">
         <p
-          className={`text-[10px] whitespace-nowrap ${
-            status.status === "failed"
-              ? "text-red-400"
-              : status.status === "complete"
-                ? "text-green-400"
-                : status.status === "embedding"
-                  ? "text-sky-400"
-                  : "text-white/40"
-          }`}
+          className={`text-[10px] whitespace-nowrap ${statusStyles[status].textColor}`}
         >
-          {statusLabel[status.status] || "Queued"}
+          {statusStyles[status].label || "Queued"}
         </p>
       </div>
     </div>
