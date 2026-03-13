@@ -10,17 +10,29 @@ concurrency:
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - "server/package.json"
-      - "collector/package.json"
 
 jobs:
-  run-script:
+  check-changes:
     runs-on: ubuntu-latest
+    outputs:
+      packages_changed: ${{ steps.filter.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            packages:
+              - 'server/package.json'
+              - 'collector/package.json'
 
+  verify-versions:
+    needs: check-changes
+    if: needs.check-changes.outputs.packages_changed == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -32,6 +44,15 @@ jobs:
           cd extras/scripts
           node verifyPackageVersions.mjs
 
-      - name: Fail job on error
-        if: failure()
-        run: exit 1
+  check-result:
+    if: always()
+    needs: [check-changes, verify-versions]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine result
+        run: |
+          if [ "${{ needs.verify-versions.result }}" == "failure" ]; then
+            echo "Version check failed"
+            exit 1
+          fi
+          echo "Check passed (or skipped - no package changes)"
