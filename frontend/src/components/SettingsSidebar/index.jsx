@@ -316,6 +316,7 @@ const SidebarOptions = ({ user = null, t }) => (
               className="h-5 w-5 flex-shrink-0 light:invert"
             />
           }
+          user={user}
           childOptions={[
             {
               btnText: t("settings.community-hub.trending"),
