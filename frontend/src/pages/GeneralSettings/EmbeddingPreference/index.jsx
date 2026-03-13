@@ -41,6 +41,7 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import { applyNormalizedGeminiKeyFields } from "@/utils/geminiKeys";
 
 const EMBEDDERS = [
   {
@@ -195,6 +196,7 @@ export default function GeneralEmbeddingPreference() {
     const formData = new FormData(form);
     settingsData.EmbeddingEngine = selectedEmbedder;
     for (var [key, value] of formData.entries()) settingsData[key] = value;
+    applyNormalizedGeminiKeyFields(settingsData, ["GeminiEmbeddingApiKeys"]);
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {

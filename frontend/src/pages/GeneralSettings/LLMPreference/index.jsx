@@ -78,6 +78,7 @@ import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import { applyNormalizedGeminiKeyFields } from "@/utils/geminiKeys";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -437,6 +438,7 @@ export default function GeneralLLMPreference() {
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
+    applyNormalizedGeminiKeyFields(data, ["GeminiLLMApiKeys"]);
     const { error } = await System.updateSystem(data);
     setSaving(true);
 

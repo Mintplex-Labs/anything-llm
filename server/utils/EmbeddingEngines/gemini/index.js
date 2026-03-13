@@ -1,22 +1,24 @@
 const { toChunks } = require("../../helpers");
+const {
+  getGeminiApiKeys,
+  hasConfiguredGeminiApiKeys,
+  withGeminiKeyFallback,
+} = require("../../gemini/keyPool");
 
 const MODEL_MAP = {
+  "gemini-embedding-2-preview": 8192,
   "gemini-embedding-001": 2048,
 };
 
 class GeminiEmbedder {
   constructor() {
-    if (!process.env.GEMINI_EMBEDDING_API_KEY)
+    if (!hasConfiguredGeminiApiKeys("embedding"))
       throw new Error("No Gemini API key was set.");
 
     this.className = "GeminiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
     this.model = process.env.EMBEDDING_MODEL_PREF || "gemini-embedding-001";
-    this.openai = new OpenAIApi({
-      apiKey: process.env.GEMINI_EMBEDDING_API_KEY,
-      // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
-      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-    });
+    this.OpenAIApi = OpenAIApi;
 
     this.maxConcurrentChunks = 4;
 
@@ -28,6 +30,14 @@ class GeminiEmbedder {
           ? ` - Output Dimensions: ${this.outputDimensions}`
           : " Assuming default output dimensions")
     );
+  }
+
+  createClient(apiKey) {
+    return new this.OpenAIApi({
+      apiKey,
+      // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    });
   }
 
   log(text, ...args) {
@@ -63,6 +73,9 @@ class GeminiEmbedder {
    */
   async embedChunks(textChunks = []) {
     this.log(`Embedding ${textChunks.length} chunks...`);
+    this.log(
+      `Using ${getGeminiApiKeys("embedding").length} configured Gemini embedding key(s).`
+    );
 
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we concurrently execute each max batch of text chunks possible.
@@ -71,12 +84,15 @@ class GeminiEmbedder {
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
-          this.openai.embeddings
-            .create({
-              model: this.model,
-              input: chunk,
-              dimensions: this.outputDimensions,
-            })
+          withGeminiKeyFallback({
+            provider: "embedding",
+            operation: (apiKey) =>
+              this.createClient(apiKey).embeddings.create({
+                model: this.model,
+                input: chunk,
+                dimensions: this.outputDimensions,
+              }),
+          })
             .then((result) => {
               resolve({ data: result?.data, error: null });
             })

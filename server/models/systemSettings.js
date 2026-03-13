@@ -9,6 +9,10 @@ const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
+const {
+  getConfiguredGeminiKeyCount,
+  hasConfiguredGeminiApiKeys,
+} = require("../utils/gemini/keyPool");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
 const {
   ConnectionStringParser,
@@ -243,7 +247,8 @@ const SystemSettings = {
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
-      GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
+      GeminiEmbeddingApiKey: hasConfiguredGeminiApiKeys("embedding"),
+      GeminiEmbeddingApiKeysCount: getConfiguredGeminiKeyCount("embedding"),
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -522,7 +527,8 @@ const SystemSettings = {
       AnthropicCacheControl: process.env.ANTHROPIC_CACHE_CONTROL || "none",
 
       // Gemini Keys
-      GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
+      GeminiLLMApiKey: hasConfiguredGeminiApiKeys("llm"),
+      GeminiLLMApiKeysCount: getConfiguredGeminiKeyCount("llm"),
       GeminiLLMModelPref:
         process.env.GEMINI_LLM_MODEL_PREF || "gemini-2.0-flash-lite",
       GeminiSafetySetting:

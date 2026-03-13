@@ -15,6 +15,8 @@ const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
 const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
+const { defaultGeminiModels } = require("../AiProviders/gemini/defaultModels");
+const { withGeminiKeyFallback } = require("../gemini/keyPool");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -697,14 +699,20 @@ async function getNvidiaNimModels(basePath = null) {
 }
 
 async function getGeminiModels(_apiKey = null) {
-  const apiKey =
-    _apiKey === true
-      ? process.env.GEMINI_API_KEY
-      : _apiKey || process.env.GEMINI_API_KEY || null;
-  const models = await GeminiLLM.fetchModels(apiKey);
-  // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
-  return { models, error: null };
+  try {
+    const models = await withGeminiKeyFallback({
+      provider: "llm",
+      apiKeys: typeof _apiKey === "string" ? _apiKey : null,
+      operation: (apiKey) =>
+        GeminiLLM.fetchModels(apiKey, 1_000, null, {
+          allowDefaultFallback: false,
+        }),
+    });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Gemini:getGeminiModels`, e.message);
+    return { models: defaultGeminiModels(), error: null };
+  }
 }
 
 async function getPPIOModels() {

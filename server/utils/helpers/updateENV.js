@@ -3,6 +3,10 @@ const {
   SUPPORTED_CONNECTION_METHODS,
 } = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+const {
+  normalizeGeminiApiKeysForStorage,
+  syncGeminiLegacyKey,
+} = require("../gemini/keyPool");
 
 const KEY_MAPPING = {
   LLMProvider: {
@@ -71,6 +75,11 @@ const KEY_MAPPING = {
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
     checks: [isNotEmpty],
+  },
+  GeminiLLMApiKeys: {
+    envKey: "GEMINI_API_KEYS",
+    checks: [isNotEmpty],
+    postUpdate: [normalizeStoredGeminiKeys, syncGeminiLlmLegacyKey],
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
@@ -320,6 +329,11 @@ const KEY_MAPPING = {
   GeminiEmbeddingApiKey: {
     envKey: "GEMINI_EMBEDDING_API_KEY",
     checks: [isNotEmpty],
+  },
+  GeminiEmbeddingApiKeys: {
+    envKey: "GEMINI_EMBEDDING_API_KEYS",
+    checks: [isNotEmpty],
+    postUpdate: [normalizeStoredGeminiKeys, syncGeminiEmbeddingLegacyKey],
   },
 
   // Generic OpenAI Embedding Settings
@@ -1240,6 +1254,23 @@ async function executeValidationChecks(checks, value, force) {
     checks.map((validator) => validator(value, force))
   );
   return results.filter((err) => typeof err === "string");
+}
+
+async function normalizeStoredGeminiKeys(key, _prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key]?.envKey;
+  if (!envKey) return null;
+  process.env[envKey] = normalizeGeminiApiKeysForStorage(nextValue);
+  return null;
+}
+
+async function syncGeminiLlmLegacyKey(_key, _prevValue, nextValue) {
+  syncGeminiLegacyKey("llm", nextValue);
+  return null;
+}
+
+async function syncGeminiEmbeddingLegacyKey(_key, _prevValue, nextValue) {
+  syncGeminiLegacyKey("embedding", nextValue);
+  return null;
 }
 
 async function logChangesToEventLog(newValues = {}, userId = null) {

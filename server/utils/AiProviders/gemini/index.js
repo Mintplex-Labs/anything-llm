@@ -11,6 +11,11 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
+const {
+  getGeminiApiKeys,
+  hasConfiguredGeminiApiKeys,
+  withGeminiKeyFallback,
+} = require("../../gemini/keyPool");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
@@ -26,22 +31,18 @@ const NO_SYSTEM_PROMPT_MODELS = [
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.GEMINI_API_KEY)
+    if (!hasConfiguredGeminiApiKeys("llm"))
       throw new Error("No Gemini API key was set.");
 
     this.className = "GeminiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
+    this.OpenAIApi = OpenAIApi;
     this.model =
       modelPreference ||
       process.env.GEMINI_LLM_MODEL_PREF ||
       "gemini-2.0-flash-lite";
 
     const isExperimental = this.isExperimentalModel(this.model);
-    this.openai = new OpenAIApi({
-      apiKey: process.env.GEMINI_API_KEY,
-      // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
-      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-    });
 
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -59,6 +60,14 @@ class GeminiLLM {
     this.#log(
       `Initialized with model: ${this.model} ${isExperimental ? "[Experimental v1beta]" : "[Stable v1]"} - ctx: ${this.promptWindowLimit()}`
     );
+  }
+
+  createClient(apiKey) {
+    return new this.OpenAIApi({
+      apiKey,
+      // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    });
   }
 
   /**
@@ -169,7 +178,12 @@ class GeminiLLM {
    * @param {string} pageToken - The page token to use for pagination
    * @returns {Promise<[{id: string, name: string, contextWindow: number, experimental: boolean}]>} A promise that resolves to an array of Gemini models
    */
-  static async fetchModels(apiKey, limit = 1_000, pageToken = null) {
+  static async fetchModels(
+    apiKey,
+    limit = 1_000,
+    pageToken = null,
+    { allowDefaultFallback = true } = {}
+  ) {
     if (!apiKey) return [];
     if (fs.existsSync(cacheFolder) && !this.cacheIsStale()) {
       console.log(
@@ -281,6 +295,8 @@ class GeminiLLM {
 
     if (allModels.length === 0) {
       console.error(`Gemini:getGeminiModels - No models found`);
+      if (!allowDefaultFallback)
+        throw new Error("Could not fetch Gemini models.");
       return defaultGeminiModels();
     }
 
@@ -308,7 +324,7 @@ class GeminiLLM {
    * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the model is valid
    */
   async isValidChatCompletionModel(modelName = "") {
-    const models = await this.fetchModels(process.env.GEMINI_API_KEY);
+    const models = await this.fetchModels(getGeminiApiKeys("llm")[0]);
     return models.some((model) => model.id === modelName);
   }
 
@@ -379,12 +395,15 @@ class GeminiLLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.chat.completions
-        .create({
-          model: this.model,
-          messages,
-          temperature: temperature,
-        })
+      withGeminiKeyFallback({
+        provider: "llm",
+        operation: (apiKey) =>
+          this.createClient(apiKey).chat.completions.create({
+            model: this.model,
+            messages,
+            temperature: temperature,
+          }),
+      })
         .catch((e) => {
           console.error(e);
           throw new Error(e.message);
@@ -414,14 +433,18 @@ class GeminiLLM {
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
-      func: this.openai.chat.completions.create({
-        model: this.model,
-        stream: true,
-        messages,
-        temperature: temperature,
-        stream_options: {
-          include_usage: true,
-        },
+      func: withGeminiKeyFallback({
+        provider: "llm",
+        operation: (apiKey) =>
+          this.createClient(apiKey).chat.completions.create({
+            model: this.model,
+            stream: true,
+            messages,
+            temperature: temperature,
+            stream_options: {
+              include_usage: true,
+            },
+          }),
       }),
       messages,
       runPromptTokenCalculation: false,

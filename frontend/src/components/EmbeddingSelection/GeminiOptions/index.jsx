@@ -3,32 +3,42 @@ import { Tooltip } from "react-tooltip";
 
 const DEFAULT_MODELS = [
   {
+    id: "gemini-embedding-2-preview",
+    name: "Gemini Embedding 2 Preview",
+  },
+  {
     id: "gemini-embedding-001",
     name: "Gemini Embedding 001",
   },
 ];
 
 export default function GeminiOptions({ settings }) {
+  const configuredKeyCount =
+    settings?.GeminiEmbeddingApiKeysCount ||
+    (settings?.GeminiEmbeddingApiKey ? 1 : 0);
+
   return (
     <div className="w-full flex flex-col gap-y-6">
       <div className="w-full flex flex-col gap-y-4">
-        <div className="w-full flex items-center gap-[36px] mt-1.5">
+        <div className="w-full flex items-start gap-[36px] mt-1.5">
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-3">
-              API Key
+              API Keys
             </label>
-            <input
-              type="password"
-              name="GeminiEmbeddingApiKey"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="Gemini API Key"
-              defaultValue={
-                settings?.GeminiEmbeddingApiKey ? "*".repeat(20) : ""
-              }
-              required={true}
+            <textarea
+              name="GeminiEmbeddingApiKeys"
+              rows={4}
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y min-h-[112px]"
+              placeholder="Paste one Gemini key per line"
+              defaultValue=""
+              required={configuredKeyCount === 0}
               autoComplete="off"
               spellCheck={false}
             />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Enter one key per line. Saved keys stay hidden.
+              {configuredKeyCount > 0 ? ` ${configuredKeyCount} key(s) saved.` : ""}
+            </p>
           </div>
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-3">

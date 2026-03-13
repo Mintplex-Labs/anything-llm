@@ -2,28 +2,44 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 export default function GeminiLLMOptions({ settings }) {
-  const [inputValue, setInputValue] = useState(settings?.GeminiLLMApiKey);
-  const [geminiApiKey, setGeminiApiKey] = useState(settings?.GeminiLLMApiKey);
+  const configuredKeyCount =
+    settings?.GeminiLLMApiKeysCount || (settings?.GeminiLLMApiKey ? 1 : 0);
+  const [inputValue, setInputValue] = useState("");
+  const [geminiApiKey, setGeminiApiKey] = useState(
+    configuredKeyCount > 0 ? true : null
+  );
 
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full flex items-center gap-[36px] mt-1.5">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Google AI API Key
+            Google AI API Keys
           </label>
-          <input
-            type="password"
-            name="GeminiLLMApiKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Google Gemini API Key"
-            defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
-            required={true}
+          <textarea
+            name="GeminiLLMApiKeys"
+            rows={4}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y min-h-[112px]"
+            placeholder="Paste one Gemini key per line"
+            defaultValue=""
+            required={configuredKeyCount === 0}
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setInputValue(e.target.value)}
-            onBlur={() => setGeminiApiKey(inputValue)}
+            onBlur={() =>
+              setGeminiApiKey(
+                inputValue.trim().length > 0
+                  ? inputValue
+                  : configuredKeyCount > 0
+                    ? true
+                    : null
+              )
+            }
           />
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            Enter one key per line. Saved keys stay hidden.
+            {configuredKeyCount > 0 ? ` ${configuredKeyCount} key(s) saved.` : ""}
+          </p>
         </div>
 
         {!settings?.credentialsOnly && (
@@ -78,6 +94,8 @@ function GeminiModelSelection({ apiKey, settings }) {
           return acc;
         }, {});
         setGroupedModels(modelsByOrganization);
+      } else {
+        setGroupedModels({});
       }
       setLoading(false);
     }
