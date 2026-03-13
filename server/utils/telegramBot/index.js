@@ -1,10 +1,15 @@
+// Suppress deprecated content-type warning when sending files via the Telegram bot API.
+// https://github.com/yagop/node-telegram-bot-api/blob/master/doc/usage.md#sending-files
+process.env.NTBA_FIX_350 = 1;
 const TelegramBot = require("node-telegram-bot-api");
 const { ExternalConnector } = require("../../models/externalConnector");
-const { Workspace } = require("../../models/workspace");
-const { WorkspaceThread } = require("../../models/workspaceThread");
 const { MessageQueue } = require("../connectorMessageQueue");
+const { BackgroundService } = require("../BackgroundWorkers");
 const { BOT_COMMANDS } = require("./constants");
 const { decryptToken } = require("./encryption");
+const {
+  WorkspaceAgentInvocation,
+} = require("../../models/workspaceAgentInvocation");
 const {
   isVerified,
   sendPairingRequest,
@@ -22,7 +27,6 @@ const {
   handleNewThread,
 } = require("./commands");
 const { showWorkspaceMenu, handleCallback } = require("./navigation");
-const { streamResponse } = require("./chatPipeline");
 
 class TelegramBotService {
   static _instance = null;
@@ -186,23 +190,33 @@ class TelegramBotService {
 
     this.#queue.enqueue(chatId, async () => {
       const state = this.#getState(chatId);
-      const workspace = await Workspace.get({ slug: state.workspaceSlug });
-      if (!workspace) {
-        await ctx.bot.sendMessage(
-          chatId,
-          "No workspace configured. Use /switch to select one."
-        );
-        return;
-      }
-
-      const thread = state.threadSlug
-        ? await WorkspaceThread.get({ slug: state.threadSlug })
-        : null;
-
       try {
-        await streamResponse(ctx, chatId, workspace, thread, msg.text);
+        const bgService = new BackgroundService();
+        // Collect the invocation UUID from the child so we can close it
+        // after exit, when the child's SQLite lock is released.
+        let invocationUuid = null;
+        await bgService.runJob(
+          "handle-telegram-chat",
+          {
+            botToken: this.#config.bot_token,
+            chatId,
+            workspaceSlug: state.workspaceSlug,
+            threadSlug: state.threadSlug,
+            message: msg.text,
+          },
+          {
+            onMessage: (msg) => {
+              if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
+            },
+          }
+        );
+
+        // We do this here to avoid creating another instance of a prisma connection
+        // in the background worker.
+        if (invocationUuid)
+          await WorkspaceAgentInvocation.close(invocationUuid);
       } catch (error) {
-        this.#log("Chat error:", error.message);
+        this.#log("Chat worker error:", error.message);
         await ctx.bot.sendMessage(
           chatId,
           "Sorry, something went wrong. Please try again."
@@ -236,6 +250,12 @@ class TelegramBotService {
 
       const config = { ...connector.config };
       config.bot_token = decryptToken(config.bot_token);
+      if (!config.bot_token) {
+        console.error(
+          "[TelegramBot] Failed to decrypt bot token. Re-connect to fix."
+        );
+        return;
+      }
 
       const service = new TelegramBotService();
       await service.start(config);

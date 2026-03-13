@@ -1,0 +1,48 @@
+// Suppress deprecated content-type warning when sending files via the Telegram bot API.
+// https://github.com/yagop/node-telegram-bot-api/blob/master/doc/usage.md#file-options-metadata
+process.env.NTBA_FIX_350 = 1;
+const TelegramBot = require("node-telegram-bot-api");
+const { log, conclude } = require("./helpers/index.js");
+const { Workspace } = require("../models/workspace");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const { streamResponse } = require("../utils/telegramBot/chatPipeline");
+
+process.on("message", async (payload) => {
+  const { botToken, chatId, workspaceSlug, threadSlug, message } = payload;
+
+  try {
+    const bot = new TelegramBot(botToken, { polling: false });
+    const ctx = {
+      bot,
+      log: (text, ...args) =>
+        log(args.length ? `${text} ${args.join(" ")}` : text),
+    };
+
+    const workspace = await Workspace.get({ slug: workspaceSlug });
+    if (!workspace) {
+      await bot.sendMessage(
+        chatId,
+        "No workspace configured. Use /switch to select one."
+      );
+      conclude();
+      return;
+    }
+
+    const thread = threadSlug
+      ? await WorkspaceThread.get({ slug: threadSlug })
+      : null;
+
+    await streamResponse(ctx, chatId, workspace, thread, message);
+  } catch (error) {
+    log(`Chat error: ${error.message}`);
+    try {
+      const bot = new TelegramBot(botToken, { polling: false });
+      await bot.sendMessage(
+        chatId,
+        "Sorry, something went wrong. Please try again."
+      );
+    } catch { }
+  } finally {
+    conclude();
+  }
+});

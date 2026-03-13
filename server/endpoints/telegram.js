@@ -37,9 +37,11 @@ function telegramEndpoints(app) {
         }
 
         const plainToken = decryptToken(connector.config.bot_token);
+        const service = new TelegramBotService();
         return response.status(200).json({
           config: {
             active: connector.active,
+            connected: service.isRunning,
             bot_username: connector.config.bot_username || null,
             default_workspace: connector.config.default_workspace || null,
             bot_token_masked: ExternalConnector.maskToken(plainToken),
@@ -84,11 +86,14 @@ function telegramEndpoints(app) {
           });
         }
 
+        // Preserve approved users when reconnecting with a new token
+        const existing = await ExternalConnector.get("telegram");
         const storedConfig = {
           bot_token: encryptToken(bot_token),
           bot_username: verification.username,
           default_workspace,
           owner_chat_id: null,
+          approved_users: existing?.config?.approved_users || [],
         };
 
         // Save config with encrypted token

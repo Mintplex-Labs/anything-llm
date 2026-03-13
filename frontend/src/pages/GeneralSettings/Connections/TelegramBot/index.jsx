@@ -51,7 +51,7 @@ export default function TelegramBotSettings() {
     );
   }
 
-  const isConnected = config?.active && config?.bot_username;
+  const hasConfig = config?.active && config?.bot_username;
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6">
@@ -73,11 +73,12 @@ export default function TelegramBotSettings() {
             </p>
           </div>
 
-          {isConnected ? (
+          {hasConfig ? (
             <ConnectedView
               config={config}
               workspaces={workspaces}
               onDisconnected={handleDisconnected}
+              onReconnected={handleConnected}
             />
           ) : (
             <SetupView workspaces={workspaces} onConnected={handleConnected} />
@@ -185,8 +186,11 @@ function SetupView({ workspaces, onConnected }) {
   );
 }
 
-function ConnectedView({ config, workspaces, onDisconnected }) {
+function ConnectedView({ config, workspaces, onDisconnected, onReconnected }) {
+  const connected = config.connected;
   const [disconnecting, setDisconnecting] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
+  const [newToken, setNewToken] = useState("");
   const [pendingUsers, setPendingUsers] = useState([]);
   const [approvedUsers, setApprovedUsers] = useState([]);
   const workspaceName =
@@ -222,6 +226,33 @@ function ConnectedView({ config, workspaces, onDisconnected }) {
     onDisconnected();
   }
 
+  async function handleReconnect(e) {
+    e.preventDefault();
+    if (!newToken.trim())
+      return showToast("Please enter a bot token.", "error");
+
+    setReconnecting(true);
+    const res = await Telegram.connect(
+      newToken.trim(),
+      config.default_workspace
+    );
+    setReconnecting(false);
+
+    if (!res.success) {
+      showToast(res.error || "Failed to reconnect bot.", "error");
+      return;
+    }
+
+    showToast("Telegram bot reconnected!", "success");
+    setNewToken("");
+    onReconnected({
+      active: true,
+      connected: true,
+      bot_username: res.bot_username,
+      default_workspace: config.default_workspace,
+    });
+  }
+
   async function handleApprove(chatId) {
     const res = await Telegram.approveUser(chatId);
     if (!res.success) {
@@ -255,37 +286,82 @@ function ConnectedView({ config, workspaces, onDisconnected }) {
   return (
     <div className="mt-6 flex flex-col gap-y-6">
       <div className="flex flex-col gap-y-4 max-w-[480px]">
-        <div className="flex items-center gap-x-3 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/10">
-            <TelegramLogo className="h-5 w-5 text-green-400" weight="fill" />
+        {connected ? (
+          <div className="flex items-center gap-x-3 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/10">
+              <TelegramLogo className="h-5 w-5 text-green-400" weight="fill" />
+            </div>
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold text-theme-text-primary">
+                @{config.bot_username}
+              </p>
+              <p className="text-xs text-green-400">Connected</p>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <p className="text-sm font-semibold text-theme-text-primary">
-              @{config.bot_username}
-            </p>
-            <p className="text-xs text-green-400">Connected</p>
+        ) : (
+          <div className="flex flex-col gap-y-3">
+            <div className="flex items-center gap-x-3 rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/10">
+                <TelegramLogo className="h-5 w-5 text-red-400" weight="fill" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-sm font-semibold text-theme-text-primary">
+                  @{config.bot_username}
+                </p>
+                <p className="text-xs text-red-400">
+                  Disconnected — token may be expired or invalid
+                </p>
+              </div>
+            </div>
+            <form onSubmit={handleReconnect} className="flex items-end gap-x-2">
+              <input
+                type="password"
+                value={newToken}
+                onChange={(e) => setNewToken(e.target.value)}
+                placeholder="Paste new bot token..."
+                className="flex-1 bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                disabled={reconnecting}
+                className="flex items-center gap-x-2 text-sm font-medium text-white bg-primary-button hover:bg-primary-button/80 rounded-lg px-4 py-2.5 whitespace-nowrap transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {reconnecting ? (
+                  <CircleNotch className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Reconnect"
+                )}
+              </button>
+            </form>
           </div>
-        </div>
-        <div className="flex flex-col gap-y-2 rounded-lg bg-theme-bg-primary p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-theme-text-secondary">Workspace</span>
-            <span className="text-xs text-theme-text-primary font-medium">
-              {workspaceName}
-            </span>
+        )}
+        {connected && (
+          <div className="flex flex-col gap-y-2 rounded-lg bg-theme-bg-primary p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-theme-text-secondary">
+                Workspace
+              </span>
+              <span className="text-xs text-theme-text-primary font-medium">
+                {workspaceName}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-theme-text-secondary">
+                Bot Link
+              </span>
+              <a
+                href={`https://t.me/${config.bot_username}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-primary-button hover:underline flex items-center gap-x-1"
+              >
+                t.me/{config.bot_username}
+                <ArrowSquareOut className="h-3 w-3" />
+              </a>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-theme-text-secondary">Bot Link</span>
-            <a
-              href={`https://t.me/${config.bot_username}`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs text-primary-button hover:underline flex items-center gap-x-1"
-            >
-              t.me/{config.bot_username}
-              <ArrowSquareOut className="h-3 w-3" />
-            </a>
-          </div>
-        </div>
+        )}
         <button
           onClick={handleDisconnect}
           disabled={disconnecting}
