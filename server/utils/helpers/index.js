@@ -243,6 +243,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "minimax":
+      const { MiniMaxLLM } = require("../AiProviders/minimax");
+      return new MiniMaxLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -425,6 +428,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "minimax":
+      const { MiniMaxLLM: MiniMaxLLMClass } = require("../AiProviders/minimax");
+      return MiniMaxLLMClass;
     default:
       return null;
   }
@@ -509,6 +515,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "minimax":
+      return process.env.MINIMAX_MODEL_PREF;
     default:
       return null;
   }

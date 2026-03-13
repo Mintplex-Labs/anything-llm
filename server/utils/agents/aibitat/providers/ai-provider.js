@@ -260,6 +260,14 @@ class Provider {
           apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
           ...config,
         });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY ?? null,
+          ...config,
+        });
       case "cometapi":
         return new ChatOpenAI({
           configuration: {

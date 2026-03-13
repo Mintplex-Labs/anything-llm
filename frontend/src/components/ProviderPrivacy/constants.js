@@ -45,6 +45,7 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import MiniMaxLogo from "@/media/llmprovider/minimax.png";
 
 const LLM_PROVIDER_PRIVACY_MAP = {
   openai: {
@@ -210,6 +211,11 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     name: "Moonshot AI",
     policyUrl: "https://platform.moonshot.ai/docs/agreement/userprivacy",
     logo: MoonshotAiLogo,
+  },
+  minimax: {
+    name: "MiniMax",
+    policyUrl: "https://platform.minimax.io",
+    logo: MiniMaxLogo,
   },
   cometapi: {
     name: "CometAPI",

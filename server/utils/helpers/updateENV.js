@@ -726,6 +726,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // MiniMax Options
+  MiniMaxApiKey: {
+    envKey: "MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MiniMaxModelPref: {
+    envKey: "MINIMAX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Foundry Options
   FoundryBasePath: {
     envKey: "FOUNDRY_BASE_PATH",

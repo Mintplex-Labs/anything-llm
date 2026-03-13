@@ -49,6 +49,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "minimax",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -131,6 +132,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "minimax":
+      return await getMiniMaxModels(apiKey);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
     default:
@@ -1002,6 +1005,52 @@ async function getSambaNovaModels(_apiKey = null) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
   }
+}
+
+async function getMiniMaxModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.MINIMAX_API_KEY
+      : _apiKey || process.env.MINIMAX_API_KEY || null;
+
+  // MiniMax does not have a /models endpoint, so we return a static list.
+  const models = [
+    {
+      id: "MiniMax-M2.5",
+      name: "MiniMax-M2.5",
+      object: "model",
+      owned_by: "minimax",
+    },
+    {
+      id: "MiniMax-M2.5-highspeed",
+      name: "MiniMax-M2.5-highspeed",
+      object: "model",
+      owned_by: "minimax",
+    },
+  ];
+
+  // Validate API key by making a small request
+  if (apiKey) {
+    try {
+      const { OpenAI: OpenAIApi } = require("openai");
+      const openai = new OpenAIApi({
+        baseURL: "https://api.minimax.io/v1",
+        apiKey,
+      });
+      await openai.chat.completions.create({
+        model: "MiniMax-M2.5",
+        messages: [{ role: "user", content: "hi" }],
+        max_tokens: 1,
+        temperature: 0.7,
+      });
+      process.env.MINIMAX_API_KEY = apiKey;
+    } catch (e) {
+      console.error(`MiniMax:validateKey`, e.message);
+      return { models: [], error: "Invalid MiniMax API key" };
+    }
+  }
+
+  return { models, error: null };
 }
 
 module.exports = {

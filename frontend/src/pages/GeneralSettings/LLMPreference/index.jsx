@@ -41,6 +41,7 @@ import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import MiniMaxLogo from "@/media/llmprovider/minimax.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -79,6 +80,7 @@ import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunne
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import MiniMaxOptions from "@/components/LLMSelection/MiniMaxOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -339,6 +341,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
     requiredConfig: ["MoonshotAiApiKey"],
+  },
+  {
+    name: "MiniMax",
+    value: "minimax",
+    logo: MiniMaxLogo,
+    options: (settings) => <MiniMaxOptions settings={settings} />,
+    description: "Run MiniMax's powerful LLMs with OpenAI-compatible API.",
+    requiredConfig: ["MiniMaxApiKey"],
   },
   {
     name: "Privatemode",

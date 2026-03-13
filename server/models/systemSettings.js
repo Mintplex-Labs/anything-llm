@@ -602,6 +602,10 @@ const SystemSettings = {
       MoonshotAiModelPref:
         process.env.MOONSHOT_AI_MODEL_PREF || "moonshot-v1-32k",
 
+      // MiniMax Keys
+      MiniMaxApiKey: !!process.env.MINIMAX_API_KEY,
+      MiniMaxModelPref: process.env.MINIMAX_MODEL_PREF || "MiniMax-M2.5",
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,

@@ -201,6 +201,10 @@ class AgentHandler {
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
         break;
+      case "minimax":
+        if (!process.env.MINIMAX_API_KEY)
+          throw new Error("MiniMax API Key must be provided to use agents.");
+        break;
       case "cometapi":
         if (!process.env.COMETAPI_LLM_API_KEY)
           throw new Error("CometAPI API Key must be provided to use agents.");
@@ -295,6 +299,8 @@ class AgentHandler {
         return process.env.LITE_LLM_MODEL_PREF ?? null;
       case "moonshotai":
         return process.env.MOONSHOT_AI_MODEL_PREF ?? "moonshot-v1-32k";
+      case "minimax":
+        return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.5";
       case "apipie":
         return process.env.APIPIE_LLM_MODEL_PREF ?? null;
       case "xai":
