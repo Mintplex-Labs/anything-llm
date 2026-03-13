@@ -34,6 +34,64 @@ export function EmbeddingProgressProvider({ children }) {
     };
   }, []);
 
+  const updateFileStatus = (slug, filename, status) =>
+    setEmbeddingProgressMap((prev) => ({
+      ...prev,
+      [slug]: { ...prev[slug], [filename]: status },
+    }));
+
+  function handleMessage(slug, msg, ctrl) {
+    let data;
+    try {
+      data = JSON.parse(msg.data);
+    } catch {
+      console.error("Error parsing SSE message", msg.data);
+      return;
+    }
+
+    switch (data.type) {
+      case "batch_starting": {
+        const initial = {};
+        for (const name of data.filenames || []) {
+          initial[name] = { status: "pending" };
+        }
+        setEmbeddingProgressMap((prev) => ({
+          ...prev,
+          [slug]: { ...initial, ...prev[slug] },
+        }));
+        break;
+      }
+
+      case "doc_starting":
+        updateFileStatus(slug, data.filename, { status: "embedding" });
+        break;
+
+      case "doc_complete":
+        updateFileStatus(slug, data.filename, { status: "complete" });
+        break;
+
+      case "doc_failed":
+        updateFileStatus(slug, data.filename, {
+          status: "failed",
+          error: data.error || "Embedding failed",
+        });
+        break;
+
+      case "all_complete":
+        ctrl.abort();
+        delete abortControllersRef.current[slug];
+        cleanupTimeoutsRef.current[slug] = setTimeout(() => {
+          setEmbeddingProgressMap((prev) => {
+            const next = { ...prev };
+            delete next[slug];
+            return next;
+          });
+          delete cleanupTimeoutsRef.current[slug];
+        }, 5000);
+        break;
+    }
+  }
+
   /**
    * Open (or reconnect) an SSE connection for a given workspace slug.
    * Updates embeddingProgressMap in real time as events arrive.
@@ -49,73 +107,7 @@ export function EmbeddingProgressProvider({ children }) {
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
-      onmessage(msg) {
-        try {
-          const data = JSON.parse(msg.data);
-
-          switch (data.type) {
-            case "batch_starting": {
-              const initial = {};
-              for (const name of data.filenames || []) {
-                initial[name] = { status: "pending" };
-              }
-              setEmbeddingProgressMap((prev) => ({
-                ...prev,
-                [slug]: { ...initial, ...prev[slug] },
-              }));
-              break;
-            }
-
-            case "doc_starting":
-              setEmbeddingProgressMap((prev) => ({
-                ...prev,
-                [slug]: {
-                  ...prev[slug],
-                  [data.filename]: { status: "embedding" },
-                },
-              }));
-              break;
-
-            case "doc_complete":
-              setEmbeddingProgressMap((prev) => ({
-                ...prev,
-                [slug]: {
-                  ...prev[slug],
-                  [data.filename]: { status: "complete" },
-                },
-              }));
-              break;
-
-            case "doc_failed":
-              setEmbeddingProgressMap((prev) => ({
-                ...prev,
-                [slug]: {
-                  ...prev[slug],
-                  [data.filename]: {
-                    status: "failed",
-                    error: data.error || "Embedding failed",
-                  },
-                },
-              }));
-              break;
-
-            case "all_complete":
-              ctrl.abort();
-              delete abortControllersRef.current[slug];
-              cleanupTimeoutsRef.current[slug] = setTimeout(() => {
-                setEmbeddingProgressMap((prev) => {
-                  const next = { ...prev };
-                  delete next[slug];
-                  return next;
-                });
-                delete cleanupTimeoutsRef.current[slug];
-              }, 5000);
-              break;
-          }
-        } catch {
-          // ignore parse errors
-        }
-      },
+      onmessage: (msg) => handleMessage(slug, msg, ctrl),
       onclose() {
         delete abortControllersRef.current[slug];
       },
