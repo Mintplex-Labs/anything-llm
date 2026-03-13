@@ -1,4 +1,5 @@
 const { ApiKey } = require("../models/apiKeys");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
@@ -137,6 +138,7 @@ function adminEndpoints(app) {
           return;
         }
 
+        await BrowserExtensionApiKey.deleteAllForUser(Number(id));
         await User.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "user_deleted",
