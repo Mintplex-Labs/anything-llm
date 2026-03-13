@@ -180,8 +180,8 @@ function writeToServerDocuments({
  */
 function wipeCollectorStorage() {
   const dirs = [
-    { path: WATCH_DIRECTORY, keep: ["__HOTDIR__.md"] },
-    { path: tmpStorage, keep: [".placeholder"] },
+    { path: WATCH_DIRECTORY, keep: [] },
+    { path: tmpStorage, keep: [] },
   ];
 
   for (const { path: directory, keep } of dirs) {

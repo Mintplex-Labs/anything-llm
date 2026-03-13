@@ -8,7 +8,6 @@ const {
   isWithin,
   WATCH_DIRECTORY,
 } = require("../utils/files");
-const RESERVED_FILES = ["__HOTDIR__.md"];
 
 /**
  * Process a single file and return the documents
@@ -30,12 +29,6 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
       documents: [],
     };
 
-  if (RESERVED_FILES.includes(targetFilename))
-    return {
-      success: false,
-      reason: "Filename is a reserved filename and cannot be processed.",
-      documents: [],
-    };
   if (!fs.existsSync(fullFilePath))
     return {
       success: false,
