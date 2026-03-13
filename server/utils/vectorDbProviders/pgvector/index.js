@@ -652,7 +652,7 @@ class PGVector extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (err) {
-      this.logger("addDocumentToNamespace", err.message);
+      this.logger("addDocumentToNamespace", err);
       return { vectorized: false, error: err.message };
     } finally {
       if (connection) await connection.end();

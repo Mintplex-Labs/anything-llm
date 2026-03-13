@@ -324,7 +324,7 @@ class QDrant extends VectorDatabase {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      this.logger("addDocumentToNamespace", e.message);
+      this.logger("addDocumentToNamespace", e);
       return { vectorized: false, error: e.message };
     }
   }
