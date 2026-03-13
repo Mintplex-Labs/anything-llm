@@ -232,26 +232,39 @@ class NativeEmbedder {
     return output.length > 0 ? output.tolist()[0] : [];
   }
 
-  // If you are thinking you want to edit this function - you probably don't.
-  // This process was benchmarked heavily on a t3.small (2GB RAM 1vCPU)
-  // and without careful memory management for the V8 garbage collector
-  // this function will likely result in an OOM on any resource-constrained deployment.
-  // To help manage very large documents we run a concurrent write-log each iteration
-  // to keep the embedding result out of memory. The `maxConcurrentChunk` is set to 25,
-  // as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
-  // during a very large document (>100K words) but can spike up to 70% before gc.
-  // This seems repeatable for all document sizes.
-  // While this does take a while, it is zero set up and is 100% free and on-instance.
-  // It still may crash depending on other elements at play - so no promises it works under all conditions.
+  /**
+   * Routes embedding through an isolated worker process to protect the main
+   * server from OOM crashes during large document batches.
+   * This is the public API that vector DB providers and AI provider wrappers call.
+   * @param {string[]} textChunks
+   * @returns {Promise<Array<number[]>>}
+   */
   async embedChunks(textChunks = []) {
-    // If running in the main process, route through the worker queue
-    // to isolate OOM risk. The worker calls embedChunks directly, so
-    // process.send (IPC channel) distinguishes worker from main.
-    if (typeof process.send !== "function") {
-      const { queueEmbedding } = require("../../WorkerQueue");
-      return await queueEmbedding({ textChunks });
-    }
+    const { queueEmbedding } = require("../../WorkerQueue");
+    return await queueEmbedding({ textChunks });
+  }
 
+  /**
+   *
+   * If you are thinking you want to edit this function - you probably don't.
+   * This process was benchmarked heavily on a t3.small (2GB RAM 1vCPU)
+   * and without careful memory management for the V8 garbage collector
+   * this function will likely result in an OOM on any resource-constrained deployment.
+   * To help manage very large documents we run a concurrent write-log each iteration
+   * to keep the embedding result out of memory. The `maxConcurrentChunk` is set to 25,
+   * as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
+   * during a very large document (>100K words) but can spike up to 70% before gc.
+   * This seems repeatable for all document sizes.
+   * While this does take a while, it is zero set up and is 100% free and on-instance.
+   * It still may crash depending on other elements at play - so no promises it works under all conditions.
+   *
+   * Runs the embedding pipeline directly in the current process. Only the
+   * embedding worker should call this — all other callers should use
+   * {@link embedChunks} which routes work to the isolated worker process.
+   * @param {string[]} textChunks
+   * @returns {Promise<Array<number[]>|null>}
+   */
+  async embedChunksInProcess(textChunks = []) {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;

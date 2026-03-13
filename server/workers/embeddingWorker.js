@@ -35,7 +35,7 @@ process.on("message", async (msg) => {
       if (!embedder) embedder = new NativeEmbedder();
 
       const { textChunks } = msg.payload;
-      const result = await embedder.embedChunks(textChunks);
+      const result = await embedder.embedChunksInProcess(textChunks);
 
       process.send({
         type: "result",
