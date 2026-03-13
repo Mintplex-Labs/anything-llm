@@ -24,7 +24,10 @@ const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
-const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
   determineWorkspacePfpFilepath,
@@ -1084,7 +1087,7 @@ function workspaceEndpoints(app) {
         const { unsubscribe } = embeddingProgressBus.subscribe(
           { workspaceSlug: workspace.slug, userId },
           (event) => {
-            response.write(`data: ${JSON.stringify(event)}\n\n`);
+            writeResponseChunk(response, event);
           }
         );
 
