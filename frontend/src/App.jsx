@@ -14,7 +14,6 @@ import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
-import { EmbeddingProgressProvider } from "./EmbeddingProgressContext";
 
 export default function App() {
   const location = useLocation();
@@ -31,9 +30,7 @@ export default function App() {
               <LogoProvider>
                 <PfpProvider>
                   <I18nextProvider i18n={i18n}>
-                    <EmbeddingProgressProvider>
-                      <Outlet />
-                    </EmbeddingProgressProvider>
+                    <Outlet />
                     <ToastContainer />
                     <KeyboardShortcutsHelp />
                   </I18nextProvider>
