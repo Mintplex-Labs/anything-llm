@@ -11,7 +11,7 @@ const {
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
 const { safeJsonParse } = require("../../http");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 
 class DockerModelRunnerLLM {
   static cacheTime = 1000 * 60 * 60 * 24; // 24 hours

@@ -12,7 +12,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { COMETAPI_IGNORE_PATTERNS } = require("./constants");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 const cacheFolder = path.resolve(baseStoragePath, "models/cometapi");
 
 class CometApiLLM {

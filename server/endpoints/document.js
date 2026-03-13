@@ -1,5 +1,6 @@
 const { Document } = require("../models/documents");
-const { normalizePath, documentsPath, isWithin } = require("../utils/files");
+const { normalizePath, isWithin } = require("../utils/files");
+const { documentsPath } = require("../utils/files/paths");
 const { reqBody } = require("../utils/http");
 const {
   flexUserRoleValid,

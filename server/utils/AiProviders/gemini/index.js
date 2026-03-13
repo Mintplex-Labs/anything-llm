@@ -11,7 +11,7 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 const cacheFolder = path.resolve(baseStoragePath, "models/gemini");
 
 const NO_SYSTEM_PROMPT_MODELS = [

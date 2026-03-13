@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const LEGACY_MODEL_MAP = require("./legacy");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 
 class ContextWindowFinder {
   static instance = null;

@@ -8,7 +8,7 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 const cacheFolder = path.resolve(baseStoragePath, "models/ppio");
 
 class PPIOLLM {

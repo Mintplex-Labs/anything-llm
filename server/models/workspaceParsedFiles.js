@@ -1,7 +1,7 @@
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 const { Document } = require("./documents");
-const { documentsPath, directUploadsPath } = require("../utils/files");
+const { documentsPath, directUploadsPath } = require("../utils/files/paths");
 const { safeJsonParse } = require("../utils/http");
 const fs = require("fs");
 const path = require("path");

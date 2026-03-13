@@ -15,7 +15,7 @@ const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
-const { documentsPath } = require("../../../utils/files");
+const { documentsPath } = require("../../../utils/files/paths");
 
 /**
  * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.

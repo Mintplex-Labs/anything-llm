@@ -2,7 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const { getType } = require("mime");
 const { User } = require("../../models/user");
-const { normalizePath, isWithin, baseStoragePath } = require(".");
+const { normalizePath, isWithin } = require(".");
+const { baseStoragePath } = require("./paths");
 const { Workspace } = require("../../models/workspace");
 
 function fetchPfp(pfpPath) {

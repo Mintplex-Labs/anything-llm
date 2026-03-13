@@ -2,7 +2,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
-const { hotdirPath, normalizePath, baseStoragePath } = require(".");
+const { normalizePath } = require(".");
+const { baseStoragePath, hotdirPath } = require("./paths");
 
 /**
  * Handle File uploads for auto-uploading.

@@ -11,7 +11,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 const cacheFolder = path.resolve(baseStoragePath, "models/giteeai");
 
 class GiteeAILLM {

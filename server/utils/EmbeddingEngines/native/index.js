@@ -3,7 +3,7 @@ const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
 const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 
 class NativeEmbedder {
   static defaultModel = "Xenova/all-MiniLM-L6-v2";

@@ -12,7 +12,7 @@ const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 
 /**
  * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes

@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 
 class NativeEmbeddingReranker {
   static #model = null;

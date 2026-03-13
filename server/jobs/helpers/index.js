@@ -1,7 +1,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const { parentPort } = require("node:worker_threads");
-const { documentsPath } = require("../../utils/files");
+const { documentsPath } = require("../../utils/files/paths");
 
 function log(stringContent = "") {
   if (parentPort)

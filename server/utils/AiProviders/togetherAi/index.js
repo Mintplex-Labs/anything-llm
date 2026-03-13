@@ -8,7 +8,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
-const { baseStoragePath } = require("../../files");
+const { baseStoragePath } = require("../../files/paths");
 const cacheFolder = path.resolve(baseStoragePath, "models/togetherAi");
 
 async function togetherAiModels(apiKey = null) {

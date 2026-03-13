@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../http");
-const { isWithin, normalizePath, baseStoragePath } = require("../files");
+const { isWithin, normalizePath, baseStoragePath } = require("../files/paths");
 const { CollectorApi } = require("../collectorApi");
 const pluginsPath = path.resolve(baseStoragePath, "plugins/agent-skills");
 const sharedWebScraper = new CollectorApi();

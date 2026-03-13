@@ -6,7 +6,7 @@ const { MimeDetector } = require("./mime");
  * The base storage path for the server - where all primary storage is stored.
  */
 const basePrimaryStoragePath =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development" || !process.env.STORAGE_DIR
     ? path.resolve(__dirname, "../../../server/storage")
     : path.resolve(process.env.STORAGE_DIR);
 
@@ -15,7 +15,7 @@ const basePrimaryStoragePath =
  * In development points to a storage folder in the collector directory - not the main storage directory.
  */
 const tmpStorage =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development" || !process.env.STORAGE_DIR
     ? path.resolve(__dirname, "../../storage/tmp")
     : path.resolve(process.env.STORAGE_DIR, "tmp");
 
@@ -24,7 +24,7 @@ const tmpStorage =
  * In development points to a storage folder in the collector directory - not the main storage directory.
  */
 const WATCH_DIRECTORY =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development" || !process.env.STORAGE_DIR
     ? path.resolve(__dirname, "../../storage/hotdir")
     : path.resolve(process.env.STORAGE_DIR, "hotdir");
 

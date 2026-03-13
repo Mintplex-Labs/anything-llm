@@ -17,7 +17,9 @@ const { Telemetry } = require("../../models/telemetry");
 const { CollectorApi } = require("../collectorApi");
 const fs = require("fs");
 const path = require("path");
-const { hotdirPath, normalizePath, isWithin } = require("../files");
+const { normalizePath, isWithin } = require("../files");
+const { hotdirPath } = require("../files/paths");
+
 /**
  * @typedef ResponseObject
  * @property {string} id - uuid of response

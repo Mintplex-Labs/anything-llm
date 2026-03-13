@@ -5,8 +5,8 @@ const {
   purgeSourceDocument,
   normalizePath,
   isWithin,
-  documentsPath,
 } = require(".");
+const { documentsPath } = require("./paths");
 const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 

@@ -3,7 +3,7 @@ const path = require("path");
 const { default: slugify } = require("slugify");
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles.js");
-const { directUploadsPath } = require("../utils/files");
+const { directUploadsPath } = require("../utils/files/paths");
 
 async function batchDeleteFiles(filesToDelete, batchSize = 500) {
   let deletedCount = 0;

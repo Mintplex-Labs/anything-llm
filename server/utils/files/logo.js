@@ -3,7 +3,8 @@ const fs = require("fs");
 const { getType } = require("mime");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
-const { normalizePath, isWithin, baseStoragePath } = require(".");
+const { normalizePath, isWithin } = require(".");
+const { baseStoragePath } = require("./paths");
 const LOGO_FILENAME = "anything-llm.png";
 const LOGO_FILENAME_DARK = "anything-llm-dark.png";
 

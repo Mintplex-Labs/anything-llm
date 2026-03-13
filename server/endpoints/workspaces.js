@@ -36,7 +36,7 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
-const { baseStoragePath } = require("../utils/files");
+const { baseStoragePath } = require("../utils/files/paths");
 const truncate = require("truncate");
 
 function workspaceEndpoints(app) {

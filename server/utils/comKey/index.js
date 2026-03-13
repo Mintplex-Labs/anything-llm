@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const { baseStoragePath } = require("../files");
+const { baseStoragePath } = require("../files/paths");
 const keyPath = path.resolve(baseStoragePath, "comkey");
 
 // What does this class do?
