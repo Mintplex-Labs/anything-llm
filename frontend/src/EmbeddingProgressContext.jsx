@@ -8,7 +8,7 @@ import {
 } from "react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 
 const EmbeddingProgressContext = createContext();
 
@@ -41,13 +41,7 @@ export function EmbeddingProgressProvider({ children }) {
     }));
 
   function handleMessage(slug, msg, ctrl) {
-    let data;
-    try {
-      data = JSON.parse(msg.data);
-    } catch {
-      console.error("Error parsing SSE message", msg.data);
-      return;
-    }
+    const data = safeJsonParse(msg.data);
 
     switch (data.type) {
       case "batch_starting": {
