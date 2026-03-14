@@ -1,10 +1,7 @@
-import { Fragment } from "react";
-import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import {
   FileText,
-  Info,
   ArrowSquareOut,
   GithubLogo,
   X,
@@ -12,9 +9,9 @@ import {
   LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
-import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import { useSourcesSidebar } from "../../SourcesSidebar";
+import SourceDetailBody from "../../SourcesSidebar/SourceDetailBody";
 
 const CIRCLE_ICONS = {
   file: FileText,
@@ -49,13 +46,37 @@ export function SourceTypeCircle({ type = "file", size = 22, iconSize = 12 }) {
 export function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text, chunkSource = "", score = null } = source;
-    if (combined.hasOwnProperty(title)) {
-      combined[title].chunks.push({ id, text, chunkSource, score });
-      combined[title].references += 1;
+    const {
+      id,
+      title,
+      text,
+      chunkSource = "",
+      score = null,
+      published = null,
+      location = null,
+      url = null,
+      docSource = null,
+      docAuthor = null,
+      description = null,
+    } = source;
+    const sourceKey = [
+      title,
+      published || "no-published",
+      location || chunkSource || "no-location",
+    ].join("::");
+
+    if (combined.hasOwnProperty(sourceKey)) {
+      combined[sourceKey].chunks.push({ id, text, chunkSource, score });
+      combined[sourceKey].references += 1;
     } else {
-      combined[title] = {
+      combined[sourceKey] = {
         title,
+        published,
+        location,
+        url,
+        docSource,
+        docAuthor,
+        description,
         chunks: [{ id, text, chunkSource, score }],
         references: 1,
       };
@@ -118,10 +139,14 @@ export function omitChunkHeader(text) {
   return text.split("</document_metadata>")[1].trim();
 }
 
-export function CitationDetailModal({ source, onClose }) {
-  const { references, title, chunks } = source;
+export function CitationDetailModal({
+  source,
+  workspaceSlug = null,
+  threadSlug = null,
+  onClose,
+}) {
+  const { references, title } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
-  const { t } = useTranslation();
 
   return (
     <ModalWrapper isOpen={!!source}>
@@ -169,38 +194,13 @@ export function CitationDetailModal({ source, onClose }) {
           className="h-full w-full overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
-          <div className="py-7 px-9 space-y-2 flex-col">
-            {chunks.map(({ text, score }, idx) => (
-              <Fragment key={idx}>
-                <div className="pt-6 text-white light:text-slate-900">
-                  <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                    <p className="text-white light:text-slate-900 whitespace-pre-line">
-                      {HTMLDecode(omitChunkHeader(text))}
-                    </p>
-
-                    {!!score && (
-                      <div className="w-full flex items-center text-xs text-white/60 light:text-slate-500 gap-x-2 cursor-default">
-                        <div
-                          data-tooltip-id="similarity-score"
-                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
-                          className="flex items-center gap-x-1"
-                        >
-                          <Info size={14} />
-                          <p>
-                            {toPercentString(score)}{" "}
-                            {t("chat_window.similarity_match")}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {idx !== chunks.length - 1 && (
-                  <hr className="border-zinc-700 light:border-slate-300" />
-                )}
-              </Fragment>
-            ))}
-            <div className="mb-6"></div>
+          <div className="py-7 px-9">
+            <SourceDetailBody
+              source={source}
+              workspaceSlug={workspaceSlug}
+              threadSlug={threadSlug}
+            />
+            <div className="mb-6" />
           </div>
         </div>
       </div>

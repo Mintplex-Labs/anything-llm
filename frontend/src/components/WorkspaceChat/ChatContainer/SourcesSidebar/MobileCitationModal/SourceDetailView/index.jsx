@@ -1,13 +1,14 @@
-import { Fragment } from "react";
-import { CaretLeft, Info, X } from "@phosphor-icons/react";
-import { decode as HTMLDecode } from "he";
+import { CaretLeft, X } from "@phosphor-icons/react";
 import truncate from "truncate";
-import { useTranslation } from "react-i18next";
-import { omitChunkHeader } from "../../../ChatHistory/Citation";
-import { toPercentString } from "@/utils/numbers";
+import SourceDetailBody from "../../SourceDetailBody";
 
-export default function SourceDetailView({ source, onBack, onClose }) {
-  const { t } = useTranslation();
+export default function SourceDetailView({
+  source,
+  workspaceSlug = null,
+  threadSlug = null,
+  onBack,
+  onClose,
+}) {
   return (
     <>
       <div className="flex items-center justify-between">
@@ -29,27 +30,12 @@ export default function SourceDetailView({ source, onBack, onClose }) {
           <X size={16} weight="bold" />
         </button>
       </div>
-      <div className="flex flex-col overflow-y-auto no-scroll">
-        {source.chunks.map(({ text, score }, idx) => (
-          <Fragment key={idx}>
-            <div className="flex flex-col gap-y-1 py-4">
-              <p className="text-sm leading-[20px] text-white light:text-slate-900">
-                {HTMLDecode(omitChunkHeader(text))}
-              </p>
-              {!!score && (
-                <div className="flex items-center text-xs text-white/60 light:text-slate-500 gap-x-1">
-                  <Info size={14} />
-                  <p>
-                    {toPercentString(score)} {t("chat_window.similarity_match")}
-                  </p>
-                </div>
-              )}
-            </div>
-            {idx !== source.chunks.length - 1 && (
-              <hr className="border-zinc-700 light:border-slate-300" />
-            )}
-          </Fragment>
-        ))}
+      <div className="flex flex-col overflow-y-auto no-scroll pt-4">
+        <SourceDetailBody
+          source={source}
+          workspaceSlug={workspaceSlug}
+          threadSlug={threadSlug}
+        />
       </div>
     </>
   );

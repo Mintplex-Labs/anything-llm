@@ -6,6 +6,16 @@ const { safeJsonParse } = require("../utils/http");
 const fs = require("fs");
 const path = require("path");
 
+function buildUnavailableSource(identity = {}) {
+  return {
+    title: identity?.title || null,
+    pageContent: null,
+    metadata: null,
+    location: identity?.location || null,
+    mode: "unavailable",
+  };
+}
+
 const WorkspaceParsedFiles = {
   create: async function ({
     filename,
@@ -223,6 +233,92 @@ const WorkspaceParsedFiles = {
     } catch (error) {
       console.error("Failed to get context files:", error);
       return [];
+    }
+  },
+  resolveSourceDocument: async function ({
+    workspace,
+    thread = null,
+    user = null,
+    sourceIdentity = {},
+  } = {}) {
+    try {
+      if (!workspace?.id) return buildUnavailableSource(sourceIdentity);
+
+      const scopedClause = {
+        workspaceId: workspace.id,
+        threadId: thread?.id || null,
+        ...(user ? { userId: user.id } : {}),
+      };
+
+      const readParsedFile = (location, metadata = {}) => {
+        const sourceFile = path.join(
+          directUploadsPath,
+          path.basename(location)
+        );
+        if (!fs.existsSync(sourceFile))
+          return buildUnavailableSource(sourceIdentity);
+
+        const content = fs.readFileSync(sourceFile, "utf-8");
+        const data = safeJsonParse(content, null);
+        if (!data?.pageContent) return buildUnavailableSource(sourceIdentity);
+
+        const { pageContent, ...fileMetadata } = data;
+        return {
+          title: fileMetadata.title || sourceIdentity.title,
+          pageContent,
+          metadata: Object.keys(metadata).length ? metadata : fileMetadata,
+          location: fileMetadata.location || location,
+          mode: "full",
+        };
+      };
+
+      if (sourceIdentity?.location) {
+        const byLocation = await this.get({
+          ...scopedClause,
+          metadata: { contains: sourceIdentity.location },
+        });
+
+        if (byLocation) {
+          const metadata = safeJsonParse(byLocation.metadata, {});
+          if (metadata?.location === sourceIdentity.location) {
+            return readParsedFile(metadata.location, metadata);
+          }
+        }
+      }
+
+      const scopedFiles = await this.where(scopedClause, null, null, {
+        id: true,
+        metadata: true,
+      });
+
+      const candidates = scopedFiles
+        .map((file) => ({
+          ...file,
+          parsedMetadata: safeJsonParse(file.metadata, {}),
+        }))
+        .filter(
+          ({ parsedMetadata }) =>
+            parsedMetadata?.title === sourceIdentity?.title &&
+            parsedMetadata?.published === sourceIdentity?.published
+        );
+
+      const narrowedCandidates =
+        candidates.length > 1 && sourceIdentity?.chunkSource
+          ? candidates.filter(
+              ({ parsedMetadata }) =>
+                parsedMetadata?.chunkSource === sourceIdentity.chunkSource
+            )
+          : candidates;
+
+      if (narrowedCandidates.length === 1) {
+        const [{ parsedMetadata }] = narrowedCandidates;
+        return readParsedFile(parsedMetadata.location, parsedMetadata);
+      }
+
+      return await Document.resolveSourceDocument(workspace, sourceIdentity);
+    } catch (error) {
+      console.error("Failed to resolve source document:", error);
+      return buildUnavailableSource(sourceIdentity);
     }
   },
 };

@@ -10,6 +10,8 @@ export default function MobileCitationModal({
   isOpen,
   selectedSource,
   setSelectedSource,
+  workspaceSlug = null,
+  threadSlug = null,
   onClose,
 }) {
   const sources = combineLikeSources(rawSources);
@@ -22,6 +24,8 @@ export default function MobileCitationModal({
         {selectedSource ? (
           <SourceDetailView
             source={selectedSource}
+            workspaceSlug={workspaceSlug}
+            threadSlug={threadSlug}
             onBack={() => setSelectedSource(null)}
             onClose={onClose}
           />

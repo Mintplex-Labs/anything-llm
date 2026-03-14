@@ -6,6 +6,15 @@ const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
 const { getModelTag } = require("../endpoints/utils");
 
+function normalizeSourceIdentity(sourceIdentity = {}) {
+  return {
+    title: sourceIdentity?.title || null,
+    published: sourceIdentity?.published || null,
+    chunkSource: sourceIdentity?.chunkSource || null,
+    location: sourceIdentity?.location || null,
+  };
+}
+
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
   /**
@@ -239,6 +248,100 @@ const Document = {
     const { fileData } = require("../utils/files");
     const data = await fileData(docPath);
     return { title: data.title, content: data.pageContent };
+  },
+  resolveSourceDocument: async function (workspace, sourceIdentity = {}) {
+    const identity = normalizeSourceIdentity(sourceIdentity);
+    if (!workspace?.id) {
+      return {
+        title: identity.title,
+        pageContent: null,
+        metadata: null,
+        location: identity.location,
+        mode: "unavailable",
+      };
+    }
+
+    const buildResponse = async (docpath, metadata = null) => {
+      const { fileData } = require("../utils/files");
+      const data = await fileData(docpath);
+      if (!data?.pageContent) {
+        return {
+          title: identity.title,
+          pageContent: null,
+          metadata: null,
+          location: identity.location || docpath,
+          mode: "unavailable",
+        };
+      }
+
+      const { pageContent, ...fileMetadata } = data;
+      return {
+        title: fileMetadata.title || identity.title,
+        pageContent,
+        metadata: metadata || fileMetadata,
+        location: fileMetadata.location || docpath,
+        mode: "full",
+      };
+    };
+
+    if (identity.location) {
+      const directMatch = await this.get({
+        workspaceId: workspace.id,
+        docpath: identity.location,
+      });
+      if (directMatch) {
+        const directMetadata = safeJsonParse(directMatch.metadata, {});
+        return await buildResponse(directMatch.docpath, directMetadata);
+      }
+    }
+
+    if (!identity.title || !identity.published) {
+      return {
+        title: identity.title,
+        pageContent: null,
+        metadata: null,
+        location: identity.location,
+        mode: "unavailable",
+      };
+    }
+
+    const candidates = (
+      await this.where({ workspaceId: workspace.id }, null, null, null, {
+        id: true,
+        docpath: true,
+        metadata: true,
+      })
+    )
+      .map((document) => ({
+        ...document,
+        parsedMetadata: safeJsonParse(document.metadata, {}),
+      }))
+      .filter(
+        ({ parsedMetadata }) =>
+          parsedMetadata?.title === identity.title &&
+          parsedMetadata?.published === identity.published
+      );
+
+    const narrowedCandidates =
+      candidates.length > 1 && identity.chunkSource
+        ? candidates.filter(
+            ({ parsedMetadata }) =>
+              parsedMetadata?.chunkSource === identity.chunkSource
+          )
+        : candidates;
+
+    if (narrowedCandidates.length !== 1) {
+      return {
+        title: identity.title,
+        pageContent: null,
+        metadata: null,
+        location: identity.location,
+        mode: "unavailable",
+      };
+    }
+
+    const [{ docpath, parsedMetadata }] = narrowedCandidates;
+    return await buildResponse(docpath, parsedMetadata);
   },
 
   // Some data sources have encoded params in them we don't want to log - so strip those details.

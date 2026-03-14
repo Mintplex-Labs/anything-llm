@@ -268,6 +268,22 @@ const Workspace = {
     const data = await response.json();
     return data;
   },
+  getCitationSource: async function (slug, source = {}, threadSlug = null) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/citation-source`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          ...source,
+          threadSlug,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
   uploadLink: async function (slug, link) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
       method: "POST",

@@ -113,6 +113,67 @@ function workspaceParsedFilesEndpoints(app) {
   );
 
   app.post(
+    "/workspace/:slug/citation-source",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async function (request, response) {
+      try {
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const {
+          title = null,
+          published = null,
+          chunkSource = null,
+          location = null,
+          threadSlug = null,
+        } = reqBody(request);
+
+        const thread = threadSlug
+          ? await WorkspaceThread.get({
+              slug: String(threadSlug),
+              workspace_id: workspace.id,
+              user_id: user?.id || null,
+            })
+          : null;
+
+        if (threadSlug && !thread) {
+          return response.status(200).json({
+            title,
+            pageContent: null,
+            metadata: null,
+            location,
+            mode: "unavailable",
+          });
+        }
+
+        const resolvedSource = await WorkspaceParsedFiles.resolveSourceDocument(
+          {
+            workspace,
+            thread,
+            user: multiUserMode(response) ? user : null,
+            sourceIdentity: {
+              title,
+              published,
+              chunkSource,
+              location,
+            },
+          }
+        );
+
+        return response.status(200).json(resolvedSource);
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(200).json({
+          title: null,
+          pageContent: null,
+          metadata: null,
+          location: null,
+          mode: "unavailable",
+        });
+      }
+    }
+  );
+
+  app.post(
     "/workspace/:slug/parse",
     [
       validatedRequest,

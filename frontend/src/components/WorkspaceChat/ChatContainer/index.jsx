@@ -402,7 +402,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   return (
-    <SourcesSidebarProvider>
+    <SourcesSidebarProvider
+      workspaceSlug={workspace.slug}
+      threadSlug={threadSlug}
+    >
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"

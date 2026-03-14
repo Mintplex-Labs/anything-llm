@@ -11,7 +11,11 @@ import SourceItem from "./SourceItem";
 
 export const SourcesSidebarContext = createContext();
 
-export function SourcesSidebarProvider({ children }) {
+export function SourcesSidebarProvider({
+  children,
+  workspaceSlug = null,
+  threadSlug = null,
+}) {
   const [sources, setSources] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeCitationId, setActiveCitationId] = useState(null);
@@ -33,6 +37,8 @@ export function SourcesSidebarProvider({ children }) {
         sources,
         sidebarOpen,
         activeCitationId,
+        workspaceSlug,
+        threadSlug,
         openSidebar,
         closeSidebar,
       }}
@@ -47,7 +53,8 @@ export function useSourcesSidebar() {
 }
 
 export default function SourcesSidebar() {
-  const { sources, sidebarOpen, closeSidebar } = useSourcesSidebar();
+  const { sources, sidebarOpen, closeSidebar, workspaceSlug, threadSlug } =
+    useSourcesSidebar();
   const { t } = useTranslation();
   const [selectedSource, setSelectedSource] = useState(null);
 
@@ -64,6 +71,8 @@ export default function SourcesSidebar() {
         isOpen={sidebarOpen}
         selectedSource={selectedSource}
         setSelectedSource={setSelectedSource}
+        workspaceSlug={workspaceSlug}
+        threadSlug={threadSlug}
         onClose={() => {
           setSelectedSource(null);
           closeSidebar();
@@ -108,6 +117,8 @@ export default function SourcesSidebar() {
       {selectedSource && (
         <CitationDetailModal
           source={selectedSource}
+          workspaceSlug={workspaceSlug}
+          threadSlug={threadSlug}
           onClose={() => setSelectedSource(null)}
         />
       )}
