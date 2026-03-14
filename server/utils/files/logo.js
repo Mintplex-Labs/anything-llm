@@ -7,6 +7,16 @@ const { normalizePath, isWithin } = require(".");
 const LOGO_FILENAME = "anything-llm.png";
 const LOGO_FILENAME_DARK = "anything-llm-dark.png";
 
+function getCustomAssetsDirectory() {
+  return process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, "assets")
+    : path.join(__dirname, "../../storage/assets");
+}
+
+function getBundledAssetsDirectory() {
+  return path.join(__dirname, "../../storage/assets");
+}
+
 /**
  * Checks if the filename is the default logo filename for dark or light mode.
  * @param {string} filename - The filename to check.
@@ -32,17 +42,20 @@ function getDefaultFilename(darkMode = true) {
 
 async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
   const currentLogoFilename = await SystemSettings.currentLogoFilename();
-  const basePath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets")
-    : path.join(__dirname, "../../storage/assets");
-  const defaultFilepath = path.join(basePath, defaultFilename);
+  const customAssetsPath = getCustomAssetsDirectory();
+  const bundledAssetsPath = getBundledAssetsDirectory();
+  const defaultFilepath = fs.existsSync(
+    path.join(customAssetsPath, defaultFilename)
+  )
+    ? path.join(customAssetsPath, defaultFilename)
+    : path.join(bundledAssetsPath, defaultFilename);
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
     const customLogoPath = path.join(
-      basePath,
+      customAssetsPath,
       normalizePath(currentLogoFilename)
     );
-    if (!isWithin(path.resolve(basePath), path.resolve(customLogoPath)))
+    if (!isWithin(path.resolve(customAssetsPath), path.resolve(customLogoPath)))
       return defaultFilepath;
     return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;
   }
@@ -70,33 +83,40 @@ function fetchLogo(logoPath) {
   };
 }
 
-async function renameLogoFile(originalFilename = null) {
-  const extname = path.extname(originalFilename) || ".png";
+async function renameLogoFile(uploadedFile = null) {
+  const assetsDirectory = getCustomAssetsDirectory();
+  fs.mkdirSync(assetsDirectory, { recursive: true });
+
+  const storedFilename =
+    typeof uploadedFile === "object"
+      ? uploadedFile?.filename ||
+        (uploadedFile?.path ? path.basename(uploadedFile.path) : null)
+      : null;
+  const originalFilename =
+    typeof uploadedFile === "string"
+      ? uploadedFile
+      : uploadedFile?.originalname || storedFilename || null;
+
+  const extname = path.extname(originalFilename || "") || ".png";
   const newFilename = `${v4()}${extname}`;
-  const assetsDirectory = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets")
-    : path.join(__dirname, `../../storage/assets`);
-  const originalFilepath = path.join(
-    assetsDirectory,
-    normalizePath(originalFilename)
-  );
+
+  const originalFilepath = storedFilename
+    ? path.join(assetsDirectory, normalizePath(storedFilename))
+    : path.join(assetsDirectory, normalizePath(originalFilename));
+
   if (!isWithin(path.resolve(assetsDirectory), path.resolve(originalFilepath)))
     throw new Error("Invalid file path.");
+  if (!fs.existsSync(originalFilepath))
+    throw new Error("Uploaded logo file could not be found.");
 
-  // The output always uses a random filename.
-  const outputFilepath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(newFilename))
-    : path.join(__dirname, `../../storage/assets`, normalizePath(newFilename));
-
+  const outputFilepath = path.join(assetsDirectory, normalizePath(newFilename));
   fs.renameSync(originalFilepath, outputFilepath);
   return newFilename;
 }
 
 async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
   if (!logoFilename || !validFilename(logoFilename)) return false;
-  const assetsDirectory = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets")
-    : path.join(__dirname, `../../storage/assets`);
+  const assetsDirectory = getCustomAssetsDirectory();
 
   const logoPath = path.join(assetsDirectory, normalizePath(logoFilename));
   if (!isWithin(path.resolve(assetsDirectory), path.resolve(logoPath)))

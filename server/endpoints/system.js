@@ -24,7 +24,6 @@ const {
   determineLogoFilepath,
   fetchLogo,
   validFilename,
-  renameLogoFile,
   removeCustomLogo,
   LOGO_FILENAME,
   isDefaultFilename,
@@ -39,7 +38,11 @@ const {
   ROLES,
   isMultiUserSetup,
 } = require("../utils/middleware/multiUserProtected");
-const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
+const {
+  fetchPfp,
+  determinePfpFilepath,
+  getPfpBasePath,
+} = require("../utils/files/pfp");
 const { exportChatsAsType } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
@@ -775,7 +778,7 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = getPfpBasePath();
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(userRecord.pfpFilename)
@@ -862,7 +865,7 @@ function systemEndpoints(app) {
         const oldPfpFilename = userRecord.pfpFilename;
 
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = getPfpBasePath();
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(oldPfpFilename)
@@ -900,6 +903,11 @@ function systemEndpoints(app) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
+      const uploadedFileName = request.randomFileName;
+      if (!uploadedFileName) {
+        return response.status(400).json({ message: "File upload failed." });
+      }
+
       if (!validFilename(request.file.originalname)) {
         return response.status(400).json({
           message: "Invalid file name. Please choose a different file.",
@@ -907,12 +915,11 @@ function systemEndpoints(app) {
       }
 
       try {
-        const newFilename = await renameLogoFile(request.file.originalname);
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
         const { success, error } = await SystemSettings._updateSettings({
-          logo_filename: newFilename,
+          logo_filename: uploadedFileName,
         });
 
         return response.status(success ? 200 : 500).json({

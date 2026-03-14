@@ -29,6 +29,7 @@ const { CollectorApi } = require("../utils/collectorApi");
 const {
   determineWorkspacePfpFilepath,
   fetchPfp,
+  getPfpBasePath,
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
@@ -731,7 +732,7 @@ function workspaceEndpoints(app) {
 
         const oldPfpFilename = workspaceRecord.pfpFilename;
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = getPfpBasePath();
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(workspaceRecord.pfpFilename)
@@ -772,7 +773,7 @@ function workspaceEndpoints(app) {
         const oldPfpFilename = workspaceRecord.pfpFilename;
 
         if (oldPfpFilename) {
-          const storagePath = path.join(__dirname, "../storage/assets/pfp");
+          const storagePath = getPfpBasePath();
           const oldPfpPath = path.join(
             storagePath,
             normalizePath(oldPfpFilename)

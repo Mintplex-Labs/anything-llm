@@ -26,7 +26,7 @@ import useAppVersion from "@/hooks/useAppVersion";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
-  const { logo } = useLogo();
+  const { logo, isCustomLogo } = useLogo();
   const { user } = useUser();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -59,8 +59,9 @@ export default function SettingsSidebar() {
             <img
               src={logo}
               alt="Logo"
-              className="block mx-auto h-6 w-auto"
-              style={{ maxHeight: "40px", objectFit: "contain" }}
+              className={`block mx-auto w-auto object-contain ${
+                isCustomLogo ? "max-h-[44px] max-w-[180px]" : "h-6 max-h-[40px]"
+              }`}
             />
           </div>
           <div className="w-12"></div>
@@ -90,8 +91,11 @@ export default function SettingsSidebar() {
                   <img
                     src={logo}
                     alt="Logo"
-                    className="rounded w-full max-h-[40px]"
-                    style={{ objectFit: "contain" }}
+                    className={`rounded w-auto object-contain ${
+                      isCustomLogo
+                        ? "max-h-[52px] max-w-[200px]"
+                        : "max-h-[40px]"
+                    }`}
                   />
                 </div>
                 <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
@@ -144,8 +148,11 @@ export default function SettingsSidebar() {
           <img
             src={logo}
             alt="Logo"
-            className="rounded max-h-[24px]"
-            style={{ objectFit: "contain" }}
+            className={`rounded object-contain ${
+              isCustomLogo
+                ? "max-h-[40px] max-w-[220px]"
+                : "max-h-[24px] max-w-[220px]"
+            }`}
           />
         </Link>
         <div

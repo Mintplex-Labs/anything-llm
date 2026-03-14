@@ -13,7 +13,7 @@ import { safeJsonParse } from "@/utils/request";
 export default function DefaultChatContainer() {
   const { t } = useTranslation();
   const { user } = useUser();
-  const { logo } = useLogo();
+  const { logo, isCustomLogo } = useLogo();
   const [lastVisitedWorkspace, setLastVisitedWorkspace] = useState(null);
   const [{ workspaces, loading }, setWorkspaces] = useState({
     workspaces: [],
@@ -77,7 +77,11 @@ export default function DefaultChatContainer() {
         <img
           src={logo}
           alt="Custom Logo"
-          className=" w-[200px] h-fit mb-5 rounded-lg"
+          className={`mb-5 rounded-lg object-contain ${
+            isCustomLogo
+              ? "max-w-[320px] max-h-[120px] w-auto h-auto"
+              : "w-[200px] h-fit"
+          }`}
         />
         <h1 className="text-white text-2xl font-semibold">
           {t("home.welcome")}, {user.username}!

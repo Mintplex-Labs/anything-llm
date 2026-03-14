@@ -18,7 +18,7 @@ import { createPortal } from "react-dom";
 
 export default function Sidebar() {
   const { user } = useUser();
-  const { logo } = useLogo();
+  const { logo, isCustomLogo } = useLogo();
   const sidebarRef = useRef(null);
   const { showSidebar, setShowSidebar, canToggleSidebar } = useSidebarToggle();
   const {
@@ -49,7 +49,11 @@ export default function Sidebar() {
                 <img
                   src={logo}
                   alt="Logo"
-                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                  className={`rounded object-contain transition-opacity duration-500 ${
+                    isCustomLogo
+                      ? "max-h-[40px] max-w-[220px]"
+                      : "max-h-[24px] max-w-[220px]"
+                  } ${showSidebar ? "opacity-100" : "opacity-0"}`}
                 />
               </Link>
             </div>
@@ -81,7 +85,7 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
-  const { logo } = useLogo();
+  const { logo, isCustomLogo } = useLogo();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
@@ -123,8 +127,9 @@ export function SidebarMobileHeader() {
           <img
             src={logo}
             alt="Logo"
-            className="block mx-auto h-6 w-auto"
-            style={{ maxHeight: "40px", objectFit: "contain" }}
+            className={`block mx-auto w-auto object-contain ${
+              isCustomLogo ? "max-h-[44px] max-w-[180px]" : "h-6 max-h-[40px]"
+            }`}
           />
         </div>
         <div className="w-12"></div>
@@ -154,8 +159,9 @@ export function SidebarMobileHeader() {
                 <img
                   src={logo}
                   alt="Logo"
-                  className="rounded w-full max-h-[40px]"
-                  style={{ objectFit: "contain" }}
+                  className={`rounded w-auto object-contain ${
+                    isCustomLogo ? "max-h-[52px] max-w-[200px]" : "max-h-[40px]"
+                  }`}
                 />
               </div>
               {(!user || user?.role !== "default") && (
