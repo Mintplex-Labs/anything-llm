@@ -2,6 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import { ArrowSquareOut, Info, SpinnerGap } from "@phosphor-icons/react";
 import { decode as HTMLDecode } from "he";
 import Workspace from "@/models/workspace";
+import renderMarkdown from "@/utils/chat/markdown";
+import DOMPurify from "@/utils/chat/purify";
 import { toPercentString } from "@/utils/numbers";
 import { omitChunkHeader } from "../ChatHistory/Citation";
 
@@ -62,36 +64,58 @@ function parseLeadingSourceHeader(pageContent = "") {
   };
 }
 
-function RichSourceText({ text, className = "" }) {
-  const lines = text.split("\n");
+function normalizeSourceText(text = "") {
+  return text.replace(
+    /^(Kilde:\s*)(https?:\/\/\S+)(.*)$/gim,
+    (_, label, url, suffix = "") => `${label}[${url}](${url})${suffix}`
+  );
+}
+
+function SourceMarkdownText({ text, className = "" }) {
+  const sourceHtml = DOMPurify.sanitize(
+    renderMarkdown(normalizeSourceText(text))
+  );
 
   return (
-    <div className={className}>
-      {lines.map((line, index) => {
-        const sourceMatch = line.match(/^(Kilde:\s*)(https?:\/\/\S+)(.*)$/i);
-        return (
-          <Fragment key={`${line}-${index}`}>
-            {sourceMatch ? (
-              <>
-                <span>{sourceMatch[1]}</span>
-                <a
-                  href={sourceMatch[2]}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-300 light:text-blue-600 hover:underline break-all"
-                >
-                  {sourceMatch[2]}
-                </a>
-                <span>{sourceMatch[3]}</span>
-              </>
-            ) : (
-              line
-            )}
-            {index !== lines.length - 1 && <br />}
-          </Fragment>
-        );
-      })}
-    </div>
+    <div
+      className={`markdown whitespace-pre-line ${className}`.trim()}
+      dangerouslySetInnerHTML={{ __html: sourceHtml }}
+    />
+  );
+}
+
+function renderSourceFieldValue(field = {}) {
+  if (isSourceFieldUrl(field.label, field.value)) {
+    return (
+      <a
+        href={field.value}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 text-blue-300 light:text-blue-600 hover:underline break-all"
+      >
+        {field.value}
+        <ArrowSquareOut size={14} />
+      </a>
+    );
+  }
+
+  return (
+    <SourceMarkdownText
+      text={field.value}
+      className="text-white light:text-slate-900 break-words"
+    />
+  );
+}
+
+function renderSourceBodyText(sourceDocument = {}, parsedSource = null) {
+  const text = parsedSource ? parsedSource.body : sourceDocument.pageContent;
+  if (!text) return null;
+
+  return (
+    <SourceMarkdownText
+      text={text}
+      className="text-sm leading-7 text-white light:text-slate-900 break-words"
+    />
   );
 }
 
@@ -146,21 +170,7 @@ function SourceDocumentSection({ sourceDocument }) {
                 <span className="text-white/55 light:text-slate-500">
                   {field.label}
                 </span>
-                {isSourceFieldUrl(field.label, field.value) ? (
-                  <a
-                    href={field.value}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-blue-300 light:text-blue-600 hover:underline break-all"
-                  >
-                    {field.value}
-                    <ArrowSquareOut size={14} />
-                  </a>
-                ) : (
-                  <span className="text-white light:text-slate-900 whitespace-pre-wrap break-words">
-                    {field.value}
-                  </span>
-                )}
+                {renderSourceFieldValue(field)}
               </div>
             ))}
           </div>
@@ -168,9 +178,7 @@ function SourceDocumentSection({ sourceDocument }) {
       )}
 
       <div className="pt-4">
-        <p className="text-sm leading-7 text-white light:text-slate-900 whitespace-pre-line break-words">
-          {parsedSource ? parsedSource.body : sourceDocument.pageContent}
-        </p>
+        {renderSourceBodyText(sourceDocument, parsedSource)}
       </div>
     </div>
   );
@@ -292,7 +300,7 @@ export default function SourceDetailBody({
           return (
             <Fragment key={`${source.title}-${idx}`}>
               <div className="rounded-xl border border-zinc-700 light:border-slate-300 px-4 py-4 bg-black/10 light:bg-slate-50">
-                <RichSourceText
+                <SourceMarkdownText
                   text={decodedText}
                   className="text-sm leading-7 text-white light:text-slate-900 break-words"
                 />
