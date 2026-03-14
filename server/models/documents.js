@@ -84,13 +84,34 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
+    const { embeddingProgressBus } = require("../utils/WorkerQueue");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
+    const totalDocs = additions.length;
 
-    for (const path of additions) {
+    const emitProgress = (type, extra = {}) =>
+      embeddingProgressBus.emit("progress", {
+        type,
+        workspaceSlug: workspace.slug,
+        userId,
+        ...extra,
+      });
+
+    // Signal the full batch so SSE clients (including late-joining ones
+    // via history replay) can seed the complete file list as "pending".
+    emitProgress("batch_starting", { filenames: additions, totalDocs });
+
+    for (const [index, path] of additions.entries()) {
+      const docProgress = { filename: path, docIndex: index, totalDocs };
       const data = await fileData(path);
-      if (!data) continue;
+      if (!data) {
+        emitProgress("doc_failed", {
+          ...docProgress,
+          error: "Failed to load file data",
+        });
+        continue;
+      }
 
       const docId = uuidv4();
       const { pageContent: _pageContent, ...metadata } = data;
@@ -101,6 +122,8 @@ const Document = {
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
       };
+
+      emitProgress("doc_starting", docProgress);
 
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
@@ -115,16 +138,32 @@ const Document = {
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
         errors.add(error);
+        emitProgress("doc_failed", {
+          ...docProgress,
+          error: error || "Unknown error",
+        });
         continue;
       }
 
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
+        emitProgress("doc_complete", docProgress);
       } catch (error) {
         console.error(error.message);
+        emitProgress("doc_failed", {
+          ...docProgress,
+          error: "Failed to save document record",
+        });
       }
     }
+
+    // Signal that all documents have been processed
+    emitProgress("all_complete", {
+      totalDocs,
+      embedded: embedded.length,
+      failed: failedToEmbed.length,
+    });
 
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",

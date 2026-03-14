@@ -3,7 +3,14 @@ import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { Eye, PushPin } from "@phosphor-icons/react";
+import {
+  Eye,
+  PushPin,
+  CheckCircle,
+  XCircle,
+  CircleNotch,
+  Clock,
+} from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
@@ -11,6 +18,7 @@ import Workspace from "@/models/workspace";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
+import { middleTruncate } from "@/utils/directories";
 
 function WorkspaceDirectory({
   workspace,
@@ -25,6 +33,7 @@ function WorkspaceDirectory({
   saveChanges,
   embeddingCosts,
   movedItems,
+  embeddingProgress = null,
 }) {
   const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
@@ -87,7 +96,7 @@ function WorkspaceDirectory({
     saveChanges(e);
   };
 
-  if (loading) {
+  if (loading || embeddingProgress) {
     return (
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
@@ -101,14 +110,31 @@ function WorkspaceDirectory({
               <div className="shrink-0 w-3 h-3" />
               <p className="ml-[7px] text-theme-text-primary">Name</p>
             </div>
-            <p className="col-span-2" />
-          </div>
-          <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
-            <PreLoader />
-            <p className="text-theme-text-primary text-sm font-semibold animate-pulse text-center w-1/3">
-              {loadingMessage}
+            <p className="col-span-2 text-right text-theme-text-primary">
+              Status
             </p>
           </div>
+
+          {embeddingProgress ? (
+            <div className="overflow-y-auto h-[calc(100%-40px)]">
+              {Object.entries(embeddingProgress).map(
+                ([filename, fileStatus]) => (
+                  <EmbeddingFileRow
+                    key={filename}
+                    filename={filename}
+                    status={fileStatus}
+                  />
+                )
+              )}
+            </div>
+          ) : (
+            <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
+              <PreLoader />
+              <p className="text-theme-text-primary text-sm font-semibold animate-pulse text-center w-1/3">
+                {loadingMessage}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -464,6 +490,81 @@ function WorkspaceDocumentTooltips() {
         className="tooltip invert !text-xs"
       />
     </>
+  );
+}
+
+/**
+ * @param {string} filename
+ */
+const getDisplayName = (filename) =>
+  filename
+    .split("/")
+    .pop()
+    ?.replace(/\.json$/, "") || filename;
+
+const getStatusStyles = () => ({
+  pending: {
+    icon: (
+      <Clock size={16} className="text-white/40 shrink-0" weight="regular" />
+    ),
+    textColor: "",
+    label: "Queued",
+  },
+
+  embedding: {
+    icon: (
+      <CircleNotch
+        size={16}
+        className="text-sky-400 animate-spin shrink-0"
+        weight="bold"
+      />
+    ),
+    textColor: "text-sky-400",
+    label: "Embedding",
+  },
+
+  complete: {
+    icon: (
+      <CheckCircle
+        size={16}
+        className="text-green-400 shrink-0"
+        weight="fill"
+      />
+    ),
+    textColor: "text-green-400",
+    label: "Complete",
+  },
+  failed: {
+    icon: <XCircle size={16} className="text-red-400 shrink-0" weight="fill" />,
+    textColor: "text-red-400",
+    label: "Failed",
+  },
+});
+function EmbeddingFileRow({ filename, status: { status } }) {
+  const displayName = getDisplayName(filename);
+  const statusStyles = getStatusStyles();
+
+  return (
+    <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
+      <div className="col-span-8 flex items-center gap-x-2 overflow-hidden">
+        {statusStyles[status].icon || statusStyles.pending.icon}
+        <p
+          className={`whitespace-nowrap overflow-hidden text-ellipsis ${
+            status === "failed" ? "text-red-400" : ""
+          }`}
+          title={displayName}
+        >
+          {middleTruncate(displayName, 45)}
+        </p>
+      </div>
+      <div className="col-span-4 flex justify-end items-center gap-x-2">
+        <p
+          className={`text-[10px] whitespace-nowrap ${statusStyles[status].textColor}`}
+        >
+          {statusStyles[status].label || "Queued"}
+        </p>
+      </div>
+    </div>
   );
 }
 

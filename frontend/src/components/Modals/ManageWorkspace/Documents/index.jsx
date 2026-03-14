@@ -1,10 +1,11 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
 
 // OpenAI Cost per token
 // ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
@@ -25,6 +26,28 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const [movedItems, setMovedItems] = useState([]);
   const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
+
+  const { embeddingProgressMap, startEmbedding, connectSSE } =
+    useEmbeddingProgress();
+
+  const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
+
+  // On mount, connect SSE so we catch up on any active embedding job
+  // via the server's buffered history replay.
+  useEffect(() => {
+    connectSSE(workspace.slug);
+  }, [workspace.slug, connectSSE]);
+
+  // When progress is cleared by the context (all_complete + 5s auto-clear),
+  // refresh the file lists so the normal view reflects newly embedded docs.
+  const prevProgressRef = useRef(embeddingProgress);
+  useEffect(() => {
+    // Went from non-null → null = progress was just cleared
+    if (prevProgressRef.current && !embeddingProgress) {
+      fetchKeys(true);
+    }
+    prevProgressRef.current = embeddingProgress;
+  }, [embeddingProgress]);
 
   async function fetchKeys(refetchWorkspace = false) {
     setLoading(true);
@@ -86,36 +109,41 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setLoading(true);
-    showToast("Updating workspace...", "info", { autoClose: false });
     setLoadingMessage("This may take a while for large documents");
 
-    const changesToSend = {
-      adds: movedItems.map((item) => `${item.folderName}/${item.name}`),
-    };
+    const filenames = movedItems.map(
+      (item) => `${item.folderName}/${item.name}`
+    );
+    const changesToSend = { adds: filenames };
 
     setSelectedItems({});
     setHasChanges(false);
     setHighlightWorkspace(false);
-    await Workspace.modifyEmbeddings(workspace.slug, changesToSend)
-      .then((res) => {
-        if (!!res.message) {
-          showToast(`Error: ${res.message}`, "error", { clear: true });
-          return;
-        }
-        showToast("Workspace updated successfully.", "success", {
-          clear: true,
-        });
+
+    // Fire the embed POST first so the server is already processing the job
+    // by the time the SSE connection opens. This avoids the server sending
+    // idle (no active job) before embedding has started.
+    const embedPromise = Workspace.modifyEmbeddings(
+      workspace.slug,
+      changesToSend
+    );
+    startEmbedding(workspace.slug, filenames);
+
+    embedPromise
+      .then(async (res) => {
+        // Refresh file lists after API responds.
+        // Progress UI is driven by SSE via embeddingProgress context.
+        await fetchKeys(true);
       })
       .catch((error) => {
         showToast(`Workspace update failed: ${error}`, "error", {
           clear: true,
         });
+        setLoading(false);
+        setLoadingMessage("");
       });
 
     setMovedItems([]);
-    await fetchKeys(true);
-    setLoading(false);
-    setLoadingMessage("");
   };
 
   const moveSelectedItemsToWorkspace = () => {
@@ -224,6 +252,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
         saveChanges={updateWorkspace}
         embeddingCosts={embeddingsCost}
         movedItems={movedItems}
+        embeddingProgress={embeddingProgress}
       />
     </div>
   );

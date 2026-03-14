@@ -38,7 +38,7 @@ const VECTOR_DBS = [
     name: "LanceDB",
     value: "lancedb",
     logo: LanceDbLogo,
-    options: (_) => <LanceDBOptions />,
+    options: (settings) => <LanceDBOptions settings={settings} />,
     description:
       "100% local vector DB that runs on the same instance as AnythingLLM.",
   },

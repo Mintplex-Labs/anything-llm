@@ -214,14 +214,30 @@ class NativeEmbeddingReranker {
   }
 
   /**
-   * Reranks a list of documents based on the query.
+   * Routes reranking to an isolated worker process to protect the main server
+   * from OOM. The worker calls {@link rerank} directly to do the actual work.
+   * Can be called statically without instantiating in the parent process.
+   */
+  static async rerankViaWorker(query, documents, options = { topK: 4 }) {
+    const { queueReranking } = require("../../WorkerQueue");
+    return await queueReranking({
+      query,
+      documents,
+      topK: options.topK,
+    });
+  }
+
+  /**
+   * Runs the reranking model directly in the current process. Only the
+   * reranking worker should call this — all other callers should use
+   * {@link rerankViaWorker} which routes work to the isolated worker process.
    * @param {string} query - The query to rerank the documents against.
    * @param {{text: string}[]} documents - The list of document text snippets to rerank. Should be output from a vector search.
    * @param {Object} options - The options for the reranking.
    * @param {number} options.topK - The number of top documents to return.
    * @returns {Promise<any[]>} - The reranked list of documents.
    */
-  async rerank(query, documents, options = { topK: 4 }) {
+  async rerankInProcess(query, documents, options = { topK: 4 }) {
     await this.initClient();
     const model = NativeEmbeddingReranker.#model;
     const tokenizer = NativeEmbeddingReranker.#tokenizer;

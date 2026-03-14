@@ -94,7 +94,6 @@ class LanceDb extends VectorDatabase {
     similarityThreshold = 0.25,
     filterIdentifiers = [],
   }) {
-    const reranker = new NativeEmbeddingReranker();
     const collection = await client.openTable(namespace);
     const totalEmbeddings = await this.namespaceCount(namespace);
     const result = {
@@ -126,8 +125,9 @@ class LanceDb extends VectorDatabase {
       .limit(searchLimit)
       .toArray();
 
-    await reranker
-      .rerank(query, vectorSearchResults, { topK: topN })
+    await NativeEmbeddingReranker.rerankViaWorker(query, vectorSearchResults, {
+      topK: topN,
+    })
       .then((rerankResults) => {
         rerankResults.forEach((item) => {
           if (this.distanceToSimilarity(item._distance) < similarityThreshold)

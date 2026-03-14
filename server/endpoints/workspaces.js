@@ -24,7 +24,10 @@ const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
-const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
   determineWorkspacePfpFilepath,
@@ -1055,6 +1058,44 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // SSE endpoint for embedding progress
+  app.get(
+    "/workspace/:slug/embed-progress",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const user = await userFromSession(request, response);
+        const userId = user?.id ?? null;
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        const { embeddingProgressBus } = require("../utils/WorkerQueue");
+        const { unsubscribe } = embeddingProgressBus.subscribe(
+          { workspaceSlug: workspace.slug, userId },
+          (event) => {
+            writeResponseChunk(response, event);
+          }
+        );
+
+        // If there's no history, no embedding is in progress right now.
+        // We intentionally send nothing and keep the connection open —
+        // events will flow if embedding starts, and the connection is
+        // cleaned up when the client disconnects (modal close / unmount).
+        request.on("close", () => {
+          unsubscribe();
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).end();
       }
     }
   );
