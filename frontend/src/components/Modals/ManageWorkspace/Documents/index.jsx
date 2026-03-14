@@ -131,14 +131,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
     embedPromise
       .then(async (res) => {
-        if (res.message) {
-          showToast(`Error: ${res.message}`, "error", { clear: true });
-        } else {
-          showToast("Workspace updated successfully.", "success", {
-            clear: true,
-          });
-        }
-
         // Refresh file lists after API responds.
         // Progress UI is driven by SSE via embeddingProgress context.
         await fetchKeys(true);
