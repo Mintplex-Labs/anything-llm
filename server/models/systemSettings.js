@@ -286,6 +286,12 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // ModelsLab TTS
+      TTSModelsLabApiKey: !!process.env.TTS_MODELSLAB_API_KEY,
+      TTSModelsLabVoiceId:
+        process.env.TTS_MODELSLAB_VOICE_ID ?? "en_us_001",
+      TTSModelsLabLanguage: process.env.TTS_MODELSLAB_LANGUAGE ?? "english",
+      TTSModelsLabSpeed: process.env.TTS_MODELSLAB_SPEED ?? "1",
 
       // --------------------------------------------------------
       // Agent Settings & Configs
