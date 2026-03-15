@@ -174,7 +174,7 @@ export default function ActiveWorkspaces() {
                                   className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                 >
                                   <UploadSimple
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-[#071037]/80 light:group-hover/upload:text-infinite-night" : "text-doctor/55 hover:text-white light:text-[rgba(7,16,55,0.55)] light:group-hover/upload:text-infinite-night"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-infinite-night/80 light:group-hover/upload:text-infinite-night" : "text-doctor/55 hover:text-white light:text-infinite-night/55 light:group-hover/upload:text-infinite-night"}`}
                                   />
                                 </button>
                                 <button
@@ -199,7 +199,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-[#071037]/80 light:group-hover/gear:text-infinite-night" : "text-doctor/55 hover:text-white light:text-[rgba(7,16,55,0.55)] light:group-hover/gear:text-infinite-night"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-infinite-night/80 light:group-hover/gear:text-infinite-night" : "text-doctor/55 hover:text-white light:text-infinite-night/55 light:group-hover/gear:text-infinite-night"}`}
                                   />
                                 </button>
                               </div>

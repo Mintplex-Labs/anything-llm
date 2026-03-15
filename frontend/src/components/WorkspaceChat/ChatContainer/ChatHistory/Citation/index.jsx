@@ -273,7 +273,7 @@ export function CitationDetailModal({ source, onClose }) {
             )}
           </div>
           {references > 1 && (
-            <p className="text-xs text-doctor/55 light:text-[rgba(7,16,55,0.55)] mt-2">
+            <p className="text-xs text-doctor/55 light:text-infinite-night/55 mt-2">
               Referenced {references} times.
             </p>
           )}

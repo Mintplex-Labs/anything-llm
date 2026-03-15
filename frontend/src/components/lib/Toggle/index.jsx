@@ -153,7 +153,7 @@ function TextContent({ label, description, labelStyles = {}, hint }) {
       )}
       {description && (
         <span
-          className={`text-doctor/55 light:text-[rgba(7,16,55,0.55)] ${labelStyles.description}`}
+          className={`text-doctor/55 light:text-infinite-night/55 ${labelStyles.description}`}
         >
           {description}
         </span>

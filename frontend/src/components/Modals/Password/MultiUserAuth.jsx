@@ -41,7 +41,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
               {t("login.password-reset.title")}
             </h3>
           </div>
-          <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
+          <p className="text-doctor/55 light:text-infinite-night/55 text-sm text-center">
             {t("login.password-reset.description")}
           </p>
         </div>
@@ -55,7 +55,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
             <input
               name="username"
               type="text"
-              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -71,7 +71,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
                 key={index}
                 type="text"
                 name={`recoveryCode${index + 1}`}
-                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 value={code}
                 onChange={(e) =>
                   handleRecoveryCodeChange(index, e.target.value)
@@ -92,7 +92,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
         </button>
         <button
           type="button"
-          className="text-zinc-200 light:text-[rgba(7,16,55,0.55)] hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
+          className="text-zinc-200 light:text-infinite-night/55 hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
           onClick={() => setShowRecoveryForm(false)}
         >
           {t("login.password-reset.back-to-login")}
@@ -123,7 +123,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               Reset Password
             </h3>
           </div>
-          <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
+          <p className="text-doctor/55 light:text-infinite-night/55 text-sm text-center">
             Enter your new password.
           </p>
         </div>
@@ -137,7 +137,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
             <input
               type="password"
               name="newPassword"
-              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
@@ -150,7 +150,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
             <input
               type="password"
               name="confirmPassword"
-              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -296,7 +296,7 @@ export default function MultiUserAuth() {
                 {t("login.multi-user.welcome")}
               </h3>
             </div>
-            <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
+            <p className="text-doctor/55 light:text-infinite-night/55 text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "Lovora" })}
             </p>
           </div>
@@ -310,7 +310,7 @@ export default function MultiUserAuth() {
               <input
                 name="username"
                 type="text"
-                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -322,7 +322,7 @@ export default function MultiUserAuth() {
               <input
                 name="password"
                 type="password"
-                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -342,7 +342,7 @@ export default function MultiUserAuth() {
           </button>
           <button
             type="button"
-            className="text-zinc-200 light:text-[rgba(7,16,55,0.55)] hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
+            className="text-zinc-200 light:text-infinite-night/55 hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
             onClick={handleResetPassword}
           >
             {t("login.multi-user.forgot-pass")}?

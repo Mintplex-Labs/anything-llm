@@ -204,7 +204,7 @@ function ShortWidthNewWorkspaceButton({ user, showNewWsModal }) {
         <Plus
           size={16}
           weight="bold"
-          className="text-black light:text-[rgba(7,16,55,0.55)]"
+          className="text-black light:text-infinite-night/55"
         />
       </button>
       <Tooltip

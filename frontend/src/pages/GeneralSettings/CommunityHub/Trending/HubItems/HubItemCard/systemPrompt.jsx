@@ -27,7 +27,7 @@ export default function SystemPromptHubCard({ item }) {
         <div className="flex justify-end mt-2">
           <Link
             to={paths.communityHub.importItem(item.importId)}
-            className="text-primary-button hover:text-primary-button/80 text-sm font-medium px-3 py-1.5 rounded-md bg-black/30 light:bg-divine-pleasure group-hover:bg-black/50 light:group-hover:bg-slate-300 transition-all"
+            className="text-primary-button hover:text-primary-button/80 text-sm font-medium px-3 py-1.5 rounded-md bg-black/30 light:bg-divine-pleasure group-hover:bg-black/50 light:group-hover:bg-[#E5DFC9] transition-all"
           >
             Import →
           </Link>

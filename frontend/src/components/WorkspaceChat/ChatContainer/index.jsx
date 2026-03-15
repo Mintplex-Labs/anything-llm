@@ -420,7 +420,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
       >
         <TextSizeMenu />
-        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-theme-bg-secondary light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
           {isMobile && <SidebarMobileHeader />}
           <WorkspaceModelPicker workspaceSlug={workspace.slug} />
           <DnDFileUploaderWrapper>

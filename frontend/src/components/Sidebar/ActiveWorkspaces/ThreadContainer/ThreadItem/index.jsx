@@ -50,7 +50,7 @@ export default function ThreadItem({
         className={`${
           isActive
             ? "border-l-2 border-b-2 border-white light:border-infinite-night z-[2]"
-            : "border-l border-b border-zinc-500 light:border-[rgba(7,16,55,0.20)] z-[1]"
+            : "border-l border-b border-zinc-500 light:border-infinite-night/20 z-[1]"
         } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
@@ -60,7 +60,7 @@ export default function ThreadItem({
           className={`${
             idx <= activeIdx && !isActive
               ? "border-l-2 border-white light:border-infinite-night z-[2]"
-              : "border-l border-zinc-500 light:border-[rgba(7,16,55,0.20)] z-[1]"
+              : "border-l border-zinc-500 light:border-infinite-night/20 z-[1]"
           } h-[100%] absolute top-0 left-3`}
         ></div>
       )}
@@ -77,7 +77,7 @@ export default function ThreadItem({
           <div className="w-full flex justify-between">
             <div className="w-full pl-2 py-1">
               <p
-                className={`text-left text-sm text-slate-400/50 light:text-[rgba(7,16,55,0.55)] italic`}
+                className={`text-left text-sm text-slate-400/50 light:text-infinite-night/55 italic`}
               >
                 deleted thread
               </p>

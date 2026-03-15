@@ -372,7 +372,7 @@ export default function PromptInput({
                   }}
                   value={promptInput}
                   spellCheck={Appearance.get("enableSpellCheck")}
-                  className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[20px] w-full leading-5 text-white light:text-[rgba(7,16,55,0.55)] bg-transparent placeholder:text-white/60 light:placeholder:text-[rgba(7,16,55,0.40)] resize-none active:outline-none focus:outline-none flex-grow pwa:!text-[16px] ${textSizeClass}`}
+                  className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[20px] w-full leading-5 text-white light:text-infinite-night/55 bg-transparent placeholder:text-white/60 light:placeholder:text-infinite-night/40 resize-none active:outline-none focus:outline-none flex-grow pwa:!text-[16px] ${textSizeClass}`}
                   placeholder={t("chat_window.send_message")}
                 />
               </div>
@@ -400,7 +400,7 @@ export default function PromptInput({
                       className={`text-sm font-medium ${
                         showTools
                           ? "text-white light:text-infinite-night"
-                          : "text-doctor/75 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-800"
+                          : "text-doctor/75 light:text-infinite-night/55 group-hover:text-white light:group-hover:text-slate-800"
                       }`}
                     >
                       {t("chat_window.tools")}

@@ -109,7 +109,7 @@ export default function LLMSelectorModal({
         className="w-full h-[388px] flex flex-col items-center justify-center gap-2"
       >
         <PreLoader size={12} />
-        <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm">
+        <p className="text-doctor/55 light:text-infinite-night/55 text-sm">
           {t("chat_window.workspace_llm_manager.loading_workspace_settings")}
         </p>
       </div>
@@ -132,7 +132,7 @@ export default function LLMSelectorModal({
                 provider: providerName,
               })}
             </p>
-            <p className="text-xs font-medium text-doctor/55 light:text-[rgba(7,16,55,0.55)]">
+            <p className="text-xs font-medium text-doctor/55 light:text-infinite-night/55">
               {t(
                 "chat_window.workspace_llm_manager.available_models_description"
               )}

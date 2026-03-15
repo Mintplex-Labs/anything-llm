@@ -45,7 +45,7 @@ export default function SlashCommandRow({
         <span className="text-white light:text-slate-900 shrink-0">
           {command}
         </span>
-        <span className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] italic truncate">
+        <span className="text-doctor/55 light:text-infinite-night/55 italic truncate">
           {description}
         </span>
       </div>
@@ -59,7 +59,7 @@ export default function SlashCommandRow({
               e.stopPropagation();
               setMenuOpen(!menuOpen);
             }}
-            className="border-none cursor-pointer text-doctor/55 light:text-[rgba(7,16,55,0.55)] p-0.5 hover:text-white light:hover:text-slate-900 rounded opacity-0 group-hover:opacity-100"
+            className="border-none cursor-pointer text-doctor/55 light:text-infinite-night/55 p-0.5 hover:text-white light:hover:text-slate-900 rounded opacity-0 group-hover:opacity-100"
           >
             <DotsThree size={16} weight="bold" />
           </button>

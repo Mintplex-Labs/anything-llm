@@ -18,7 +18,7 @@ export default function SourceItem({ source, onClick }) {
           {source.title}
         </p>
       </div>
-      <div className="flex flex-col gap-[2px] pl-[22px] text-[10px] text-doctor/55 light:text-[rgba(7,16,55,0.55)] leading-[14px]">
+      <div className="flex flex-col gap-[2px] pl-[22px] text-[10px] text-doctor/55 light:text-infinite-night/55 leading-[14px]">
         <p>{subtitle}</p>
         <p>{t("chat_window.source_count", { count: source.references })}</p>
       </div>

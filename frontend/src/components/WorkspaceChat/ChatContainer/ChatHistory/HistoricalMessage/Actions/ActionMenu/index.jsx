@@ -40,7 +40,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     <div className="mt-2 -ml-0.5 relative" ref={menuRef}>
       <button
         onClick={toggleMenu}
-        className="border-none text-doctor/75 light:text-[rgba(7,16,55,0.55)] transition-colors duration-200"
+        className="border-none text-doctor/75 light:text-infinite-night/55 transition-colors duration-200"
         data-tooltip-id="action-menu"
         data-tooltip-content={t("chat_window.more_actions")}
         aria-label={t("chat_window.more_actions")}

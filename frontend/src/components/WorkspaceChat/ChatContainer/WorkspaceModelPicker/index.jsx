@@ -89,7 +89,7 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
             className={`text-xs ${
               showSelector
                 ? "text-white light:text-infinite-night"
-                : "text-zinc-500 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-800"
+                : "text-zinc-500 light:text-infinite-night/55 group-hover:text-white light:group-hover:text-slate-800"
             }`}
           >
             {modelName || t("chat_window.select_model")}

@@ -53,7 +53,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
             ? t("chat_window.edit_prompt")
             : t("chat_window.edit_response")
         } `}
-        className="border-none text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
+        className="border-none text-doctor/75 light:text-infinite-night/55"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
         <Pencil size={21} className="mb-1" />

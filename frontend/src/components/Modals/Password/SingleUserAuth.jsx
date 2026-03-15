@@ -80,7 +80,7 @@ export default function SingleUserAuth() {
                 {t("login.multi-user.welcome")}
               </h3>
             </div>
-            <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
+            <p className="text-doctor/55 light:text-infinite-night/55 text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "Lovora" })}
             </p>
           </div>
@@ -94,7 +94,7 @@ export default function SingleUserAuth() {
               <input
                 name="password"
                 type="password"
-                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-infinite-night/55 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
