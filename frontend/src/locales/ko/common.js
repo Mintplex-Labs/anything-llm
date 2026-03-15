@@ -47,16 +47,9 @@ const TRANSLATIONS = {
       skip: "설문 건너뛰기",
       thankYou: "소중한 의견 감사합니다!",
     },
-    workspace: {
-      title: "첫 번째 워크스페이스 만들기",
-      description:
-        "첫 번째 워크스페이스를 생성하고 AnythingLLM을 시작해보세요.",
-    },
   },
   common: {
     "workspaces-name": "워크스페이스 이름",
-    error: "오류",
-    success: "성공",
     user: "사용자",
     selection: "모델 선택",
     saving: "저장 중...",
@@ -72,7 +65,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "인스턴스 설정",
-    system: "일반 설정",
     invites: "초대",
     users: "사용자",
     workspaces: "워크스페이스",
@@ -86,7 +78,6 @@ const TRANSLATIONS = {
     "voice-speech": "음성과 말하기",
     "vector-database": "벡터 데이터베이스",
     embeds: "채팅 임베드",
-    "embed-chats": "채팅 임베드 기록",
     security: "보안",
     "event-logs": "이벤트 로그",
     privacy: "사생활 보호와 데이터",
@@ -124,92 +115,10 @@ const TRANSLATIONS = {
       title: "비밀번호 재설정",
       description: "비밀번호를 재설정하려면 아래에 필요한 정보를 입력하세요.",
       "recovery-codes": "복구 코드",
-      "recovery-code": "복구 코드 {{index}}",
       "back-to-login": "로그인으로 돌아가기",
     },
   },
   "main-page": {
-    noWorkspaceError: "채팅을 시작하기 전에 워크스페이스를 먼저 만들어주세요.",
-    checklist: {
-      title: "시작하기",
-      tasksLeft: "남은 작업",
-      completed: "이제 곧 AnythingLLM 전문가가 되실 거예요!",
-      dismiss: "닫기",
-      tasks: {
-        create_workspace: {
-          title: "워크스페이스 만들기",
-          description: "처음으로 워크스페이스를 만들어 시작해보세요",
-          action: "만들기",
-        },
-        send_chat: {
-          title: "채팅 보내기",
-          description: "AI 어시스턴트와 대화를 시작해보세요",
-          action: "채팅",
-        },
-        embed_document: {
-          title: "문서 임베드하기",
-          description: "워크스페이스에 첫 번째 문서를 추가해보세요",
-          action: "임베드",
-        },
-        setup_system_prompt: {
-          title: "시스템 프롬프트 설정",
-          description: "AI 어시스턴트의 동작 방식을 설정하세요",
-          action: "설정",
-        },
-        define_slash_command: {
-          title: "슬래시 명령어 정의",
-          description: "어시스턴트용 맞춤 명령어를 만들어보세요",
-          action: "정의",
-        },
-        visit_community: {
-          title: "커뮤니티 허브 방문",
-          description: "커뮤니티 자료와 템플릿을 둘러보세요",
-          action: "둘러보기",
-        },
-      },
-    },
-    quickLinks: {
-      title: "바로가기",
-      sendChat: "채팅 보내기",
-      embedDocument: "문서 임베드",
-      createWorkspace: "워크스페이스 만들기",
-    },
-    exploreMore: {
-      title: "더 많은 기능 살펴보기",
-      features: {
-        customAgents: {
-          title: "맞춤형 AI 에이전트",
-          description: "코딩 없이 강력한 AI 에이전트와 자동화를 구축하세요.",
-          primaryAction: "@agent로 채팅하기",
-          secondaryAction: "에이전트 플로우 만들기",
-        },
-        slashCommands: {
-          title: "슬래시 명령어",
-          description:
-            "맞춤 슬래시 명령어로 시간을 절약하고 프롬프트를 빠르게 입력하세요.",
-          primaryAction: "슬래시 명령어 만들기",
-          secondaryAction: "허브에서 둘러보기",
-        },
-        systemPrompts: {
-          title: "시스템 프롬프트",
-          description:
-            "시스템 프롬프트를 수정해 워크스페이스의 AI 답변을 원하는 대로 맞춤 설정하세요.",
-          primaryAction: "시스템 프롬프트 수정",
-          secondaryAction: "프롬프트 변수 관리",
-        },
-      },
-    },
-    announcements: {
-      title: "업데이트 및 공지사항",
-    },
-    resources: {
-      title: "자료실",
-      links: {
-        docs: "문서 보기",
-        star: "Github에 스타 누르기",
-      },
-      keyboardShortcuts: "단축키 안내",
-    },
     quickActions: {
       createAgent: "에이전트 생성",
       editWorkspace: "워크스페이스 편집",
@@ -244,12 +153,6 @@ const TRANSLATIONS = {
       heading: "저에게 설명해주세요",
       body: "AnythingLLM의 장점",
     },
-    pfp: {
-      title: "어시스턴트 프로필 이미지",
-      description: "이 워크스페이스의 어시스턴트 프로필 이미지를 수정합니다.",
-      image: "워크스페이스 이미지",
-      remove: "워크스페이스 이미지 제거",
-    },
     delete: {
       title: "워크스페이스 삭제",
       description:
@@ -272,7 +175,6 @@ const TRANSLATIONS = {
       title: "워크스페이스 채팅 모델",
       description:
         "이 워크스페이스에서 사용할 특정 채팅 모델입니다. 비어 있으면 시스템 LLM 기본 설정을 사용합니다.",
-      wait: "-- 모델 기다리는 중 --",
     },
     mode: {
       title: "채팅 모드",
@@ -376,9 +278,6 @@ const TRANSLATIONS = {
       wait: "-- 모델 기다리는 중 --",
     },
     skill: {
-      title: "기본 에이전트 스킬",
-      description:
-        "기본 에이전트의 능력을 사전 정의된 스킬을 사용하여 향상시킵니다. 이 설정은 모든 워크스페이스에 적용됩니다.",
       rag: {
         title: "RAG와 장기 메모리",
         description:
@@ -478,10 +377,6 @@ const TRANSLATIONS = {
         description:
           "로그인 페이지에 모든 사용자에게 표시될 애플리케이션 이름을 설정하세요.",
       },
-      "chat-message-alignment": {
-        title: "채팅 메시지 정렬",
-        description: "채팅 인터페이스에서 메시지 정렬 방식을 선택하세요.",
-      },
       "display-language": {
         title: "표시 언어",
         description:
@@ -494,18 +389,6 @@ const TRANSLATIONS = {
         recommended: "권장 크기: 800 x 200",
         remove: "제거",
         replace: "교체",
-      },
-      "welcome-messages": {
-        title: "환영 메시지",
-        description:
-          "사용자에게 표시될 환영 메시지를 맞춤 설정하세요. 관리자 권한이 없는 사용자만 이 메시지를 볼 수 있습니다.",
-        new: "새 메시지",
-        system: "시스템",
-        user: "사용자",
-        message: "메시지",
-        assistant: "AnythingLLM 채팅 어시스턴트",
-        "double-click": "더블 클릭하여 편집...",
-        save: "메시지 저장",
       },
       "browser-appearance": {
         title: "브라우저 표시 설정",
@@ -650,17 +533,12 @@ const TRANSLATIONS = {
     title: "개인정보와 데이터 처리",
     description:
       "연결된 타사 제공자와 AnythingLLM이 데이터를 처리하는 방식을 구성합니다.",
-    llm: "LLM 선택",
-    embedding: "임베딩 기본 설정",
-    vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
   },
   connectors: {
     "search-placeholder": "데이터 커넥터 검색",
     "no-connectors": "데이터 커넥터를 찾을 수 없습니다.",
     obsidian: {
-      name: "Obsidian",
-      description: "Obsidian 볼트를 한 번에 가져옵니다.",
       vault_location: "볼트 위치",
       vault_description:
         "모든 노트와 연결을 가져오려면 Obsidian 볼트 폴더를 선택하세요.",
@@ -707,7 +585,6 @@ const TRANSLATIONS = {
       URL_explained: "가져오려는 GitLab 저장소의 URL을 입력하세요.",
       token: "GitLab 액세스 토큰",
       optional: "선택 사항",
-      token_explained: "요청 제한을 방지하기 위한 액세스 토큰입니다.",
       token_description: "GitLab API에서 추가로 가져올 엔터티를 선택하세요.",
       token_explained_start: "무엇보다 중요한 것은,",
       token_explained_link1: "개인 액세스 토큰",
@@ -739,9 +616,6 @@ const TRANSLATIONS = {
       URL_explained_end: " 이 활성화되어 있어야 합니다.",
       task_explained:
         "가져오기가 완료되면 자막이 문서 선택기에서 워크스페이스에 임베딩할 수 있도록 제공됩니다.",
-      language: "자막 언어",
-      language_explained: "가져오려는 자막의 언어를 선택하세요.",
-      loading_languages: "-- 사용 가능한 언어 불러오는 중 --",
     },
     "website-depth": {
       name: "웹사이트 대량 링크 수집",
@@ -802,14 +676,11 @@ const TRANSLATIONS = {
       "search-document": "문서 검색",
       "no-documents": "문서 없음",
       "move-workspace": "워크스페이스로 이동",
-      name: "이름",
       "delete-confirmation":
         "이 파일과 폴더를 삭제하시겠습니까?\n삭제 시 시스템에서 완전히 제거되며, 기존 워크스페이스에서도 자동으로 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.",
       "removing-message":
         "{{count}}개의 문서와 {{folderCount}}개의 폴더를 삭제하는 중입니다. 잠시만 기다려 주세요.",
       "move-success": "{{count}}개의 문서를 성공적으로 이동했습니다.",
-      date: "날짜",
-      type: "유형",
       no_docs: "문서 없음",
       select_all: "전체 선택",
       deselect_all: "전체 선택 해제",
@@ -854,18 +725,10 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "새 워크스페이스에 오신 것을 환영합니다.",
-    get_started: "시작하려면",
-    get_started_default: "시작하려면",
-    upload: "문서 업로드",
-    or: "또는",
     attachments_processing:
       "첨부 파일을 처리 중입니다. 잠시만 기다려 주세요...",
-    send_chat: "채팅을 보내세요.",
     send_message: "메시지 보내기",
     attach_file: "이 채팅에 파일 첨부",
-    slash: "채팅에서 사용할 수 있는 모든 슬래시 명령어 보기",
-    agents: "채팅에 사용할 수 있는 모든 에이전트 보기",
     text_size: "텍스트 크기 변경",
     microphone: "프롬프트를 음성으로 입력",
     send: "프롬프트 메시지를 워크스페이스로 전송",
@@ -875,19 +738,11 @@ const TRANSLATIONS = {
     regenerate_response: "응답 다시 생성",
     good_response: "좋은 답변",
     more_actions: "더 많은 작업",
-    hide_citations: "인용 숨기기",
-    show_citations: "인용 보기",
-    pause_tts_speech_message: "TTS 음성 읽기 일시정지",
     fork: "포크",
     delete: "삭제",
-    save_submit: "저장 및 제출",
     cancel: "취소",
     edit_prompt: "프롬프트 수정",
     edit_response: "응답 수정",
-    at_agent: "@agent",
-    default_agent_description: " - 이 워크스페이스의 기본 에이전트입니다.",
-    custom_agents_coming_soon: "커스텀 에이전트 기능이 곧 제공됩니다!",
-    slash_reset: "/reset",
     preset_reset_description: "채팅 기록을 초기화하고 새 채팅을 시작합니다",
     add_new_preset: "새 프리셋 추가",
     command: "명령어",
@@ -910,6 +765,35 @@ const TRANSLATIONS = {
       missing_credentials: "이 제공자의 인증 정보가 없습니다!",
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
     },
+    submit: "제출",
+    edit_info_user:
+      '"제출"은 AI 응답을 다시 생성합니다. "저장"은 사용자 메시지만 업데이트합니다.',
+    edit_info_assistant: "당신이 변경한 내용은 바로 이 답변에 저장됩니다.",
+    see_less: "더 보기",
+    see_more: "더 보기",
+    tools: "도구",
+    browse: "검색",
+    text_size_label: "글자 크기",
+    select_model: "모델 선택",
+    sources: "출처",
+    document: "문서",
+    similarity_match: "경쟁",
+    source_count_one: "{{count}} 참조",
+    source_count_other: "{{count}} 관련 참고 자료",
+    preset_exit_description: "현재 에이전트 세션을 중단",
+    add_new: "새로운 항목 추가",
+    edit: "수정",
+    publish: "출판",
+    stop_generating: "응답 생성 중단",
+    pause_tts_speech_message: "메시지의 텍스트 음성 변환(TTS) 기능을 일시 중지",
+    slash_commands: "슬래시 명령어",
+    agent_skills: "에이전트의 역량",
+    manage_agent_skills: "에이전트 역량 관리",
+    agent_skills_disabled_in_session:
+      "활성 에이전트 세션 중에 기술을 변경할 수 없습니다. 먼저 /exit 명령을 사용하여 세션을 종료하십시오.",
+    start_agent_session: "에이전트 세션 시작",
+    use_agent_session_to_use_tools:
+      "채팅에서 도구를 사용하려면, 프롬프트의 시작 부분에 '@agent'을 사용하여 에이전트 세션을 시작할 수 있습니다.",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -969,16 +853,12 @@ const TRANSLATIONS = {
         private_description: "비공개 시스템 프롬프트는 본인만 볼 수 있습니다.",
         publish_button: "커뮤니티 허브에 게시",
         submitting: "게시 중...",
-        submit: "커뮤니티 허브에 게시",
         prompt_label: "프롬프트",
         prompt_description:
           "실제로 LLM을 안내하는 데 사용될 시스템 프롬프트를 입력하세요.",
         prompt_placeholder: "여기에 시스템 프롬프트를 입력하세요...",
       },
       agent_flow: {
-        public_description:
-          "공개 에이전트 플로우는 모든 사용자에게 표시됩니다.",
-        private_description: "비공개 에이전트 플로우는 본인만 볼 수 있습니다.",
         success_title: "성공!",
         success_description:
           "에이전트 플로우가 커뮤니티 허브에 성공적으로 게시되었습니다!",
@@ -996,7 +876,6 @@ const TRANSLATIONS = {
           "태그를 추가하면 에이전트 플로우를 더 쉽게 검색할 수 있습니다. 여러 개의 태그를 추가할 수 있습니다. 최대 5개, 태그당 20자 이내로 입력해 주세요.",
         tags_placeholder: "태그 입력 후 Enter를 눌러 추가",
         visibility_label: "공개 범위",
-        publish_button: "커뮤니티 허브에 게시",
         submitting: "게시 중...",
         submit: "커뮤니티 허브에 게시",
         privacy_note:
@@ -1015,10 +894,6 @@ const TRANSLATIONS = {
         description_label: "설명",
         description_description:
           "슬래시 커맨드의 목적이나 용도를 설명해 주세요.",
-        command_label: "커맨드",
-        command_description:
-          "사용자가 이 프리셋을 실행할 때 입력할 슬래시 커맨드입니다.",
-        command_placeholder: "my-command",
         tags_label: "태그",
         tags_description:
           "태그를 추가하면 슬래시 커맨드를 더 쉽게 검색할 수 있습니다. 여러 개의 태그를 추가할 수 있습니다. 최대 5개, 태그당 20자 이내로 입력해 주세요.",

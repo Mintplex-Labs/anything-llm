@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Queste impostazioni possono essere riconfigurate in qualsiasi momento nelle impostazioni.",
     },
-    workspace: {
-      title: "Crea il tuo primo spazio di lavoro",
-      description:
-        "Crea il tuo primo spazio di lavoro e inizia a utilizzare AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nome delle aree di lavoro",
-    error: "errore",
-    success: "successo",
     user: "Utente",
     selection: "Selezione del modello",
     saving: "Salvo...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Impostazioni istanza",
-    system: "Impostazioni generali",
     invites: "Inviti",
     users: "Utenti",
     workspaces: "Aree di lavoro",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voce & discorso",
     "vector-database": "Database Vettoriale",
     embeds: "Chat incorporata",
-    "embed-chats": "Storico chat incorporata",
     security: "Sicurezza",
     "event-logs": "Log degli eventi",
     privacy: "Privacy & Dati",
@@ -128,7 +119,6 @@ const TRANSLATIONS = {
       description:
         "Fornisci le informazioni necessarie qui sotto per reimpostare la tua password.",
       "recovery-codes": "Codici di recupero",
-      "recovery-code": "Codice di recupero {{index}}",
       "back-to-login": "Torna al Login",
     },
   },
@@ -161,13 +151,6 @@ const TRANSLATIONS = {
       heading: "Spiegami",
       body: "i vantaggi di AnythingLLM",
     },
-    pfp: {
-      title: "Immagine del profilo dell'assistente",
-      description:
-        "Personalizza l'immagine del profilo dell'assistente per quest'area di lavoro.",
-      image: "Immagine dell'area di lavoro",
-      remove: "Rimuovi immagine dell'area di lavoro",
-    },
     delete: {
       title: "Elimina area di lavoro",
       description:
@@ -190,7 +173,6 @@ const TRANSLATIONS = {
       title: "Modello di chat dell'area di lavoro",
       description:
         "Il modello di chat specifico che verrà utilizzato per quest'area di lavoro. Se vuoto, utilizzerà l'LLM di sistema.",
-      wait: "-- in attesa dei modelli --",
     },
     mode: {
       title: "Modalità chat",
@@ -300,9 +282,6 @@ const TRANSLATIONS = {
       wait: "-- in attesa dei modelli --",
     },
     skill: {
-      title: "Abilità predefinite dell'agente",
-      description:
-        "Migliora le capacità naturali dell'agente predefinito con queste abilità predefinite. Questa configurazione si applica a tutte le aree di lavoro.",
       rag: {
         title: "RAG e memoria a lungo termine",
         description:
@@ -476,9 +455,6 @@ const TRANSLATIONS = {
     title: "Privacy e gestione dei dati",
     description:
       "Questa è la tua configurazione per il modo in cui i provider terzi connessi e AnythingLLM gestiscono i tuoi dati.",
-    llm: "Selezione LLM",
-    embedding: "Preferenza di embedding",
-    vector: "Database vettoriale",
     anonymous: "Telemetria anonima abilitata",
   },
   connectors: {
@@ -520,7 +496,6 @@ const TRANSLATIONS = {
       URL_explained: "URL del repository di GitLab a cui desideri accedere.",
       token: "Token di accesso a GitLab",
       optional: "Opzionale",
-      token_explained: "Token di accesso per prevenire il limite di velocità.",
       token_description:
         "Selezionare ulteriori entità da recuperare dall'API di GitLab.",
       token_explained_start: "Senza",
@@ -554,10 +529,6 @@ const TRANSLATIONS = {
       URL_explained_end: "Disponibile.",
       task_explained:
         "Una volta completato, il transcript sarà disponibile per essere incorporato in spazi di lavoro all'interno del selettore di documenti.",
-      language: "Trascrizione della lingua",
-      language_explained:
-        "Seleziona la lingua del testo che desideri raccogliere.",
-      loading_languages: "-- Caricamento delle lingue disponibili --",
     },
     "website-depth": {
       name: "Scraping di link in blocco",
@@ -618,14 +589,11 @@ const TRANSLATIONS = {
       "search-document": "Cerca documento",
       "no-documents": "Nessun documento.",
       "move-workspace": "Vai a Workspace",
-      name: "Nome",
       "delete-confirmation":
         "È sicuro che desideri eliminare questi file e cartelle?\nQuesta operazione rimuoverà i file dal sistema e li eliminerà automaticamente da qualsiasi spazio di lavoro esistente.\nQuesta operazione non è reversibile.",
       "removing-message":
         "Eliminazione di {{count}} documenti e {{folderCount}} cartelle. Si prega di attendere.",
       "move-success": "Trasferiti con successo {{count}} documenti.",
-      date: "Data",
-      type: "Tipo",
       no_docs: "Nessun documento.",
       select_all: "Seleziona tutto",
       deselect_all: "Deselect All",
@@ -670,8 +638,6 @@ const TRANSLATIONS = {
       accept: "Ok, ho capito.",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Importa il vault di Obsidian con un solo clic.",
       vault_location: "Posizione del deposito",
       vault_description:
         "Seleziona la cartella del tuo archivio Obsidian per importare tutte le note e le loro relazioni.",
@@ -685,17 +651,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Benvenuti nel vostro nuovo spazio di lavoro.",
-    get_started: "Per iniziare, si può fare:",
-    get_started_default: "Per iniziare",
-    upload: "caricare un documento",
-    or: "oppure",
-    send_chat: "Invia un messaggio.",
     send_message: "Invia un messaggio",
     attach_file: "Allega un file a questa chat.",
-    slash: "Visualizza tutti i comandi disponibili per la chat.",
-    agents:
-      "Visualizza tutti gli agenti disponibili che puoi utilizzare per la chat.",
     text_size: "Modifica la dimensione del testo.",
     microphone: "Formula la tua richiesta.",
     send: "Invia un messaggio immediato allo spazio di lavoro",
@@ -707,21 +664,11 @@ const TRANSLATIONS = {
       "Per favore, fornisci il testo originale che desideri che venga riformulato.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per ricoprire la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda è alla ricerca di un nuovo dipendente per la posizione di rappresentante commerciale.\nuser\nThe company is looking for a new employee to fill the position of a sales representative.\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.\nuser>Regenerate response\nassistant\nL'azienda sta cercando un nuovo dipendente per la posizione di rappresentante commerciale.",
     good_response: "Ottima risposta.",
     more_actions: "Ulteriori azioni",
-    hide_citations: "Nascondi le citazioni",
-    show_citations: "Mostra citazioni",
-    pause_tts_speech_message:
-      "Mettere in pausa la sintesi vocale del messaggio.",
     fork: "Forchetta",
     delete: "Elimina",
-    save_submit: "Salva e invia",
     cancel: "Annulla",
     edit_prompt: "Suggerimento di modifica:",
     edit_response: "Modifica la risposta",
-    at_agent: "@agent",
-    default_agent_description:
-      "- l'agente predefinito per questo spazio di lavoro.",
-    custom_agents_coming_soon: "Agenti personalizzati in arrivo a breve!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Elimina la cronologia delle chat e avvia una nuova chat",
     add_new_preset: "Aggiungi nuovo preset",
@@ -751,6 +698,37 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Fare clic per configurare le credenziali",
     },
+    submit: "Invia",
+    edit_info_user:
+      '"Invia" rigenera la risposta dell\'IA. "Salva" aggiorna solo il tuo messaggio.',
+    edit_info_assistant:
+      "Le modifiche verranno salvate direttamente in questa risposta.",
+    see_less: "Visualizza meno",
+    see_more: "Visualizza altro",
+    tools: "Strumenti",
+    browse: "Naviga",
+    text_size_label: "Dimensione del testo",
+    select_model: "Seleziona il modello",
+    sources: "Fonti",
+    document: "Documento",
+    similarity_match: "partita",
+    source_count_one: "Riferimento {{count}}",
+    source_count_other: "Riferimenti a {{count}}",
+    preset_exit_description: "Interrompere la sessione corrente con l'agente.",
+    add_new: "Aggiungi nuovo",
+    edit: "Modifica",
+    publish: "Pubblicare",
+    stop_generating: "Interrompi la generazione della risposta",
+    pause_tts_speech_message:
+      "Mettere in pausa la lettura vocale del messaggio",
+    slash_commands: "Comandi abbreviati",
+    agent_skills: "Competenze dell'agente",
+    manage_agent_skills: "Gestire le competenze degli agenti",
+    agent_skills_disabled_in_session:
+      "Non è possibile modificare le competenze durante una sessione di agente attivo. Per terminare la sessione, utilizzare il comando `/exit`.",
+    start_agent_session: "Avvia sessione agente",
+    use_agent_session_to_use_tools:
+      'È possibile utilizzare gli strumenti disponibili tramite chat avviando una sessione con un agente utilizzando il prefisso "@agent" all\'inizio del messaggio.',
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -823,11 +801,6 @@ const TRANSLATIONS = {
         description:
           "Definisci un nome che verrà visualizzato sulla pagina di accesso per tutti gli utenti.",
       },
-      "chat-message-alignment": {
-        title: "Allignment di conversazioni",
-        description:
-          "Seleziona la modalità di allineamento del messaggio quando utilizzi l'interfaccia di chat.",
-      },
       "display-language": {
         title: "Lingua da visualizzare",
         description:
@@ -841,18 +814,6 @@ const TRANSLATIONS = {
         recommended: "Dimensioni consigliate: 800 x 200",
         remove: "Rimuovi",
         replace: "Sostituire",
-      },
-      "welcome-messages": {
-        title: "Messaggi di benvenuto",
-        description:
-          "Personalizza i messaggi di benvenuto visualizzati ai tuoi utenti. Solo gli utenti non amministrativi vedranno questi messaggi.",
-        new: "Nuovo",
-        system: "sistema",
-        user: "utente",
-        message: "messaggio",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Fare doppio clic per modificare...",
-        save: "Salva i messaggi",
       },
       "browser-appearance": {
         title: "Aspetto del browser",
@@ -884,92 +845,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Si prega di creare uno spazio di lavoro prima di iniziare una conversazione.",
-    checklist: {
-      title: "Come iniziare",
-      tasksLeft: "compiti rimanenti",
-      completed: "Stai per diventare un esperto di AnythingLLM!",
-      dismiss: "chiudi",
-      tasks: {
-        create_workspace: {
-          title: "Crea uno spazio di lavoro",
-          description: "Crea il tuo primo spazio di lavoro per iniziare",
-          action: "Crea",
-        },
-        send_chat: {
-          title: "Invia una chat",
-          description: "Inizia una conversazione con il tuo assistente AI",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Incorporare un documento",
-          description:
-            "Aggiungi il tuo primo documento al tuo spazio di lavoro.",
-          action: "Incorporare",
-        },
-        setup_system_prompt: {
-          title: "Definisci un prompt di sistema",
-          description: "Configura il comportamento del tuo assistente AI",
-          action: "Configurazione",
-        },
-        define_slash_command: {
-          title: "Definire un comando slash",
-          description: "Crea comandi personalizzati per il tuo assistente",
-          action: "Definire",
-        },
-        visit_community: {
-          title: "Visita il centro comunitario",
-          description:
-            "Esplorate le risorse e i modelli disponibili nella comunità.",
-          action: "Esplora",
-        },
-      },
-    },
-    quickLinks: {
-      title:
-        "Link to the website\nLink to the online store\nLink to the contact form\nLink to the FAQ\nLink to the privacy policy\nLink to the terms and conditions\nLink to the blog\nLink to the social media profiles",
-      sendChat: "Invia chat",
-      embedDocument: "Incorporare un documento",
-      createWorkspace: "Creare uno spazio di lavoro",
-    },
-    exploreMore: {
-      title: "Esplora le altre funzionalità",
-      features: {
-        customAgents: {
-          title: "Agenti AI personalizzati",
-          description:
-            "Creare potenti agenti di intelligenza artificiale e automazioni senza codice.",
-          primaryAction: "Chatta usando @agent",
-          secondaryAction: "Costruisci un flusso di lavoro per un agente.",
-        },
-        slashCommands: {
-          title: "Comandi Slash",
-          description:
-            "Risparmia tempo e utilizza comandi personalizzati per l'inserimento di prompt.",
-          primaryAction: "Creare un comando Slash",
-          secondaryAction: "Esplora su Hub",
-        },
-        systemPrompts: {
-          title: "Prompt di sistema",
-          description:
-            "Modifica l'istruzione del sistema per personalizzare le risposte dell'IA in un ambiente di lavoro.",
-          primaryAction: "Modifica un prompt di sistema",
-          secondaryAction: "Gestire le variabili di prompt",
-        },
-      },
-    },
-    announcements: {
-      title: "Aggiornamenti e comunicazioni",
-    },
-    resources: {
-      title: "Risorse",
-      links: {
-        docs: "Documenti",
-        star: "Star on Github",
-      },
-      keyboardShortcuts: "Combinazioni di tasti",
-    },
     quickActions: {
       createAgent: "Creare un agente",
       editWorkspace: "Modifica l'area di lavoro",
@@ -1018,17 +893,12 @@ const TRANSLATIONS = {
           "I messaggi di sistema privati sono visibili solo a te.",
         publish_button: "Pubblica su Community Hub",
         submitting: "Pubblicazione...",
-        submit: "Pubblica su Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Questo è il prompt di sistema effettivo che verrà utilizzato per guidare il modello linguistico.",
         prompt_placeholder: "Inserisci il prompt del tuo sistema qui...",
       },
       agent_flow: {
-        public_description:
-          "Tutti possono visualizzare i flussi di dati pubblici.",
-        private_description:
-          "Solo gli utenti autorizzati possono visualizzare i flussi di dati privati.",
         success_title: "Successo!",
         success_description:
           "Il tuo flusso di lavoro è stato pubblicato nella Community Hub!",
@@ -1048,7 +918,6 @@ const TRANSLATIONS = {
           "Le etichette vengono utilizzate per identificare il flusso di lavoro del tuo agente, facilitando la ricerca. È possibile aggiungere più etichette. Massimo 5 etichette. Massimo 20 caratteri per etichetta.",
         tags_placeholder: "Inserisci il testo e premi Invio per aggiungere tag",
         visibility_label: "Visibilità",
-        publish_button: "Pubblica su Community Hub",
         submitting: "Pubblicazione...",
         submit: "Pubblica su Community Hub",
         privacy_note:
@@ -1076,10 +945,6 @@ const TRANSLATIONS = {
         description_label: "Descrizione",
         description_description:
           "Questa è la descrizione del tuo comando slash. Utilizzala per descrivere lo scopo del tuo comando slash.",
-        command_label: "Comando",
-        command_description:
-          "Questo è il comando da utilizzare dagli utenti per attivare questa impostazione predefinita.",
-        command_placeholder: "my-command",
         tags_label: "Etichette",
         tags_description:
           "Le etichette vengono utilizzate per identificare il tuo comando slash, facilitando la ricerca. È possibile aggiungere più etichette. Massimo 5 etichette. Massimo 20 caratteri per etichetta.",

@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Các cài đặt này có thể được cấu hình lại bất cứ lúc nào trong cài đặt.",
     },
-    workspace: {
-      title: "Tạo không gian làm việc đầu tiên của bạn",
-      description:
-        "Tạo không gian làm việc đầu tiên của bạn và bắt đầu với AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Tên không gian làm việc",
-    error: "Lỗi",
-    success: "Thành công",
     user: "Người dùng",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Cài đặt hệ thống",
-    system: "Cài đặt chung",
     invites: "Lời mời",
     users: "Người dùng",
     workspaces: "Không gian làm việc",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "Giọng nói & Phát âm",
     "vector-database": "Cơ sở dữ liệu Vector",
     embeds: "Nhúng hội thoại",
-    "embed-chats": "Lịch sử Nhúng hội thoại",
     security: "Bảo mật",
     "event-logs": "Nhật ký sự kiện",
     privacy: "Quyền riêng tư & Dữ liệu",
@@ -126,7 +117,6 @@ const TRANSLATIONS = {
       title: "Đặt lại Mật khẩu",
       description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
       "recovery-codes": "Mã khôi phục",
-      "recovery-code": "Mã khôi phục {{index}}",
       "back-to-login": "Quay lại Đăng nhập",
     },
   },
@@ -159,13 +149,6 @@ const TRANSLATIONS = {
       heading: "Giải thích cho tôi",
       body: "các lợi ích của AnythingLLM",
     },
-    pfp: {
-      title: "Hình đại diện trợ lý",
-      description:
-        "Tùy chỉnh hình ảnh hồ sơ của trợ lý cho không gian làm việc này.",
-      image: "Hình ảnh Không gian làm việc",
-      remove: "Xóa Hình ảnh Không gian làm việc",
-    },
     delete: {
       title: "Xóa không gian làm việc",
       description:
@@ -188,7 +171,6 @@ const TRANSLATIONS = {
       title: "Mô hình Trò chuyện Không gian làm việc",
       description:
         "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng tùy chọn LLM hệ thống.",
-      wait: "-- đang chờ mô hình --",
     },
     mode: {
       title: "Chế độ trò chuyện",
@@ -294,9 +276,6 @@ const TRANSLATIONS = {
       wait: "-- đang chờ mô hình --",
     },
     skill: {
-      title: "Kỹ năng agent mặc định",
-      description:
-        "Cải thiện khả năng tự nhiên của agent mặc định với những kỹ năng được xây dựng sẵn này. Thiết lập này áp dụng cho tất cả không gian làm việc.",
       rag: {
         title: "RAG & bộ nhớ dài hạn",
         description:
@@ -469,9 +448,6 @@ const TRANSLATIONS = {
     title: "Quyền riêng tư & Xử lý Dữ liệu",
     description:
       "Đây là cấu hình của bạn về cách các nhà cung cấp bên thứ ba được kết nối và AnythingLLM xử lý dữ liệu của bạn.",
-    llm: "Lựa chọn LLM",
-    embedding: "Tùy chọn nhúng",
-    vector: "Cơ sở dữ liệu Vector",
     anonymous: "Đã Bật Telemetry Ẩn danh",
   },
   connectors: {
@@ -513,7 +489,6 @@ const TRANSLATIONS = {
       URL_explained: "URL của kho GitLab bạn muốn thu thập.",
       token: "Token Truy cập GitLab",
       optional: "tùy chọn",
-      token_explained: "Token truy cập để ngăn giới hạn tốc độ.",
       token_description: "Chọn các thực thể bổ sung để lấy từ API GitLab.",
       token_explained_start: "Nếu không có ",
       token_explained_link1: "Token Truy cập Cá nhân",
@@ -545,9 +520,6 @@ const TRANSLATIONS = {
       URL_explained_end: " có sẵn.",
       task_explained:
         "Khi hoàn tất, bản ghi sẽ có sẵn để nhúng vào không gian làm việc trong bộ chọn tài liệu.",
-      language: "Ngôn ngữ Bản ghi",
-      language_explained: "Chọn ngôn ngữ của bản ghi bạn muốn thu thập.",
-      loading_languages: "-- đang tải các ngôn ngữ có sẵn --",
     },
     "website-depth": {
       name: "Trình thu thập Liên kết Hàng loạt",
@@ -608,14 +580,11 @@ const TRANSLATIONS = {
       "search-document": "Tìm kiếm tài liệu",
       "no-documents": "Không có Tài liệu",
       "move-workspace": "Di chuyển đến Không gian làm việc",
-      name: "Tên",
       "delete-confirmation":
         "Bạn có chắc chắn muốn xóa các tệp và thư mục này?\nĐiều này sẽ xóa các tệp khỏi hệ thống và tự động xóa chúng khỏi bất kỳ không gian làm việc hiện có nào.\nHành động này không thể hoàn tác.",
       "removing-message":
         "Đang xóa {{count}} tài liệu và {{folderCount}} thư mục. Vui lòng chờ.",
       "move-success": "Đã di chuyển thành công {{count}} tài liệu.",
-      date: "Ngày",
-      type: "Loại",
       no_docs: "Không có Tài liệu",
       select_all: "Chọn Tất cả",
       deselect_all: "Bỏ chọn Tất cả",
@@ -660,8 +629,6 @@ const TRANSLATIONS = {
       accept: "Ok, tôi hiểu rồi",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Nhập kho Obsidian chỉ với một cú nhấp chuột.",
       vault_location: "Vị trí Kho",
       vault_description:
         "Chọn thư mục kho Obsidian của bạn để nhập tất cả ghi chú và kết nối của chúng.",
@@ -675,16 +642,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Chào mừng đến với không gian làm việc mới của bạn.",
-    get_started: "Để bắt đầu, hãy",
-    get_started_default: "Để bắt đầu",
-    upload: "tải lên một tài liệu",
-    or: "hoặc",
-    send_chat: "gửi một tin nhắn trò chuyện.",
     send_message: "Gửi tin nhắn",
     attach_file: "Đính kèm tệp vào cuộc trò chuyện này",
-    slash: "Xem tất cả các lệnh gạch chéo có sẵn để trò chuyện.",
-    agents: "Xem tất cả các agent có sẵn bạn có thể sử dụng để trò chuyện.",
     text_size: "Thay đổi kích thước văn bản.",
     microphone: "Nói prompt của bạn.",
     send: "Gửi tin nhắn prompt đến không gian làm việc",
@@ -695,19 +654,11 @@ const TRANSLATIONS = {
     regenerate_response: "Tạo lại phản hồi",
     good_response: "Phản hồi tốt",
     more_actions: "Thêm hành động",
-    hide_citations: "Ẩn trích dẫn",
-    show_citations: "Hiện trích dẫn",
-    pause_tts_speech_message: "Tạm dừng đọc TTS của tin nhắn",
     fork: "Rẽ nhánh",
     delete: "Xóa",
-    save_submit: "Lưu & Gửi",
     cancel: "Hủy",
     edit_prompt: "Chỉnh sửa prompt",
     edit_response: "Chỉnh sửa phản hồi",
-    at_agent: "@agent",
-    default_agent_description: " - agent mặc định cho không gian làm việc này.",
-    custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Xóa lịch sử trò chuyện và bắt đầu cuộc trò chuyện mới",
     add_new_preset: " Thêm Cài đặt sẵn Mới",
@@ -731,6 +682,36 @@ const TRANSLATIONS = {
       missing_credentials: "Nhà cung cấp này thiếu thông tin đăng nhập!",
       missing_credentials_description: "Nhấp để thiết lập thông tin đăng nhập",
     },
+    submit: "Gửi",
+    edit_info_user:
+      '"Gửi" sẽ tạo lại phản hồi của AI. "Lưu" chỉ cập nhật tin nhắn của bạn.',
+    edit_info_assistant:
+      "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
+    see_less: "Xem ít hơn",
+    see_more: "Xem thêm",
+    tools: "Dụng cụ",
+    browse: "Duyệt",
+    text_size_label: "Kích thước văn bản",
+    select_model: "Chọn mẫu",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
+    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
+    add_new: "Thêm mới",
+    edit: "Chỉnh sửa",
+    publish: "Đăng tải",
+    stop_generating: "Dừng tạo ra phản hồi",
+    pause_tts_speech_message: "Tạm dừng phát giọng đọc của tin nhắn",
+    slash_commands: "Lệnh tắt/bật",
+    agent_skills: "Kỹ năng của đại lý",
+    manage_agent_skills: "Quản lý kỹ năng của đại lý",
+    agent_skills_disabled_in_session:
+      "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
+    start_agent_session: "Bắt đầu phiên làm việc với đại lý",
+    use_agent_session_to_use_tools:
+      "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -799,11 +780,6 @@ const TRANSLATIONS = {
         description:
           "Đặt tên được hiển thị trên trang đăng nhập cho tất cả người dùng.",
       },
-      "chat-message-alignment": {
-        title: "Căn chỉnh Tin nhắn Trò chuyện",
-        description:
-          "Chọn chế độ căn chỉnh tin nhắn khi sử dụng giao diện trò chuyện.",
-      },
       "display-language": {
         title: "Ngôn ngữ Hiển thị",
         description:
@@ -817,18 +793,6 @@ const TRANSLATIONS = {
         recommended: "Kích thước khuyến nghị: 800 x 200",
         remove: "Xóa",
         replace: "Thay thế",
-      },
-      "welcome-messages": {
-        title: "Tin nhắn Chào mừng",
-        description:
-          "Tùy chỉnh các tin nhắn chào mừng hiển thị cho người dùng của bạn. Chỉ người dùng không phải quản trị viên mới thấy các tin nhắn này.",
-        new: "Mới",
-        system: "hệ thống",
-        user: "người dùng",
-        message: "tin nhắn",
-        assistant: "Trợ lý Trò chuyện AnythingLLM",
-        "double-click": "Nhấp đúp để chỉnh sửa...",
-        save: "Lưu Tin nhắn",
       },
       "browser-appearance": {
         title: "Giao diện Trình duyệt",
@@ -858,89 +822,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Vui lòng tạo một không gian làm việc trước khi bắt đầu trò chuyện.",
-    checklist: {
-      title: "Bắt đầu",
-      tasksLeft: "nhiệm vụ còn lại",
-      completed: "Bạn đang trên đường trở thành chuyên gia AnythingLLM!",
-      dismiss: "đóng",
-      tasks: {
-        create_workspace: {
-          title: "Tạo một không gian làm việc",
-          description: "Tạo không gian làm việc đầu tiên của bạn để bắt đầu",
-          action: "Tạo",
-        },
-        send_chat: {
-          title: "Gửi một tin nhắn trò chuyện",
-          description: "Bắt đầu cuộc trò chuyện với trợ lý AI của bạn",
-          action: "Trò chuyện",
-        },
-        embed_document: {
-          title: "Nhúng một tài liệu",
-          description: "Thêm tài liệu đầu tiên của bạn vào không gian làm việc",
-          action: "Nhúng",
-        },
-        setup_system_prompt: {
-          title: "Thiết lập system prompt",
-          description: "Cấu hình hành vi của trợ lý AI của bạn",
-          action: "Thiết lập",
-        },
-        define_slash_command: {
-          title: "Định nghĩa một lệnh gạch chéo",
-          description: "Tạo các lệnh tùy chỉnh cho trợ lý của bạn",
-          action: "Định nghĩa",
-        },
-        visit_community: {
-          title: "Truy cập Community Hub",
-          description: "Khám phá tài nguyên và mẫu cộng đồng",
-          action: "Duyệt",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Liên kết Nhanh",
-      sendChat: "Gửi Trò chuyện",
-      embedDocument: "Nhúng Tài liệu",
-      createWorkspace: "Tạo Không gian làm việc",
-    },
-    exploreMore: {
-      title: "Khám phá thêm tính năng",
-      features: {
-        customAgents: {
-          title: "Agent AI Tùy chỉnh",
-          description:
-            "Xây dựng các Agent AI và tự động hóa mạnh mẽ mà không cần viết mã.",
-          primaryAction: "Trò chuyện bằng @agent",
-          secondaryAction: "Xây dựng một luồng agent",
-        },
-        slashCommands: {
-          title: "Lệnh Gạch chéo",
-          description:
-            "Tiết kiệm thời gian và đưa prompt bằng các lệnh gạch chéo tùy chỉnh.",
-          primaryAction: "Tạo một Lệnh Gạch chéo",
-          secondaryAction: "Khám phá trên Hub",
-        },
-        systemPrompts: {
-          title: "System Prompt",
-          description:
-            "Sửa đổi system prompt để tùy chỉnh các phản hồi AI của một không gian làm việc.",
-          primaryAction: "Sửa đổi System Prompt",
-          secondaryAction: "Quản lý biến prompt",
-        },
-      },
-    },
-    announcements: {
-      title: "Cập nhật & Thông báo",
-    },
-    resources: {
-      title: "Tài nguyên",
-      links: {
-        docs: "Tài liệu",
-        star: "Đánh dấu sao trên Github",
-      },
-      keyboardShortcuts: "Phím tắt",
-    },
     quickActions: {
       createAgent: "Tạo một đại lý",
       editWorkspace: "Chỉnh sửa không gian làm việc",
@@ -987,16 +868,12 @@ const TRANSLATIONS = {
         private_description: "System prompt riêng tư chỉ hiển thị cho bạn.",
         publish_button: "Đăng lên Community Hub",
         submitting: "Đang đăng...",
-        submit: "Đăng lên Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Đây là system prompt thực tế sẽ được sử dụng để hướng dẫn LLM.",
         prompt_placeholder: "Nhập system prompt của bạn ở đây...",
       },
       agent_flow: {
-        public_description:
-          "Luồng agent công khai hiển thị cho tất cả mọi người.",
-        private_description: "Luồng agent riêng tư chỉ hiển thị cho bạn.",
         success_title: "Thành công!",
         success_description:
           "Luồng Agent của bạn đã được đăng lên Community Hub!",
@@ -1014,7 +891,6 @@ const TRANSLATIONS = {
           "Thẻ được sử dụng để gắn nhãn luồng agent của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",
         tags_placeholder: "Nhập và nhấn Enter để thêm thẻ",
         visibility_label: "Hiển thị",
-        publish_button: "Đăng lên Community Hub",
         submitting: "Đang đăng...",
         submit: "Đăng lên Community Hub",
         privacy_note:
@@ -1033,10 +909,6 @@ const TRANSLATIONS = {
         description_label: "Mô tả",
         description_description:
           "Đây là mô tả của lệnh gạch chéo của bạn. Sử dụng điều này để mô tả mục đích của lệnh gạch chéo của bạn.",
-        command_label: "Lệnh",
-        command_description:
-          "Đây là lệnh gạch chéo mà người dùng sẽ nhập để kích hoạt cài đặt sẵn này.",
-        command_placeholder: "lệnh-của-tôi",
         tags_label: "Thẻ",
         tags_description:
           "Thẻ được sử dụng để gắn nhãn lệnh gạch chéo của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",

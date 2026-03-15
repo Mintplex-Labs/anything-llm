@@ -46,16 +46,9 @@ const TRANSLATIONS = {
       skip: "דלג על הסקר",
       thankYou: "תודה על המשוב!",
     },
-    workspace: {
-      title: "צור את סביבת העבודה הראשונה שלך",
-      description:
-        "צור את סביבת העבודה הראשונה שלך והתחל לעבוד עם AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "שם סביבת העבודה",
-    error: "שגיאה",
-    success: "הצלחה",
     user: "משתמש",
     selection: "בחירת מודל",
     saving: "שומר...",
@@ -71,7 +64,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "הגדרות מופע",
-    system: "הגדרות כלליות",
     invites: "הזמנות",
     users: "משתמשים",
     workspaces: "סביבות עבודה",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "קול ודיבור",
     "vector-database": "מסד נתונים וקטורי",
     embeds: "הטמעות צ'אט (Embeds)",
-    "embed-chats": "היסטוריית הטמעות צ'אט",
     security: "אבטחה",
     "event-logs": "יומני אירועים",
     privacy: "פרטיות ונתונים",
@@ -123,92 +114,10 @@ const TRANSLATIONS = {
       title: "איפוס סיסמה",
       description: "ספק את המידע הדרוש למטה כדי לאפס את סיסמתך.",
       "recovery-codes": "קודיי שחזור",
-      "recovery-code": "קוד שחזור {{index}}",
       "back-to-login": "חזרה להתחברות",
     },
   },
   "main-page": {
-    noWorkspaceError: "אנא צור סביבת עבודה לפני התחלת צ'אט.",
-    checklist: {
-      title: "תחילת עבודה",
-      tasksLeft: "משימות נותרו",
-      completed: "אתה בדרך להפוך למומחה AnythingLLM!",
-      dismiss: "סגור",
-      tasks: {
-        create_workspace: {
-          title: "צור סביבת עבודה",
-          description: "צור את סביבת העבודה הראשונה שלך כדי להתחיל",
-          action: "צור",
-        },
-        send_chat: {
-          title: "שלח צ'אט",
-          description: "התחל שיחה עם עוזר ה-AI שלך",
-          action: "צ'אט",
-        },
-        embed_document: {
-          title: "הטמע מסמך",
-          description: "הוסף את המסמך הראשון שלך לסביבת העבודה",
-          action: "הטמע",
-        },
-        setup_system_prompt: {
-          title: "הגדר הנחיית מערכת",
-          description: "הגדר את התנהגות עוזר ה-AI שלך",
-          action: "הגדר",
-        },
-        define_slash_command: {
-          title: "הגדר פקודת סלאש",
-          description: "צור פקודות מותאמות אישית עבור העוזר שלך",
-          action: "הגדר",
-        },
-        visit_community: {
-          title: "בקר במרכז הקהילה",
-          description: "גלה משאבים ותבניות מהקהילה",
-          action: "עיין",
-        },
-      },
-    },
-    quickLinks: {
-      title: "קישורים מהירים",
-      sendChat: "שלח צ'אט",
-      embedDocument: "הטמע מסמך",
-      createWorkspace: "צור סביבת עבודה",
-    },
-    exploreMore: {
-      title: "גלה תכונות נוספות",
-      features: {
-        customAgents: {
-          title: "סוכני AI מותאמים אישית",
-          description: "בנה סוכני AI ואוטומציות חזקות ללא קוד.",
-          primaryAction: "צ'אט באמצעות @agent",
-          secondaryAction: "בנה זרימת סוכן",
-        },
-        slashCommands: {
-          title: "פקודות סלאש",
-          description:
-            "חסוך זמן והזרק הנחיות באמצעות פקודות סלאש מותאמות אישית.",
-          primaryAction: "צור פקודת סלאש",
-          secondaryAction: "גלה במרכז הקהילה",
-        },
-        systemPrompts: {
-          title: "הנחיות מערכת",
-          description:
-            "שנה את הנחיית המערכת כדי להתאים אישית את תשובות ה-AI של סביבת עבודה.",
-          primaryAction: "שנה הנחיית מערכת",
-          secondaryAction: "נהל משתני הנחיה",
-        },
-      },
-    },
-    announcements: {
-      title: "עדכונים והודעות",
-    },
-    resources: {
-      title: "משאבים",
-      links: {
-        docs: "תיעוד",
-        star: "סמן בכוכב ב-Github",
-      },
-      keyboardShortcuts: "קיצורי מקלדת",
-    },
     quickActions: {
       createAgent: "צור סוכן",
       editWorkspace: "ערוך את סביבת העבודה",
@@ -243,12 +152,6 @@ const TRANSLATIONS = {
       heading: "הסבר לי",
       body: "את היתרונות של AnythingLLM",
     },
-    pfp: {
-      title: "תמונת פרופיל של העוזר",
-      description: "התאם אישית את תמונת הפרופיל של העוזר עבור סביבת עבודה זו.",
-      image: "תמונת סביבת עבודה",
-      remove: "הסר תמונת סביבת עבודה",
-    },
     delete: {
       title: "מחק סביבת עבודה",
       description:
@@ -271,7 +174,6 @@ const TRANSLATIONS = {
       title: "מודל צ'אט של סביבת העבודה",
       description:
         "מודל הצ'אט הספציפי שישמש עבור סביבת עבודה זו. אם ריק, ישתמש בהעדפת ה-LLM של המערכת.",
-      wait: "-- ממתין למודלים --",
     },
     mode: {
       title: "מצב צ'אט",
@@ -376,9 +278,6 @@ const TRANSLATIONS = {
       wait: "-- ממתין למודלים --",
     },
     skill: {
-      title: "כישורי סוכן ברירת מחדל",
-      description:
-        "שפר את היכולות הטבעיות של סוכן ברירת המחדל עם כישורים מובנים אלה. הגדרה זו חלה על כל סביבות העבודה.",
       rag: {
         title: "RAG וזיכרון לטווח ארוך",
         description:
@@ -474,10 +373,6 @@ const TRANSLATIONS = {
         title: "שם",
         description: "הגדר שם שיוצג בדף ההתחברות לכל המשתמשים.",
       },
-      "chat-message-alignment": {
-        title: "יישור הודעות צ'אט",
-        description: "בחר את מצב יישור ההודעות בעת שימוש בממשק הצ'אט.",
-      },
       "display-language": {
         title: "שפת תצוגה",
         description:
@@ -490,18 +385,6 @@ const TRANSLATIONS = {
         recommended: "גודל מומלץ: 800x200",
         remove: "הסר",
         replace: "החלף",
-      },
-      "welcome-messages": {
-        title: "הודעות פתיחה",
-        description:
-          "התאם אישית את הודעות הפתיחה המוצגות למשתמשים שלך. רק משתמשים שאינם מנהלים יראו הודעות אלה.",
-        new: "חדש",
-        system: "מערכת",
-        user: "משתמש",
-        message: "הודעה",
-        assistant: "עוזר הצ'אט של AnythingLLM",
-        "double-click": "לחץ פעמיים לעריכה...",
-        save: "שמור הודעות",
       },
       "browser-appearance": {
         title: "מראה הדפדפן",
@@ -647,17 +530,12 @@ const TRANSLATIONS = {
     title: "פרטיות וטיפול בנתונים",
     description:
       "זוהי התצורה שלך לאופן שבו ספקים צד שלישי מחוברים ו-AnythingLLM מטפלים בנתונים שלך.",
-    llm: "בחירת מודל שפה (LLM)",
-    embedding: "העדפות הטמעה",
-    vector: "מסד נתונים וקטורי",
     anonymous: "טלמטריה אנונימית מופעלת",
   },
   connectors: {
     "search-placeholder": "חפש מחברי נתונים",
     "no-connectors": "לא נמצאו מחברי נתונים.",
     obsidian: {
-      name: "Obsidian",
-      description: "ייבא כספת Obsidian בלחיצה אחת.",
       vault_location: "מיקום כספת",
       vault_description:
         "בחר את תיקיית כספת ה-Obsidian שלך כדי לייבא את כל ההערות והחיבורים ביניהן.",
@@ -701,7 +579,6 @@ const TRANSLATIONS = {
       URL_explained: "כתובת ה-URL של מאגר ה-GitLab שברצונך לאסוף.",
       token: "אסימון גישה של GitLab",
       optional: "אופציונלי",
-      token_explained: "אסימון גישה למניעת הגבלת קצב.",
       token_description: "בחר ישויות נוספות לאחזור מה-API של GitLab.",
       token_explained_start: "ללא ",
       token_explained_link1: "אסימון גישה אישי",
@@ -732,9 +609,6 @@ const TRANSLATIONS = {
       URL_explained_end: " זמינות.",
       task_explained:
         "לאחר השלמה, התמלול יהיה זמין להטמעה בסביבות עבודה בבורר המסמכים.",
-      language: "שפת התמלול",
-      language_explained: "בחר את שפת התמלול שברצונך לאסוף.",
-      loading_languages: "-- טוען שפות זמינות --",
     },
     "website-depth": {
       name: "גרדן קישורים המוני",
@@ -794,14 +668,11 @@ const TRANSLATIONS = {
       "search-document": "חפש מסמך",
       "no-documents": "אין מסמכים",
       "move-workspace": "העבר לסביבת עבודה",
-      name: "שם",
       "delete-confirmation":
         "האם אתה בטוח שברצונך למחוק קבצים ותיקיות אלה?\nפעולה זו תסיר את הקבצים מהמערכת ותסיר אותם אוטומטית מכל סביבת עבודה קיימת.\nפעולה זו אינה הפיכה.",
       "removing-message":
         "מסיר {{count}} מסמכים ו-{{folderCount}} תיקיות. אנא המתן.",
       "move-success": "{{count}} מסמכים הועברו בהצלחה.",
-      date: "תאריך",
-      type: "סוג",
       no_docs: "אין מסמכים",
       select_all: "בחר הכל",
       deselect_all: "בטל בחירת הכל",
@@ -846,17 +717,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "ברוכים הבאים לסביבת העבודה החדשה שלך.",
-    get_started: "כדי להתחיל, או",
-    get_started_default: "כדי להתחיל",
-    upload: "העלה מסמך",
-    or: "או",
     attachments_processing: "קבצים מצורפים בעיבוד. אנא המתן...",
-    send_chat: "שלח צ'אט.",
     send_message: "שלח הודעה",
     attach_file: "צרף קובץ לצ'אט זה",
-    slash: "הצג את כל פקודות הסלאש הזמינות לצ'אט.",
-    agents: "הצג את כל הסוכנים הזמינים שתוכל להשתמש בהם לצ'אט.",
     text_size: "שנה גודל טקסט.",
     microphone: "אמור את ההנחיה שלך.",
     send: "שלח הודעת הנחיה לסביבת העבודה",
@@ -866,19 +729,11 @@ const TRANSLATIONS = {
     regenerate_response: "צור תגובה מחדש",
     good_response: "תגובה טובה",
     more_actions: "פעולות נוספות",
-    hide_citations: "הסתר ציטוטים",
-    show_citations: "הצג ציטוטים",
-    pause_tts_speech_message: "השהה הקראת הודעה (TTS)",
     fork: "פצל (Fork)",
     delete: "מחק",
-    save_submit: "שמור ושלח",
     cancel: "בטל",
     edit_prompt: "ערוך הנחיה",
     edit_response: "ערוך תגובה",
-    at_agent: "@agent",
-    default_agent_description: " - סוכן ברירת המחדל עבור סביבת עבודה זו.",
-    custom_agents_coming_soon: "סוכנים מותאמים אישית יגיעו בקרוב!",
-    slash_reset: "/reset",
     preset_reset_description: "נקה את היסטוריית הצ'אט שלך והתחל צ'אט חדש",
     add_new_preset: " הוסף הגדרה קבועה חדשה",
     command: "פקודה",
@@ -900,6 +755,36 @@ const TRANSLATIONS = {
       missing_credentials: "חסרים אישורים לספק זה!",
       missing_credentials_description: "לחץ להגדרת אישורים",
     },
+    submit: "הגש",
+    edit_info_user:
+      '"שלח" מחזיר את התגובה של הבינה המלאכותית. "שמור" מעדכן רק את ההודעה שלך.',
+    edit_info_assistant: "השינויים שאתם מבצעים יישמרו ישירות בתגובה זו.",
+    see_less: "ראה פחות",
+    see_more: "לראות עוד",
+    tools: "כלים",
+    browse: "גלו",
+    text_size_label: "גודל הטקסט",
+    select_model: "בחר מודל",
+    sources: "מקורות",
+    document: "מסמך",
+    similarity_match: "משחק",
+    source_count_one: "{{count}} - הפניה",
+    source_count_other: "{{count}} – מקורות",
+    preset_exit_description: "עצירת הפעולה הנוכחית של המשתמש",
+    add_new: "הוסף חדש",
+    edit: "עריכה",
+    publish: "להוציא לאור",
+    stop_generating: "הפסיקו ליצור תגובה",
+    pause_tts_speech_message:
+      "השהייה של קריאת טקסט באמצעות תוכנת TTS (Text-to-Speech)",
+    slash_commands: "פקודות קיצור",
+    agent_skills: "כישורים של סוכן",
+    manage_agent_skills: "ניהול מיומנויות של סוכנים",
+    agent_skills_disabled_in_session:
+      'לא ניתן לשנות כישורים במהלך סשן פעיל. יש להשתמש בפקודה "/exit" כדי לסיים את הסשן תחילה.',
+    start_agent_session: "התחלת סשן עם סוכן",
+    use_agent_session_to_use_tools:
+      "ניתן להשתמש בכלי הדיון באמצעות פתיחת סשן עם נציג על ידי שימוש בסימן '@agent' בתחילת ההודעה.",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -958,14 +843,11 @@ const TRANSLATIONS = {
         private_description: "הנחיות מערכת פרטיות נראות רק לך.",
         publish_button: "פרסם במרכז הקהילה",
         submitting: "מפרסם...",
-        submit: "פרסם במרכז הקהילה",
         prompt_label: "הנחיה",
         prompt_description: "זוהי הנחיית המערכת בפועל שתשמש להנחיית מודל השפה.",
         prompt_placeholder: "הזן את הנחיית המערכת שלך כאן...",
       },
       agent_flow: {
-        public_description: "זרימות סוכן ציבוריות נראות לכולם.",
-        private_description: "זרימות סוכן פרטיות נראות רק לך.",
         success_title: "הצלחה!",
         success_description: "זרימת הסוכן שלך פורסמה במרכז הקהילה!",
         success_thank_you: "תודה על השיתוף בקהילה!",
@@ -982,7 +864,6 @@ const TRANSLATIONS = {
           "תגיות משמשות לתיוג זרימת הסוכן שלך לחיפוש קל יותר. ניתן להוסיף מספר תגיות. עד 5 תגיות. עד 20 תווים לתגית.",
         tags_placeholder: "הקלד והקש אנטר להוספת תגיות",
         visibility_label: "נראות",
-        publish_button: "פרסם במרכז הקהילה",
         submitting: "מפרסם...",
         submit: "פרסם במרכז הקהילה",
         privacy_note:
@@ -1000,10 +881,6 @@ const TRANSLATIONS = {
         description_label: "תיאור",
         description_description:
           "זהו התיאור של פקודת הסלאש שלך. השתמש בזה כדי לתאר את מטרת הפקודה.",
-        command_label: "פקודה",
-        command_description:
-          "זוהי פקודת הסלאש שמשתמשים יקלידו כדי להפעיל הגדרה קבועה זו.",
-        command_placeholder: "הפקודה-שלי",
         tags_label: "תגיות",
         tags_description:
           "תגיות משמשות לתיוג פקודת הסלאש שלך לחיפוש קל יותר. ניתן להוסיף מספר תגיות. עד 5 תגיות. עד 20 תווים לתגית.",
