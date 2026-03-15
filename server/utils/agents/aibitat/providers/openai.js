@@ -133,6 +133,8 @@ class OpenAIProvider extends Provider {
    */
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("OpenAI.stream - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
 
@@ -194,6 +196,13 @@ class OpenAIProvider extends Provider {
           });
           continue;
         }
+
+        if (chunk.type === "response.completed") {
+          const completedResponse = chunk.response;
+          if (!completedResponse?.usage) continue;
+          this.recordUsage(completedResponse.usage);
+          continue;
+        }
       }
 
       if (completion.functionCall) {
@@ -209,6 +218,7 @@ class OpenAIProvider extends Provider {
             arguments: completion.functionCall.arguments,
           },
           cost: this.getCost(),
+          uuid: msgUUID,
         };
       }
 
@@ -216,16 +226,15 @@ class OpenAIProvider extends Provider {
         textResponse: completion.content,
         functionCall: null,
         cost: this.getCost(),
+        uuid: msgUUID,
       };
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
       if (error instanceof OpenAI.AuthenticationError) throw error;
 
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
+        error instanceof OpenAI.APIError
       ) {
         throw new RetryError(error.message);
       }
@@ -243,6 +252,8 @@ class OpenAIProvider extends Provider {
    */
   async complete(messages, functions = []) {
     this.providerLog("OpenAI.complete - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const completion = {
         content: "",
@@ -261,17 +272,14 @@ class OpenAIProvider extends Provider {
           : {}),
       });
 
+      if (response.usage) this.recordUsage(response.usage);
       for (const outputBlock of response.output) {
-        // Grab intermediate text output if it exists
-        // If no tools are used, this will be returned to the aibitat handler
-        // Otherwise, this text will never be shown to the user
         if (outputBlock.type === "message") {
           if (outputBlock.content[0]?.type === "output_text") {
             completion.content = outputBlock.content[0].text;
           }
         }
 
-        // Grab function call output if it exists
         if (outputBlock.type === "function_call") {
           completion.functionCall = {
             name: outputBlock.name,
@@ -289,13 +297,12 @@ class OpenAIProvider extends Provider {
         return {
           textResponse: completion.content,
           functionCall: {
-            // For OpenAI, the id is the call_id and we need it in followup requests
-            // so we can match the function call output to its invocation in the message history.
             id: completion.functionCall.call_id,
             name: completion.functionCall.name,
             arguments: completion.functionCall.arguments,
           },
           cost: this.getCost(),
+          usage: this.getUsage(),
         };
       }
 
@@ -303,16 +310,14 @@ class OpenAIProvider extends Provider {
         textResponse: completion.content,
         functionCall: null,
         cost: this.getCost(),
+        usage: this.getUsage(),
       };
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
       if (error instanceof OpenAI.AuthenticationError) throw error;
-
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
+        error instanceof OpenAI.APIError
       ) {
         throw new RetryError(error.message);
       }
@@ -323,9 +328,7 @@ class OpenAIProvider extends Provider {
 
   /**
    * Get the cost of the completion.
-   *
-   * @param _usage The completion to get the cost for.
-   * @returns The cost of the completion.
+   * @returns {number} The cost of the completion (currently returns 0).
    */
   getCost() {
     return 0;

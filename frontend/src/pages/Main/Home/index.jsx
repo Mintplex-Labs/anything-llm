@@ -23,9 +23,9 @@ import { safeJsonParse } from "@/utils/request";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
 import useUser from "@/hooks/useUser";
-import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import TextSizeMenu from "@/components/WorkspaceChat/ChatContainer/TextSizeMenu";
 import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
+import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 
 async function getTargetWorkspace() {
   const lastVisited = safeJsonParse(
@@ -277,7 +277,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border"
     >
       {isMobile && <SidebarMobileHeader />}
       <TextSizeMenu />

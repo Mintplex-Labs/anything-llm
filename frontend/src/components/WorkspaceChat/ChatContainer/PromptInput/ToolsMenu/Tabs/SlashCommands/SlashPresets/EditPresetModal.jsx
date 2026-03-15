@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { CMD_REGEX } from ".";
+import { CMD_REGEX } from "./constants";
 
 export default function EditPresetModal({
   isOpen,

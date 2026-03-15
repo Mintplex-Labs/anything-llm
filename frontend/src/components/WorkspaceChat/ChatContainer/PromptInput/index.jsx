@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
-import { ArrowUp } from "@phosphor-icons/react";
+import { ArrowUp, At } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
@@ -17,6 +17,10 @@ import Appearance from "@/models/appearance";
 import usePromptInputStorage from "@/hooks/usePromptInputStorage";
 import ToolsMenu, { TOOLS_MENU_KEYBOARD_EVENT } from "./ToolsMenu";
 import { useSearchParams } from "react-router-dom";
+<<<<<<< HEAD
+=======
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
+>>>>>>> upstream/master
 
 export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -42,8 +46,13 @@ export default function PromptInput({
 }) {
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
+  const agentSessionActive = useIsAgentSessionActive();
   const [promptInput, setPromptInput] = useState("");
   const [showTools, setShowTools] = useState(false);
+<<<<<<< HEAD
+=======
+  const autoOpenedToolsRef = useRef(false);
+>>>>>>> upstream/master
   const toolsHighlightRef = useRef(-1);
   const formRef = useRef(null);
   const textareaRef = useRef(null);
@@ -80,6 +89,8 @@ export default function PromptInput({
   function handlePromptUpdate(e) {
     const { messageContent, writeMode = "replace" } = e?.detail ?? {};
     if (writeMode === "append") setPromptInput((prev) => prev + messageContent);
+    else if (writeMode === "prepend")
+      setPromptInput((prev) => messageContent + " " + prev);
     else setPromptInput(messageContent ?? "");
   }
 
@@ -111,6 +122,10 @@ export default function PromptInput({
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
   function handleSubmit(e) {
+<<<<<<< HEAD
+=======
+    // Ignore submits from portaled modals (slash command preset forms)
+>>>>>>> upstream/master
     if (e.target !== e.currentTarget) return;
     setFocused(false);
     setShowTools(false);
@@ -141,6 +156,11 @@ export default function PromptInput({
         );
         return;
       }
+<<<<<<< HEAD
+=======
+      // When an item is highlighted via arrow keys, Enter selects it.
+      // Otherwise, Enter falls through to submit the form normally.
+>>>>>>> upstream/master
       if (event.key === "Enter" && toolsHighlightRef.current >= 0) {
         event.preventDefault();
         window.dispatchEvent(
@@ -165,7 +185,14 @@ export default function PromptInput({
       !event.metaKey &&
       promptInput.trim() === ""
     ) {
+<<<<<<< HEAD
       setShowTools((prev) => !prev);
+=======
+      setShowTools((prev) => {
+        autoOpenedToolsRef.current = !prev;
+        return !prev;
+      });
+>>>>>>> upstream/master
       return;
     }
 
@@ -287,7 +314,14 @@ export default function PromptInput({
   function handleChange(e) {
     debouncedSaveState(-1);
     adjustTextArea(e);
-    setPromptInput(e.target.value);
+    const value = e.target.value;
+    setPromptInput(value);
+
+    // Auto-dismiss the tools menu when the "/" that opened it is modified
+    if (autoOpenedToolsRef.current && showTools && value !== "/") {
+      setShowTools(false);
+      autoOpenedToolsRef.current = false;
+    }
   }
 
   return (
@@ -343,6 +377,7 @@ export default function PromptInput({
                 />
               </div>
               <div className="flex justify-between items-center pt-3.5 pb-3">
+<<<<<<< HEAD
                 <div className="flex gap-x-0.5 items-center">
                   <AttachItem
                     workspaceSlug={workspaceSlug}
@@ -371,12 +406,34 @@ export default function PromptInput({
                       {t("chat_window.tools")}
                     </span>
                   </button>
+=======
+                <div className="flex items-center gap-x-0.25">
+                  <div className="flex items-center gap-x-1">
+                    <AttachItem
+                      workspaceSlug={workspaceSlug}
+                      workspaceThreadSlug={threadSlug}
+                    />
+                    <AgentSessionButton
+                      sendCommand={sendCommand}
+                      promptInput={promptInput}
+                      textareaRef={textareaRef}
+                      visible={!agentSessionActive}
+                    />
+                  </div>
+                  <ToolsButton
+                    showTools={showTools}
+                    setShowTools={setShowTools}
+                    textareaRef={textareaRef}
+                    autoOpenedToolsRef={autoOpenedToolsRef}
+                  />
+>>>>>>> upstream/master
                 </div>
                 <div className="flex gap-x-2 items-center">
                   <SpeechToText sendCommand={sendCommand} />
                   {isStreaming ? (
                     <StopGenerationButton />
                   ) : (
+<<<<<<< HEAD
                     <>
                       <button
                         ref={formRef}
@@ -408,6 +465,13 @@ export default function PromptInput({
                         className="tooltip !text-xs z-99"
                       />
                     </>
+=======
+                    <SendPromptButton
+                      formRef={formRef}
+                      promptInput={promptInput}
+                      isDisabled={isDisabled}
+                    />
+>>>>>>> upstream/master
                   )}
                 </div>
               </div>
@@ -416,6 +480,123 @@ export default function PromptInput({
         </div>
       </form>
     </div>
+  );
+}
+
+function AgentSessionButton({
+  sendCommand,
+  promptInput,
+  textareaRef,
+  visible = true,
+}) {
+  const { t } = useTranslation();
+  if (!visible) return null;
+
+  function handleClick() {
+    try {
+      if (promptInput?.trim()?.startsWith("@agent")) return;
+      sendCommand({ text: "@agent", writeMode: "prepend" });
+    } finally {
+      textareaRef?.current?.focus();
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        data-tooltip-id="agent-session"
+        data-tooltip-content={t("chat_window.start_agent_session")}
+        aria-label={t("chat_window.start_agent_session")}
+        className="group border-none relative flex justify-center items-center cursor-pointer w-6 h-6 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200"
+      >
+        <At
+          size={18}
+          className="pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 shrink-0"
+        />
+      </button>
+      <Tooltip
+        id="agent-session"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      />
+    </>
+  );
+}
+
+function ToolsButton({
+  showTools,
+  setShowTools,
+  textareaRef,
+  autoOpenedToolsRef,
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <button
+      id="tools-btn"
+      type="button"
+      onClick={() => {
+        autoOpenedToolsRef.current = false;
+        setShowTools(!showTools);
+        textareaRef.current?.focus();
+      }}
+      className={`group border-none cursor-pointer flex items-center justify-center h-6 px-2 rounded-full ${
+        showTools
+          ? "bg-zinc-700 light:bg-slate-200"
+          : "hover:bg-zinc-700 light:hover:bg-slate-200"
+      }`}
+    >
+      <span
+        className={`text-sm font-medium ${
+          showTools
+            ? "text-white light:text-slate-800"
+            : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
+        }`}
+      >
+        {t("chat_window.tools")}
+      </span>
+    </button>
+  );
+}
+
+function SendPromptButton({ formRef, promptInput, isDisabled }) {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <button
+        ref={formRef}
+        type="submit"
+        disabled={isDisabled || !promptInput.trim().length}
+        className={`border-none flex justify-center items-center rounded-full w-8 h-8 transition-all ${
+          promptInput.trim().length && !isDisabled
+            ? "cursor-pointer bg-white hover:bg-zinc-200 light:bg-slate-800 light:hover:bg-slate-600"
+            : "cursor-not-allowed bg-zinc-600 light:bg-slate-400"
+        }`}
+        data-tooltip-id="send-prompt"
+        data-tooltip-content={
+          isDisabled
+            ? t("chat_window.attachments_processing")
+            : t("chat_window.send")
+        }
+        aria-label={t("chat_window.send")}
+      >
+        <ArrowUp
+          className="w-[18px] h-[18px] pointer-events-none text-zinc-800 light:text-white"
+          weight="bold"
+        />
+        <span className="sr-only">{t("chat_window.send")}</span>
+      </button>
+      <Tooltip
+        id="send-prompt"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      />
+    </>
   );
 }
 

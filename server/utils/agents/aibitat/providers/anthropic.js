@@ -208,9 +208,11 @@ class AnthropicProvider extends Provider {
    * @param {any[]} messages - The messages to send to the LLM.
    * @param {any[]} functions - The functions to use in the LLM.
    * @param {function} eventHandler - The event handler to use to report stream events.
-   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
       const [systemPrompt, chats] = this.#prepareMessages(messages);
@@ -233,7 +235,20 @@ class AnthropicProvider extends Provider {
         textResponse: "",
       };
 
+      // Track usage from streaming events
+      const usage = { input_tokens: 0, output_tokens: 0 };
+
       for await (const chunk of response) {
+        // Capture input tokens from message_start event
+        if (chunk.type === "message_start" && chunk.message?.usage) {
+          usage.input_tokens = chunk.message.usage.input_tokens || 0;
+        }
+
+        // Capture output tokens from message_delta event
+        if (chunk.type === "message_delta" && chunk.usage) {
+          usage.output_tokens = chunk.usage.output_tokens || 0;
+        }
+
         if (chunk.type === "content_block_start") {
           if (chunk.content_block.type === "text") {
             result.textResponse += chunk.content_block.text;
@@ -282,6 +297,8 @@ class AnthropicProvider extends Provider {
         }
       }
 
+      // Record accumulated usage
+      this.recordUsage(usage);
       if (result.functionCall) {
         result.functionCall.arguments = safeJsonParse(
           result.functionCall.arguments,
@@ -306,6 +323,7 @@ class AnthropicProvider extends Provider {
             arguments: result.functionCall.arguments,
           },
           cost: 0,
+          uuid: msgUUID,
         };
       }
 
@@ -313,6 +331,7 @@ class AnthropicProvider extends Provider {
         textResponse: result.textResponse,
         functionCall: null,
         cost: 0,
+        uuid: msgUUID,
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting
@@ -339,6 +358,8 @@ class AnthropicProvider extends Provider {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    this.resetUsage();
+
     try {
       const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
@@ -354,6 +375,9 @@ class AnthropicProvider extends Provider {
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+
+      // Record usage from response (Anthropic uses input_tokens/output_tokens)
+      if (response.usage) this.recordUsage(response.usage);
 
       // We know that we need to call a tool. So we are about to recurse through completions/handleExecution
       // https://docs.anthropic.com/claude/docs/tool-use#how-tool-use-works
@@ -402,6 +426,7 @@ class AnthropicProvider extends Provider {
             arguments: functionArgs,
           },
           cost: 0,
+          usage: this.getUsage(),
         };
       }
 
@@ -411,6 +436,7 @@ class AnthropicProvider extends Provider {
           completion?.text ??
           "The model failed to complete the task and return back a valid response.",
         cost: 0,
+        usage: this.getUsage(),
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting

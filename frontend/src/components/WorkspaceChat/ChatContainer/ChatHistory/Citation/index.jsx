@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+import { Fragment, useState, useEffect } from "react";
+import { decode as HTMLDecode } from "he";
+>>>>>>> upstream/master
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import {
@@ -9,9 +14,15 @@ import {
   LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
+<<<<<<< HEAD
 import { useTranslation } from "react-i18next";
 import { useSourcesSidebar } from "../../SourcesSidebar";
 import SourceDetailBody from "../../SourcesSidebar/SourceDetailBody";
+=======
+import { toPercentString } from "@/utils/numbers";
+import { useTranslation } from "react-i18next";
+import { useSourcesSidebar } from "../../SourcesSidebar";
+>>>>>>> upstream/master
 
 const CIRCLE_ICONS = {
   file: FileText,
@@ -26,6 +37,7 @@ const CIRCLE_ICONS = {
 };
 
 /**
+<<<<<<< HEAD
  * Renders a circle with a source type icon inside.
  * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
  * @param {number} [props.size] - Circle diameter in px
@@ -39,6 +51,53 @@ export function SourceTypeCircle({ type = "file", size = 22, iconSize = 12 }) {
       style={{ width: size, height: size }}
     >
       <Icon size={iconSize} weight="bold" className="text-black" />
+=======
+ * Renders a circle with a source type icon inside, or a favicon if URL is provided.
+ * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
+ * @param {number} [props.size] - Circle diameter in px
+ * @param {number} [props.iconSize] - Icon size in px
+ * @param {string} [props.url] - Optional URL to fetch favicon from
+ */
+export function SourceTypeCircle({
+  type = "file",
+  size = 22,
+  iconSize = 12,
+  url = null,
+}) {
+  const Icon = CIRCLE_ICONS[type] || CIRCLE_ICONS.file;
+  const [imgError, setImgError] = useState(false);
+
+  let faviconUrl = null;
+  if (type === "link" && url) {
+    try {
+      const hostname = new URL(url).hostname;
+      faviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`;
+    } catch {
+      faviconUrl = null;
+    }
+  }
+
+  useEffect(() => {
+    setImgError(false);
+  }, [url]);
+
+  return (
+    <div
+      className="bg-white light:bg-slate-100 rounded-full flex items-center justify-center overflow-hidden"
+      style={{ width: size, height: size }}
+    >
+      {faviconUrl && !imgError ? (
+        <img
+          src={faviconUrl}
+          alt="favicon"
+          style={{ width: size, height: size }}
+          className="object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <Icon size={iconSize} weight="bold" className="text-black" />
+      )}
+>>>>>>> upstream/master
     </div>
   );
 }
@@ -85,15 +144,26 @@ export function combineLikeSources(sources) {
   return Object.values(combined);
 }
 
+<<<<<<< HEAD
 export default function Citations({ sources = [], citationId }) {
   const { sidebarOpen, activeCitationId, openSidebar, closeSidebar } =
     useSourcesSidebar();
+=======
+export default function Citations({ sources = [] }) {
+  const {
+    sidebarOpen,
+    openSidebar,
+    closeSidebar,
+    sources: currentSources,
+  } = useSourcesSidebar();
+>>>>>>> upstream/master
   const { t } = useTranslation();
   if (sources.length === 0) return null;
 
   const combined = combineLikeSources(sources);
   const visibleSources = combined.slice(0, 3);
   const remainingCount = Math.max(0, combined.length - 3);
+<<<<<<< HEAD
 
   return (
     <button
@@ -102,6 +172,20 @@ export default function Citations({ sources = [], citationId }) {
           ? closeSidebar()
           : openSidebar(sources, citationId)
       }
+=======
+
+  function handleOpenSourcesSidebar() {
+    if (sidebarOpen && sources === currentSources) {
+      closeSidebar();
+    } else {
+      openSidebar(sources);
+    }
+  }
+
+  return (
+    <button
+      onClick={handleOpenSourcesSidebar}
+>>>>>>> upstream/master
       className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >
@@ -120,7 +204,16 @@ export default function Citations({ sources = [], citationId }) {
               className="absolute top-0 size-[22px] rounded-full border-2 border-zinc-800 light:border-white"
               style={{ left: `${idx * 17}px`, zIndex: 3 - idx }}
             >
+<<<<<<< HEAD
               <SourceTypeCircle type={info.icon} size={18} iconSize={10} />
+=======
+              <SourceTypeCircle
+                type={info.icon}
+                size={18}
+                iconSize={10}
+                url={info.href}
+              />
+>>>>>>> upstream/master
             </div>
           );
         })}
@@ -139,6 +232,7 @@ export function omitChunkHeader(text) {
   return text.split("</document_metadata>")[1].trim();
 }
 
+<<<<<<< HEAD
 export function CitationDetailModal({
   source,
   workspaceSlug = null,
@@ -146,7 +240,12 @@ export function CitationDetailModal({
   onClose,
 }) {
   const { references, title } = source;
+=======
+export function CitationDetailModal({ source, onClose }) {
+  const { references, title, chunks } = source;
+>>>>>>> upstream/master
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
+  const { t } = useTranslation();
 
   return (
     <ModalWrapper isOpen={!!source}>
@@ -194,6 +293,7 @@ export function CitationDetailModal({
           className="h-full w-full overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
+<<<<<<< HEAD
           <div className="py-7 px-9">
             <SourceDetailBody
               source={source}
@@ -201,6 +301,40 @@ export function CitationDetailModal({
               threadSlug={threadSlug}
             />
             <div className="mb-6" />
+=======
+          <div className="py-7 px-9 space-y-2 flex-col">
+            {chunks.map(({ text, score }, idx) => (
+              <Fragment key={idx}>
+                <div className="pt-6 text-white light:text-slate-900">
+                  <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                    <p className="text-white light:text-slate-900 whitespace-pre-line">
+                      {HTMLDecode(omitChunkHeader(text))}
+                    </p>
+
+                    {!!score && (
+                      <div className="w-full flex items-center text-xs text-white/60 light:text-slate-500 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>
+                            {toPercentString(score)}{" "}
+                            {t("chat_window.similarity_match")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {idx !== chunks.length - 1 && (
+                  <hr className="border-zinc-700 light:border-slate-300" />
+                )}
+              </Fragment>
+            ))}
+            <div className="mb-6"></div>
+>>>>>>> upstream/master
           </div>
         </div>
       </div>

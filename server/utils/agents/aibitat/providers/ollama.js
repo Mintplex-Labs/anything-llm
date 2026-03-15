@@ -28,7 +28,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new Ollama({
       host: basePath,
       headers: headers,
-      fetch: this.#applyFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
     this.verbose = true;
@@ -287,6 +287,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.providerLog(
         "OllamaProvider.stream (tooled) - will process this chat completion."
       );
+      this.resetUsage();
       await OllamaAILLM.cacheContextWindows();
       const msgUUID = v4();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
@@ -304,6 +305,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       let toolCalls = null;
 
       for await (const chunk of stream) {
+        // Capture usage from final chunk (Ollama sends usage when done=true)
+        if (chunk.done === true) {
+          this.recordUsage({
+            prompt_tokens: chunk.prompt_eval_count || 0,
+            completion_tokens: chunk.eval_count || 0,
+          });
+        }
+
         if (!chunk?.message) continue;
 
         if (chunk.message.content) {
@@ -339,10 +348,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             name: toolCall.function.name,
             arguments: args,
           },
+          cost: 0,
+          uuid: msgUUID,
         };
       }
 
-      return { textResponse, functionCall: null };
+      return { textResponse, functionCall: null, cost: 0, uuid: msgUUID };
     }
 
     // Fallback: UnTooled prompt-based approach via the native Ollama SDK
@@ -473,6 +484,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
     if (useNative) {
+      this.resetUsage();
       await OllamaAILLM.cacheContextWindows();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
@@ -482,6 +494,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         messages: formattedMessages,
         tools,
         options: this.queryOptions,
+      });
+
+      // Record usage (Ollama uses prompt_eval_count/eval_count)
+      this.recordUsage({
+        prompt_tokens: response.prompt_eval_count || 0,
+        completion_tokens: response.eval_count || 0,
       });
 
       if (response.message?.tool_calls?.length > 0) {
@@ -499,12 +517,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             arguments: args,
           },
           cost: 0,
+          usage: this.getUsage(),
         };
       }
 
       return {
         textResponse: response.message?.content || null,
         cost: 0,
+        usage: this.getUsage(),
       };
     }
 
@@ -567,46 +587,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   getCost(_usage) {
     return 0;
-  }
-
-  /**
-   * Apply a custom fetch function to the Ollama client.
-   * This is useful when we want to bypass the default 5m timeout for global fetch
-   * for machines which run responses very slowly.
-   * @returns {Function} The custom fetch function.
-   */
-  #applyFetch() {
-    try {
-      if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
-      const { Agent } = require("undici");
-      const moment = require("moment");
-      let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
-
-      if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        this.providerLog(
-          "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
-          { timeout }
-        );
-        return fetch;
-      } else timeout = Number(timeout);
-
-      const noTimeoutFetch = (input, init = {}) => {
-        return fetch(input, {
-          ...init,
-          dispatcher: new Agent({ headersTimeout: timeout }),
-        });
-      };
-
-      const humanDiff = moment.duration(timeout).humanize();
-      this.providerLog(`Applying custom fetch w/timeout of ${humanDiff}.`);
-      return noTimeoutFetch;
-    } catch (error) {
-      this.providerLog(
-        "Error applying custom fetch - using default fetch",
-        error
-      );
-      return fetch;
-    }
   }
 }
 

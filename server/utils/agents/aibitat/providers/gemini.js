@@ -186,6 +186,8 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.stream - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
       /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
@@ -193,6 +195,7 @@ class GeminiProvider extends Provider {
         model: this.model,
         messages: this.#formatMessages(messages),
         stream: true,
+        stream_options: { include_usage: true },
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
           : {}),
@@ -207,6 +210,9 @@ class GeminiProvider extends Provider {
       for await (const streamEvent of response) {
         /** @type {OpenAI.OpenAI.Chat.ChatCompletionChunk} */
         const chunk = streamEvent;
+
+        // Capture usage from final chunk (when stream_options.include_usage is true)
+        if (chunk?.usage) this.recordUsage(chunk.usage);
         const { content, tool_calls } = chunk?.choices?.[0]?.delta || {};
 
         if (content) {
@@ -249,6 +255,7 @@ class GeminiProvider extends Provider {
             extra_content: completion.functionCall.extra_content,
           },
           cost: this.getCost(),
+          uuid: msgUUID,
         };
       }
 
@@ -256,6 +263,7 @@ class GeminiProvider extends Provider {
         textResponse: completion.content,
         functionCall: null,
         cost: this.getCost(),
+        uuid: msgUUID,
       };
     } catch (error) {
       if (error instanceof OpenAI.AuthenticationError) throw error;
@@ -282,6 +290,8 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.complete - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
@@ -291,6 +301,8 @@ class GeminiProvider extends Provider {
           ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
           : {}),
       });
+
+      if (response.usage) this.recordUsage(response.usage);
 
       /** @type {OpenAI.OpenAI.Chat.ChatCompletionMessage} */
       const completion = response.choices[0].message;
@@ -308,12 +320,14 @@ class GeminiProvider extends Provider {
             extra_content: toolCall.extra_content ?? null,
           },
           cost,
+          usage: this.getUsage(),
         };
       }
 
       return {
         textResponse: completion.content,
         cost,
+        usage: this.getUsage(),
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting

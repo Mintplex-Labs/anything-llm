@@ -277,6 +277,17 @@ class ImportedPlugin {
       // Note: https://github.com/cthackers/adm-zip?tab=readme-ov-file#electron-original-fs
       const AdmZip = require("adm-zip");
       const zip = new AdmZip(zipFilePath);
+
+      // Validate all zip entries to prevent Zip Slip path traversal attacks (CWE-22)
+      for (const entry of zip.getEntries()) {
+        const entryPath = path.resolve(pluginFolder, entry.entryName);
+        if (!isWithin(pluginFolder, entryPath) && pluginFolder !== entryPath) {
+          throw new Error(
+            `[ImportedPlugin.importCommunityItemFromUrl]: Entry "${entry.entryName}" would extract outside plugin folder - not allowed.`
+          );
+        }
+      }
+
       zip.extractAllTo(pluginFolder);
 
       // We want to make sure specific keys are set to the proper values for

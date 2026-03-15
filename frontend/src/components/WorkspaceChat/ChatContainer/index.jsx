@@ -127,7 +127,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {boolean} options.autoSubmit - Determines if the text should be sent immediately or if it should be added to the message state (default: false)
    * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
    * @param {Object[import("./DnDWrapper").Attachment]} options.attachments - The attachments to send to the LLM for this message
-   * @param {'replace' | 'append'} options.writeMode - Replace current text or append to existing text (default: replace)
+   * @param {'replace' | 'append' | 'prepend'} options.writeMode - Replace current text or append to existing text (default: replace)
    * @returns {void}
    */
   const sendCommand = async ({
@@ -141,6 +141,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     if (!autoSubmit) {
       setMessageEmit(text, writeMode);
       return;
+    }
+
+    if (writeMode === "prepend") {
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+      text = currentText + " " + text;
     }
 
     // If we are auto-submitting in append mode
@@ -359,7 +364,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     return (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border"
       >
         {isMobile && <SidebarMobileHeader />}
         <TextSizeMenu />
@@ -402,10 +407,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   return (
+<<<<<<< HEAD
     <SourcesSidebarProvider
       workspaceSlug={workspace.slug}
       threadSlug={threadSlug}
     >
+=======
+    <SourcesSidebarProvider>
+>>>>>>> upstream/master
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
