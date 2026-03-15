@@ -21,6 +21,23 @@ export default {
         "360": "360deg"
       },
       colors: {
+        // Palette tokens
+        "doctor":             "#F9F9F9",
+        "divine-pleasure":    "#F4EFE1",
+        "marsh-field":        "#D4C477",
+        "rustic-wicker":      "#B18A56",
+        "burnt-earth":        "#9D4531",
+        "infinite-night":     "#071037",
+        "infinite-night-800": "#0b1845",
+        "infinite-night-700": "#0f1f50",
+
+        // Remap zinc to Infinite Night navy palette
+        zinc: {
+          700: '#0f1f50',
+          800: '#0b1845',
+          900: '#071037',
+        },
+
         "black-900": "#141414",
         accent: "#3D4147",
         "sidebar-button": "#31353A",
