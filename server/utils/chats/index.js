@@ -65,18 +65,20 @@ async function recentChatHistory({
   messageLimit = 20,
   apiSessionId = null,
 }) {
+  const conditions = {
+    workspaceId: workspace.id,
+    user_id: user?.id || null,
+    thread_id: thread?.id || null,
+    api_session_id: apiSessionId || null,
+  };
+
+  // API chats using a sessionId are saved with include: false to keep them
+  // hidden from the UI. When fetching history for an API session, we omit
+  // the include filter so prior chats are still available for LLM context.
+  if (!apiSessionId) conditions.include = true;
+
   const rawHistory = (
-    await WorkspaceChats.where(
-      {
-        workspaceId: workspace.id,
-        user_id: user?.id || null,
-        thread_id: thread?.id || null,
-        api_session_id: apiSessionId || null,
-        include: true,
-      },
-      messageLimit,
-      { id: "desc" }
-    )
+    await WorkspaceChats.where(conditions, messageLimit, { id: "desc" })
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }

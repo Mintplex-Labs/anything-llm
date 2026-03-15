@@ -18,6 +18,24 @@ const { getModelTag } = require("../../utils");
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
 
+  const validateRequest = (req, res, next) => {
+    const { userId, sessionId = null } = reqBody(req);
+    if (userId && sessionId) {
+      res.status(400).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error:
+          "Cannot pass both userId and sessionId. Use userId to chat as a user or sessionId for ephemeral sessions.",
+      });
+      return;
+    }
+
+    next();
+  };
+
   app.post(
     "/v1/workspace/:slug/thread/new",
     [validApiKey],
@@ -320,7 +338,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/thread/:threadSlug/chat",
-    [validApiKey],
+    [validApiKey, validateRequest],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
@@ -387,6 +405,7 @@ function apiWorkspaceThreadEndpoints(app) {
           message,
           mode = "query",
           userId,
+          sessionId = null,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -429,6 +448,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
         });
@@ -462,7 +482,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/thread/:threadSlug/stream-chat",
-    [validApiKey],
+    [validApiKey, validateRequest],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
@@ -555,6 +575,7 @@ function apiWorkspaceThreadEndpoints(app) {
           message,
           mode = "query",
           userId,
+          sessionId = null,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -605,6 +626,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
         });
