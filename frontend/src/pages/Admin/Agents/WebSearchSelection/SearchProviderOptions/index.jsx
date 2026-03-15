@@ -391,7 +391,7 @@ export function PerplexitySearchOptions({ settings }) {
       <p className="text-sm text-white/60 my-2">
         You can get an API key{" "}
         <a
-          href="https://docs.perplexity.ai"
+          href="https://console.perplexity.ai"
           target="_blank"
           rel="noreferrer"
           className="text-blue-300 underline"

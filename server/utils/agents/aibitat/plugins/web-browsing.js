@@ -985,7 +985,7 @@ const webBrowsing = {
           _perplexitySearch: async function (query) {
             if (!process.env.AGENT_PERPLEXITY_API_KEY) {
               this.super.introspect(
-                `${this.caller}: I can't use Perplexity searching because the user has not defined the required API key.\nVisit: [https://docs.perplexity.ai](https://docs.perplexity.ai) to create the API key.`
+                `${this.caller}: I can't use Perplexity searching because the user has not defined the required API key.\nVisit: [https://console.perplexity.ai](https://console.perplexity.ai) to create the API key.`
               );
               return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
             }
