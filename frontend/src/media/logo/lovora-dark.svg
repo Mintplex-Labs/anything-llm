@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <g transform="translate(60, -10) scale(1.1)" fill="#F4EFE1">
+    <!-- Left Side -->
+    <polygon points="5,47 95,20 95,40 5,67" />
+    <polygon points="15,74 95,50 95,70 15,94" />
+    <polygon points="25,101 65,89 65,171 45,165 45,115 25,115" />
+    <polygon points="75,86 95,80 95,180 75,174" />
+    
+    <!-- Right Side -->
+    <polygon points="195,47 105,20 105,40 195,67" />
+    <polygon points="185,74 105,50 105,70 185,94" />
+    <polygon points="175,101 135,89 135,171 155,165 155,115 175,115" />
+    <polygon points="125,86 105,80 105,180 125,174" />
+  </g>
+  <text x="330" y="138" font-family="Georgia, 'Times New Roman', serif" font-size="90" font-weight="600" letter-spacing="4" fill="#F4EFE1">LOVORA</text>
+</svg>

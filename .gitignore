@@ -15,3 +15,4 @@ yarn.lock
 frontend/.env
 server/.env.development
 collector/.env.development
+.gstack/
