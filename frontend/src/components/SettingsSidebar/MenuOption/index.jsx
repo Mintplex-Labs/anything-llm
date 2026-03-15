@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import { safeJsonParse } from "@/utils/request";
-import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 
 export default function MenuOption({
   btnText,
@@ -14,6 +13,7 @@ export default function MenuOption({
   roles = [],
   hidden = false,
   isChild = false,
+  setShowSidebar,
 }) {
   const storageKey = generateStorageKey({ key: btnText });
   const location = useLocation();
@@ -31,12 +31,6 @@ export default function MenuOption({
         childOptions.some((child) => child.href === location.pathname)) ||
       location.pathname === href
     : location.pathname === href;
-
-  const { ref } = useScrollActiveItemIntoView({
-    isActive,
-    behavior: "instant",
-    block: "center",
-  });
 
   if (hidden) return null;
 
@@ -65,6 +59,10 @@ export default function MenuOption({
     }
   };
 
+  const handleNavigate = () => {
+    setShowSidebar?.(false);
+  };
+
   return (
     <div>
       <div
@@ -80,12 +78,11 @@ export default function MenuOption({
         `}
       >
         <Link
-          ref={ref}
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
             isChild ? "hover:text-white" : "text-white light:text-black"
           }`}
-          onClick={hasChildren ? handleClick : undefined}
+          onClick={hasChildren ? handleClick : handleNavigate}
         >
           {icon}
           <p
@@ -121,6 +118,7 @@ export default function MenuOption({
               {...childOption} // flex and roles go here.
               user={user}
               isChild={true}
+              setShowSidebar={setShowSidebar}
             />
           ))}
         </div>
