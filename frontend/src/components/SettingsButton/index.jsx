@@ -21,7 +21,7 @@ export default function SettingsButton() {
           data-tooltip-content="Back to workspaces"
         >
           <ArrowUUpLeft
-            className="h-5 w-5 text-white light:text-slate-800"
+            className="h-5 w-5 text-white light:text-infinite-night"
             weight="fill"
           />
         </Link>
@@ -38,7 +38,7 @@ export default function SettingsButton() {
         data-tooltip-content="Open settings"
       >
         <Wrench
-          className="h-5 w-5 text-white light:text-slate-800"
+          className="h-5 w-5 text-white light:text-infinite-night"
           weight="fill"
         />
       </Link>

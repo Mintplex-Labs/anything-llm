@@ -65,7 +65,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
             ? t("pause_tts_speech_message")
             : t("chat_window.tts_speak_message")
         }
-        className="border-none text-zinc-300 light:text-slate-500"
+        className="border-none text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
         aria-label={speaking ? "Pause speech" : "Speak message"}
       >
         {speaking ? (

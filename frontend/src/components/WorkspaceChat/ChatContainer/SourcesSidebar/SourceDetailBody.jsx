@@ -142,10 +142,10 @@ function SourceDocumentSection({ sourceDocument }) {
   if (!sourceDocument?.pageContent) return null;
 
   return (
-    <div className="rounded-xl border border-zinc-700 light:border-slate-300 bg-black/10 light:bg-slate-50 px-4 py-4">
+    <div className="rounded-xl border border-zinc-700 light:border-slate-300 bg-black/10 light:bg-doctor px-4 py-4">
       <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-700 light:border-slate-300">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-slate-500">
+          <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-[rgba(7,16,55,0.55)]">
             Source document
           </p>
           <p className="text-sm font-medium text-white light:text-slate-900">
@@ -153,7 +153,7 @@ function SourceDocumentSection({ sourceDocument }) {
           </p>
         </div>
         {sourceDocument?.metadata?.location && (
-          <span className="text-[11px] text-white/40 light:text-slate-500 text-right">
+          <span className="text-[11px] text-white/40 light:text-[rgba(7,16,55,0.55)] text-right">
             {sourceDocument.metadata.location}
           </span>
         )}
@@ -167,7 +167,7 @@ function SourceDocumentSection({ sourceDocument }) {
                 key={`${field.label}-${field.value}`}
                 className="flex flex-col gap-1 text-sm"
               >
-                <span className="text-white/55 light:text-slate-500">
+                <span className="text-white/55 light:text-[rgba(7,16,55,0.55)]">
                   {field.label}
                 </span>
                 {renderSourceFieldValue(field)}
@@ -250,8 +250,8 @@ export default function SourceDetailBody({
   return (
     <div className="flex flex-col gap-4">
       {externalSourceLink && (
-        <div className="rounded-xl border border-zinc-700 light:border-slate-300 bg-black/10 light:bg-slate-50 px-4 py-3">
-          <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-slate-500">
+        <div className="rounded-xl border border-zinc-700 light:border-slate-300 bg-black/10 light:bg-doctor px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-[rgba(7,16,55,0.55)]">
             Original source
           </p>
           <a
@@ -269,10 +269,10 @@ export default function SourceDetailBody({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-slate-500">
+            <p className="text-xs uppercase tracking-[0.14em] text-white/50 light:text-[rgba(7,16,55,0.55)]">
               Relevant excerpts
             </p>
-            <p className="text-sm text-white/70 light:text-slate-600">
+            <p className="text-sm text-white/70 light:text-[rgba(7,16,55,0.55)]">
               Chunks are shown first so the cited passages stay easy to scan.
             </p>
           </div>
@@ -299,13 +299,13 @@ export default function SourceDetailBody({
           const decodedText = decodeChunkText(text);
           return (
             <Fragment key={`${source.title}-${idx}`}>
-              <div className="rounded-xl border border-zinc-700 light:border-slate-300 px-4 py-4 bg-black/10 light:bg-slate-50">
+              <div className="rounded-xl border border-zinc-700 light:border-slate-300 px-4 py-4 bg-black/10 light:bg-doctor">
                 <SourceMarkdownText
                   text={decodedText}
                   className="text-sm leading-7 text-white light:text-slate-900 break-words"
                 />
                 {!!score && (
-                  <div className="pt-3 flex items-center text-xs text-white/60 light:text-slate-500 gap-x-2 cursor-default">
+                  <div className="pt-3 flex items-center text-xs text-white/60 light:text-[rgba(7,16,55,0.55)] gap-x-2 cursor-default">
                     <div className="flex items-center gap-x-1">
                       <Info size={14} />
                       <p>{toPercentString(score)} similarity match</p>
@@ -322,7 +322,7 @@ export default function SourceDetailBody({
       </div>
 
       {loadState.status === "unavailable" && (
-        <div className="rounded-xl border border-dashed border-zinc-700 light:border-slate-300 px-4 py-4 text-sm text-white/70 light:text-slate-600">
+        <div className="rounded-xl border border-dashed border-zinc-700 light:border-slate-300 px-4 py-4 text-sm text-white/70 light:text-[rgba(7,16,55,0.55)]">
           Full source text is unavailable for this citation. The excerpts above
           are still the retrieved passages used in the answer.
         </div>

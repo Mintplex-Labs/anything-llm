@@ -37,11 +37,11 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-start justify-between pt-7 pb-9">
         <div className="flex items-center flex-col gap-y-[18px] max-w-[300px]">
           <div className="flex gap-x-1">
-            <h3 className="text-white light:text-slate-950 text-3xl leading-[28px] font-medium text-center white-space-nowrap block">
+            <h3 className="text-white light:text-infinite-night text-3xl leading-[28px] font-medium text-center white-space-nowrap block">
               {t("login.password-reset.title")}
             </h3>
           </div>
-          <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
+          <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
             {t("login.password-reset.description")}
           </p>
         </div>
@@ -49,13 +49,13 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="w-full px-12">
         <div className="w-full flex flex-col gap-y-3">
           <div className="w-full flex flex-col gap-y-2">
-            <label className="text-zinc-300 light:text-slate-800 text-sm">
+            <label className="text-doctor/75 light:text-infinite-night text-sm">
               {t("login.multi-user.placeholder-username")}
             </label>
             <input
               name="username"
               type="text"
-              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -63,7 +63,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
             />
           </div>
           <div className="w-full flex flex-col gap-y-2">
-            <label className="text-zinc-300 light:text-slate-800 text-sm">
+            <label className="text-doctor/75 light:text-infinite-night text-sm">
               {t("login.password-reset.recovery-codes")}
             </label>
             {recoveryCodeInputs.map((code, index) => (
@@ -71,7 +71,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
                 key={index}
                 type="text"
                 name={`recoveryCode${index + 1}`}
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 value={code}
                 onChange={(e) =>
                   handleRecoveryCodeChange(index, e.target.value)
@@ -86,13 +86,13 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-center px-12 mt-9 space-x-2 w-full flex-col gap-y-6">
         <button
           type="submit"
-          className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-sky-200 light:text-slate-950 light:hover:bg-sky-300 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
+          className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-burnt-earth/20 light:text-infinite-night light:hover:bg-burnt-earth/20 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
         >
           {t("login.password-reset.title")}
         </button>
         <button
           type="button"
-          className="text-zinc-200 light:text-zinc-600 hover:text-sky-300 light:hover:text-sky-600 hover:underline text-sm flex gap-x-1"
+          className="text-zinc-200 light:text-[rgba(7,16,55,0.55)] hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
           onClick={() => setShowRecoveryForm(false)}
         >
           {t("login.password-reset.back-to-login")}
@@ -119,11 +119,11 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="flex items-start justify-between pt-7 pb-9">
         <div className="flex items-center flex-col gap-y-[18px] max-w-[300px]">
           <div className="flex gap-x-1">
-            <h3 className="text-white light:text-slate-950 text-[38px] leading-[28px] font-medium text-center white-space-nowrap block">
+            <h3 className="text-white light:text-infinite-night text-[38px] leading-[28px] font-medium text-center white-space-nowrap block">
               Reset Password
             </h3>
           </div>
-          <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
+          <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
             Enter your new password.
           </p>
         </div>
@@ -131,26 +131,26 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="w-full px-12">
         <div className="w-full flex flex-col gap-y-3">
           <div className="w-full flex flex-col gap-y-2">
-            <label className="text-zinc-300 light:text-slate-800 text-sm">
+            <label className="text-doctor/75 light:text-infinite-night text-sm">
               New Password
             </label>
             <input
               type="password"
               name="newPassword"
-              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
           </div>
           <div className="w-full flex flex-col gap-y-2">
-            <label className="text-zinc-300 light:text-slate-800 text-sm">
+            <label className="text-doctor/75 light:text-infinite-night text-sm">
               Confirm Password
             </label>
             <input
               type="password"
               name="confirmPassword"
-              className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -161,7 +161,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="flex items-center px-12 mt-9 space-x-2 w-full flex-col gap-y-6">
         <button
           type="submit"
-          className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-sky-200 light:text-slate-950 light:hover:bg-sky-300 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
+          className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-burnt-earth/20 light:text-infinite-night light:hover:bg-burnt-earth/20 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
         >
           Reset Password
         </button>
@@ -292,11 +292,11 @@ export default function MultiUserAuth() {
         <div className="flex items-start justify-between pt-7 pb-9">
           <div className="flex items-center flex-col gap-y-[18px] max-w-[300px]">
             <div className="flex gap-x-1">
-              <h3 className="text-white light:text-slate-950 text-[38px] leading-[28px] font-medium text-center white-space-nowrap block">
+              <h3 className="text-white light:text-infinite-night text-[38px] leading-[28px] font-medium text-center white-space-nowrap block">
                 {t("login.multi-user.welcome")}
               </h3>
             </div>
-            <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
+            <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "Lovora" })}
             </p>
           </div>
@@ -304,25 +304,25 @@ export default function MultiUserAuth() {
         <div className="w-full px-12">
           <div className="w-full flex flex-col gap-y-3">
             <div className="w-full flex flex-col gap-y-2">
-              <label className="text-zinc-300 light:text-slate-800 text-sm">
+              <label className="text-doctor/75 light:text-infinite-night text-sm">
                 {t("login.multi-user.placeholder-username")}
               </label>
               <input
                 name="username"
                 type="text"
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
             </div>
             <div className="w-full px-0 flex flex-col gap-y-2">
-              <label className="text-zinc-300 light:text-slate-800 text-sm">
+              <label className="text-doctor/75 light:text-infinite-night text-sm">
                 {t("login.multi-user.placeholder-password")}
               </label>
               <input
                 name="password"
                 type="password"
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -334,7 +334,7 @@ export default function MultiUserAuth() {
           <button
             disabled={loading}
             type="submit"
-            className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-sky-200 light:text-slate-950 light:hover:bg-sky-300 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
+            className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-burnt-earth/20 light:text-infinite-night light:hover:bg-burnt-earth/20 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
           >
             {loading
               ? t("login.multi-user.validating")
@@ -342,11 +342,11 @@ export default function MultiUserAuth() {
           </button>
           <button
             type="button"
-            className="text-zinc-200 light:text-zinc-600 hover:text-sky-300 light:hover:text-sky-600 hover:underline text-sm flex gap-x-1"
+            className="text-zinc-200 light:text-[rgba(7,16,55,0.55)] hover:text-sky-300 light:hover:text-burnt-earth hover:underline text-sm flex gap-x-1"
             onClick={handleResetPassword}
           >
             {t("login.multi-user.forgot-pass")}?
-            <b className="font-semibold text-sky-300 light:text-sky-600">
+            <b className="font-semibold text-sky-300 light:text-burnt-earth">
               {t("login.multi-user.reset")}
             </b>
           </button>

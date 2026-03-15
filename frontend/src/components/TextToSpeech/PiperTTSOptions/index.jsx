@@ -186,7 +186,7 @@ function DemoVoiceSample({ voiceId }) {
       type="button"
       onClick={speakMessage}
       disabled={loading}
-      className="border-none text-zinc-300 flex items-center gap-x-1"
+      className="border-none text-doctor/75 flex items-center gap-x-1"
     >
       {speaking ? (
         <>

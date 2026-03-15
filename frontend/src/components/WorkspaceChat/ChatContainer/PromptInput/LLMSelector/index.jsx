@@ -109,7 +109,7 @@ export default function LLMSelectorModal({
         className="w-full h-[388px] flex flex-col items-center justify-center gap-2"
       >
         <PreLoader size={12} />
-        <p className="text-zinc-400 light:text-slate-500 text-sm">
+        <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm">
           {t("chat_window.workspace_llm_manager.loading_workspace_settings")}
         </p>
       </div>
@@ -127,12 +127,12 @@ export default function LLMSelectorModal({
       <div className="w-[60%] h-full p-[18px] flex flex-col gap-2.5">
         <div className="flex flex-col gap-[15px]">
           <div className="flex flex-col gap-1.5">
-            <p className="text-sm font-medium text-white light:text-slate-800">
+            <p className="text-sm font-medium text-white light:text-infinite-night">
               {t("chat_window.workspace_llm_manager.available_models", {
                 provider: providerName,
               })}
             </p>
-            <p className="text-xs font-medium text-zinc-400 light:text-slate-500">
+            <p className="text-xs font-medium text-doctor/55 light:text-[rgba(7,16,55,0.55)]">
               {t(
                 "chat_window.workspace_llm_manager.available_models_description"
               )}

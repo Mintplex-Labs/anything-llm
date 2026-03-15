@@ -76,11 +76,11 @@ export default function SingleUserAuth() {
         <div className="flex items-start justify-between pt-7 pb-9">
           <div className="flex items-center flex-col gap-y-[18px] max-w-[300px]">
             <div className="flex gap-x-1">
-              <h3 className="text-white light:text-slate-950 text-3xl leading-[28px] font-medium text-center white-space-nowrap block">
+              <h3 className="text-white light:text-infinite-night text-3xl leading-[28px] font-medium text-center white-space-nowrap block">
                 {t("login.multi-user.welcome")}
               </h3>
             </div>
-            <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
+            <p className="text-doctor/55 light:text-[rgba(7,16,55,0.55)] text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "Lovora" })}
             </p>
           </div>
@@ -88,13 +88,13 @@ export default function SingleUserAuth() {
         <div className="w-full px-12">
           <div className="w-full flex flex-col gap-y-3">
             <div className="w-full flex flex-col gap-y-2">
-              <label className="text-zinc-300 light:text-slate-800 text-sm">
+              <label className="text-doctor/75 light:text-infinite-night text-sm">
                 Password
               </label>
               <input
                 name="password"
                 type="password"
-                className="border-none bg-zinc-800 light:bg-slate-200 text-zinc-200 light:text-zinc-600 text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="border-none bg-zinc-800 light:bg-divine-pleasure text-zinc-200 light:text-[rgba(7,16,55,0.55)] text-sm rounded-lg p-2.5 w-[300px] h-[34px] focus:outline-none focus:ring-1 focus:ring-sky-300"
                 required={true}
                 autoComplete="off"
               />
@@ -106,7 +106,7 @@ export default function SingleUserAuth() {
           <button
             disabled={loading}
             type="submit"
-            className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-sky-200 light:text-slate-950 light:hover:bg-sky-300 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
+            className="text-zinc-950 bg-white hover:bg-zinc-300 light:bg-burnt-earth/20 light:text-infinite-night light:hover:bg-burnt-earth/20 text-sm font-semibold rounded-lg border-primary-button h-[34px] w-full"
           >
             {loading
               ? t("login.multi-user.validating")

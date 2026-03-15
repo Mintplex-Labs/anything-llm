@@ -57,16 +57,16 @@ export default function TextSizeMenu() {
         onClick={() => setShowMenu(!showMenu)}
         className={`group border-none cursor-pointer flex items-center justify-center w-[35px] h-[35px] rounded-full transition-all ${
           showMenu
-            ? "bg-zinc-700 light:bg-slate-200"
-            : "hover:bg-zinc-700 light:hover:bg-slate-200"
+            ? "bg-zinc-700 light:bg-divine-pleasure"
+            : "hover:bg-zinc-700 light:hover:bg-divine-pleasure"
         }`}
       >
         <SlidersHorizontal
           size={18}
           className={
             showMenu
-              ? "text-white light:text-slate-800"
-              : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
+              ? "text-white light:text-infinite-night"
+              : "text-doctor/75 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-800"
           }
         />
       </button>
@@ -76,7 +76,7 @@ export default function TextSizeMenu() {
           ref={menuRef}
           className="absolute right-0 top-[42px] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg p-3 w-[200px] flex flex-col gap-1 shadow-lg"
         >
-          <p className="text-[10px] font-medium text-zinc-400 light:text-slate-500 px-2 mb-0.5">
+          <p className="text-[10px] font-medium text-doctor/55 light:text-[rgba(7,16,55,0.55)] px-2 mb-0.5">
             {t("chat_window.text_size_label")}
           </p>
           {TEXT_SIZES.map(({ key, label, textClass }) => (
@@ -85,7 +85,7 @@ export default function TextSizeMenu() {
               onClick={() => handleTextSizeChange(key)}
               className={`flex items-center px-2 py-1 rounded cursor-pointer ${
                 selectedSize === key
-                  ? "bg-zinc-700 light:bg-slate-200"
+                  ? "bg-zinc-700 light:bg-divine-pleasure"
                   : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
               }`}
             >

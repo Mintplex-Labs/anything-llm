@@ -189,7 +189,7 @@ export default function Citations({ sources = [] }) {
       className="w-fit flex items-center gap-[5px] px-[10px] py-[4px] rounded-full hover:bg-white/5 light:hover:bg-black/5 transition-colors"
       type="button"
     >
-      <span className="text-xs text-white light:text-slate-800">
+      <span className="text-xs text-white light:text-infinite-night">
         {t("chat_window.sources")}
       </span>
       <div
@@ -219,7 +219,7 @@ export default function Citations({ sources = [] }) {
         })}
       </div>
       {remainingCount > 0 && (
-        <span className="text-xs text-white light:text-slate-800">
+        <span className="text-xs text-white light:text-infinite-night">
           + {remainingCount}
         </span>
       )}
@@ -273,14 +273,14 @@ export function CitationDetailModal({ source, onClose }) {
             )}
           </div>
           {references > 1 && (
-            <p className="text-xs text-zinc-400 light:text-slate-500 mt-2">
+            <p className="text-xs text-doctor/55 light:text-[rgba(7,16,55,0.55)] mt-2">
               Referenced {references} times.
             </p>
           )}
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-700 light:hover:bg-slate-200 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-700 light:hover:bg-divine-pleasure border-transparent border"
           >
             <X
               size={24}

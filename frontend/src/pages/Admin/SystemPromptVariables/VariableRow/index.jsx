@@ -43,7 +43,7 @@ export default function VariableRow({ variable, onRefresh }) {
       case "system":
         return {
           bg: "bg-blue-600/20",
-          text: "text-blue-400 light:text-blue-800",
+          text: "text-blue-400 light:text-infinite-night",
         };
       case "user":
         return {

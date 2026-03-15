@@ -53,7 +53,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
             ? t("chat_window.edit_prompt")
             : t("chat_window.edit_response")
         } `}
-        className="border-none text-zinc-300 light:text-slate-500"
+        className="border-none text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
         <Pencil size={21} className="mb-1" />
@@ -152,13 +152,13 @@ export function EditMessageForm({
 function EditActionBar({ onCancel, onSave, isUserMessage = false }) {
   const { t } = useTranslation();
   return (
-    <div className="mt-2 flex flex-col md:flex-row md:items-center justify-between gap-2 bg-zinc-800 light:bg-slate-200 rounded-lg p-2">
+    <div className="mt-2 flex flex-col md:flex-row md:items-center justify-between gap-2 bg-zinc-800 light:bg-divine-pleasure rounded-lg p-2">
       <div className="flex items-start gap-2">
         <Info
           size={12}
-          className="shrink-0 mt-0.5 text-zinc-200 light:text-slate-800"
+          className="shrink-0 mt-0.5 text-zinc-200 light:text-infinite-night"
         />
-        <span className="text-zinc-200 light:text-slate-800 text-xs leading-4">
+        <span className="text-zinc-200 light:text-infinite-night text-xs leading-4">
           {isUserMessage
             ? t("chat_window.edit_info_user")
             : t("chat_window.edit_info_assistant")}
@@ -168,7 +168,7 @@ function EditActionBar({ onCancel, onSave, isUserMessage = false }) {
         <button
           type="button"
           onClick={onCancel}
-          className="border-none text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-slate-300"
+          className="border-none text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-[#E5DFC9]"
         >
           {t("chat_window.cancel")}
         </button>
@@ -176,7 +176,7 @@ function EditActionBar({ onCancel, onSave, isUserMessage = false }) {
           <button
             type="button"
             onClick={onSave}
-            className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-slate-300"
+            className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-[#E5DFC9]"
           >
             {t("chat_window.save")}
           </button>

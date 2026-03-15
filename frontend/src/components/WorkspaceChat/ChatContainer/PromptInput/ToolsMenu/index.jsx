@@ -153,8 +153,8 @@ function TabButton({ active, onClick, children }) {
       onClick={onClick}
       className={`border-none cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-medium text-center whitespace-nowrap ${
         active
-          ? "bg-zinc-700 text-white light:bg-slate-200 light:text-slate-800"
-          : "text-zinc-400 light:text-slate-800"
+          ? "bg-zinc-700 text-white light:bg-divine-pleasure light:text-infinite-night"
+          : "text-doctor/55 light:text-infinite-night"
       }`}
     >
       {children}

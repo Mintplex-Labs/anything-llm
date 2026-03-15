@@ -61,7 +61,7 @@ export default function Footer() {
             >
               <GithubLogo
                 weight="fill"
-                className="h-5 w-5 text-white light:text-slate-800"
+                className="h-5 w-5 text-white light:text-infinite-night"
               />
             </Link>
           </div>
@@ -77,7 +77,7 @@ export default function Footer() {
             >
               <BookOpen
                 weight="fill"
-                className="h-5 w-5 text-white light:text-slate-800"
+                className="h-5 w-5 text-white light:text-infinite-night"
               />
             </Link>
           </div>
@@ -93,7 +93,7 @@ export default function Footer() {
             >
               <DiscordLogo
                 weight="fill"
-                className="h-5 w-5 text-white light:text-slate-800"
+                className="h-5 w-5 text-white light:text-infinite-night"
               />
             </Link>
           </div>

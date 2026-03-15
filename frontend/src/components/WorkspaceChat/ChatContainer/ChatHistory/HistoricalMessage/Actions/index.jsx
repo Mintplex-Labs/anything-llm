@@ -85,7 +85,7 @@ function FeedbackButton({
         onClick={handleFeedback}
         data-tooltip-id="feedback-button"
         data-tooltip-content={tooltipContent}
-        className="text-zinc-300 light:text-slate-500"
+        className="text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
         aria-label={tooltipContent}
       >
         <IconComponent
@@ -109,7 +109,7 @@ function CopyMessage({ message }) {
           onClick={() => copyText(message)}
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content={t("chat_window.copy")}
-          className="text-zinc-300 light:text-slate-500"
+          className="text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
           aria-label={t("chat_window.copy")}
         >
           {copied ? (
@@ -132,7 +132,7 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         onClick={() => regenerateMessage(chatId)}
         data-tooltip-id="regenerate-assistant-text"
         data-tooltip-content={t("chat_window.regenerate_response")}
-        className="border-none text-zinc-300 light:text-slate-500"
+        className="border-none text-doctor/75 light:text-[rgba(7,16,55,0.55)]"
         aria-label={t("chat_window.regenerate")}
       >
         <ArrowsClockwise size={20} className="mb-1" weight="fill" />

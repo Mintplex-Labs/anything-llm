@@ -139,7 +139,7 @@ function TextContent({ label, description, labelStyles = {}, hint }) {
     <div className={`flex flex-col ${labelStyles.gap}`}>
       {label && (
         <span
-          className={`flex items-center gap-x-1 text-white light:text-slate-950 ${labelStyles.label}`}
+          className={`flex items-center gap-x-1 text-white light:text-infinite-night ${labelStyles.label}`}
         >
           {label}
           {hint && (
@@ -153,7 +153,7 @@ function TextContent({ label, description, labelStyles = {}, hint }) {
       )}
       {description && (
         <span
-          className={`text-zinc-400 light:text-zinc-600 ${labelStyles.description}`}
+          className={`text-doctor/55 light:text-[rgba(7,16,55,0.55)] ${labelStyles.description}`}
         >
           {description}
         </span>

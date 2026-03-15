@@ -133,7 +133,7 @@ export default function ActiveWorkspaces() {
                             transition-all duration-[200ms]
                             flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
                             bg-theme-sidebar-item-default
-                            ${isActive ? "light:bg-blue-200 font-bold" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"}
+                            ${isActive ? "light:bg-[#EDE8D8] font-bold" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-[#E5DFC9]"}
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
@@ -143,7 +143,7 @@ export default function ActiveWorkspaces() {
                             >
                               <DotsSixVertical
                                 size={20}
-                                className={`${isActive ? "text-white light:text-blue-800" : ""}`}
+                                className={`${isActive ? "text-white light:text-infinite-night" : ""}`}
                                 weight="bold"
                               />
                             </div>
@@ -152,7 +152,7 @@ export default function ActiveWorkspaces() {
                                 <p
                                   className={`
                                   text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                                  ${isActive ? "font-bold text-white light:text-blue-900" : "font-medium "} truncate
+                                  ${isActive ? "font-bold text-white light:text-infinite-night" : "font-medium "} truncate
                                   w-full group-hover:w-[130px] group-hover:duration-200
                                 `}
                                 >
@@ -174,7 +174,7 @@ export default function ActiveWorkspaces() {
                                   className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
                                 >
                                   <UploadSimple
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/upload:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/upload:text-slate-950"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-[#071037]/80 light:group-hover/upload:text-infinite-night" : "text-doctor/55 hover:text-white light:text-[rgba(7,16,55,0.55)] light:group-hover/upload:text-infinite-night"}`}
                                   />
                                 </button>
                                 <button
@@ -199,7 +199,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/gear:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/gear:text-slate-950"}`}
+                                    className={`h-[20px] w-[20px] ${isActive ? "text-doctor/55 hover:text-white light:text-[#071037]/80 light:group-hover/gear:text-infinite-night" : "text-doctor/55 hover:text-white light:text-[rgba(7,16,55,0.55)] light:group-hover/gear:text-infinite-night"}`}
                                   />
                                 </button>
                               </div>

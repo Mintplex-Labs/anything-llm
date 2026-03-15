@@ -81,15 +81,15 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
           onClick={() => setShowSelector(!showSelector)}
           className={`group border-none cursor-pointer px-2.5 py-1 flex items-center rounded-full transition-all ${
             showSelector
-              ? "bg-zinc-700 light:bg-slate-200"
-              : "hover:bg-zinc-700 light:hover:bg-slate-200"
+              ? "bg-zinc-700 light:bg-divine-pleasure"
+              : "hover:bg-zinc-700 light:hover:bg-divine-pleasure"
           }`}
         >
           <span
             className={`text-xs ${
               showSelector
-                ? "text-white light:text-slate-800"
-                : "text-zinc-500 light:text-slate-500 group-hover:text-white light:group-hover:text-slate-800"
+                ? "text-white light:text-infinite-night"
+                : "text-zinc-500 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-800"
             }`}
           >
             {modelName || t("chat_window.select_model")}

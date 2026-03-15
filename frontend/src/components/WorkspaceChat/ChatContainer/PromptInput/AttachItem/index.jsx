@@ -169,11 +169,11 @@ export default function AttachItem({
         onPointerLeave={() => {
           setIsAnchorHovered(false);
         }}
-        className="group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200"
+        className="group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-divine-pleasure"
       >
         <div className="relative">
           <Plus
-            className="w-[16px] h-[16px] pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600"
+            className="w-[16px] h-[16px] pointer-events-none text-doctor/75 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-600"
             weight="bold"
           />
           {hasParsedFiles && (

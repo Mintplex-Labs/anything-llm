@@ -94,7 +94,7 @@ export default function AgentSkill({ item, settings, setStep }) {
         <p>
           Agent skills unlock new capabilities for your AnythingLLM workspace
           via{" "}
-          <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm">
+          <code className="font-mono bg-zinc-900 light:bg-divine-pleasure px-1 py-0.5 rounded-md text-sm">
             @agent
           </code>{" "}
           skills that can do specific tasks when invoked.
@@ -150,7 +150,7 @@ function FileReview({ item }) {
         <div className="flex justify-between items-center">
           <button
             type="button"
-            className={`border-none bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
+            className={`border-none bg-black/70 light:bg-divine-pleasure rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
               index === 0 ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={handlePrevious}
@@ -162,7 +162,7 @@ function FileReview({ item }) {
           </p>
           <button
             type="button"
-            className={`border-none bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
+            className={`border-none bg-black/70 light:bg-divine-pleasure rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
               index === files.length - 1 ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={handleNext}

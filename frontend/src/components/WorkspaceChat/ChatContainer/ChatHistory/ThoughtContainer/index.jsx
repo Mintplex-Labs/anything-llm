@@ -180,7 +180,7 @@ export const ThoughtChainComponent = forwardRef(
               {canExpand && (
                 <button
                   onClick={handleExpandClick}
-                  className="absolute top-4 right-4 border-none text-zinc-200 light:text-slate-800 transition-colors"
+                  className="absolute top-4 right-4 border-none text-zinc-200 light:text-infinite-night transition-colors"
                   data-tooltip-id="expand-cot"
                   data-tooltip-content={
                     isExpanded ? "Hide thought chain" : "Show thought chain"
@@ -197,7 +197,7 @@ export const ThoughtChainComponent = forwardRef(
               <div
                 className={`ml-[28px] mr-[26px] transition-[max-height] duration-300 ease-in-out origin-top ${isExpanded ? "" : "overflow-hidden max-h-[18px]"}`}
               >
-                <div className="text-zinc-200 light:text-slate-800 font-mono text-sm leading-[18px] [&_p]:m-0">
+                <div className="text-zinc-200 light:text-infinite-night font-mono text-sm leading-[18px] [&_p]:m-0">
                   <span
                     className={`block w-full ${!isExpanded ? "truncate" : ""}`}
                     dangerouslySetInnerHTML={{

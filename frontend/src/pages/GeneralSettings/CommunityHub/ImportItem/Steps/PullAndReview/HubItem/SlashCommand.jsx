@@ -48,7 +48,7 @@ export default function SlashCommand({ item, setStep }) {
           <br />
           The slash command will be available during chatting by simply invoking
           it with{" "}
-          <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm">
+          <code className="font-mono bg-zinc-900 light:bg-divine-pleasure px-1 py-0.5 rounded-md text-sm">
             {item.command}
           </code>{" "}
           like you would any other command.
@@ -56,13 +56,13 @@ export default function SlashCommand({ item, setStep }) {
 
         <div className="flex flex-col gap-y-2 mt-2">
           <div className="w-full text-theme-text-primary text-md gap-x-2 flex items-center">
-            <p className="text-white/60 light:text-theme-text-secondary w-fit font-mono bg-zinc-900 light:bg-slate-200 px-2 py-1 rounded-md text-sm whitespace-pre-line">
+            <p className="text-white/60 light:text-theme-text-secondary w-fit font-mono bg-zinc-900 light:bg-divine-pleasure px-2 py-1 rounded-md text-sm whitespace-pre-line">
               {item.command}
             </p>
           </div>
 
           <div className="w-full text-theme-text-primary text-md flex flex-col gap-y-2">
-            <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-slate-200 p-4 rounded-md text-sm whitespace-pre-line max-h-[calc(200px)] overflow-y-auto">
+            <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-divine-pleasure p-4 rounded-md text-sm whitespace-pre-line max-h-[calc(200px)] overflow-y-auto">
               {item.prompt}
             </p>
           </div>

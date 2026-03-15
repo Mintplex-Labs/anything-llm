@@ -49,8 +49,8 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white light:border-blue-800 z-[2]"
-            : "border-l border-b border-zinc-500 light:border-slate-400 z-[1]"
+            ? "border-l-2 border-b-2 border-white light:border-infinite-night z-[2]"
+            : "border-l border-b border-zinc-500 light:border-[rgba(7,16,55,0.20)] z-[1]"
         } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
@@ -59,8 +59,8 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white light:border-blue-800 z-[2]"
-              : "border-l border-zinc-500 light:border-slate-400 z-[1]"
+              ? "border-l-2 border-white light:border-infinite-night z-[2]"
+              : "border-l border-zinc-500 light:border-[rgba(7,16,55,0.20)] z-[1]"
           } h-[100%] absolute top-0 left-3`}
         ></div>
       )}
@@ -71,13 +71,13 @@ export default function ThreadItem({
         className="h-full"
       />
       <div
-        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] light:bg-blue-200" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"} rounded-[4px]`}
+        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] light:bg-[#EDE8D8]" : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-[#E5DFC9]"} rounded-[4px]`}
       >
         {thread.deleted ? (
           <div className="w-full flex justify-between">
             <div className="w-full pl-2 py-1">
               <p
-                className={`text-left text-sm text-slate-400/50 light:text-slate-500 italic`}
+                className={`text-left text-sm text-slate-400/50 light:text-[rgba(7,16,55,0.55)] italic`}
               >
                 deleted thread
               </p>
@@ -89,7 +89,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <ArrowCounterClockwise
-                  className="text-zinc-300 hover:text-white light:text-theme-text-secondary hover:light:text-theme-text-primary"
+                  className="text-doctor/75 hover:text-white light:text-theme-text-secondary hover:light:text-theme-text-primary"
                   size={18}
                 />
               </button>
@@ -109,8 +109,8 @@ export default function ThreadItem({
             <p
               className={`text-left text-sm truncate max-w-[150px] ${
                 isActive
-                  ? "font-semibold text-theme-text-primary light:text-blue-900"
-                  : "text-theme-text-primary font-medium light:text-slate-800"
+                  ? "font-semibold text-theme-text-primary light:text-infinite-night"
+                  : "text-theme-text-primary font-medium light:text-infinite-night"
               }`}
             >
               {thread.name}
@@ -128,7 +128,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
-                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                  className="text-doctor/75 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
                   weight="bold"
                   size={18}
                 />
@@ -142,7 +142,7 @@ export default function ThreadItem({
                   aria-label="Thread options"
                 >
                   <DotsThree
-                    className="text-slate-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                    className="text-doctor/75 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
                     size={25}
                   />
                 </button>
@@ -264,7 +264,7 @@ function OptionsMenu({
       <button
         onClick={renameThread}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-doctor/8 text-doctor/75 light:text-theme-text-primary"
       >
         <PencilSimple size={18} />
         <p className="text-sm">Rename</p>
@@ -272,7 +272,7 @@ function OptionsMenu({
       <button
         onClick={handleDelete}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-doctor/75 light:text-theme-text-primary hover:text-red-100"
       >
         <Trash size={18} />
         <p className="text-sm">Delete Thread</p>

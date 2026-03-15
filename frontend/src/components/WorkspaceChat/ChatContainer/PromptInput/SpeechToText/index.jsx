@@ -125,15 +125,15 @@ export default function SpeechToText({ sendCommand }) {
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
-      className={`group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200 ${
-        listening ? "bg-zinc-700 light:bg-slate-200" : ""
+      className={`group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-divine-pleasure ${
+        listening ? "bg-zinc-700 light:bg-divine-pleasure" : ""
       }`}
     >
       <Microphone
         weight="regular"
-        className={`w-[18px] h-[18px] pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 ${
+        className={`w-[18px] h-[18px] pointer-events-none text-doctor/75 light:text-[rgba(7,16,55,0.55)] group-hover:text-white light:group-hover:text-slate-600 ${
           listening
-            ? "animate-pulse-glow !text-white light:!text-slate-800"
+            ? "animate-pulse-glow !text-white light:!text-infinite-night"
             : ""
         }`}
       />
