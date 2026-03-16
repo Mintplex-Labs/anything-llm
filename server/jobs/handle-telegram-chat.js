@@ -41,7 +41,7 @@ process.on("message", async (payload) => {
         chatId,
         "Sorry, something went wrong. Please try again."
       );
-    } catch { }
+    } catch {}
   } finally {
     conclude();
   }
