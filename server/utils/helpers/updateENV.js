@@ -307,14 +307,6 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
   },
-  NativeEmbeddingWorkerTimeout: {
-    envKey: "NATIVE_EMBEDDING_WORKER_TIMEOUT",
-    checks: [isInteger],
-  },
-  NativeRerankingWorkerTimeout: {
-    envKey: "NATIVE_RERANKING_WORKER_TIMEOUT",
-    checks: [isInteger],
-  },
   EmbeddingOutputDimensions: {
     envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
     checks: [],
@@ -1323,9 +1315,9 @@ function dumpENV() {
     // Allow native tool calling for specific providers.
     "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
 
-    // Native worker process idle timeouts (in seconds)
-    "NATIVE_EMBEDDING_WORKER_TIMEOUT",
-    "NATIVE_RERANKING_WORKER_TIMEOUT",
+    // Native worker process TTL (in seconds)
+    "NATIVE_EMBEDDING_WORKER_TTL",
+    "NATIVE_RERANKING_WORKER_TTL",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

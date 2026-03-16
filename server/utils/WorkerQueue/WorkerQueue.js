@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 /**
  * Generic serial job queue backed by a forked child process.
- * Manages worker lifecycle (fork, ready handshake, idle timeout, graceful shutdown)
+ * Manages worker lifecycle (fork, ready handshake, TTL, graceful shutdown)
  * and processes jobs one at a time in FIFO order.
  *
  * For chunk-level progress: when a worker sends { type: "progress" } IPC messages,
@@ -15,7 +15,7 @@ const { v4: uuidv4 } = require("uuid");
  */
 class WorkerQueue {
   #worker = null;
-  #idleTimer = null;
+  #ttlTimer = null;
   #readyResolve = null;
   #queue = [];
   #activeJob = null;
@@ -23,14 +23,14 @@ class WorkerQueue {
   /**
    * @param {Object} options
    * @param {string} options.workerScript - Path to worker JS file (relative to this file or absolute)
-   * @param {number} options.idleTimeout - Ms of inactivity before killing the worker
+   * @param {number} options.ttl - Ms the worker stays alive after finishing work before being killed
    * @param {function|null} options.onProgress - Callback for progress messages from the worker
    */
-  constructor({ workerScript, idleTimeout = 300_000, onProgress = null }) {
+  constructor({ workerScript, ttl = 300_000, onProgress = null }) {
     this.workerScript = path.isAbsolute(workerScript)
       ? workerScript
       : path.resolve(__dirname, workerScript);
-    this.idleTimeout = idleTimeout;
+    this.ttl = ttl;
     this._onProgress = onProgress;
   }
 
@@ -60,7 +60,7 @@ class WorkerQueue {
    * Gracefully shutdown the worker.
    */
   killWorker() {
-    this.#clearIdleTimer();
+    this.#clearTTLTimer();
     if (!this.#worker) return;
 
     try {
@@ -94,7 +94,7 @@ class WorkerQueue {
 
     try {
       await this.#ensureWorker();
-      this.#clearIdleTimer();
+      this.#clearTTLTimer();
       console.log(
         `[WorkerQueue] Sending job ${job.jobId} to ${path.basename(this.workerScript)}`
       );
@@ -173,7 +173,7 @@ class WorkerQueue {
       case "result": {
         const job = this.#activeJob;
         this.#activeJob = null;
-        this.#resetIdleTimer();
+        this.#resetTTLTimer();
         if (job && job.jobId === msg.jobId) {
           job.resolve({ jobId: msg.jobId, result: msg.result });
         }
@@ -184,7 +184,7 @@ class WorkerQueue {
       case "error": {
         const job = this.#activeJob;
         this.#activeJob = null;
-        this.#resetIdleTimer();
+        this.#resetTTLTimer();
         if (job && job.jobId === msg.jobId) {
           job.reject(new Error(String(msg.error)));
         }
@@ -215,7 +215,7 @@ class WorkerQueue {
     const job = this.#activeJob;
     this.#worker = null;
     this.#activeJob = null;
-    this.#clearIdleTimer();
+    this.#clearTTLTimer();
 
     if (job) {
       const errorMsg = `Worker exited unexpectedly (code=${code}, signal=${signal}) while processing job ${job.jobId}`;
@@ -229,20 +229,20 @@ class WorkerQueue {
     }
   }
 
-  #resetIdleTimer() {
-    this.#clearIdleTimer();
-    this.#idleTimer = setTimeout(() => {
+  #resetTTLTimer() {
+    this.#clearTTLTimer();
+    this.#ttlTimer = setTimeout(() => {
       console.log(
-        `[WorkerQueue] Idle timeout for ${path.basename(this.workerScript)}, killing worker.`
+        `[WorkerQueue] TTL expired for ${path.basename(this.workerScript)}, killing worker.`
       );
       this.killWorker();
-    }, this.idleTimeout);
+    }, this.ttl);
   }
 
-  #clearIdleTimer() {
-    if (this.#idleTimer) {
-      clearTimeout(this.#idleTimer);
-      this.#idleTimer = null;
+  #clearTTLTimer() {
+    if (this.#ttlTimer) {
+      clearTimeout(this.#ttlTimer);
+      this.#ttlTimer = null;
     }
   }
 }

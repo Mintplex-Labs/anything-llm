@@ -95,30 +95,6 @@ export default function NativeEmbeddingOptions({ settings }) {
           </div>
         )}
       </div>
-      <div className="w-full flex flex-col mt-1.5">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-1">
-            Worker Idle Timeout
-          </label>
-          <p className="text-theme-text-secondary text-xs font-normal block mb-3">
-            How long the embedding worker process stays alive after finishing
-            work. Set to 0 to shut down immediately.
-          </p>
-          <input
-            type="number"
-            name="NativeEmbeddingWorkerTimeout"
-            min={0}
-            max={3600}
-            step={1}
-            defaultValue={settings?.NativeEmbeddingWorkerTimeout ?? ""}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
-            placeholder="300"
-          />
-          <p className="text-theme-text-secondary text-xs font-normal mt-1">
-            Value in seconds. Leave empty to use the default (300s).
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

@@ -4,10 +4,10 @@ const { embeddingProgressBus } = require("./EmbeddingProgressBus");
 // ---------------------------------------------------------------------------
 // Queue instances & environment helpers
 // ---------------------------------------------------------------------------
-const DEFAULT_EMBEDDING_TIMEOUT_SEC = 300;
-const DEFAULT_RERANKING_TIMEOUT_SEC = 900;
+const DEFAULT_EMBEDDING_TTL_SEC = 300;
+const DEFAULT_RERANKING_TTL_SEC = 900;
 
-function envTimeoutSec(envKey, fallback) {
+function envTTLSec(envKey, fallback) {
   const raw = process.env[envKey];
   if (raw === undefined || raw === "") return fallback;
   const val = Number(raw);
@@ -45,11 +45,8 @@ function setEmbeddingContext(ctx) {
 
 const embeddingQueue = new WorkerQueue({
   workerScript: "../../workers/embeddingWorker.js",
-  idleTimeout:
-    envTimeoutSec(
-      "NATIVE_EMBEDDING_WORKER_TIMEOUT",
-      DEFAULT_EMBEDDING_TIMEOUT_SEC
-    ) * 1000,
+  ttl:
+    envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000,
   // Final step in the chunk progress chain: receives IPC progress from the
   // worker (via WorkerQueue.#onMessage), attaches the document context set by
   // Document.addDocuments, and emits a "chunk_progress" event on the bus.
@@ -69,11 +66,8 @@ const embeddingQueue = new WorkerQueue({
 
 const rerankingQueue = new WorkerQueue({
   workerScript: "../../workers/rerankingWorker.js",
-  idleTimeout:
-    envTimeoutSec(
-      "NATIVE_RERANKING_WORKER_TIMEOUT",
-      DEFAULT_RERANKING_TIMEOUT_SEC
-    ) * 1000,
+  ttl:
+    envTTLSec("NATIVE_RERANKING_WORKER_TTL", DEFAULT_RERANKING_TTL_SEC) * 1000,
 });
 
 /**
@@ -82,11 +76,8 @@ const rerankingQueue = new WorkerQueue({
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
 async function queueEmbedding(payload) {
-  embeddingQueue.idleTimeout =
-    envTimeoutSec(
-      "NATIVE_EMBEDDING_WORKER_TIMEOUT",
-      DEFAULT_EMBEDDING_TIMEOUT_SEC
-    ) * 1000;
+  embeddingQueue.ttl =
+    envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000;
   const { result } = await embeddingQueue.enqueue({ payload });
   return result.vectors;
 }
@@ -97,11 +88,8 @@ async function queueEmbedding(payload) {
  * @returns {Promise<Array>} The reranked documents
  */
 async function queueReranking(payload) {
-  rerankingQueue.idleTimeout =
-    envTimeoutSec(
-      "NATIVE_RERANKING_WORKER_TIMEOUT",
-      DEFAULT_RERANKING_TIMEOUT_SEC
-    ) * 1000;
+  rerankingQueue.ttl =
+    envTTLSec("NATIVE_RERANKING_WORKER_TTL", DEFAULT_RERANKING_TTL_SEC) * 1000;
   const { result } = await rerankingQueue.enqueue({ payload });
   return result.reranked;
 }
