@@ -7,11 +7,12 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-
-const LLMAPI_BASE_URL = "https://api.llmapi.ai/v1";
-const LLMAPI_DEFAULT_CONTEXT_WINDOW = 131072;
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
 class LLMApiLLM {
+  /** @see LLMApiLLM.cacheContextWindows */
+  static modelContextWindows = {};
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LLMAPI_LLM_API_KEY)
       throw new Error("No LLM API key was set.");
@@ -19,21 +20,21 @@ class LLMApiLLM {
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
-      baseURL: LLMAPI_BASE_URL,
+      baseURL: "https://api.llmapi.ai/v1",
       apiKey: process.env.LLMAPI_LLM_API_KEY,
       defaultHeaders: {
-        "x-source": "anythingllm",
+        "User-Agent": getAnythingLLMUserAgent(),
       },
     });
     this.model = modelPreference || process.env.LLMAPI_LLM_MODEL_PREF;
-    this.limits = {
-      history: this.promptWindowLimit() * 0.15,
-      system: this.promptWindowLimit() * 0.15,
-      user: this.promptWindowLimit() * 0.7,
-    };
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+
+    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    this.limits = null;
+
+    LLMApiLLM.cacheContextWindows(true);
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -41,6 +42,54 @@ class LLMApiLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[36m[LLMApiLLM]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Cache the context windows for available LLMAPI models.
+   * Done once and then cached for the lifetime of the server.
+   * @param {boolean} force - Force the cache to be refreshed.
+   */
+  static async cacheContextWindows(force = false) {
+    try {
+      if (Object.keys(LLMApiLLM.modelContextWindows).length > 0 && !force)
+        return;
+
+      const { OpenAI: OpenAIApi } = require("openai");
+      const client = new OpenAIApi({
+        baseURL: "https://api.llmapi.ai/v1",
+        // /v1/models does not require authentication
+        apiKey: process.env.LLMAPI_LLM_API_KEY || "no-key",
+      });
+
+      const { data: models } = await client.models
+        .list()
+        .catch(() => ({ data: [] }));
+      if (!models.length) return;
+
+      models.forEach((model) => {
+        // context_length is available on some models
+        if (model.context_length)
+          LLMApiLLM.modelContextWindows[model.id] = model.context_length;
+      });
+
+      LLMApiLLM.#slog(`Context windows cached for ${models.length} models.`);
+    } catch (e) {
+      LLMApiLLM.#slog(`Error caching context windows`, e);
+    }
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await LLMApiLLM.cacheContextWindows();
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
   #appendContext(contextTexts = []) {
@@ -59,12 +108,14 @@ class LLMApiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit() {
-    return LLMAPI_DEFAULT_CONTEXT_WINDOW;
+  static promptWindowLimit(modelName) {
+    const defaultLimit = 128_000;
+    if (!modelName) return defaultLimit;
+    return LLMApiLLM.modelContextWindows[modelName] ?? defaultLimit;
   }
 
   promptWindowLimit() {
-    return LLMAPI_DEFAULT_CONTEXT_WINDOW;
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(modelName = "") {
@@ -180,11 +231,9 @@ class LLMApiLLM {
     let hasUsageMetrics = false;
     let usage = {
       prompt_tokens: 0,
-      total_tokens: 0,
-      outputTps: 0,
       completion_tokens: 0,
+      total_tokens: 0,
     };
-
     let fullText = "";
     let resolveStream;
     const streamPromise = new Promise((resolve) => {
@@ -198,9 +247,15 @@ class LLMApiLLM {
     response.on("close", handleAbort);
 
     try {
+      let closed = false;
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
+        const delta = message?.delta ?? {};
+
+        // Some LLMAPI-proxied reasoning models (e.g. GLM, Kimi) place their
+        // full response in delta.reasoning with no delta.content at all.
+        // Fall back to delta.reasoning so those models produce non-empty output.
+        const token = delta.content || delta.reasoning || null;
 
         if (
           chunk.hasOwnProperty("usage") &&
@@ -209,13 +264,12 @@ class LLMApiLLM {
         ) {
           if (chunk.usage.hasOwnProperty("prompt_tokens"))
             usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
-          if (chunk.usage.hasOwnProperty("completion_tokens"))
+          if (chunk.usage.hasOwnProperty("completion_tokens")) {
+            hasUsageMetrics = true;
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
+          }
           if (chunk.usage.hasOwnProperty("total_tokens"))
             usage.total_tokens = Number(chunk.usage.total_tokens);
-          if (chunk.usage.hasOwnProperty("total_tokens_per_sec"))
-            usage.outputTps = Number(chunk.usage.total_tokens_per_sec);
-          hasUsageMetrics = true;
         }
 
         if (token) {
@@ -244,12 +298,29 @@ class LLMApiLLM {
             close: true,
             error: false,
           });
+          response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
+          resolveStream(fullText);
+          closed = true;
+          break;
         }
       }
 
-      response.removeListener("close", handleAbort);
-      stream?.endMeasurement(usage);
-      resolveStream(fullText);
+      // Some providers (e.g. Gemini via LLMAPI) never send finish_reason,
+      // so the stream ends naturally without hitting the break above.
+      if (!closed) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolveStream(fullText);
+      }
     } catch (e) {
       this.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
       writeResponseChunk(response, {
@@ -276,6 +347,7 @@ class LLMApiLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

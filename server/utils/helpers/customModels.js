@@ -1010,35 +1010,25 @@ async function getSambaNovaModels(_apiKey = null) {
 /**
  * Get LLM API models. The /v1/models endpoint does not require an API key,
  * so models are available even before the user has entered their key.
- * @param {string|null} _apiKey - The API key (optional)
  * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
  */
-async function getLLMApiModels(_apiKey = null) {
+async function getLLMApiModels() {
   try {
-    const apiKey =
-      _apiKey === true
-        ? process.env.LLMAPI_LLM_API_KEY
-        : _apiKey || process.env.LLMAPI_LLM_API_KEY || null;
-
-    const headers = { "Content-Type": "application/json" };
-    if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
-
-    const response = await fetch("https://api.llmapi.ai/v1/models", {
-      headers,
-      signal: AbortSignal.timeout(5000),
+    const { OpenAI } = require("openai");
+    const client = new OpenAI({
+      baseURL: "https://api.llmapi.ai/v1",
+      apiKey: process.env.LLMAPI_LLM_API_KEY || "no-key",
     });
 
-    if (!response.ok)
-      throw new Error(`LLM API models fetch failed: ${response.statusText}`);
-
-    const data = await response.json();
-    const models = (data?.data ?? []).map((model) => ({
-      id: model.id,
-      organization: model.owned_by ?? "LLM API",
-      name: model.id,
-    }));
-
-    return { models, error: null };
+    const { data: models } = await client.models.list();
+    return {
+      models: models.map((model) => ({
+        id: model.id,
+        organization: model.family ?? model.owned_by ?? "LLM API",
+        name: model.name ?? model.id,
+      })),
+      error: null,
+    };
   } catch (e) {
     console.error(`LLMApi:getLLMApiModels`, e.message);
     return { models: [], error: "Could not fetch LLM API Models" };

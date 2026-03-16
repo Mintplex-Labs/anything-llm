@@ -255,7 +255,7 @@ const LLM_PROVIDER_PRIVACY_MAP = {
   },
   llmapi: {
     name: "LLM API",
-    policyUrl: "https://llmapi.ai/privacy-policy",
+    policyUrl: "https://llmapi.ai/policy",
     logo: LLMApiLogo,
   },
 };
