@@ -1,5 +1,5 @@
 const { ExternalConnector } = require("../models/externalConnector");
-const { SystemSettings } = require("../models/systemSettings");
+const { Telemetry } = require("../models/telemetry");
 const { TelegramBotService } = require("../utils/telegramBot");
 const {
   encryptToken,
@@ -24,7 +24,7 @@ function telegramEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        if (await SystemSettings.isMultiUserMode()) {
+        if (response.locals?.multiUserMode) {
           return response.status(403).json({
             config: null,
             error: "Telegram bot is only available in single-user mode.",
@@ -62,7 +62,7 @@ function telegramEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        if (await SystemSettings.isMultiUserMode()) {
+        if (response.locals?.multiUserMode) {
           return response.status(403).json({
             success: false,
             error: "Telegram bot is only available in single-user mode.",
@@ -113,6 +113,7 @@ function telegramEndpoints(app) {
         await EventLogs.logEvent("telegram_bot_connected", {
           bot_username: verification.username,
         });
+        await Telemetry.sendTelemetry("telegram_bot_connected");
 
         return response.status(200).json({
           success: true,
