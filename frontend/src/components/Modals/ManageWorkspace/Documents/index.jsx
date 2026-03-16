@@ -130,7 +130,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     startEmbedding(workspace.slug, filenames);
 
     embedPromise
-      .then(async (res) => {
+      .then(async () => {
         // Refresh file lists after API responds.
         // Progress UI is driven by SSE via embeddingProgress context.
         await fetchKeys(true);
