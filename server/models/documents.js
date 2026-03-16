@@ -84,7 +84,10 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
-    const { embeddingProgressBus } = require("../utils/WorkerQueue");
+    const {
+      embeddingProgressBus,
+      setEmbeddingContext,
+    } = require("../utils/WorkerQueue");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
@@ -125,11 +128,21 @@ const Document = {
 
       emitProgress("doc_starting", docProgress);
 
+      // Set the document context so that chunk-level progress events from the
+      // embedding worker can be attributed to this specific document/user.
+      // Must be cleared after vectorization. See WorkerQueue/index.js for how
+      // this context is read when forwarding worker progress to the SSE bus.
+      setEmbeddingContext({
+        workspaceSlug: workspace.slug,
+        filename: path,
+        userId,
+      });
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
         { ...data, docId },
         path
       );
+      setEmbeddingContext(null);
 
       if (!vectorized) {
         console.error(

@@ -261,13 +261,29 @@ class NativeEmbedder {
    * Runs the embedding pipeline directly in the current process. Only the
    * embedding worker should call this — all other callers should use
    * {@link embedChunks} which routes work to the isolated worker process.
+   *
+   * Chunk-level progress reporting:
+   * This method runs inside a forked child process (embeddingWorker.js), so it
+   * cannot emit events on the main process's EmbeddingProgressBus directly.
+   * Instead, the worker passes an onProgress callback that sends IPC messages
+   * back to the parent. The full flow is:
+   *
+   *   embedChunksInProcess (onProgress callback)
+   *     → embeddingWorker.js (converts callback to process.send IPC message)
+   *       → WorkerQueue.js (receives IPC, calls its own onProgress callback)
+   *         → WorkerQueue/index.js (emits "chunk_progress" on EmbeddingProgressBus)
+   *           → SSE endpoint streams it to the frontend
+   *
    * @param {string[]} textChunks
+   * @param {function|null} onProgress - Called after each chunk group with { chunksProcessed: number, totalChunks: number }.
+   *   The embedding worker sets this to a function that sends IPC messages to the parent process.
    * @returns {Promise<Array<number[]>|null>}
    */
-  async embedChunksInProcess(textChunks = []) {
+  async embedChunksInProcess(textChunks = [], onProgress = null) {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;
+    const totalChunks = textChunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
@@ -290,6 +306,15 @@ class NativeEmbedder {
       this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
+
+      if (onProgress) {
+        const chunksProcessed = Math.min(
+          (idx + 1) * this.maxConcurrentChunks,
+          totalChunks
+        );
+        onProgress({ chunksProcessed, totalChunks });
+      }
+
       pipeline = null;
       output = null;
       data = null;

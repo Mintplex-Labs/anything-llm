@@ -6,6 +6,12 @@ const { v4: uuidv4 } = require("uuid");
  * Generic serial job queue backed by a forked child process.
  * Manages worker lifecycle (fork, ready handshake, idle timeout, graceful shutdown)
  * and processes jobs one at a time in FIFO order.
+ *
+ * For chunk-level progress: when a worker sends { type: "progress" } IPC messages,
+ * this class receives them in #onMessage and forwards them to the onProgress
+ * callback provided at construction. This is how progress crosses the child→parent
+ * process boundary. See WorkerQueue/index.js for how the callback is wired to the
+ * EmbeddingProgressBus.
  */
 class WorkerQueue {
   #worker = null;
@@ -18,12 +24,14 @@ class WorkerQueue {
    * @param {Object} options
    * @param {string} options.workerScript - Path to worker JS file (relative to this file or absolute)
    * @param {number} options.idleTimeout - Ms of inactivity before killing the worker
+   * @param {function|null} options.onProgress - Callback for progress messages from the worker
    */
-  constructor({ workerScript, idleTimeout = 300_000 }) {
+  constructor({ workerScript, idleTimeout = 300_000, onProgress = null }) {
     this.workerScript = path.isAbsolute(workerScript)
       ? workerScript
       : path.resolve(__dirname, workerScript);
     this.idleTimeout = idleTimeout;
+    this._onProgress = onProgress;
   }
 
   get isRunning() {
@@ -181,6 +189,20 @@ class WorkerQueue {
           job.reject(new Error(String(msg.error)));
         }
         this.#processNext();
+        break;
+      }
+
+      // Chunk-level progress from the worker. Forwarded to the onProgress
+      // callback so the caller (WorkerQueue/index.js) can emit it on the
+      // EmbeddingProgressBus with the appropriate document context attached.
+      case "progress": {
+        if (this._onProgress && this.#activeJob) {
+          this._onProgress({
+            jobId: this.#activeJob.jobId,
+            chunksProcessed: msg.chunksProcessed,
+            totalChunks: msg.totalChunks,
+          });
+        }
         break;
       }
 

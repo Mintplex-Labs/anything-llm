@@ -57,7 +57,19 @@ export function EmbeddingProgressProvider({ children }) {
       }
 
       case "doc_starting":
-        updateFileStatus(slug, data.filename, { status: "embedding" });
+        updateFileStatus(slug, data.filename, {
+          status: "embedding",
+          chunksProcessed: 0,
+          totalChunks: 0,
+        });
+        break;
+
+      case "chunk_progress":
+        updateFileStatus(slug, data.filename, {
+          status: "embedding",
+          chunksProcessed: data.chunksProcessed,
+          totalChunks: data.totalChunks,
+        });
         break;
 
       case "doc_complete":

@@ -540,9 +540,14 @@ const getStatusStyles = () => ({
     label: "Failed",
   },
 });
-function EmbeddingFileRow({ filename, status: { status } }) {
+function EmbeddingFileRow({ filename, status: fileStatus }) {
+  const { status, chunksProcessed = 0, totalChunks = 0 } = fileStatus;
   const displayName = getDisplayName(filename);
   const statusStyles = getStatusStyles();
+  const isEmbedding = status === "embedding" && totalChunks > 0;
+  const pct = isEmbedding
+    ? Math.round((chunksProcessed / totalChunks) * 100)
+    : 0;
 
   return (
     <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
@@ -558,11 +563,25 @@ function EmbeddingFileRow({ filename, status: { status } }) {
         </p>
       </div>
       <div className="col-span-4 flex justify-end items-center gap-x-2">
-        <p
-          className={`text-[10px] whitespace-nowrap ${statusStyles[status].textColor}`}
-        >
-          {statusStyles[status].label || "Queued"}
-        </p>
+        {isEmbedding ? (
+          <div className="flex items-center gap-x-2 w-full justify-end">
+            <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-sky-400 rounded-full transition-all duration-300"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <p className="text-[10px] whitespace-nowrap text-sky-400 w-8 text-right">
+              {pct}%
+            </p>
+          </div>
+        ) : (
+          <p
+            className={`text-[10px] whitespace-nowrap ${statusStyles[status].textColor}`}
+          >
+            {statusStyles[status].label || "Queued"}
+          </p>
+        )}
       </div>
     </div>
   );
