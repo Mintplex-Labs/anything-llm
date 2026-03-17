@@ -396,18 +396,6 @@ const TRANSLATIONS = {
         remove: "Noņemt",
         replace: "Aizvietot",
       },
-      "welcome-messages": {
-        title: "Sveiciena ziņojumi",
-        description:
-          "Pielāgojiet sveiciena ziņojumus, kas tiek rādīti lietotājiem. Tikai ne-administratori redzēs šos ziņojumus.",
-        new: "Jauns",
-        system: "sistēma",
-        user: "lietotājs",
-        message: "ziņojums",
-        assistant: "AnythingLLM čata asistents",
-        "double-click": "Dubultklikšķis, lai rediģētu...",
-        save: "Saglabāt ziņojumus",
-      },
       "browser-appearance": {
         title: "Pārlūkprogrammas izskats",
         description:

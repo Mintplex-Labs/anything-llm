@@ -385,18 +385,6 @@ const TRANSLATIONS = {
         remove: "Eemalda",
         replace: "Asenda",
       },
-      "welcome-messages": {
-        title: "Tervitussõnumid",
-        description:
-          "Kohanda sõnumeid, mida kasutajad näevad sisselogimisel. Ainult mitte-adminid näevad neid.",
-        new: "Uus",
-        system: "süsteem",
-        user: "kasutaja",
-        message: "sõnum",
-        assistant: "AnythingLLM vestlusabi",
-        "double-click": "Topeltklõps muutmiseks…",
-        save: "Salvesta sõnumid",
-      },
       "browser-appearance": {
         title: "Brauseri välimus",
         description: "Kohanda brauseri vahekaardi pealkirja ja ikooni.",
