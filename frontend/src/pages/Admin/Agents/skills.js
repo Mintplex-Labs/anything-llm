@@ -8,6 +8,7 @@ import {
   Browser,
   ChartBar,
   FileMagnifyingGlass,
+  MagnifyingGlass,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -70,5 +71,13 @@ export const getConfigurableSkills = (t) => ({
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "file-search": {
+    title: t("agent.skill.file_search.title"),
+    description: t("agent.skill.file_search.description"),
+    component: GenericSkillPanel,
+    skill: "file-search",
+    icon: MagnifyingGlass,
+    image: RAGImage,
   },
 });

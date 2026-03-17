@@ -326,6 +326,11 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
       },
+      file_search: {
+        title: "File Search",
+        description:
+          "Allow the agent to search and read files from the server's mounted file storage to answer questions about their contents.",
+      },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },
