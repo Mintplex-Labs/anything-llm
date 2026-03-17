@@ -1,14 +1,22 @@
 const fs = require("fs");
 const path = require("path");
+const { execFile } = require("child_process");
+const { promisify } = require("util");
+const { rgPath } = require("@vscode/ripgrep");
 const { CollectorApi } = require("../../../collectorApi");
 const Provider = require("../providers/ai-provider");
 const { summarizeContent } = require("../utils/summarize");
 const { isWithin, hotdirPath } = require("../../../files");
 
+const execFileAsync = promisify(execFile);
 const FILE_SEARCH_PATH =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../../storage/anythingllm-files")
     : "/anythingllm-files";
+const MAX_SEARCH_DEPTH = 5;
+const MAX_SEARCH_RESULTS = 10000;
+const MAX_CONTENT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const RECENT_FILE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 const fileSearch = {
   name: "file-search",
@@ -122,7 +130,7 @@ const fileSearch = {
               `${this.caller}: Searching for files matching: ${searchTerms.join(", ")}...`
             );
 
-            const allFiles = this.walkDir(searchRoot);
+            const allFiles = await this.listCandidateFiles(searchRoot);
             if (allFiles.length === 0) {
               this.super.introspect(
                 `${this.caller}: No files found in the search directory.`
@@ -130,19 +138,18 @@ const fileSearch = {
               return "No files were found in the search directory. The directory is empty.";
             }
 
-            // Filter by file type if specified
-            let candidates = allFiles;
-            if (fileTypes && fileTypes.length > 0) {
-              const extensions = fileTypes.map((t) =>
-                t.startsWith(".") ? t.toLowerCase() : `.${t.toLowerCase()}`
-              );
-              candidates = candidates.filter((f) =>
-                extensions.includes(path.extname(f.name).toLowerCase())
-              );
-            }
+            const candidates =
+              fileTypes && fileTypes.length > 0
+                ? await this.listCandidateFiles(searchRoot, fileTypes)
+                : allFiles;
 
             // Run all search strategies and rank results
-            const ranked = this.searchAndRank(candidates, searchTerms);
+            const ranked = await this.searchAndRank(
+              searchRoot,
+              candidates,
+              searchTerms,
+              fileTypes
+            );
             if (ranked.length === 0) {
               this.super.introspect(
                 `${this.caller}: No files matched the search criteria.`
@@ -232,71 +239,167 @@ const fileSearch = {
           },
 
           /**
-           * Recursively walk a directory and return all files with metadata.
-           * @param {string} dir - Directory to walk
-           * @param {number} maxDepth - Maximum recursion depth
-           * @param {number} _currentDepth - Current recursion depth (internal)
+           * Execute ripgrep and return its stdout as a string.
+           * Exit code 1 is treated as a valid "no matches" result.
+           * @param {string[]} args
+           * @param {string} cwd
+           * @returns {Promise<string>}
+           */
+          runRipgrep: async function (args, cwd) {
+            try {
+              const { stdout } = await execFileAsync(rgPath, args, {
+                cwd,
+                maxBuffer: 10 * 1024 * 1024,
+              });
+              return stdout;
+            } catch (error) {
+              if (error.code === 1) return error.stdout || "";
+              throw new Error(
+                error.stderr?.trim() ||
+                  error.message ||
+                  "Ripgrep search failed."
+              );
+            }
+          },
+
+          /**
+           * Convert file type filters into ripgrep globs.
+           * @param {string[]} fileTypes
+           * @returns {string[]}
+           */
+          fileTypeGlobs: function (fileTypes = []) {
+            return fileTypes
+              .filter(Boolean)
+              .map((type) => type.trim().toLowerCase())
+              .filter(Boolean)
+              .map((type) => (type.startsWith(".") ? type.slice(1) : type))
+              .map((type) => `*.${type}`);
+          },
+
+          /**
+           * Convert ripgrep's relative file output into safe hydrated file metadata.
+           * @param {string} searchRoot
+           * @param {string[]} relativePaths
            * @returns {{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]}
            */
-          walkDir: function (dir, maxDepth = 5, _currentDepth = 0) {
+          hydrateFileMetadata: function (searchRoot, relativePaths = []) {
             const results = [];
-            if (_currentDepth >= maxDepth) return results;
-
-            let entries;
-            try {
-              entries = fs.readdirSync(dir, { withFileTypes: true });
-            } catch {
-              return results;
-            }
-
-            for (const entry of entries) {
-              // Skip hidden files and directories
-              if (entry.name.startsWith(".")) continue;
-
-              const fullPath = path.resolve(dir, entry.name);
-
-              // Security: ensure we stay within search root
-              if (
-                !isWithin(FILE_SEARCH_PATH, fullPath) &&
-                FILE_SEARCH_PATH !== fullPath
-              )
+            for (const relativePath of relativePaths) {
+              const normalizedPath = String(relativePath).trim();
+              if (!normalizedPath) continue;
+              const fullPath = path.resolve(searchRoot, normalizedPath);
+              if (!isWithin(searchRoot, fullPath) && searchRoot !== fullPath)
                 continue;
 
-              if (entry.isDirectory()) {
-                results.push(
-                  ...this.walkDir(fullPath, maxDepth, _currentDepth + 1)
-                );
-              } else if (entry.isFile()) {
-                try {
-                  const stats = fs.statSync(fullPath);
-                  results.push({
-                    fullPath,
-                    relativePath: path.relative(FILE_SEARCH_PATH, fullPath),
-                    name: entry.name,
-                    size: stats.size,
-                    mtime: stats.mtime,
-                  });
-                } catch {
-                  // File may have been deleted between readdir and stat
-                  continue;
-                }
+              try {
+                const stats = fs.statSync(fullPath);
+                if (!stats.isFile()) continue;
+
+                results.push({
+                  fullPath,
+                  relativePath: path.relative(searchRoot, fullPath),
+                  name: path.basename(fullPath),
+                  size: stats.size,
+                  mtime: stats.mtime,
+                });
+              } catch {
+                continue;
               }
 
-              // Cap total files to prevent runaway scanning
-              if (results.length >= 10000) break;
+              if (results.length >= MAX_SEARCH_RESULTS) break;
             }
-
             return results;
           },
 
           /**
+           * List files with ripgrep, optionally filtered by extension globs.
+           * @param {string} searchRoot
+           * @param {string[]} fileTypes
+           * @returns {Promise<{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]>}
+           */
+          listCandidateFiles: async function (searchRoot, fileTypes = []) {
+            const args = [
+              "--files",
+              "--null",
+              "--no-ignore",
+              "--max-depth",
+              `${MAX_SEARCH_DEPTH}`,
+            ];
+            const typeGlobs = this.fileTypeGlobs(fileTypes);
+            if (typeGlobs.length > 0) args.push("--glob-case-insensitive");
+            for (const glob of typeGlobs) {
+              args.push("--glob", glob);
+            }
+
+            const stdout = await this.runRipgrep(args, searchRoot);
+            const relativePaths = stdout
+              .split("\0")
+              .map((file) => file.trim())
+              .filter(Boolean);
+            return this.hydrateFileMetadata(searchRoot, relativePaths);
+          },
+
+          /**
+           * Search file contents with ripgrep using fixed-string case-insensitive matching.
+           * @param {string} searchRoot
+           * @param {string[]} searchTerms
+           * @param {string[]} fileTypes
+           * @returns {Promise<Set<string>>}
+           */
+          searchByContent: async function (
+            searchRoot,
+            searchTerms,
+            fileTypes = []
+          ) {
+            const terms = searchTerms
+              .map((term) => term.trim())
+              .filter(Boolean);
+            if (terms.length === 0) return new Set();
+
+            const args = [
+              "-l",
+              "--null",
+              "--no-ignore",
+              "--no-binary",
+              "--max-depth",
+              `${MAX_SEARCH_DEPTH}`,
+              "--fixed-strings",
+              "--ignore-case",
+              "--max-filesize",
+              `${MAX_CONTENT_FILE_SIZE}`,
+            ];
+            const typeGlobs = this.fileTypeGlobs(fileTypes);
+            if (typeGlobs.length > 0) args.push("--glob-case-insensitive");
+            for (const glob of typeGlobs) {
+              args.push("--glob", glob);
+            }
+            for (const term of terms) {
+              args.push("-e", term);
+            }
+            args.push(".");
+
+            const stdout = await this.runRipgrep(args, searchRoot);
+            const matchedPaths = stdout
+              .split("\0")
+              .map((file) => file.trim())
+              .filter(Boolean)
+              .map((relativePath) => path.resolve(searchRoot, relativePath));
+            return new Set(matchedPaths);
+          },
+
+          /**
            * Run all search strategies (filename, path, content) and rank by relevance.
-           * Results are deduplicated by file path and scored by how many strategies matched.
            * @param {{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]} files
            * @param {string[]} searchTerms
+           * @param {string[]} fileTypes
            * @returns {{fullPath: string, relativePath: string, name: string, size: number, mtime: Date, score: number}[]}
            */
-          searchAndRank: function (files, searchTerms) {
+          searchAndRank: async function (
+            searchRoot,
+            files,
+            searchTerms,
+            fileTypes = []
+          ) {
             // If the only search term is "*", return all files ranked by recency
             if (searchTerms.length === 1 && searchTerms[0].trim() === "*") {
               return files
@@ -334,15 +437,19 @@ const fileSearch = {
               }
             }
 
-            // Strategy 3: Content search (reads text files) — highest weight
-            // since file content is what actually gets injected into the LLM context.
-            const contentMatches = this.searchByContent(searchTerms, files);
+            // Strategy 3: Content search via ripgrep — highest weight since
+            // file content is what actually gets injected into the LLM context.
+            const contentMatches = await this.searchByContent(
+              searchRoot,
+              searchTerms,
+              fileTypes
+            );
             for (const matchedPath of contentMatches) {
               addScore(matchedPath, 3);
             }
 
             // Apply recency bonus
-            const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+            const sevenDaysAgo = Date.now() - RECENT_FILE_WINDOW_MS;
             for (const entry of scores.values()) {
               if (entry.mtime.getTime() > sevenDaysAgo) entry.score += 1;
             }
@@ -351,67 +458,6 @@ const fileSearch = {
             const ranked = Array.from(scores.values());
             ranked.sort((a, b) => b.score - a.score || b.mtime - a.mtime);
             return ranked;
-          },
-
-          /**
-           * Search for files containing any of the search terms by reading file contents.
-           * Only scans text-readable files under 1MB to keep it fast.
-           * @param {string[]} searchTerms
-           * @param {{fullPath: string, name: string, size: number}[]} files
-           * @returns {Set<string>} - Set of absolute file paths that matched
-           */
-          searchByContent: function (searchTerms, files) {
-            const TEXT_EXTENSIONS = new Set([
-              ".txt",
-              ".md",
-              ".csv",
-              ".json",
-              ".html",
-              ".xml",
-              ".yaml",
-              ".yml",
-              ".log",
-              ".rst",
-              ".toml",
-              ".env",
-              ".js",
-              ".ts",
-              ".py",
-              ".rb",
-              ".sh",
-              ".bat",
-              ".ps1",
-              ".css",
-              ".sql",
-              ".ini",
-              ".cfg",
-              ".conf",
-            ]);
-            const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
-            const matchedPaths = new Set();
-            const termsLower = searchTerms.map((t) => t.toLowerCase());
-
-            for (const file of files) {
-              const ext = path.extname(file.name).toLowerCase();
-              if (!TEXT_EXTENSIONS.has(ext)) continue;
-              if (file.size > MAX_FILE_SIZE || file.size === 0) continue;
-
-              try {
-                const content = fs
-                  .readFileSync(file.fullPath, "utf-8")
-                  .toLowerCase();
-                for (const term of termsLower) {
-                  if (content.includes(term)) {
-                    matchedPaths.add(file.fullPath);
-                    break;
-                  }
-                }
-              } catch {
-                // File may be unreadable — skip it
-              }
-            }
-
-            return matchedPaths;
           },
 
           /**
