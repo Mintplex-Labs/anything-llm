@@ -1,6 +1,5 @@
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceThread } = require("../../models/workspaceThread");
-const { clearTelegramChat, sendHistoryPreview } = require("./chatActions");
 const { isVerified } = require("./verification");
 
 /**
@@ -21,7 +20,7 @@ async function showWorkspaceMenu(ctx, chatId, messageId = null) {
     const isCurrent = ws.slug === state.workspaceSlug;
     return [
       {
-        text: `${isCurrent ? "● " : ""}${ws.name}`,
+        text: isCurrent ? `🟢 ${ws.name} (active)` : ws.name,
         callback_data: `ws:${ws.slug}`,
       },
     ];
@@ -63,7 +62,7 @@ async function showThreadMenu(ctx, chatId, workspaceSlug, messageId = null) {
   const buttons = [
     [
       {
-        text: `${!state.threadSlug ? "● " : ""}Main`,
+        text: !state.threadSlug ? "🟢 Default (active)" : "Default",
         callback_data: `th:${workspaceSlug}:main`,
       },
     ],
@@ -73,7 +72,7 @@ async function showThreadMenu(ctx, chatId, workspaceSlug, messageId = null) {
     const isCurrent = thread.slug === state.threadSlug;
     buttons.push([
       {
-        text: `${isCurrent ? "● " : ""}${thread.name}`,
+        text: isCurrent ? `🟢 ${thread.name} (active)` : thread.name,
         callback_data: `th:${workspaceSlug}:${thread.slug}`,
       },
     ]);
@@ -132,11 +131,8 @@ async function handleCallback(ctx, query) {
       ctx.setState(chatId, { workspaceSlug, threadSlug });
       await ctx.bot.answerCallbackQuery(query.id, { text: "Switched!" });
 
-      // Clear old messages so the chat isn't confusing
-      await clearTelegramChat(ctx.bot, chatId);
-
       const workspace = await Workspace.get({ slug: workspaceSlug });
-      let threadName = "Main";
+      let threadName = "Default";
       if (threadSlug) {
         const thread = await WorkspaceThread.get({ slug: threadSlug });
         threadName = thread?.name || threadSlug;
@@ -146,9 +142,6 @@ async function handleCallback(ctx, query) {
         chatId,
         `Switched to "${workspace?.name}" → ${threadName}`
       );
-
-      // Send history preview as separate messages so nothing gets cut off
-      await sendHistoryPreview(ctx.bot, chatId, workspace, threadSlug);
     } else if (data === "back:workspaces") {
       await showWorkspaceMenu(ctx, chatId, messageId);
       await ctx.bot.answerCallbackQuery(query.id);

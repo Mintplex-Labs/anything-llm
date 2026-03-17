@@ -1,8 +1,9 @@
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceChats } = require("../../models/workspaceChats");
+const { convertToChatHistory } = require("../helpers/chat/responses");
 const { BOT_COMMANDS } = require("./constants");
-const { clearTelegramChat, sendHistoryPreview } = require("./chatActions");
+const { clearTelegramChat, sendBatchedMessages } = require("./chatActions");
 const { showWorkspaceMenu } = require("./navigation");
 
 /**
@@ -45,19 +46,23 @@ async function handleStatus(ctx, chatId) {
     return;
   }
 
-  const parts = [`Workspace: ${workspace.name}`];
-  parts.push(`Chat Mode: ${workspace.chatMode || "chat"}`);
-  if (workspace.chatProvider) parts.push(`Provider: ${workspace.chatProvider}`);
-  if (workspace.chatModel) parts.push(`Model: ${workspace.chatModel}`);
-
+  let threadName = "Default";
   if (state.threadSlug) {
     const thread = await WorkspaceThread.get({ slug: state.threadSlug });
-    if (thread) parts.push(`Thread: ${thread.name}`);
-  } else {
-    parts.push("Thread: Main");
+    if (thread) threadName = thread.name;
   }
 
-  await ctx.bot.sendMessage(chatId, parts.join("\n"));
+  const lines = [
+    `<b>Workspace:</b> ${workspace.name}`,
+    `<b>Thread:</b> ${threadName}`,
+  ];
+  if (workspace.chatProvider)
+    lines.push(`<b>Provider:</b> ${workspace.chatProvider}`);
+  if (workspace.chatModel) lines.push(`<b>Model:</b> ${workspace.chatModel}`);
+
+  await ctx.bot.sendMessage(chatId, lines.join("\n"), {
+    parse_mode: "HTML",
+  });
 }
 
 /** /reset - clears LLM chat history context */
@@ -91,7 +96,7 @@ async function handleClear(ctx, chatId) {
   const workspace = await Workspace.get({ slug: state.workspaceSlug });
   const name = workspace?.name || state.workspaceSlug;
 
-  let threadInfo = "Main";
+  let threadInfo = "Default";
   if (state.threadSlug) {
     const thread = await WorkspaceThread.get({ slug: state.threadSlug });
     if (thread) threadInfo = thread.name;
@@ -103,22 +108,41 @@ async function handleClear(ctx, chatId) {
   );
 }
 
-/** /resume - clears chat and shows history for last conversation */
+/** /resume - finds the most recent conversation and switches to it */
 async function handleResume(ctx, chatId) {
-  await clearTelegramChat(ctx.bot, chatId);
+  const latestChat = await WorkspaceChats.get(
+    { user_id: null, api_session_id: null, include: true },
+    null,
+    { id: "desc" }
+  );
 
-  const state = ctx.getState(chatId);
-  const workspace = await Workspace.get({ slug: state.workspaceSlug });
-  const name = workspace?.name || state.workspaceSlug;
-
-  let threadInfo = "Main";
-  if (state.threadSlug) {
-    const thread = await WorkspaceThread.get({ slug: state.threadSlug });
-    if (thread) threadInfo = thread.name;
+  if (!latestChat) {
+    await ctx.bot.sendMessage(chatId, "No recent conversations found.");
+    return;
   }
 
-  await ctx.bot.sendMessage(chatId, `Resuming "${name}" → ${threadInfo}`);
-  await sendHistoryPreview(ctx.bot, chatId, workspace, state.threadSlug);
+  const workspace = await Workspace.get({ id: latestChat.workspaceId });
+  if (!workspace) {
+    await ctx.bot.sendMessage(chatId, "No recent conversations found.");
+    return;
+  }
+
+  let threadSlug = null;
+  let threadName = "Default";
+  if (latestChat.thread_id) {
+    const thread = await WorkspaceThread.get({ id: latestChat.thread_id });
+    if (thread) {
+      threadSlug = thread.slug;
+      threadName = thread.name;
+    }
+  }
+
+  ctx.setState(chatId, { workspaceSlug: workspace.slug, threadSlug });
+
+  await ctx.bot.sendMessage(
+    chatId,
+    `Resumed "${workspace.name}" → ${threadName}\n\nUse /history to view recent messages.`
+  );
 }
 
 /** /new - creates a new thread */
@@ -148,6 +172,86 @@ async function handleNewThread(ctx, chatId) {
   );
 }
 
+const DEFAULT_HISTORY_COUNT = 10;
+const MAX_HISTORY_COUNT = 50;
+
+/** Escape HTML special characters so Telegram doesn't try to parse them as tags. */
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/**
+ * /history [count] - show recent chat history
+ * @param {BotContext} ctx
+ * @param {number} chatId
+ * @param {string} [messageText] - full message text to parse count from
+ */
+async function handleHistory(ctx, chatId, messageText = "") {
+  const state = ctx.getState(chatId);
+  const workspace = await Workspace.get({ slug: state.workspaceSlug });
+  if (!workspace) {
+    await ctx.bot.sendMessage(chatId, "No workspace configured.");
+    return;
+  }
+
+  const match = messageText.match(/\/history\s+(\d+)/);
+  const count = match
+    ? Math.min(parseInt(match[1], 10), MAX_HISTORY_COUNT)
+    : DEFAULT_HISTORY_COUNT;
+
+  const thread = state.threadSlug
+    ? await WorkspaceThread.get({ slug: state.threadSlug })
+    : null;
+
+  const rawChats = await WorkspaceChats.where(
+    {
+      workspaceId: workspace.id,
+      user_id: null,
+      thread_id: thread?.id || null,
+      api_session_id: null,
+      include: true,
+    },
+    count,
+    { id: "desc" }
+  );
+
+  if (!rawChats.length) {
+    await ctx.bot.sendMessage(chatId, "No messages yet in this thread.");
+    return;
+  }
+
+  const history = convertToChatHistory(rawChats.reverse());
+
+  const exchanges = [];
+  for (let i = 0; i < history.length; i++) {
+    const entry = history[i];
+    if (entry.role === "user") {
+      let block = `<b>You:</b> ${escapeHtml(entry.content || "")}`;
+      if (i + 1 < history.length && history[i + 1].role === "assistant") {
+        block += `\n\n<b>AI:</b> ${escapeHtml(history[i + 1].content || "")}`;
+        i++;
+      }
+      exchanges.push(block);
+    } else if (entry.role === "assistant") {
+      exchanges.push(`<b>AI:</b> ${escapeHtml(entry.content || "")}`);
+    }
+  }
+
+  if (!exchanges.length) return;
+
+  const threadName = thread?.name || "Default";
+  const header = `<b>${workspace.name} → ${threadName}</b>\nLast ${exchanges.length} message(s)\n\n`;
+
+  await sendBatchedMessages(ctx.bot, chatId, exchanges, {
+    header,
+    separator: "\n\n———\n\n",
+    sendOptions: { parse_mode: "HTML" },
+  });
+}
+
 const COMMAND_HANDLERS = {
   start: handleStart,
   help: handleHelp,
@@ -157,6 +261,7 @@ const COMMAND_HANDLERS = {
   reset: handleReset,
   clear: handleClear,
   resume: handleResume,
+  history: handleHistory,
 };
 
 module.exports = { COMMAND_HANDLERS };

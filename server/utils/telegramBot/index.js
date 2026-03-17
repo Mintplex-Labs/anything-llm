@@ -134,12 +134,19 @@ class TelegramBotService {
       handler();
     };
 
-    // Register all commands
+    // Register all commands (history is registered separately below)
     for (const [command, handler] of Object.entries(COMMAND_HANDLERS)) {
+      if (command === "history") continue;
       this.#bot.onText(new RegExp(`\\/${command}`), (msg) =>
         guard(msg, () => handler(ctx, msg.chat.id))
       );
     }
+
+    // Register /history separately so we can pass the message text for argument parsing
+    // Ex: /history 25 shows last 25 messages
+    this.#bot.onText(/\/history(.*)/, (msg) =>
+      guard(msg, () => COMMAND_HANDLERS.history(ctx, msg.chat.id, msg.text))
+    );
 
     // Register callback queries, used for workspace/thread selection interactive menus
     this.#bot.on("callback_query", (query) => handleCallback(ctx, query));

@@ -1,8 +1,3 @@
-const { WorkspaceThread } = require("../../models/workspaceThread");
-const { WorkspaceChats } = require("../../models/workspaceChats");
-const { convertToChatHistory } = require("../helpers/chat/responses");
-const { HISTORY_PREVIEW_COUNT } = require("./constants");
-
 /**
  * Delete recent messages from a Telegram chat.
  * Telegram doesn't let bots bulk-delete in private chats,
@@ -21,85 +16,6 @@ async function clearTelegramChat(bot, chatId) {
     } catch {
       // Message doesn't exist or is too old — skip
     }
-  }
-}
-
-/**
- * Send recent chat history as separate messages so nothing gets cut off.
- * Groups exchanges into batches that fit within Telegram's 4096 char limit.
- * @param {TelegramBot} bot
- * @param {number} chatId
- * @param {object} workspace
- * @param {string|null} threadSlug
- */
-async function sendHistoryPreview(bot, chatId, workspace, threadSlug) {
-  if (!workspace) return;
-
-  const thread = threadSlug
-    ? await WorkspaceThread.get({ slug: threadSlug })
-    : null;
-
-  const rawChats = await WorkspaceChats.where(
-    {
-      workspaceId: workspace.id,
-      user_id: null,
-      thread_id: thread?.id || null,
-      api_session_id: null,
-      include: true,
-    },
-    HISTORY_PREVIEW_COUNT,
-    { id: "desc" }
-  );
-
-  if (!rawChats.length) {
-    await bot.sendMessage(
-      chatId,
-      "No messages yet. Send a message to start chatting."
-    );
-    return;
-  }
-
-  const history = convertToChatHistory(rawChats.reverse());
-  const separator = "\n━━━━━━━━━━━━━━━━━━━━\n";
-
-  // Build individual exchange blocks (user + assistant pairs)
-  const exchanges = [];
-  for (let i = 0; i < history.length; i++) {
-    const entry = history[i];
-    if (entry.role === "user") {
-      let block = `You: ${entry.content || ""}`;
-      // Attach the assistant response if it immediately follows
-      if (i + 1 < history.length && history[i + 1].role === "assistant") {
-        block += `\n\nAI: ${history[i + 1].content || ""}`;
-        i++;
-      }
-      exchanges.push(block);
-    } else if (entry.role === "assistant") {
-      exchanges.push(`AI: ${entry.content || ""}`);
-    }
-  }
-
-  if (!exchanges.length) return;
-
-  // Batch exchanges into messages that fit under Telegram's 4096 char limit
-  const MAX_MSG_LEN = 4000;
-  const header = "━━━ Recent History ━━━\n";
-  let currentMsg = header;
-
-  for (let i = 0; i < exchanges.length; i++) {
-    const block = exchanges[i];
-    const addition = (i === 0 ? "" : separator) + block;
-
-    if (currentMsg.length + addition.length > MAX_MSG_LEN) {
-      await bot.sendMessage(chatId, currentMsg.trim());
-      currentMsg = block;
-    } else {
-      currentMsg += addition;
-    }
-  }
-
-  if (currentMsg.trim()) {
-    await bot.sendMessage(chatId, currentMsg.trim());
   }
 }
 
@@ -127,4 +43,40 @@ async function editMessage(bot, chatId, messageId, text, log) {
   }
 }
 
-module.exports = { clearTelegramChat, sendHistoryPreview, editMessage };
+const MAX_MSG_LEN = 4000;
+
+/**
+ * Send a list of text blocks as batched Telegram messages that
+ * stay under the 4096 char limit. Blocks are joined with the
+ * given separator and split into new messages when they'd overflow.
+ * @param {TelegramBot} bot
+ * @param {number} chatId
+ * @param {string[]} blocks - individual text blocks to send
+ * @param {object} [opts]
+ * @param {string} [opts.header] - text prepended to the first message
+ * @param {string} [opts.separator] - string between blocks (default "\n\n")
+ * @param {object} [opts.sendOptions] - extra options passed to sendMessage (e.g. parse_mode)
+ */
+async function sendBatchedMessages(bot, chatId, blocks, opts = {}) {
+  const { header = "", separator = "\n\n", sendOptions = {} } = opts;
+  if (!blocks.length) return;
+
+  let currentMsg = header;
+
+  for (let i = 0; i < blocks.length; i++) {
+    const addition = (i === 0 ? "" : separator) + blocks[i];
+
+    if (currentMsg.length + addition.length > MAX_MSG_LEN) {
+      await bot.sendMessage(chatId, currentMsg.trim(), sendOptions);
+      currentMsg = blocks[i];
+    } else {
+      currentMsg += addition;
+    }
+  }
+
+  if (currentMsg.trim()) {
+    await bot.sendMessage(chatId, currentMsg.trim(), sendOptions);
+  }
+}
+
+module.exports = { clearTelegramChat, editMessage, sendBatchedMessages };
