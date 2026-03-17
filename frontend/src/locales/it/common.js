@@ -600,6 +600,8 @@ const TRANSLATIONS = {
       remove_selected: "Elimina gli elementi selezionati",
       costs: "*Costo una tantum per le embedding",
       save_embed: "Salva e incorpora",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documenti",
     },
     upload: {
       "processor-offline": "Il processore di documenti non è disponibile.",

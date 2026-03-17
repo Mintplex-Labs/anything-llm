@@ -590,6 +590,8 @@ const TRANSLATIONS = {
       remove_selected: "حذف المحدد",
       costs: "*تكلفة ثابتة لإنشاء التمثيلات",
       save_embed: "حفظ و تضمين",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} المستندات",
     },
     upload: {
       "processor-offline": "غير متاح",

@@ -594,6 +594,8 @@ const TRANSLATIONS = {
       remove_selected: "Seçilenleri Kaldır",
       costs: "*Gömmeler için tek seferlik maliyet",
       save_embed: "Kaydet ve Göm",
+      "total-documents_one": "{{count}} belgesi",
+      "total-documents_other": "{{count}} belgeleri",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",

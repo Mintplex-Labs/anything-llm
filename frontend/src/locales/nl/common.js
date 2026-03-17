@@ -596,6 +596,8 @@ const TRANSLATIONS = {
       remove_selected: "Verwijderen Geselecteerd",
       costs: "*Eenmalige kosten voor embedden",
       save_embed: "Opslaan en embedden",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documenten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",

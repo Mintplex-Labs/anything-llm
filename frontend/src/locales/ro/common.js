@@ -448,6 +448,8 @@ const TRANSLATIONS = {
       remove_selected: "Elimină selectate",
       costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documente",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
