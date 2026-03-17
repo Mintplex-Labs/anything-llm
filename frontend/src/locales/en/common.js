@@ -715,6 +715,8 @@ const TRANSLATIONS = {
     directory: {
       "my-documents": "My Documents",
       "new-folder": "New Folder",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",

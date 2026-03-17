@@ -553,6 +553,8 @@ const TRANSLATIONS = {
       remove_selected: "移除選擇的項目",
       costs: "*嵌入僅會計費一次",
       save_embed: "儲存並嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 文件",
     },
     upload: {
       "processor-offline": "文件處理器無法使用",

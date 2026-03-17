@@ -586,6 +586,8 @@ const TRANSLATIONS = {
       remove_selected: "選択したものを削除",
       costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
+      "total-documents_one": "{{count}} のドキュメント",
+      "total-documents_other": "{{count}} に関する書類",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
