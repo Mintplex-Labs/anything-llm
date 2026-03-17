@@ -7,8 +7,9 @@ const { DocumentManager } = require("../DocumentManager");
 const { sourceIdentifier, recentChatHistory, chatPrompt } = require("../chats");
 const { AgentHandler } = require("../agents");
 const { v4: uuidv4 } = require("uuid");
-const { STREAM_EDIT_INTERVAL } = require("./constants");
+const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("./constants");
 const { editMessage } = require("./chatActions");
+const { sendVoiceResponse } = require("./mediaHandlers");
 
 /**
  * Stream a response to Telegram by running the full RAG pipeline.
@@ -20,7 +21,7 @@ const { editMessage } = require("./chatActions");
  * @param {object|null} thread
  * @param {string} message
  */
-async function streamResponse(ctx, chatId, workspace, thread, message) {
+async function streamResponse(ctx, chatId, workspace, thread, message, { attachments = [], voiceResponse = false } = {}) {
   // Show typing indicator while we prepare the response
   await ctx.bot.sendChatAction(chatId, "typing");
 
@@ -133,7 +134,7 @@ async function streamResponse(ctx, chatId, workspace, thread, message) {
       userPrompt: message,
       contextTexts,
       chatHistory,
-      attachments: [],
+      attachments,
     },
     rawHistory
   );
@@ -185,12 +186,17 @@ async function streamResponse(ctx, chatId, workspace, thread, message) {
         sources,
         type: chatMode,
         metrics,
-        attachments: [],
+        attachments,
       },
       threadId: thread?.id || null,
       apiSessionId: null,
       user: null,
     });
+  }
+
+  // Send a TTS audio response when the original message was a voice note
+  if (voiceResponse && completeText?.length > 0) {
+    await sendVoiceResponse(ctx.bot, chatId, completeText);
   }
 }
 
@@ -291,7 +297,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
       uuid: invocation.uuid,
     }).init();
     await agentHandler.createAIbitat({ socket });
-    // End on interrupts — Telegram can't provide interactive feedback and
+    // End on interrupts. Telegram can't provide interactive feedback and
     // auto-continuing would accumulate tool results across cycles, risking token limits.
     socket.askForFeedback = () => Promise.resolve("exit");
     agentHandler.aibitat.onError((_error, chat) => {
@@ -312,7 +318,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
     }
   }
 
-  // Final thought update — mark as completed
+  // Final thought update, mark as completed
   if (thoughtMsgId && thoughts.length > 0) {
     const doneText = thoughts.map((t) => `✓ ${t}`).join("\n");
     await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log);
@@ -417,12 +423,11 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
   let messageId = null;
   let lastEditTime = 0;
   let editTimer = null;
+  // Telegram caps messages at 4096 chars. We track where in fullText the
+  // current message starts and split into a new message when it fills up.
+  let msgOffset = 0;
 
-  const mockResponse = {
-    write: () => {},
-    on: () => {},
-    removeListener: () => {},
-  };
+  const currentText = () => fullText.slice(msgOffset);
 
   try {
     if (typeof stream[Symbol.asyncIterator] === "function") {
@@ -432,9 +437,27 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
 
         fullText += token;
 
-        // Send the first message when the first token arrives
+        // Current message hit the limit, finalize it and start a new one
+        if (messageId !== null && currentText().length > MAX_MSG_LEN) {
+          clearTimeout(editTimer);
+          editTimer = null;
+          await editMessage(
+            ctx.bot,
+            chatId,
+            messageId,
+            fullText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
+            ctx.log
+          );
+          msgOffset += MAX_MSG_LEN;
+          messageId = null;
+        }
+
+        // Send the first message when the first token arrives (or after a split)
         if (messageId === null) {
-          const sent = await ctx.bot.sendMessage(chatId, fullText + " \u258d");
+          const sent = await ctx.bot.sendMessage(
+            chatId,
+            currentText() + " \u258d"
+          );
           messageId = sent.message_id;
           lastEditTime = Date.now();
           continue;
@@ -448,7 +471,7 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
             ctx.bot,
             chatId,
             messageId,
-            fullText + " \u258d",
+            currentText() + " \u258d",
             ctx.log
           ).catch(() => {});
         } else if (!editTimer) {
@@ -458,7 +481,7 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
               ctx.bot,
               chatId,
               messageId,
-              fullText + " \u258d",
+              currentText() + " \u258d",
               ctx.log
             ).catch(() => {});
             editTimer = null;
@@ -466,10 +489,15 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
         }
       }
     } else {
+      // Some providers don't return an async iterable. handleStream expects
+      // an Express-like response object to write to, so we pass a no-op one
+      // since we only need the final text back.
       ctx.log(`Using fallback stream for ${LLMConnector.constructor.name}`);
-      fullText = await LLMConnector.handleStream(mockResponse, stream, {
-        uuid: uuidv4(),
-      });
+      fullText = await LLMConnector.handleStream(
+        { write: () => {}, on: () => {}, removeListener: () => {} },
+        stream,
+        { uuid: uuidv4() }
+      );
     }
   } catch (error) {
     ctx.log("Stream error:", error.message);
@@ -478,11 +506,13 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
   clearTimeout(editTimer);
 
   // Final edit to remove the cursor and show the complete text
-  if (messageId && fullText.length > 0) {
-    await editMessage(ctx.bot, chatId, messageId, fullText, ctx.log);
+  if (messageId && currentText().length > 0) {
+    await editMessage(ctx.bot, chatId, messageId, currentText(), ctx.log);
   } else if (!messageId && fullText.length > 0) {
-    // Fallback stream path — never created a message via streaming
-    await ctx.bot.sendMessage(chatId, fullText);
+    // Fallback path, split into chunks if needed
+    for (let i = 0; i < fullText.length; i += MAX_MSG_LEN) {
+      await ctx.bot.sendMessage(chatId, fullText.slice(i, i + MAX_MSG_LEN));
+    }
   }
 
   return fullText;

@@ -1,3 +1,5 @@
+const { MAX_MSG_LEN } = require("./constants");
+
 /**
  * Delete recent messages from a Telegram chat.
  * Telegram doesn't let bots bulk-delete in private chats,
@@ -14,7 +16,7 @@ async function clearTelegramChat(bot, chatId) {
     try {
       await bot.deleteMessage(chatId, i);
     } catch {
-      // Message doesn't exist or is too old — skip
+      // Message doesn't exist or is too old, skip
     }
   }
 }
@@ -42,8 +44,6 @@ async function editMessage(bot, chatId, messageId, text, log) {
     }
   }
 }
-
-const MAX_MSG_LEN = 4000;
 
 /**
  * Send a list of text blocks as batched Telegram messages that

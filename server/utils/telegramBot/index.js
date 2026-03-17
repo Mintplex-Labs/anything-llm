@@ -19,6 +19,11 @@ const {
 } = require("./verification");
 const { COMMAND_HANDLERS } = require("./commands");
 const { handleCallback } = require("./navigation");
+const {
+  downloadTelegramFile,
+  transcribeAudio,
+  photoToAttachment,
+} = require("./mediaHandlers");
 
 class TelegramBotService {
   static _instance = null;
@@ -161,44 +166,105 @@ class TelegramBotService {
     });
   }
 
+  async #runChatJob(ctx, chatId, payload) {
+    const state = this.#getState(chatId);
+    try {
+      const bgService = new BackgroundService();
+      // Collect the invocation UUID from the child so we can close it
+      // after exit, when the child's SQLite lock is released.
+      let invocationUuid = null;
+      await bgService.runJob(
+        "handle-telegram-chat",
+        {
+          botToken: this.#config.bot_token,
+          chatId,
+          workspaceSlug: state.workspaceSlug,
+          threadSlug: state.threadSlug,
+          ...payload,
+        },
+        {
+          onMessage: (msg) => {
+            if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
+          },
+        }
+      );
+
+      // We do this here to avoid creating another instance of a prisma connection
+      // in the background worker.
+      if (invocationUuid)
+        await WorkspaceAgentInvocation.close(invocationUuid);
+    } catch (error) {
+      this.#log("Chat worker error:", error.message);
+      await ctx.bot.sendMessage(
+        chatId,
+        "Sorry, something went wrong. Please try again."
+      );
+    }
+  }
+
   #handleMessage(ctx, msg) {
-    if (!msg.text) return;
     const chatId = msg.chat.id;
 
-    this.#queue.enqueue(chatId, async () => {
-      const state = this.#getState(chatId);
-      try {
-        const bgService = new BackgroundService();
-        // Collect the invocation UUID from the child so we can close it
-        // after exit, when the child's SQLite lock is released.
-        let invocationUuid = null;
-        await bgService.runJob(
-          "handle-telegram-chat",
-          {
-            botToken: this.#config.bot_token,
-            chatId,
-            workspaceSlug: state.workspaceSlug,
-            threadSlug: state.threadSlug,
-            message: msg.text,
-          },
-          {
-            onMessage: (msg) => {
-              if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
-            },
+    // Voice messages: transcribe then send to LLM
+    if (msg.voice || msg.audio) {
+      this.#queue.enqueue(chatId, async () => {
+        try {
+          const fileId = (msg.voice || msg.audio).file_id;
+          await ctx.bot.sendChatAction(chatId, "typing");
+          const audioBuffer = await downloadTelegramFile(ctx.bot, fileId);
+          const transcription = await transcribeAudio(audioBuffer);
+          if (!transcription?.trim()) {
+            await ctx.bot.sendMessage(
+              chatId,
+              "Could not transcribe the voice message."
+            );
+            return;
           }
-        );
+          await this.#runChatJob(ctx, chatId, {
+            message: transcription,
+            voiceResponse: true,
+          });
+        } catch (error) {
+          this.#log("Voice handling error:", error.message);
+          const isConfigError =
+            error.message.includes("transcription") ||
+            error.message.includes("Whisper") ||
+            error.message.includes("OpenAI");
+          await ctx.bot.sendMessage(
+            chatId,
+            isConfigError
+              ? error.message
+              : "Failed to process voice message. Please try again."
+          );
+        }
+      });
+      return;
+    }
 
-        // We do this here to avoid creating another instance of a prisma connection
-        // in the background worker.
-        if (invocationUuid)
-          await WorkspaceAgentInvocation.close(invocationUuid);
-      } catch (error) {
-        this.#log("Chat worker error:", error.message);
-        await ctx.bot.sendMessage(
-          chatId,
-          "Sorry, something went wrong. Please try again."
-        );
-      }
+    // Photo messages: extract image and send to LLM with vision
+    if (msg.photo) {
+      this.#queue.enqueue(chatId, async () => {
+        try {
+          await ctx.bot.sendChatAction(chatId, "typing");
+          const attachment = await photoToAttachment(ctx.bot, msg.photo);
+          await this.#runChatJob(ctx, chatId, {
+            message: msg.caption || "Describe this image.",
+            attachments: [attachment],
+          });
+        } catch (error) {
+          this.#log("Photo handling error:", error.message);
+          await ctx.bot.sendMessage(
+            chatId,
+            "Failed to process the image. Please try again."
+          );
+        }
+      });
+      return;
+    }
+
+    if (!msg.text) return;
+    this.#queue.enqueue(chatId, async () => {
+      await this.#runChatJob(ctx, chatId, { message: msg.text });
     });
   }
 

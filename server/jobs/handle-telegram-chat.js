@@ -8,7 +8,15 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const { streamResponse } = require("../utils/telegramBot/chatPipeline");
 
 process.on("message", async (payload) => {
-  const { botToken, chatId, workspaceSlug, threadSlug, message } = payload;
+  const {
+    botToken,
+    chatId,
+    workspaceSlug,
+    threadSlug,
+    message,
+    attachments = [],
+    voiceResponse = false,
+  } = payload;
 
   try {
     const bot = new TelegramBot(botToken, { polling: false });
@@ -32,7 +40,10 @@ process.on("message", async (payload) => {
       ? await WorkspaceThread.get({ slug: threadSlug })
       : null;
 
-    await streamResponse(ctx, chatId, workspace, thread, message);
+    await streamResponse(ctx, chatId, workspace, thread, message, {
+      attachments,
+      voiceResponse,
+    });
   } catch (error) {
     log(`Chat error: ${error.message}`);
     try {
