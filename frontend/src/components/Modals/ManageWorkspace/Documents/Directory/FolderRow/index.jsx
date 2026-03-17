@@ -5,7 +5,7 @@ import { middleTruncate } from "@/utils/directories";
 
 export default function FolderRow({
   item,
-  totalItems,
+  totalItems = 0,
   selected,
   onRowClick,
   toggleSelection,
@@ -61,9 +61,11 @@ export default function FolderRow({
           <p className="whitespace-nowrap overflow-show max-w-[400px]">
             {middleTruncate(item.name, 35)}
           </p>
-          <span className="text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0">
-            ({totalItems ?? item.items.length})
-          </span>
+          {totalItems > 0 && (
+            <span className="text-theme-text-secondary text-[10px] font-medium ml-1.5 shrink-0">
+              ({totalItems})
+            </span>
+          )}
         </div>
         <p className="col-span-2 pl-3.5" />
         <p className="col-span-2 pl-2" />
