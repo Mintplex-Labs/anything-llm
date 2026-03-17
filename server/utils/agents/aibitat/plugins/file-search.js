@@ -119,15 +119,19 @@ const fileSearch = {
           search: async function (searchTerms, fileTypes, maxResults) {
             const searchRoot = FILE_SEARCH_PATH;
 
-            const missingRootMessage = this.validateSearchRoot(searchRoot);
-            if (missingRootMessage) return missingRootMessage;
+            const searchRootResult = this.validateSearchRoot(searchRoot);
+            if (!searchRootResult.ok) return searchRootResult.error;
 
             this.super.introspect(
               `${this.caller}: Searching for files matching: ${searchTerms.join(", ")}...`
             );
 
-            const candidates = await this.getCandidates(searchRoot, fileTypes);
-            if (typeof candidates === "string") return candidates;
+            const candidatesResult = await this.getCandidates(
+              searchRoot,
+              fileTypes
+            );
+            if (!candidatesResult.ok) return candidatesResult.error;
+            const candidates = candidatesResult.data;
 
             const ranked = await this.searchAndRank(
               searchRoot,
@@ -157,23 +161,46 @@ const fileSearch = {
           },
 
           /**
+           * Create a successful result payload.
+           * @param {any} data
+           * @returns {{ok: true, data: any}}
+           */
+          okResult: function (data) {
+            return { ok: true, data };
+          },
+
+          /**
+           * Create a failed result payload.
+           * @param {string} error
+           * @returns {{ok: false, error: string}}
+           */
+          errorResult: function (error) {
+            return { ok: false, error };
+          },
+
+          /**
            * Ensure the search root exists before running any search operations.
            * @param {string} searchRoot
-           * @returns {string|null}
+           * @returns {{ok: true, data: string}|{ok: false, error: string}}
            */
           validateSearchRoot: function (searchRoot) {
-            if (fs.existsSync(searchRoot)) return null;
+            if (fs.existsSync(searchRoot)) return this.okResult(searchRoot);
             this.super.introspect(
               `${this.caller}: File search directory does not exist. No files are available to search.`
             );
-            return "The file search directory does not exist. No files have been mounted or made available for searching. Please ensure files are mounted to the correct path.";
+            return this.errorResult(
+              "The file search directory does not exist. No files have been mounted or made available for searching. Please ensure files are mounted to the correct path."
+            );
           },
 
           /**
            * Gather search candidates and preserve the empty-directory behavior.
            * @param {string} searchRoot
            * @param {string[]} fileTypes
-           * @returns {Promise<string|{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]>}
+           * @returns {Promise<
+           *   {ok: true, data: {fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]}
+           *   | {ok: false, error: string}
+           * >}
            */
           getCandidates: async function (searchRoot, fileTypes = []) {
             const allFiles = await this.listCandidateFiles(searchRoot);
@@ -181,11 +208,16 @@ const fileSearch = {
               this.super.introspect(
                 `${this.caller}: No files found in the search directory.`
               );
-              return "No files were found in the search directory. The directory is empty.";
+              return this.errorResult(
+                "No files were found in the search directory. The directory is empty."
+              );
             }
 
-            if (!fileTypes || fileTypes.length === 0) return allFiles;
-            return this.listCandidateFiles(searchRoot, fileTypes);
+            if (!fileTypes || fileTypes.length === 0)
+              return this.okResult(allFiles);
+            return this.okResult(
+              await this.listCandidateFiles(searchRoot, fileTypes)
+            );
           },
 
           /**
