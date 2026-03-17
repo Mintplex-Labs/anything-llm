@@ -3,6 +3,7 @@ const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { BOT_COMMANDS } = require("./constants");
 const { clearTelegramChat, sendHistoryPreview } = require("./chatActions");
+const { showWorkspaceMenu } = require("./navigation");
 
 /**
  * All command handler functions receive a `ctx` object:
@@ -147,12 +148,15 @@ async function handleNewThread(ctx, chatId) {
   );
 }
 
-module.exports = {
-  handleStart,
-  handleHelp,
-  handleStatus,
-  handleReset,
-  handleClear,
-  handleResume,
-  handleNewThread,
+const COMMAND_HANDLERS = {
+  start: handleStart,
+  help: handleHelp,
+  status: handleStatus,
+  switch: showWorkspaceMenu,
+  new: handleNewThread,
+  reset: handleReset,
+  clear: handleClear,
+  resume: handleResume,
 };
+
+module.exports = { COMMAND_HANDLERS };

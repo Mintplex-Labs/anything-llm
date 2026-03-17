@@ -17,16 +17,8 @@ const {
   denyUser,
   revokeUser,
 } = require("./verification");
-const {
-  handleStart,
-  handleHelp,
-  handleStatus,
-  handleReset,
-  handleClear,
-  handleResume,
-  handleNewThread,
-} = require("./commands");
-const { showWorkspaceMenu, handleCallback } = require("./navigation");
+const { COMMAND_HANDLERS } = require("./commands");
+const { handleCallback } = require("./navigation");
 
 class TelegramBotService {
   static _instance = null;
@@ -142,36 +134,14 @@ class TelegramBotService {
       handler();
     };
 
-    this.#bot.onText(/\/start/, (msg) => {
-      if (!isVerified(this.#config.approved_users, msg.chat.id)) {
-        sendPairingRequest(this.#bot, msg, this.#pendingPairings);
-        return;
-      }
-      handleStart(ctx, msg.chat.id);
-    });
+    // Register all commands
+    for (const [command, handler] of Object.entries(COMMAND_HANDLERS)) {
+      this.#bot.onText(new RegExp(`\\/${command}`), (msg) =>
+        guard(msg, () => handler(ctx, msg.chat.id))
+      );
+    }
 
-    this.#bot.onText(/\/help/, (msg) =>
-      guard(msg, () => handleHelp(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/status/, (msg) =>
-      guard(msg, () => handleStatus(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/switch/, (msg) =>
-      guard(msg, () => showWorkspaceMenu(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/new/, (msg) =>
-      guard(msg, () => handleNewThread(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/reset/, (msg) =>
-      guard(msg, () => handleReset(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/clear/, (msg) =>
-      guard(msg, () => handleClear(ctx, msg.chat.id))
-    );
-    this.#bot.onText(/\/resume/, (msg) =>
-      guard(msg, () => handleResume(ctx, msg.chat.id))
-    );
-
+    // Register callback queries, used for workspace/thread selection interactive menus
     this.#bot.on("callback_query", (query) => handleCallback(ctx, query));
 
     this.#bot.on("message", (msg) => {
