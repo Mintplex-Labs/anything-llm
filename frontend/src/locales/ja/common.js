@@ -791,18 +791,6 @@ const TRANSLATIONS = {
         remove: "削除",
         replace: "置き換える",
       },
-      "welcome-messages": {
-        title: "ようこそ",
-        description:
-          "ユーザーに表示されるウェルカムメッセージをカスタマイズできます。これらのメッセージは、管理者以外のユーザーのみが表示します。",
-        new: "新しい",
-        system: "システム",
-        user: "私は、このプロジェクトの成功に貢献できることを願っています。",
-        message: "メッセージ",
-        assistant: "何か質問はありますか？",
-        "double-click": "編集するにはダブルクリック...",
-        save: "メッセージを保存する",
-      },
       "browser-appearance": {
         title: "ブラウザの見た目",
         description:

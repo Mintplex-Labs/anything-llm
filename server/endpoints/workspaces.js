@@ -498,21 +498,16 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
+        const user = await userFromSession(request, response);
         const existingChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: response.locals.workspace.id,
+          user_id: user?.id,
         });
 
-        if (!existingChat) {
-          response.status(404).end();
-          return;
-        }
-
-        const result = await WorkspaceChats.updateFeedbackScore(
-          chatId,
-          feedback
-        );
-        response.status(200).json({ success: result });
+        if (!existingChat) return response.status(404).json({ success: false });
+        await WorkspaceChats.updateFeedbackScore(chatId, feedback);
+        return response.status(200).json({ success: true });
       } catch (error) {
         console.error("Error updating chat feedback:", error);
         response.status(500).end();

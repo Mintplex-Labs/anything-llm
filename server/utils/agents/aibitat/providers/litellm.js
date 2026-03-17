@@ -113,7 +113,8 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -152,7 +153,8 @@ class LiteLLMProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

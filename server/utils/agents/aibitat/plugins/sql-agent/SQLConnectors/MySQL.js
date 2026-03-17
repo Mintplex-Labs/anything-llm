@@ -30,13 +30,17 @@ class MySQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
+   * @param {Array} params optional parameters for prepared statement
    * @returns {Promise<import(".").QueryResult>}
    */
-  async runQuery(queryString = "") {
+  async runQuery(queryString = "", params = []) {
     const result = { rows: [], count: 0, error: null };
     try {
       if (!this.#connected) await this.connect();
-      const [query] = await this._client.query(queryString);
+      const [query] =
+        params.length > 0
+          ? await this._client.execute(queryString, params)
+          : await this._client.query(queryString);
       result.rows = query;
       result.count = query?.length;
     } catch (err) {
@@ -62,10 +66,17 @@ class MySQLConnector {
   }
 
   getTablesSql() {
-    return `SELECT table_name FROM information_schema.tables WHERE table_schema = '${this.database_id}'`;
+    return {
+      query: `SELECT table_name FROM information_schema.tables WHERE table_schema = ?`,
+      params: [this.database_id],
+    };
   }
+
   getTableSchemaSql(table_name) {
-    return `SHOW COLUMNS FROM ${this.database_id}.${table_name};`;
+    return {
+      query: `SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA FROM information_schema.columns WHERE table_schema = ? AND table_name = ?`,
+      params: [this.database_id, table_name],
+    };
   }
 }
 

@@ -1,4 +1,5 @@
 const { ApiKey } = require("../models/apiKeys");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
@@ -137,6 +138,7 @@ function adminEndpoints(app) {
           return;
         }
 
+        await BrowserExtensionApiKey.deleteAllForUser(Number(id));
         await User.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "user_deleted",
@@ -324,6 +326,7 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
         const requestedSettings = {};
         const labels = request.query.labels?.split(",") || [];
         const needEmbedder = [
@@ -339,9 +342,26 @@ function adminEndpoints(app) {
           "meta_page_favicon",
         ];
 
+        // Managers can only read a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        const managerAllowedFields = [
+          "custom_app_name",
+          "footer_data",
+          "support_email",
+          "meta_page_title",
+          "meta_page_favicon",
+        ];
+
         for (const label of labels) {
           // Skip any settings that are not explicitly defined as public
           if (!SystemSettings.publicFields.includes(label)) continue;
+
+          // Managers can only read manager-allowed fields
+          if (
+            user?.role === ROLES.manager &&
+            !managerAllowedFields.includes(label)
+          )
+            continue;
 
           // Only get the embedder if the setting actually needs it
           let embedder = needEmbedder.includes(label)
@@ -419,7 +439,29 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const updates = reqBody(request);
+        const user = await userFromSession(request, response);
+        let updates = reqBody(request);
+
+        // Managers can only update a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        // Admin users can update all supportedFields without restriction.
+        if (user?.role === ROLES.manager) {
+          const managerAllowedFields = [
+            "custom_app_name",
+            "footer_data",
+            "support_email",
+            "meta_page_title",
+            "meta_page_favicon",
+          ];
+          const filteredUpdates = {};
+          for (const key of Object.keys(updates)) {
+            if (managerAllowedFields.includes(key)) {
+              filteredUpdates[key] = updates[key];
+            }
+          }
+          updates = filteredUpdates;
+        }
+
         await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
       } catch (e) {

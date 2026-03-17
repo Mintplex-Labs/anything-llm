@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -29,19 +29,51 @@ const CIRCLE_ICONS = {
 };
 
 /**
- * Renders a circle with a source type icon inside.
+ * Renders a circle with a source type icon inside, or a favicon if URL is provided.
  * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
  * @param {number} [props.size] - Circle diameter in px
  * @param {number} [props.iconSize] - Icon size in px
+ * @param {string} [props.url] - Optional URL to fetch favicon from
  */
-export function SourceTypeCircle({ type = "file", size = 22, iconSize = 12 }) {
+export function SourceTypeCircle({
+  type = "file",
+  size = 22,
+  iconSize = 12,
+  url = null,
+}) {
   const Icon = CIRCLE_ICONS[type] || CIRCLE_ICONS.file;
+  const [imgError, setImgError] = useState(false);
+
+  let faviconUrl = null;
+  if (type === "link" && url) {
+    try {
+      const hostname = new URL(url).hostname;
+      faviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`;
+    } catch {
+      faviconUrl = null;
+    }
+  }
+
+  useEffect(() => {
+    setImgError(false);
+  }, [url]);
+
   return (
     <div
-      className="bg-white light:bg-slate-100 rounded-full flex items-center justify-center"
+      className="bg-white light:bg-slate-100 rounded-full flex items-center justify-center overflow-hidden"
       style={{ width: size, height: size }}
     >
-      <Icon size={iconSize} weight="bold" className="text-black" />
+      {faviconUrl && !imgError ? (
+        <img
+          src={faviconUrl}
+          alt="favicon"
+          style={{ width: size, height: size }}
+          className="object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <Icon size={iconSize} weight="bold" className="text-black" />
+      )}
     </div>
   );
 }
@@ -107,7 +139,12 @@ export default function Citations({ sources = [] }) {
               className="absolute top-0 size-[22px] rounded-full border-2 border-zinc-800 light:border-white"
               style={{ left: `${idx * 17}px`, zIndex: 3 - idx }}
             >
-              <SourceTypeCircle type={info.icon} size={18} iconSize={10} />
+              <SourceTypeCircle
+                type={info.icon}
+                size={18}
+                iconSize={10}
+                url={info.href}
+              />
             </div>
           );
         })}
