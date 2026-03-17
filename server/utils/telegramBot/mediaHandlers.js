@@ -24,8 +24,7 @@ async function transcribeAudio(audioBuffer) {
   const { CollectorApi } = require("../collectorApi");
   const { hotdirPath } = require("../files");
 
-  if (!fs.existsSync(hotdirPath))
-    fs.mkdirSync(hotdirPath, { recursive: true });
+  if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
 
   const filename = `telegram-voice-${Date.now()}.wav`;
   fs.writeFileSync(path.join(hotdirPath, filename), audioBuffer);
@@ -69,10 +68,15 @@ async function sendVoiceResponse(bot, chatId, text) {
     const provider = getTTSProvider();
     const buffer = await provider.ttsBuffer(text);
     if (!buffer) return;
-    await bot.sendAudio(chatId, buffer, {}, {
-      filename: "response.mp3",
-      contentType: "audio/mpeg",
-    });
+    await bot.sendAudio(
+      chatId,
+      buffer,
+      {},
+      {
+        filename: "response.mp3",
+        contentType: "audio/mpeg",
+      }
+    );
   } catch {
     // TTS not configured or failed, text response already sent
   }

@@ -191,8 +191,7 @@ class TelegramBotService {
 
       // We do this here to avoid creating another instance of a prisma connection
       // in the background worker.
-      if (invocationUuid)
-        await WorkspaceAgentInvocation.close(invocationUuid);
+      if (invocationUuid) await WorkspaceAgentInvocation.close(invocationUuid);
     } catch (error) {
       this.#log("Chat worker error:", error.message);
       await ctx.bot.sendMessage(

@@ -21,7 +21,14 @@ const { sendVoiceResponse } = require("./mediaHandlers");
  * @param {object|null} thread
  * @param {string} message
  */
-async function streamResponse(ctx, chatId, workspace, thread, message, { attachments = [], voiceResponse = false } = {}) {
+async function streamResponse(
+  ctx,
+  chatId,
+  workspace,
+  thread,
+  message,
+  { attachments = [], voiceResponse = false } = {}
+) {
   // Show typing indicator while we prepare the response
   await ctx.bot.sendChatAction(chatId, "typing");
 
