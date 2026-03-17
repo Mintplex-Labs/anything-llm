@@ -702,6 +702,8 @@ const TRANSLATIONS = {
       remove_selected: "Usuń wybrane",
       costs: "*Jednorazowy koszt dodania danych",
       save_embed: "Zapisz",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentów niedostępny",

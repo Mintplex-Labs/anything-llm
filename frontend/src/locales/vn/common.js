@@ -591,6 +591,8 @@ const TRANSLATIONS = {
       remove_selected: "Xóa Đã chọn",
       costs: "*Chi phí một lần cho việc nhúng",
       save_embed: "Lưu và Nhúng",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",

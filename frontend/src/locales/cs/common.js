@@ -728,6 +728,8 @@ const TRANSLATIONS = {
       remove_selected: "Odebrat vybrané",
       costs: "*Jednorázové náklady pro embeddingy",
       save_embed: "Uložit a vložit",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",

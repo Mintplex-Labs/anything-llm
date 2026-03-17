@@ -687,6 +687,8 @@ const TRANSLATIONS = {
       remove_selected: "선택 항목 삭제",
       costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
+      "total-documents_one": "{{count}} 문서",
+      "total-documents_other": "{{count}} 관련 문서",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",
