@@ -602,6 +602,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_EXA_API_KEY",
     checks: [],
   },
+  AgentPerplexityApiKey: {
+    envKey: "AGENT_PERPLEXITY_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {

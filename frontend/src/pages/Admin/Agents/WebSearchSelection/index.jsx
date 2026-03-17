@@ -10,6 +10,7 @@ import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import ExaIcon from "./icons/exa.png";
+import PerplexitySearchIcon from "./icons/perplexity.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -29,6 +30,7 @@ import {
   TavilySearchOptions,
   DuckDuckGoOptions,
   ExaSearchOptions,
+  PerplexitySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -108,6 +110,13 @@ const SEARCH_PROVIDERS = [
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
     description: "AI-powered search engine optimized for LLM use cases.",
+  },
+  {
+    name: "Perplexity Search",
+    value: "perplexity-search",
+    logo: PerplexitySearchIcon,
+    options: (settings) => <PerplexitySearchOptions settings={settings} />,
+    description: "AI-powered web search using the Perplexity Search API.",
   },
 ];
 
