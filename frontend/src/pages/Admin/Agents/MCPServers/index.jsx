@@ -112,14 +112,14 @@ export function MCPServersList({
   if (servers.length === 0) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>{t("common.agent.mcp.no-servers-found")}</p>
+        <p>{t("agent.mcp.no-servers-found")}</p>
         <a
           href="https://docs.anythingllm.com/mcp-compatibility/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
-          {t("common.agent.mcp.learn-more")}
+          {t("agent.mcp.learn-more")}
         </a>
       </div>
     );
@@ -142,7 +142,7 @@ export function MCPServersList({
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"
-        content={t("common.agent.mcp.tool-warning")}
+        content={t("agent.mcp.tool-warning")}
       />
     </div>
   );
