@@ -5,6 +5,7 @@ const MCPCompatibilityLayer = require("../MCP");
 const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { User } = require("../../models/user");
+const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const {
@@ -397,11 +398,32 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   /**
+   * Determine if the message should invoke the agent handler.
+   * This is true when the user explicitly invokes an agent (via @agent prefix)
+   * or when the workspace is in automatic mode **and** the provider supports native tool calling.
+   * @param {{message: string, workspace?: object, chatMode?: string}} parameters
+   * @returns {Promise<boolean>}
+   */
+  static async isAgentInvocation({
+    message,
+    workspace = null,
+    chatMode = null,
+  }) {
+    if (this.#isAgentCommandInvocation({ message })) return true;
+    if (chatMode === "automatic") {
+      if (!workspace) return false;
+      if (await Workspace.supportsNativeToolCalling(workspace)) return true;
+      return false;
+    }
+    return false;
+  }
+
+  /**
    * Determine if the message provided is an agent invocation.
    * @param {{message:string}} parameters
    * @returns {boolean}
    */
-  static isAgentInvocation({ message }) {
+  static #isAgentCommandInvocation({ message }) {
     const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
     if (agentHandles.length > 0) return true;
     return false;
