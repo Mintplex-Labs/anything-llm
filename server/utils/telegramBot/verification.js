@@ -1,5 +1,7 @@
 const crypto = require("crypto");
-const { ExternalConnector } = require("../../models/externalConnector");
+const {
+  ExternalCommunicationConnector,
+} = require("../../models/externalCommunicationConnector");
 
 /**
  * Generate a random 6-digit pairing code.
@@ -77,7 +79,7 @@ async function approveUser(bot, chatId, config, pendingPairings) {
       firstName: pending?.firstName || null,
     });
     config.approved_users = approved;
-    await ExternalConnector.updateConfig("telegram", {
+    await ExternalCommunicationConnector.updateConfig("telegram", {
       approved_users: approved,
     });
   }
@@ -123,7 +125,7 @@ async function revokeUser(chatId, config) {
     (u) => (typeof u === "string" ? u : u.chatId) !== String(chatId)
   );
   config.approved_users = approved;
-  await ExternalConnector.updateConfig("telegram", {
+  await ExternalCommunicationConnector.updateConfig("telegram", {
     approved_users: approved,
   });
 }

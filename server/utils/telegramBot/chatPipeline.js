@@ -156,12 +156,17 @@ async function streamResponse(
         user: null,
       });
 
-      completeText = await handleStreamToTelegram(
-        ctx,
-        chatId,
-        stream,
-        LLMConnector
-      );
+      if (voiceResponse) {
+        // Collect text silently so we can send it as voice only
+        completeText = await collectStreamText(stream, LLMConnector);
+      } else {
+        completeText = await handleStreamToTelegram(
+          ctx,
+          chatId,
+          stream,
+          LLMConnector
+        );
+      }
       metrics = stream.metrics || {};
     } else {
       const { textResponse, metrics: performanceMetrics } =
@@ -172,7 +177,7 @@ async function streamResponse(
       completeText = textResponse;
       metrics = performanceMetrics || {};
 
-      if (completeText?.length > 0) {
+      if (!voiceResponse && completeText?.length > 0) {
         await ctx.bot.sendMessage(chatId, completeText);
       }
     }
@@ -201,9 +206,17 @@ async function streamResponse(
     });
   }
 
-  // Send a TTS audio response when the original message was a voice note
+  // Send voice or fall back to text if TTS fails
   if (voiceResponse && completeText?.length > 0) {
-    await sendVoiceResponse(ctx.bot, chatId, completeText);
+    const sent = await sendVoiceResponse(ctx.bot, chatId, completeText);
+    if (!sent) {
+      for (let i = 0; i < completeText.length; i += MAX_MSG_LEN) {
+        await ctx.bot.sendMessage(
+          chatId,
+          completeText.slice(i, i + MAX_MSG_LEN)
+        );
+      }
+    }
   }
 }
 
@@ -414,6 +427,34 @@ async function renderChartToBuffer(chart) {
   };
 
   return await canvas.renderToBuffer(config);
+}
+
+/**
+ * Read through a stream and return the full text without sending any messages.
+ * Used when the response will be sent as voice instead of text.
+ * @param {AsyncIterable} stream
+ * @param {object} LLMConnector
+ * @returns {Promise<string>}
+ */
+async function collectStreamText(stream, LLMConnector) {
+  let fullText = "";
+  try {
+    if (typeof stream[Symbol.asyncIterator] === "function") {
+      for await (const chunk of stream) {
+        const token = extractToken(chunk);
+        if (token) fullText += token;
+      }
+    } else {
+      fullText = await LLMConnector.handleStream(
+        { write: () => {}, on: () => {}, removeListener: () => {} },
+        stream,
+        { uuid: uuidv4() }
+      );
+    }
+  } catch (error) {
+    console.log("[TelegramBot] Stream error:", error.message);
+  }
+  return fullText;
 }
 
 /**

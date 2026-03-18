@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "external_connectors" (
+CREATE TABLE "external_communication_connectors" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "type" TEXT NOT NULL,
     "config" TEXT NOT NULL DEFAULT '{}',
@@ -9,4 +9,4 @@ CREATE TABLE "external_connectors" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "external_connectors_type_key" ON "external_connectors"("type");
+CREATE UNIQUE INDEX "external_communication_connectors_type_key" ON "external_communication_connectors"("type");

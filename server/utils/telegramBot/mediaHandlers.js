@@ -62,12 +62,15 @@ async function photoToAttachment(bot, photos) {
  * @param {number} chatId
  * @param {string} text
  */
+/**
+ * @returns {boolean} true if voice was sent, false if TTS failed
+ */
 async function sendVoiceResponse(bot, chatId, text) {
   try {
     const { getTTSProvider } = require("../TextToSpeech");
     const provider = getTTSProvider();
     const buffer = await provider.ttsBuffer(text);
-    if (!buffer) return;
+    if (!buffer) return false;
     await bot.sendAudio(
       chatId,
       buffer,
@@ -77,8 +80,15 @@ async function sendVoiceResponse(bot, chatId, text) {
         contentType: "audio/mpeg",
       }
     );
+    return true;
   } catch {
-    // TTS not configured or failed, text response already sent
+    await bot
+      .sendMessage(
+        chatId,
+        "Voice responses require a text-to-speech provider. Set one up in Settings > Voice & Speech > Text-to-Speech Preference."
+      )
+      .catch(() => {});
+    return false;
   }
 }
 

@@ -386,7 +386,7 @@ model workspace_parsed_files {
   @@index([userId])
 }
 
-model external_connectors {
+model external_communication_connectors {
   id            Int      @id @default(autoincrement())
   type          String   @unique
   config        String   @default("{}")

@@ -137,6 +137,24 @@ const Telegram = {
   },
 
   /**
+   * Update the Telegram bot configuration.
+   * @param {object} updates - Config fields to update (e.g. voice_response_mode).
+   * @returns {Promise<{success: boolean, error: string|null}>}
+   */
+  updateConfig: async function (updates) {
+    return await fetch(`${API_BASE}/telegram/update-config`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(updates),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  /**
    * Revoke an approved user.
    * @param {string} chatId
    * @returns {Promise<{success: boolean, error: string|null}>}

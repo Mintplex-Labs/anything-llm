@@ -1,7 +1,7 @@
 const prisma = require("../utils/prisma");
 const { safeJsonParse } = require("../utils/http");
 
-const ExternalConnector = {
+const ExternalCommunicationConnector = {
   supportedTypes: ["telegram"],
 
   /**
@@ -11,16 +11,17 @@ const ExternalConnector = {
    */
   get: async function (type) {
     try {
-      const connector = await prisma.external_connectors.findUnique({
-        where: { type },
-      });
+      const connector =
+        await prisma.external_communication_connectors.findUnique({
+          where: { type },
+        });
       if (!connector) return null;
       return {
         ...connector,
         config: safeJsonParse(connector.config, {}),
       };
     } catch (error) {
-      console.error("ExternalConnector.get", error.message);
+      console.error("ExternalCommunicationConnector.get", error.message);
       return null;
     }
   },
@@ -37,19 +38,20 @@ const ExternalConnector = {
       return { connector: null, error: `Unsupported connector type: ${type}` };
 
     try {
-      const connector = await prisma.external_connectors.upsert({
-        where: { type },
-        update: {
-          config: JSON.stringify(config),
-          active,
-          lastUpdatedAt: new Date(),
-        },
-        create: {
-          type,
-          config: JSON.stringify(config),
-          active,
-        },
-      });
+      const connector =
+        await prisma.external_communication_connectors.upsert({
+          where: { type },
+          update: {
+            config: JSON.stringify(config),
+            active,
+            lastUpdatedAt: new Date(),
+          },
+          create: {
+            type,
+            config: JSON.stringify(config),
+            active,
+          },
+        });
       return {
         connector: {
           ...connector,
@@ -58,7 +60,7 @@ const ExternalConnector = {
         error: null,
       };
     } catch (error) {
-      console.error("ExternalConnector.upsert", error.message);
+      console.error("ExternalCommunicationConnector.upsert", error.message);
       return { connector: null, error: error.message };
     }
   },
@@ -86,13 +88,16 @@ const ExternalConnector = {
    */
   setActive: async function (type, active) {
     try {
-      await prisma.external_connectors.update({
+      await prisma.external_communication_connectors.update({
         where: { type },
         data: { active, lastUpdatedAt: new Date() },
       });
       return { success: true, error: null };
     } catch (error) {
-      console.error("ExternalConnector.setActive", error.message);
+      console.error(
+        "ExternalCommunicationConnector.setActive",
+        error.message
+      );
       return { success: false, error: error.message };
     }
   },
@@ -104,10 +109,12 @@ const ExternalConnector = {
    */
   delete: async function (type) {
     try {
-      await prisma.external_connectors.delete({ where: { type } });
+      await prisma.external_communication_connectors.delete({
+        where: { type },
+      });
       return true;
     } catch (error) {
-      console.error("ExternalConnector.delete", error.message);
+      console.error("ExternalCommunicationConnector.delete", error.message);
       return false;
     }
   },
@@ -126,4 +133,4 @@ const ExternalConnector = {
   },
 };
 
-module.exports = { ExternalConnector };
+module.exports = { ExternalCommunicationConnector };

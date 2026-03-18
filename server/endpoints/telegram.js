@@ -1,4 +1,6 @@
-const { ExternalConnector } = require("../models/externalConnector");
+const {
+  ExternalCommunicationConnector,
+} = require("../models/externalCommunicationConnector");
 const { Telemetry } = require("../models/telemetry");
 const { TelegramBotService } = require("../utils/telegramBot");
 const {
@@ -31,7 +33,7 @@ function telegramEndpoints(app) {
           });
         }
 
-        const connector = await ExternalConnector.get("telegram");
+        const connector = await ExternalCommunicationConnector.get("telegram");
         if (!connector) {
           return response.status(200).json({ config: null });
         }
@@ -44,7 +46,9 @@ function telegramEndpoints(app) {
             connected: service.isRunning,
             bot_username: connector.config.bot_username || null,
             default_workspace: connector.config.default_workspace || null,
-            bot_token_masked: ExternalConnector.maskToken(plainToken),
+            bot_token_masked: ExternalCommunicationConnector.maskToken(plainToken),
+            voice_response_mode:
+              connector.config.voice_response_mode || "text_only",
           },
         });
       } catch (e) {
@@ -87,17 +91,19 @@ function telegramEndpoints(app) {
         }
 
         // Preserve approved users when reconnecting with a new token
-        const existing = await ExternalConnector.get("telegram");
+        const existing = await ExternalCommunicationConnector.get("telegram");
         const storedConfig = {
           bot_token: encryptToken(bot_token),
           bot_username: verification.username,
           default_workspace,
           owner_chat_id: null,
           approved_users: existing?.config?.approved_users || [],
+          voice_response_mode:
+            existing?.config?.voice_response_mode || "text_only",
         };
 
         // Save config with encrypted token
-        const { error } = await ExternalConnector.upsert(
+        const { error } = await ExternalCommunicationConnector.upsert(
           "telegram",
           storedConfig,
           true
@@ -137,9 +143,9 @@ function telegramEndpoints(app) {
         const service = new TelegramBotService();
         await service.stop();
 
-        const connector = await ExternalConnector.get("telegram");
+        const connector = await ExternalCommunicationConnector.get("telegram");
         if (connector) {
-          await ExternalConnector.setActive("telegram", false);
+          await ExternalCommunicationConnector.setActive("telegram", false);
         }
 
         await EventLogs.logEvent("telegram_bot_disconnected");
@@ -160,7 +166,7 @@ function telegramEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const connector = await ExternalConnector.get("telegram");
+        const connector = await ExternalCommunicationConnector.get("telegram");
         const service = new TelegramBotService();
         return response.status(200).json({
           active: connector?.active && service.isRunning,
@@ -200,7 +206,7 @@ function telegramEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const connector = await ExternalConnector.get("telegram");
+        const connector = await ExternalCommunicationConnector.get("telegram");
         const approved = connector?.config?.approved_users || [];
         return response.status(200).json({ users: approved });
       } catch (e) {
@@ -277,6 +283,48 @@ function telegramEndpoints(app) {
         const service = new TelegramBotService();
         await service.revokeUser(chatId);
         await EventLogs.logEvent("telegram_user_revoked", { chatId });
+        return response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  /**
+   * Update the Telegram bot configuration (voice mode, etc).
+   */
+  app.post(
+    "/telegram/update-config",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { voice_response_mode } = reqBody(request);
+        const updates = {};
+
+        if (
+          voice_response_mode &&
+          ["text_only", "mirror", "always_voice"].includes(voice_response_mode)
+        ) {
+          updates.voice_response_mode = voice_response_mode;
+        }
+
+        if (Object.keys(updates).length === 0) {
+          return response
+            .status(400)
+            .json({ success: false, error: "No valid updates provided." });
+        }
+
+        const { error } =
+          await ExternalCommunicationConnector.updateConfig("telegram", updates);
+        if (error) {
+          return response.status(500).json({ success: false, error });
+        }
+
+        // Update the running bot's config so changes take effect immediately
+        const service = new TelegramBotService();
+        if (service.isRunning) service.updateConfig(updates);
+
         return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e.message, e);

@@ -8,6 +8,12 @@ import Telegram from "@/models/telegram";
 import showToast from "@/utils/toast";
 import UsersTable from "./UsersTable";
 
+const VOICE_MODE_OPTIONS = [
+  { value: "text_only", label: "Text only" },
+  { value: "mirror", label: "Mirror (reply with voice when user sends voice)" },
+  { value: "always_voice", label: "Always voice (send audio with every reply)" },
+];
+
 export default function ConnectedView({
   config,
   workspaces,
@@ -18,6 +24,9 @@ export default function ConnectedView({
   const [disconnecting, setDisconnecting] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
   const [newToken, setNewToken] = useState("");
+  const [voiceMode, setVoiceMode] = useState(
+    config.voice_response_mode || "text_only"
+  );
   const [pendingUsers, setPendingUsers] = useState([]);
   const [approvedUsers, setApprovedUsers] = useState([]);
   const workspaceName =
@@ -78,6 +87,16 @@ export default function ConnectedView({
       bot_username: res.bot_username,
       default_workspace: config.default_workspace,
     });
+  }
+
+  async function handleVoiceModeChange(e) {
+    const mode = e.target.value;
+    setVoiceMode(mode);
+    const res = await Telegram.updateConfig({ voice_response_mode: mode });
+    if (!res.success) {
+      showToast(res.error || "Failed to update voice mode.", "error");
+      setVoiceMode(config.voice_response_mode || "text_only");
+    }
   }
 
   async function handleApprove(chatId) {
@@ -186,6 +205,22 @@ export default function ConnectedView({
                 t.me/{config.bot_username}
                 <ArrowSquareOut className="h-3 w-3" />
               </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-theme-text-secondary">
+                Voice Response
+              </span>
+              <select
+                value={voiceMode}
+                onChange={handleVoiceModeChange}
+                className="text-xs bg-theme-settings-input-bg text-theme-text-primary rounded-md px-2 py-1 outline-none max-w-[260px]"
+              >
+                {VOICE_MODE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         )}

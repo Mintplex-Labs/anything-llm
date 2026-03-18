@@ -2,7 +2,9 @@
 // https://github.com/yagop/node-telegram-bot-api/blob/master/doc/usage.md#sending-files
 process.env.NTBA_FIX_350 = 1;
 const TelegramBot = require("node-telegram-bot-api");
-const { ExternalConnector } = require("../../models/externalConnector");
+const {
+  ExternalCommunicationConnector,
+} = require("../../models/externalCommunicationConnector");
 const { MessageQueue } = require("../connectorMessageQueue");
 const { BackgroundService } = require("../BackgroundWorkers");
 const { BOT_COMMANDS } = require("./constants");
@@ -60,9 +62,25 @@ class TelegramBotService {
     if (this.#bot) await this.stop();
     this.#config = config;
     this.#bot = new TelegramBot(config.bot_token, { polling: true });
+
+    // Restore per-user workspace/thread state from saved config
+    for (const user of config.approved_users || []) {
+      if (user.active_workspace) {
+        this.#chatState.set(Number(user.chatId), {
+          workspaceSlug: user.active_workspace,
+          threadSlug: user.active_thread || null,
+        });
+      }
+    }
+
     this.#setupHandlers();
     await this.#registerCommands();
     this.#log(`Started polling as @${config.bot_username || "unknown"}`);
+  }
+
+  updateConfig(updates) {
+    if (!this.#config) return;
+    Object.assign(this.#config, updates);
   }
 
   async stop() {
@@ -101,6 +119,24 @@ class TelegramBotService {
   #setState(chatId, updates) {
     const state = this.#getState(chatId);
     Object.assign(state, updates);
+    this.#persistChatState(chatId, state);
+  }
+
+  async #persistChatState(chatId, state) {
+    const approved = (this.#config.approved_users || []).map((u) => {
+      if (String(u.chatId) === String(chatId)) {
+        return {
+          ...u,
+          active_workspace: state.workspaceSlug,
+          active_thread: state.threadSlug,
+        };
+      }
+      return u;
+    });
+    this.#config.approved_users = approved;
+    await ExternalCommunicationConnector.updateConfig("telegram", {
+      approved_users: approved,
+    });
   }
 
   /**
@@ -201,6 +237,13 @@ class TelegramBotService {
     }
   }
 
+  #shouldVoiceRespond(isVoiceMessage) {
+    const mode = this.#config.voice_response_mode || "text_only";
+    if (mode === "always_voice") return true;
+    if (mode === "mirror" && isVoiceMessage) return true;
+    return false;
+  }
+
   #handleMessage(ctx, msg) {
     const chatId = msg.chat.id;
 
@@ -221,7 +264,7 @@ class TelegramBotService {
           }
           await this.#runChatJob(ctx, chatId, {
             message: transcription,
-            voiceResponse: true,
+            voiceResponse: this.#shouldVoiceRespond(true),
           });
         } catch (error) {
           this.#log("Voice handling error:", error.message);
@@ -249,6 +292,7 @@ class TelegramBotService {
           await this.#runChatJob(ctx, chatId, {
             message: msg.caption || "Describe this image.",
             attachments: [attachment],
+            voiceResponse: this.#shouldVoiceRespond(false),
           });
         } catch (error) {
           this.#log("Photo handling error:", error.message);
@@ -263,7 +307,10 @@ class TelegramBotService {
 
     if (!msg.text) return;
     this.#queue.enqueue(chatId, async () => {
-      await this.#runChatJob(ctx, chatId, { message: msg.text });
+      await this.#runChatJob(ctx, chatId, {
+        message: msg.text,
+        voiceResponse: this.#shouldVoiceRespond(false),
+      });
     });
   }
 
@@ -286,7 +333,7 @@ class TelegramBotService {
    */
   static async bootIfActive() {
     try {
-      const connector = await ExternalConnector.get("telegram");
+      const connector = await ExternalCommunicationConnector.get("telegram");
       if (!connector || !connector.active || !connector.config?.bot_token)
         return;
 
