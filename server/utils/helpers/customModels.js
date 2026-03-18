@@ -49,6 +49,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "llmapi",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -133,6 +134,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "llmapi":
+      return await getLLMApiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -1001,6 +1004,34 @@ async function getSambaNovaModels(_apiKey = null) {
   } catch (e) {
     console.error(`SambaNova:getSambaNovaModels`, e.message);
     return { models: [], error: "Could not fetch SambaNova Models" };
+  }
+}
+
+/**
+ * Get LLM API models. The /v1/models endpoint does not require an API key,
+ * so models are available even before the user has entered their key.
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getLLMApiModels() {
+  try {
+    const { OpenAI } = require("openai");
+    const client = new OpenAI({
+      baseURL: "https://api.llmapi.ai/v1",
+      apiKey: process.env.LLMAPI_LLM_API_KEY || "no-key",
+    });
+
+    const { data: models } = await client.models.list();
+    return {
+      models: models.map((model) => ({
+        id: model.id,
+        organization: model.family ?? model.owned_by ?? "LLM API",
+        name: model.name ?? model.id,
+      })),
+      error: null,
+    };
+  } catch (e) {
+    console.error(`LLMApi:getLLMApiModels`, e.message);
+    return { models: [], error: "Could not fetch LLM API Models" };
   }
 }
 

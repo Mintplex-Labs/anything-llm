@@ -243,6 +243,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return new LemonadeLLM(embedder, model);
+    case "llmapi":
+      const { LLMApiLLM } = require("../AiProviders/llmapi");
+      return new LLMApiLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -425,6 +428,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "lemonade":
       const { LemonadeLLM } = require("../AiProviders/lemonade");
       return LemonadeLLM;
+    case "llmapi":
+      const { LLMApiLLM } = require("../AiProviders/llmapi");
+      return LLMApiLLM;
     default:
       return null;
   }
@@ -509,6 +515,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.SAMBANOVA_LLM_MODEL_PREF;
     case "lemonade":
       return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "llmapi":
+      return process.env.LLMAPI_LLM_MODEL_PREF;
     default:
       return null;
   }

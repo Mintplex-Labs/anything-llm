@@ -837,6 +837,16 @@ const KEY_MAPPING = {
     envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+
+  // LLM API Options
+  LLMApiLLMApiKey: {
+    envKey: "LLMAPI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  LLMApiLLMModelPref: {
+    envKey: "LLMAPI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -954,6 +964,7 @@ function supportedLLM(input = "") {
     "privatemode",
     "sambanova",
     "lemonade",
+    "llmapi",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
