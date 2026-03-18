@@ -176,15 +176,18 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
-        "desc-start": "zal antwoorden geven met de algemene kennis van de LLM",
-        and: "en",
-        "desc-end": "documentcontext die wordt gevonden.",
+        description:
+          "zal antwoorden geven met de algemene kennis van het LLM en de relevante context uit het document. U moet het `@agent`-commando gebruiken om tools te gebruiken.",
       },
       query: {
         title: "Query",
-        "desc-start": "zal antwoorden geven",
-        only: "alleen",
-        "desc-end": "als documentcontext wordt gevonden.",
+        description:
+          "zal antwoorden <b>alleen</b> geven, indien de context van het document wordt gevonden.<br />U moet het commando @agent gebruiken om tools te gebruiken.",
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen.<br />Als native tooling niet wordt ondersteund, moet u het `@agent`-commando gebruiken om tools te gebruiken.",
       },
     },
     history: {
@@ -596,6 +599,8 @@ const TRANSLATIONS = {
       remove_selected: "Verwijderen Geselecteerd",
       costs: "*Eenmalige kosten voor embedden",
       save_embed: "Opslaan en embedden",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documenten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",
@@ -797,18 +802,6 @@ const TRANSLATIONS = {
         recommended: "Aanbevolen formaat: 800 x 200",
         remove: "Verwijderen",
         replace: "Vervangen",
-      },
-      "welcome-messages": {
-        title: "Welkomstberichten",
-        description:
-          "Pas de welkomstberichten aan die aan uw gebruikers worden getoond. Alleen niet-beheerders zien deze berichten.",
-        new: "Nieuw",
-        system: "systeem",
-        user: "gebruiker",
-        message: "bericht",
-        assistant: "AnythingLLM Chatassistent",
-        "double-click": "Dubbelklik om te bewerken...",
-        save: "Berichten opslaan",
       },
       "browser-appearance": {
         title: "Browserweergave",

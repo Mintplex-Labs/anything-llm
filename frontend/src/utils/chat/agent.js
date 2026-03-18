@@ -138,6 +138,18 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           );
         }
 
+        if (type === "citations") {
+          if (!data.content.citations) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid
+              ? {
+                  ...msg,
+                  sources: [...(msg.sources || []), ...data.content.citations],
+                }
+              : msg
+          );
+        }
+
         if (type === "textResponseChunk") {
           return prev
             .map((msg) =>

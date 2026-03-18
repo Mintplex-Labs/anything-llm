@@ -498,21 +498,16 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
+        const user = await userFromSession(request, response);
         const existingChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: response.locals.workspace.id,
+          user_id: user?.id,
         });
 
-        if (!existingChat) {
-          response.status(404).end();
-          return;
-        }
-
-        const result = await WorkspaceChats.updateFeedbackScore(
-          chatId,
-          feedback
-        );
-        response.status(200).json({ success: result });
+        if (!existingChat) return response.status(404).json({ success: false });
+        await WorkspaceChats.updateFeedbackScore(chatId, feedback);
+        return response.status(200).json({ success: true });
       } catch (error) {
         console.error("Error updating chat feedback:", error);
         response.status(500).end();
@@ -1060,6 +1055,23 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/is-agent-command-available",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          showAgentCommand: await Workspace.isAgentCommandAvailable(
+            response.locals.workspace
+          ),
+        });
+      } catch (error) {
+        console.error("Error checking if agent command is available:", error);
+        response.status(500).json({ showAgentCommand: true });
       }
     }
   );

@@ -185,16 +185,18 @@ const TRANSLATIONS = {
       title: "Modo de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "proporcionará respuestas con el conocimiento general del LLM",
-        and: "y",
-        "desc-end": "el contexto del documento que se encuentre.",
+        description:
+          'proporcionará respuestas basándose en el conocimiento general del LLM y en el contexto del documento que se encuentre disponible. Para utilizar las herramientas, deberá utilizar el comando "@agent".',
       },
       query: {
         title: "Consulta",
-        "desc-start": "proporcionará respuestas",
-        only: "solo",
-        "desc-end": "si se encuentra contexto del documento.",
+        description:
+          'proporcionará respuestas <b>solo</b> si se encuentra el contexto del documento.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
+      },
+      automatic: {
+        title: "Coche",
+        description:
+          'Utilizará automáticamente las herramientas si el modelo y el proveedor admiten la llamada a herramientas nativas. Si no se admiten las herramientas nativas, deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
     },
     history: {
@@ -406,18 +408,6 @@ const TRANSLATIONS = {
         recommended: "Tamaño recomendado: 800 x 200",
         remove: "Eliminar",
         replace: "Reemplazar",
-      },
-      "welcome-messages": {
-        title: "Mensajes de bienvenida",
-        description:
-          "Personaliza los mensajes de bienvenida que se muestran a tus usuarios. Solo los usuarios no administradores verán estos mensajes.",
-        new: "Nuevo",
-        system: "sistema",
-        user: "usuario",
-        message: "mensaje",
-        assistant: "Asistente de chat de AnythingLLM",
-        "double-click": "Doble clic para editar...",
-        save: "Guardar mensajes",
       },
       "browser-appearance": {
         title: "Apariencia del navegador",
@@ -727,6 +717,8 @@ const TRANSLATIONS = {
       remove_selected: "Eliminar seleccionados",
       costs: "*Costo único por incrustaciones",
       save_embed: "Guardar e incrustar",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documentos",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",

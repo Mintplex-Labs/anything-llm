@@ -136,6 +136,15 @@ const docSummarizer = {
                 );
               }
 
+              // Report citation for the document being summarized
+              this.super.addCitation?.({
+                id: docInfo.document_id,
+                title: document.title || filename,
+                text: document.content,
+                chunkSource: null,
+                score: null,
+              });
+
               const { TokenManager } = require("../../../helpers/tiktoken");
               if (
                 new TokenManager(this.super.model).countFromString(

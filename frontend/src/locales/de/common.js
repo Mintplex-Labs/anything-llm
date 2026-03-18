@@ -184,15 +184,18 @@ const TRANSLATIONS = {
       title: "Chat-Modus",
       chat: {
         title: "Chat",
-        "desc-start": "wird Antworten mit dem allgemeinen Wissen des LLM",
-        and: "und",
-        "desc-end": "gefundenem Dokumentenkontext liefern.",
+        description:
+          "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem relevanten Kontext aus den Dokumenten <b> und </b> liefern. <br /> Sie benötigen den Befehl `@agent`, um die Tools zu nutzen.",
       },
       query: {
         title: "Abfrage",
-        "desc-start": "wird Antworten",
-        only: "nur",
-        "desc-end": "liefern, wenn Dokumentenkontext gefunden wird.",
+        description:
+          'wird nur Antworten <b> und </b> bereitstellen, falls der Kontext des Dokuments gefunden wurde.<br />Sie müssen den Befehl "@agent" verwenden, um die Tools zu nutzen.',
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          'wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl "@agent" verwenden, um Werkzeuge zu nutzen.',
       },
     },
     history: {
@@ -398,18 +401,6 @@ const TRANSLATIONS = {
         recommended: "Empfohlene Größe: 800 x 200",
         remove: "Löschen",
         replace: "Ersetzen",
-      },
-      "welcome-messages": {
-        title: "Willkommensnachrichten",
-        description:
-          "Individualisieren Sie die angezeigten Willkommensmitteilungen für Ihre Benutzer. Diese Mitteilungen sehen nur Nicht-Administratoren.",
-        new: "Neue Nachricht",
-        system: "System",
-        user: "Benutzer",
-        message: "Nachricht",
-        assistant: "AnythingLLM Chat-Assistent",
-        "double-click": "Zum Bearbeiten doppelklicken",
-        save: "Nachrichten speichern",
       },
       "browser-appearance": {
         title: "Browser-Ansicht",
@@ -717,6 +708,8 @@ const TRANSLATIONS = {
       remove_selected: "Ausgewähltes entfernen",
       costs: "*Einmalige Kosten für das Einbetten",
       save_embed: "Speichern und Einbetten",
+      "total-documents_one": "{{count}} Dokument",
+      "total-documents_other": "{{count}} Dokumente",
     },
     upload: {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",

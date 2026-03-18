@@ -180,15 +180,18 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        "desc-start": "문서 내용을 찾습니다.",
-        and: "그리고",
-        "desc-end": "LLM의 일반 지식을 같이 사용하여 답변을 제공합니다",
+        description:
+          "LLM의 일반적인 지식과 관련 문맥 정보를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령어를 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        "desc-start": "문서 컨텍스트를 찾을 ",
-        only: "때만",
-        "desc-end": "답변을 제공합니다.",
+        description:
+          "문서 맥락이 발견되면 <b>에만</b> 답변을 제공합니다.<br /> 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
+      },
+      automatic: {
+        title: "자동",
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br /> 네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
     },
     history: {
@@ -389,18 +392,6 @@ const TRANSLATIONS = {
         recommended: "권장 크기: 800 x 200",
         remove: "제거",
         replace: "교체",
-      },
-      "welcome-messages": {
-        title: "환영 메시지",
-        description:
-          "사용자에게 표시될 환영 메시지를 맞춤 설정하세요. 관리자 권한이 없는 사용자만 이 메시지를 볼 수 있습니다.",
-        new: "새 메시지",
-        system: "시스템",
-        user: "사용자",
-        message: "메시지",
-        assistant: "AnythingLLM 채팅 어시스턴트",
-        "double-click": "더블 클릭하여 편집...",
-        save: "메시지 저장",
       },
       "browser-appearance": {
         title: "브라우저 표시 설정",
@@ -699,6 +690,8 @@ const TRANSLATIONS = {
       remove_selected: "선택 항목 삭제",
       costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
+      "total-documents_one": "{{count}} 문서",
+      "total-documents_other": "{{count}} 관련 문서",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",

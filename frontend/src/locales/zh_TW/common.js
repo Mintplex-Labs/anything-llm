@@ -169,15 +169,18 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        "desc-start": "會結合 LLM 的一般知識",
-        and: "以及",
-        "desc-end": "已找到的文件內容來回答。",
+        description:
+          "將提供答案，利用 LLM 的一般知識和相關文件內容。您需要使用 `@agent` 命令來使用工具。",
       },
       query: {
         title: "查詢",
-        "desc-start": "會",
-        only: "只",
-        "desc-end": "在找到文件內容時回答。",
+        description:
+          "將提供答案，僅在找到文件上下文時 <b>。您需要使用 @agent 指令來使用工具。",
+      },
+      automatic: {
+        title: "自動",
+        description:
+          "如果模型和供應商支援原生工具調用，則系統會自動使用這些工具。<br />如果原生工具調用不受支援，您需要使用 `@agent` 命令來使用工具。",
       },
     },
     history: {
@@ -553,6 +556,8 @@ const TRANSLATIONS = {
       remove_selected: "移除選擇的項目",
       costs: "*嵌入僅會計費一次",
       save_embed: "儲存並嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 文件",
     },
     upload: {
       "processor-offline": "文件處理器無法使用",
@@ -740,18 +745,6 @@ const TRANSLATIONS = {
         recommended: "建議尺寸：800 x 200",
         remove: "移除",
         replace: "更換",
-      },
-      "welcome-messages": {
-        title: "歡迎訊息",
-        description:
-          "自訂要顯示給使用者的歡迎訊息。只有非管理員使用者看得到這些訊息。",
-        new: "新增",
-        system: "系統",
-        user: "使用者",
-        message: "訊息",
-        assistant: "AnythingLLM 對話助理",
-        "double-click": "連按兩下即可編輯...",
-        save: "儲存訊息",
       },
       "browser-appearance": {
         title: "瀏覽器外觀",

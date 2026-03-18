@@ -196,7 +196,8 @@ export default memo(
       prevProps.message === nextProps.message &&
       prevProps.isLastMessage === nextProps.isLastMessage &&
       prevProps.chatId === nextProps.chatId &&
-      JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics)
+      JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
+      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources)
     );
   }
 );

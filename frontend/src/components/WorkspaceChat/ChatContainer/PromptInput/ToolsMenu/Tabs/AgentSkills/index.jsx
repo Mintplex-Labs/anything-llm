@@ -17,8 +17,10 @@ import { useIsAgentSessionActive } from "@/utils/chat/agent";
 export default function AgentSkillsTab({
   highlightedIndex = -1,
   registerItemCount,
+  workspace,
 }) {
   const { t } = useTranslation();
+  const { showAgentCommand = true } = workspace ?? {};
   const agentSessionActive = useIsAgentSessionActive();
   const defaultSkills = getDefaultSkills(t);
   const configurableSkills = getConfigurableSkills(t);
@@ -27,6 +29,7 @@ export default function AgentSkillsTab({
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
   useEffect(() => {
     fetchSkillSettings();
@@ -147,7 +150,7 @@ export default function AgentSkillsTab({
 
   return (
     <>
-      {!agentSessionActive && (
+      {showAgentCmdActivationAlert && (
         <p className="text-xs text-theme-text-secondary text-center py-1">
           {t("chat_window.use_agent_session_to_use_tools")}
         </p>
