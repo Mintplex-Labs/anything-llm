@@ -630,6 +630,12 @@ function systemEndpoints(app) {
           multiUserMode: true,
         });
         await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
+
+        // Telegram bot is single-user only, stop when switching to multi-user
+        const { TelegramBotService } = require("../utils/telegramBot");
+        const telegramService = new TelegramBotService();
+        if (telegramService.isRunning) await telegramService.stop();
+
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});

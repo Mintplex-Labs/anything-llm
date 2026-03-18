@@ -97,7 +97,6 @@ function telegramEndpoints(app) {
           bot_token: encryptToken(bot_token),
           bot_username: verification.username,
           default_workspace,
-          owner_chat_id: null,
           approved_users: existing?.config?.approved_users || [],
           voice_response_mode:
             existing?.config?.voice_response_mode || "text_only",
@@ -142,12 +141,8 @@ function telegramEndpoints(app) {
     async (_request, response) => {
       try {
         const service = new TelegramBotService();
-        await service.stop();
-
-        const connector = await ExternalCommunicationConnector.get("telegram");
-        if (connector) {
-          await ExternalCommunicationConnector.setActive("telegram", false);
-        }
+        service.stop();
+        await ExternalCommunicationConnector.delete("telegram");
 
         await EventLogs.logEvent("telegram_bot_disconnected");
 

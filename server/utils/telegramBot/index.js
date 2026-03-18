@@ -333,6 +333,14 @@ class TelegramBotService {
    */
   static async bootIfActive() {
     try {
+      const { SystemSettings } = require("../../models/systemSettings");
+      if (await SystemSettings.isMultiUserMode()) {
+        console.log(
+          "[TelegramBot] Disabled in multi-user mode. Skipping boot."
+        );
+        return;
+      }
+
       const connector = await ExternalCommunicationConnector.get("telegram");
       if (!connector || !connector.active || !connector.config?.bot_token)
         return;

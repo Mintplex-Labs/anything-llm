@@ -30,6 +30,7 @@ export default function SetupView({ workspaces, onConnected }) {
     showToast("Telegram bot connected successfully!", "success");
     onConnected({
       active: true,
+      connected: true,
       bot_username: res.bot_username,
       default_workspace: selectedWorkspace,
     });
