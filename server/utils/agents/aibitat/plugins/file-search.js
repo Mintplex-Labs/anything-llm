@@ -35,7 +35,7 @@ const fileSearch = {
           name: this.name,
           controller: new AbortController(),
           description:
-            "Search for files in the server's mounted file storage by filename. Use this tool when the user asks about files, documents, or wants to find specific files. Results are ranked by relevance to search terms and recency.",
+            "Search for files in the server's mounted file storage by filename and content. Use this tool when the user asks about files, documents, or wants to find specific files. Searches both filenames and file contents for matching terms. Results are ranked by relevance to search terms and recency.",
           examples: [
             {
               prompt: "What's in my Q4 pricing spreadsheet?",
