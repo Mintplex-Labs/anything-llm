@@ -109,7 +109,8 @@ const SEARCH_PROVIDERS = [
     value: "exa-search",
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
-    description: "Web search API built for AI agents with real-time results and full page contents.",
+    description:
+      "One of the best web search APIs for AI agents with real-time results and full page contents.",
   },
   {
     name: "Perplexity Search",
