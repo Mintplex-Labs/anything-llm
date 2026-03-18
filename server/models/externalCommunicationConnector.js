@@ -38,20 +38,19 @@ const ExternalCommunicationConnector = {
       return { connector: null, error: `Unsupported connector type: ${type}` };
 
     try {
-      const connector =
-        await prisma.external_communication_connectors.upsert({
-          where: { type },
-          update: {
-            config: JSON.stringify(config),
-            active,
-            lastUpdatedAt: new Date(),
-          },
-          create: {
-            type,
-            config: JSON.stringify(config),
-            active,
-          },
-        });
+      const connector = await prisma.external_communication_connectors.upsert({
+        where: { type },
+        update: {
+          config: JSON.stringify(config),
+          active,
+          lastUpdatedAt: new Date(),
+        },
+        create: {
+          type,
+          config: JSON.stringify(config),
+          active,
+        },
+      });
       return {
         connector: {
           ...connector,
@@ -94,10 +93,7 @@ const ExternalCommunicationConnector = {
       });
       return { success: true, error: null };
     } catch (error) {
-      console.error(
-        "ExternalCommunicationConnector.setActive",
-        error.message
-      );
+      console.error("ExternalCommunicationConnector.setActive", error.message);
       return { success: false, error: error.message };
     }
   },

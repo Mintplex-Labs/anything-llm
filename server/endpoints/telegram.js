@@ -46,7 +46,8 @@ function telegramEndpoints(app) {
             connected: service.isRunning,
             bot_username: connector.config.bot_username || null,
             default_workspace: connector.config.default_workspace || null,
-            bot_token_masked: ExternalCommunicationConnector.maskToken(plainToken),
+            bot_token_masked:
+              ExternalCommunicationConnector.maskToken(plainToken),
             voice_response_mode:
               connector.config.voice_response_mode || "text_only",
           },
@@ -315,8 +316,10 @@ function telegramEndpoints(app) {
             .json({ success: false, error: "No valid updates provided." });
         }
 
-        const { error } =
-          await ExternalCommunicationConnector.updateConfig("telegram", updates);
+        const { error } = await ExternalCommunicationConnector.updateConfig(
+          "telegram",
+          updates
+        );
         if (error) {
           return response.status(500).json({ success: false, error });
         }

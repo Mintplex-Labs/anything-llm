@@ -11,7 +11,10 @@ import UsersTable from "./UsersTable";
 const VOICE_MODE_OPTIONS = [
   { value: "text_only", label: "Text only" },
   { value: "mirror", label: "Mirror (reply with voice when user sends voice)" },
-  { value: "always_voice", label: "Always voice (send audio with every reply)" },
+  {
+    value: "always_voice",
+    label: "Always voice (send audio with every reply)",
+  },
 ];
 
 export default function ConnectedView({
