@@ -24,12 +24,13 @@ export default function CreateBotSection() {
       </p>
       <div className="flex items-start gap-x-6 flex-wrap gap-y-4">
         <div className="flex flex-col items-center gap-y-2">
-          <div className="bg-white/10 rounded-lg p-4 flex items-center justify-center">
+          <div className="bg-white/10 light:bg-black/5 rounded-lg p-4 flex items-center justify-center">
             <QRCodeSVG
               value={BOTFATHER_URL}
               size={qrSize}
               bgColor="transparent"
-              fgColor="white"
+              fgColor="currentColor"
+              className="text-white light:text-black light:[&_image]:invert"
               level="L"
               imageSettings={{
                 src: Logo,
