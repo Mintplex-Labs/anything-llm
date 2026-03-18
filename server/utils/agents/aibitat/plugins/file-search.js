@@ -16,7 +16,7 @@ const FILE_SEARCH_PATH =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../../storage/anythingllm-files")
     : "/anythingllm-files";
-const MAX_SEARCH_DEPTH = 5;
+// const MAX_SEARCH_DEPTH = 5;
 const MAX_SEARCH_RESULTS = 10000;
 const MAX_CONTENT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const RECENT_FILE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -63,6 +63,13 @@ const fileSearch = {
                 search_terms: ["*"],
               }),
             },
+            {
+              prompt: "Show me my most recent files",
+              call: JSON.stringify({
+                search_terms: ["*"],
+                max_results: 5,
+              }),
+            },
           ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
@@ -95,9 +102,9 @@ const fileSearch = {
             max_results = 5,
           }) {
             try {
-              // verify user has ripregp binary
+              // Treat empty/missing search terms as "list all files" (most recent first)
               if (!search_terms || search_terms.length === 0) {
-                return "No search terms were provided. Please provide keywords to search for files.";
+                search_terms = ["*"];
               }
 
               max_results = Math.max(1, Math.min(10, max_results || 5));
@@ -338,8 +345,8 @@ const fileSearch = {
               "--files",
               "--null",
               "--no-ignore",
-              "--max-depth",
-              `${MAX_SEARCH_DEPTH}`,
+              // "--max-depth",
+              // `${MAX_SEARCH_DEPTH}`,
             ];
             this.appendTypeGlobs(args, fileTypes);
 
@@ -395,8 +402,8 @@ const fileSearch = {
               "--null",
               "--no-ignore",
               "--no-binary",
-              "--max-depth",
-              `${MAX_SEARCH_DEPTH}`,
+              // "--max-depth",
+              // `${MAX_SEARCH_DEPTH}`,
               "--fixed-strings",
               "--ignore-case",
               "--max-filesize",
