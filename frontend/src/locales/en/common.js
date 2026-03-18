@@ -59,9 +59,14 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    on: "On",
+    none: "None",
+    stopped: "Stopped",
     search: "Search",
     username_requirements:
       "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+    loading: "Loading",
+    refresh: "Refresh",
   },
   home: {
     welcome: "Welcome",
@@ -331,6 +336,26 @@ const TRANSLATIONS = {
       },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
+    },
+    mcp: {
+      title: "MCP Servers",
+      "loading-from-config": "Loading MCP Servers from configuration file",
+      "learn-more": "Learn more about MCP Servers.",
+      "no-servers-found": "No MCP servers found",
+      "tool-warning":
+        "For the best performance, consider disabling unwanted tools to conserve context.",
+      "tools-enabled": "tools enabled",
+      "stop-server": "Stop MCP Server",
+      "start-server": "Start MCP Server",
+      "delete-server": "Delete MCP Server",
+      "tool-count-warning":
+        "This MCP server has <b>{{count}} tools enabled</b> that will consume context in every chat.<br />Consider disabling unwanted tools to conserve context.",
+      "startup-command": "Startup Command",
+      command: "Command",
+      arguments: "Arguments",
+      "not-running-warning":
+        "This MCP server is not running - it may be stopped or experiencing an error on startup.",
+      "tool-call-arguments": "Tool call arguments",
     },
   },
   recorded: {

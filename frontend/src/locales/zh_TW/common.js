@@ -60,6 +60,11 @@ const TRANSLATIONS = {
     search: "搜尋",
     username_requirements:
       "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
+    on: "關於",
+    none: "沒有",
+    stopped: "停止",
+    loading: "載入",
+    refresh: "重新整理",
   },
   settings: {
     title: "系統設定",
@@ -297,6 +302,25 @@ const TRANSLATIONS = {
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
       default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+    },
+    mcp: {
+      title: "MCP 伺服器",
+      "loading-from-config": "從設定檔中載入 MCP 伺服器",
+      "learn-more": "了解更多關於 MCP 伺服器的資訊。",
+      "no-servers-found": "未找到任何 MCP 伺服器",
+      "tool-warning": "為了獲得最佳效能，建議關閉不必要的工具，以節省資源。",
+      "stop-server": "停止 MCP 伺服器",
+      "start-server": "啟動 MCP 伺服器",
+      "delete-server": "刪除 MCP 伺服器",
+      "tool-count-warning":
+        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
+      "startup-command": "啟動指令",
+      command: "指令",
+      arguments: "辯論",
+      "not-running-warning":
+        "這個 MCP 伺服器目前處於停止狀態，可能是因為已停止運作，或是啟動時出現錯誤。",
+      "tool-call-arguments": "工具呼叫的參數",
+      "tools-enabled": "已啟用工具",
     },
   },
   recorded: {

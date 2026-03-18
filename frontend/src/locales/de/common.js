@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Suchen",
     username_requirements:
       "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+    on: "Über",
+    none: "Keine",
+    stopped: "Gestoppt",
+    loading: "Laden",
+    refresh: "Erfrischen",
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -326,6 +331,27 @@ const TRANSLATIONS = {
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
+    mcp: {
+      title: "MCP-Servern",
+      "loading-from-config":
+        "Laden von MCP-Servern aus einer Konfigurationsdatei",
+      "learn-more": "Erfahren Sie mehr über MCP-Server.",
+      "no-servers-found": "Keine MCP-Server gefunden",
+      "tool-warning":
+        "Für die beste Leistung sollten Sie unnötige Werkzeuge deaktivieren, um den Kontext zu schonen.",
+      "stop-server": "MCP-Server stoppen",
+      "start-server": "MCP-Server starten",
+      "delete-server": "MCP-Server löschen",
+      "tool-count-warning":
+        "Dieser MCP-Server hat <b>{{count}} Tools aktiviert, </b> die Kontext verbrauchen werden, wenn eine Chat-Sitzung stattfindet. <br /> Erwägen Sie, unerwünschte Tools zu deaktivieren, um Kontext zu sparen.",
+      "startup-command": "Startbefehl",
+      command: "Befehl",
+      arguments: "Argumente",
+      "not-running-warning":
+        "Dieser MCP-Server ist nicht aktiv – er kann gestoppt sein oder bei der Startsequenz einen Fehler aufweisen.",
+      "tool-call-arguments": "Argumente für die Funktionsaufrufe",
+      "tools-enabled": "Werkzeuge aktiviert",
+    },
   },
   recorded: {
     title: "Workspace-Chats",

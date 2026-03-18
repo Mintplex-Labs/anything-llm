@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Zoeken",
     username_requirements:
       "De gebruikersnaam moet 2-32 tekens bevatten, beginnen met een kleine letter en mag alleen kleine letters, cijfers, underscores, koppeltekens en punten bevatten.",
+    on: "Over",
+    none: "Geen",
+    stopped: "Gestopt",
+    loading: "Laad",
+    refresh: "Verfrissen",
   },
   settings: {
     title: "Instelling Instanties",
@@ -318,6 +323,26 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
+    },
+    mcp: {
+      title: "MCP-servers",
+      "loading-from-config": "MCP-servers laden vanuit een configuratiebestand",
+      "learn-more": "Meer informatie over MCP-servers.",
+      "no-servers-found": "Geen MCP-servers gevonden.",
+      "tool-warning":
+        "Om de beste prestaties te garanderen, overweeg dan om ongewenste tools uit te schakelen om de context te behouden.",
+      "stop-server": "Stoppen met de MCP-server",
+      "start-server": "Start de MCP-server",
+      "delete-server": "Verwijder de MCP-server",
+      "tool-count-warning":
+        "Deze MCP-server heeft <b> bepaalde tools ingeschakeld</b> die context gebruiken in elke chat. <br /> Overweeg om ongewenste tools uit te schakelen om context te besparen.",
+      "startup-command": "Startcommando",
+      command: "Instructie",
+      arguments: "Argumenten",
+      "not-running-warning":
+        "Deze MCP-server is niet actief – deze kan zijn uitgeschakeld of een fout ervaren tijdens het opstarten.",
+      "tool-call-arguments": "Argumenten voor het aanroepen van een tool",
+      "tools-enabled": "hulpmiddelen zijn geactiveerd",
     },
   },
   recorded: {

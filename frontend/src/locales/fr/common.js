@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "Rechercher",
     username_requirements:
       "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+    on: "Sur",
+    none: "Aucun",
+    stopped: "Arrêté",
+    loading: "Chargement",
+    refresh: "Rafraîchir",
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -319,6 +324,27 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+    },
+    mcp: {
+      title: "Serveurs MCP",
+      "loading-from-config":
+        "Chargement des serveurs MCP à partir du fichier de configuration",
+      "learn-more": "En savoir plus sur les serveurs MCP.",
+      "no-servers-found": "Aucun serveur MCP n'a été trouvé.",
+      "tool-warning":
+        "Pour obtenir les meilleures performances, envisagez de désactiver les outils inutiles afin de préserver le contexte.",
+      "stop-server": "Arrêter le serveur MCP",
+      "start-server": "Démarrer le serveur MCP",
+      "delete-server": "Supprimer le serveur MCP",
+      "tool-count-warning":
+        "Ce serveur MCP a <b> des outils {{count}} activés</b> qui consommeront du contexte dans chaque conversation.<br /> Envisagez de désactiver les outils inutiles pour préserver le contexte.",
+      "startup-command": "Commande de démarrage",
+      command: "Ordre",
+      arguments: "Arguments",
+      "not-running-warning":
+        "Ce serveur MCP n'est pas en cours de fonctionnement ; il peut être arrêté ou rencontrer une erreur lors du démarrage.",
+      "tool-call-arguments": "Arguments des appels de fonctions/outils",
+      "tools-enabled": "outils activés",
     },
   },
   recorded: {

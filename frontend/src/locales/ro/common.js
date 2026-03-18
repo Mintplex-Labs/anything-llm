@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Caută",
     username_requirements:
       "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
+    on: "În",
+    none: "Niciunul",
+    stopped: "Oprit",
+    loading: "Încărcare",
+    refresh: "Reîmprospătează",
   },
   settings: {
     title: "Setările instanței",
@@ -769,6 +774,27 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
+    },
+    mcp: {
+      title: "Servere MCP",
+      "loading-from-config":
+        "Încărcarea serverelor MCP din fișierul de configurare",
+      "learn-more": "Aflați mai multe despre serverele MCP.",
+      "no-servers-found": "Nu au fost găsite servere MCP.",
+      "tool-warning":
+        "Pentru cele mai bune rezultate, luați în considerare dezactivarea instrumentelor nedorite, pentru a economisi resurse.",
+      "stop-server": "Închideți serverul MCP",
+      "start-server": "Pornește serverul MCP",
+      "delete-server": "Șterge serverul MCP",
+      "tool-count-warning":
+        "Acest server MCP are activate<b> instrumentele menționate</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
+      "startup-command": "Comanda de pornire",
+      command: "Ordine",
+      arguments: "Argumente",
+      "not-running-warning":
+        "Acest server MCP nu este în funcționare – ar putea fi oprit sau ar putea întâmpina o eroare la pornire.",
+      "tool-call-arguments": "Argumente pentru apelarea unei funcții",
+      "tools-enabled": "instrumentele sunt activate",
     },
   },
   recorded: {
