@@ -169,15 +169,18 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        "desc-start": "會結合 LLM 的一般知識",
-        and: "以及",
-        "desc-end": "已找到的文件內容來回答。",
+        description:
+          "將提供答案，利用 LLM 的一般知識和相關文件內容。您需要使用 `@agent` 命令來使用工具。",
       },
       query: {
         title: "查詢",
-        "desc-start": "會",
-        only: "只",
-        "desc-end": "在找到文件內容時回答。",
+        description:
+          "將提供答案，僅在找到文件上下文時 <b>。您需要使用 @agent 指令來使用工具。",
+      },
+      automatic: {
+        title: "自動",
+        description:
+          "如果模型和供應商支援原生工具調用，則系統會自動使用這些工具。<br />如果原生工具調用不受支援，您需要使用 `@agent` 命令來使用工具。",
       },
     },
     history: {

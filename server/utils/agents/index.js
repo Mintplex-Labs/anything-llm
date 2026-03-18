@@ -3,6 +3,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
@@ -10,6 +11,8 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { getAndClearInvocationAttachments } = require("../chats/agents");
+const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
   #invocationUUID;
@@ -19,6 +22,7 @@ class AgentHandler {
   channel = null;
   provider = null;
   model = null;
+  attachments = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -590,7 +594,74 @@ class AgentHandler {
   async init() {
     await this.#validInvocation();
     this.#providerSetupAndCheck();
+
+    // Retrieve cached attachments (images, etc.) from the HTTP request
+    this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+
     return this;
+  }
+
+  /**
+   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
+   * Called on every chat turn to ensure context is always up-to-date.
+   * @returns {Promise<string>} Formatted context string to append to user message
+   */
+  async #fetchParsedFileContext() {
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const thread = this.invocation.thread_id
+      ? { id: this.invocation.thread_id }
+      : null;
+    const documentManager = new DocumentManager({
+      workspace: this.invocation.workspace,
+    });
+
+    return Promise.all([
+      WorkspaceParsedFiles.getContextFiles(
+        this.invocation.workspace,
+        thread,
+        user
+      ),
+      documentManager.pinnedDocs(),
+    ])
+      .then(([parsedFiles, pinnedDocs]) => {
+        const allDocuments = [
+          ...(parsedFiles || []).map((doc) => ({
+            name: doc.title || "Uploaded Document",
+            content: doc.pageContent,
+          })),
+          ...(pinnedDocs || []).map((doc) => ({
+            name: doc.title || doc.metadata?.title || "Pinned Document",
+            content: doc.pageContent,
+          })),
+        ];
+
+        if (allDocuments.length === 0) return "";
+        if (parsedFiles?.length > 0)
+          this.log(
+            `Injecting ${parsedFiles.length} parsed file(s) into user message`
+          );
+        if (pinnedDocs?.length > 0)
+          this.log(
+            `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
+
+        return (
+          "\n\n<attached_documents>\n" +
+          allDocuments
+            .map((doc, i) => {
+              const filename = doc.name || `Document ${i + 1}`;
+              return `<document name="${filename}">\n${doc.content}\n</document>`;
+            })
+            .join("\n") +
+          "\n</attached_documents>"
+        );
+      })
+      .catch((e) => {
+        this.log("Error fetching parsed file context", e.message);
+        return "";
+      });
   }
 
   async createAIbitat(
@@ -607,6 +678,10 @@ class AgentHandler {
         log: this.log,
       },
     });
+
+    // Register callback to fetch fresh parsed file context on each chat turn
+    // This injects parsed files into user messages instead of system prompt
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
@@ -631,11 +706,28 @@ class AgentHandler {
     await this.#attachPlugins(args);
   }
 
+  /**
+   * Strip the @agent command from the message if it exists.
+   * Prevents hallucination by the agent when the @agent command is used from the model thinking
+   * it is an agent or something itself.
+   * If the user sent nothing after the @agent command - assume its a greeting.
+   * @param {string} message - The message to strip the @agent command from.
+   * @returns {string} The message with the @agent command stripped.
+   */
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    if (!stripped) return "Hello!";
+    return stripped;
+  }
+
   startAgentCluster() {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.invocation.prompt,
+      content: this.#stripAgentCommand(this.invocation.prompt),
+      attachments: this.attachments,
     });
   }
 }

@@ -31,9 +31,19 @@ class OpenAIProvider extends Provider {
   }
 
   /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - OpenAI always supports tool calling.
+   * @returns {Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
    * Format the messages to the OpenAI API Responses format.
    * - If the message is our internal `function` type, then we need to map it to a function call + output format
    * - Otherwise, map it to the input text format for user, system, and assistant messages
+   * - Handles attachments (images) for multimodal support
    *
    * @param {any[]} messages - The messages to format.
    * @returns {OpenAI.OpenAI.Responses.ResponseInput[]} The formatted messages.
@@ -69,14 +79,27 @@ class OpenAIProvider extends Provider {
         return;
       }
 
+      // Build content array with text and optional image attachments
+      const content = [
+        {
+          type: message.role === "assistant" ? "output_text" : "input_text",
+          text: message.content,
+        },
+      ];
+
+      // Add image attachments if present (for multimodal/vision support)
+      if (message.attachments && message.attachments.length > 0) {
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "input_image",
+            image_url: attachment.contentString,
+          });
+        }
+      }
+
       formattedMessages.push({
         role: message.role,
-        content: [
-          {
-            type: message.role === "assistant" ? "output_text" : "input_text",
-            text: message.content,
-          },
-        ],
+        content,
       });
     });
 
