@@ -136,7 +136,8 @@ function validatedHeaders(headers = {}) {
 async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
     let pageContents = [];
-    const runtimeSettings = new RuntimeSettings();
+    /** Not used for Render due to limitations on browsers in containers. */
+    const _runtimeSettings = new RuntimeSettings();
 
     /** @type {import('puppeteer').PuppeteerLaunchOptions} */
     let launchConfig = { headless: "new" };

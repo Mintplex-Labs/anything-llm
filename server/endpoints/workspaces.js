@@ -49,7 +49,7 @@ function workspaceEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name = null, onboardingComplete = false } = reqBody(request);
+        const { name = null } = reqBody(request);
         const { workspace, message } = await Workspace.new(name, user?.id);
         await Telemetry.sendTelemetry(
           "workspace_created",
@@ -454,9 +454,9 @@ function workspaceEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
-        const { chatId, newText = null } = reqBody(request);
+        const { chatId, newText = null, role = "assistant" } = reqBody(request);
         if (!newText || !String(newText).trim())
-          throw new Error("Cannot save empty response");
+          throw new Error("Cannot save empty edit");
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
@@ -468,15 +468,20 @@ function workspaceEndpoints(app) {
         });
         if (!existingChat) throw new Error("Invalid chat.");
 
-        const chatResponse = safeJsonParse(existingChat.response, null);
-        if (!chatResponse) throw new Error("Failed to parse chat response");
-
-        await WorkspaceChats._update(existingChat.id, {
-          response: JSON.stringify({
-            ...chatResponse,
-            text: String(newText),
-          }),
-        });
+        if (role === "user") {
+          await WorkspaceChats._update(existingChat.id, {
+            prompt: String(newText),
+          });
+        } else {
+          const chatResponse = safeJsonParse(existingChat.response, null);
+          if (!chatResponse) throw new Error("Failed to parse chat response");
+          await WorkspaceChats._update(existingChat.id, {
+            response: JSON.stringify({
+              ...chatResponse,
+              text: String(newText),
+            }),
+          });
+        }
 
         response.sendStatus(200).end();
       } catch (e) {
@@ -493,21 +498,16 @@ function workspaceEndpoints(app) {
       try {
         const { chatId } = request.params;
         const { feedback = null } = reqBody(request);
+        const user = await userFromSession(request, response);
         const existingChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: response.locals.workspace.id,
+          user_id: user?.id,
         });
 
-        if (!existingChat) {
-          response.status(404).end();
-          return;
-        }
-
-        const result = await WorkspaceChats.updateFeedbackScore(
-          chatId,
-          feedback
-        );
-        response.status(200).json({ success: result });
+        if (!existingChat) return response.status(404).json({ success: false });
+        await WorkspaceChats.updateFeedbackScore(chatId, feedback);
+        return response.status(200).json({ success: true });
       } catch (error) {
         console.error("Error updating chat feedback:", error);
         response.status(500).end();
