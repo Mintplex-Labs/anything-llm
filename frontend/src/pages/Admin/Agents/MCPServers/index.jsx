@@ -5,12 +5,14 @@ import { Tooltip } from "react-tooltip";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export function MCPServerHeader({
   setMcpServers,
   setSelectedMcpServer,
   children,
 }) {
+  const { t } = useTranslation();
   const [loadingMcpServers, setLoadingMcpServers] = useState(false);
   useEffect(() => {
     async function fetchMCPServers() {
@@ -50,7 +52,7 @@ export function MCPServerHeader({
       <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
         <div className="flex items-center gap-x-2">
           <img src={MCPLogo} className="w-6 h-6 light:invert" alt="MCP Logo" />
-          <p className="text-lg font-medium">MCP Servers</p>
+          <p className="text-lg font-medium">{t("agent.mcp.title")}</p>
         </div>
         <div className="flex items-center gap-x-3">
           <a
@@ -72,7 +74,9 @@ export function MCPServerHeader({
               className={loadingMcpServers ? "animate-spin" : ""}
             />
             <p className="text-sm">
-              {loadingMcpServers ? "Loading..." : "Refresh"}
+              {loadingMcpServers
+                ? `${t("common.loading")}...`
+                : t("common.refresh")}
             </p>
           </button>
         </div>
@@ -88,17 +92,18 @@ export function MCPServersList({
   selectedServer,
   handleClick,
 }) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>Loading MCP Servers from configuration file...</p>
+        <p>{t("agent.mcp.loading-from-config")}...</p>
         <a
           href="https://docs.anythingllm.com/mcp-compatibility/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
-          Learn more about MCP Servers.
+          {t("agent.mcp.learn-more")}
         </a>
       </div>
     );
@@ -107,14 +112,14 @@ export function MCPServersList({
   if (servers.length === 0) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>No MCP servers found</p>
+        <p>{t("common.agent.mcp.no-servers-found")}</p>
         <a
           href="https://docs.anythingllm.com/mcp-compatibility/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
-          Learn more about MCP Servers.
+          {t("common.agent.mcp.learn-more")}
         </a>
       </div>
     );
@@ -137,13 +142,14 @@ export function MCPServersList({
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"
-        content="For the best performance, consider disabling unwanted tools to conserve context."
+        content={t("common.agent.mcp.tool-warning")}
       />
     </div>
   );
 }
 
 function MCPServerItem({ server, isFirst, isLast, isSelected, handleClick }) {
+  const { t } = useTranslation();
   const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
   const enabledToolCount = server.tools.length - suppressedTools.length;
   const showWarning = enabledToolCount > 10;
@@ -173,7 +179,7 @@ function MCPServerItem({ server, isFirst, isLast, isSelected, handleClick }) {
         <div
           className={`text-sm text-theme-text-secondary font-medium ${running ? "text-green-500" : "text-red-500"}`}
         >
-          {running ? "On" : "Stopped"}
+          {running ? t("common.on") : t("common.stopped")}
         </div>
       </div>
     </div>

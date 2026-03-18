@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Søg",
     username_requirements:
       "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+    on: "Om",
+    none: "Ingen",
+    stopped: "Stoppet",
+    loading: "Indlæsning",
+    refresh: "Opfrisk",
   },
   settings: {
     title: "Instansindstillinger",
@@ -320,6 +325,26 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
+    },
+    mcp: {
+      title: "MCP-servere",
+      "loading-from-config": "Indlæsning af MCP-servere fra konfigurationsfil",
+      "learn-more": "Lær mere om MCP-servere.",
+      "no-servers-found": "Ingen MCP-servere fundet",
+      "tool-warning":
+        "For den bedste ydeevne, overvej at deaktivere unødvendige værktøjer for at bevare konteksten.",
+      "stop-server": "Afbryd MCP-serveren",
+      "start-server": "Start MCP-serveren",
+      "delete-server": "Slet MCP-serveren",
+      "tool-count-warning":
+        "Denne MCP-server har <b>aktiverede</b>værktøjer, som vil forbruge kontekst i hvert chat-session.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
+      "startup-command": "Startkommando",
+      command: "Instruktion",
+      arguments: "Argumenter",
+      "not-running-warning":
+        "Denne MCP-server kører ikke – den kan være stoppet, eller den kan opleve fejl ved opstart.",
+      "tool-call-arguments": "Argumenter til værktøjsopkald",
+      "tools-enabled": "værktøjer er aktiveret",
     },
   },
   recorded: {

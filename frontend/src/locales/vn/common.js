@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Tìm kiếm",
     username_requirements:
       "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+    on: "Về",
+    none: "Không",
+    stopped: "Dừng",
+    loading: "Đang tải",
+    refresh: "Tái tạo",
   },
   settings: {
     title: "Cài đặt hệ thống",
@@ -316,6 +321,26 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
+    },
+    mcp: {
+      title: "Máy chủ MCP",
+      "loading-from-config": "Tải các máy chủ MCP từ tệp cấu hình",
+      "learn-more": "Tìm hiểu thêm về máy chủ MCP.",
+      "no-servers-found": "Không tìm thấy máy chủ MCP.",
+      "tool-warning":
+        "Để đạt hiệu suất tốt nhất, hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm tài nguyên.",
+      "stop-server": "Tắt máy chủ MCP",
+      "start-server": "Khởi động máy chủ MCP",
+      "delete-server": "Xóa máy chủ MCP",
+      "tool-count-warning":
+        "Máy chủ MCP này có các công cụ <b> được kích hoạt, {{count}} và chúng sẽ tiêu thụ ngữ cảnh trong mọi cuộc trò chuyện.</b> Hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm ngữ cảnh.",
+      "startup-command": "Lệnh khởi động",
+      command: "Lệnh",
+      arguments: "Luận điểm",
+      "not-running-warning":
+        "Máy chủ MCP này không hoạt động – có thể nó đã bị tắt hoặc đang gặp lỗi khi khởi động.",
+      "tool-call-arguments": "Tham số khi gọi hàm/thao tác",
+      "tools-enabled": "các công cụ đã được kích hoạt",
     },
   },
   recorded: {

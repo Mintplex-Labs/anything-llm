@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Cerca",
     username_requirements:
       "Il nome utente deve essere compreso tra 2 e 32 caratteri, iniziare con una lettera minuscola e contenere solo lettere minuscole, numeri, trattini bassi, trattini e punti.",
+    on: "Su",
+    none: "Nessuno",
+    stopped: "Arrestato",
+    loading: "Caricamento",
+    refresh: "Rinfresca",
   },
   settings: {
     title: "Impostazioni istanza",
@@ -322,6 +327,27 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
+    },
+    mcp: {
+      title: "Server MCP",
+      "loading-from-config":
+        "Caricamento dei server MCP da file di configurazione",
+      "learn-more": "Scopri di più sui server MCP.",
+      "no-servers-found": "Nessun server MCP trovato.",
+      "tool-warning":
+        "Per ottenere le migliori prestazioni, si consiglia di disattivare gli strumenti non necessari per preservare il contesto.",
+      "stop-server": "Arrestare il server MCP",
+      "start-server": "Avvia il server MCP",
+      "delete-server": "Elimina il server MCP",
+      "tool-count-warning":
+        "Questo server MCP ha <b> alcune funzionalità abilitate</b> che consumano contesto in ogni chat.<br /> Considera di disabilitare le funzionalità indesiderate per preservare il contesto.",
+      "startup-command": "Comando di avvio",
+      command: "Ordine",
+      arguments: "Argomentazioni",
+      "not-running-warning":
+        "Questo server MCP non è attivo; potrebbe essere stato interrotto o potrebbe essere in fase di avvio con errori.",
+      "tool-call-arguments": "Argomenti delle chiamate di funzioni",
+      "tools-enabled": "strumenti abilitati",
     },
   },
   recorded: {

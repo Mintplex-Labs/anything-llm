@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     search: "Hledat",
     username_requirements:
       "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
+    on: "Na",
+    none: "Žádné",
+    stopped: "Zastaveno",
+    loading: "Načítání",
+    refresh: "Obnovit",
   },
   home: {
     welcome: "Vítejte",
@@ -332,6 +337,26 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
+    },
+    mcp: {
+      title: "Servery společnosti MCP",
+      "loading-from-config": "Načítání serverů MCP z konfiguračního souboru",
+      "learn-more": "Zjistěte více o serverech MCP.",
+      "no-servers-found": "Nebyl nalezen žádný server pro správu MCP.",
+      "tool-warning":
+        "Pro optimální výkon zvažte vypnutí nepoužívaných nástrojů, abyste ušetřili zdroje.",
+      "stop-server": "Zastavte server MCP",
+      "start-server": "Spustit server MCP",
+      "delete-server": "Odstranit server MCP",
+      "tool-count-warning":
+        "Tento server pro správu chatů má povolené nástroje <b>{{count}}, které spotřebovávají kontext v každém chatu. </b> Zvažte vypnutí nepotřebných nástrojů, abyste ušetřili kontext.",
+      "startup-command": "Příkaz pro spuštění",
+      command: "Příkaz",
+      arguments: "Argumenty",
+      "not-running-warning":
+        "Tento server pro správu MCP není aktivní – buď byl vypnut, nebo se při spuštění vyskytuje chyba.",
+      "tool-call-arguments": "Argumenty pro volání nástroje",
+      "tools-enabled": "nástroje jsou aktivovány",
     },
   },
   recorded: {

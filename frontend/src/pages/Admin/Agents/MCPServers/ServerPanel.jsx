@@ -4,10 +4,11 @@ import { CaretDown, Gear, Warning } from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import { titleCase } from "text-case";
 import MCPServers from "@/models/mcpServers";
-import pluralize from "pluralize";
 import { SimpleToggleSwitch } from "@/components/lib/Toggle";
+import { useTranslation, Trans } from "react-i18next";
 
 function ManageServerMenu({ server, toggleServer, onDelete }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(server.running);
   const menuRef = useRef(null);
@@ -85,7 +86,9 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <span className="text-sm">
-              {running ? "Stop MCP Server" : "Start MCP Server"}
+              {running
+                ? t("agent.mcp.stop-server")
+                : t("agent.mcp.start-server")}
             </span>
           </button>
           <button
@@ -93,7 +96,7 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
             onClick={deleteServer}
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
-            <span className="text-sm">Delete MCP Server</span>
+            <span className="text-sm">{t("agent.mcp.delete-server")}</span>
           </button>
         </div>
       )}
@@ -107,6 +110,7 @@ export default function ServerPanel({
   onDelete,
   onToggleTool,
 }) {
+  const { t } = useTranslation();
   const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
   const enabledToolCount = server.tools.filter(
     (tool) => !suppressedTools.includes(tool.name)
@@ -129,7 +133,7 @@ export default function ServerPanel({
               {server.tools.length > 0 && (
                 <p className="text-theme-text-secondary text-sm">
                   {enabledToolCount}/{server.tools.length}{" "}
-                  {pluralize("tool", server.tools.length)} enabled
+                  {t("agent.mcp.tools-enabled")}
                 </p>
               )}
             </div>
@@ -157,31 +161,37 @@ export default function ServerPanel({
 function ToolCountWarningBanner({ server, enabledToolCount }) {
   if (server.tools.length <= 10) return null;
   if (enabledToolCount <= 10) return null;
+
   return (
     <div className="flex items-center gap-x-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
       <Warning className="h-5 w-5 text-yellow-500 shrink-0" weight="fill" />
       <p className="text-yellow-500 text-sm">
-        This MCP server has <b>{enabledToolCount} tools enabled</b> that will
-        consume context in every chat.
-        <br />
-        Consider disabling unwanted tools to conserve context.
+        <Trans
+          i18nKey={`agent.mcp.tool-count-warning`}
+          values={{ count: enabledToolCount }}
+          components={{ b: <b />, br: <br /> }}
+        />
       </p>
     </div>
   );
 }
 
 function RenderServerConfig({ config = null }) {
+  const { t } = useTranslation();
   if (!config) return null;
   return (
     <div className="flex flex-col gap-y-2">
-      <p className="text-theme-text-primary text-sm">Startup Command</p>
+      <p className="text-theme-text-primary text-sm">
+        {t("agent.mcp.startup-command")}
+      </p>
       <div className="bg-theme-bg-primary rounded-lg p-4">
         <p className="text-theme-text-secondary text-sm text-left">
-          <span className="font-bold">Command:</span> {config.command}
+          <span className="font-bold">{t("agent.mcp.command")}:</span>{" "}
+          {config.command}
         </p>
         <p className="text-theme-text-secondary text-sm text-left">
-          <span className="font-bold">Arguments:</span>{" "}
-          {config.args ? config.args.join(" ") : "None"}
+          <span className="font-bold">{t("agent.mcp.arguments")}:</span>{" "}
+          {config.args ? config.args.join(" ") : t("common.none")}
         </p>
       </div>
     </div>
@@ -189,12 +199,12 @@ function RenderServerConfig({ config = null }) {
 }
 
 function RenderServerStatus({ server }) {
+  const { t } = useTranslation();
   if (server.running || !server.error) return null;
   return (
     <div className="flex flex-col gap-y-2">
       <p className="text-theme-text-primary text-sm">
-        This MCP server is not running - it may be stopped or experiencing an
-        error on startup.
+        {t("agent.mcp.not-running-warning")}
       </p>
       <div className="bg-theme-bg-primary rounded-lg p-4">
         <p className="text-red-500 text-sm font-mono">{server.error}</p>
@@ -228,6 +238,7 @@ function RenderServerTools({
 }
 
 function ServerTool({ serverName, tool, enabled, onToggle }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -277,7 +288,7 @@ function ServerTool({ serverName, tool, enabled, onToggle }) {
           </div>
           <div className="flex flex-col gap-y-2">
             <p className="text-theme-text-primary text-sm text-left">
-              Tool call arguments
+              {t("agent.mcp.tool-call-arguments")}
             </p>
             <div className="flex flex-col gap-y-2">
               {Object.entries(tool.inputSchema?.properties || {}).map(
