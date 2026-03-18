@@ -151,7 +151,7 @@ async function chatSync({
   message = processedMessage;
 
   if (
-    EphemeralAgentHandler.isAgentInvocation({
+    await EphemeralAgentHandler.isAgentInvocation({
       message,
       workspace,
       chatMode,
@@ -168,6 +168,7 @@ async function chatSync({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -499,7 +500,7 @@ async function streamChat({
   message = processedMessage;
 
   if (
-    EphemeralAgentHandler.isAgentInvocation({
+    await EphemeralAgentHandler.isAgentInvocation({
       message,
       workspace,
       chatMode,
@@ -516,6 +517,7 @@ async function streamChat({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls
