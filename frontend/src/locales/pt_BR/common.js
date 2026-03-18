@@ -685,6 +685,8 @@ const TRANSLATIONS = {
       remove_selected: "Remover Selecionados",
       costs: "*Custo único para vínculos",
       save_embed: "Salvar e Inserir",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documentos",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",

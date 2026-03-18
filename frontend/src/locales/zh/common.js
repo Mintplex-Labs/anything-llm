@@ -643,6 +643,8 @@ const TRANSLATIONS = {
       remove_selected: "移除所选",
       costs: "*嵌入时一次性费用",
       save_embed: "保存并嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 类型的文件",
     },
     upload: {
       "processor-offline": "文档处理器不可用",

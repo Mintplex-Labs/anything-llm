@@ -715,6 +715,8 @@ const TRANSLATIONS = {
       remove_selected: "Eliminar seleccionados",
       costs: "*Costo único por incrustaciones",
       save_embed: "Guardar e incrustar",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documentos",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",

@@ -594,6 +594,8 @@ const TRANSLATIONS = {
       remove_selected: "حذف انتخاب‌شده",
       costs: "*هزینه یکباره برای ایجاد مدل‌های برداری",
       save_embed: "ذخیره و وارد کردن",
+      "total-documents_one": "{{count}} سند",
+      "total-documents_other": "{{count}} اسناد",
     },
     upload: {
       "processor-offline":

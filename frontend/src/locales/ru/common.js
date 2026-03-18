@@ -594,6 +594,8 @@ const TRANSLATIONS = {
       remove_selected: "Удалить выбранные",
       costs: "*Единоразовая стоимость за внедрение",
       save_embed: "Сохранить и внедрить",
+      "total-documents_one": "{{count}} документ",
+      "total-documents_other": "{{count}} документы",
     },
     upload: {
       "processor-offline": "Процессор документов недоступен",

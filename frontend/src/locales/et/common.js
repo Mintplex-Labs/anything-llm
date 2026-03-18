@@ -675,6 +675,8 @@ const TRANSLATIONS = {
       remove_selected: "Eemalda valitud",
       costs: "*Ühekordne embeddingu kulu",
       save_embed: "Salvesta ja põimi",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumendid",
     },
     upload: {
       "processor-offline": "Dokumenditöötleja pole saadaval",

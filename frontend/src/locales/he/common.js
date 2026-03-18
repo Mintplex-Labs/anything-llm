@@ -679,6 +679,8 @@ const TRANSLATIONS = {
       remove_selected: "הסר נבחרים",
       costs: "*עלות חד פעמית להטמעות",
       save_embed: "שמור והטמע",
+      "total-documents_one": "{{count}} מסמך",
+      "total-documents_other": "מסמכים {{count}}",
     },
     upload: {
       "processor-offline": "מעבד המסמכים אינו זמין",
