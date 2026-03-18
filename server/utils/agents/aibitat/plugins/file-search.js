@@ -9,6 +9,9 @@ const { summarizeContent } = require("../utils/summarize");
 const { isWithin, hotdirPath } = require("../../../files");
 
 const execFileAsync = promisify(execFile);
+
+// In development files live under server/storage; in production they're
+// mounted at /anythingllm-files via Docker volume.
 const FILE_SEARCH_PATH =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../../storage/anythingllm-files")
@@ -16,7 +19,7 @@ const FILE_SEARCH_PATH =
 const MAX_SEARCH_DEPTH = 5;
 const MAX_SEARCH_RESULTS = 10000;
 const MAX_CONTENT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
-const RECENT_FILE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+const RECENT_FILE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const fileSearch = {
   name: "file-search",
@@ -92,6 +95,7 @@ const fileSearch = {
             max_results = 5,
           }) {
             try {
+              // verify user has ripregp binary
               if (!search_terms || search_terms.length === 0) {
                 return "No search terms were provided. Please provide keywords to search for files.";
               }
@@ -110,7 +114,8 @@ const fileSearch = {
           },
 
           /**
-           * Search for files matching the given terms and extract their content.
+            Main pipeline: validate → list files → rank → extract content → render output.
+            Each step can early-return a string error message to the LLM.
            * @param {string[]} searchTerms - Keywords to search for
            * @param {string[]} fileTypes - File extensions to filter by
            * @param {number} maxResults - Maximum number of files to return
@@ -119,19 +124,15 @@ const fileSearch = {
           search: async function (searchTerms, fileTypes, maxResults) {
             const searchRoot = FILE_SEARCH_PATH;
 
-            const searchRootResult = this.validateSearchRoot(searchRoot);
-            if (!searchRootResult.ok) return searchRootResult.error;
+            const rootError = this.validateSearchRoot(searchRoot);
+            if (rootError) return rootError;
 
             this.super.introspect(
               `${this.caller}: Searching for files matching: ${searchTerms.join(", ")}...`
             );
 
-            const candidatesResult = await this.getCandidates(
-              searchRoot,
-              fileTypes
-            );
-            if (!candidatesResult.ok) return candidatesResult.error;
-            const candidates = candidatesResult.data;
+            const candidates = await this.getCandidates(searchRoot, fileTypes);
+            if (typeof candidates === "string") return candidates;
 
             const ranked = await this.searchAndRank(
               searchRoot,
@@ -161,63 +162,44 @@ const fileSearch = {
           },
 
           /**
-           * Create a successful result payload.
-           * @param {any} data
-           * @returns {{ok: true, data: any}}
-           */
-          okResult: function (data) {
-            return { ok: true, data };
-          },
-
-          /**
-           * Create a failed result payload.
-           * @param {string} error
-           * @returns {{ok: false, error: string}}
-           */
-          errorResult: function (error) {
-            return { ok: false, error };
-          },
-
-          /**
            * Ensure the search root exists before running any search operations.
            * @param {string} searchRoot
-           * @returns {{ok: true, data: string}|{ok: false, error: string}}
+           * @returns {string|null} Error message if invalid, null if valid
            */
           validateSearchRoot: function (searchRoot) {
-            if (fs.existsSync(searchRoot)) return this.okResult(searchRoot);
+            if (fs.existsSync(searchRoot)) return null;
             this.super.introspect(
               `${this.caller}: File search directory does not exist. No files are available to search.`
             );
-            return this.errorResult(
-              "The file search directory does not exist. No files have been mounted or made available for searching. Please ensure files are mounted to the correct path."
-            );
+            return "The file search directory does not exist. No files have been mounted or made available for searching. Please ensure files are mounted to the correct path.";
           },
 
           /**
-           * Gather search candidates and preserve the empty-directory behavior.
+           * Gather search candidates, filtered by file type if specified.
+           * Returns the file list directly, or an error string if the directory is empty.
            * @param {string} searchRoot
            * @param {string[]} fileTypes
            * @returns {Promise<
-           *   {ok: true, data: {fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]}
-           *   | {ok: false, error: string}
+           *   {fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]
+           *   | string
            * >}
            */
           getCandidates: async function (searchRoot, fileTypes = []) {
-            const allFiles = await this.listCandidateFiles(searchRoot);
-            if (allFiles.length === 0) {
-              this.super.introspect(
-                `${this.caller}: No files found in the search directory.`
-              );
-              return this.errorResult(
-                "No files were found in the search directory. The directory is empty."
-              );
+            const files = await this.listCandidateFiles(searchRoot, fileTypes);
+
+            if (files.length > 0) return files;
+
+            // When filtering by type returned nothing, check if the directory
+            // itself is empty vs just having no matches for the requested types.
+            if (fileTypes.length > 0) {
+              const allFiles = await this.listCandidateFiles(searchRoot);
+              if (allFiles.length > 0) return files; // directory has files, just none matching the filter
             }
 
-            if (!fileTypes || fileTypes.length === 0)
-              return this.okResult(allFiles);
-            return this.okResult(
-              await this.listCandidateFiles(searchRoot, fileTypes)
+            this.super.introspect(
+              `${this.caller}: No files found in the search directory.`
             );
+            return "No files were found in the search directory. The directory is empty.";
           },
 
           /**
@@ -246,13 +228,14 @@ const fileSearch = {
            * @param {{name: string, path: string, size: number, modified: string, content: string}[]} results
            * @returns {Promise<string>}
            */
-          renderResults: function (results) {
+          renderResults: async function (results) {
             const { TokenManager } = require("../../../helpers/tiktoken");
             const tokenManager = new TokenManager(this.super.model);
             const contextLimit = Provider.contextLimit(
               this.super.provider,
               this.super.model
             );
+            // Budget tokens evenly across files, capped at 4k per file
             const maxTokensPerFile = Math.floor(
               Math.min(4000, contextLimit / results.length)
             );
@@ -318,6 +301,7 @@ const fileSearch = {
               });
               return stdout;
             } catch (error) {
+              // Exit code 1 means "no matches" — not an error for our purposes
               if (error.code === 1) return error.stdout || "";
               throw new Error(
                 error.stderr?.trim() ||
@@ -328,82 +312,23 @@ const fileSearch = {
           },
 
           /**
-           * Convert file type filters into ripgrep globs.
-           * @param {string[]} fileTypes
-           * @returns {string[]}
-           */
-          fileTypeGlobs: function (fileTypes = []) {
-            return fileTypes
-              .filter(Boolean)
-              .map((type) => type.trim().toLowerCase())
-              .filter(Boolean)
-              .map((type) => (type.startsWith(".") ? type.slice(1) : type))
-              .map((type) => `*.${type}`);
-          },
-
-          /**
-           * Append file type globs to a ripgrep argument list.
+           * Append --glob flags for file type filtering to a ripgrep arg list.
            * @param {string[]} args
            * @param {string[]} fileTypes
            */
           appendTypeGlobs: function (args, fileTypes = []) {
-            const typeGlobs = this.fileTypeGlobs(fileTypes);
-            if (typeGlobs.length === 0) return;
+            const globs = fileTypes
+              .filter(Boolean)
+              .map((t) => t.trim().toLowerCase())
+              .filter(Boolean)
+              .map((t) => `*.${t.startsWith(".") ? t.slice(1) : t}`);
+            if (globs.length === 0) return;
             args.push("--glob-case-insensitive");
-            for (const glob of typeGlobs) {
-              args.push("--glob", glob);
-            }
+            for (const glob of globs) args.push("--glob", glob);
           },
 
           /**
-           * Parse ripgrep's null-delimited output into a clean path list.
-           * @param {string} stdout
-           * @returns {string[]}
-           */
-          parseRipgrepPaths: function (stdout = "") {
-            return stdout
-              .split("\0")
-              .map((file) => file.trim())
-              .filter(Boolean);
-          },
-
-          /**
-           * Convert ripgrep's relative file output into safe hydrated file metadata.
-           * @param {string} searchRoot
-           * @param {string[]} relativePaths
-           * @returns {{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]}
-           */
-          hydrateFileMetadata: function (searchRoot, relativePaths = []) {
-            const results = [];
-            for (const relativePath of relativePaths) {
-              const normalizedPath = String(relativePath).trim();
-              if (!normalizedPath) continue;
-              const fullPath = path.resolve(searchRoot, normalizedPath);
-              if (!isWithin(searchRoot, fullPath) && searchRoot !== fullPath)
-                continue;
-
-              try {
-                const stats = fs.statSync(fullPath);
-                if (!stats.isFile()) continue;
-
-                results.push({
-                  fullPath,
-                  relativePath: path.relative(searchRoot, fullPath),
-                  name: path.basename(fullPath),
-                  size: stats.size,
-                  mtime: stats.mtime,
-                });
-              } catch {
-                continue;
-              }
-
-              if (results.length >= MAX_SEARCH_RESULTS) break;
-            }
-            return results;
-          },
-
-          /**
-           * List files with ripgrep, optionally filtered by extension globs.
+           * List files with ripgrep, optionally filtered by extension.
            * @param {string} searchRoot
            * @param {string[]} fileTypes
            * @returns {Promise<{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]>}
@@ -418,9 +343,34 @@ const fileSearch = {
             ];
             this.appendTypeGlobs(args, fileTypes);
 
+            // Parse null-delimited ripgrep output into file metadata,
+            // validating each path stays within the search root (path traversal guard).
             const stdout = await this.runRipgrep(args, searchRoot);
-            const relativePaths = this.parseRipgrepPaths(stdout);
-            return this.hydrateFileMetadata(searchRoot, relativePaths);
+            const results = [];
+            for (const entry of stdout.split("\0")) {
+              const relativePath = entry.trim();
+              if (!relativePath) continue;
+              const fullPath = path.resolve(searchRoot, relativePath);
+              if (!isWithin(searchRoot, fullPath) && searchRoot !== fullPath)
+                continue;
+
+              try {
+                const stats = fs.statSync(fullPath);
+                if (!stats.isFile()) continue;
+                results.push({
+                  fullPath,
+                  relativePath: path.relative(searchRoot, fullPath),
+                  name: path.basename(fullPath),
+                  size: stats.size,
+                  mtime: stats.mtime,
+                });
+              } catch {
+                continue;
+              }
+
+              if (results.length >= MAX_SEARCH_RESULTS) break;
+            }
+            return results;
           },
 
           /**
@@ -453,20 +403,24 @@ const fileSearch = {
               `${MAX_CONTENT_FILE_SIZE}`,
             ];
             this.appendTypeGlobs(args, fileTypes);
-            for (const term of terms) {
-              args.push("-e", term);
-            }
+            // Multiple -e flags use OR semantics — matches files containing any term
+            for (const term of terms) args.push("-e", term);
             args.push(".");
 
             const stdout = await this.runRipgrep(args, searchRoot);
-            const matchedPaths = this.parseRipgrepPaths(stdout)
-              .filter(Boolean)
-              .map((relativePath) => path.resolve(searchRoot, relativePath));
-            return new Set(matchedPaths);
+            return new Set(
+              stdout
+                .split("\0")
+                .map((p) => p.trim())
+                .filter(Boolean)
+                .map((rel) => path.resolve(searchRoot, rel))
+            );
           },
 
           /**
            * Run all search strategies (filename, path, content) and rank by relevance.
+           * Scoring weights: filename match +2, path match +1, content match +3, recent (<7d) +1.
+             Files must match at least one strategy to appear in results.
            * @param {{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]} files
            * @param {string[]} searchTerms
            * @param {string[]} fileTypes
@@ -545,11 +499,12 @@ const fileSearch = {
            * @param {{fullPath: string, relativePath: string, name: string}} file
            * @returns {Promise<string|null>} - Extracted text content or null on failure
            */
+          // Leverages the collector's existing document parsing pipeline (supports PDF, DOCX, etc.)
+          // by copying the file to the hotdir, parsing it, then cleaning up.
           extractContent: async function (file) {
             const destPath = path.resolve(hotdirPath, file.name);
 
             try {
-              // Copy file to collector hotdir for processing
               fs.copyFileSync(file.fullPath, destPath);
 
               this.super.introspect(
