@@ -305,6 +305,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

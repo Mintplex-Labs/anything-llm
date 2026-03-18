@@ -319,6 +319,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

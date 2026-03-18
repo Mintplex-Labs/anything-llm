@@ -315,6 +315,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

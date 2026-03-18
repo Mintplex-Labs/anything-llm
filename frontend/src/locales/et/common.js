@@ -312,6 +312,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

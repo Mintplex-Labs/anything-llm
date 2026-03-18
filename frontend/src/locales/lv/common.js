@@ -320,6 +320,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

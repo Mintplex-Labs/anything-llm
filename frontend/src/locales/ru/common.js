@@ -314,6 +314,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "По умолчанию, эта функция включена, но вы можете отключить ее, если не хотите, чтобы она была доступна для агента.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

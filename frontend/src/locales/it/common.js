@@ -319,6 +319,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

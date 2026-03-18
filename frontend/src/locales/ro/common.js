@@ -765,6 +765,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

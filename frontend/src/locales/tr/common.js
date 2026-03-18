@@ -314,6 +314,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Varsayılan olarak bu özellik etkinleştirilmiştir, ancak ajanın kullanmasına izin vermek istemiyorsanız, bu özelliği devre dışı bırakabilirsiniz.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

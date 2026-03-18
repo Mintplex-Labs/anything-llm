@@ -317,6 +317,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

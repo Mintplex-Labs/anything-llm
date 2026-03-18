@@ -311,6 +311,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

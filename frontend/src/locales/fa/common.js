@@ -315,6 +315,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "به طور پیش‌فرض، این قابلیت فعال است، اما می‌توانید آن را غیرفعال کنید اگر نمی‌خواهید این قابلیت برای نمایندگی در دسترس باشد.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

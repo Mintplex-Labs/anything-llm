@@ -329,6 +329,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

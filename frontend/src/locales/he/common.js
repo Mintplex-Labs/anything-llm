@@ -314,6 +314,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "כברירת מחדל, הכישורים הזה מופעל, אך ניתן להשבית אותו אם אינכם רוצים שהוא יהיה זמין עבור הסוכן.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

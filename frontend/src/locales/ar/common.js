@@ -313,6 +313,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "افتراضيًا، يتم تفعيل هذه الميزة، ولكن يمكنك تعطيلها إذا لم ترغب في أن تكون متاحة للممثل.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {

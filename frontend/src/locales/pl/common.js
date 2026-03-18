@@ -322,6 +322,10 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
+      file_search: {
+        title: null,
+        description: null,
+      },
     },
   },
   recorded: {
