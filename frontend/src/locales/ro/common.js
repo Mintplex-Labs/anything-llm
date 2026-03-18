@@ -185,16 +185,18 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "oferă răspunsuri bazate pe cunoștințele generale ale LLM-ului",
-        and: "și",
-        "desc-end": "context document care este găsit.",
+        description:
+          'va oferi răspunsuri folosind cunoștințele generale ale modelului LLM și contextul documentului respectiv.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
-        "desc-start": "oferă răspunsuri",
-        only: "doar",
-        "desc-end": "dacă contextul documentului este găsit.",
+        description:
+          'vor oferi răspunsuri **doar** dacă contextul documentului este identificat. Veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
+      },
+      automatic: {
+        title: "Mașină",
+        description:
+          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {
@@ -448,6 +450,8 @@ const TRANSLATIONS = {
       remove_selected: "Elimină selectate",
       costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documente",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
@@ -842,18 +846,6 @@ const TRANSLATIONS = {
         recommended: "Dimensiune recomandată: 800 x 200",
         remove: "Elimină",
         replace: "Înlocuiește",
-      },
-      "welcome-messages": {
-        title: "Mesaje de bun venit",
-        description:
-          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
-        new: "Nou",
-        system: "sistem",
-        user: "utilizator",
-        message: "mesaj",
-        assistant: "Asistent Chat AnythingLLM",
-        "double-click": "Dublu clic pentru a edita...",
-        save: "Salvează mesajele",
       },
       "browser-appearance": {
         title: "Aspect browser",

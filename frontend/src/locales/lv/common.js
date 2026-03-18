@@ -183,15 +183,18 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
-        "desc-start": "sniegs atbildes ar LLM vispārējām zināšanām",
-        and: "un",
-        "desc-end": "dokumentu kontekstu, kas tiek atrasts.",
+        description:
+          'sniedz atbildes, izmantojot LLM vispārīgo zināšanu un dokumenta kontekstu, kas ir pieejams.<br />Lai izmantotu rīkus, jums jāizmantojat komandu "@agent".',
       },
       query: {
         title: "Vaicājums",
-        "desc-start": "sniegs atbildes",
-        only: "tikai",
-        "desc-end": "ja tiek atrasts dokumentu konteksts.",
+        description:
+          'sniedz atbildes <b> tikai </b>, ja dokumenta konteksts ir atrasts. <br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
+      },
+      automatic: {
+        title: "Automobiļs",
+        description:
+          'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izmantošanu. <br />Ja vietējā rīku izmantošana netiek atbalstīta, jums būs jāizmantojas "@agent" komanda, lai izmantotu rīkus.',
       },
     },
     history: {
@@ -395,18 +398,6 @@ const TRANSLATIONS = {
         recommended: "Ieteicamais izmērs: 800 x 200",
         remove: "Noņemt",
         replace: "Aizvietot",
-      },
-      "welcome-messages": {
-        title: "Sveiciena ziņojumi",
-        description:
-          "Pielāgojiet sveiciena ziņojumus, kas tiek rādīti lietotājiem. Tikai ne-administratori redzēs šos ziņojumus.",
-        new: "Jauns",
-        system: "sistēma",
-        user: "lietotājs",
-        message: "ziņojums",
-        assistant: "AnythingLLM čata asistents",
-        "double-click": "Dubultklikšķis, lai rediģētu...",
-        save: "Saglabāt ziņojumus",
       },
       "browser-appearance": {
         title: "Pārlūkprogrammas izskats",
@@ -712,6 +703,8 @@ const TRANSLATIONS = {
       remove_selected: "Noņemt atlasītos",
       costs: "*Vienreizējas izmaksas iegulšanai",
       save_embed: "Saglabāt un iegult",
+      "total-documents_one": "{{count}} dokumenta",
+      "total-documents_other": "{{count}} dokumenti",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",

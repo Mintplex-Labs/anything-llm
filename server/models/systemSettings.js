@@ -121,6 +121,7 @@ const SystemSettings = {
             "tavily-search",
             "duckduckgo-engine",
             "exa-search",
+            "perplexity-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -300,6 +301,7 @@ const SystemSettings = {
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
       AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
+      AgentPerplexityApiKey: !!process.env.AGENT_PERPLEXITY_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -789,6 +791,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       originalDatabaseId,
       connectionString,
       engine,
+      schema,
     } = update;
 
     switch (action) {
@@ -822,6 +825,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: newId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }
@@ -842,6 +846,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: slugifiedId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }

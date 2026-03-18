@@ -57,9 +57,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    */
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes("bedrock");
-
+    const supportsToolCalling = this.supportsNativeToolCallingViaEnv("bedrock");
     if (supportsToolCalling)
       this.providerLog("AWS Bedrock native tool calling is ENABLED via ENV.");
     else
@@ -95,19 +93,45 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   // or otherwise absorb headaches that can arise from Ollama models
   #convertToLangchainPrototypes(chats = []) {
     const langchainChats = [];
-    const roleToMessageMap = {
-      system: SystemMessage,
-      user: HumanMessage,
-      assistant: AIMessage,
-    };
 
     for (const chat of chats) {
-      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
-      const MessageClass = roleToMessageMap[chat.role];
-      langchainChats.push(new MessageClass({ content: chat.content }));
+      if (chat.role === "system") {
+        langchainChats.push(new SystemMessage({ content: chat.content }));
+      } else if (chat.role === "user") {
+        langchainChats.push(
+          new HumanMessage({
+            content: this.#formatContentWithAttachments(chat),
+          })
+        );
+      } else if (chat.role === "assistant") {
+        langchainChats.push(new AIMessage({ content: chat.content }));
+      }
     }
 
     return langchainChats;
+  }
+
+  /**
+   * Format message content with attachments for Langchain multimodal support.
+   * Transforms a message with attachments into the format Langchain expects.
+   * @param {Object} chat - The chat message
+   * @returns {string|Array} Content as string or multimodal array
+   */
+  #formatContentWithAttachments(chat) {
+    if (!chat.attachments || chat.attachments.length === 0) {
+      return chat.content;
+    }
+
+    const content = [{ type: "text", text: chat.content }];
+    for (const attachment of chat.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content;
   }
 
   /**
@@ -115,6 +139,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * proper tool call / tool result handling for native tool calling.
    * role:"function" messages (from previous aibitat tool runs) are converted
    * to AIMessage(tool_calls) + ToolMessage pairs that Langchain expects.
+   * Also handles image attachments for multimodal support.
    * @param {Array} chats - The aibitat message history.
    * @returns {Array} Langchain message instances.
    */
@@ -176,7 +201,11 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       } else if (chat.role === "system") {
         langchainChats.push(new SystemMessage({ content: chat.content }));
       } else if (chat.role === "user") {
-        langchainChats.push(new HumanMessage({ content: chat.content }));
+        langchainChats.push(
+          new HumanMessage({
+            content: this.#formatContentWithAttachments(chat),
+          })
+        );
       } else if (chat.role === "assistant") {
         langchainChats.push(new AIMessage({ content: chat.content }));
       }

@@ -59,10 +59,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   supportsNativeToolCalling() {
     if (this._supportsToolCalling !== null) return this._supportsToolCalling;
     const supportsToolCalling =
-      process.env.PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING?.includes(
-        "generic-openai"
-      );
-
+      this.supportsNativeToolCallingViaEnv("generic-openai");
     if (supportsToolCalling)
       this.providerLog(
         "Generic OpenAI supports native tool calling is ENABLED via ENV."
@@ -131,7 +128,8 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -170,7 +168,8 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

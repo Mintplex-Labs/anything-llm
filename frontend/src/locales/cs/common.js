@@ -191,15 +191,18 @@ const TRANSLATIONS = {
       title: "Režim chatu",
       chat: {
         title: "Chat",
-        "desc-start": "bude poskytovat odpovědi s obecnými znalostmi LLM",
-        and: "a",
-        "desc-end": "kontext dokumentu, který je nalezen.",
+        description:
+          "poskytne odpovědi založené na obecných znalostech LLM a kontextu dokumentu, který je k dispozici.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
       },
       query: {
         title: "Dotaz",
-        "desc-start": "bude poskytovat odpovědi",
-        only: "pouze",
-        "desc-end": "pokud je nalezen kontext dokumentu.",
+        description:
+          "budou poskytovat odpovědi <b>pouze</b>, pokud je nalezen kontext dokumentu.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
+      },
+      automatic: {
+        title: "Auto",
+        description:
+          "automaticky použije nástroje, pokud to podporují jak model, tak poskytovatel. Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
       },
     },
     history: {
@@ -404,18 +407,6 @@ const TRANSLATIONS = {
         recommended: "Doporučená velikost: 800 x 200",
         remove: "Odebrat",
         replace: "Nahradit",
-      },
-      "welcome-messages": {
-        title: "Uvítací zprávy",
-        description:
-          "Přizpůsobte uvítací zprávy zobrazené vašim uživatelům. Pouze neadministrátoři uvidí tyto zprávy.",
-        new: "Nové",
-        system: "systém",
-        user: "uživatel",
-        message: "zpráva",
-        assistant: "Chatovací asistent AnythingLLM",
-        "double-click": "Dvojitým kliknutím upravit...",
-        save: "Uložit zprávy",
       },
       "browser-appearance": {
         title: "Vzhled prohlížeče",
@@ -740,6 +731,8 @@ const TRANSLATIONS = {
       remove_selected: "Odebrat vybrané",
       costs: "*Jednorázové náklady pro embeddingy",
       save_embed: "Uložit a vložit",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",
