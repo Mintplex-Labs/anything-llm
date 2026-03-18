@@ -59,7 +59,10 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   get #tooledOptions() {
-    return this.#isThinkingModel ? { injectReasoningContent: true } : {};
+    return {
+      provider: this,
+      ...(this.#isThinkingModel ? { injectReasoningContent: true } : {}),
+    };
   }
 
   async #handleFunctionCallChat({ messages = [] }) {

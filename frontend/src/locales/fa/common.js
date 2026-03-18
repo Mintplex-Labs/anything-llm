@@ -597,6 +597,8 @@ const TRANSLATIONS = {
       remove_selected: "حذف انتخاب‌شده",
       costs: "*هزینه یکباره برای ایجاد مدل‌های برداری",
       save_embed: "ذخیره و وارد کردن",
+      "total-documents_one": "{{count}} سند",
+      "total-documents_other": "{{count}} اسناد",
     },
     upload: {
       "processor-offline":
@@ -797,18 +799,6 @@ const TRANSLATIONS = {
         recommended: "اندازه پیشنهادی: 800 در 200",
         remove: "حذف",
         replace: "جایگزین کردن",
-      },
-      "welcome-messages": {
-        title: "پیام‌های خوش‌آمد",
-        description:
-          "پیام‌های خوش‌آمدی که به کاربران نمایش داده می‌شوند را سفارشی کنید. فقط کاربران غیر از مدیران این پیام‌ها را مشاهده خواهند کرد.",
-        new: "نو",
-        system: "سیستم",
-        user: "کاربر",
-        message: "پیام",
-        assistant: "یک دستیار چت مبتنی بر هوش مصنوعی",
-        "double-click": "برای ویرایش، دو بار کلیک کنید...",
-        save: "ذخیره پیام‌ها",
       },
       "browser-appearance": {
         title: "ظاهر مرورگر",

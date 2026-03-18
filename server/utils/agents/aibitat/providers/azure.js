@@ -43,7 +43,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {any[]} messages
    * @param {any[]} functions
    * @param {function} eventHandler
-   * @returns {Promise<{ functionCall: any, textResponse: string }>}
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("Provider.stream - will process this chat completion.");
@@ -54,7 +54,8 @@ class AzureOpenAiProvider extends Provider {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -84,7 +85,8 @@ class AzureOpenAiProvider extends Provider {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

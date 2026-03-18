@@ -393,18 +393,6 @@ const TRANSLATIONS = {
         remove: "제거",
         replace: "교체",
       },
-      "welcome-messages": {
-        title: "환영 메시지",
-        description:
-          "사용자에게 표시될 환영 메시지를 맞춤 설정하세요. 관리자 권한이 없는 사용자만 이 메시지를 볼 수 있습니다.",
-        new: "새 메시지",
-        system: "시스템",
-        user: "사용자",
-        message: "메시지",
-        assistant: "AnythingLLM 채팅 어시스턴트",
-        "double-click": "더블 클릭하여 편집...",
-        save: "메시지 저장",
-      },
       "browser-appearance": {
         title: "브라우저 표시 설정",
         description:
@@ -702,6 +690,8 @@ const TRANSLATIONS = {
       remove_selected: "선택 항목 삭제",
       costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
+      "total-documents_one": "{{count}} 문서",
+      "total-documents_other": "{{count}} 관련 문서",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",

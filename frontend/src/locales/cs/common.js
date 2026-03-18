@@ -408,18 +408,6 @@ const TRANSLATIONS = {
         remove: "Odebrat",
         replace: "Nahradit",
       },
-      "welcome-messages": {
-        title: "Uvítací zprávy",
-        description:
-          "Přizpůsobte uvítací zprávy zobrazené vašim uživatelům. Pouze neadministrátoři uvidí tyto zprávy.",
-        new: "Nové",
-        system: "systém",
-        user: "uživatel",
-        message: "zpráva",
-        assistant: "Chatovací asistent AnythingLLM",
-        "double-click": "Dvojitým kliknutím upravit...",
-        save: "Uložit zprávy",
-      },
       "browser-appearance": {
         title: "Vzhled prohlížeče",
         description:
@@ -743,6 +731,8 @@ const TRANSLATIONS = {
       remove_selected: "Odebrat vybrané",
       costs: "*Jednorázové náklady pro embeddingy",
       save_embed: "Uložit a vložit",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",

@@ -409,18 +409,6 @@ const TRANSLATIONS = {
         remove: "Eliminar",
         replace: "Reemplazar",
       },
-      "welcome-messages": {
-        title: "Mensajes de bienvenida",
-        description:
-          "Personaliza los mensajes de bienvenida que se muestran a tus usuarios. Solo los usuarios no administradores verán estos mensajes.",
-        new: "Nuevo",
-        system: "sistema",
-        user: "usuario",
-        message: "mensaje",
-        assistant: "Asistente de chat de AnythingLLM",
-        "double-click": "Doble clic para editar...",
-        save: "Guardar mensajes",
-      },
       "browser-appearance": {
         title: "Apariencia del navegador",
         description:
@@ -729,6 +717,8 @@ const TRANSLATIONS = {
       remove_selected: "Eliminar seleccionados",
       costs: "*Costo único por incrustaciones",
       save_embed: "Guardar e incrustar",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documentos",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",

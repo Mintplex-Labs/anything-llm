@@ -593,6 +593,8 @@ const TRANSLATIONS = {
       remove_selected: "حذف المحدد",
       costs: "*تكلفة ثابتة لإنشاء التمثيلات",
       save_embed: "حفظ و تضمين",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} المستندات",
     },
     upload: {
       "processor-offline": "غير متاح",
@@ -787,18 +789,6 @@ const TRANSLATIONS = {
         recommended: "الحجم الموصى به: 800 × 200",
         remove: "احذف",
         replace: "استبدل",
-      },
-      "welcome-messages": {
-        title: "أهلاً وسهلاً",
-        description:
-          "خصص الرسائل الترحيبية المعروضة لمستخدميك. سيتمكن المستخدمون غير المسؤولين فقط من رؤية هذه الرسائل.",
-        new: "جديد",
-        system: "نظام",
-        user: "المعلومات التي قدمتها، بالإضافة إلى المعلومات التي تم جمعها من مصادر أخرى، ستساعد في تحديد موقع هذا الشخص.",
-        message: "رسالة",
-        assistant: "مساعد الدردشة من AnythingLLM",
-        "double-click": "انقر نقرًا مزدوجًا لتحرير...",
-        save: "حفظ الرسائل",
       },
       "browser-appearance": {
         title: "مظهر المتصفح",

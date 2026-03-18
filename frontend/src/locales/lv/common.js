@@ -399,18 +399,6 @@ const TRANSLATIONS = {
         remove: "Noņemt",
         replace: "Aizvietot",
       },
-      "welcome-messages": {
-        title: "Sveiciena ziņojumi",
-        description:
-          "Pielāgojiet sveiciena ziņojumus, kas tiek rādīti lietotājiem. Tikai ne-administratori redzēs šos ziņojumus.",
-        new: "Jauns",
-        system: "sistēma",
-        user: "lietotājs",
-        message: "ziņojums",
-        assistant: "AnythingLLM čata asistents",
-        "double-click": "Dubultklikšķis, lai rediģētu...",
-        save: "Saglabāt ziņojumus",
-      },
       "browser-appearance": {
         title: "Pārlūkprogrammas izskats",
         description:
@@ -715,6 +703,8 @@ const TRANSLATIONS = {
       remove_selected: "Noņemt atlasītos",
       costs: "*Vienreizējas izmaksas iegulšanai",
       save_embed: "Saglabāt un iegult",
+      "total-documents_one": "{{count}} dokumenta",
+      "total-documents_other": "{{count}} dokumenti",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",

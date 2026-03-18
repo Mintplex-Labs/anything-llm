@@ -400,18 +400,6 @@ const TRANSLATIONS = {
         remove: "Usuń",
         replace: "Zmień",
       },
-      "welcome-messages": {
-        title: "Ekran powitalny",
-        description:
-          "Dostosuj komunikaty wyświetlane użytkownikom na ekranie powitalnym. Będą widoczne tylko dla użytkowników, którzy nie są administratorami.",
-        new: "Nowa wiadomość",
-        system: "systemu",
-        user: "użytkownika",
-        message: "wiadomość",
-        assistant: "Asystent czatu AnythingLLM",
-        "double-click": "Kliknij dwukrotnie, aby edytować...",
-        save: "Zapisz wiadomości",
-      },
       "browser-appearance": {
         title: "Wygląd przeglądarki",
         description:
@@ -716,6 +704,8 @@ const TRANSLATIONS = {
       remove_selected: "Usuń wybrane",
       costs: "*Jednorazowy koszt dodania danych",
       save_embed: "Zapisz",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentów niedostępny",

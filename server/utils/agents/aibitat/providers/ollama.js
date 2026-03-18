@@ -300,6 +300,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.providerLog(
         "OllamaProvider.stream (tooled) - will process this chat completion."
       );
+      this.resetUsage();
       await OllamaAILLM.cacheContextWindows();
       const msgUUID = v4();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
@@ -317,6 +318,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       let toolCalls = null;
 
       for await (const chunk of stream) {
+        // Capture usage from final chunk (Ollama sends usage when done=true)
+        if (chunk.done === true) {
+          this.recordUsage({
+            prompt_tokens: chunk.prompt_eval_count || 0,
+            completion_tokens: chunk.eval_count || 0,
+          });
+        }
+
         if (!chunk?.message) continue;
 
         if (chunk.message.content) {
@@ -352,10 +361,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             name: toolCall.function.name,
             arguments: args,
           },
+          cost: 0,
+          uuid: msgUUID,
         };
       }
 
-      return { textResponse, functionCall: null };
+      return { textResponse, functionCall: null, cost: 0, uuid: msgUUID };
     }
 
     // Fallback: UnTooled prompt-based approach via the native Ollama SDK
@@ -486,6 +497,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       functions.length > 0 && (await this.supportsNativeToolCalling());
 
     if (useNative) {
+      this.resetUsage();
       await OllamaAILLM.cacheContextWindows();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
@@ -495,6 +507,12 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         messages: formattedMessages,
         tools,
         options: this.queryOptions,
+      });
+
+      // Record usage (Ollama uses prompt_eval_count/eval_count)
+      this.recordUsage({
+        prompt_tokens: response.prompt_eval_count || 0,
+        completion_tokens: response.eval_count || 0,
       });
 
       if (response.message?.tool_calls?.length > 0) {
@@ -512,12 +530,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             arguments: args,
           },
           cost: 0,
+          usage: this.getUsage(),
         };
       }
 
       return {
         textResponse: response.message?.content || null,
         cost: 0,
+        usage: this.getUsage(),
       };
     }
 

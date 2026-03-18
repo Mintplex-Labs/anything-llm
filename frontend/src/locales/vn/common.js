@@ -594,6 +594,8 @@ const TRANSLATIONS = {
       remove_selected: "Xóa Đã chọn",
       costs: "*Chi phí một lần cho việc nhúng",
       save_embed: "Lưu và Nhúng",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",
@@ -796,18 +798,6 @@ const TRANSLATIONS = {
         recommended: "Kích thước khuyến nghị: 800 x 200",
         remove: "Xóa",
         replace: "Thay thế",
-      },
-      "welcome-messages": {
-        title: "Tin nhắn Chào mừng",
-        description:
-          "Tùy chỉnh các tin nhắn chào mừng hiển thị cho người dùng của bạn. Chỉ người dùng không phải quản trị viên mới thấy các tin nhắn này.",
-        new: "Mới",
-        system: "hệ thống",
-        user: "người dùng",
-        message: "tin nhắn",
-        assistant: "Trợ lý Trò chuyện AnythingLLM",
-        "double-click": "Nhấp đúp để chỉnh sửa...",
-        save: "Lưu Tin nhắn",
       },
       "browser-appearance": {
         title: "Giao diện Trình duyệt",

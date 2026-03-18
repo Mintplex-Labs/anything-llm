@@ -93,6 +93,9 @@ const webBrowsing = {
               case "exa-search":
                 engine = "_exaSearch";
                 break;
+              case "perplexity-search":
+                engine = "_perplexitySearch";
+                break;
               default:
                 engine = "_duckDuckGoEngine";
             }
@@ -109,6 +112,36 @@ const webBrowsing = {
           middleTruncate(str, length = 5) {
             if (str.length <= length) return str;
             return `${str.slice(0, length)}...${str.slice(-length)}`;
+          },
+
+          /**
+           * Report citations for an array of search results.
+           * Uses title, link, and snippet directly from result data.
+           * @param {Array<{title?: string, link?: string, snippet?: string}>} results - Search results to report as citations
+           */
+          reportSearchResultsCitations: function (results) {
+            if (!Array.isArray(results)) return;
+            const citations = [];
+            for (const result of results) {
+              const fallbackUrl =
+                result.link ||
+                result.url ||
+                result.website ||
+                result.product_link ||
+                result.patent_link ||
+                result.link_clean;
+
+              citations.push({
+                id: result.link || fallbackUrl,
+                title: result.title || fallbackUrl,
+                text: result.snippet || result.description || result.text || "",
+                chunkSource: result.link
+                  ? `link://${result.link}`
+                  : `link://${fallbackUrl}`,
+                score: null,
+              });
+            }
+            this.super.addCitation?.(citations);
           },
 
           /**
@@ -362,6 +395,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -436,6 +470,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -504,6 +539,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -559,6 +595,7 @@ const webBrowsing = {
             if (searchResponse.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(searchResponse);
             const result = JSON.stringify(searchResponse);
             this.super.introspect(
               `${this.caller}: I found ${searchResponse.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -643,6 +680,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -715,6 +753,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -778,6 +817,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -785,6 +825,26 @@ const webBrowsing = {
             return result;
           },
           _duckDuckGoEngine: async function (query) {
+            /**
+             * Extract the actual destination URL from a DuckDuckGo redirect link.
+             * DDG links look like: //duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com&rut=...
+             * @param {string} ddgLink - The DuckDuckGo redirect link
+             * @returns {string} The actual destination URL
+             */
+            function extractUrl(ddgLink) {
+              if (!ddgLink) return ddgLink;
+              try {
+                const fullUrl = ddgLink.startsWith("//")
+                  ? `https:${ddgLink}`
+                  : ddgLink;
+                const url = new URL(fullUrl);
+                const actualUrl = url.searchParams.get("uddg");
+                return actualUrl ? decodeURIComponent(actualUrl) : ddgLink;
+              } catch {
+                return ddgLink;
+              }
+            }
+
             this.super.introspect(
               `${this.caller}: Using DuckDuckGo to search for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
@@ -823,11 +883,11 @@ const webBrowsing = {
               );
               const title = titleMatch ? titleMatch[1].trim() : "";
 
-              // Extract URL
+              // Extract URL and clean DDG redirect
               const urlMatch = result.match(
                 /<a[^>]*class="result__a"[^>]*href="([^"]*)">/
               );
-              const link = urlMatch ? urlMatch[1] : "";
+              const link = extractUrl(urlMatch ? urlMatch[1] : "");
 
               // Extract snippet
               const snippetMatch = result.match(
@@ -846,6 +906,7 @@ const webBrowsing = {
               return `No information was found online for the search query.`;
             }
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -913,10 +974,89 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
             );
+            return result;
+          },
+
+          _perplexitySearch: async function (query) {
+            if (!process.env.AGENT_PERPLEXITY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Perplexity searching because the user has not defined the required API key.\nVisit: [https://console.perplexity.ai](https://console.perplexity.ai) to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Perplexity to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.perplexity.ai/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
+                },
+                body: JSON.stringify({
+                  query: query,
+                  max_results: 5,
+                  max_tokens_per_page: 2048,
+                }),
+              }
+            )
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    auth: this.middleTruncate(
+                      process.env.AGENT_PERPLEXITY_API_KEY,
+                      5
+                    ),
+                    q: query,
+                  })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `Perplexity Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            if (response.results) {
+              response.results.forEach((result) => {
+                data.push({
+                  title: result.title,
+                  link: result.url,
+                  snippet: result.snippet || "",
+                });
+              });
+            }
+
+            if (data.length === 0)
+              return "No information was found online for the search query.";
+
+            this.reportSearchResultsCitations(data);
+
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+
             return result;
           },
         });

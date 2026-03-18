@@ -598,6 +598,8 @@ const TRANSLATIONS = {
       remove_selected: "Supprimer la sélection",
       costs: "Coûts",
       save_embed: "Sauvegarder et intégrer",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documents",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
@@ -801,18 +803,6 @@ const TRANSLATIONS = {
         recommended: "Taille recommandée : 800 x 200",
         remove: "Supprimer",
         replace: "Remplacer",
-      },
-      "welcome-messages": {
-        title: "Messages de bienvenue",
-        description:
-          "Personnalisez les messages affichés aux nouveaux utilisateurs.",
-        new: "Nouveau",
-        system: "système",
-        user: "utilisateur",
-        message: "message",
-        assistant: "assistant",
-        "double-click": "Double-cliquez pour modifier.",
-        save: "Sauvegarder les messages",
       },
       "browser-appearance": {
         title: "Apparence du navigateur",

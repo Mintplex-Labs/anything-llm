@@ -589,6 +589,8 @@ const TRANSLATIONS = {
       remove_selected: "選択したものを削除",
       costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
+      "total-documents_one": "{{count}} のドキュメント",
+      "total-documents_other": "{{count}} に関する書類",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -793,18 +795,6 @@ const TRANSLATIONS = {
         recommended: "推奨サイズ：800 x 200",
         remove: "削除",
         replace: "置き換える",
-      },
-      "welcome-messages": {
-        title: "ようこそ",
-        description:
-          "ユーザーに表示されるウェルカムメッセージをカスタマイズできます。これらのメッセージは、管理者以外のユーザーのみが表示します。",
-        new: "新しい",
-        system: "システム",
-        user: "私は、このプロジェクトの成功に貢献できることを願っています。",
-        message: "メッセージ",
-        assistant: "何か質問はありますか？",
-        "double-click": "編集するにはダブルクリック...",
-        save: "メッセージを保存する",
       },
       "browser-appearance": {
         title: "ブラウザの見た目",

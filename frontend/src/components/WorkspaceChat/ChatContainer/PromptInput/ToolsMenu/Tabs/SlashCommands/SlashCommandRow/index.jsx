@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { DotsThree } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +14,7 @@ export default function SlashCommandRow({
 }) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const menuRef = useRef(null);
   const menuBtnRef = useRef(null);
 
@@ -30,6 +32,16 @@ export default function SlashCommandRow({
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen && menuBtnRef.current) {
+      const rect = menuBtnRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.right + window.scrollX - 120,
+      });
+    }
   }, [menuOpen]);
 
   return (
@@ -64,35 +76,42 @@ export default function SlashCommandRow({
             <DotsThree size={16} weight="bold" />
           </button>
 
-          {menuOpen && (
-            <div
-              ref={menuRef}
-              className="absolute right-0 top-full z-50 bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg shadow-lg min-w-[120px] flex flex-col overflow-hidden"
-            >
-              <button
-                type="button"
-                className="border-none px-3 py-1.5 text-xs text-white light:text-slate-900 hover:bg-zinc-700 light:hover:bg-slate-100 cursor-pointer text-left"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMenuOpen(false);
-                  onEdit?.();
+          {menuOpen &&
+            createPortal(
+              <div
+                ref={menuRef}
+                style={{
+                  position: "fixed",
+                  top: menuPosition.top,
+                  left: menuPosition.left,
                 }}
+                className="z-[9999] bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg shadow-lg min-w-[120px] flex flex-col overflow-hidden"
               >
-                {t("chat_window.edit")}
-              </button>
-              <button
-                type="button"
-                className="border-none px-3 py-1.5 text-xs text-white light:text-slate-900 hover:bg-zinc-700 light:hover:bg-slate-100 cursor-pointer text-left"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMenuOpen(false);
-                  onPublish?.();
-                }}
-              >
-                {t("chat_window.publish")}
-              </button>
-            </div>
-          )}
+                <button
+                  type="button"
+                  className="border-none px-3 py-1.5 text-xs text-white light:text-slate-900 hover:bg-zinc-700 light:hover:bg-slate-100 cursor-pointer text-left"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen(false);
+                    onEdit?.();
+                  }}
+                >
+                  {t("chat_window.edit")}
+                </button>
+                <button
+                  type="button"
+                  className="border-none px-3 py-1.5 text-xs text-white light:text-slate-900 hover:bg-zinc-700 light:hover:bg-slate-100 cursor-pointer text-left"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen(false);
+                    onPublish?.();
+                  }}
+                >
+                  {t("chat_window.publish")}
+                </button>
+              </div>,
+              document.body
+            )}
         </div>
       )}
     </div>

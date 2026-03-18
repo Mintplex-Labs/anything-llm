@@ -600,6 +600,8 @@ const TRANSLATIONS = {
       remove_selected: "Fjern valgte",
       costs: "*Engangsomkostning for indlejringer",
       save_embed: "Gem og indlejr",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenter",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -804,18 +806,6 @@ const TRANSLATIONS = {
         recommended: "Anbefalet størrelse: 800 x 200",
         remove: "Fjern",
         replace: "Udskift",
-      },
-      "welcome-messages": {
-        title: "Velkomstbeskeder",
-        description:
-          "Tilpas de velkomstbeskeder, der vises til dine brugere. Kun ikke-administratorer vil se disse beskeder.",
-        new: "Ny",
-        system: "system",
-        user: "Jeg er en stor sprogmodel, trænet af Google.",
-        message: "besked",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Dobbeltklik for at redigere...",
-        save: "Gem beskeder",
       },
       "browser-appearance": {
         title: "Browser-udseende",

@@ -450,6 +450,8 @@ const TRANSLATIONS = {
       remove_selected: "Elimină selectate",
       costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documente",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
@@ -844,18 +846,6 @@ const TRANSLATIONS = {
         recommended: "Dimensiune recomandată: 800 x 200",
         remove: "Elimină",
         replace: "Înlocuiește",
-      },
-      "welcome-messages": {
-        title: "Mesaje de bun venit",
-        description:
-          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
-        new: "Nou",
-        system: "sistem",
-        user: "utilizator",
-        message: "mesaj",
-        assistant: "Asistent Chat AnythingLLM",
-        "double-click": "Dublu clic pentru a edita...",
-        save: "Salvează mesajele",
       },
       "browser-appearance": {
         title: "Aspect browser",

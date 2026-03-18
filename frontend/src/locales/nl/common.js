@@ -599,6 +599,8 @@ const TRANSLATIONS = {
       remove_selected: "Verwijderen Geselecteerd",
       costs: "*Eenmalige kosten voor embedden",
       save_embed: "Opslaan en embedden",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documenten",
     },
     upload: {
       "processor-offline": "Documentverwerker niet beschikbaar",
@@ -800,18 +802,6 @@ const TRANSLATIONS = {
         recommended: "Aanbevolen formaat: 800 x 200",
         remove: "Verwijderen",
         replace: "Vervangen",
-      },
-      "welcome-messages": {
-        title: "Welkomstberichten",
-        description:
-          "Pas de welkomstberichten aan die aan uw gebruikers worden getoond. Alleen niet-beheerders zien deze berichten.",
-        new: "Nieuw",
-        system: "systeem",
-        user: "gebruiker",
-        message: "bericht",
-        assistant: "AnythingLLM Chatassistent",
-        "double-click": "Dubbelklik om te bewerken...",
-        save: "Berichten opslaan",
       },
       "browser-appearance": {
         title: "Browserweergave",

@@ -402,18 +402,6 @@ const TRANSLATIONS = {
         remove: "Löschen",
         replace: "Ersetzen",
       },
-      "welcome-messages": {
-        title: "Willkommensnachrichten",
-        description:
-          "Individualisieren Sie die angezeigten Willkommensmitteilungen für Ihre Benutzer. Diese Mitteilungen sehen nur Nicht-Administratoren.",
-        new: "Neue Nachricht",
-        system: "System",
-        user: "Benutzer",
-        message: "Nachricht",
-        assistant: "AnythingLLM Chat-Assistent",
-        "double-click": "Zum Bearbeiten doppelklicken",
-        save: "Nachrichten speichern",
-      },
       "browser-appearance": {
         title: "Browser-Ansicht",
         description:
@@ -720,6 +708,8 @@ const TRANSLATIONS = {
       remove_selected: "Ausgewähltes entfernen",
       costs: "*Einmalige Kosten für das Einbetten",
       save_embed: "Speichern und Einbetten",
+      "total-documents_one": "{{count}} Dokument",
+      "total-documents_other": "{{count}} Dokumente",
     },
     upload: {
       "processor-offline": "Dokumentenprozessor nicht verfügbar",

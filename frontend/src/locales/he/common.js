@@ -389,18 +389,6 @@ const TRANSLATIONS = {
         remove: "הסר",
         replace: "החלף",
       },
-      "welcome-messages": {
-        title: "הודעות פתיחה",
-        description:
-          "התאם אישית את הודעות הפתיחה המוצגות למשתמשים שלך. רק משתמשים שאינם מנהלים יראו הודעות אלה.",
-        new: "חדש",
-        system: "מערכת",
-        user: "משתמש",
-        message: "הודעה",
-        assistant: "עוזר הצ'אט של AnythingLLM",
-        "double-click": "לחץ פעמיים לעריכה...",
-        save: "שמור הודעות",
-      },
       "browser-appearance": {
         title: "מראה הדפדפן",
         description:
@@ -694,6 +682,8 @@ const TRANSLATIONS = {
       remove_selected: "הסר נבחרים",
       costs: "*עלות חד פעמית להטמעות",
       save_embed: "שמור והטמע",
+      "total-documents_one": "{{count}} מסמך",
+      "total-documents_other": "מסמכים {{count}}",
     },
     upload: {
       "processor-offline": "מעבד המסמכים אינו זמין",

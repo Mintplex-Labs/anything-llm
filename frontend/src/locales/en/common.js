@@ -406,18 +406,6 @@ const TRANSLATIONS = {
         remove: "Remove",
         replace: "Replace",
       },
-      "welcome-messages": {
-        title: "Welcome Messages",
-        description:
-          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
-        new: "New",
-        system: "system",
-        user: "user",
-        message: "message",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Double click to edit...",
-        save: "Save Messages",
-      },
       "browser-appearance": {
         title: "Browser Appearance",
         description:
@@ -730,6 +718,8 @@ const TRANSLATIONS = {
     directory: {
       "my-documents": "My Documents",
       "new-folder": "New Folder",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",

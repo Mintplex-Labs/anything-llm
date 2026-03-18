@@ -597,6 +597,8 @@ const TRANSLATIONS = {
       remove_selected: "Seçilenleri Kaldır",
       costs: "*Gömmeler için tek seferlik maliyet",
       save_embed: "Kaydet ve Göm",
+      "total-documents_one": "{{count}} belgesi",
+      "total-documents_other": "{{count}} belgeleri",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",
@@ -799,18 +801,6 @@ const TRANSLATIONS = {
         recommended: "Önerilen boyut: 800 x 200",
         remove: "Kaldır",
         replace: "Değiştir",
-      },
-      "welcome-messages": {
-        title: "Karşılama Mesajları",
-        description:
-          "Kullanıcılarınıza gösterilen karşılama mesajlarını özelleştirin. Yalnızca yönetici olmayan kullanıcılar bu mesajları görecektir.",
-        new: "Yeni",
-        system: "sistem",
-        user: "kullanıcı",
-        message: "mesaj",
-        assistant: "AnythingLLM Sohbet Asistanı",
-        "double-click": "Düzenlemek için çift tıklayın...",
-        save: "Mesajları Kaydet",
       },
       "browser-appearance": {
         title: "Tarayıcı Görünümü",

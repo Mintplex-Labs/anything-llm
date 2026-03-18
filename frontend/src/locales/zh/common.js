@@ -377,17 +377,6 @@ const TRANSLATIONS = {
         remove: "移除",
         replace: "替换",
       },
-      "welcome-messages": {
-        title: "欢迎信息",
-        description: "自定义显示给用户的欢迎信息。仅非管理员用户可见这些信息。",
-        new: "新建",
-        system: "系统",
-        user: "用户",
-        message: "信息",
-        assistant: "AnythingLLM 聊天助手",
-        "double-click": "双击进行编辑...",
-        save: "保存信息",
-      },
       "browser-appearance": {
         title: "浏览器外观",
         description: "自定义应用打开时浏览器标签和标题的外观。",
@@ -657,6 +646,8 @@ const TRANSLATIONS = {
       remove_selected: "移除所选",
       costs: "*嵌入时一次性费用",
       save_embed: "保存并嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 类型的文件",
     },
     upload: {
       "processor-offline": "文档处理器不可用",

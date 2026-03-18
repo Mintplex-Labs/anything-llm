@@ -116,14 +116,6 @@ model document_vectors {
   lastUpdatedAt DateTime @default(now())
 }
 
-model welcome_messages {
-  id         Int      @id @default(autoincrement())
-  user       String
-  response   String
-  orderIndex Int?
-  createdAt  DateTime @default(now())
-}
-
 model workspaces {
   id                           Int                            @id @default(autoincrement())
   name                         String

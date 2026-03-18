@@ -603,6 +603,8 @@ const TRANSLATIONS = {
       remove_selected: "Elimina gli elementi selezionati",
       costs: "*Costo una tantum per le embedding",
       save_embed: "Salva e incorpora",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documenti",
     },
     upload: {
       "processor-offline": "Il processore di documenti non è disponibile.",
@@ -817,18 +819,6 @@ const TRANSLATIONS = {
         recommended: "Dimensioni consigliate: 800 x 200",
         remove: "Rimuovi",
         replace: "Sostituire",
-      },
-      "welcome-messages": {
-        title: "Messaggi di benvenuto",
-        description:
-          "Personalizza i messaggi di benvenuto visualizzati ai tuoi utenti. Solo gli utenti non amministrativi vedranno questi messaggi.",
-        new: "Nuovo",
-        system: "sistema",
-        user: "utente",
-        message: "messaggio",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Fare doppio clic per modificare...",
-        save: "Salva i messaggi",
       },
       "browser-appearance": {
         title: "Aspetto del browser",
