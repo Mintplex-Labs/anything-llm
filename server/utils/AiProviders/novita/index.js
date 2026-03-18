@@ -82,7 +82,7 @@ class NovitaLLM {
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
   #cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
+    const MAX_STALE = 2.592e8; // 3 days in MS
     if (!fs.existsSync(this.cacheAtPath)) return true;
     const now = Number(new Date());
     const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
@@ -141,6 +141,32 @@ class NovitaLLM {
   promptWindowLimit() {
     const availableModels = this.models();
     return availableModels[this.model]?.maxLength || 4096;
+  }
+
+  /**
+   * Get the capabilities of a model from the Novita API.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      await this.#syncModels();
+      const availableModels = this.models();
+      const modelInfo = availableModels[this.model];
+      return {
+        tools: modelInfo.features.includes("function-calling"),
+        reasoning: modelInfo.features.includes("reasoning"),
+        imageGeneration: false, // no image generation capabilities for Novita yet.
+        vision: modelInfo.input_modalities.includes("image"),
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
   }
 
   async isValidChatCompletionModel(model = "") {
@@ -398,6 +424,8 @@ async function fetchNovitaModels() {
             model.id.split("/")[0].charAt(0).toUpperCase() +
             model.id.split("/")[0].slice(1),
           maxLength: model.context_size,
+          features: model.features ?? [],
+          input_modalities: model.input_modalities ?? [],
         };
       });
 

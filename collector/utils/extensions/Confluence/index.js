@@ -2,7 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments, sanitizeFileName } = require("../../files");
+const {
+  writeToServerDocuments,
+  sanitizeFileName,
+  documentsFolder,
+} = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { ConfluencePagesLoader } = require("./ConfluenceLoader");
 
@@ -230,7 +234,7 @@ function validBaseUrl(baseUrl) {
   try {
     new URL(baseUrl);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

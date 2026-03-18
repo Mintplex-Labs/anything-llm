@@ -440,7 +440,7 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "openai":
       return process.env.OPEN_MODEL_PREF;
     case "azure":
-      return process.env.OPEN_MODEL_PREF;
+      return process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF;
     case "anthropic":
       return process.env.ANTHROPIC_MODEL_PREF;
     case "gemini":

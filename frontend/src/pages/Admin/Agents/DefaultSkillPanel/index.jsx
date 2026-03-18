@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { DefaultBadge } from "../Badges/default";
 import Toggle from "@/components/lib/Toggle";
 
@@ -11,6 +12,7 @@ export default function DefaultSkillPanel({
   toggleSkill,
   skill,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
@@ -41,8 +43,7 @@ export default function DefaultSkillPanel({
           {description}
           <br />
           <br />
-          By default, this skill is enabled, but you can disable it if you don't
-          want it to be available to the agent.
+          {t("agent.skill.default_skill")}
         </p>
       </div>
     </div>

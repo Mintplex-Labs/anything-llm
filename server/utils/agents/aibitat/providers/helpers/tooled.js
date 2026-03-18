@@ -131,8 +131,9 @@ function formatMessagesForTools(messages, options = {}) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean}} options - Provider-specific options forwarded to formatMessagesForTools
- * @returns {Promise<{textResponse: string, functionCall: object|null}>}
+ * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
 async function tooledStream(
   client,
@@ -142,13 +143,23 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
+  const { provider, ...formatOptions } = options;
+
+  // Auto-reset usage if provider is passed
+  if (provider?.resetUsage) {
+    try {
+      provider.resetUsage();
+    } catch {}
+  }
+
   const msgUUID = v4();
-  const formattedMessages = formatMessagesForTools(messages, options);
+  const formattedMessages = formatMessagesForTools(messages, formatOptions);
   const tools = formatFunctionsToTools(functions);
 
   const stream = await client.chat.completions.create({
     model,
     stream: true,
+    stream_options: { include_usage: true },
     messages: formattedMessages,
     ...(tools.length > 0 ? { tools } : {}),
   });
@@ -159,8 +170,14 @@ async function tooledStream(
   };
 
   const toolCallsByIndex = {};
+  let usage = null;
 
   for await (const chunk of stream) {
+    // Capture usage from final chunk (some providers send usage after finish_reason)
+    if (chunk?.usage) {
+      usage = chunk.usage;
+    }
+
     if (!chunk?.choices?.[0]) continue;
     const choice = chunk.choices[0];
 
@@ -203,6 +220,13 @@ async function tooledStream(
     }
   }
 
+  // Auto-record usage if provider is passed and usage is available
+  if (provider?.recordUsage && usage) {
+    try {
+      provider.recordUsage(usage);
+    } catch {}
+  }
+
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
@@ -216,6 +240,8 @@ async function tooledStream(
   return {
     textResponse: result.textResponse,
     functionCall: result.functionCall,
+    uuid: msgUUID,
+    usage,
   };
 }
 
@@ -228,8 +254,9 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
- * @param {{injectReasoningContent?: boolean}} options - Provider-specific options forwarded to formatMessagesForTools
- * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number}>}
+ * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number, usage: object|null}>}
  */
 async function tooledComplete(
   client,
@@ -239,7 +266,16 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const formattedMessages = formatMessagesForTools(messages, options);
+  const { provider, ...formatOptions } = options;
+
+  // Auto-reset usage if provider is passed
+  if (provider?.resetUsage) {
+    try {
+      provider.resetUsage();
+    } catch {}
+  }
+
+  const formattedMessages = formatMessagesForTools(messages, formatOptions);
   const tools = formatFunctionsToTools(functions);
 
   const response = await client.chat.completions.create({
@@ -251,6 +287,14 @@ async function tooledComplete(
 
   const completion = response.choices[0].message;
   const cost = getCostFn(response.usage);
+  const usage = response.usage || null;
+
+  // Auto-record usage if provider is passed and usage is available
+  if (provider?.recordUsage && usage) {
+    try {
+      provider.recordUsage(usage);
+    } catch {}
+  }
 
   if (completion.tool_calls && completion.tool_calls.length > 0) {
     const toolCall = completion.tool_calls[0];
@@ -270,6 +314,7 @@ async function tooledComplete(
           },
         },
         cost,
+        usage,
       };
     }
 
@@ -281,12 +326,14 @@ async function tooledComplete(
         arguments: functionArgs,
       },
       cost,
+      usage,
     };
   }
 
   return {
     textResponse: completion.content,
     cost,
+    usage,
   };
 }
 
