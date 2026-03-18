@@ -175,15 +175,18 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        "desc-start": "LLMの一般知識で回答します",
-        and: "および",
-        "desc-end": "見つかったドキュメントコンテキストを使用します。",
+        description:
+          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        "desc-start": "回答を提供します",
-        only: "のみ",
-        "desc-end": "ドキュメントコンテキストが見つかった場合のみ。",
+        description:
+          "該当する情報が見つかった場合、回答を<b>のみ</b>提供します。ツールを使用するには、@agentコマンドを使用する必要があります。",
+      },
+      automatic: {
+        title: "自動車",
+        description:
+          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。<br />ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -586,6 +589,8 @@ const TRANSLATIONS = {
       remove_selected: "選択したものを削除",
       costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
+      "total-documents_one": "{{count}} のドキュメント",
+      "total-documents_other": "{{count}} に関する書類",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",

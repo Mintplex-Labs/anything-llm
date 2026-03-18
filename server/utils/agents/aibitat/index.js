@@ -606,10 +606,22 @@ ${this.getHistory({ to: route.to })
     }
 
     // This is normal chat between user<->agent
-    return this.getHistory(route).map((c) => ({
-      content: c.content,
-      role: c.from === route.to ? "user" : "assistant",
-    }));
+    // Include attachments if present (for vision/multimodal support)
+    return this.getHistory(route).map((c) => {
+      const message = {
+        content: c.content,
+        role: c.from === route.to ? "user" : "assistant",
+      };
+      // Pass attachments through for user messages that have them
+      if (
+        c.attachments &&
+        c.attachments.length > 0 &&
+        message.role === "user"
+      ) {
+        message.attachments = c.attachments;
+      }
+      return message;
+    });
   }
 
   /**
@@ -626,6 +638,24 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
+
+    // Fetch fresh parsed file context and inject into the last user message
+    if (this.fetchParsedFileContext) {
+      const parsedContext = await this.fetchParsedFileContext();
+      if (parsedContext) {
+        // Find the last user message and append context to it
+        for (let i = chatHistory.length - 1; i >= 0; i--) {
+          if (chatHistory[i].role === "user") {
+            chatHistory[i] = {
+              ...chatHistory[i],
+              content: chatHistory[i].content + parsedContext,
+            };
+            break;
+          }
+        }
+      }
+    }
+
     const messages = [
       {
         content: fromConfig.role,
@@ -675,6 +705,25 @@ ${this.getHistory({ to: route.to })
   }
 
   /**
+   * Wrapper for provider calls that catches errors and converts them to APIError.
+   * This ensures provider errors are properly surfaced to the user instead of crashing.
+   *
+   * @param {Function} providerCall - Async function that calls the provider
+   * @returns {Promise<any>} - The result of the provider call
+   * @throws {APIError} - If the provider call fails
+   */
+  async #safeProviderCall(providerCall) {
+    try {
+      return await providerCall();
+    } catch (error) {
+      console.error(`[AIbitat] Provider error: ${error.message}`, {
+        hide_meta: true,
+      });
+      throw new APIError(`The agent model failed to respond: ${error.message}`);
+    }
+  }
+
+  /**
    * Handle the async (streaming) execution of the provider
    * with tool calls.
    *
@@ -696,11 +745,9 @@ ${this.getHistory({ to: route.to })
       this?.socket?.send(type, data);
     };
 
-    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string, uuid: string }} */
-    const completionStream = await provider.stream(
-      messages,
-      functions,
-      eventHandler
+    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
+    const completionStream = await this.#safeProviderCall(() =>
+      provider.stream(messages, functions, eventHandler)
     );
 
     if (completionStream.functionCall) {
@@ -712,14 +759,9 @@ ${this.getHistory({ to: route.to })
           `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
         );
 
-        const finalStream = await provider.stream(messages, [], eventHandler);
-        const finalUuid = finalStream?.uuid || v4();
-        eventHandler?.("reportStreamEvent", {
-          type: "usageMetrics",
-          uuid: finalUuid,
-          metrics: provider.getUsage(),
-        });
-        this?.flushCitations?.(finalUuid);
+        const finalStream = await this.#safeProviderCall(() =>
+          provider.stream(messages, [], eventHandler)
+        );
         const finalResponse =
           finalStream?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
@@ -847,7 +889,9 @@ ${this.getHistory({ to: route.to })
     };
 
     // get the chat completion
-    const completion = await provider.complete(messages, functions);
+    const completion = await this.#safeProviderCall(() =>
+      provider.complete(messages, functions)
+    );
 
     if (completion.functionCall) {
       if (depth >= this.maxToolCalls) {
@@ -858,7 +902,9 @@ ${this.getHistory({ to: route.to })
           `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
         );
 
-        const finalCompletion = await provider.complete(messages, []);
+        const finalCompletion = await this.#safeProviderCall(() =>
+          provider.complete(messages, [])
+        );
         eventHandler?.("reportStreamEvent", {
           type: "usageMetrics",
           uuid: msgUUID,
@@ -959,9 +1005,10 @@ ${this.getHistory({ to: route.to })
    * Provide a feedback where it was interrupted if you want to.
    *
    * @param feedback The feedback to the interruption if any.
+   * @param attachments Optional attachments (images) to include with the feedback.
    * @returns
    */
-  async continue(feedback) {
+  async continue(feedback, attachments = []) {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "interrupt") {
       throw new Error("No chat to continue");
@@ -981,6 +1028,7 @@ ${this.getHistory({ to: route.to })
         from,
         to,
         content: feedback,
+        ...(attachments?.length > 0 ? { attachments } : {}),
       };
 
       // register the message in the chat history

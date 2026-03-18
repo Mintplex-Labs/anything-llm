@@ -176,15 +176,18 @@ const TRANSLATIONS = {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        "desc-start": "LLM'nin genel bilgisiyle yanıtlar sunar",
-        and: "ve",
-        "desc-end": "bulunan belge bağlamını ekler.",
+        description:
+          "LLM'nin genel bilgisi ve bulunan doküman bağlamıyla cevaplar sunacaktır. Araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
       query: {
         title: "Sorgu",
-        "desc-start": "yanıtları",
-        only: "sadece",
-        "desc-end": "belge bağlamı bulunduğunda sunar.",
+        description:
+          "yalnızca doküman bağlamı bulunursa yanıtlar sağlayacaktır.<b>İhtiyaç duyacağınız araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
+      },
+      automatic: {
+        title: "Oto",
+        description:
+          "<br />Varsa, model ve sağlayıcı tarafından desteklenen yerel araçları otomatik olarak kullanacaktır. Yerel araç kullanımı desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
     },
     history: {
@@ -594,6 +597,8 @@ const TRANSLATIONS = {
       remove_selected: "Seçilenleri Kaldır",
       costs: "*Gömmeler için tek seferlik maliyet",
       save_embed: "Kaydet ve Göm",
+      "total-documents_one": "{{count}} belgesi",
+      "total-documents_other": "{{count}} belgeleri",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",

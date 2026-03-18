@@ -177,16 +177,18 @@ const TRANSLATIONS = {
       title: "Mode de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "fournira des réponses avec les connaissances générales du LLM",
-        and: "et",
-        "desc-end": "le contexte du document trouvé.",
+        description:
+          'fournira des réponses en utilisant les connaissances générales du LLM et le contexte du document correspondant. <br />Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       query: {
         title: "Requête",
-        "desc-start": "fournira des réponses",
-        only: "uniquement",
-        "desc-end": "si un contexte de document est trouvé.",
+        description:
+          "fournira des réponses <b>uniquement</b> si le contexte du document est trouvé.<br />Vous devrez utiliser la commande @agent pour utiliser les outils.",
+      },
+      automatic: {
+        title: "Voiture",
+        description:
+          "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de outils natifs. <br />Si l'utilisation d'outils natifs n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
       },
     },
     history: {
@@ -596,6 +598,8 @@ const TRANSLATIONS = {
       remove_selected: "Supprimer la sélection",
       costs: "Coûts",
       save_embed: "Sauvegarder et intégrer",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documents",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",

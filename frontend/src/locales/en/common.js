@@ -188,17 +188,20 @@ const TRANSLATIONS = {
     },
     mode: {
       title: "Chat mode",
+      automatic: {
+        title: "Auto",
+        description:
+          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
+      },
       chat: {
         title: "Chat",
-        "desc-start": "will provide answers with the LLM's general knowledge",
-        and: "and",
-        "desc-end": "document context that is found.",
+        description:
+          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
-        "desc-start": "will provide answers",
-        only: "only",
-        "desc-end": "if document context is found.",
+        description:
+          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {
@@ -715,6 +718,8 @@ const TRANSLATIONS = {
     directory: {
       "my-documents": "My Documents",
       "new-folder": "New Folder",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
