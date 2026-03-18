@@ -28,7 +28,7 @@ export default function FolderRow({
         }`}
       >
         <div
-          className={`col-span-6 flex gap-x-[4px] items-center ${
+          className={`col-span-5 flex gap-x-[4px] items-center ${
             selected ? "!text-white" : "text-theme-text-primary"
           }`}
         >
@@ -67,8 +67,8 @@ export default function FolderRow({
             </span>
           )}
         </div>
-        <p className="col-span-2 pl-3.5" />
-        <p className="col-span-2 pl-2" />
+        <p className="col-span-4" />
+        <p className="col-span-3" />
       </tr>
       {expanded && (
         <>

@@ -82,7 +82,7 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`w-[560px] border-dashed border-[2px] border-theme-modal-border light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 p-3 ${
+        className={`w-full border-dashed border-[2px] border-theme-modal-border light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 p-3 ${
           ready
             ? " light:bg-[#E0F2FE] cursor-pointer hover:bg-theme-bg-secondary light:hover:bg-transparent"
             : "cursor-not-allowed"
@@ -130,7 +130,7 @@ export default function UploadFile({
           </div>
         )}
       </div>
-      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
+      <div className="text-center text-white text-opacity-50 text-xs font-medium w-full py-2">
         {t("connectors.upload.or-submit-link")}
       </div>
       <form onSubmit={handleSendLink} className="flex gap-x-2">
@@ -152,7 +152,7 @@ export default function UploadFile({
             : t("connectors.upload.fetch-website")}
         </button>
       </form>
-      <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
+      <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-full">
         {t("connectors.upload.privacy-notice")}
       </div>
     </div>

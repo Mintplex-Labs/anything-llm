@@ -202,7 +202,7 @@ function Directory({
     <>
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
         <div className="flex flex-col gap-y-6">
-          <div className="flex items-center justify-between w-[560px] px-5 relative">
+          <div className="flex items-center justify-between w-full px-5 relative">
             <h3 className="text-white text-base font-bold">
               {t("connectors.directory.my-documents")}
             </h3>
@@ -234,16 +234,17 @@ function Directory({
             </button>
           </div>
 
-          <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
+          <div className="relative w-full h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
             <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
-              <p className="col-span-6">Name</p>
-              {totalDocCount > 0 && (
-                <p className="col-span-6 text-right text-theme-text-secondary">
-                  {t(`connectors.directory.total-documents`, {
-                    count: totalDocCount,
-                  })}
-                </p>
-              )}
+              <p className="col-span-5">Name</p>
+              <p className="col-span-4 text-right">Date added</p>
+              <p className="col-span-3 text-right text-theme-text-secondary">
+                {totalDocCount > 0
+                  ? t(`connectors.directory.total-documents`, {
+                      count: totalDocCount,
+                    })
+                  : ""}
+              </p>
             </div>
 
             <div className="overflow-y-auto h-full pt-8">
@@ -260,7 +261,24 @@ function Directory({
                     item.type === "folder" && (
                       <FolderRow
                         key={index}
-                        item={item}
+                        item={{
+                          ...item,
+                          items: [...(item.items || [])].sort((a, b) => {
+                            const aDate =
+                              typeof a.addedAt === "number"
+                                ? a.addedAt
+                                : a.published
+                                  ? new Date(a.published).getTime()
+                                  : 0;
+                            const bDate =
+                              typeof b.addedAt === "number"
+                                ? b.addedAt
+                                : b.published
+                                  ? new Date(b.published).getTime()
+                                  : 0;
+                            return bDate - aDate;
+                          }),
+                        }}
                         totalItems={item.items?.length ?? 0}
                         selected={isSelected(
                           item.id,

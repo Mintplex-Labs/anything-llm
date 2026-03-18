@@ -16,10 +16,12 @@ export default function FileRow({ item, selected, toggleSelection }) {
     >
       <div
         data-tooltip-id="directory-item"
-        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+        className="col-span-5 w-fit flex gap-x-[4px] items-center relative"
         data-tooltip-content={JSON.stringify({
           title: item.title,
-          date: formatDateTimeAsMoment(item?.published),
+          date: item?.addedAt
+            ? formatDateTimeAsMoment(item.addedAt)
+            : formatDateTimeAsMoment(item?.published),
           extension: getFileExtension(item.url),
         })}
       >
@@ -37,11 +39,16 @@ export default function FileRow({ item, selected, toggleSelection }) {
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
           weight="fill"
         />
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[280px]">
           {middleTruncate(item.title, 55)}
         </p>
       </div>
-      <div className="col-span-2 flex justify-end items-center">
+      <p className="col-span-4 text-right text-theme-text-secondary pr-2">
+        {item?.addedAt
+          ? formatDateTimeAsMoment(item.addedAt, "MMM D, YYYY")
+          : "-"}
+      </p>
+      <div className="col-span-3 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-theme-settings-input-active rounded-3xl">
             <p className="text-xs px-2 py-0.5">Cached</p>

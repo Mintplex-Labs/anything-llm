@@ -388,6 +388,10 @@ async function fileToPickerData({
   const filename = path.basename(pathToFile);
   const fileStats = fs.statSync(pathToFile);
   const cachedStatus = await cachedVectorInformation(cachefilename, true);
+  const addedAt =
+    typeof fileStats?.birthtimeMs === "number" && fileStats.birthtimeMs > 0
+      ? fileStats.birthtimeMs
+      : fileStats.mtimeMs;
 
   if (fileStats.size < FILE_READ_SIZE_THRESHOLD) {
     const rawData = fs.readFileSync(pathToFile, "utf8");
@@ -404,6 +408,7 @@ async function fileToPickerData({
       name: filename,
       type: "file",
       ...metadata,
+      addedAt,
       cached: cachedStatus,
       canWatch: liveSyncAvailable
         ? DocumentSyncQueue.canWatch(metadata)
@@ -454,6 +459,7 @@ async function fileToPickerData({
     name: filename,
     type: "file",
     ...metadata,
+    addedAt,
     cached: cachedStatus,
     canWatch: liveSyncAvailable ? DocumentSyncQueue.canWatch(metadata) : false,
   };
