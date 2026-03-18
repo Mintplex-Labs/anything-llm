@@ -34,7 +34,7 @@ export default function UploadFile({
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
-      fetchKeys(true);
+      fetchKeys(true, { autoSelectNew: true });
       showToast("Link uploaded successfully", "success");
       formEl.reset();
     }
@@ -42,11 +42,9 @@ export default function UploadFile({
     setFetchingUrl(false);
   };
 
-  // Queue all fetchKeys calls through the same debouncer to prevent spamming the server.
-  // either a success or error will trigger a fetchKeys call so the UI is not stuck loading.
-  const debouncedFetchKeys = debounce(() => fetchKeys(true), 1000);
-  const handleUploadSuccess = () => debouncedFetchKeys();
-  const handleUploadError = () => debouncedFetchKeys();
+  const debouncedFetchKeys = debounce((opts) => fetchKeys(true, opts), 1000);
+  const handleUploadSuccess = () => debouncedFetchKeys({ autoSelectNew: true });
+  const handleUploadError = () => debouncedFetchKeys({});
 
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {

@@ -1,5 +1,5 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
@@ -25,8 +25,23 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const [movedItems, setMovedItems] = useState([]);
   const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const availableDocsRef = useRef([]);
 
-  async function fetchKeys(refetchWorkspace = false) {
+  useEffect(() => {
+    availableDocsRef.current = availableDocs;
+  }, [availableDocs]);
+
+  async function fetchKeys(refetchWorkspace = false, options = {}) {
+    const { autoSelectNew = false } = options;
+    const previousIds = new Set();
+    if (autoSelectNew && availableDocsRef.current?.items) {
+      for (const folder of availableDocsRef.current.items) {
+        for (const file of folder.items ?? []) {
+          if (file?.id) previousIds.add(file.id);
+        }
+      }
+    }
+
     setLoading(true);
     const localFiles = await System.localFiles();
     const currentWorkspace = refetchWorkspace
@@ -76,6 +91,21 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
     setAvailableDocs(availableDocs);
     setWorkspaceDocs(workspaceDocs);
+
+    if (autoSelectNew) {
+      const newSelected = {};
+      for (const folder of availableDocs.items ?? []) {
+        for (const file of folder.items ?? []) {
+          if (file?.id && !previousIds.has(file.id)) {
+            newSelected[file.id] = true;
+          }
+        }
+      }
+      if (Object.keys(newSelected).length > 0) {
+        setSelectedItems(newSelected);
+      }
+    }
+
     setLoading(false);
   }
 
