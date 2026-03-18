@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 const { EventEmitter } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
@@ -36,6 +37,13 @@ class AIbitat {
   channels = new Map();
   functions = new Map();
 
+  /**
+   * Buffer for citations collected during tool execution.
+   * Citations are flushed to the frontend when the response is finalized.
+   * @type {Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>}
+   */
+  _pendingCitations = [];
+
   constructor(props = {}) {
     const {
       chats = [],
@@ -73,6 +81,41 @@ class AIbitat {
   use(plugin) {
     plugin.setup(this);
     return this;
+  }
+
+  /**
+   * Add citation(s) to be reported when the response is finalized.
+   * Citations are buffered and flushed with the correct message UUID.
+   * @param {{id: string, title: string, text: string, chunkSource?: string, score?: number}|Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>} citations - Citation object or array of citation objects
+   */
+  addCitation(citations) {
+    if (!citations) return;
+    if (Array.isArray(citations))
+      this._pendingCitations.push(...citations.filter(Boolean));
+    else if (typeof citations === "object")
+      this._pendingCitations.push(citations);
+  }
+
+  /**
+   * Flush all pending citations to the frontend with the given message UUID.
+   * Called automatically when the agent response is finalized.
+   * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.
+   * @param {string} messageUuid - The UUID of the message to attach citations to
+   */
+  flushCitations(messageUuid) {
+    if (!messageUuid || this._pendingCitations.length === 0) return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "citations",
+      uuid: messageUuid,
+      citations: this._pendingCitations,
+    });
+  }
+
+  /**
+   * Clear all pending citations. Called after citations have been persisted.
+   */
+  clearCitations() {
+    this._pendingCitations = [];
   }
 
   /**
@@ -275,6 +318,7 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
+      // eslint-disable-next-line
       {}
     ) => null
   ) {
@@ -624,6 +668,8 @@ ${this.getHistory({ to: route.to })
       );
     }
 
+    // Store the active provider so plugins can access usage metrics
+    this.provider = provider;
     this.newMessage({ ...route, content });
     return content;
   }
@@ -650,7 +696,7 @@ ${this.getHistory({ to: route.to })
       this?.socket?.send(type, data);
     };
 
-    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
+    /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string, uuid: string }} */
     const completionStream = await provider.stream(
       messages,
       functions,
@@ -667,6 +713,13 @@ ${this.getHistory({ to: route.to })
         );
 
         const finalStream = await provider.stream(messages, [], eventHandler);
+        const finalUuid = finalStream?.uuid || v4();
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: finalUuid,
+          metrics: provider.getUsage(),
+        });
+        this?.flushCitations?.(finalUuid);
         const finalResponse =
           finalStream?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
@@ -724,11 +777,18 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        const directOutputUUID = completionStream?.uuid || v4();
         eventHandler?.("reportStreamEvent", {
           type: "fullTextResponse",
-          uuid: v4(),
+          uuid: directOutputUUID,
           content: result,
         });
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: directOutputUUID,
+          metrics: provider.getUsage(),
+        });
+        this?.flushCitations?.(directOutputUUID);
         return result;
       }
 
@@ -749,6 +809,13 @@ ${this.getHistory({ to: route.to })
       );
     }
 
+    const responseUuid = completionStream?.uuid || v4();
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: responseUuid,
+      metrics: provider.getUsage(),
+    });
+    this?.flushCitations?.(responseUuid);
     return completionStream?.textResponse;
   }
 
@@ -760,6 +827,8 @@ ${this.getHistory({ to: route.to })
    * @param messages
    * @param functions
    * @param byAgent
+   * @param depth
+   * @param msgUUID - The message UUID to use for event correlation (created at depth=0)
    *
    * @returns {Promise<string>}
    */
@@ -768,8 +837,15 @@ ${this.getHistory({ to: route.to })
     messages = [],
     functions = [],
     byAgent = null,
-    depth = 0
+    depth = 0,
+    msgUUID = null
   ) {
+    // Create a stable UUID at the start of execution for event correlation
+    if (!msgUUID) msgUUID = v4();
+    const eventHandler = (type, data) => {
+      this?.socket?.send(type, data);
+    };
+
     // get the chat completion
     const completion = await provider.complete(messages, functions);
 
@@ -783,6 +859,12 @@ ${this.getHistory({ to: route.to })
         );
 
         const finalCompletion = await provider.complete(messages, []);
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: provider.getUsage(),
+        });
+        this?.flushCitations?.(msgUUID);
         return (
           finalCompletion?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
@@ -806,7 +888,8 @@ ${this.getHistory({ to: route.to })
           ],
           functions,
           byAgent,
-          depth + 1
+          depth + 1,
+          msgUUID
         );
       }
 
@@ -834,6 +917,12 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: provider.getUsage(),
+        });
+        this?.flushCitations?.(msgUUID);
         return result;
       }
 
@@ -850,10 +939,17 @@ ${this.getHistory({ to: route.to })
         ],
         functions,
         byAgent,
-        depth + 1
+        depth + 1,
+        msgUUID
       );
     }
 
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: msgUUID,
+      metrics: provider.getUsage(),
+    });
+    this?.flushCitations?.(msgUUID);
     return completion?.textResponse;
   }
 
@@ -913,6 +1009,7 @@ ${this.getHistory({ to: route.to })
     }
 
     // remove the last chat's that threw an error
+    // eslint-disable-next-line
     const { from, to } = this?._chats?.pop();
 
     await this.chat({ from, to });

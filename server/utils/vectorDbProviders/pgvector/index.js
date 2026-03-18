@@ -315,7 +315,7 @@ class PGVector extends VectorDatabase {
         (row) => row.tablename === PGVector.tableName()
       );
       return !!tableExists;
-    } catch (err) {
+    } catch {
       return false;
     } finally {
       if (connection) await connection.end();
@@ -331,7 +331,7 @@ class PGVector extends VectorDatabase {
         `SELECT COUNT(id) FROM "${PGVector.tableName()}"`
       );
       return result.rows[0].count;
-    } catch (err) {
+    } catch {
       return 0;
     } finally {
       if (connection) await connection.end();
@@ -356,7 +356,7 @@ class PGVector extends VectorDatabase {
         [namespace]
       );
       return result.rows[0].count;
-    } catch (err) {
+    } catch {
       return 0;
     } finally {
       if (connection) await connection.end();
@@ -502,7 +502,7 @@ class PGVector extends VectorDatabase {
     try {
       connection = await this.connect();
       return await this.namespaceExists(connection, namespace);
-    } catch (err) {
+    } catch {
       return false;
     } finally {
       if (connection) await connection.end();
@@ -825,7 +825,7 @@ class PGVector extends VectorDatabase {
       connection = await this.connect();
       await connection.query(`DROP TABLE IF EXISTS "${PGVector.tableName()}"`);
       return { reset: true };
-    } catch (err) {
+    } catch {
       return { reset: false };
     } finally {
       if (connection) await connection.end();

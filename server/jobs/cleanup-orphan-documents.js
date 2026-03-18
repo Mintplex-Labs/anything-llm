@@ -26,7 +26,7 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
       log(
         `Deleted batch ${Math.floor(i / batchSize) + 1}: ${batch.length} files`
       );
-    } catch (err) {
+    } catch {
       // If batch fails, try individual files sync
       for (const filePath of batch) {
         try {

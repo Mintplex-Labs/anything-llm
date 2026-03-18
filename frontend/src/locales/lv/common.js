@@ -48,16 +48,9 @@ const TRANSLATIONS = {
       skip: "Izlaist aptauju",
       thankYou: "Paldies par jūsu atsauksmi!",
     },
-    workspace: {
-      title: "Izveidojiet savu pirmo darba telpu",
-      description:
-        "Izveidojiet savu pirmo darba telpu un sāciet darbu ar AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Darba telpas nosaukums",
-    error: "kļūda",
-    success: "veiksmīgi",
     user: "Lietotājs",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
@@ -73,7 +66,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Instances iestatījumi",
-    system: "Vispārīgie iestatījumi",
     invites: "Ielūgumi",
     users: "Lietotāji",
     workspaces: "Darba telpas",
@@ -90,7 +82,6 @@ const TRANSLATIONS = {
     "voice-speech": "Balss un runa",
     "vector-database": "Vektoru datubāze",
     embeds: "Sarunas ietvere",
-    "embed-chats": "Sarunas ietveres vēsture",
     security: "Drošība",
     "event-logs": "Notikumu žurnāli",
     privacy: "Privātums un dati",
@@ -103,6 +94,12 @@ const TRANSLATIONS = {
     contact: "Sazināties ar atbalstu",
     "browser-extension": "Pārlūka paplašinājums",
     "mobile-app": "AnythingLLM mobilā versija",
+    "community-hub": {
+      title: "Sabiedriskais centrs",
+      trending: "Izpētiet populārākās",
+      "your-account": "Jūsu konts",
+      "import-item": "Importētā prece",
+    },
   },
   login: {
     "multi-user": {
@@ -120,93 +117,10 @@ const TRANSLATIONS = {
       description:
         "Sniedziet nepieciešamo informāciju zemāk, lai atiestatītu savu paroli.",
       "recovery-codes": "Atjaunošanas kodi",
-      "recovery-code": "Atjaunošanas kods {{index}}",
       "back-to-login": "Atpakaļ uz pieteikšanos",
     },
   },
   "main-page": {
-    noWorkspaceError: "Lūdzu izveidojiet darba telpu pirms sarunas sākšanas.",
-    checklist: {
-      title: "Darba sākšana",
-      tasksLeft: "atlikušie uzdevumi",
-      completed: "Jūs esat ceļā, lai kļūtu par AnythingLLM ekspertu!",
-      dismiss: "aizvērt",
-      tasks: {
-        create_workspace: {
-          title: "Izveidot darba telpu",
-          description: "Izveidojiet savu pirmo darba telpu, lai sāktu",
-          action: "Izveidot",
-        },
-        send_chat: {
-          title: "Nosūtīt sarunu",
-          description: "Sāciet sarunu ar savu AI asistentu",
-          action: "Saruna",
-        },
-        embed_document: {
-          title: "Iegult dokumentu",
-          description: "Pievienojiet savu pirmo dokumentu darba telpai",
-          action: "Iegult",
-        },
-        setup_system_prompt: {
-          title: "Iestatīt sistēmas uzvedni",
-          description: "Konfigurējiet sava AI asistenta uzvedību",
-          action: "Iestatīt",
-        },
-        define_slash_command: {
-          title: "Definēt slīpsvītras komandu",
-          description: "Izveidojiet pielāgotas komandas savam asistentam",
-          action: "Definēt",
-        },
-        visit_community: {
-          title: "Apmeklēt kopienas centru",
-          description: "Izpētiet kopienas resursus un veidnes",
-          action: "Pārlūkot",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Ātrās saites",
-      sendChat: "Sūtīt sarunu",
-      embedDocument: "Iegult dokumentu",
-      createWorkspace: "Izveidot darba telpu",
-    },
-    exploreMore: {
-      title: "Izpētiet vairāk funkciju",
-      features: {
-        customAgents: {
-          title: "Pielāgoti AI aģenti",
-          description:
-            "Veidojiet spēcīgus AI aģentus un automatizācijas bez koda.",
-          primaryAction: "Sarunāties izmantojot @agent",
-          secondaryAction: "Veidot aģenta plūsmu",
-        },
-        slashCommands: {
-          title: "Slīpsvītras komandas",
-          description:
-            "Ietaupiet laiku un ievietojiet uzvednes izmantojot pielāgotas slīpsvītras komandas.",
-          primaryAction: "Izveidot slīpsvītras komandu",
-          secondaryAction: "Izpētīt centrā",
-        },
-        systemPrompts: {
-          title: "Sistēmas uzvednes",
-          description:
-            "Modificējiet sistēmas uzvedni, lai pielāgotu AI atbildes darba telpā.",
-          primaryAction: "Modificēt sistēmas uzvedni",
-          secondaryAction: "Pārvaldīt uzvednes mainīgos",
-        },
-      },
-    },
-    announcements: {
-      title: "Atjauninājumi un paziņojumi",
-    },
-    resources: {
-      title: "Resursi",
-      links: {
-        docs: "Dokumentācija",
-        star: "Zvaigzne GitHub",
-      },
-      keyboardShortcuts: "Taustiņu atvieglojumi",
-    },
     quickActions: {
       createAgent: "Izveidot aģentu",
       editWorkspace: "Rediģēt darba telpu",
@@ -242,12 +156,6 @@ const TRANSLATIONS = {
       heading: "Izskaidro man",
       body: "AnythingLLM priekšrocības",
     },
-    pfp: {
-      title: "Asistenta profila attēls",
-      description: "Pielāgojiet asistenta profila attēlu šai darba telpai.",
-      image: "Darba telpas attēls",
-      remove: "Noņemt darba telpas attēlu",
-    },
     delete: {
       title: "Dzēst darba telpu",
       description:
@@ -270,7 +178,6 @@ const TRANSLATIONS = {
       title: "Darba telpas sarunas modelis",
       description:
         "Konkrētais sarunas modelis, kas tiks izmantots šai darba telpai. Ja tukšs, izmantos sistēmas LLM preferences.",
-      wait: "-- gaida modeļus --",
     },
     mode: {
       title: "Sarunas režīms",
@@ -377,9 +284,6 @@ const TRANSLATIONS = {
       wait: "-- gaida modeļus --",
     },
     skill: {
-      title: "Noklusējuma aģenta prasmes",
-      description:
-        "Uzlabojiet noklusējuma aģenta dabiskās spējas ar šīm iepriekš izveidotajām prasmēm. Šis uzstādījums attiecas uz visām darba telpām.",
       rag: {
         title: "RAG un ilgtermiņa atmiņa",
         description:
@@ -406,11 +310,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Tiešsaistes tīmekļa meklēšana un pārlūkošana",
-        "desc-start":
-          "Ļaujiet savam aģentam meklēt tīmeklī, lai atbildētu uz jūsu jautājumiem, savienojoties ar tīmekļa meklēšanas (SERP) pakalpojumu sniedzēju.",
-        "desc-end":
-          "Tīmekļa meklēšana aģenta sesijās nedarbosies, līdz tas nebūs iestatīts.",
+        description:
+          "Iegādājieties iespēju, lai jūsu aģents varētu meklēt informāciju internetā, lai atbildētu uz jūsu jautājumiem, pieslēdzoties tīmekļa meklēšanas (SERP) pakalpojuma sniedzējam.",
       },
+      sql: {
+        title: "SQL savienotājs",
+        description:
+          "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
+      },
+      default_skill:
+        "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
     },
   },
   recorded: {
@@ -473,11 +382,6 @@ const TRANSLATIONS = {
         description:
           "Iestatiet nosaukumu, kas tiek rādīts pieteikšanās lapā visiem lietotājiem.",
       },
-      "chat-message-alignment": {
-        title: "Sarunas ziņu līdzinājums",
-        description:
-          "Izvēlieties ziņu līdzinājuma režīmu, izmantojot sarunas saskarni.",
-      },
       "display-language": {
         title: "Displeja valoda",
         description:
@@ -491,18 +395,6 @@ const TRANSLATIONS = {
         recommended: "Ieteicamais izmērs: 800 x 200",
         remove: "Noņemt",
         replace: "Aizvietot",
-      },
-      "welcome-messages": {
-        title: "Sveiciena ziņojumi",
-        description:
-          "Pielāgojiet sveiciena ziņojumus, kas tiek rādīti lietotājiem. Tikai ne-administratori redzēs šos ziņojumus.",
-        new: "Jauns",
-        system: "sistēma",
-        user: "lietotājs",
-        message: "ziņojums",
-        assistant: "AnythingLLM čata asistents",
-        "double-click": "Dubultklikšķis, lai rediģētu...",
-        save: "Saglabāt ziņojumus",
       },
       "browser-appearance": {
         title: "Pārlūkprogrammas izskats",
@@ -653,17 +545,12 @@ const TRANSLATIONS = {
     title: "Privātums un datu apstrāde",
     description:
       "Šī ir jūsu konfigurācija tam, kā savienotie trešo pušu pakalpojumu sniedzēji un AnythingLLM apstrādā jūsu datus.",
-    llm: "LLM izvēle",
-    embedding: "Iegulšanas preferences",
-    vector: "Vektoru datubāze",
     anonymous: "Anonīmā telemetrija iespējota",
   },
   connectors: {
     "search-placeholder": "Meklēt datu savienotājus",
     "no-connectors": "Nav atrasti datu savienotāji.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importējiet Obsidian krātuvi ar vienu klikšķi.",
       vault_location: "Krātuves atrašanās vieta",
       vault_description:
         "Atlasiet savu Obsidian krātuves mapi, lai importētu visas piezīmes un to savienojumus.",
@@ -711,7 +598,6 @@ const TRANSLATIONS = {
       URL_explained: "GitLab repozitorija URL, kuru vēlaties savākt.",
       token: "GitLab piekļuves tokens",
       optional: "neobligāts",
-      token_explained: "Piekļuves tokens, lai novērstu ātruma ierobežojumus.",
       token_description: "Atlasiet papildu entītijas, ko iegūt no GitLab API.",
       token_explained_start: "Bez ",
       token_explained_link1: "personiskā piekļuves tokena",
@@ -743,10 +629,6 @@ const TRANSLATIONS = {
       URL_explained_end: ".",
       task_explained:
         "Kad tas būs pabeigts, transkripcija būs pieejama iegulšanai darba vietās dokumentu atlasītājā.",
-      language: "Transkripcijas valoda",
-      language_explained:
-        "Atlasiet transkripcijas valodu, kuru vēlaties savākt.",
-      loading_languages: "-- notiek pieejamo valodu ielāde --",
     },
     "website-depth": {
       name: "Vairāku saišu skrāpētājs",
@@ -807,20 +689,19 @@ const TRANSLATIONS = {
       "search-document": "Meklēt dokumentu",
       "no-documents": "Nav dokumentu",
       "move-workspace": "Pārvietot uz darba vietu",
-      name: "Nosaukums",
       "delete-confirmation":
         "Vai tiešām vēlaties dzēst šos failus un mapes?\nTas noņems failus no sistēmas un automātiski noņems tos no visām esošajām darba vietām.\nŠī darbība nav atgriezeniska.",
       "removing-message":
         "Notiek {{count}} dokumentu un {{folderCount}} mapju noņemšana. Lūdzu, uzgaidiet.",
       "move-success": "Veiksmīgi pārvietoti {{count}} dokumenti.",
-      date: "Datums",
-      type: "Veids",
       no_docs: "Nav dokumentu",
       select_all: "Atlasīt visu",
       deselect_all: "Atcelt visu atlasi",
       remove_selected: "Noņemt atlasītos",
       costs: "*Vienreizējas izmaksas iegulšanai",
       save_embed: "Saglabāt un iegult",
+      "total-documents_one": "{{count}} dokumenta",
+      "total-documents_other": "{{count}} dokumenti",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",
@@ -861,16 +742,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Laipni lūgti jūsu jaunajā darba vietā.",
-    get_started: "Lai sāktu, vai nu",
-    get_started_default: "Lai sāktu",
-    upload: "augšupielādējiet dokumentu",
-    or: "vai",
-    send_chat: "sūtiet čatu.",
     send_message: "Sūtīt ziņojumu",
     attach_file: "Pievienot failu šim čatam",
-    slash: "Skatīt visas pieejamās slīpsvītras komandas čatošanai.",
-    agents: "Skatīt visus pieejamos aģentus, kurus varat izmantot čatošanai.",
     text_size: "Mainīt teksta izmēru.",
     microphone: "Izrunājiet savu uzvedni.",
     send: "Nosūtīt uzvednes ziņojumu uz darba vietu",
@@ -881,20 +754,11 @@ const TRANSLATIONS = {
     regenerate_response: "Atjaunot atbildi",
     good_response: "Laba atbilde",
     more_actions: "Vairāk darbību",
-    hide_citations: "Izvākt atsaukmes",
-    show_citations: "Rādīt atsauces",
-    pause_tts_speech_message: "Pārtrauciet tekstā iekļauto balss tulkošanu.",
     fork: "Klūtis",
     delete: "Dzēst",
-    save_submit: "Saglabāt un iesūt",
     cancel: "Atcelt",
     edit_prompt: "Ieslēgt",
     edit_response: "Rediģēt atbildi",
-    at_agent: "@agent",
-    default_agent_description: "- noklusējuma aģents šim darba telpai.",
-    custom_agents_coming_soon:
-      "Nedaudz drīzumā būs pieejami individuāli pakalpojumi!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Izdzēsiet savu pastā veidoتو sarunu vēsturi un sāciet jaunu sarunu.",
     add_new_preset: "Pievienot jaunu iepriekšējo",
@@ -921,6 +785,37 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Noklikšķiniet, lai konfigurētu autentifikācijas datus",
     },
+    submit: "Iesniegt",
+    edit_info_user:
+      '"Sūtīt" atjauno AI atbildi. "Saglabāt" atjauno tikai jūsu ziņu.',
+    edit_info_assistant:
+      "Jūsu izmaiņas tiks automātiski saglabātas šajā atbildē.",
+    see_less: "Skatīt mazāk",
+    see_more: "Skatīt vairāk",
+    tools: "Rīki",
+    browse: "Izpētiet",
+    text_size_label: "Teksta izmērs",
+    select_model: "Izvēlieties modeli",
+    sources: "Avotus",
+    document: "Dokuments",
+    similarity_match: "spēle",
+    source_count_one: "{{count}} – atsauce",
+    source_count_other: "Atsauces uz {{count}}",
+    preset_exit_description: "Aizust klientu sesiju",
+    add_new: "Pievienot jaunu",
+    edit: "Rediģēt",
+    publish: "Publicēt",
+    stop_generating: "Atsauciet atbildes ģenerēšanu",
+    pause_tts_speech_message:
+      "Pārtrauciet TTS (teksta-izrunas) žēstā vēstījuma izrunu.",
+    slash_commands: "Īs termini komandās",
+    agent_skills: "Aģenta prasmes",
+    manage_agent_skills: "Iesaista aģenta prasmes",
+    agent_skills_disabled_in_session:
+      "Nav iespējams mainīt prasmes aktīvā lietotāja sesijā. Pirmais, jāizmanto komandu `/exit`, lai beigtu sesiju.",
+    start_agent_session: "Sākt aģenta sesiju",
+    use_agent_session_to_use_tools:
+      'Jūs varat izmantot rīkus čatā, sākot aģenta sesiju, ievietojot "@agent" jūsu iniciālajā tekstā.',
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -982,15 +877,12 @@ const TRANSLATIONS = {
           "Privātā sistēmas paziņojumi ir redzami tikai jums.",
         publish_button: "Publicē savu saturu Community Hub.",
         submitting: "Izdevniecība...",
-        submit: "Publicē savu saturu Community Hub.",
         prompt_label: "Ieslēgt",
         prompt_description:
           "Šis ir tiešais sistēmas prompts, kas tiks izmantots, lai vadītu LLM.",
         prompt_placeholder: "Ievietojiet savu sistēmas komandu šeit...",
       },
       agent_flow: {
-        public_description: "Visiem redzamas sabiedrības aģentu darbības.",
-        private_description: "Privātās aģenta darbības ir redzamas tikai jums.",
         success_title: "Veiksmi!",
         success_description:
           'Jūsu "Agent Flow" ir publicēts "Community Hub" platformā!',
@@ -1009,7 +901,6 @@ const TRANSLATIONS = {
         tags_placeholder:
           'Ievietojiet tekstu un nospiediet "Enter", lai pievienotu atzīmes',
         visibility_label: "Redzamība",
-        publish_button: "Publicē savu saturu Community Hub.",
         submitting: "Izdevniecība...",
         submit: "Publicē savu saturu Community Hub.",
         privacy_note:
@@ -1036,10 +927,6 @@ const TRANSLATIONS = {
         description_label: "Apraksts",
         description_description:
           "Šis ir jūsu komandas apraksts. Izmantojiet to, lai aprakstītu jūsu komandas mērķi.",
-        command_label: "Ordere",
-        command_description:
-          "Šis ir komandu, ko lietotāji ievadīs, lai aktivizētu šo iepriekš noteikto.",
-        command_placeholder: "manas komanda",
         tags_label: "Atzīmes",
         tags_description:
           "Atzīmes tiek izmantotas, lai atzīmētu jūsu komandu, kas ļauj vieglāk meklēt. Jūs varat pievienot vairākas atzīmes. Maks 5 atzīmes. Katrai atzīmei – maksimāli 20 raksti.",

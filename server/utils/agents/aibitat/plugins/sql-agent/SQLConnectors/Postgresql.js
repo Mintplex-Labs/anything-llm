@@ -25,13 +25,14 @@ class PostgresSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
+   * @param {Array} params optional parameters for prepared statement
    * @returns {Promise<import(".").QueryResult>}
    */
-  async runQuery(queryString = "") {
+  async runQuery(queryString = "", params = []) {
     const result = { rows: [], count: 0, error: null };
     try {
       if (!this.#connected) await this.connect();
-      const query = await this._client.query(queryString);
+      const query = await this._client.query(queryString, params);
       result.rows = query.rows;
       result.count = query.rowCount;
     } catch (err) {
@@ -57,10 +58,17 @@ class PostgresSQLConnector {
   }
 
   getTablesSql() {
-    return `SELECT * FROM pg_catalog.pg_tables WHERE schemaname = '${this.schema}'`;
+    return {
+      query: `SELECT * FROM pg_catalog.pg_tables WHERE schemaname = $1`,
+      params: [this.schema],
+    };
   }
+
   getTableSchemaSql(table_name) {
-    return ` select column_name, data_type, character_maximum_length, column_default, is_nullable from INFORMATION_SCHEMA.COLUMNS where table_name = '${table_name}' AND table_schema = '${this.schema}'`;
+    return {
+      query: `SELECT column_name, data_type, character_maximum_length, column_default, is_nullable FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = $1 AND table_schema = $2`,
+      params: [table_name, this.schema],
+    };
   }
 }
 

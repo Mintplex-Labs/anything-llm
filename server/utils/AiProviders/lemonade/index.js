@@ -309,7 +309,7 @@ function parseLemonadeServerEndpoint(basePath = null, to = "openai") {
     else if (to === "ollama") url.pathname = "api";
     else if (to === "base") url.pathname = ""; // only used for /live
     return url.toString();
-  } catch (e) {
+  } catch {
     return basePath;
   }
 }
@@ -369,6 +369,7 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     LemonadeLLM.slog(`Error getting Lemonade models`, e);
   } finally {
+    // eslint-disable-next-line
     return Object.values(availableModels).flatMap((m) => m.tags);
   }
 }
