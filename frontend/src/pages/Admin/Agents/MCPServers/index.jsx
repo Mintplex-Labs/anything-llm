@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { titleCase } from "text-case";
-import { BookOpenText, ArrowClockwise } from "@phosphor-icons/react";
+import { BookOpenText, ArrowClockwise, Warning } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
@@ -122,33 +123,59 @@ export function MCPServersList({
   return (
     <div className="bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px]">
       {servers.map((server, index) => (
-        <div
+        <MCPServerItem
           key={server.name}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === servers.length - 1
-              ? "rounded-b-xl"
-              : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
-            selectedServer?.name === server.name
-              ? "bg-white/10 light:bg-theme-bg-sidebar"
-              : ""
-          }`}
-          onClick={() => handleClick?.(server)}
-        >
-          <div className="text-sm font-light">
-            {titleCase(server.name.replace(/[_-]/g, " "))}
-          </div>
-          <div className="flex items-center gap-x-2">
-            <div
-              className={`text-sm text-theme-text-secondary font-medium ${server.running ? "text-green-500" : "text-red-500"}`}
-            >
-              {server.running ? "On" : "Stopped"}
-            </div>
-          </div>
-        </div>
+          server={server}
+          isFirst={index === 0}
+          isLast={index === servers.length - 1}
+          isSelected={selectedServer?.name === server.name}
+          handleClick={() => handleClick?.(server)}
+        />
       ))}
+      <Tooltip
+        id="mcp-server-warning"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+        content="For the best performance, consider disabling unwanted tools to conserve context."
+      />
+    </div>
+  );
+}
+
+function MCPServerItem({ server, isFirst, isLast, isSelected, handleClick }) {
+  const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
+  const enabledToolCount = server.tools.length - suppressedTools.length;
+  const showWarning = enabledToolCount > 10;
+  const running = server.running;
+
+  return (
+    <div
+      className={`py-3 px-4 flex items-center justify-between ${
+        isFirst ? "rounded-t-xl" : ""
+      } ${
+        isLast ? "rounded-b-xl" : "border-b border-white/10"
+      } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
+        isSelected ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
+      }`}
+      onClick={handleClick}
+    >
+      <div className="flex items-center gap-x-2 text-sm font-light">
+        {showWarning && (
+          <Warning
+            data-tooltip-id="mcp-server-warning"
+            className="h-4 w-4 text-yellow-500"
+          />
+        )}
+        {titleCase(server.name.replace(/[_-]/g, " "))}
+      </div>
+      <div className="flex items-center gap-x-2">
+        <div
+          className={`text-sm text-theme-text-secondary font-medium ${running ? "text-green-500" : "text-red-500"}`}
+        >
+          {running ? "On" : "Stopped"}
+        </div>
+      </div>
     </div>
   );
 }
