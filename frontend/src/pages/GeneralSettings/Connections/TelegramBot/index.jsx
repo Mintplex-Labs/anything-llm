@@ -6,8 +6,10 @@ import Workspace from "@/models/workspace";
 import Telegram from "@/models/telegram";
 import ConnectedView from "./ConnectedView";
 import SetupView from "./SetupView";
+import { useTranslation } from "react-i18next";
 
 export default function TelegramBotSettings() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
@@ -57,12 +59,11 @@ export default function TelegramBotSettings() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Telegram Bot
+                {t("telegram.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
-              Connect your AnythingLLM instance to Telegram so you can chat with
-              your workspaces from any device.
+              {t("telegram.description")}
             </p>
           </div>
 

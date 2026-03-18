@@ -3,8 +3,10 @@ import { CircleNotch, TelegramLogo } from "@phosphor-icons/react";
 import Telegram from "@/models/telegram";
 import showToast from "@/utils/toast";
 import CreateBotSection from "./CreateBotSection";
+import { useTranslation } from "react-i18next";
 
 export default function SetupView({ workspaces, onConnected }) {
+  const { t } = useTranslation();
   const [botToken, setBotToken] = useState("");
   const [selectedWorkspace, setSelectedWorkspace] = useState(
     workspaces[0]?.slug || ""
@@ -14,20 +16,20 @@ export default function SetupView({ workspaces, onConnected }) {
   async function handleConnect(e) {
     e.preventDefault();
     if (!botToken.trim())
-      return showToast("Please enter a bot token.", "error");
+      return showToast(t("telegram.setup.toast-enter-token"), "error");
     if (!selectedWorkspace)
-      return showToast("Please select a workspace.", "error");
+      return showToast(t("telegram.setup.toast-select-workspace"), "error");
 
     setConnecting(true);
     const res = await Telegram.connect(botToken.trim(), selectedWorkspace);
     setConnecting(false);
 
     if (!res.success) {
-      showToast(res.error || "Failed to connect bot.", "error");
+      showToast(res.error || t("telegram.setup.toast-connect-failed"), "error");
       return;
     }
 
-    showToast("Telegram bot connected successfully!", "success");
+    showToast(t("telegram.setup.toast-connect-success"), "success");
     onConnected({
       active: true,
       connected: true,
@@ -42,17 +44,16 @@ export default function SetupView({ workspaces, onConnected }) {
       <form onSubmit={handleConnect} className="flex flex-col gap-y-4">
         <div className="flex flex-col gap-y-1">
           <p className="text-sm font-semibold text-theme-text-primary">
-            Step 2: Connect your bot
+            {t("telegram.setup.step2.title")}
           </p>
           <p className="text-xs text-theme-text-secondary">
-            Paste the API token you received from @BotFather and select a
-            default workspace for your bot to chat with.
+            {t("telegram.setup.step2.description")}
           </p>
         </div>
         <div className="flex flex-col gap-y-4 max-w-[480px]">
           <div className="flex flex-col gap-y-1">
             <label className="text-xs font-medium text-theme-text-secondary">
-              Bot Token
+              {t("telegram.setup.step2.bot-token")}
             </label>
             <input
               type="password"
@@ -65,7 +66,7 @@ export default function SetupView({ workspaces, onConnected }) {
           </div>
           <div className="flex flex-col gap-y-1">
             <label className="text-xs font-medium text-theme-text-secondary">
-              Default Workspace
+              {t("telegram.setup.step2.default-workspace")}
             </label>
             <select
               value={selectedWorkspace}
@@ -87,12 +88,12 @@ export default function SetupView({ workspaces, onConnected }) {
             {connecting ? (
               <>
                 <CircleNotch className="h-4 w-4 animate-spin" />
-                Connecting...
+                {t("telegram.setup.step2.connecting")}
               </>
             ) : (
               <>
                 <TelegramLogo className="h-4 w-4" weight="bold" />
-                Connect Bot
+                {t("telegram.setup.step2.connect-bot")}
               </>
             )}
           </button>

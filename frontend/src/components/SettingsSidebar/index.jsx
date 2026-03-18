@@ -409,12 +409,12 @@ const SidebarOptions = ({ user = null, t }) => (
           ]}
         />
         <Option
-          btnText="Connections"
+          btnText={t("settings.connections")}
           icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
           user={user}
           childOptions={[
             {
-              btnText: "Telegram",
+              btnText: t("settings.telegram"),
               href: paths.settings.telegram(),
               flex: true,
               roles: ["admin"],

@@ -7,14 +7,12 @@ import {
 import Telegram from "@/models/telegram";
 import showToast from "@/utils/toast";
 import UsersTable from "./UsersTable";
+import { useTranslation } from "react-i18next";
 
 const VOICE_MODE_OPTIONS = [
-  { value: "text_only", label: "Text only" },
-  { value: "mirror", label: "Mirror (reply with voice when user sends voice)" },
-  {
-    value: "always_voice",
-    label: "Always voice (send audio with every reply)",
-  },
+  { value: "text_only", key: "telegram.connected.voice-text-only" },
+  { value: "mirror", key: "telegram.connected.voice-mirror" },
+  { value: "always_voice", key: "telegram.connected.voice-always" },
 ];
 
 export default function ConnectedView({
@@ -23,6 +21,7 @@ export default function ConnectedView({
   onDisconnected,
   onReconnected,
 }) {
+  const { t } = useTranslation();
   const connected = config.connected;
   const [disconnecting, setDisconnecting] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
@@ -57,18 +56,21 @@ export default function ConnectedView({
     setDisconnecting(false);
 
     if (!res.success) {
-      showToast(res.error || "Failed to disconnect bot.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-disconnect-failed"),
+        "error"
+      );
       return;
     }
 
-    showToast("Telegram bot disconnected.", "success");
+    showToast(t("telegram.connected.toast-disconnect-success"), "success");
     onDisconnected();
   }
 
   async function handleReconnect(e) {
     e.preventDefault();
     if (!newToken.trim())
-      return showToast("Please enter a bot token.", "error");
+      return showToast(t("telegram.connected.toast-enter-token"), "error");
 
     setReconnecting(true);
     const res = await Telegram.connect(
@@ -78,11 +80,14 @@ export default function ConnectedView({
     setReconnecting(false);
 
     if (!res.success) {
-      showToast(res.error || "Failed to reconnect bot.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-reconnect-failed"),
+        "error"
+      );
       return;
     }
 
-    showToast("Telegram bot reconnected!", "success");
+    showToast(t("telegram.connected.toast-reconnect-success"), "success");
     setNewToken("");
     onReconnected({
       active: true,
@@ -97,7 +102,10 @@ export default function ConnectedView({
     setVoiceMode(mode);
     const res = await Telegram.updateConfig({ voice_response_mode: mode });
     if (!res.success) {
-      showToast(res.error || "Failed to update voice mode.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-voice-failed"),
+        "error"
+      );
       setVoiceMode(config.voice_response_mode || "text_only");
     }
   }
@@ -105,30 +113,39 @@ export default function ConnectedView({
   async function handleApprove(chatId) {
     const res = await Telegram.approveUser(chatId);
     if (!res.success) {
-      showToast(res.error || "Failed to approve user.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-approve-failed"),
+        "error"
+      );
       return;
     }
-    showToast("User approved.", "success");
+    showToast(t("telegram.connected.toast-approve-success"), "success");
     fetchUsers();
   }
 
   async function handleDeny(chatId) {
     const res = await Telegram.denyUser(chatId);
     if (!res.success) {
-      showToast(res.error || "Failed to deny user.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-deny-failed"),
+        "error"
+      );
       return;
     }
-    showToast("User denied.", "info");
+    showToast(t("telegram.connected.toast-deny-success"), "info");
     fetchUsers();
   }
 
   async function handleRevoke(chatId) {
     const res = await Telegram.revokeUser(chatId);
     if (!res.success) {
-      showToast(res.error || "Failed to revoke user.", "error");
+      showToast(
+        res.error || t("telegram.connected.toast-revoke-failed"),
+        "error"
+      );
       return;
     }
-    showToast("User access revoked.", "info");
+    showToast(t("telegram.connected.toast-revoke-success"), "info");
     fetchUsers();
   }
 
@@ -144,7 +161,9 @@ export default function ConnectedView({
               <p className="text-sm font-semibold text-theme-text-primary">
                 @{config.bot_username}
               </p>
-              <p className="text-xs text-green-400">Connected</p>
+              <p className="text-xs text-green-400">
+                {t("telegram.connected.status")}
+              </p>
             </div>
           </div>
         ) : (
@@ -158,7 +177,7 @@ export default function ConnectedView({
                   @{config.bot_username}
                 </p>
                 <p className="text-xs text-red-400">
-                  Disconnected — token may be expired or invalid
+                  {t("telegram.connected.status-disconnected")}
                 </p>
               </div>
             </div>
@@ -167,7 +186,7 @@ export default function ConnectedView({
                 type="password"
                 value={newToken}
                 onChange={(e) => setNewToken(e.target.value)}
-                placeholder="Paste new bot token..."
+                placeholder={t("telegram.connected.placeholder-token")}
                 className="flex-1 bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 autoComplete="off"
               />
@@ -179,7 +198,7 @@ export default function ConnectedView({
                 {reconnecting ? (
                   <CircleNotch className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Reconnect"
+                  t("telegram.connected.reconnect")
                 )}
               </button>
             </form>
@@ -189,7 +208,7 @@ export default function ConnectedView({
           <div className="flex flex-col gap-y-2 rounded-lg bg-theme-bg-primary p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs text-theme-text-secondary">
-                Workspace
+                {t("telegram.connected.workspace")}
               </span>
               <span className="text-xs text-theme-text-primary font-medium">
                 {workspaceName}
@@ -197,7 +216,7 @@ export default function ConnectedView({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-theme-text-secondary">
-                Bot Link
+                {t("telegram.connected.bot-link")}
               </span>
               <a
                 href={`https://t.me/${config.bot_username}`}
@@ -211,7 +230,7 @@ export default function ConnectedView({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-theme-text-secondary">
-                Voice Response
+                {t("telegram.connected.voice-response")}
               </span>
               <select
                 value={voiceMode}
@@ -220,7 +239,7 @@ export default function ConnectedView({
               >
                 {VOICE_MODE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.key)}
                   </option>
                 ))}
               </select>
@@ -235,17 +254,17 @@ export default function ConnectedView({
           {disconnecting ? (
             <>
               <CircleNotch className="h-4 w-4 animate-spin" />
-              Disconnecting...
+              {t("telegram.connected.disconnecting")}
             </>
           ) : (
-            "Disconnect"
+            t("telegram.connected.disconnect")
           )}
         </button>
       </div>
 
       <UsersTable
-        title="Pending Approval"
-        description="Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat."
+        title={t("telegram.users.pending-title")}
+        description={t("telegram.users.pending-description")}
         users={pendingUsers}
         isPending
         onApprove={handleApprove}
@@ -253,8 +272,8 @@ export default function ConnectedView({
       />
 
       <UsersTable
-        title="Approved Users"
-        description="Users who have been approved to chat with your bot."
+        title={t("telegram.users.approved-title")}
+        description={t("telegram.users.approved-description")}
         users={approvedUsers}
         onRevoke={handleRevoke}
       />

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export default function UsersTable({
   title,
   description,
@@ -7,6 +9,7 @@ export default function UsersTable({
   onDeny,
   onRevoke,
 }) {
+  const { t } = useTranslation();
   if (isPending && users.length === 0) return null;
   const colCount = isPending ? 4 : 3;
 
@@ -19,14 +22,14 @@ export default function UsersTable({
           <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
             <tr>
               <th scope="col" className="px-6 py-3">
-                User
+                {t("telegram.users.user")}
               </th>
               <th scope="col" className="px-6 py-3">
-                Chat ID
+                {t("telegram.users.chat-id")}
               </th>
               {isPending && (
                 <th scope="col" className="px-6 py-3">
-                  Pairing Code
+                  {t("telegram.users.pairing-code")}
                 </th>
               )}
               <th scope="col" className="px-6 py-3">
@@ -38,7 +41,9 @@ export default function UsersTable({
             {users.length === 0 ? (
               <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
                 <td colSpan={colCount} className="px-6 py-4 text-center">
-                  {isPending ? "No pending requests" : "No approved users"}
+                  {isPending
+                    ? t("telegram.users.no-pending")
+                    : t("telegram.users.no-approved")}
                 </td>
               </tr>
             ) : (
@@ -48,7 +53,7 @@ export default function UsersTable({
                 const firstName = user.firstName || null;
                 const displayName = username
                   ? `@${username}`
-                  : firstName || "Unknown";
+                  : firstName || t("telegram.users.unknown");
                 const code = user.code;
                 return (
                   <tr
@@ -79,13 +84,13 @@ export default function UsersTable({
                             onClick={() => onApprove(chatId)}
                             className="hover:light:bg-green-50 hover:light:text-green-500 hover:text-green-300"
                           >
-                            Approve
+                            {t("telegram.users.approve")}
                           </ActionButton>
                           <ActionButton
                             onClick={() => onDeny(chatId)}
                             className="hover:light:bg-red-50 hover:light:text-red-500 hover:text-red-300"
                           >
-                            Deny
+                            {t("telegram.users.deny")}
                           </ActionButton>
                         </>
                       ) : (
@@ -93,7 +98,7 @@ export default function UsersTable({
                           onClick={() => onRevoke(chatId)}
                           className="hover:light:bg-red-50"
                         >
-                          Revoke
+                          {t("telegram.users.revoke")}
                         </ActionButton>
                       )}
                     </td>
