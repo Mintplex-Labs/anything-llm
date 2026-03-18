@@ -8,6 +8,7 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
+const { DocumentManager } = require("../DocumentManager");
 const { safeJsonParse } = require("../http");
 const {
   USER_AGENT,
@@ -361,41 +362,59 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   /**
-   * Fetch fresh parsed files and format them for injection into user messages.
+   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
    * Called on every chat turn to ensure context is always up-to-date.
    * @returns {Promise<string>} Formatted context string to append to user message
    */
   async #fetchParsedFileContext() {
-    try {
-      const user = this.#userId ? { id: this.#userId } : null;
-      const thread = this.#threadId ? { id: this.#threadId } : null;
+    const user = this.#userId ? { id: this.#userId } : null;
+    const thread = this.#threadId ? { id: this.#threadId } : null;
+    const documentManager = new DocumentManager({
+      workspace: this.#workspace,
+    });
 
-      const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-        this.#workspace,
-        thread,
-        user
-      );
+    return Promise.all([
+      WorkspaceParsedFiles.getContextFiles(this.#workspace, thread, user),
+      documentManager.pinnedDocs(),
+    ])
+      .then(([parsedFiles, pinnedDocs]) => {
+        const allDocuments = [
+          ...(parsedFiles || []).map((doc) => ({
+            name: doc.title || "Uploaded Document",
+            content: doc.pageContent,
+          })),
+          ...(pinnedDocs || []).map((doc) => ({
+            name: doc.title || doc.metadata?.title || "Pinned Document",
+            content: doc.pageContent,
+          })),
+        ];
 
-      if (!parsedFiles || parsedFiles.length === 0) return "";
+        if (allDocuments.length === 0) return "";
 
-      this.log(
-        `Injecting ${parsedFiles.length} parsed file(s) into user message`
-      );
+        if (parsedFiles?.length > 0)
+          this.log(
+            `Injecting ${parsedFiles.length} parsed file(s) into user message`
+          );
+        if (pinnedDocs?.length > 0)
+          this.log(
+            `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
 
-      return (
-        "\n\n<attached_documents>\n" +
-        parsedFiles
-          .map((doc, i) => {
-            const filename = doc.title || `Document ${i + 1}`;
-            return `<document name="${filename}">\n${doc.pageContent}\n</document>`;
-          })
-          .join("\n") +
-        "\n</attached_documents>"
-      );
-    } catch (e) {
-      this.log("Error fetching parsed file context", e.message);
-      return "";
-    }
+        return (
+          "\n\n<attached_documents>\n" +
+          allDocuments
+            .map((doc, i) => {
+              const filename = doc.name || `Document ${i + 1}`;
+              return `<document name="${filename}">\n${doc.content}\n</document>`;
+            })
+            .join("\n") +
+          "\n</attached_documents>"
+        );
+      })
+      .catch((e) => {
+        this.log("Error fetching parsed file context", e.message);
+        return "";
+      });
   }
 
   /**
