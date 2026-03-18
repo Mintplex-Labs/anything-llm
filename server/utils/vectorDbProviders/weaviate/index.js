@@ -492,7 +492,6 @@ class Weaviate extends VectorDatabase {
         if (
           value.length > 0 &&
           typeof value[0] !== "object" &&
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           value.every((el) => typeof el === typeof value[0])
         ) {
           // Weaviate only supports arrays of primitive types,

@@ -93,7 +93,7 @@ const Document = {
       if (!data) continue;
 
       const docId = uuidv4();
-      const { pageContent, ...metadata } = data;
+      const { pageContent: _pageContent, ...metadata } = data;
       const newDoc = {
         docId,
         filename: path.split("/")[1],

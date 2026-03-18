@@ -49,16 +49,9 @@ const TRANSLATIONS = {
       skip: "Spring undersøgelsen over",
       thankYou: "Tak for din feedback!",
     },
-    workspace: {
-      title: "Opret dit første arbejdsområde",
-      description:
-        "Opret dit første arbejdsområde og kom i gang med AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Navn på arbejdsområder",
-    error: "fejl",
-    success: "succes",
     user: "Bruger",
     selection: "Modelvalg",
     saving: "Gemmer...",
@@ -74,7 +67,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Instansindstillinger",
-    system: "Generelle indstillinger",
     invites: "Invitationer",
     users: "Brugere",
     workspaces: "Arbejdsområder",
@@ -88,7 +80,6 @@ const TRANSLATIONS = {
     "voice-speech": "Stemme & Tale",
     "vector-database": "Vektordatabase",
     embeds: "Chat-indlejring",
-    "embed-chats": "Historik for chat-indlejringer",
     security: "Sikkerhed",
     "event-logs": "Hændelseslog",
     privacy: "Privatliv & Data",
@@ -105,6 +96,12 @@ const TRANSLATIONS = {
     branding: "Brandstrategi og white-labeling",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Fælleshus",
+      trending: "Udforsk populære emner",
+      "your-account": "Dit konti",
+      "import-item": "Importeret vare",
+    },
   },
   login: {
     "multi-user": {
@@ -122,7 +119,6 @@ const TRANSLATIONS = {
       description:
         "Angiv de nødvendige oplysninger nedenfor for at nulstille din adgangskode.",
       "recovery-codes": "Gendannelseskoder",
-      "recovery-code": "Gendannelseskode {{index}}",
       "back-to-login": "Tilbage til log ind",
     },
   },
@@ -154,12 +150,6 @@ const TRANSLATIONS = {
       heading: "Forklar mig",
       body: "fordelene ved AnythingLLM",
     },
-    pfp: {
-      title: "Assistentens profilbillede",
-      description: "Tilpas assistentens profilbillede for dette arbejdsområde.",
-      image: "Arbejdsområdebillede",
-      remove: "Fjern arbejdsområdebillede",
-    },
     delete: {
       title: "Slet arbejdsområde",
       description:
@@ -182,7 +172,6 @@ const TRANSLATIONS = {
       title: "Arbejdsområdets chatmodel",
       description:
         "Den specifikke chatmodel, der vil blive brugt for dette arbejdsområde. Hvis tom, anvendes systemets LLM-præference.",
-      wait: "-- venter på modeller --",
     },
     mode: {
       title: "Chat-tilstand",
@@ -291,9 +280,6 @@ const TRANSLATIONS = {
       wait: "-- venter på modeller --",
     },
     skill: {
-      title: "Standard agentfærdigheder",
-      description:
-        "Forbedr standardagentens naturlige evner med disse forudbyggede færdigheder. Denne opsætning gælder for alle arbejdsområder.",
       rag: {
         title: "RAG & langtidshukommelse",
         description:
@@ -321,11 +307,16 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Live web-søgning og browsing",
-        "desc-start":
-          "Gør det muligt for din agent at søge på internettet for at besvare dine spørgsmål ved at forbinde til en web-søgeudbyder (SERP).",
-        "desc-end":
-          "Web-søgning under agent-sessioner vil ikke fungere, før dette er opsat.",
+        description:
+          "Giv din agent mulighed for at søge på internettet for at besvare dine spørgsmål ved at forbinde den til en web-søgetjeneste (SERP).",
       },
+      sql: {
+        title: "SQL-forbindelse",
+        description:
+          "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
+      },
+      default_skill:
+        "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
     },
   },
   recorded: {
@@ -462,9 +453,6 @@ const TRANSLATIONS = {
     title: "Privatliv & datahåndtering",
     description:
       "Dette er din konfiguration for, hvordan tilsluttede tredjepartsudbydere og AnythingLLM håndterer dine data.",
-    llm: "Valg af LLM",
-    embedding: "Foretrukken indlejring",
-    vector: "Vektordatabase",
     anonymous: "Anonym telemetri aktiveret",
   },
   connectors: {
@@ -506,7 +494,6 @@ const TRANSLATIONS = {
       URL_explained: "URL til det GitLab-repository, du ønsker at indsamle.",
       token: "GitLab-adgangstoken",
       optional: "valgfrit",
-      token_explained: "Adgangstoken for at undgå ratebegrænsning.",
       token_description: "Vælg yderligere enheder at hente fra GitLab API'en.",
       token_explained_start: "Uden en ",
       token_explained_link1: "personlig adgangstoken",
@@ -539,10 +526,6 @@ const TRANSLATIONS = {
       URL_explained_end: " tilgængelige.",
       task_explained:
         "Når færdig, vil transskriptionen være tilgængelig for indlejring i arbejdsområder i dokumentvælgeren.",
-      language: "Transskript-sprog",
-      language_explained:
-        "Vælg det sprog, for transskriptionen, du ønsker at indsamle.",
-      loading_languages: "-- indlæser tilgængelige sprog --",
     },
     "website-depth": {
       name: "Bulk link-scraper",
@@ -603,20 +586,19 @@ const TRANSLATIONS = {
       "search-document": "Søg efter dokument",
       "no-documents": "Ingen dokumenter",
       "move-workspace": "Flyt til arbejdsområde",
-      name: "Navn",
       "delete-confirmation":
         "Er du sikker på, at du vil slette disse filer og mapper?\nDette vil fjerne filerne fra systemet og automatisk fjerne dem fra alle eksisterende arbejdsområder.\nDenne handling kan ikke fortrydes.",
       "removing-message":
         "Fjerner {{count}} dokumenter og {{folderCount}} mapper. Vent venligst.",
       "move-success": "Flyttede {{count}} dokumenter med succes.",
-      date: "Dato",
-      type: "Type",
       no_docs: "Ingen dokumenter",
       select_all: "Vælg alle",
       deselect_all: "Fravælg alle",
       remove_selected: "Fjern valgte",
       costs: "*Engangsomkostning for indlejringer",
       save_embed: "Gem og indlejr",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenter",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -655,8 +637,6 @@ const TRANSLATIONS = {
       accept: "Okay, jeg har forstået",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Importer Obsidian-arkiv med ét klik.",
       vault_location: "Opbevaringssted",
       vault_description:
         "Vælg din Obsidian-mappe, som du vil importere alle noter og deres forbindelser til.",
@@ -670,16 +650,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Velkommen til dit nye arbejdsområde.",
-    get_started: "For at komme i gang, enten",
-    get_started_default: "For at komme i gang",
-    upload: "upload et dokument",
-    or: "eller",
-    send_chat: "send en chat.",
     send_message: "Send en besked",
     attach_file: "Vedhæft en fil til denne chat",
-    slash: "Vis alle tilgængelige skråstreg-kommandoer til chat.",
-    agents: "Vis alle tilgængelige agenter, du kan bruge til chat.",
     text_size: "Ændr tekststørrelse.",
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
@@ -691,19 +663,11 @@ const TRANSLATIONS = {
     regenerate_response: "Genopbyg svar",
     good_response: "Godt svar",
     more_actions: "Flere handlinger",
-    hide_citations: "Skjul henvisninger",
-    show_citations: "Vis henvisninger",
-    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Slet",
-    save_submit: "Gem og indsende",
     cancel: "Annullér",
     edit_prompt: "Redigeringsanmodning",
     edit_response: "Rediger svar",
-    at_agent: "@agent",
-    default_agent_description: "- standardagenten for dette arbejdsområde.",
-    custom_agents_coming_soon: "Specialagenter kommer snart!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Rydd op i din chat-historik og start en ny samtale",
     add_new_preset: "Tilføj ny forudindstilling",
@@ -729,6 +693,36 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klik for at oprette legitimationsoplysninger",
     },
+    submit: "Indsend",
+    edit_info_user:
+      '"Send" genopretter AI-responsen. "Gem" opdaterer kun dit budskab.',
+    edit_info_assistant:
+      "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
+    see_less: "Se mindre",
+    see_more: "Se flere",
+    tools: "Værktøj",
+    browse: "Gennemse",
+    text_size_label: "Tekststørrelse",
+    select_model: "Vælg model",
+    sources: "Kilder",
+    document: "Dokument",
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
+    preset_exit_description: "Afslut den aktuelle agent-session",
+    add_new: "Tilføj nyt",
+    edit: "Rediger",
+    publish: "Udgive",
+    stop_generating: "Stop med at generere svar",
+    pause_tts_speech_message: "Pause TTS-læsningen af beskeden",
+    slash_commands: "Kommandoer",
+    agent_skills: "Agenters kompetencer",
+    manage_agent_skills: "Administrer agenters kompetencer",
+    agent_skills_disabled_in_session:
+      "Det er ikke muligt at ændre færdigheder under en aktiv agent-session. Brug kommandoen `/exit` for at afslutte sessionen først.",
+    start_agent_session: "Start Agent-session",
+    use_agent_session_to_use_tools:
+      "Du kan bruge værktøjer i chat ved at starte en agent-session med '@agent' i starten af din forespørgsel.",
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -796,10 +790,6 @@ const TRANSLATIONS = {
         description:
           "Angiv et navn, der vises på login-siden for alle brugere.",
       },
-      "chat-message-alignment": {
-        title: "Sammenstillet samtale",
-        description: "Vælg alignmentsmoden, når du bruger chat-grænsefladen.",
-      },
       "display-language": {
         title: "Visningssprog",
         description:
@@ -813,18 +803,6 @@ const TRANSLATIONS = {
         recommended: "Anbefalet størrelse: 800 x 200",
         remove: "Fjern",
         replace: "Udskift",
-      },
-      "welcome-messages": {
-        title: "Velkomstbeskeder",
-        description:
-          "Tilpas de velkomstbeskeder, der vises til dine brugere. Kun ikke-administratorer vil se disse beskeder.",
-        new: "Ny",
-        system: "system",
-        user: "Jeg er en stor sprogmodel, trænet af Google.",
-        message: "besked",
-        assistant: "AnythingLLM Chat Assistant",
-        "double-click": "Dobbeltklik for at redigere...",
-        save: "Gem beskeder",
       },
       "browser-appearance": {
         title: "Browser-udseende",
@@ -856,92 +834,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Vær venligst oprettet et arbejdsområde, før du starter en samtale.",
-    checklist: {
-      title: "Sådan kommer du i gang",
-      tasksLeft: "Udførte opgaver\n\nUdførte opgaver",
-      completed: "Du er på vej til at blive en ekspert i AnythingLLM!",
-      dismiss: "luk",
-      tasks: {
-        create_workspace: {
-          title: "Opret et arbejdsområde",
-          description: "Opret dit første arbejdsområde for at komme i gang.",
-          action: "Opret",
-        },
-        send_chat: {
-          title: "Send en besked",
-          description:
-            "Start a conversation with your AI assistant\n\nStart en samtale med din AI-assistent",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Indsæt et dokument",
-          description: "Tilføj dit første dokument til dit arbejdsområde.",
-          action: "Indlejre",
-        },
-        setup_system_prompt: {
-          title: "Opret et system prompt",
-          description: "Konfigurer din AI-assistent's adfærd",
-          action: "Opsætning",
-        },
-        define_slash_command: {
-          title: "Definér en kommando med et skråtegn",
-          description: "Opret brugerdefinerede kommandoer til din assistent",
-          action: "Definér",
-        },
-        visit_community: {
-          title: "Besøg Community Hub",
-          description: "Udforsk lokale ressourcer og skabeloner",
-          action: "Udforsk",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Hurtige links",
-      sendChat: "Send chat",
-      embedDocument: "Indsæt et dokument",
-      createWorkspace: "Opret arbejdsområde",
-    },
-    exploreMore: {
-      title: "Udforsk flere funktioner",
-      features: {
-        customAgents: {
-          title:
-            "Skræddersyede AI-agenter\n\nCustom AI Agents\n\nSkræddersyede AI-agenter",
-          description:
-            "Opret kraftfulde AI-agenter og automatiseringer uden kode.",
-          primaryAction:
-            "Brug chatfunktionen til at kommunikere med agenten.\n\nBrug chatfunktionen til at kommunikere med agenten.",
-          secondaryAction: "Opret en agentflow",
-        },
-        slashCommands: {
-          title: "Slash-kommandoer",
-          description:
-            "Spar tid og indsæt kommandoer ved hjælp af brugerdefinerede kommandoer.",
-          primaryAction: "Opret en Slash-kommando",
-          secondaryAction: "Udforsk på Hub",
-        },
-        systemPrompts: {
-          title: "System Prompts\n\nSystem prompts",
-          description:
-            "Tilpas systemprompten for at tilpasse AI's svar i et arbejdsområde.",
-          primaryAction: "Rediger en systemprompt",
-          secondaryAction: "Administrer variabler",
-        },
-      },
-    },
-    announcements: {
-      title: "Opdateringer og meddelelser",
-    },
-    resources: {
-      title: "Ressourcer",
-      links: {
-        docs: "Dokumenter",
-        star: "Stjerne på GitHub",
-      },
-      keyboardShortcuts: "Tastaturgenveje",
-    },
     quickActions: {
       createAgent: "Opret en agent",
       editWorkspace: "Rediger arbejdsområdet",
@@ -987,15 +879,12 @@ const TRANSLATIONS = {
         private_description: "Private system prompts er kun synlige for dig.",
         publish_button: "Publicer på Community Hub",
         submitting: "Uddrag...",
-        submit: "Publicer på Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Dette er den faktiske systemprompt, der vil blive brugt til at styre LLM'en.",
         prompt_placeholder: "Indtast din systemprompt her...",
       },
       agent_flow: {
-        public_description: "Offentlige agentstrømme er synlige for alle.",
-        private_description: "Private agent flows er kun synlige for dig.",
         success_title: "Succes!",
         success_description:
           "Dit Agent Flow er nu tilgængeligt i Community Hub!",
@@ -1013,7 +902,6 @@ const TRANSLATIONS = {
           "Tags bruges til at mærke dine agentflows, så de er nemmere at finde. Du kan tilføje flere tags. Maksimalt 5 tags. Maksimalt 20 tegn per tag.",
         tags_placeholder: "Skriv og tryk på Enter for at tilføje tags",
         visibility_label: "Synlighed",
-        publish_button: "Publicer på Community Hub",
         submitting: "Uddrag...",
         submit: "Publicer på Community Hub",
         privacy_note:
@@ -1040,10 +928,6 @@ const TRANSLATIONS = {
         description_label: "Beskrivelse",
         description_description:
           "Dette er beskrivelsen af din kommando. Brug den til at beskrive formålet med din kommando.",
-        command_label: "Kommandér",
-        command_description:
-          "Dette er kommandoen, som brugerne vil indtaste for at aktivere denne forudindstillede funktion.",
-        command_placeholder: "mit-kommando",
         tags_label: "Tags",
         tags_description:
           "Tags bruges til at mærke dine kommandoer, så de er nemmere at finde. Du kan tilføje flere tags. Maksimalt 5 tags. Maksimalt 20 tegn pr. tag.",

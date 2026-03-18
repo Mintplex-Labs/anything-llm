@@ -3,7 +3,10 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 
 class SambaNovaLLM {

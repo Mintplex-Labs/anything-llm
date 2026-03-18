@@ -1,4 +1,4 @@
-import { Pencil } from "@phosphor-icons/react";
+import { Info, Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
@@ -53,14 +53,10 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
             ? t("chat_window.edit_prompt")
             : t("chat_window.edit_response")
         } `}
-        className="border-none text-zinc-300"
+        className="border-none text-zinc-300 light:text-slate-500"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
-        <Pencil
-          color="var(--theme-sidebar-footer-icon-fill)"
-          size={21}
-          className="mb-1"
-        />
+        <Pencil size={21} className="mb-1" />
       </button>
     </div>
   );
@@ -75,12 +71,25 @@ export function EditMessageForm({
   saveChanges,
 }) {
   const formRef = useRef(null);
-  const { t } = useTranslation();
-  function handleSaveMessage(e) {
+
+  function handleSubmit(e) {
     e.preventDefault();
-    const form = new FormData(e.target);
-    const editedMessage = form.get("editedMessage");
+    const editedMessage = formRef.current.value;
     saveChanges({ editedMessage, chatId, role, attachments });
+    window.dispatchEvent(
+      new CustomEvent(EDIT_EVENT, { detail: { chatId, role, attachments } })
+    );
+  }
+
+  function handleSave() {
+    const editedMessage = formRef.current.value;
+    saveChanges({
+      editedMessage,
+      chatId,
+      role,
+      attachments,
+      saveOnly: true,
+    });
     window.dispatchEvent(
       new CustomEvent(EDIT_EVENT, { detail: { chatId, role, attachments } })
     );
@@ -94,36 +103,91 @@ export function EditMessageForm({
   }
 
   useEffect(() => {
-    if (!formRef || !formRef.current) return;
+    if (!formRef?.current) return;
     formRef.current.focus();
     adjustTextArea({ target: formRef.current });
-  }, [formRef]);
+  }, []);
+
+  if (role === "user") {
+    return (
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col w-full max-w-[650px]"
+      >
+        <textarea
+          ref={formRef}
+          name="editedMessage"
+          spellCheck={Appearance.get("enableSpellCheck")}
+          className="text-white light:text-slate-900 w-full rounded-2xl bg-zinc-800 light:bg-slate-100 border border-sky-300 focus:border-sky-300 active:outline-none focus:outline-none focus:ring-0 px-4 py-3 resize-none overflow-hidden"
+          defaultValue={message}
+          onChange={adjustTextArea}
+        />
+        <EditActionBar
+          onCancel={cancelEdits}
+          onSave={handleSave}
+          isUserMessage
+        />
+      </form>
+    );
+  }
 
   return (
-    <form onSubmit={handleSaveMessage} className="flex flex-col w-full">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col w-full max-w-[650px]"
+    >
       <textarea
         ref={formRef}
         name="editedMessage"
         spellCheck={Appearance.get("enableSpellCheck")}
-        className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
+        className="text-white light:text-slate-900 w-full rounded-2xl bg-zinc-800 light:bg-slate-100 border border-sky-300 focus:border-sky-300 active:outline-none focus:outline-none focus:ring-0 px-4 py-3 resize-none overflow-hidden"
         defaultValue={message}
         onChange={adjustTextArea}
       />
-      <div className="mt-3 flex justify-center">
-        <button
-          type="submit"
-          className="border-none px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          {t("chat_window.save_submit")}
-        </button>
+      <EditActionBar onCancel={cancelEdits} />
+    </form>
+  );
+}
+
+function EditActionBar({ onCancel, onSave, isUserMessage = false }) {
+  const { t } = useTranslation();
+  return (
+    <div className="mt-2 flex flex-col md:flex-row md:items-center justify-between gap-2 bg-zinc-800 light:bg-slate-200 rounded-lg p-2">
+      <div className="flex items-start gap-2">
+        <Info
+          size={12}
+          className="shrink-0 mt-0.5 text-zinc-200 light:text-slate-800"
+        />
+        <span className="text-zinc-200 light:text-slate-800 text-xs leading-4">
+          {isUserMessage
+            ? t("chat_window.edit_info_user")
+            : t("chat_window.edit_info_assistant")}
+        </span>
+      </div>
+      <div className="flex items-center gap-2 self-end shrink-0">
         <button
           type="button"
-          className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-          onClick={cancelEdits}
+          onClick={onCancel}
+          className="border-none text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-slate-300"
         >
           {t("chat_window.cancel")}
         </button>
+        {isUserMessage && (
+          <button
+            type="button"
+            onClick={onSave}
+            className="border border-zinc-600 light:border-slate-600 text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-slate-300"
+          >
+            {t("chat_window.save")}
+          </button>
+        )}
+        <button
+          type="submit"
+          className="border-none bg-zinc-50 light:bg-slate-800 text-zinc-800 light:text-white text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-zinc-200 light:hover:bg-slate-800"
+        >
+          {isUserMessage ? t("chat_window.submit") : t("chat_window.save")}
+        </button>
       </div>
-    </form>
+    </div>
   );
 }

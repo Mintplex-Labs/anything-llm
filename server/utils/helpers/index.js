@@ -118,7 +118,9 @@ function getVectorDbClass(getExactly = null) {
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to PGVector`
       );
-      const { PGVector: DefaultPGVector } = require("../vectorDbProviders/pgvector");
+      const {
+        PGVector: DefaultPGVector,
+      } = require("../vectorDbProviders/pgvector");
       return new DefaultPGVector();
   }
 }
@@ -440,7 +442,7 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "openai":
       return process.env.OPEN_MODEL_PREF;
     case "azure":
-      return process.env.OPEN_MODEL_PREF;
+      return process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF;
     case "anthropic":
       return process.env.ANTHROPIC_MODEL_PREF;
     case "gemini":

@@ -28,8 +28,14 @@ function makeJWT(info = {}, expiry = "30d") {
   return JWT.sign(info, process.env.JWT_SECRET, { expiresIn: expiry });
 }
 
-// Note: Only valid for finding users in multi-user mode
-// as single-user mode with password is not a "user"
+/**
+ * Gets the user from the session
+ * Note: Only valid for multi-user mode
+ * as single-user mode with password is not a "user"
+ * @param {import("express").Request} request - The request object
+ * @param {import("express").Response} response - The response object
+ * @returns {Promise<import("@prisma/client").users | null>} The user
+ */
 async function userFromSession(request, response = null) {
   if (!!response && !!response.locals?.user) {
     return response.locals.user;
@@ -95,7 +101,7 @@ function isValidUrl(urlString = "") {
     const url = new URL(urlString);
     if (!["http:", "https:"].includes(url.protocol)) return false;
     return true;
-  } catch (e) {}
+  } catch {}
   return false;
 }
 
