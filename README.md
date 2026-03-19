@@ -36,7 +36,7 @@
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
-Chat with your docs, execute complex workflows with AI Agents, hyper-configurable, multi-user ready, battle-tested, batteries-included, and local by default with no frustrating setup.
+Chat with your docs. Automate complex workflows with AI Agents. Hyper-configurable, multi-user ready, battle-tested—and runs locally by default with zero setup friction.
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
 
@@ -49,13 +49,13 @@ Chat with your docs, execute complex workflows with AI Agents, hyper-configurabl
 
 ### Product Overview
 
-AnythingLLM is the all-in-one AI app you were looking for. AnythingLLM includes everything you need to build a private ChatGPT with no compromises using your favorite local or cloud LLM providers. AnythingLLM is hyper-configurable, but comes with everything you need to get started out of the box like built-in agents, multi-user support, vector databases, document ingestion pipelines, and more.
+AnythingLLM is the all-in-one AI application that lets you build a private, fully-featured ChatGPT—without compromises. Connect your favorite local or cloud LLM, ingest your documents, and start chatting in minutes. Out of the box you get built-in agents, multi-user support, vector databases, and document pipelines — no extra configuration required.
 
-AnythingLLM supports multiple users as well where you can control the access and expierence per user without compromising the security or privacy of the instance or your intellectual property.
+AnythingLLM supports multiple users as well where you can control the access and experience per user without compromising the security or privacy of the instance or your intellectual property.
 
 ## Cool features of AnythingLLM
 
-- [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models 80% per query
+- [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models while reducing token usage by up to 80% per query
 - [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
 - [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - **Multi-modal support (both closed and open-source LLMs!)**
@@ -64,12 +64,12 @@ AnythingLLM supports multiple users as well where you can control the access and
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
-- Simple chat UI with Drag-n-Drop functionality and clear citations.
-- 100% Cloud deployment ready.
+- Intuitive chat UI with drag-and-drop uploads and source citations.
+- Production-ready for any cloud deployment.
 - Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
-- Built-in cost & performance improvements for managing large documents sets compared to any other chat UI.
+- Built-in optimizations for large document sets—lower costs and faster responses than other chat UIs.
 - Full Developer API for custom integrations!
-- Much more...install and find out!
+- ...and much more—install in minutes and see for yourself.
 
 ### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
