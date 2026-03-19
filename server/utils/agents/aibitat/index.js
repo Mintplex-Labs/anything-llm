@@ -724,7 +724,7 @@ ${this.getHistory({ to: route.to })
 
 \x1b[44m[HINT]\x1b[0m: You are injecting \x1b[0;93m${functions.length} tools\x1b[0m into every request.
 Consider enabling \x1b[0;93mIntelligent Skill Selection\x1b[0m to reduce token usage from tool call bloat by up to \x1b[0;93m80% per request\x1b[0m.
-https://docs.anythingllm.com/agent-skills/intelligent-skill-selection
+https://docs.anythingllm.com/agent/intelligent-tool-selection
 
 `
         );
