@@ -38,7 +38,7 @@
 
 Chat with your docs, execute complex workflows with AI Agents, hyper-configurable, multi-user ready, battle-tested, batteries-included, and local by default with no frustrating setup.
 
-![Chatting](https://webassets.anythingllm.com/README-Demo.gif)
+![Chatting](https://webassets.anythingllm.com/AnythingLLM720p.gif)
 
 <details>
 <summary><kbd>Watch the demo!</kbd></summary>
