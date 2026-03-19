@@ -344,6 +344,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumenten voor het aanroepen van een tool",
       "tools-enabled": "hulpmiddelen zijn geactiveerd",
     },
+    settings: {
+      title: "Instellingen voor vaardigheden van agenten",
+      "max-tool-calls": {
+        title: "Maximaal aantal tool-aanroepen per antwoord",
+        description:
+          "Het maximale aantal tools dat een agent kan gebruiken om een enkele reactie te genereren. Dit voorkomt dat tools onbeperkt worden aangeroepen en dat er oneindige loops ontstaan.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligente selectie van vaardigheden",
+        "beta-badge": "Betaling",
+        description:
+          'Maak gebruik van een onbeperkt aantal tools en verminder het gebruik van "cut tokens" met tot wel 80% per query – AnythingLLM selecteert automatisch de juiste vaardigheden voor elke vraag.',
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Werkruimte Chats",

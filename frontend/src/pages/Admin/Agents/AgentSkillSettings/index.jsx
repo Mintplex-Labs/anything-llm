@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Toggle from "@/components/lib/Toggle";
 import System from "@/models/system";
 import debounce from "lodash.debounce";
+import { useTranslation } from "react-i18next";
 
 export default function AgentSkillSettings() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -23,13 +24,15 @@ export default function AgentSkillSettings() {
 }
 
 function AgentSkillSettingsModal({ isOpen, closeModal }) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
+
   return (
     <ModalWrapper isOpen={isOpen}>
       <div className="w-[500px] bg-theme-bg-sidebar px-6 py-4 rounded-lg flex flex-col items-center justify-between relative shadow-lg border border-white/10">
         <div className="w-full flex items-center justify-between">
           <div className="text-white text-left font-medium text-lg">
-            Agent Skill Settings
+            {t("agent.settings.title")}
           </div>
           <button
             onClick={closeModal}
@@ -52,6 +55,7 @@ function AgentSkillSettingsModal({ isOpen, closeModal }) {
 }
 
 function MaxToolCallStack() {
+  const { t } = useTranslation();
   const [maxCallStack, setMaxCallStack] = useState(10);
   const [loading, setLoading] = useState(true);
 
@@ -84,11 +88,10 @@ function MaxToolCallStack() {
       <div className="flex items-center gap-x-4 mt-2">
         <div className="flex flex-col gap-y-1 flex-1">
           <label className="block text-md font-medium text-white">
-            Max Tool Calls Per Response
+            {t("agent.settings.max-tool-calls.title")}
           </label>
           <p className="text-xs text-white/60">
-            The maximum number of tools an agent can chain to generate a single
-            response. This prevents runaway tool calls and infinite loops.
+            {t("agent.settings.max-tool-calls.description")}
           </p>
         </div>
         <input
@@ -113,6 +116,7 @@ function MaxToolCallStack() {
 }
 
 function AgentSkillReranker() {
+  const { t } = useTranslation();
   const [enabled, setEnabled] = useState(false);
   const [maxTools, setMaxTools] = useState(15);
   const [loading, setLoading] = useState(true);
@@ -153,16 +157,15 @@ function AgentSkillReranker() {
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center gap-x-1">
         <label className="block text-md font-medium text-white flex items-center gap-x-1">
-          Intelligent Skill Selection{" "}
+          {t("agent.settings.intelligent-skill-selection.title")}{" "}
           <i className="ml-1 text-xs text-white pl-2 bg-blue-500/40 rounded-md px-2 py-0.5">
-            Beta
+            {t("agent.settings.intelligent-skill-selection.beta-badge")}
           </i>
         </label>
       </div>
       <div className="flex items-center gap-x-4">
         <p className="text-xs text-white/60">
-          Enable unlimited tools and cut token usage by up to 80% per query —
-          AnythingLLM automatically selects the right skills for every prompt.
+          {t("agent.settings.intelligent-skill-selection.description")}
         </p>
         {loading ? (
           <CircleNotch
@@ -182,11 +185,12 @@ function AgentSkillReranker() {
         <div className="flex items-center gap-x-4">
           <div className="flex flex-col gap-y-1 flex-1">
             <label className="block text-md font-medium text-white">
-              Max Tools
+              {t("agent.settings.intelligent-skill-selection.max-tools.title")}
             </label>
             <p className="text-xs text-white/60">
-              The maximum number of tools to select for each query. We recommend
-              setting this to higher values for larger context models.
+              {t(
+                "agent.settings.intelligent-skill-selection.max-tools.description"
+              )}
             </p>
           </div>
           <input

@@ -346,6 +346,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Arguments des appels de fonctions/outils",
       "tools-enabled": "outils activés",
     },
+    settings: {
+      title: "Paramètres des compétences des agents",
+      "max-tool-calls": {
+        title: "Nombre maximal de requêtes Max Tool par réponse",
+        description:
+          "Le nombre maximal d'outils qu'un agent peut utiliser en chaîne pour générer une seule réponse. Cela empêche les appels excessifs aux outils et les boucles infinies.",
+      },
+      "intelligent-skill-selection": {
+        title: "Sélection de compétences basée sur l'intelligence",
+        "beta-badge": "Bêta",
+        description:
+          "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Chats de l'espace de travail",
