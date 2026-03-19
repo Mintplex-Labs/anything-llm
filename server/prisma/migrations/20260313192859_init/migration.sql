@@ -5,6 +5,4 @@
 
 */
 -- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "welcome_messages";
-PRAGMA foreign_keys=on;
+DROP TABLE IF EXISTS "welcome_messages";
