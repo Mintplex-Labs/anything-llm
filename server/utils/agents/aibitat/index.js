@@ -4,6 +4,7 @@ const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
+const { ToolReranker } = require("./utils/toolReranker.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -534,9 +535,7 @@ class AIbitat {
       {
         role: "user",
         content: `You are in a role play game. The following roles are available:
-${availableNodes
-  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
-  .join("\n")}.
+${availableNodes.map((node) => `@${node}: ${this.getAgentConfig(node).role}`).join("\n")}.
 
 Read the following conversation.
 
@@ -572,6 +571,27 @@ Only return the role.
       return pluginName;
     if (pluginName.startsWith("@@")) return pluginName.replace("@@", "");
     return pluginName.split("#")[1];
+  }
+
+  /**
+   * Extract the user's prompt from the messages array for tool reranking.
+   * Gets the content of the last user message.
+   * @param {Array} messages - Array of chat messages
+   * @returns {string|null} The user's prompt or null if not found
+   */
+  #extractUserPrompt(messages) {
+    if (!messages || !Array.isArray(messages)) return null;
+
+    // Find the last user message
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg.role === "user" && msg.content) {
+        return typeof msg.content === "string"
+          ? msg.content
+          : JSON.stringify(msg.content);
+      }
+    }
+    return null;
   }
 
   /**
@@ -665,9 +685,17 @@ ${this.getHistory({ to: route.to })
     ];
 
     // get the functions that the node can call
-    const functions = fromConfig.functions
+    let functions = fromConfig.functions
       ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
+
+    // Rerank tools based on user prompt if enabled
+    if (ToolReranker.isEnabled() && functions?.length) {
+      const toolReranker = new ToolReranker();
+      const userPrompt = this.#extractUserPrompt(messages);
+      if (userPrompt)
+        functions = await toolReranker.rerank(userPrompt, functions);
+    }
 
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,

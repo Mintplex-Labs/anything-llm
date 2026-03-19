@@ -837,6 +837,16 @@ const KEY_MAPPING = {
     envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+
+  // Agent Skill Reranker Settings
+  AgentSkillRerankerEnabled: {
+    envKey: "AGENT_SKILL_RERANKER_ENABLED",
+    checks: [],
+  },
+  AgentSkillRerankerTopN: {
+    envKey: "AGENT_SKILL_RERANKER_TOP_N",
+    checks: [nonZero],
+  },
 };
 
 function isNotEmpty(input = "") {

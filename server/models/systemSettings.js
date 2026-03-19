@@ -12,6 +12,7 @@ const { getBaseLLMProviderModel } = require("../utils/helpers");
 const {
   ConnectionStringParser,
 } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
+const { ToolReranker } = require("../utils/agents/aibitat/utils/toolReranker");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -316,6 +317,12 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // Agent Skill Reranker Settings
+      // --------------------------------------------------------
+      AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
+      AgentSkillRerankerTopN: ToolReranker.getTopN(),
     };
   },
 
