@@ -302,7 +302,8 @@ class LanceDb extends VectorDatabase {
     namespace,
     documentData = {},
     fullFilePath = null,
-    skipCache = false
+    skipCache = false,
+    embeddingContext = null
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -358,7 +359,10 @@ class LanceDb extends VectorDatabase {
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(
+        textChunks,
+        embeddingContext
+      );
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {

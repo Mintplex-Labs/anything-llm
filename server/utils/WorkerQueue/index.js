@@ -14,50 +14,21 @@ function envTTLSec(envKey, fallback) {
   return !isNaN(val) && val >= 0 ? val : fallback;
 }
 
-// ---------------------------------------------------------------------------
-// Embedding context for chunk-level progress
-// ---------------------------------------------------------------------------
-//
-// Problem: chunk progress originates inside the embedding worker (child process)
-// which only knows about text chunks — it has no idea which document, workspace,
-// or user it's working for. That context lives in Document.addDocuments (main process).
-//
-// Solution: Document.addDocuments calls setEmbeddingContext() with the current
-// document's { workspaceSlug, filename, userId } before starting vectorization,
-// and clears it (null) after. When the worker sends chunk progress back via IPC,
-// the onProgress callback below reads this context to emit a fully-attributed
-// "chunk_progress" event on the EmbeddingProgressBus.
-//
-// This is safe because the embedding queue processes jobs serially — only one
-// document is ever being embedded at a time, so the context always matches
-// the active job.
-// ---------------------------------------------------------------------------
-let _currentEmbeddingContext = null;
-
-/**
- * Set the current document context for chunk-level progress events.
- * Called by Document.addDocuments before/after each vectorization call.
- * @param {{ workspaceSlug: string, filename: string, userId: number|null }|null} ctx
- */
-function setEmbeddingContext(ctx) {
-  _currentEmbeddingContext = ctx;
-}
-
 const embeddingQueue = new WorkerQueue({
   workerScript: "../../workers/embeddingWorker.js",
   ttl:
     envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000,
   // Final step in the chunk progress chain: receives IPC progress from the
-  // worker (via WorkerQueue.#onMessage), attaches the document context set by
-  // Document.addDocuments, and emits a "chunk_progress" event on the bus.
+  // worker (via WorkerQueue.#onMessage), reads the document context from the
+  // active job, and emits a "chunk_progress" event on the bus.
   // From here the existing SSE infrastructure streams it to the frontend.
   onProgress: (progress) => {
-    if (!_currentEmbeddingContext) return;
+    if (!progress.context) return;
     embeddingProgressBus.emit("progress", {
       type: "chunk_progress",
-      workspaceSlug: _currentEmbeddingContext.workspaceSlug,
-      filename: _currentEmbeddingContext.filename,
-      userId: _currentEmbeddingContext.userId,
+      workspaceSlug: progress.context.workspaceSlug,
+      filename: progress.context.filename,
+      userId: progress.context.userId,
       chunksProcessed: progress.chunksProcessed,
       totalChunks: progress.totalChunks,
     });
@@ -73,12 +44,13 @@ const rerankingQueue = new WorkerQueue({
 /**
  * Queue an embedding job for the native embedder worker.
  * @param {{ textChunks: string[] }} payload
+ * @param {{ workspaceSlug: string, filename: string, userId: number|null }|null} context - Document context for progress reporting
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
-async function queueEmbedding(payload) {
+async function queueEmbedding(payload, context = null) {
   embeddingQueue.ttl =
     envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000;
-  const { result } = await embeddingQueue.enqueue({ payload });
+  const { result } = await embeddingQueue.enqueue({ payload, context });
   return result.vectors;
 }
 
@@ -98,5 +70,4 @@ module.exports = {
   queueEmbedding,
   queueReranking,
   embeddingProgressBus,
-  setEmbeddingContext,
 };

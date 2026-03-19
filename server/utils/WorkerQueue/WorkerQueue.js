@@ -40,15 +40,16 @@ class WorkerQueue {
 
   /**
    * Add a job to the queue. Returns a promise that resolves with the worker's result.
-   * @param {{ payload: object }} jobData
+   * @param {{ payload: object, context?: object }} jobData
    * @returns {Promise<{ jobId: string, result: any }>}
    */
-  enqueue({ payload }) {
+  enqueue({ payload, context = null }) {
     const jobId = uuidv4();
     return new Promise((resolve, reject) => {
       this.#queue.push({
         jobId,
         payload,
+        context,
         resolve,
         reject,
       });
@@ -199,6 +200,7 @@ class WorkerQueue {
         if (this._onProgress && this.#activeJob) {
           this._onProgress({
             jobId: this.#activeJob.jobId,
+            context: this.#activeJob.context,
             chunksProcessed: msg.chunksProcessed,
             totalChunks: msg.totalChunks,
           });

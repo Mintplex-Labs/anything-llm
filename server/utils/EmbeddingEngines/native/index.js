@@ -237,11 +237,12 @@ class NativeEmbedder {
    * server from OOM crashes during large document batches.
    * This is the public API that vector DB providers and AI provider wrappers call.
    * @param {string[]} textChunks
+   * @param {{ workspaceSlug: string, filename: string, userId: number|null }|null} context - Document context for progress reporting
    * @returns {Promise<Array<number[]>>}
    */
-  async embedChunks(textChunks = []) {
+  async embedChunks(textChunks = [], context = null) {
     const { queueEmbedding } = require("../../WorkerQueue");
-    return await queueEmbedding({ textChunks });
+    return await queueEmbedding({ textChunks }, context);
   }
 
   /**
