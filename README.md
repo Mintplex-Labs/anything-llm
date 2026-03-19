@@ -38,7 +38,7 @@
 
 Chat with your docs, execute complex workflows with AI Agents, hyper-configurable, multi-user ready, battle-tested, batteries-included, and local by default with no frustrating setup.
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+![Chatting](https://webassets.anythingllm.com/AnythingLLM720p.gif)
 
 <details>
 <summary><kbd>Watch the demo!</kbd></summary>
@@ -55,7 +55,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 ## Cool features of AnythingLLM
 
-- [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models and cut token usage by up to 80% per query
+- [Intelligent Skill Selection](https://docs.anythingllm.com/agent/intelligent-tool-selection) Enable **unlimited** tools for your models 80% per query
 - [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
 - [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - **Multi-modal support (both closed and open-source LLMs!)**
