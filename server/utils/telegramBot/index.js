@@ -54,6 +54,10 @@ class TelegramBotService {
     return pairings;
   }
 
+  static #slog(text, ...args) {
+    console.log(`\x1b[35m[TelegramBot]\x1b[0m ${text}`, ...args);
+  }
+
   #log(text, ...args) {
     console.log(`\x1b[35m[TelegramBot]\x1b[0m ${text}`, ...args);
   }
@@ -335,9 +339,7 @@ class TelegramBotService {
     try {
       const { SystemSettings } = require("../../models/systemSettings");
       if (await SystemSettings.isMultiUserMode()) {
-        console.log(
-          "[TelegramBot] Disabled in multi-user mode. Skipping boot."
-        );
+        TelegramBotService.#slog("Disabled in multi-user mode. Skipping boot.");
         return;
       }
 
@@ -348,8 +350,8 @@ class TelegramBotService {
       const config = { ...connector.config };
       config.bot_token = decryptToken(config.bot_token);
       if (!config.bot_token) {
-        console.error(
-          "[TelegramBot] Failed to decrypt bot token. Re-connect to fix."
+        TelegramBotService.#slog(
+          "Failed to decrypt bot token. Re-connect to fix."
         );
         return;
       }

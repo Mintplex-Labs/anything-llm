@@ -6,7 +6,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Get a connector by type.
-   * @param {string} type
+   * @param {'telegram'} type
    * @returns {Promise<{id: number, type: string, config: object, active: boolean}|null>}
    */
   get: async function (type) {
@@ -28,28 +28,32 @@ const ExternalCommunicationConnector = {
 
   /**
    * Create or update a connector's config and active state.
-   * @param {string} type
+   * @param {'telegram'} type
    * @param {object} config
    * @param {boolean} active
    * @returns {Promise<{connector: object|null, error: string|null}>}
    */
-  upsert: async function (type, config = {}, active = false) {
+  upsert: async function (type, config = {}) {
     if (!this.supportedTypes.includes(type))
       return { connector: null, error: `Unsupported connector type: ${type}` };
 
     try {
+      let update = {},
+        create = {};
+
+      if (config.hasOwnProperty("active")) {
+        delete config.active;
+        update.active = Boolean(config.active);
+        create.active = Boolean(config.active);
+      }
+
+      update = { config: JSON.stringify(config), lastUpdatedAt: new Date() };
+      create = { config: JSON.stringify(config), type: String(type) };
+
       const connector = await prisma.external_communication_connectors.upsert({
-        where: { type },
-        update: {
-          config: JSON.stringify(config),
-          active,
-          lastUpdatedAt: new Date(),
-        },
-        create: {
-          type,
-          config: JSON.stringify(config),
-          active,
-        },
+        where: { type: String(type) },
+        update,
+        create,
       });
       return {
         connector: {
@@ -66,7 +70,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Merge partial config updates into an existing connector.
-   * @param {string} type
+   * @param {'telegram'} type
    * @param {object} configUpdates - Partial config to merge.
    * @returns {Promise<{connector: object|null, error: string|null}>}
    */
@@ -81,7 +85,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Toggle a connector's active state.
-   * @param {string} type
+   * @param {'telegram'} type
    * @param {boolean} active
    * @returns {Promise<{success: boolean, error: string|null}>}
    */
@@ -100,7 +104,7 @@ const ExternalCommunicationConnector = {
 
   /**
    * Delete a connector entirely.
-   * @param {string} type
+   * @param {'telegram'} type
    * @returns {Promise<boolean>}
    */
   delete: async function (type) {

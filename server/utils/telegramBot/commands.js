@@ -9,11 +9,11 @@ const { showWorkspaceMenu } = require("./navigation");
 /**
  * All command handler functions receive a `ctx` object:
  * @typedef {object} BotContext
- * @property {TelegramBot} bot
- * @property {object} config
- * @property {function} getState - (chatId) => { workspaceSlug, threadSlug }
- * @property {function} setState - (chatId, updates) => void
- * @property {function} log - (text, ...args) => void
+ * @property {import('node-telegram-bot-api')} bot - The bot object.
+ * @property {object} config - The bot configuration.
+ * @property {(chatId: number) => { workspaceSlug: string, threadSlug: string | null }} getState - Get state for a chat.
+ * @property {(chatId: number, updates: object) => void} setState - Update state for a chat.
+ * @property {(text: string, ...args: any[]) => void} log - Log a message.
  */
 
 /** /start */

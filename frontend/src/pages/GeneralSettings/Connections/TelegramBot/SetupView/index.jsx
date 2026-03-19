@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { CircleNotch, TelegramLogo } from "@phosphor-icons/react";
+import {
+  CircleNotch,
+  Eye,
+  EyeSlash,
+  TelegramLogo,
+} from "@phosphor-icons/react";
 import Telegram from "@/models/telegram";
 import showToast from "@/utils/toast";
 import CreateBotSection from "./CreateBotSection";
@@ -8,17 +13,14 @@ import { useTranslation } from "react-i18next";
 export default function SetupView({ workspaces, onConnected }) {
   const { t } = useTranslation();
   const [botToken, setBotToken] = useState("");
-  const [selectedWorkspace, setSelectedWorkspace] = useState(
-    workspaces[0]?.slug || ""
-  );
+  const [showToken, setShowToken] = useState(false);
+  const [selectedWorkspace, setSelectedWorkspace] = useState("");
   const [connecting, setConnecting] = useState(false);
 
   async function handleConnect(e) {
     e.preventDefault();
     if (!botToken.trim())
       return showToast(t("telegram.setup.toast-enter-token"), "error");
-    if (!selectedWorkspace)
-      return showToast(t("telegram.setup.toast-select-workspace"), "error");
 
     setConnecting(true);
     const res = await Telegram.connect(botToken.trim(), selectedWorkspace);
@@ -34,7 +36,7 @@ export default function SetupView({ workspaces, onConnected }) {
       active: true,
       connected: true,
       bot_username: res.bot_username,
-      default_workspace: selectedWorkspace,
+      default_workspace: selectedWorkspace || null,
     });
   }
 
@@ -55,24 +57,45 @@ export default function SetupView({ workspaces, onConnected }) {
             <label className="text-xs font-medium text-theme-text-secondary">
               {t("telegram.setup.step2.bot-token")}
             </label>
-            <input
-              type="password"
-              value={botToken}
-              onChange={(e) => setBotToken(e.target.value)}
-              placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v..."
-              className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              autoComplete="off"
-            />
+            <div className="relative">
+              <input
+                type={showToken ? "text" : "password"}
+                value={botToken}
+                onChange={(e) => setBotToken(e.target.value)}
+                placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v..."
+                className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pr-10"
+                autoComplete="off"
+              />
+              <button
+                type="button"
+                onMouseDown={() => setShowToken(true)}
+                onMouseUp={() => setShowToken(false)}
+                onMouseLeave={() => setShowToken(false)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-theme-text-secondary hover:text-theme-text-primary transition-colors"
+              >
+                {showToken ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeSlash className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-y-1">
             <label className="text-xs font-medium text-theme-text-secondary">
-              {t("telegram.setup.step2.default-workspace")}
+              {t("telegram.setup.step2.default-workspace")}{" "}
+              <span className="italic font-normal">
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={selectedWorkspace}
               onChange={(e) => setSelectedWorkspace(e.target.value)}
               className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             >
+              <option disabled value="">
+                {t("telegram.setup.step2.no-workspace")}
+              </option>
               {workspaces.map((ws) => (
                 <option key={ws.slug} value={ws.slug}>
                   {ws.name}

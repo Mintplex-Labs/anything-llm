@@ -14,6 +14,7 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
 const { EventLogs } = require("../models/eventLogs");
+const { Workspace } = require("../models/workspace");
 
 function telegramEndpoints(app) {
   if (!app) return;
@@ -74,16 +75,18 @@ function telegramEndpoints(app) {
           });
         }
 
-        const { bot_token, default_workspace } = reqBody(request);
-        if (!bot_token || !default_workspace) {
+        const { bot_token, default_workspace = null } = reqBody(request);
+        if (!bot_token) {
           return response.status(400).json({
             success: false,
-            error: "Bot token and default workspace are required.",
+            error: "Bot token is required.",
           });
         }
 
         // Verify the token with Telegram API
-        const verification = await TelegramBotService.verifyToken(bot_token);
+        const verification = await TelegramBotService.verifyToken(
+          String(bot_token)
+        );
         if (!verification.valid) {
           return response.status(400).json({
             success: false,
@@ -91,12 +94,32 @@ function telegramEndpoints(app) {
           });
         }
 
+        let workspaceSlug = null;
+        if (default_workspace) workspaceSlug = String(default_workspace);
+        else {
+          const workspaces = await Workspace.where({}, 1);
+          if (workspaces.length) workspaceSlug = workspaces[0].slug;
+          else {
+            const { workspace } = await Workspace.new(
+              `${verification.username} Workspace`
+            );
+            if (workspace) workspaceSlug = workspace.slug;
+          }
+        }
+
+        if (!workspaceSlug) {
+          return response.status(400).json({
+            success: false,
+            error: "No workspace found or could be created.",
+          });
+        }
+
         // Preserve approved users when reconnecting with a new token
         const existing = await ExternalCommunicationConnector.get("telegram");
         const storedConfig = {
-          bot_token: encryptToken(bot_token),
+          bot_token: encryptToken(String(bot_token)),
           bot_username: verification.username,
-          default_workspace,
+          default_workspace: workspaceSlug,
           approved_users: existing?.config?.approved_users || [],
           voice_response_mode:
             existing?.config?.voice_response_mode || "text_only",
@@ -105,16 +128,13 @@ function telegramEndpoints(app) {
         // Save config with encrypted token
         const { error } = await ExternalCommunicationConnector.upsert(
           "telegram",
-          storedConfig,
-          true
+          { ...storedConfig, active: true }
         );
-        if (error) {
-          return response.status(500).json({ success: false, error });
-        }
+        if (error) return response.status(500).json({ success: false, error });
 
         // Start the bot with the plaintext token
         const service = new TelegramBotService();
-        await service.start({ ...storedConfig, bot_token });
+        await service.start({ ...storedConfig, bot_token: String(bot_token) });
 
         await EventLogs.logEvent("telegram_bot_connected", {
           bot_username: verification.username,

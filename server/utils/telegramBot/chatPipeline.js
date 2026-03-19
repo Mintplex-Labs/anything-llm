@@ -15,29 +15,38 @@ const { sendVoiceResponse } = require("./mediaHandlers");
  * Stream a response to Telegram by running the full RAG pipeline.
  * Uses the same pipeline as the web UI (RAG, pinned docs, etc.)
  * and stores chats with thread_id so they appear in the AnythingLLM UI.
- * @param {BotContext} ctx
- * @param {number} chatId
- * @param {object} workspace
- * @param {object|null} thread
- * @param {string} message
+ * @param {object} context - The context object.
+ * @param {import("./commands").BotContext} context.ctx - The bot object.
+ * @param {number} context.chatId - The chat ID.
+ * @param {object} context.workspace - The workspace object.
+ * @param {object|null} context.thread - The thread object.
+ * @param {string} context.message - The message to send.
+ * @param {array} context.attachments - The attachments to send.
+ * @param {boolean} context.voiceResponse - Whether to send the response as voice.
  */
-async function streamResponse(
-  ctx,
-  chatId,
-  workspace,
-  thread,
-  message,
-  { attachments = [], voiceResponse = false } = {}
-) {
-  // Show typing indicator while we prepare the response
-  await ctx.bot.sendChatAction(chatId, "typing");
+async function streamResponse({
+  ctx = null,
+  chatId = null,
+  workspace = null,
+  thread = null,
+  message = "",
+  attachments = [],
+  voiceResponse = false,
+}) {
+  if (!ctx?.bot || !chatId || !workspace || !message)
+    throw new Error("Invalid context or missing required parameters!");
 
-  // Handle @agent invocations via the agent pipeline
-  const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
-  if (agentHandles.length > 0) {
-    await handleAgentResponse(ctx, chatId, workspace, thread, message);
-    return;
-  }
+  await ctx.bot.sendChatAction(chatId, "typing");
+  const typingInterval = setInterval(() => {
+    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
+  }, 4000);
+
+  // // Handle @agent invocations via the agent pipeline
+  // const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+  // if (agentHandles.length > 0) {
+  //   await handleAgentResponse(ctx, chatId, workspace, thread, message);
+  //   return;
+  // }
 
   const chatMode = workspace.chatMode || "chat";
   const LLMConnector = getLLMProvider({
@@ -130,14 +139,9 @@ async function streamResponse(
     return;
   }
 
-  // Keep typing indicator alive while LLM prepares the stream
-  const typingInterval = setInterval(() => {
-    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
-  }, 4000);
-
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, null),
+      systemPrompt: await chatPrompt(workspace),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -153,20 +157,11 @@ async function streamResponse(
     if (LLMConnector.streamingEnabled() === true) {
       const stream = await LLMConnector.streamGetChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-        user: null,
       });
 
-      if (voiceResponse) {
-        // Collect text silently so we can send it as voice only
-        completeText = await collectStreamText(stream, LLMConnector);
-      } else {
-        completeText = await handleStreamToTelegram(
-          ctx,
-          chatId,
-          stream,
-          LLMConnector
-        );
-      }
+      completeText = voiceResponse
+        ? await collectStreamText(stream, LLMConnector)
+        : await handleStreamToTelegram(ctx, chatId, stream, LLMConnector);
       metrics = stream.metrics || {};
     } else {
       const { textResponse, metrics: performanceMetrics } =
@@ -176,10 +171,8 @@ async function streamResponse(
         });
       completeText = textResponse;
       metrics = performanceMetrics || {};
-
-      if (!voiceResponse && completeText?.length > 0) {
+      if (!voiceResponse && completeText?.length > 0)
         await ctx.bot.sendMessage(chatId, completeText);
-      }
     }
   } finally {
     clearInterval(typingInterval);
@@ -187,9 +180,7 @@ async function streamResponse(
 
   if (!completeText?.length) {
     await ctx.bot.sendMessage(chatId, "No response generated.");
-  }
-
-  if (completeText?.length > 0) {
+  } else {
     await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
@@ -201,22 +192,11 @@ async function streamResponse(
         attachments,
       },
       threadId: thread?.id || null,
-      apiSessionId: null,
-      user: null,
     });
-  }
 
-  // Send voice or fall back to text if TTS fails
-  if (voiceResponse && completeText?.length > 0) {
-    const sent = await sendVoiceResponse(ctx.bot, chatId, completeText);
-    if (!sent) {
-      for (let i = 0; i < completeText.length; i += MAX_MSG_LEN) {
-        await ctx.bot.sendMessage(
-          chatId,
-          completeText.slice(i, i + MAX_MSG_LEN)
-        );
-      }
-    }
+    if (!voiceResponse) return;
+    const ttsSent = await sendVoiceResponse(ctx.bot, chatId, completeText);
+    if (!ttsSent) await ctx.bot.sendMessage(chatId, completeText);
   }
 }
 
@@ -474,7 +454,6 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
   // Telegram caps messages at 4096 chars. We track where in fullText the
   // current message starts and split into a new message when it fills up.
   let msgOffset = 0;
-
   const currentText = () => fullText.slice(msgOffset);
 
   try {
@@ -573,11 +552,21 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
  * @returns {string|null}
  */
 function extractToken(chunk) {
-  if (chunk?.type === "response.output_text.delta") return chunk.delta;
+  // Ollama Response Chunk
+  if (chunk?.message?.content) return chunk.message.content;
+
+  // OpenAI Chat Completions Response Chunk
   if (chunk?.choices?.[0]?.delta?.content)
     return chunk.choices[0].delta.content;
+
+  // OpenAI Responses API Response Chunk
+  if (chunk?.type === "response.output_text.delta") return chunk.delta;
+
+  // Anthropic Response Chunk
   if (chunk?.type === "content_block_delta" && chunk?.delta?.text)
     return chunk.delta.text;
+
+  // Generic String Response Chunk
   if (typeof chunk === "string") return chunk;
   return null;
 }

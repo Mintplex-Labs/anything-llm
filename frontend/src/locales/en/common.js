@@ -589,6 +589,7 @@ const TRANSLATIONS = {
           "Paste the API token you received from @BotFather and select a default workspace for your bot to chat with.",
         "bot-token": "Bot Token",
         "default-workspace": "Default Workspace",
+        "no-workspace": "No default workspace",
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
