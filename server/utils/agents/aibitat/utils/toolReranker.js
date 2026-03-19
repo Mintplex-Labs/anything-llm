@@ -4,7 +4,12 @@ const {
 const { TokenManager } = require("../../../helpers/tiktoken");
 
 class ToolReranker {
+  /**
+   * The default number of top tools to keep after reranking
+   * @type {number}
+   */
   static defaultTopN = 15;
+
   static instance = null;
   static #reranker = null;
 
@@ -15,7 +20,7 @@ class ToolReranker {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[33m[ToolReranker]\x1b[0m ${text}`, ...args);
+    console.log(`\x1b[33m[IntelligentSkillSelector]\x1b[0m ${text}`, ...args);
   }
 
   /**
@@ -23,7 +28,7 @@ class ToolReranker {
    * @returns {boolean}
    */
   static isEnabled() {
-    if ((!"AGENT_SKILL_RERANKER_ENABLED") in process.env) return false;
+    if (!("AGENT_SKILL_RERANKER_ENABLED" in process.env)) return false;
     if (process.env.AGENT_SKILL_RERANKER_ENABLED === "false") return false;
     return true;
   }
@@ -135,26 +140,18 @@ class ToolReranker {
         (acc, doc) => acc + doc.tokens,
         0
       );
-      const tokensSaved = originalTokenCount - newTokenCount;
-      const percentSaved = ((tokensSaved / originalTokenCount) * 100).toFixed(
-        1
+      const percentSaved = Math.round(
+        ((originalTokenCount - newTokenCount) / originalTokenCount) * 100
       );
+      this.log(`
+Identified top ${rerankedTools.length} of ${tools.length} tools in ${elapsedMs}ms
+${originalTokenCount.toLocaleString()} -> ${newTokenCount.toLocaleString()} tokens \x1b[0;93m(${percentSaved}% reduction)\x1b[0m`);
 
-      this.log(
-        `Identified top ${rerankedTools.length} of ${tools.length} tools in ${elapsedMs}ms`
-      );
-      this.log(
-        `${tokensSaved.toLocaleString()} tokens saved (${percentSaved}% reduction)`
-      );
-      this.log(
-        `${originalTokenCount.toLocaleString()} -> ${newTokenCount.toLocaleString()} tokens`
-      );
-
-      this.log("Selected tools:");
+      let logText = "Selected tools:\n";
       rerankedDocs.forEach((doc, index) => {
-        this.log(`  ${index + 1}. ${doc.toolName}`);
+        logText += `  ${index + 1}. ${doc.toolName}\n`;
       });
-
+      this.log(logText);
       return rerankedTools;
     } catch (error) {
       this.log(`Error during tool reranking: ${error.message}`);

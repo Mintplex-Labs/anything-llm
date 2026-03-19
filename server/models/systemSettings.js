@@ -12,7 +12,6 @@ const { getBaseLLMProviderModel } = require("../utils/helpers");
 const {
   ConnectionStringParser,
 } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
-const { ToolReranker } = require("../utils/agents/aibitat/utils/toolReranker");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -209,6 +208,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
+    const {
+      ToolReranker,
+    } = require("../utils/agents/aibitat/utils/toolReranker");
+    const AIbitat = require("../utils/agents/aibitat");
+
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
@@ -319,8 +323,9 @@ const SystemSettings = {
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
 
       // --------------------------------------------------------
-      // Agent Skill Reranker Settings
+      // Agent Skill Settings
       // --------------------------------------------------------
+      AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
       AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
       AgentSkillRerankerTopN: ToolReranker.getTopN(),
     };

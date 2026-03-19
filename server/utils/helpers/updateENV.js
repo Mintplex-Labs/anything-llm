@@ -838,7 +838,11 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
-  // Agent Skill Reranker Settings
+  // Agent Skill Settings
+  AgentSkillMaxToolCalls: {
+    envKey: "AGENT_MAX_TOOL_CALLS",
+    checks: [nonZero],
+  },
   AgentSkillRerankerEnabled: {
     envKey: "AGENT_SKILL_RERANKER_ENABLED",
     checks: [],

@@ -34,6 +34,7 @@ import AgentSkillSettings from "./AgentSkillSettings";
 const IGNORE_CHANGE_SETTINGS = [
   "agentSkillRerankerEnabled",
   "agentSkillRerankerTopN",
+  "agentSkillMaxToolCalls",
 ];
 
 export default function AdminAgents() {
