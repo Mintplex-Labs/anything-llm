@@ -41,7 +41,10 @@ class AgentHandler {
    * Determine if the message should invoke the agent handler.
    * This is true when the user explicitly invokes an agent (via @agent prefix)
    * or when the workspace is in automatic mode **and** the provider supports native tool calling.
-   * @param {{message: string, workspace?: object, chatMode?: string}} parameters
+   * @param {object} parameters
+   * @param {string} parameters.message - The message to check for agent invocation.
+   * @param { import("@prisma/client").workspaces} parameters.workspace - The workspace to check for agent invocation.
+   * @param {string} parameters.chatMode - The chat mode to check for agent invocation.
    * @returns {Promise<boolean>}
    */
   static async isAgentInvocation({

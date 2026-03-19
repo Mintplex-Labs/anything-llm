@@ -1,4 +1,5 @@
 const { MAX_MSG_LEN } = require("./constants");
+const { markdownToTelegram } = require("./formatTelegram");
 
 /**
  * Delete recent messages from a Telegram chat.
@@ -28,20 +29,78 @@ async function clearTelegramChat(bot, chatId) {
  * @param {number} messageId
  * @param {string} text
  * @param {function} log
+ * @param {object} [opts]
+ * @param {boolean} [opts.format=false] - Whether to format markdown as HTML
  */
-async function editMessage(bot, chatId, messageId, text, log) {
+async function editMessage(bot, chatId, messageId, text, log, opts = {}) {
   if (!text || !bot) return;
-  const truncated = text.length > 4096 ? text.slice(0, 4090) + "\n..." : text;
+  const { format = false } = opts;
+
+  let finalText = text;
+  let parseMode = undefined;
+
+  if (format) {
+    try {
+      finalText = markdownToTelegram(text);
+      parseMode = "HTML";
+    } catch {
+      finalText = text;
+    }
+  }
+
+  const truncated =
+    finalText.length > 4096 ? finalText.slice(0, 4090) + "\n..." : finalText;
 
   try {
     await bot.editMessageText(truncated, {
       chat_id: chatId,
       message_id: messageId,
+      parse_mode: parseMode,
     });
   } catch (error) {
     if (!error.message?.includes("message is not modified")) {
       log("Edit error:", error.message);
     }
+    // If HTML parsing failed, retry without formatting
+    if (parseMode && error.message?.includes("parse")) {
+      try {
+        const plainTruncated =
+          text.length > 4096 ? text.slice(0, 4090) + "\n..." : text;
+        await bot.editMessageText(plainTruncated, {
+          chat_id: chatId,
+          message_id: messageId,
+        });
+      } catch {}
+    }
+  }
+}
+
+/**
+ * Send a formatted message to Telegram with markdown converted to HTML.
+ * Falls back to plain text if HTML parsing fails.
+ * @param {TelegramBot} bot
+ * @param {number} chatId
+ * @param {string} text
+ * @param {object} [opts]
+ * @param {boolean} [opts.format=true] - Whether to format markdown as HTML
+ * @returns {Promise<object>} The sent message object
+ */
+async function sendFormattedMessage(bot, chatId, text, opts = {}) {
+  const { format = true } = opts;
+
+  if (!format) {
+    return bot.sendMessage(chatId, text);
+  }
+
+  try {
+    const formatted = markdownToTelegram(text);
+    return await bot.sendMessage(chatId, formatted, { parse_mode: "HTML" });
+  } catch (error) {
+    // If HTML parsing failed, retry without formatting
+    if (error.message?.includes("parse") || error.message?.includes("can't")) {
+      return bot.sendMessage(chatId, text);
+    }
+    throw error;
   }
 }
 
@@ -79,4 +138,9 @@ async function sendBatchedMessages(bot, chatId, blocks, opts = {}) {
   }
 }
 
-module.exports = { clearTelegramChat, editMessage, sendBatchedMessages };
+module.exports = {
+  clearTelegramChat,
+  editMessage,
+  sendBatchedMessages,
+  sendFormattedMessage,
+};

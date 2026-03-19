@@ -8,8 +8,9 @@ const { sourceIdentifier, recentChatHistory, chatPrompt } = require("../chats");
 const { AgentHandler } = require("../agents");
 const { v4: uuidv4 } = require("uuid");
 const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("./constants");
-const { editMessage } = require("./chatActions");
+const { editMessage, sendFormattedMessage } = require("./chatActions");
 const { sendVoiceResponse } = require("./mediaHandlers");
+const { safeJsonParse } = require("../http");
 
 /**
  * Stream a response to Telegram by running the full RAG pipeline.
@@ -18,7 +19,7 @@ const { sendVoiceResponse } = require("./mediaHandlers");
  * @param {object} context - The context object.
  * @param {import("./commands").BotContext} context.ctx - The bot object.
  * @param {number} context.chatId - The chat ID.
- * @param {object} context.workspace - The workspace object.
+ * @param {import('@prisma/client').workspaces} context.workspace - The workspace object.
  * @param {object|null} context.thread - The thread object.
  * @param {string} context.message - The message to send.
  * @param {array} context.attachments - The attachments to send.
@@ -41,12 +42,16 @@ async function streamResponse({
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
 
-  // // Handle @agent invocations via the agent pipeline
-  // const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
-  // if (agentHandles.length > 0) {
-  //   await handleAgentResponse(ctx, chatId, workspace, thread, message);
-  //   return;
-  // }
+  // Handle @agent invocations via the agent pipeline
+  if (
+    await AgentHandler.isAgentInvocation({
+      message,
+      workspace,
+      chatMode: workspace.chatMode ?? "chat",
+    })
+  ) {
+    return await handleAgentResponse(ctx, chatId, workspace, thread, message);
+  }
 
   const chatMode = workspace.chatMode || "chat";
   const LLMConnector = getLLMProvider({
@@ -159,9 +164,108 @@ async function streamResponse({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      completeText = voiceResponse
-        ? await collectStreamText(stream, LLMConnector)
-        : await handleStreamToTelegram(ctx, chatId, stream, LLMConnector);
+      // Stream state for Telegram message editing
+      let messageId = null;
+      let messagePending = false; // Prevents race condition on first message
+      let lastEditTime = 0;
+      let editTimer = null;
+      let msgOffset = 0;
+      const currentText = () => completeText.slice(msgOffset);
+
+      const flushEdit = async (final = false) => {
+        if (!messageId) return;
+        clearTimeout(editTimer);
+        editTimer = null;
+        const text = currentText();
+        const display = final ? text : text + " \u258d";
+        await editMessage(ctx.bot, chatId, messageId, display, ctx.log, {
+          format: final,
+        }).catch(() => {});
+      };
+
+      const stubbedResponse = {
+        on: () => {},
+        removeListener: () => {},
+        write: (data) => {
+          const match = data.match(/^data: (.+)\n\n$/s);
+          if (!match) return;
+          const parsed = safeJsonParse(match[1], null);
+          if (!parsed) return;
+
+          if (parsed.textResponse && !parsed.close) {
+            completeText += parsed.textResponse;
+
+            // Handle message length limit - split into new message
+            if (messageId !== null && currentText().length > MAX_MSG_LEN) {
+              clearTimeout(editTimer);
+              editTimer = null;
+              // Format the completed first message before moving on
+              editMessage(
+                ctx.bot,
+                chatId,
+                messageId,
+                completeText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
+                ctx.log,
+                { format: true }
+              ).catch(() => {});
+              msgOffset += MAX_MSG_LEN;
+              messageId = null;
+              messagePending = false;
+            }
+
+            // Send first message when first token arrives (or after split)
+            if (messageId === null && !messagePending && !voiceResponse) {
+              messagePending = true;
+              ctx.bot
+                .sendMessage(chatId, currentText() + " \u258d")
+                .then((sent) => {
+                  messageId = sent.message_id;
+                  lastEditTime = Date.now();
+                })
+                .catch(() => {
+                  messagePending = false;
+                });
+              return;
+            }
+
+            // Skip edits until we have a messageId
+            if (!messageId) return;
+
+            // Throttled editing to avoid Telegram rate limits
+            const now = Date.now();
+            if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
+              clearTimeout(editTimer);
+              lastEditTime = now;
+              editMessage(
+                ctx.bot,
+                chatId,
+                messageId,
+                currentText() + " \u258d",
+                ctx.log
+              ).catch(() => {});
+            } else if (!editTimer) {
+              editTimer = setTimeout(() => {
+                lastEditTime = Date.now();
+                editMessage(
+                  ctx.bot,
+                  chatId,
+                  messageId,
+                  currentText() + " \u258d",
+                  ctx.log
+                ).catch(() => {});
+                editTimer = null;
+              }, STREAM_EDIT_INTERVAL);
+            }
+          }
+        },
+      };
+
+      completeText = await LLMConnector.handleStream(stubbedResponse, stream, {
+        uuid: chatId.toString(),
+      });
+
+      // Final edit with formatting after stream completes
+      if (!voiceResponse) await flushEdit(true);
       metrics = stream.metrics || {};
     } else {
       const { textResponse, metrics: performanceMetrics } =
@@ -172,7 +276,7 @@ async function streamResponse({
       completeText = textResponse;
       metrics = performanceMetrics || {};
       if (!voiceResponse && completeText?.length > 0)
-        await ctx.bot.sendMessage(chatId, completeText);
+        await sendFormattedMessage(ctx.bot, chatId, completeText);
     }
   } finally {
     clearInterval(typingInterval);
@@ -206,7 +310,7 @@ async function streamResponse({
  * without a real WebSocket connection.
  * @param {BotContext} ctx
  * @param {number} chatId
- * @param {object} workspace
+ * @param {import('../../prisma').workspaces} workspace
  * @param {object|null} thread
  * @param {string} message
  */
@@ -364,7 +468,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
   }
 
   if (finalResponse) {
-    await ctx.bot.sendMessage(chatId, finalResponse);
+    await sendFormattedMessage(ctx.bot, chatId, finalResponse);
   } else if (charts.length === 0 && files.length === 0) {
     await ctx.bot.sendMessage(
       chatId,
@@ -459,6 +563,7 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
   try {
     if (typeof stream[Symbol.asyncIterator] === "function") {
       for await (const chunk of stream) {
+        console.log("chunk", JSON.stringify(chunk, null, 2));
         const token = extractToken(chunk);
         if (!token) continue;
 
@@ -532,13 +637,19 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
 
   clearTimeout(editTimer);
 
-  // Final edit to remove the cursor and show the complete text
+  // Final edit to remove the cursor and show the complete text with formatting
   if (messageId && currentText().length > 0) {
-    await editMessage(ctx.bot, chatId, messageId, currentText(), ctx.log);
+    await editMessage(ctx.bot, chatId, messageId, currentText(), ctx.log, {
+      format: true,
+    });
   } else if (!messageId && fullText.length > 0) {
     // Fallback path, split into chunks if needed
     for (let i = 0; i < fullText.length; i += MAX_MSG_LEN) {
-      await ctx.bot.sendMessage(chatId, fullText.slice(i, i + MAX_MSG_LEN));
+      await sendFormattedMessage(
+        ctx.bot,
+        chatId,
+        fullText.slice(i, i + MAX_MSG_LEN)
+      );
     }
   }
 
