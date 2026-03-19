@@ -24,6 +24,7 @@ const { handleCallback } = require("./navigation");
 const {
   downloadTelegramFile,
   transcribeAudio,
+  documentToText,
   photoToAttachment,
 } = require("./mediaHandlers");
 
@@ -303,6 +304,43 @@ class TelegramBotService {
           await ctx.bot.sendMessage(
             chatId,
             "Failed to process the image. Please try again."
+          );
+        }
+      });
+      return;
+    }
+
+    // Document messages: parse and send extracted text to LLM
+    if (msg.document) {
+      this.#queue.enqueue(chatId, async () => {
+        try {
+          await ctx.bot.sendChatAction(chatId, "typing");
+          const filename = msg.document.file_name || "document";
+          const docBuffer = await downloadTelegramFile(
+            ctx.bot,
+            msg.document.file_id
+          );
+          const { text, filename: docName } = await documentToText(
+            docBuffer,
+            filename
+          );
+
+          const userPrompt = msg.caption?.trim()
+            ? msg.caption.trim()
+            : "Summarize this document.";
+          const fullMessage = `The user has shared a document named "${docName}". Here is the extracted content:\n\n---\n${text}\n---\n\nUser's request: ${userPrompt}`;
+
+          await this.#runChatJob(ctx, chatId, {
+            message: fullMessage,
+            voiceResponse: this.#shouldVoiceRespond(false),
+          });
+        } catch (error) {
+          this.#log("Document handling error:", error.message);
+          await ctx.bot.sendMessage(
+            chatId,
+            error.message.includes("collector")
+              ? error.message
+              : "Failed to process the document. Please try again."
           );
         }
       });

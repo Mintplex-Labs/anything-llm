@@ -13,7 +13,6 @@ const BOT_COMMANDS = [
   { command: "resume", description: "Show current workspace and thread" },
   { command: "status", description: "Show current workspace and model" },
   { command: "reset", description: "Clear chat history in current thread" },
-  { command: "clear", description: "Clear all messages in this Telegram chat" },
   { command: "help", description: "Show available commands" },
 ];
 

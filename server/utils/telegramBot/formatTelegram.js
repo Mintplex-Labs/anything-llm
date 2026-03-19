@@ -17,7 +17,7 @@ function markdownToTelegram(text) {
 
   // Handle <think> blocks - including partial tags from split messages
   // Process complete blocks first, then handle partials
-  
+
   // First: complete <think>...</think> blocks
   result = result.replace(/<think>([\s\S]*?)<\/think>/g, (_, content) => {
     const placeholder = `\x00THINKBLOCK${thinkBlocks.length}\x00`;
@@ -63,12 +63,15 @@ function markdownToTelegram(text) {
   });
 
   // Extract and convert markdown tables to preformatted text
-  result = result.replace(/(?:^|\n)((?:\|[^\n]+\|(?:\n|$))+)/g, (match, tableContent) => {
-    const converted = convertTableToPreformatted(tableContent);
-    const placeholder = `\x00CODEBLOCK${codeBlocks.length}\x00`;
-    codeBlocks.push(`<pre>${escapeHTML(converted)}</pre>`);
-    return `\n${placeholder}`;
-  });
+  result = result.replace(
+    /(?:^|\n)((?:\|[^\n]+\|(?:\n|$))+)/g,
+    (match, tableContent) => {
+      const converted = convertTableToPreformatted(tableContent);
+      const placeholder = `\x00CODEBLOCK${codeBlocks.length}\x00`;
+      codeBlocks.push(`<pre>${escapeHTML(converted)}</pre>`);
+      return `\n${placeholder}`;
+    }
+  );
 
   // Extract inline code (`...`)
   result = result.replace(/`([^`\n]+)`/g, (_, code) => {
@@ -84,7 +87,10 @@ function markdownToTelegram(text) {
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
   result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<i>$1</i>");
-  result = result.replace(/(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g, "<i>$1</i>");
+  result = result.replace(
+    /(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g,
+    "<i>$1</i>"
+  );
   result = result.replace(/~~(.+?)~~/g, "<s>$1</s>");
   result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
@@ -92,7 +98,7 @@ function markdownToTelegram(text) {
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
 
   // Convert list items: - item or * item → • item
-  result = result.replace(/^[\-\*]\s+/gm, "• ");
+  result = result.replace(/^[-*]\s+/gm, "• ");
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
@@ -114,7 +120,10 @@ function markdownToTelegram(text) {
  * @returns {string}
  */
 function escapeHTML(text) {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 /**

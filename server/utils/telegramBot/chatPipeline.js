@@ -6,7 +6,6 @@ const { getLLMProvider, getVectorDbClass } = require("../helpers");
 const { DocumentManager } = require("../DocumentManager");
 const { sourceIdentifier, recentChatHistory, chatPrompt } = require("../chats");
 const { AgentHandler } = require("../agents");
-const { v4: uuidv4 } = require("uuid");
 const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("./constants");
 const { editMessage, sendFormattedMessage } = require("./chatActions");
 const { sendVoiceResponse } = require("./mediaHandlers");
@@ -164,107 +163,16 @@ async function streamResponse({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      // Stream state for Telegram message editing
-      let messageId = null;
-      let messagePending = false; // Prevents race condition on first message
-      let lastEditTime = 0;
-      let editTimer = null;
-      let msgOffset = 0;
-      const currentText = () => completeText.slice(msgOffset);
+      const { responseHandler, flushEdit } = createStreamHandler({
+        ctx,
+        chatId,
+        voiceResponse,
+      });
 
-      const flushEdit = async (final = false) => {
-        if (!messageId) return;
-        clearTimeout(editTimer);
-        editTimer = null;
-        const text = currentText();
-        const display = final ? text : text + " \u258d";
-        await editMessage(ctx.bot, chatId, messageId, display, ctx.log, {
-          format: final,
-        }).catch(() => {});
-      };
-
-      const stubbedResponse = {
-        on: () => {},
-        removeListener: () => {},
-        write: (data) => {
-          const match = data.match(/^data: (.+)\n\n$/s);
-          if (!match) return;
-          const parsed = safeJsonParse(match[1], null);
-          if (!parsed) return;
-
-          if (parsed.textResponse && !parsed.close) {
-            completeText += parsed.textResponse;
-
-            // Handle message length limit - split into new message
-            if (messageId !== null && currentText().length > MAX_MSG_LEN) {
-              clearTimeout(editTimer);
-              editTimer = null;
-              // Format the completed first message before moving on
-              editMessage(
-                ctx.bot,
-                chatId,
-                messageId,
-                completeText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
-                ctx.log,
-                { format: true }
-              ).catch(() => {});
-              msgOffset += MAX_MSG_LEN;
-              messageId = null;
-              messagePending = false;
-            }
-
-            // Send first message when first token arrives (or after split)
-            if (messageId === null && !messagePending && !voiceResponse) {
-              messagePending = true;
-              ctx.bot
-                .sendMessage(chatId, currentText() + " \u258d")
-                .then((sent) => {
-                  messageId = sent.message_id;
-                  lastEditTime = Date.now();
-                })
-                .catch(() => {
-                  messagePending = false;
-                });
-              return;
-            }
-
-            // Skip edits until we have a messageId
-            if (!messageId) return;
-
-            // Throttled editing to avoid Telegram rate limits
-            const now = Date.now();
-            if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
-              clearTimeout(editTimer);
-              lastEditTime = now;
-              editMessage(
-                ctx.bot,
-                chatId,
-                messageId,
-                currentText() + " \u258d",
-                ctx.log
-              ).catch(() => {});
-            } else if (!editTimer) {
-              editTimer = setTimeout(() => {
-                lastEditTime = Date.now();
-                editMessage(
-                  ctx.bot,
-                  chatId,
-                  messageId,
-                  currentText() + " \u258d",
-                  ctx.log
-                ).catch(() => {});
-                editTimer = null;
-              }, STREAM_EDIT_INTERVAL);
-            }
-          }
-        },
-      };
-
-      completeText = await LLMConnector.handleStream(stubbedResponse, stream, {
+      completeText = await LLMConnector.handleStream(responseHandler, stream, {
         uuid: chatId.toString(),
       });
 
-      // Final edit with formatting after stream completes
       if (!voiceResponse) await flushEdit(true);
       metrics = stream.metrics || {};
     } else {
@@ -514,86 +422,78 @@ async function renderChartToBuffer(chart) {
 }
 
 /**
- * Read through a stream and return the full text without sending any messages.
- * Used when the response will be sent as voice instead of text.
- * @param {AsyncIterable} stream
- * @param {object} LLMConnector
- * @returns {Promise<string>}
+ * Create a stream response handler for editing Telegram messages as tokens arrive.
+ * Manages message splitting when content exceeds Telegram's length limit.
+ * @param {object} options
+ * @param {import("./commands").BotContext} options.ctx - Bot context
+ * @param {number} options.chatId - Telegram chat ID
+ * @param {boolean} options.voiceResponse - Whether response will be sent as voice
+ * @returns {{ responseHandler: object, flushEdit: function }}
  */
-async function collectStreamText(stream, LLMConnector) {
-  let fullText = "";
-  try {
-    if (typeof stream[Symbol.asyncIterator] === "function") {
-      for await (const chunk of stream) {
-        const token = extractToken(chunk);
-        if (token) fullText += token;
-      }
-    } else {
-      fullText = await LLMConnector.handleStream(
-        { write: () => {}, on: () => {}, removeListener: () => {} },
-        stream,
-        { uuid: uuidv4() }
-      );
-    }
-  } catch (error) {
-    console.log("[TelegramBot] Stream error:", error.message);
-  }
-  return fullText;
-}
-
-/**
- * Handle a stream from an LLM provider by periodically editing a Telegram message.
- * Waits for the first chunk before sending any message (typing indicator shows until then).
- * @param {BotContext} ctx
- * @param {number} chatId
- * @param {AsyncIterable} stream
- * @param {object} LLMConnector
- * @returns {Promise<string>} The complete response text.
- */
-async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
-  let fullText = "";
+function createStreamHandler({ ctx, chatId, voiceResponse }) {
+  let completeText = "";
   let messageId = null;
+  let messagePending = false;
   let lastEditTime = 0;
   let editTimer = null;
-  // Telegram caps messages at 4096 chars. We track where in fullText the
-  // current message starts and split into a new message when it fills up.
   let msgOffset = 0;
-  const currentText = () => fullText.slice(msgOffset);
 
-  try {
-    if (typeof stream[Symbol.asyncIterator] === "function") {
-      for await (const chunk of stream) {
-        console.log("chunk", JSON.stringify(chunk, null, 2));
-        const token = extractToken(chunk);
-        if (!token) continue;
+  const currentText = () => completeText.slice(msgOffset);
 
-        fullText += token;
+  const flushEdit = async (final = false) => {
+    if (!messageId) return;
+    clearTimeout(editTimer);
+    editTimer = null;
+    const text = currentText();
+    const display = final ? text : text + " \u258d";
+    await editMessage(ctx.bot, chatId, messageId, display, ctx.log, {
+      format: final,
+    }).catch(() => {});
+  };
 
-        // Current message hit the limit, finalize it and start a new one
+  const responseHandler = {
+    on: () => {},
+    removeListener: () => {},
+    write: (data) => {
+      const match = data.match(/^data: (.+)\n\n$/s);
+      if (!match) return;
+      const parsed = safeJsonParse(match[1], null);
+      if (!parsed) return;
+
+      if (parsed.textResponse && !parsed.close) {
+        completeText += parsed.textResponse;
+
         if (messageId !== null && currentText().length > MAX_MSG_LEN) {
           clearTimeout(editTimer);
           editTimer = null;
-          await editMessage(
+          editMessage(
             ctx.bot,
             chatId,
             messageId,
-            fullText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
-            ctx.log
-          );
+            completeText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
+            ctx.log,
+            { format: true }
+          ).catch(() => {});
           msgOffset += MAX_MSG_LEN;
           messageId = null;
+          messagePending = false;
         }
 
-        // Send the first message when the first token arrives (or after a split)
-        if (messageId === null) {
-          const sent = await ctx.bot.sendMessage(
-            chatId,
-            currentText() + " \u258d"
-          );
-          messageId = sent.message_id;
-          lastEditTime = Date.now();
-          continue;
+        if (messageId === null && !messagePending && !voiceResponse) {
+          messagePending = true;
+          ctx.bot
+            .sendMessage(chatId, currentText() + " \u258d")
+            .then((sent) => {
+              messageId = sent.message_id;
+              lastEditTime = Date.now();
+            })
+            .catch(() => {
+              messagePending = false;
+            });
+          return;
         }
+
+        if (!messageId) return;
 
         const now = Date.now();
         if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
@@ -620,66 +520,10 @@ async function handleStreamToTelegram(ctx, chatId, stream, LLMConnector) {
           }, STREAM_EDIT_INTERVAL);
         }
       }
-    } else {
-      // Some providers don't return an async iterable. handleStream expects
-      // an Express-like response object to write to, so we pass a no-op one
-      // since we only need the final text back.
-      ctx.log(`Using fallback stream for ${LLMConnector.constructor.name}`);
-      fullText = await LLMConnector.handleStream(
-        { write: () => {}, on: () => {}, removeListener: () => {} },
-        stream,
-        { uuid: uuidv4() }
-      );
-    }
-  } catch (error) {
-    ctx.log("Stream error:", error.message);
-  }
+    },
+  };
 
-  clearTimeout(editTimer);
-
-  // Final edit to remove the cursor and show the complete text with formatting
-  if (messageId && currentText().length > 0) {
-    await editMessage(ctx.bot, chatId, messageId, currentText(), ctx.log, {
-      format: true,
-    });
-  } else if (!messageId && fullText.length > 0) {
-    // Fallback path, split into chunks if needed
-    for (let i = 0; i < fullText.length; i += MAX_MSG_LEN) {
-      await sendFormattedMessage(
-        ctx.bot,
-        chatId,
-        fullText.slice(i, i + MAX_MSG_LEN)
-      );
-    }
-  }
-
-  return fullText;
-}
-
-/**
- * Extract a text token from various LLM streaming chunk formats.
- * Supports OpenAI Responses API, Chat Completions, Anthropic, and generic strings.
- * @param {object|string} chunk
- * @returns {string|null}
- */
-function extractToken(chunk) {
-  // Ollama Response Chunk
-  if (chunk?.message?.content) return chunk.message.content;
-
-  // OpenAI Chat Completions Response Chunk
-  if (chunk?.choices?.[0]?.delta?.content)
-    return chunk.choices[0].delta.content;
-
-  // OpenAI Responses API Response Chunk
-  if (chunk?.type === "response.output_text.delta") return chunk.delta;
-
-  // Anthropic Response Chunk
-  if (chunk?.type === "content_block_delta" && chunk?.delta?.text)
-    return chunk.delta.text;
-
-  // Generic String Response Chunk
-  if (typeof chunk === "string") return chunk;
-  return null;
+  return { responseHandler, flushEdit };
 }
 
 module.exports = { streamResponse };

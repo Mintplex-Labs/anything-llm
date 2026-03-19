@@ -3,7 +3,7 @@ const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { convertToChatHistory } = require("../helpers/chat/responses");
 const { BOT_COMMANDS } = require("./constants");
-const { clearTelegramChat, sendBatchedMessages } = require("./chatActions");
+const { sendBatchedMessages } = require("./chatActions");
 const { showWorkspaceMenu } = require("./navigation");
 
 /**
@@ -52,13 +52,31 @@ async function handleStatus(ctx, chatId) {
     if (thread) threadName = thread.name;
   }
 
-  const lines = [
-    `<b>Workspace:</b> ${workspace.name}`,
-    `<b>Thread:</b> ${threadName}`,
-  ];
-  if (workspace.chatProvider)
-    lines.push(`<b>Provider:</b> ${workspace.chatProvider}`);
-  if (workspace.chatModel) lines.push(`<b>Model:</b> ${workspace.chatModel}`);
+  const lines = [`<b>${workspace.name}</b>`, `<i>${threadName}</i>`];
+
+  const { getBaseLLMProviderModel } = require("../helpers");
+  const AIbitat = require("../agents/aibitat");
+  const provider =
+    workspace?.agentProvider ??
+    workspace?.chatProvider ??
+    process.env.LLM_PROVIDER;
+  const model =
+    workspace?.agentModel ??
+    workspace?.chatModel ??
+    getBaseLLMProviderModel({ provider });
+  const agentConfig = { provider, model };
+  const agentProvider = new AIbitat(agentConfig).getProviderForConfig(
+    agentConfig
+  );
+  const nativeToolCalling = await agentProvider.supportsNativeToolCalling?.();
+
+  lines.push(`<b>Chat Mode:</b> ${workspace.chatMode ?? "chat"}`);
+  lines.push(`--------------------------------`);
+  lines.push(`<b>Provider:</b> ${provider}`);
+  lines.push(`<b>Model:</b> ${model}`);
+  lines.push(
+    `<b>Native Tool Calling:</b> ${nativeToolCalling ? "Enabled" : "Disabled"}`
+  );
 
   await ctx.bot.sendMessage(chatId, lines.join("\n"), {
     parse_mode: "HTML",
@@ -85,26 +103,6 @@ async function handleReset(ctx, chatId) {
   await ctx.bot.sendMessage(
     chatId,
     "Chat history has been cleared for the LLM. Previous messages still appear above but won't be used as context."
-  );
-}
-
-/** /clear - deletes Telegram messages */
-async function handleClear(ctx, chatId) {
-  await clearTelegramChat(ctx.bot, chatId);
-
-  const state = ctx.getState(chatId);
-  const workspace = await Workspace.get({ slug: state.workspaceSlug });
-  const name = workspace?.name || state.workspaceSlug;
-
-  let threadInfo = "Default";
-  if (state.threadSlug) {
-    const thread = await WorkspaceThread.get({ slug: state.threadSlug });
-    if (thread) threadInfo = thread.name;
-  }
-
-  await ctx.bot.sendMessage(
-    chatId,
-    `Chat cleared.\n\nWorkspace: ${name}\nThread: ${threadInfo}\n\nYour chat history in AnythingLLM is unchanged. Send a message to continue.`
   );
 }
 
@@ -259,7 +257,6 @@ const COMMAND_HANDLERS = {
   switch: showWorkspaceMenu,
   new: handleNewThread,
   reset: handleReset,
-  clear: handleClear,
   resume: handleResume,
   history: handleHistory,
 };
