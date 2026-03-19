@@ -610,7 +610,10 @@ class PGVector extends VectorDatabase {
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await EmbedderEngine.embedChunks(textChunks, embeddingContext);
+      const vectorValues = await EmbedderEngine.embedChunks(
+        textChunks,
+        embeddingContext
+      );
       let vectorDimensions;
 
       if (!!vectorValues && vectorValues.length > 0) {

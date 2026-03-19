@@ -229,7 +229,10 @@ class AstraDB extends VectorDatabase {
       this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await EmbedderEngine.embedChunks(textChunks, embeddingContext);
+      const vectorValues = await EmbedderEngine.embedChunks(
+        textChunks,
+        embeddingContext
+      );
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
