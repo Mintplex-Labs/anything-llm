@@ -322,6 +322,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "工具呼叫的參數",
       "tools-enabled": "已啟用工具",
     },
+    settings: {
+      title: "代理人技能設定",
+      "max-tool-calls": {
+        title: "每次回應的最大工具呼叫次數",
+        description:
+          "這設定了代理可以串聯使用的最大工具數量，以確保每次回應只會呼叫有限的工具，並避免無限循環。",
+      },
+      "intelligent-skill-selection": {
+        title: "智能技能選擇",
+        "beta-badge": "β 版本",
+        description:
+          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
+        "max-tools": {
+          title: "馬克斯工具",
+          description:
+            "可選取的工具的最大數量，適用於每個查詢。我們建議將此值設定為較高的值，以適用於較大的模型。",
+        },
+      },
+    },
   },
   recorded: {
     title: "工作區對話紀錄",

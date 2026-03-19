@@ -346,6 +346,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumenter til værktøjsopkald",
       "tools-enabled": "værktøjer er aktiveret",
     },
+    settings: {
+      title: "Indstillinger for agenters færdigheder",
+      "max-tool-calls": {
+        title: "Maksimalt antal anmodninger pr. svar",
+        description:
+          "Det maksimale antal værktøjer, en agent kan kæde sammen for at generere et enkelt svar. Dette forhindrer, at værktøjer kaldes unødvendigt, og undgår uendelige løkker.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent valg af færdigheder",
+        "beta-badge": "Beta",
+        description:
+          "Aktiver ubegrænsede værktøjer og reducer brugen af cut-tokens med op til 80 % pr. forespørgsel – AnythingLLM vælger automatisk de relevante færdigheder til hver forespørgsel.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Arbejdsområde-chat",
