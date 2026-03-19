@@ -333,6 +333,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "工具调用的参数",
       "tools-enabled": "工具已启用",
     },
+    settings: {
+      title: "代理技能设置",
+      "max-tool-calls": {
+        title: "每个回复的最大请求次数",
+        description:
+          "单个代理可以使用的最大工具数量，用于生成单个响应。 这样可以防止工具调用数量过多，从而避免无限循环。",
+      },
+      "intelligent-skill-selection": {
+        title: "智能技能选择",
+        "beta-badge": "β 版本",
+        description:
+          "实现无限工具和按查询减少高达 80% 的 Token 使用量——AnythingLLM 能够自动选择最合适的技能，以应对每个提示。",
+        "max-tools": {
+          title: "麦克斯工具",
+          description:
+            "可以选取的工具的最大数量，用于每个查询。我们建议将此值设置为较高的值，以便在处理大型上下文模型时。",
+        },
+      },
+    },
   },
   recorded: {
     title: "工作区聊天历史记录",

@@ -350,6 +350,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumenty wywoływania funkcji",
       "tools-enabled": "narzędzia są aktywne",
     },
+    settings: {
+      title: "Ustawienia umiejętności agenta",
+      "max-tool-calls": {
+        title: "Maksymalna liczba żądań narzędzi na odpowiedź",
+        description:
+          "Maksymalna liczba narzędzi, które agent może łączyć, aby wygenerować pojedynczą odpowiedź. Zapobiega to niekontrolowanemu wywoływaniu narzędzi i tworzeniu nieskończonych pętli.",
+      },
+      "intelligent-skill-selection": {
+        title: "Inteligentny wybór umiejętności",
+        "beta-badge": "Wersja beta",
+        description:
+          "Umożliwia korzystanie z nieograniczonej liczby narzędzi oraz redukcję zużycia tokenów o do 80% na każde zapytanie – EverythingLLM automatycznie wybiera odpowiednie umiejętności dla każdego zapytania.",
+        "max-tools": {
+          title: "Narzędzia Max",
+          description:
+            "Maksymalna liczba narzędzi, które można wybrać dla każdego zapytania. Zalecamy ustawienie tej wartości na wyższe poziomy dla modeli o większym kontekście.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Czaty w obszarach roboczych",

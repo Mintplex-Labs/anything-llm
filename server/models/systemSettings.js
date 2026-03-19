@@ -208,6 +208,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
+    const {
+      ToolReranker,
+    } = require("../utils/agents/aibitat/utils/toolReranker");
+    const AIbitat = require("../utils/agents/aibitat");
+
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
@@ -316,6 +321,13 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // Agent Skill Settings
+      // --------------------------------------------------------
+      AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
+      AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
+      AgentSkillRerankerTopN: ToolReranker.getTopN(),
     };
   },
 

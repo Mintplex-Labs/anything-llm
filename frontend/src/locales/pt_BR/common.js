@@ -349,6 +349,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumentos de chamada de ferramenta",
       "tools-enabled": "ferramentas ativadas",
     },
+    settings: {
+      title: "Configurações de Habilidades do Agente",
+      "max-tool-calls": {
+        title: "Número máximo de chamadas de ferramenta por resposta",
+        description:
+          "O número máximo de ferramentas que um agente pode encadear para gerar uma única resposta. Isso evita chamadas excessivas de ferramentas e loops infinitos.",
+      },
+      "intelligent-skill-selection": {
+        title: "Seleção Inteligente de Habilidades",
+        "beta-badge": "Beta",
+        description:
+          "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
+        "max-tools": {
+          title: "Ferramentas Max",
+          description:
+            "O número máximo de ferramentas que podem ser selecionadas para cada consulta. Recomendamos definir este valor para modelos com contextos maiores.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Chats do Workspace",

@@ -357,6 +357,25 @@ const TRANSLATIONS = {
         "This MCP server is not running - it may be stopped or experiencing an error on startup.",
       "tool-call-arguments": "Tool call arguments",
     },
+    settings: {
+      title: "Agent Skill Settings",
+      "max-tool-calls": {
+        title: "Max Tool Calls Per Response",
+        description:
+          "The maximum number of tools an agent can chain to generate a single response. This prevents runaway tool calls and infinite loops.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent Skill Selection",
+        "beta-badge": "Beta",
+        description:
+          "Enable unlimited tools and cut token usage by up to 80% per query — AnythingLLM automatically selects the right skills for every prompt.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Workspace Chats",

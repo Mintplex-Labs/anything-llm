@@ -340,6 +340,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "ツール呼び出しの引数",
       "tools-enabled": "ツールが有効化されました",
     },
+    settings: {
+      title: "エージェントのスキル設定",
+      "max-tool-calls": {
+        title: "1回の応答で実行できる最大ツール数",
+        description:
+          "エージェントが単一の応答を生成するために使用できるツールの一意な最大数。これにより、ツール呼び出しの過剰や無限ループを防ぐことができます。",
+      },
+      "intelligent-skill-selection": {
+        title: "知的なスキル選択",
+        "beta-badge": "ベータ版",
+        description:
+          "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
+        "max-tools": {
+          title: "マックスツールズ",
+          description:
+            "各クエリで選択できるツール数の上限。大規模なコンテキストモデルを使用する場合は、この値をより高い値に設定することをお勧めします。",
+        },
+      },
+    },
   },
   recorded: {
     title: "ワークスペースチャット履歴",

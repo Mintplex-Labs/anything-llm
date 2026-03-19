@@ -16,8 +16,12 @@ const webScraping = {
           name: this.name,
           controller: new AbortController(),
           description:
-            "Scrapes the content of a webpage or online resource from a provided URL.",
+            "Read and extract content from a specific webpage URL. Fetch the text from a website, get the contents of a link, or visit a URL to see what it says. Use when you have a specific web address to read.",
           examples: [
+            {
+              prompt: "Read that URL for me",
+              call: JSON.stringify({ url: "https://example.com" }),
+            },
             {
               prompt: "What is anythingllm.com about?",
               call: JSON.stringify({ url: "https://anythingllm.com" }),

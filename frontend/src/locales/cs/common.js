@@ -358,6 +358,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumenty pro volání nástroje",
       "tools-enabled": "nástroje jsou aktivovány",
     },
+    settings: {
+      title: "Nastavení dovedností agenta",
+      "max-tool-calls": {
+        title: "Maximální počet volání nástrojů na jednu odpověď",
+        description:
+          "Maximální počet nástrojů, které může agent spouštět v řetězci za účelem generování jedné odpovědi. To zabraňuje nekontrolovanému spouštění nástrojů a vytváření nekonečných smyček.",
+      },
+      "intelligent-skill-selection": {
+        title: "Inteligentní výběr dovedností",
+        "beta-badge": "Beta",
+        description:
+          "Umožněte použití libovolného počtu nástrojů a snížit využití tokenů až o 80 % pro každou dotaz — AnythingLLM automaticky vybírá vhodné dovednosti pro každou žádost.",
+        "max-tools": {
+          title: "Nástroje Max",
+          description:
+            "Maximální počet nástrojů, které lze vybrat pro každou dotaz. Doporučujeme nastavit tuto hodnotu na vyšší, pro modely s větším kontextem.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Chaty pracovních prostorů",
