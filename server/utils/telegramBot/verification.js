@@ -53,7 +53,7 @@ async function sendPairingRequest(bot, msg, pendingPairings) {
       "",
       `Your pairing code is: ${code}`,
       "",
-      "Ask the AnythingLLM admin to go to Settings → Connections → Telegram and approve your request.",
+      "In AnythingLLM, go to Settings → Connections → Telegram and approve your request.",
       "",
       "Make sure the pairing code shown here matches what is displayed in the settings page. This ensures no one else is trying to connect on your behalf.",
     ].join("\n")

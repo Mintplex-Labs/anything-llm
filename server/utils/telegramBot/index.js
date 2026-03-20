@@ -24,6 +24,7 @@ const { handleCallback } = require("./navigation");
 const {
   downloadTelegramFile,
   transcribeAudio,
+  documentToText,
   photoToAttachment,
 } = require("./mediaHandlers");
 
@@ -52,6 +53,10 @@ class TelegramBotService {
       pairings.push({ chatId: String(chatId), ...data });
     }
     return pairings;
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[35m[TelegramBot]\x1b[0m ${text}`, ...args);
   }
 
   #log(text, ...args) {
@@ -305,6 +310,43 @@ class TelegramBotService {
       return;
     }
 
+    // Document messages: parse and send extracted text to LLM
+    if (msg.document) {
+      this.#queue.enqueue(chatId, async () => {
+        try {
+          await ctx.bot.sendChatAction(chatId, "typing");
+          const filename = msg.document.file_name || "document";
+          const docBuffer = await downloadTelegramFile(
+            ctx.bot,
+            msg.document.file_id
+          );
+          const { text, filename: docName } = await documentToText(
+            docBuffer,
+            filename
+          );
+
+          const userPrompt = msg.caption?.trim()
+            ? msg.caption.trim()
+            : "Summarize this document.";
+          const fullMessage = `The user has shared a document named "${docName}". Here is the extracted content:\n\n---\n${text}\n---\n\nUser's request: ${userPrompt}`;
+
+          await this.#runChatJob(ctx, chatId, {
+            message: fullMessage,
+            voiceResponse: this.#shouldVoiceRespond(false),
+          });
+        } catch (error) {
+          this.#log("Document handling error:", error.message);
+          await ctx.bot.sendMessage(
+            chatId,
+            error.message.includes("collector")
+              ? error.message
+              : "Failed to process the document. Please try again."
+          );
+        }
+      });
+      return;
+    }
+
     if (!msg.text) return;
     this.#queue.enqueue(chatId, async () => {
       await this.#runChatJob(ctx, chatId, {
@@ -335,9 +377,7 @@ class TelegramBotService {
     try {
       const { SystemSettings } = require("../../models/systemSettings");
       if (await SystemSettings.isMultiUserMode()) {
-        console.log(
-          "[TelegramBot] Disabled in multi-user mode. Skipping boot."
-        );
+        TelegramBotService.#slog("Disabled in multi-user mode. Skipping boot.");
         return;
       }
 
@@ -348,8 +388,8 @@ class TelegramBotService {
       const config = { ...connector.config };
       config.bot_token = decryptToken(config.bot_token);
       if (!config.bot_token) {
-        console.error(
-          "[TelegramBot] Failed to decrypt bot token. Re-connect to fix."
+        TelegramBotService.#slog(
+          "Failed to decrypt bot token. Re-connect to fix."
         );
         return;
       }

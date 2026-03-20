@@ -5,6 +5,7 @@ const {
 } = require("../../models/workspaceAgentInvocation");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
+const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
@@ -34,6 +35,41 @@ class AgentHandler {
 
   closeAlert() {
     this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
+  }
+
+  /**
+   * Determine if the message should invoke the agent handler.
+   * This is true when the user explicitly invokes an agent (via @agent prefix)
+   * or when the workspace is in automatic mode **and** the provider supports native tool calling.
+   * @param {object} parameters
+   * @param {string} parameters.message - The message to check for agent invocation.
+   * @param { import("@prisma/client").workspaces} parameters.workspace - The workspace to check for agent invocation.
+   * @param {string} parameters.chatMode - The chat mode to check for agent invocation.
+   * @returns {Promise<boolean>}
+   */
+  static async isAgentInvocation({
+    message,
+    workspace = null,
+    chatMode = null,
+  }) {
+    if (this.#isAgentCommandInvocation({ message })) return true;
+    if (chatMode === "automatic") {
+      if (!workspace) return false;
+      if (await Workspace.supportsNativeToolCalling(workspace)) return true;
+      return false;
+    }
+    return false;
+  }
+
+  /**
+   * Determine if the message provided is an agent invocation.
+   * @param {{message:string}} parameters
+   * @returns {boolean}
+   */
+  static #isAgentCommandInvocation({ message }) {
+    const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+    if (agentHandles.length > 0) return true;
+    return false;
   }
 
   async #chatHistory(limit = 10) {

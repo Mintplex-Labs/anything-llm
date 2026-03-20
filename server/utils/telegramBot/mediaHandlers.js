@@ -38,6 +38,44 @@ async function transcribeAudio(audioBuffer) {
 }
 
 /**
+ * Parse a document buffer and extract its text content.
+ * Writes the document to the collector hotdir and runs it through
+ * the collector's parse pipeline.
+ * @param {Buffer} documentBuffer
+ * @param {string} originalFilename - The original filename with extension
+ * @returns {Promise<{text: string, filename: string}>}
+ */
+async function documentToText(documentBuffer, originalFilename) {
+  const fs = require("fs");
+  const path = require("path");
+  const { CollectorApi } = require("../collectorApi");
+  const { hotdirPath } = require("../files");
+
+  if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
+
+  const sanitizedName = originalFilename.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filename = `telegram-doc-${Date.now()}-${sanitizedName}`;
+  fs.writeFileSync(path.join(hotdirPath, filename), documentBuffer);
+
+  const collector = new CollectorApi();
+  if (!(await collector.online())) {
+    throw new Error(
+      "Document processing is unavailable. The collector service is offline."
+    );
+  }
+
+  const result = await collector.parseDocument(filename);
+  if (!result?.success || !result.documents?.length) {
+    throw new Error(
+      result?.reason || `Failed to parse document: ${originalFilename}`
+    );
+  }
+
+  const text = result.documents.map((doc) => doc.pageContent).join("\n\n");
+  return { text, filename: originalFilename };
+}
+
+/**
  * Download the largest photo from a Telegram photo array and return
  * it as an attachment object compatible with the LLM chat pipeline.
  * @param {TelegramBot} bot
@@ -61,7 +99,9 @@ async function photoToAttachment(bot, photos) {
  * @param {TelegramBot} bot
  * @param {number} chatId
  * @param {string} text
- * @returns {boolean} true if voice was sent, false if TTS failed
+ */
+/**
+ * @returns {Promise<boolean>} true if voice was sent, false if TTS failed
  */
 async function sendVoiceResponse(bot, chatId, text) {
   try {
@@ -74,7 +114,7 @@ async function sendVoiceResponse(bot, chatId, text) {
       buffer,
       {},
       {
-        filename: "response.mp3",
+        filename: `${chatId}-response.mp3`,
         contentType: "audio/mpeg",
       }
     );
@@ -85,7 +125,7 @@ async function sendVoiceResponse(bot, chatId, text) {
         chatId,
         "Voice responses require a text-to-speech provider. Set one up in Settings > Voice & Speech > Text-to-Speech Preference."
       )
-      .catch(() => {});
+      .catch(() => { });
     return false;
   }
 }
@@ -93,6 +133,7 @@ async function sendVoiceResponse(bot, chatId, text) {
 module.exports = {
   downloadTelegramFile,
   transcribeAudio,
+  documentToText,
   photoToAttachment,
   sendVoiceResponse,
 };
