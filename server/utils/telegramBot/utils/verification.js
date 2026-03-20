@@ -5,11 +5,36 @@ const {
 const { markdownToTelegram } = require("./format");
 
 /**
+ * The maximum number of pending pairings to allow.
+ * This is to prevent abuse and ensure the bot is not responding to too many requests.
+ * @type {number}
+ */
+const MAX_PENDING_PAIRINGS = 10;
+
+/**
  * Generate a random 6-digit pairing code.
  * @returns {string}
  */
 function generatePairingCode() {
   return String(crypto.randomInt(0, 1000000)).padStart(6, "0");
+}
+
+/**
+ * Enforce the max pending pairings cap using LIFO (evict oldest first).
+ * @param {Map} pendingPairings
+ */
+function enforcePendingCap(pendingPairings) {
+  if (pendingPairings.size < MAX_PENDING_PAIRINGS) return;
+
+  // Sort by requestedAt ascending (oldest first) and remove excess
+  const entries = [...pendingPairings.entries()].sort(
+    (a, b) => new Date(a[1].requestedAt) - new Date(b[1].requestedAt)
+  );
+
+  const toRemove = entries.length - MAX_PENDING_PAIRINGS + 1;
+  for (let i = 0; i < toRemove; i++) {
+    pendingPairings.delete(entries[i][0]);
+  }
 }
 
 /**
@@ -39,6 +64,9 @@ async function sendPairingRequest(bot, msg, pendingPairings) {
   // Reuse existing code if the user already has a pending request
   const existing = pendingPairings.get(chatId);
   const code = existing?.code || generatePairingCode();
+
+  // Enforce cap before adding new entries (not for existing users)
+  if (!existing) enforcePendingCap(pendingPairings);
 
   pendingPairings.set(chatId, {
     code,
@@ -134,6 +162,7 @@ async function revokeUser(chatId, config) {
 }
 
 module.exports = {
+  MAX_PENDING_PAIRINGS,
   isVerified,
   sendPairingRequest,
   approveUser,

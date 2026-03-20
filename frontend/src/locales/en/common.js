@@ -614,6 +614,15 @@ const TRANSLATIONS = {
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
+      security: {
+        title: "Recommended Security Settings",
+        description:
+          "For additional security, configure these settings in @BotFather.",
+        "disable-groups": "— Prevent adding bot to groups",
+        "disable-inline": "— Prevent bot from being used in inline search",
+        "obscure-username":
+          "Use a non-obvious bot handle username to reduce discoverability",
+      },
       "toast-enter-token": "Please enter a bot token.",
       "toast-select-workspace": "Please select a workspace.",
       "toast-connect-failed": "Failed to connect bot.",
