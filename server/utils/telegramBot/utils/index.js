@@ -5,27 +5,6 @@ const { EncryptionManager } = require("../../EncryptionManager");
 const ENCRYPTED_PREFIX = "enc:";
 
 /**
- * Delete recent messages from a Telegram chat.
- * Telegram doesn't let bots bulk-delete in private chats,
- * so we delete messages one by one going backwards.
- * @param {import("../commands").BotContext} ctx
- * @param {number} chatId
- */
-async function clearTelegramChat(bot, chatId) {
-  const marker = await bot.sendMessage(chatId, "Clearing...");
-  const msgId = marker.message_id;
-
-  // Try to delete the last 100 messages (Telegram limits to 48hr old messages)
-  for (let i = msgId; i > Math.max(msgId - 100, 0); i--) {
-    try {
-      await bot.deleteMessage(chatId, i);
-    } catch {
-      // Message doesn't exist or is too old, skip
-    }
-  }
-}
-
-/**
  * Edit a Telegram message with truncation to stay under the 4096 char limit.
  * @param {import("../commands").BotContext} ctx
  * @param {number} chatId
@@ -185,9 +164,27 @@ function resolveWorkspaceProvider(workspace) {
   return { provider, model };
 }
 
+/**
+ * Send a new message or edit an existing one (upsert pattern).
+ * @param {import('../commands').BotContext} ctx
+ * @param {number} chatId
+ * @param {number|null} msgId - Existing message ID, or null to send new
+ * @param {string} text
+ * @param {object} [log]
+ * @returns {Promise<number>} The message ID (new or existing)
+ */
+async function upsertMessage(bot, chatId, msgId, text, log) {
+  if (!msgId) {
+    const sent = await bot.sendMessage(chatId, text);
+    return sent.message_id;
+  }
+  await editMessage(bot, chatId, msgId, text, log);
+  return msgId;
+}
+
 module.exports = {
-  clearTelegramChat,
   editMessage,
+  upsertMessage,
   sendBatchedMessages,
   sendFormattedMessage,
   encryptToken,

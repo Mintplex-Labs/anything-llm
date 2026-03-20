@@ -5,8 +5,8 @@ const TelegramBot = require("node-telegram-bot-api");
 const {
   ExternalCommunicationConnector,
 } = require("../../models/externalCommunicationConnector");
-const { MessageQueue } = require("../connectorMessageQueue");
 const { BackgroundService } = require("../BackgroundWorkers");
+const { MessageQueue } = require("./utils/messageQueue");
 const { decryptToken } = require("./utils");
 const {
   WorkspaceAgentInvocation,

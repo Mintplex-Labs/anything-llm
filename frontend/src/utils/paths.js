@@ -171,7 +171,7 @@ export default {
       return `/settings/mobile-connections`;
     },
     telegram: () => {
-      return `/settings/telegram`;
+      return `/settings/external-connections/telegram`;
     },
   },
   agents: {

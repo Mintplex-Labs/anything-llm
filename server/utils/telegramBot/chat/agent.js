@@ -2,28 +2,18 @@ const { v4: uuidv4 } = require("uuid");
 const { EphemeralAgentHandler } = require("../../agents/ephemeral");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { safeJsonParse } = require("../../http");
-const { editMessage, sendFormattedMessage } = require("../utils");
-const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("../constants");
+const {
+  editMessage,
+  sendFormattedMessage,
+  upsertMessage,
+} = require("../utils");
+const {
+  STREAM_EDIT_INTERVAL,
+  MAX_MSG_LEN,
+  CURSOR_CHAR,
+} = require("../constants");
 
 const THOUGHT_FLUSH_INTERVAL_MS = 1500;
-
-/**
- * Send a new message or edit an existing one (upsert pattern).
- * @param {import('../commands').BotContext} ctx
- * @param {number} chatId
- * @param {number|null} msgId - Existing message ID, or null to send new
- * @param {string} text
- * @param {object} [log]
- * @returns {Promise<number>} The message ID (new or existing)
- */
-async function upsertMessage(bot, chatId, msgId, text, log) {
-  if (!msgId) {
-    const sent = await bot.sendMessage(chatId, text);
-    return sent.message_id;
-  }
-  await editMessage(bot, chatId, msgId, text, log);
-  return msgId;
-}
 
 /**
  * Run the agent pipeline for @agent messages and send the result to Telegram.
@@ -76,7 +66,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
     // Send initial message if none exists yet
     if (responseMsgId === null && !responsePending) {
       responsePending = ctx.bot
-        .sendMessage(chatId, currentResponseText() + " \u258d")
+        .sendMessage(chatId, currentResponseText() + CURSOR_CHAR)
         .then((sent) => {
           responseMsgId = sent.message_id;
           lastEditTime = Date.now();
@@ -98,7 +88,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
         ctx.bot,
         chatId,
         responseMsgId,
-        currentResponseText() + " \u258d",
+        currentResponseText() + CURSOR_CHAR,
         ctx.log
       ).catch(() => {});
     } else if (!editTimer) {
@@ -108,7 +98,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
           ctx.bot,
           chatId,
           responseMsgId,
-          currentResponseText() + " \u258d",
+          currentResponseText() + CURSOR_CHAR,
           ctx.log
         ).catch(() => {});
         editTimer = null;

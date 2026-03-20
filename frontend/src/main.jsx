@@ -373,7 +373,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/settings/telegram",
+        path: "/settings/external-connections/telegram",
         lazy: async () => {
           const { default: TelegramBotSettings } = await import(
             "@/pages/GeneralSettings/Connections/TelegramBot"

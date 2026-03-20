@@ -3,7 +3,6 @@ const {
 } = require("../models/externalCommunicationConnector");
 const { Telemetry } = require("../models/telemetry");
 const { TelegramBotService } = require("../utils/telegramBot");
-const { encryptToken } = require("../utils/telegramBot/utils");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
@@ -93,7 +92,6 @@ function telegramEndpoints(app) {
         // Preserve approved users when reconnecting with a new token
         const existing = await ExternalCommunicationConnector.get("telegram");
         const storedConfig = {
-          bot_token: encryptToken(String(bot_token)),
           bot_username: verification.username,
           default_workspace: workspaceSlug,
           approved_users: existing?.config?.approved_users || [],

@@ -8,13 +8,15 @@ const {
 } = require("../../chats");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
-const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("../constants");
+const {
+  STREAM_EDIT_INTERVAL,
+  MAX_MSG_LEN,
+  CURSOR_CHAR,
+} = require("../constants");
 const { editMessage, sendFormattedMessage } = require("../utils");
 const { sendVoiceResponse } = require("../utils/media");
 const { safeJsonParse } = require("../../http");
 const { handleAgentResponse } = require("./agent");
-
-const CURSOR_CHAR = " \u258d";
 
 /**
  * Check if the history is agentic by checking if any user messages start with "@agent"

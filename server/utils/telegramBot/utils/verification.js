@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const {
   ExternalCommunicationConnector,
 } = require("../../../models/externalCommunicationConnector");
+const { markdownToTelegram } = require("./format");
 
 /**
  * Generate a random 6-digit pairing code.
@@ -46,18 +47,20 @@ async function sendPairingRequest(bot, msg, pendingPairings) {
     requestedAt: existing?.requestedAt || new Date().toISOString(),
   });
 
-  await bot.sendMessage(
-    chatId,
-    [
-      "You need to be approved before using this bot.",
-      "",
-      `Your pairing code is: ${code}`,
-      "",
-      "In AnythingLLM, go to Settings → Connections → Telegram and approve your request.",
-      "",
-      "Make sure the pairing code shown here matches what is displayed in the settings page. This ensures no one else is trying to connect on your behalf.",
-    ].join("\n")
+  const formattedMessage = markdownToTelegram(
+    `You need to be **approved** before using this bot.
+
+Your pairing code is: <code>${code}</code>
+
+In AnythingLLM, go to Settings → Connections → Telegram and approve your request.
+
+Make sure the pairing code shown here matches what is displayed in the settings page.
+
+This ensures no one else is trying to connect on your behalf.`,
+    { escapeHtml: false }
   );
+
+  await bot.sendMessage(chatId, formattedMessage, { parse_mode: "HTML" });
 }
 
 /**
