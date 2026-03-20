@@ -61,8 +61,6 @@ async function photoToAttachment(bot, photos) {
  * @param {TelegramBot} bot
  * @param {number} chatId
  * @param {string} text
- */
-/**
  * @returns {boolean} true if voice was sent, false if TTS failed
  */
 async function sendVoiceResponse(bot, chatId, text) {
