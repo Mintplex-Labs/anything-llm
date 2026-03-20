@@ -88,7 +88,8 @@ async function streamResponse({
       workspace,
       thread,
       message,
-      voiceResponse
+      voiceResponse,
+      attachments
     );
   }
 
