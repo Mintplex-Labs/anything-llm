@@ -434,6 +434,7 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
   let completeText = "";
   let messageId = null;
   let messagePending = false;
+  let messageReady = null;
   let lastEditTime = 0;
   let editTimer = null;
   let msgOffset = 0;
@@ -441,6 +442,7 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
   const currentText = () => completeText.slice(msgOffset);
 
   const flushEdit = async (final = false) => {
+    if (messageReady) await messageReady;
     if (!messageId) return;
     clearTimeout(editTimer);
     editTimer = null;
@@ -477,11 +479,12 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
           msgOffset += MAX_MSG_LEN;
           messageId = null;
           messagePending = false;
+          messageReady = null;
         }
 
         if (messageId === null && !messagePending && !voiceResponse) {
           messagePending = true;
-          ctx.bot
+          messageReady = ctx.bot
             .sendMessage(chatId, currentText() + " \u258d")
             .then((sent) => {
               messageId = sent.message_id;
