@@ -1,7 +1,6 @@
-const {
-  WorkspaceAgentInvocation,
-} = require("../../../models/workspaceAgentInvocation");
-const { AgentHandler } = require("../../agents");
+const { v4: uuidv4 } = require("uuid");
+const { EphemeralAgentHandler } = require("../../agents/ephemeral");
+const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { safeJsonParse } = require("../../http");
 const { editMessage, sendFormattedMessage } = require("../utils");
 const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("../constants");
@@ -28,8 +27,7 @@ async function upsertMessage(bot, chatId, msgId, text, log) {
 
 /**
  * Run the agent pipeline for @agent messages and send the result to Telegram.
- * Creates a socket adapter so the existing AgentHandler/AIbitat system works
- * without a real WebSocket connection.
+ * Uses EphemeralAgentHandler to avoid creating a DB invocation record per call.
  * @param {import("../commands").BotContext} ctx
  * @param {number} chatId
  * @param {import('@prisma/client').workspaces} workspace
@@ -37,19 +35,6 @@ async function upsertMessage(bot, chatId, msgId, text, log) {
  * @param {string} message
  */
 async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
-  const { invocation } = await WorkspaceAgentInvocation.new({
-    prompt: message,
-    workspace,
-    user: null,
-    thread,
-  });
-
-  if (!invocation)
-    return await ctx.bot.sendMessage(
-      chatId,
-      "Failed to start agent. Try sending your message without @agent."
-    );
-
   let finalResponse = "";
   const thoughts = [];
   const charts = [];
@@ -129,7 +114,7 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
     }
   };
 
-  const socket = {
+  const handler = {
     send(data) {
       const parsed = safeJsonParse(data, null);
       if (!parsed) return;
@@ -213,37 +198,24 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
   }, 4000);
 
   try {
-    const agentHandler = await new AgentHandler({
-      uuid: invocation.uuid,
+    const agentHandler = await new EphemeralAgentHandler({
+      uuid: uuidv4(),
+      workspace,
+      prompt: message,
+      userId: null,
+      threadId: thread?.id || null,
     }).init();
-    await agentHandler.createAIbitat({ socket });
+    await agentHandler.createAIbitat({ handler });
 
-    // Telegram can't provide interactive feedback, so configure the agent to:
-    // 1. Always interrupt after generating a response (triggers askForFeedback)
-    // 2. Return "exit" on feedback request, which terminates the conversation
-    // This prevents the agent from looping through multiple rounds.
-    agentHandler.aibitat.defaultInterrupt = "ALWAYS";
+    // httpSocket terminates after the first agent message, but cap rounds
+    // as a safety net so the agent can't loop indefinitely.
     agentHandler.aibitat.maxRounds = 2;
 
-    agentHandler.aibitat.askForFeedback = () => Promise.resolve("exit");
-    agentHandler.aibitat.onError((_error, chat) => {
-      if (!finalResponse && chat?.content) finalResponse = chat.content;
-    });
     await agentHandler.startAgentCluster();
   } finally {
     clearInterval(typingInterval);
     clearTimeout(thoughtFlushTimeout);
     clearTimeout(editTimer);
-
-    // Close the invocation via the main process's DB connection since
-    // child processes (Bree jobs) can't share the SQLite connection pool.
-    if (typeof process.send === "function") {
-      process.send({ type: "closeInvocation", uuid: invocation.uuid });
-    } else {
-      try {
-        await WorkspaceAgentInvocation.close(invocation.uuid);
-      } catch {}
-    }
   }
 
   // Final thought update, mark as completed
@@ -296,7 +268,6 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
 
   if (finalResponse) {
     if (responseMsgId) {
-      // Streaming message exists — replace it with the final formatted response
       await editMessage(
         ctx.bot,
         chatId,
@@ -310,6 +281,17 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
     } else {
       await sendFormattedMessage(ctx.bot, chatId, finalResponse);
     }
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: finalResponse,
+        sources: [],
+        type: "chat",
+      },
+      threadId: thread?.id || null,
+    });
   }
 }
 
