@@ -21,8 +21,8 @@ async function downloadTelegramFile(bot, fileId) {
 async function transcribeAudio(audioBuffer) {
   const fs = require("fs");
   const path = require("path");
-  const { CollectorApi } = require("../collectorApi");
-  const { hotdirPath } = require("../files");
+  const { CollectorApi } = require("../../collectorApi");
+  const { hotdirPath } = require("../../files");
 
   if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
 
@@ -48,8 +48,8 @@ async function transcribeAudio(audioBuffer) {
 async function documentToText(documentBuffer, originalFilename) {
   const fs = require("fs");
   const path = require("path");
-  const { CollectorApi } = require("../collectorApi");
-  const { hotdirPath } = require("../files");
+  const { CollectorApi } = require("../../collectorApi");
+  const { hotdirPath } = require("../../files");
 
   if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
 
@@ -105,7 +105,7 @@ async function photoToAttachment(bot, photos) {
  */
 async function sendVoiceResponse(bot, chatId, text) {
   try {
-    const { getTTSProvider } = require("../TextToSpeech");
+    const { getTTSProvider } = require("../../TextToSpeech");
     const provider = getTTSProvider();
     const buffer = await provider.ttsBuffer(text);
     if (!buffer) return false;

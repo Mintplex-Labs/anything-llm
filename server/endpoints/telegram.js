@@ -3,10 +3,7 @@ const {
 } = require("../models/externalCommunicationConnector");
 const { Telemetry } = require("../models/telemetry");
 const { TelegramBotService } = require("../utils/telegramBot");
-const {
-  encryptToken,
-  decryptToken,
-} = require("../utils/telegramBot/encryption");
+const { encryptToken, decryptToken } = require("../utils/telegramBot/utils");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -247,7 +244,7 @@ function telegramEndpoints(app) {
             .json({ success: false, error: "chatId is required." });
 
         const service = new TelegramBotService();
-        await service.approveUser(chatId);
+        await service.approvePendingUser(chatId);
         await EventLogs.logEvent("telegram_user_approved", { chatId });
         return response.status(200).json({ success: true });
       } catch (e) {
@@ -272,7 +269,7 @@ function telegramEndpoints(app) {
             .json({ success: false, error: "chatId is required." });
 
         const service = new TelegramBotService();
-        await service.denyUser(chatId);
+        await service.denyPendingUser(chatId);
         await EventLogs.logEvent("telegram_user_denied", { chatId });
         return response.status(200).json({ success: true });
       } catch (e) {
@@ -297,7 +294,7 @@ function telegramEndpoints(app) {
             .json({ success: false, error: "chatId is required." });
 
         const service = new TelegramBotService();
-        await service.revokeUser(chatId);
+        await service.revokeExistingUser(chatId);
         await EventLogs.logEvent("telegram_user_revoked", { chatId });
         return response.status(200).json({ success: true });
       } catch (e) {

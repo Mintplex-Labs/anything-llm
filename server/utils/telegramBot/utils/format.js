@@ -172,30 +172,6 @@ function convertTableToPreformatted(tableMarkdown) {
   return output.join("\n");
 }
 
-/**
- * Attempt to format text as Telegram HTML, falling back to plain text on error.
- * @param {string} text - The text to format
- * @param {boolean} [tryFormat=true] - Whether to attempt formatting
- * @returns {{ text: string, parseMode: string|undefined }}
- */
-function formatForTelegram(text, tryFormat = true) {
-  if (!tryFormat || !text) {
-    return { text, parseMode: undefined };
-  }
-
-  try {
-    const formatted = markdownToTelegram(text);
-    return { text: formatted, parseMode: "HTML" };
-  } catch {
-    return { text, parseMode: undefined };
-  }
-}
-
-// Alias for backwards compatibility
-const markdownToTelegramHTML = markdownToTelegram;
-
 module.exports = {
   markdownToTelegram,
-  markdownToTelegramHTML,
-  formatForTelegram,
 };

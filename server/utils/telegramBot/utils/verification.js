@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const {
   ExternalCommunicationConnector,
-} = require("../../models/externalCommunicationConnector");
+} = require("../../../models/externalCommunicationConnector");
 
 /**
  * Generate a random 6-digit pairing code.
@@ -131,7 +131,6 @@ async function revokeUser(chatId, config) {
 }
 
 module.exports = {
-  generatePairingCode,
   isVerified,
   sendPairingRequest,
   approveUser,

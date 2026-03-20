@@ -5,7 +5,8 @@ const TelegramBot = require("node-telegram-bot-api");
 const { log, conclude } = require("./helpers/index.js");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceThread } = require("../models/workspaceThread");
-const { streamResponse } = require("../utils/telegramBot/chatPipeline");
+const { streamResponse } = require("../utils/telegramBot/chat/stream");
+// const { streamResponse } = require("../utils/telegramBot/chatPipeline");
 
 process.on("message", async (payload) => {
   const {

@@ -3,8 +3,8 @@ const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { convertToChatHistory } = require("../helpers/chat/responses");
 const { BOT_COMMANDS } = require("./constants");
-const { sendBatchedMessages } = require("./chatActions");
-const { showWorkspaceMenu } = require("./navigation");
+const { sendBatchedMessages } = require("./utils");
+const { showWorkspaceMenu } = require("./utils/navigation");
 
 /**
  * All command handler functions receive a `ctx` object:

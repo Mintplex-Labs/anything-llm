@@ -1,5 +1,5 @@
-const { Workspace } = require("../../models/workspace");
-const { WorkspaceThread } = require("../../models/workspaceThread");
+const { Workspace } = require("../../../models/workspace");
+const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { isVerified } = require("./verification");
 
 /**
@@ -106,7 +106,7 @@ async function showThreadMenu(ctx, chatId, workspaceSlug, messageId = null) {
  * @param {BotContext} ctx
  * @param {object} query - Telegram callback query object
  */
-async function handleCallback(ctx, query) {
+async function handleKeyboardQueryCallback(ctx, query) {
   const chatId = query.message.chat.id;
   const messageId = query.message.message_id;
   const data = query.data;
@@ -154,4 +154,4 @@ async function handleCallback(ctx, query) {
   }
 }
 
-module.exports = { showWorkspaceMenu, showThreadMenu, handleCallback };
+module.exports = { showWorkspaceMenu, handleKeyboardQueryCallback };

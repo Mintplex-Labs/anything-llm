@@ -1,11 +1,14 @@
-const { MAX_MSG_LEN } = require("./constants");
-const { markdownToTelegram } = require("./formatTelegram");
+const { MAX_MSG_LEN } = require("../constants");
+const { markdownToTelegram } = require("../utils/format");
+const { EncryptionManager } = require("../../EncryptionManager");
+
+const ENCRYPTED_PREFIX = "enc:";
 
 /**
  * Delete recent messages from a Telegram chat.
  * Telegram doesn't let bots bulk-delete in private chats,
  * so we delete messages one by one going backwards.
- * @param {TelegramBot} bot
+ * @param {import("../commands").BotContext} ctx
  * @param {number} chatId
  */
 async function clearTelegramChat(bot, chatId) {
@@ -24,7 +27,7 @@ async function clearTelegramChat(bot, chatId) {
 
 /**
  * Edit a Telegram message with truncation to stay under the 4096 char limit.
- * @param {TelegramBot} bot
+ * @param {import("../commands").BotContext} ctx
  * @param {number} chatId
  * @param {number} messageId
  * @param {string} text
@@ -138,9 +141,36 @@ async function sendBatchedMessages(bot, chatId, blocks, opts = {}) {
   }
 }
 
+/**
+ * Encrypt a bot token for safe storage in the database.
+ * @param {string} token
+ * @returns {string|null}
+ */
+function encryptToken(token) {
+  if (!token) return null;
+  const manager = new EncryptionManager();
+  const encrypted = manager.encrypt(token);
+  return encrypted ? ENCRYPTED_PREFIX + encrypted : null;
+}
+
+/**
+ * Decrypt an encrypted bot token from the database.
+ * Returns plaintext tokens as-is for backward compatibility.
+ * @param {string} encryptedToken
+ * @returns {string|null}
+ */
+function decryptToken(encryptedToken) {
+  if (!encryptedToken) return null;
+  if (!encryptedToken.startsWith(ENCRYPTED_PREFIX)) return encryptedToken;
+  const manager = new EncryptionManager();
+  return manager.decrypt(encryptedToken.slice(ENCRYPTED_PREFIX.length));
+}
+
 module.exports = {
   clearTelegramChat,
   editMessage,
   sendBatchedMessages,
   sendFormattedMessage,
+  encryptToken,
+  decryptToken,
 };

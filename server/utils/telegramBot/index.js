@@ -8,7 +8,7 @@ const {
 const { MessageQueue } = require("../connectorMessageQueue");
 const { BackgroundService } = require("../BackgroundWorkers");
 const { BOT_COMMANDS } = require("./constants");
-const { decryptToken } = require("./encryption");
+const { decryptToken } = require("./utils");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
@@ -18,15 +18,15 @@ const {
   approveUser,
   denyUser,
   revokeUser,
-} = require("./verification");
+} = require("./utils/verification");
 const { COMMAND_HANDLERS } = require("./commands");
-const { handleCallback } = require("./navigation");
+const { handleKeyboardQueryCallback } = require("./utils/navigation");
 const {
   downloadTelegramFile,
   transcribeAudio,
   documentToText,
   photoToAttachment,
-} = require("./mediaHandlers");
+} = require("./utils/media");
 
 class TelegramBotService {
   static _instance = null;
@@ -158,15 +158,15 @@ class TelegramBotService {
     };
   }
 
-  async approveUser(chatId) {
+  async approvePendingUser(chatId) {
     await approveUser(this.#bot, chatId, this.#config, this.#pendingPairings);
   }
 
-  async denyUser(chatId) {
+  async denyPendingUser(chatId) {
     await denyUser(this.#bot, chatId, this.#pendingPairings);
   }
 
-  async revokeUser(chatId) {
+  async revokeExistingUser(chatId) {
     await revokeUser(chatId, this.#config);
   }
 
@@ -195,7 +195,9 @@ class TelegramBotService {
     );
 
     // Register callback queries, used for workspace/thread selection interactive menus
-    this.#bot.on("callback_query", (query) => handleCallback(ctx, query));
+    this.#bot.on("callback_query", (query) =>
+      handleKeyboardQueryCallback(ctx, query)
+    );
 
     this.#bot.on("message", (msg) => {
       if (msg.text?.startsWith("/")) return;

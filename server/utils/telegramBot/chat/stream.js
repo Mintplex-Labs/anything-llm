@@ -1,22 +1,24 @@
-const { WorkspaceChats } = require("../../models/workspaceChats");
+const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { getLLMProvider, getVectorDbClass } = require("../../helpers");
+const { DocumentManager } = require("../../DocumentManager");
 const {
-  WorkspaceAgentInvocation,
-} = require("../../models/workspaceAgentInvocation");
-const { getLLMProvider, getVectorDbClass } = require("../helpers");
-const { DocumentManager } = require("../DocumentManager");
-const { sourceIdentifier, recentChatHistory, chatPrompt } = require("../chats");
-const { AgentHandler } = require("../agents");
-const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("./constants");
-const { editMessage, sendFormattedMessage } = require("./chatActions");
-const { sendVoiceResponse } = require("./mediaHandlers");
-const { safeJsonParse } = require("../http");
+  sourceIdentifier,
+  recentChatHistory,
+  chatPrompt,
+} = require("../../chats");
+const { AgentHandler } = require("../../agents");
+const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("../constants");
+const { editMessage, sendFormattedMessage } = require("../utils");
+const { sendVoiceResponse } = require("../utils/media");
+const { safeJsonParse } = require("../../http");
+const { handleAgentResponse } = require("./agent");
 
 /**
  * Stream a response to Telegram by running the full RAG pipeline.
  * Uses the same pipeline as the web UI (RAG, pinned docs, etc.)
  * and stores chats with thread_id so they appear in the AnythingLLM UI.
  * @param {object} context - The context object.
- * @param {import("./commands").BotContext} context.ctx - The bot object.
+ * @param {import("../commands").BotContext} context.ctx - The bot object.
  * @param {number} context.chatId - The chat ID.
  * @param {import('@prisma/client').workspaces} context.workspace - The workspace object.
  * @param {object|null} context.thread - The thread object.
@@ -37,10 +39,6 @@ async function streamResponse({
     throw new Error("Invalid context or missing required parameters!");
 
   await ctx.bot.sendChatAction(chatId, "typing");
-  const typingInterval = setInterval(() => {
-    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
-  }, 4000);
-
   // Handle @agent invocations via the agent pipeline
   if (
     await AgentHandler.isAgentInvocation({
@@ -52,6 +50,10 @@ async function streamResponse({
     return await handleAgentResponse(ctx, chatId, workspace, thread, message);
   }
 
+  // Start typing indicator renewal for traditional chat, agent has its own typing indicator.
+  const typingInterval = setInterval(() => {
+    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
+  }, 4000);
   const chatMode = workspace.chatMode || "chat";
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
@@ -123,7 +125,7 @@ async function streamResponse({
     return;
   }
 
-  const { fillSourceWindow } = require("../helpers/chat");
+  const { fillSourceWindow } = require("../../helpers/chat");
   const filledSources = fillSourceWindow({
     nDocs: workspace?.topN || 4,
     searchResults: vectorSearchResults.sources,
@@ -213,215 +215,6 @@ async function streamResponse({
 }
 
 /**
- * Run the agent pipeline for @agent messages and send the result to Telegram.
- * Creates a socket adapter so the existing AgentHandler/AIbitat system works
- * without a real WebSocket connection.
- * @param {BotContext} ctx
- * @param {number} chatId
- * @param {import('../../prisma').workspaces} workspace
- * @param {object|null} thread
- * @param {string} message
- */
-async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
-  const { invocation } = await WorkspaceAgentInvocation.new({
-    prompt: message,
-    workspace,
-    user: null,
-    thread,
-  });
-
-  if (!invocation) {
-    await ctx.bot.sendMessage(
-      chatId,
-      "Failed to start agent. Try sending your message without @agent."
-    );
-    return;
-  }
-
-  let finalResponse = "";
-  const thoughts = [];
-  const charts = [];
-  const files = [];
-  let thoughtMsgId = null;
-  let lastThoughtText = "";
-
-  const socket = {
-    send(data) {
-      const parsed = JSON.parse(data);
-
-      // Introspection / thinking updates
-      if (parsed.type === "statusResponse" && parsed.content) {
-        thoughts.push(parsed.content);
-        return;
-      }
-
-      // Chart visualization
-      if (parsed.type === "rechartVisualize" && parsed.content) {
-        charts.push(parsed.content);
-        return;
-      }
-
-      // File download
-      if (parsed.type === "fileDownload" && parsed.content) {
-        files.push(parsed.content);
-        return;
-      }
-
-      // Streaming agent response
-      if (parsed.type === "reportStreamEvent") {
-        const inner = parsed.content;
-        if (inner?.type === "fullTextResponse" && inner?.content) {
-          finalResponse = inner.content;
-        }
-        return;
-      }
-
-      // Non-streaming agent response (fallback)
-      if (parsed.from && parsed.from !== "USER" && parsed.content) {
-        finalResponse = parsed.content;
-      }
-    },
-    close() {},
-  };
-
-  // Periodically flush thoughts as a single live-updating message
-  const thoughtFlush = setInterval(async () => {
-    if (thoughts.length === 0) return;
-    const text = thoughts.map((t) => `⏳ ${t}`).join("\n");
-    if (text === lastThoughtText) return;
-    lastThoughtText = text;
-    try {
-      if (!thoughtMsgId) {
-        const sent = await ctx.bot.sendMessage(chatId, text);
-        thoughtMsgId = sent.message_id;
-      } else {
-        await editMessage(ctx.bot, chatId, thoughtMsgId, text, ctx.log);
-      }
-    } catch {}
-  }, 1500);
-
-  const typingInterval = setInterval(() => {
-    ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
-  }, 4000);
-
-  try {
-    const agentHandler = await new AgentHandler({
-      uuid: invocation.uuid,
-    }).init();
-    await agentHandler.createAIbitat({ socket });
-    // End on interrupts. Telegram can't provide interactive feedback and
-    // auto-continuing would accumulate tool results across cycles, risking token limits.
-    socket.askForFeedback = () => Promise.resolve("exit");
-    agentHandler.aibitat.onError((_error, chat) => {
-      if (!finalResponse && chat?.content) finalResponse = chat.content;
-    });
-    await agentHandler.startAgentCluster();
-  } finally {
-    clearInterval(typingInterval);
-    clearInterval(thoughtFlush);
-    // Close the invocation via the main process's DB connection since
-    // child processes (Bree jobs) can't share the SQLite connection pool.
-    if (typeof process.send === "function") {
-      process.send({ type: "closeInvocation", uuid: invocation.uuid });
-    } else {
-      try {
-        await WorkspaceAgentInvocation.close(invocation.uuid);
-      } catch {}
-    }
-  }
-
-  // Final thought update, mark as completed
-  if (thoughtMsgId && thoughts.length > 0) {
-    const doneText = thoughts.map((t) => `✓ ${t}`).join("\n");
-    await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log);
-  }
-
-  // Send charts as locally rendered images
-  for (const chart of charts) {
-    try {
-      const buffer = await renderChartToBuffer(chart);
-      await ctx.bot.sendPhoto(
-        chatId,
-        buffer,
-        { caption: chart.title },
-        {
-          filename: "chart.png",
-          contentType: "image/png",
-          knownLength: buffer.length,
-        }
-      );
-    } catch {
-      await ctx.bot.sendMessage(
-        chatId,
-        `${chart.title}: failed to render chart.`
-      );
-    }
-  }
-
-  // Send files as Telegram documents
-  for (const file of files) {
-    try {
-      const base64Data = file.b64Content.split(",")[1];
-      const buffer = Buffer.from(base64Data, "base64");
-      await ctx.bot.sendDocument(
-        chatId,
-        buffer,
-        {},
-        {
-          filename: file.filename,
-          contentType: "application/octet-stream",
-        }
-      );
-    } catch {}
-  }
-
-  if (finalResponse) {
-    await sendFormattedMessage(ctx.bot, chatId, finalResponse);
-  } else if (charts.length === 0 && files.length === 0) {
-    await ctx.bot.sendMessage(
-      chatId,
-      "Agent completed but no response was generated."
-    );
-  }
-}
-
-/**
- * Render a Recharts dataset locally as a PNG buffer using chartjs-node-canvas.
- * @param {object} chart - { type, title, dataset }
- * @returns {Promise<Buffer>}
- */
-async function renderChartToBuffer(chart) {
-  const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
-  const canvas = new ChartJSNodeCanvas({ width: 600, height: 400 });
-
-  const data = JSON.parse(chart.dataset);
-  const labels = data.map((d) => d.name);
-  const valueKey = Object.keys(data[0]).find((k) => k !== "name");
-  const values = data.map((d) => d[valueKey]);
-
-  const config = {
-    type: chart.type === "area" ? "line" : chart.type,
-    data: {
-      labels,
-      datasets: [
-        {
-          label: chart.title,
-          data: values,
-          fill: chart.type === "area",
-          borderColor: "rgb(59, 130, 246)",
-          backgroundColor: "rgba(59, 130, 246, 0.2)",
-        },
-      ],
-    },
-    options: {
-      plugins: { title: { display: true, text: chart.title } },
-    },
-  };
-
-  return await canvas.renderToBuffer(config);
-}
-
-/**
  * Create a stream response handler for editing Telegram messages as tokens arrive.
  * Manages message splitting when content exceeds Telegram's length limit.
  * @param {object} options
@@ -433,7 +226,7 @@ async function renderChartToBuffer(chart) {
 function createStreamHandler({ ctx, chatId, voiceResponse }) {
   let completeText = "";
   let messageId = null;
-  let messagePending = false;
+  let messagePending = null;
   let lastEditTime = 0;
   let editTimer = null;
   let msgOffset = 0;
@@ -441,6 +234,7 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
   const currentText = () => completeText.slice(msgOffset);
 
   const flushEdit = async (final = false) => {
+    if (messagePending) await messagePending;
     if (!messageId) return;
     clearTimeout(editTimer);
     editTimer = null;
@@ -476,19 +270,18 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
           ).catch(() => {});
           msgOffset += MAX_MSG_LEN;
           messageId = null;
-          messagePending = false;
+          messagePending = null;
         }
 
         if (messageId === null && !messagePending && !voiceResponse) {
-          messagePending = true;
-          ctx.bot
+          messagePending = ctx.bot
             .sendMessage(chatId, currentText() + " \u258d")
             .then((sent) => {
               messageId = sent.message_id;
               lastEditTime = Date.now();
             })
             .catch(() => {
-              messagePending = false;
+              messagePending = null;
             });
           return;
         }
