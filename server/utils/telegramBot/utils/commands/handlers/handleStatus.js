@@ -53,6 +53,12 @@ ${nativeToolCalling ? "Enabled" : "Disabled"}
 # Chat Mode: 
 ${workspace.chatMode ?? "chat"}`);
 
+  if (workspace.chatMode === "automatic" && !nativeToolCalling) {
+    markdown.unshift(
+      `<blockquote>**⚠️ Note**\nNative tool calling is unavailable for this provider/model. You can only use tools with the @agent command.</blockquote>`
+    );
+  }
+
   if (workspace.chatMode === "chat") {
     if (nativeToolCalling) {
       markdown.unshift(

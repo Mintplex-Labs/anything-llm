@@ -24,8 +24,16 @@ const THOUGHT_FLUSH_INTERVAL_MS = 1500;
  * @param {import('@prisma/client').workspaces} workspace
  * @param {object|null} thread
  * @param {string} message
+ * @param {boolean} voiceResponse - Whether to send the response as voice audio
  */
-async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
+async function handleAgentResponse(
+  ctx,
+  chatId,
+  workspace,
+  thread,
+  message,
+  voiceResponse = false
+) {
   let finalResponse = "";
   let metrics = {};
   const sources = [];
@@ -271,6 +279,19 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
   const responseText = finalResponse || streamingText;
 
   if (responseText) {
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: responseText,
+        sources,
+        type: "chat",
+        metrics,
+      },
+      threadId: thread?.id || null,
+    });
+
+    // Always deliver text response first
     if (responseMsgId) {
       await editMessage(
         ctx.bot,
@@ -286,17 +307,11 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
       await sendFormattedMessage(ctx.bot, chatId, responseText);
     }
 
-    await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message,
-      response: {
-        text: responseText,
-        sources,
-        type: "chat",
-        metrics,
-      },
-      threadId: thread?.id || null,
-    });
+    // Send voice as an additional attachment if requested
+    if (voiceResponse) {
+      ctx.log?.info?.(`Generating voice response for ${chatId}`);
+      await sendVoiceResponse(ctx.bot, chatId, responseText);
+    }
   }
 }
 

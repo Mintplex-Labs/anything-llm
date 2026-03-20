@@ -76,7 +76,7 @@ function ConnectionsLayout({ children, fullPage = false }) {
       >
         {fullPage ? (
           <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+            <div className="w-full flex flex-col gap-y-1 pb-4 border-white/10 border-b-2">
               <div className="items-center flex gap-x-4">
                 <p className="text-lg leading-6 font-bold text-theme-text-primary">
                   {t("telegram.title")}

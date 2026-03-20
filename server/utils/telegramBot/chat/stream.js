@@ -82,7 +82,14 @@ async function streamResponse({
       chatMode: workspace.chatMode ?? "chat",
     }))
   ) {
-    return await handleAgentResponse(ctx, chatId, workspace, thread, message);
+    return await handleAgentResponse(
+      ctx,
+      chatId,
+      workspace,
+      thread,
+      message,
+      voiceResponse
+    );
   }
 
   const typingInterval = setInterval(() => {
@@ -141,8 +148,6 @@ async function streamResponse({
       workspace,
       ctx,
       chatId,
-      voiceResponse,
-      typingInterval,
     });
 
     await persistAndDeliver({
@@ -256,7 +261,6 @@ async function generateResponse({
   workspace,
   ctx,
   chatId,
-  voiceResponse,
 }) {
   let completeText = "";
   let metrics = {};
@@ -269,14 +273,13 @@ async function generateResponse({
     const { responseHandler, flushEdit } = createStreamHandler({
       ctx,
       chatId,
-      voiceResponse,
     });
 
     completeText = await LLMConnector.handleStream(responseHandler, stream, {
       uuid: chatId.toString(),
     });
 
-    if (!voiceResponse) await flushEdit(true);
+    await flushEdit(true);
     metrics = stream.metrics || {};
   } else {
     const { textResponse, metrics: performanceMetrics } =
@@ -286,7 +289,7 @@ async function generateResponse({
       });
     completeText = textResponse;
     metrics = performanceMetrics || {};
-    if (!voiceResponse && completeText?.length > 0)
+    if (completeText?.length > 0)
       await sendFormattedMessage(ctx.bot, chatId, completeText);
   }
 
@@ -327,9 +330,11 @@ async function persistAndDeliver({
     threadId: thread?.id || null,
   });
 
-  if (!voiceResponse) return;
-  const ttsSent = await sendVoiceResponse(ctx.bot, chatId, completeText);
-  if (!ttsSent) await ctx.bot.sendMessage(chatId, completeText);
+  // Send voice as an additional attachment if requested
+  if (voiceResponse) {
+    ctx.log?.info?.(`Generating voice response for ${chatId}`);
+    await sendVoiceResponse(ctx.bot, chatId, completeText);
+  }
 }
 
 /**
@@ -349,10 +354,9 @@ function parseSSEChunk(data) {
  * @param {object} options
  * @param {import("./commands").BotContext} options.ctx - Bot context
  * @param {number} options.chatId - Telegram chat ID
- * @param {boolean} options.voiceResponse - Whether response will be sent as voice
  * @returns {{ responseHandler: object, flushEdit: function }}
  */
-function createStreamHandler({ ctx, chatId, voiceResponse }) {
+function createStreamHandler({ ctx, chatId }) {
   let completeText = "";
   let messageId = null;
   let messagePending = null;
@@ -388,7 +392,7 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
    * @returns {boolean} true if a new message was initiated (caller should skip edit).
    */
   function startNewMessageIfNeeded() {
-    if (messageId !== null || messagePending || voiceResponse) return false;
+    if (messageId !== null || messagePending) return false;
     messagePending = ctx.bot
       .sendMessage(chatId, currentText() + CURSOR_CHAR)
       .then((sent) => {
