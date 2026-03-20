@@ -36,6 +36,8 @@ class TelegramBotService {
   #chatState = new Map();
   // Pending pairing requests: chatId -> { code, telegramUsername, firstName }
   #pendingPairings = new Map();
+  // Active workers per chat: chatId -> { worker, jobId }
+  #activeWorkers = new Map();
 
   constructor() {
     if (TelegramBotService._instance) return TelegramBotService._instance;
@@ -141,11 +143,16 @@ class TelegramBotService {
     } catch {
       // Polling may already be stopped
     }
+    // Kill any active workers before clearing state
+    for (const chatId of this.#activeWorkers.keys()) {
+      this.abortChat(chatId);
+    }
     this.#bot = null;
     this.#config = null;
     this.#queue.clear();
     this.#chatState.clear();
     this.#pendingPairings.clear();
+    this.#activeWorkers.clear();
     this.#log("Stopped");
   }
 
@@ -330,35 +337,103 @@ class TelegramBotService {
     const state = this.#getState(chatId);
     try {
       const bgService = new BackgroundService();
-      // Collect the invocation UUID from the child so we can close it
-      // after exit, when the child's SQLite lock is released.
+      const jobId = `handle-telegram-chat-${Date.now()}`;
       let invocationUuid = null;
-      await bgService.runJob(
-        "handle-telegram-chat",
-        {
+      let wasAborted = false;
+
+      await bgService.bree.add({
+        name: jobId,
+        path: require("path").resolve(
+          __dirname,
+          "../../jobs/handle-telegram-chat.js"
+        ),
+      });
+
+      await bgService.bree.run(jobId);
+      const worker = bgService.bree.workers.get(jobId);
+
+      if (worker && typeof worker.send === "function") {
+        worker.send({
           botToken: this.#config.bot_token,
           chatId,
           workspaceSlug: state.workspaceSlug,
           threadSlug: state.threadSlug,
           ...payload,
-        },
-        {
-          onMessage: (msg) => {
-            if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
-          },
-        }
-      );
+        });
+      }
 
-      // We do this here to avoid creating another instance of a prisma connection
-      // in the background worker.
+      if (worker) {
+        worker.on("message", (msg) => {
+          if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
+        });
+        this.#activeWorkers.set(chatId, { worker, jobId, bgService });
+      }
+
+      await new Promise((resolve, reject) => {
+        worker.on("exit", async (code) => {
+          this.#activeWorkers.delete(chatId);
+          try {
+            await bgService.bree.remove(jobId);
+          } catch {}
+          if (code === 0 || wasAborted) resolve();
+          else reject(new Error(`Job ${jobId} exited with code ${code}`));
+        });
+
+        worker.on("error", async (err) => {
+          this.#activeWorkers.delete(chatId);
+          try {
+            await bgService.bree.remove(jobId);
+          } catch {}
+          reject(err);
+        });
+
+        const active = this.#activeWorkers.get(chatId);
+        if (active) {
+          active.markAborted = () => {
+            wasAborted = true;
+          };
+        }
+      });
+
       if (invocationUuid) await WorkspaceAgentInvocation.close(invocationUuid);
     } catch (error) {
+      this.#activeWorkers.delete(chatId);
+      if (error.message?.includes("aborted")) return;
       this.#log("Chat worker error:", error.message);
       await ctx.bot.sendMessage(
         chatId,
         "Sorry, something went wrong. Please try again."
       );
     }
+  }
+
+  /**
+   * Abort any active LLM worker for a given chat.
+   * @param {number} chatId
+   * @returns {boolean} True if a worker was aborted, false otherwise.
+   */
+  abortChat(chatId) {
+    const active = this.#activeWorkers.get(chatId);
+    if (!active) return false;
+
+    const { worker, jobId, bgService, markAborted } = active;
+    this.#log(`Aborting worker for chat ${chatId} (job: ${jobId})`);
+
+    if (markAborted) markAborted();
+
+    try {
+      worker.kill("SIGTERM");
+    } catch (err) {
+      this.#log(`Failed to kill worker: ${err.message}`);
+    }
+
+    this.#activeWorkers.delete(chatId);
+
+    try {
+      bgService.bree.remove(jobId).catch(() => {});
+    } catch {}
+
+    return true;
   }
 
   #shouldVoiceRespond(isVoiceMessage) {

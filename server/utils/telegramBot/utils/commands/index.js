@@ -109,6 +109,15 @@ const BOT_COMMANDS = [
       return handleProof;
     },
   },
+  {
+    ...BASE_COMMAND,
+    command: "abort",
+    description: "Stop the current response",
+    initHandler: () => {
+      const { handleAbort } = require("./handlers/handleAbort");
+      return handleAbort;
+    },
+  },
 ];
 
 module.exports = {
