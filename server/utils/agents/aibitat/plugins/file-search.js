@@ -17,7 +17,6 @@ const FILE_SEARCH_PATH =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../../../anythingllm-files")
     : "/anythingllm-files";
-// const MAX_SEARCH_DEPTH = 5;
 const MAX_SEARCH_RESULTS = 10000;
 const MAX_CONTENT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const RECENT_FILE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -342,13 +341,7 @@ const fileSearch = {
            * @returns {Promise<{fullPath: string, relativePath: string, name: string, size: number, mtime: Date}[]>}
            */
           listCandidateFiles: async function (searchRoot, fileTypes = []) {
-            const args = [
-              "--files",
-              "--null",
-              "--no-ignore",
-              // "--max-depth",
-              // `${MAX_SEARCH_DEPTH}`,
-            ];
+            const args = ["--files", "--null", "--no-ignore"];
             this.appendTypeGlobs(args, fileTypes);
 
             // Parse null-delimited ripgrep output into file metadata,
@@ -403,8 +396,6 @@ const fileSearch = {
               "--null",
               "--no-ignore",
               "--no-binary",
-              // "--max-depth",
-              // `${MAX_SEARCH_DEPTH}`,
               "--fixed-strings",
               "--ignore-case",
               "--max-filesize",
