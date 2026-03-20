@@ -10,11 +10,12 @@ const { isWithin, hotdirPath } = require("../../../files");
 
 const execFileAsync = promisify(execFile);
 
-// In development files live under server/storage; in production they're
-// mounted at /anythingllm-files via Docker volume.
+// Bind-mounted host directory for file search.
+// In production (Docker) this is mounted at /anythingllm-files.
+// In development it lives at the project root: <repo>/anythingllm-files.
 const FILE_SEARCH_PATH =
   process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, "../../../../storage/anythingllm-files")
+    ? path.resolve(__dirname, "../../../../../anythingllm-files")
     : "/anythingllm-files";
 // const MAX_SEARCH_DEPTH = 5;
 const MAX_SEARCH_RESULTS = 10000;
