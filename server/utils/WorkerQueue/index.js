@@ -66,6 +66,14 @@ async function queueReranking(payload) {
   return result.reranked;
 }
 
+// Graceful shutdown: kill forked workers so they don't become orphaned.
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.on(signal, () => {
+    embeddingQueue.killWorker();
+    rerankingQueue.killWorker();
+  });
+}
+
 module.exports = {
   queueEmbedding,
   queueReranking,
