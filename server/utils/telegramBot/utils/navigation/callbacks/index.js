@@ -7,11 +7,16 @@ const { handleBackWorkspaces } = require("./handleBackWorkspaces");
 const { handleModelPagination } = require("./handleModelPagination");
 const { handleModelCancel } = require("./handleModelCancel");
 const { handleModelSelect } = require("./handleModelSelect");
+const { handleSourceSelect } = require("./handleSourceSelect");
+const { handleSourcePagination } = require("./handleSourcePagination");
+const { handleBackSources } = require("./handleBackSources");
 
 const ExactCallbackHandlers = {
   "ws-create": handleWorkspaceCreate,
   "back:workspaces": handleBackWorkspaces,
   "mdl:cancel": handleModelCancel,
+  "src:back": handleBackSources,
+  "src:close": handleSourceSelect,
 };
 
 const PrefixCallbackHandlers = [
@@ -21,6 +26,8 @@ const PrefixCallbackHandlers = [
   { prefix: "th:", handler: handleThreadSelect },
   { prefix: "mdlpg:", handler: handleModelPagination },
   { prefix: "mdl:", handler: handleModelSelect },
+  { prefix: "srcpg:", handler: handleSourcePagination },
+  { prefix: "src:", handler: handleSourceSelect },
 ];
 
 /**

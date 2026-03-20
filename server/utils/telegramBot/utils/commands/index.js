@@ -100,6 +100,15 @@ const BOT_COMMANDS = [
       return handleHelp;
     },
   },
+  {
+    ...BASE_COMMAND,
+    command: "proof",
+    description: "Show citations for the last reply",
+    initHandler: () => {
+      const { handleProof } = require("./handlers/handleProof");
+      return handleProof;
+    },
+  },
 ];
 
 module.exports = {
