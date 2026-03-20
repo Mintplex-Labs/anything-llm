@@ -16,12 +16,14 @@ const ENCRYPTED_PREFIX = "enc:";
  */
 async function editMessage(bot, chatId, messageId, text, log, opts = {}) {
   if (!text || !bot) return;
-  const { format = false } = opts;
+  const { format = false, html = false, disableLinkPreview = false } = opts;
 
   let finalText = text;
   let parseMode = undefined;
 
-  if (format) {
+  if (html) {
+    parseMode = "HTML";
+  } else if (format) {
     try {
       finalText = markdownToTelegram(text);
       parseMode = "HTML";
@@ -38,6 +40,7 @@ async function editMessage(bot, chatId, messageId, text, log, opts = {}) {
       chat_id: chatId,
       message_id: messageId,
       parse_mode: parseMode,
+      disable_web_page_preview: disableLinkPreview || undefined,
     });
   } catch (error) {
     if (!error.message?.includes("message is not modified")) {
@@ -51,6 +54,7 @@ async function editMessage(bot, chatId, messageId, text, log, opts = {}) {
         await bot.editMessageText(plainTruncated, {
           chat_id: chatId,
           message_id: messageId,
+          disable_web_page_preview: disableLinkPreview || undefined,
         });
       } catch {}
     }
@@ -171,14 +175,20 @@ function resolveWorkspaceProvider(workspace) {
  * @param {number|null} msgId - Existing message ID, or null to send new
  * @param {string} text
  * @param {object} [log]
+ * @param {object} [opts]
+ * @param {boolean} [opts.html=false] - Whether text is pre-formatted HTML
  * @returns {Promise<number>} The message ID (new or existing)
  */
-async function upsertMessage(bot, chatId, msgId, text, log) {
+async function upsertMessage(bot, chatId, msgId, text, log, opts = {}) {
+  const { html = false, disableLinkPreview = false } = opts;
   if (!msgId) {
-    const sent = await bot.sendMessage(chatId, text);
+    const sent = await bot.sendMessage(chatId, text, {
+      parse_mode: html ? "HTML" : undefined,
+      disable_web_page_preview: disableLinkPreview || undefined,
+    });
     return sent.message_id;
   }
-  await editMessage(bot, chatId, msgId, text, log);
+  await editMessage(bot, chatId, msgId, text, log, opts);
   return msgId;
 }
 

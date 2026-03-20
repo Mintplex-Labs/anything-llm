@@ -7,6 +7,7 @@ const {
   sendFormattedMessage,
   upsertMessage,
 } = require("../utils");
+const { escapeHTML } = require("../utils/format");
 const { sendVoiceResponse } = require("../utils/media");
 const {
   STREAM_EDIT_INTERVAL,
@@ -162,6 +163,20 @@ async function handleAgentResponse(
   let flushing = false;
   let thoughtFlushTimeout = null;
 
+  const formatThoughtsAsBlockquote = (thoughtList, done = false) => {
+    const header = done
+      ? "✓ <b>Agent completed:</b>"
+      : "🤔 <b>Agent is thinking:</b>";
+    const icon = done ? "✓" : "⏳";
+    const content = thoughtList
+      .map((t) => `${icon} ${escapeHTML(t)}`)
+      .join("\n");
+    const fullContent = `${header}\n${content}`;
+    const tag =
+      fullContent.length > 200 ? "blockquote expandable" : "blockquote";
+    return `<${tag}>${fullContent}</${tag.split(" ")[0]}>`;
+  };
+
   const flushThoughts = async () => {
     if (flushing || thoughts.length === 0) {
       thoughtFlushTimeout = setTimeout(
@@ -170,7 +185,7 @@ async function handleAgentResponse(
       );
       return;
     }
-    const text = thoughts.map((t) => `⏳ ${t}`).join("\n");
+    const text = formatThoughtsAsBlockquote(thoughts, false);
     if (text === lastThoughtText) {
       thoughtFlushTimeout = setTimeout(
         flushThoughts,
@@ -186,7 +201,8 @@ async function handleAgentResponse(
         chatId,
         thoughtMsgId,
         text,
-        ctx.log
+        ctx.log,
+        { html: true, disableLinkPreview: true }
       );
     } catch (err) {
       ctx.log?.error?.("Failed to update thought message:", err);
@@ -228,8 +244,11 @@ async function handleAgentResponse(
 
   // Final thought update, mark as completed
   if (thoughtMsgId && thoughts.length > 0) {
-    const doneText = thoughts.map((t) => `✓ ${t}`).join("\n");
-    await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log);
+    const doneText = formatThoughtsAsBlockquote(thoughts, true);
+    await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log, {
+      html: true,
+      disableLinkPreview: true,
+    });
   }
 
   // Send charts as locally rendered images
