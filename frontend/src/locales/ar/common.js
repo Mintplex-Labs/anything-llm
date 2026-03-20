@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "اسم مساحة العمل",
-    user: "مستعمِل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
     save: "حفظ التغييرات",
@@ -184,18 +183,12 @@ const TRANSLATIONS = {
       title: "وضع المحادثة",
       chat: {
         title: "المحادثة",
-        description:
-          'سيوفر إجابات بناءً على المعرفة العامة للنموذج اللغوي الكبير، بالإضافة إلى سياق المستندات.<br />ستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
       query: {
         title: "استعلام",
-        description:
-          'سيوفر الإجابات <b>فقط</b> إذا تم العثور على سياق الوثيقة.<br />ستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
       automatic: {
         title: "سيارة",
-        description:
-          'سيتم استخدام الأدوات تلقائيًا إذا كان النموذج ومزود الخدمة يدعمان استدعاء الأدوات الأصلية. إذا لم يتم دعم الأدوات الأصلية، فستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
     },
     history: {
@@ -738,7 +731,6 @@ const TRANSLATIONS = {
     see_less: "اقرأ المزيد",
     see_more: "عرض المزيد",
     tools: "الأدوات",
-    browse: "تصفح",
     text_size_label: "حجم النص",
     select_model: "اختر الطراز",
     sources: "مصادر",
@@ -751,7 +743,6 @@ const TRANSLATIONS = {
     edit: "تحرير",
     publish: "نشر",
     stop_generating: "توقف عن إنشاء رد",
-    pause_tts_speech_message: "توقف عن قراءة النص بصوت مسجل.",
     slash_commands: "أوامر مختصرة",
     agent_skills: "مهارات الوكيل",
     manage_agent_skills: "إدارة مهارات الوكلاء",
@@ -1038,9 +1029,7 @@ const TRANSLATIONS = {
           "استخدم اسم مستخدم روبوت غير تقليدي لتقليل فرص اكتشافه.",
       },
       "toast-enter-token": "الرجاء إدخال رمز البوت.",
-      "toast-select-workspace": "الرجاء اختيار مساحة عمل.",
       "toast-connect-failed": "فشل الاتصال بالروبوت.",
-      "toast-connect-success": "تم توصيل روبوت Telegram بنجاح!",
     },
     connected: {
       status: "متصل",
@@ -1056,18 +1045,12 @@ const TRANSLATIONS = {
       "voice-text-only": "النص فقط",
       "voice-mirror": "مرآة (يرد الصوت عند إرسال المستخدم له)",
       "voice-always": "يرجى تضمين تسجيل صوتي (إرسال تسجيل صوتي مع كل رد).",
-      "toast-enter-token": "الرجاء إدخال رمز البوت.",
       "toast-disconnect-failed": "فشل فصل الوحدة الآلية.",
-      "toast-disconnect-success": "تم فصل الروبوت الخاص بتطبيق تيليجرام.",
       "toast-reconnect-failed": "فشل إعادة الاتصال بالروبوت.",
-      "toast-reconnect-success": "تم إعادة توصيل روبوت تليجرام!",
       "toast-voice-failed": "فشلت عملية تحديث وضع الصوت.",
       "toast-approve-failed": "فشل في الموافقة على المستخدم.",
-      "toast-approve-success": "تمت الموافقة عليه من قبل المستخدم.",
       "toast-deny-failed": "فشل في رفض طلب المستخدم.",
-      "toast-deny-success": "رفض المستخدم.",
       "toast-revoke-failed": "فشل إلغاء صلاحية المستخدم.",
-      "toast-revoke-success": "تم إلغاء صلاحية الوصول للمستخدم.",
     },
     users: {
       "pending-title": "معلق على الموافقة",
@@ -1077,7 +1060,6 @@ const TRANSLATIONS = {
       "approved-description":
         "المستخدمون الذين تم منحهم الإذن للتواصل مع روبوتك.",
       user: "المستخدم",
-      "chat-id": "معرّف الدردشة",
       "pairing-code": "رمز التوفيق",
       "no-pending": "لا توجد طلبات معلقة.",
       "no-approved": "لا يوجد مستخدمون معتمدون.",

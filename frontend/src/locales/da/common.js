@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Navn på arbejdsområder",
-    user: "Bruger",
     selection: "Modelvalg",
     saving: "Gemmer...",
     save: "Gem ændringer",
@@ -186,18 +185,12 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        description:
-          'vil give svar baseret på LLM\'s generelle viden og den relevante kontekst fra dokumentet. Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
-        description:
-          "vil give svar <b>kun</b>, hvis dokumentets kontekst er fundet.<br />Du skal bruge kommandoen @agent for at bruge værktøjerne.",
       },
       automatic: {
         title: "Bil",
-        description:
-          'vil automatisk bruge værktøjer, hvis modellen og leverandøren understøtter native værktøjskald.<br />Hvis native værktøjskald ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {
@@ -752,7 +745,6 @@ const TRANSLATIONS = {
     see_less: "Se mindre",
     see_more: "Se flere",
     tools: "Værktøj",
-    browse: "Gennemse",
     text_size_label: "Tekststørrelse",
     select_model: "Vælg model",
     sources: "Kilder",
@@ -765,7 +757,6 @@ const TRANSLATIONS = {
     edit: "Rediger",
     publish: "Udgive",
     stop_generating: "Stop med at generere svar",
-    pause_tts_speech_message: "Pause TTS-læsningen af beskeden",
     slash_commands: "Kommandoer",
     agent_skills: "Agenters kompetencer",
     manage_agent_skills: "Administrer agenters kompetencer",
@@ -1062,9 +1053,7 @@ const TRANSLATIONS = {
           "Brug et brugernavn til en bot, der ikke er åbenlyst, for at reducere synligheden.",
       },
       "toast-enter-token": "Vær venligst opført et bot-token.",
-      "toast-select-workspace": "Vælg venligst et arbejdsområde.",
       "toast-connect-failed": "Kunne ikke etablere forbindelse med botten.",
-      "toast-connect-success": "Telegram-bot er nu forbundet med succes!",
     },
     connected: {
       status: "Forbundet",
@@ -1081,19 +1070,13 @@ const TRANSLATIONS = {
       "voice-mirror": "Spejl (svar med stemme, når brugeren sender en stemme)",
       "voice-always":
         "Sørg altid for at inkludere en lydbesked (send lyd sammen med hvert svar).",
-      "toast-enter-token": "Vær venligst opgiv et bot-token.",
       "toast-disconnect-failed": "Kunne ikke afbryde robotten.",
-      "toast-disconnect-success": "Telegram-boten er blevet afbrudt.",
       "toast-reconnect-failed":
         "Kunne ikke genoprette forbindelsen med botten.",
-      "toast-reconnect-success": "Telegram-botten er genoptaget!",
       "toast-voice-failed": "Kunne ikke opdatere stemmemodus.",
       "toast-approve-failed": "Mislykkedes med at godkende bruger.",
-      "toast-approve-success": "Godkendt af bruger.",
       "toast-deny-failed": "Kunne ikke afvise brugeren.",
-      "toast-deny-success": "Bruger afvist.",
       "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
-      "toast-revoke-success": "Brugerens adgang er blevet tilbagekaldt.",
     },
     users: {
       "pending-title": "Afventer godkendelse",
@@ -1103,7 +1086,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Brugere, der er blevet godkendt til at kommunikere med din bot.",
       user: "Bruger",
-      "chat-id": "Chat-ID",
       "pairing-code": "Kombinationskode",
       "no-pending": "Ingen igangværende anmodninger",
       "no-approved": "Ingen godkendte brugere",

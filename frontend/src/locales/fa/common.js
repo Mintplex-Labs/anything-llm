@@ -53,7 +53,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "نام فضای کار",
-    user: "کاربر",
     selection: "انتخاب مدل",
     saving: "در حال ذخیره...",
     save: "ذخیره تغییرات",
@@ -185,18 +184,12 @@ const TRANSLATIONS = {
       title: "حالت گفتگو",
       chat: {
         title: "گفتگو",
-        description:
-          "با استفاده از دانش عمومی مدل زبانی و اطلاعات موجود در سند، پاسخ‌ها را ارائه خواهد داد. برای استفاده از ابزارها، باید از دستور @agent استفاده کنید.",
       },
       query: {
         title: "پرس‌وجو",
-        description:
-          "پاسخ‌ها را تنها در صورت یافتن زمینه سند ارائه می‌دهد. برای استفاده از ابزارها، باید از دستور @agent استفاده کنید.",
       },
       automatic: {
         title: "خودرو",
-        description:
-          "اگر مدل و ارائه‌دهنده از فراخوانی ابزار به صورت پیش‌فرض پشتیبانی کنند، ابزارها به‌طور خودکار استفاده خواهند شد. <br />در صورتی که فراخوانی ابزار به صورت پیش‌فرض پشتیبانی نشود، شما باید از دستور @agent برای استفاده از ابزارها استفاده کنید.",
       },
     },
     history: {
@@ -747,7 +740,6 @@ const TRANSLATIONS = {
     see_less: "کمی بیشتر",
     see_more: "بیشتر",
     tools: "ابزارها",
-    browse: "جستجو",
     text_size_label: "اندازه متن",
     select_model: "انتخاب مدل",
     sources: "منابع",
@@ -760,7 +752,6 @@ const TRANSLATIONS = {
     edit: "ویرایش",
     publish: "انتشار",
     stop_generating: "متوقف کردن تولید پاسخ",
-    pause_tts_speech_message: "مکث در پخش صدای متن",
     slash_commands: "دستورات کوتاه‌شده",
     agent_skills: "مهارت‌های کارگزار",
     manage_agent_skills: "مدیریت مهارت‌های نمایندگان",
@@ -1054,9 +1045,7 @@ const TRANSLATIONS = {
           "از یک نام کاربری برای ربات که به راحتی قابل تشخیص نباشد، استفاده کنید تا میزان شناسایی آن را کاهش دهید.",
       },
       "toast-enter-token": "لطفاً یک توکن برای ربات وارد کنید.",
-      "toast-select-workspace": "لطفاً یک فضای کاری را انتخاب کنید.",
       "toast-connect-failed": "عدم امکان اتصال ربات.",
-      "toast-connect-success": "ربات تلگرام با موفقیت متصل شد!",
     },
     connected: {
       status: "اتصال یافته",
@@ -1073,18 +1062,12 @@ const TRANSLATIONS = {
       "voice-mirror": "بازتاب (پاسخگویی با صدا هنگام ارسال صدا توسط کاربر)",
       "voice-always":
         "همیشه، حتماً، یک صدای صوتی (ارسال فایل صوتی همراه با هر پاسخ)",
-      "toast-enter-token": "لطفاً یک توکن برای ربات وارد کنید.",
       "toast-disconnect-failed": "عدم توانایی در قطع ارتباط با ربات.",
-      "toast-disconnect-success": "ربات تلگرام قطع ارتباط کرد.",
       "toast-reconnect-failed": "عدم امکان برقراری ارتباط مجدد با ربات.",
-      "toast-reconnect-success": "ربات تلگرام دوباره به حالت آنلاین برگشت!",
       "toast-voice-failed": "عدم امکان به‌روزرسانی حالت صدا.",
       "toast-approve-failed": "عدم تایید کاربر.",
-      "toast-approve-success": "تایید شده توسط کاربر.",
       "toast-deny-failed": "امکان رد درخواست کاربر وجود نداشت.",
-      "toast-deny-success": "دسترسی برای این کاربر غیر ممکن است.",
       "toast-revoke-failed": "امکان لغو کردن حساب کاربری وجود نداشت.",
-      "toast-revoke-success": "دسترسی کاربر لغو شد.",
     },
     users: {
       "pending-title": "منتظر تایید",
@@ -1093,7 +1076,6 @@ const TRANSLATIONS = {
       "approved-title": "کاربران تایید شده",
       "approved-description": "کاربرانی که مجوز دارند با ربات شما گفتگو کنند.",
       user: "کاربر",
-      "chat-id": "شناسه چت",
       "pairing-code": "کد جفت‌سازی",
       "no-pending": "هیچ درخواست در حال انجام وجود ندارد.",
       "no-approved": "کاربران تایید شده وجود ندارد",

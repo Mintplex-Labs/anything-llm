@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nome do Workspace",
-    user: "Usuário",
     selection: "Seleção de Modelo",
     saving: "Salvando...",
     save: "Salvar alterações",
@@ -192,18 +191,12 @@ const TRANSLATIONS = {
       title: "Modo de Chat",
       chat: {
         title: "Chat",
-        description:
-          'fornecerá respostas com base no conhecimento geral do LLM e no contexto do documento encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
       query: {
         title: "Consulta",
-        description:
-          'fornecerá respostas <b>apenas</b> caso o contexto do documento seja encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
       automatic: {
         title: "Automóvel",
-        description:
-          'utilizará automaticamente as ferramentas, se o modelo e o provedor suportarem a chamada nativa de ferramentas. Se a chamada nativa de ferramentas não for suportada, você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
     },
     history: {
@@ -825,7 +818,6 @@ const TRANSLATIONS = {
     see_less: "Ver menos",
     see_more: "Ver mais",
     tools: "Ferramentas",
-    browse: "Navegar",
     text_size_label: "Tamanho do texto",
     select_model: "Selecione o modelo",
     sources: "Fontes",
@@ -838,7 +830,6 @@ const TRANSLATIONS = {
     edit: "Editar",
     publish: "Publicar",
     stop_generating: "Pare de gerar respostas",
-    pause_tts_speech_message: "Pausar a leitura de voz da mensagem",
     slash_commands: "Comandos Rápidos",
     agent_skills: "Habilidades do Agente",
     manage_agent_skills: "Gerenciar as habilidades dos agentes",
@@ -1034,9 +1025,7 @@ const TRANSLATIONS = {
           "Utilize um nome de usuário de bot menos óbvio para reduzir a sua visibilidade.",
       },
       "toast-enter-token": "Por favor, insira um token de bot.",
-      "toast-select-workspace": "Por favor, selecione um espaço de trabalho.",
       "toast-connect-failed": "Falhou a conexão com o bot.",
-      "toast-connect-success": "O bot do Telegram foi conectado com sucesso!",
     },
     connected: {
       status: "Conectado",
@@ -1054,18 +1043,12 @@ const TRANSLATIONS = {
         "Espelho (responder com voz quando o usuário enviar uma mensagem de voz)",
       "voice-always":
         "Sempre inclua uma gravação de áudio (envie um áudio com cada resposta).",
-      "toast-enter-token": "Por favor, insira um token de bot.",
       "toast-disconnect-failed": "Falhou ao desconectar o bot.",
-      "toast-disconnect-success": "O bot do Telegram foi desconectado.",
       "toast-reconnect-failed": "Falha ao tentar reconectar o bot.",
-      "toast-reconnect-success": "O bot do Telegram foi reconectado!",
       "toast-voice-failed": "Falhou ao atualizar o modo de voz.",
       "toast-approve-failed": "Falhou ao aprovar o usuário.",
-      "toast-approve-success": "Usuário aprovado.",
       "toast-deny-failed": "Não foi possível negar o acesso ao usuário.",
-      "toast-deny-success": "Acesso negado.",
       "toast-revoke-failed": "Falhou ao revogar o acesso do usuário.",
-      "toast-revoke-success": "Acesso do usuário revogado.",
     },
     users: {
       "pending-title": "Aguardando Aprovação",
@@ -1075,7 +1058,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Usuários que foram aprovados para conversar com o seu bot.",
       user: "Usuário",
-      "chat-id": "ID do chat",
       "pairing-code": "Código de emparelhamento",
       "no-pending": "Não há solicitações pendentes.",
       "no-approved": "Sem usuários autorizados",

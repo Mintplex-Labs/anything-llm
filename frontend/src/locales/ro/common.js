@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Numele spațiilor de lucru",
-    user: "Utilizator",
     selection: "Selecția modelului",
     saving: "Se salvează...",
     save: "Salvează modificările",
@@ -194,18 +193,12 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        description:
-          'va oferi răspunsuri folosind cunoștințele generale ale modelului LLM și contextul documentului respectiv.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
-        description:
-          'vor oferi răspunsuri **doar** dacă contextul documentului este identificat. Veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       automatic: {
         title: "Mașină",
-        description:
-          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {
@@ -550,7 +543,6 @@ const TRANSLATIONS = {
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
     tools: "Unelte",
-    browse: "Navigați",
     text_size_label: "Dimensiunea textului",
     select_model: "Selectați modelul",
     sources: "Surse",
@@ -563,8 +555,6 @@ const TRANSLATIONS = {
     edit: "Editează",
     publish: "Publica",
     stop_generating: "Opriți generarea răspunsului",
-    pause_tts_speech_message:
-      "Pauză în redarea vocii prin Text-to-Speech (TTS) a mesajului.",
     slash_commands: "Comenzi scurte",
     agent_skills: "Abilități ale agentului",
     manage_agent_skills: "Gestionarea competențelor agenților",
@@ -1064,9 +1054,7 @@ const TRANSLATIONS = {
           "Utilizați un nume de utilizator pentru bot, care nu este evident, pentru a reduce vizibilitatea acestuia.",
       },
       "toast-enter-token": "Vă rugăm să introduceți un token pentru bot.",
-      "toast-select-workspace": "Vă rugăm să selectați un spațiu de lucru.",
       "toast-connect-failed": "Nu a reușit să se conecteze bot-ul.",
-      "toast-connect-success": "Robotul Telegram a fost conectat cu succes!",
     },
     connected: {
       status: "Conectat",
@@ -1084,19 +1072,13 @@ const TRANSLATIONS = {
         "Reflectare (răspunde cu voce atunci când utilizatorul trimite înregistrare audio)",
       "voice-always":
         "Asigurați-vă întotdeauna că includeți un mesaj audio (trimiteți înregistrarea audio împreună cu fiecare răspuns).",
-      "toast-enter-token": "Vă rugăm să introduceți un token pentru robot.",
       "toast-disconnect-failed": "Nu s-a reușit deconectarea bot-ului.",
-      "toast-disconnect-success": "Bot-ul Telegram a pierdut conexiunea.",
       "toast-reconnect-failed": "Nu a reușit să se reconecteze.",
-      "toast-reconnect-success": "Bot-ul Telegram s-a reconectat!",
       "toast-voice-failed": "Nu a reușit să actualizeze modul de voce.",
       "toast-approve-failed": "Nu a fost posibilă aprobarea utilizatorului.",
-      "toast-approve-success": "Aprobare de către utilizator.",
       "toast-deny-failed": "Nu a reușit să respingă cererea utilizatorului.",
-      "toast-deny-success": "Accesul a fost refuzat.",
       "toast-revoke-failed":
         "Nu a fost posibil să se anuleze contul utilizatorului.",
-      "toast-revoke-success": "Accesul utilizatorului a fost anulat.",
     },
     users: {
       "pending-title": "Așteptare aprobare",
@@ -1106,7 +1088,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
       user: "Utilizator",
-      "chat-id": "Identificatorul de chat",
       "pairing-code": "Cod de asociere",
       "no-pending": "Nu există cereri în așteptare.",
       "no-approved": "Nu există utilizatori autorizați.",

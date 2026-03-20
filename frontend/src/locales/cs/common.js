@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Název pracovního prostoru",
-    user: "Uživatel",
     selection: "Výběr modelu",
     saving: "Ukládání...",
     save: "Uložit změny",
@@ -200,18 +199,12 @@ const TRANSLATIONS = {
       title: "Režim chatu",
       chat: {
         title: "Chat",
-        description:
-          "poskytne odpovědi založené na obecných znalostech LLM a kontextu dokumentu, který je k dispozici.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
       },
       query: {
         title: "Dotaz",
-        description:
-          "budou poskytovat odpovědi <b>pouze</b>, pokud je nalezen kontext dokumentu.<br />Pro použití nástrojů budete muset použít příkaz @agent.",
       },
       automatic: {
         title: "Auto",
-        description:
-          "automaticky použije nástroje, pokud to podporují jak model, tak poskytovatel. Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
       },
     },
     history: {
@@ -867,7 +860,6 @@ const TRANSLATIONS = {
     see_less: "Zobrazit méně",
     see_more: "Více",
     tools: "Nářadí",
-    browse: "Prohlédněte si",
     text_size_label: "Velikost písma",
     select_model: "Vyberte model",
     sources: "Zdroje",
@@ -880,8 +872,6 @@ const TRANSLATIONS = {
     edit: "Upravit",
     publish: "Publikovat",
     stop_generating: "Zastavte generování odpovědi",
-    pause_tts_speech_message:
-      "Zastavte čtení textu pomocí syntetické řeči z tohoto zprávy.",
     slash_commands: "Příkazy v řádku",
     agent_skills: "Dovednosti agenta",
     manage_agent_skills: "Řízení dovedností agentů",
@@ -1056,9 +1046,7 @@ const TRANSLATIONS = {
           "Použijte neobvyklé uživatelské jméno pro robota, abyste snížili jeho snadnou identifikovatelnost.",
       },
       "toast-enter-token": "Prosím, zadejte token pro robota.",
-      "toast-select-workspace": "Prosím, vyberte si pracovní prostor.",
       "toast-connect-failed": "Nedaří se připojit k botovi.",
-      "toast-connect-success": "Bot pro Telegram se úspěšně připojil!",
     },
     connected: {
       status: "Spojené",
@@ -1075,18 +1063,12 @@ const TRANSLATIONS = {
         "Zrcadlo (odpovězte hlasem, když uživatel pošle hlasovou zprávu)",
       "voice-always":
         "Vždy uveďte zvukový záznam (odesílejte zvukový záznam ke každé odpovědi)",
-      "toast-enter-token": "Prosím, zadejte token pro robota.",
       "toast-disconnect-failed": "Nepodařilo se odpojit automat.",
-      "toast-disconnect-success": "Bot na Telegramu se odpojil.",
       "toast-reconnect-failed": "Nedaří se znovu navázat spojení s botem.",
-      "toast-reconnect-success": "Bot na Telegramu se znovu připojil!",
       "toast-voice-failed": "Nepodařilo se aktualizovat hlasový režim.",
       "toast-approve-failed": "Neúspěšné schválení uživatele.",
-      "toast-approve-success": "Potvrzeno uživatelem.",
       "toast-deny-failed": "Nezucceededo v odmítnutí uživatele.",
-      "toast-deny-success": "Přístup zamítnut.",
       "toast-revoke-failed": "Nezdařilo se zrušit uživatelskou účet.",
-      "toast-revoke-success": "Přístup uživatele byl pozastaven.",
     },
     users: {
       "pending-title": "Čeká na schválení",
@@ -1096,7 +1078,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Uživatelé, kteří byli schváleni pro komunikaci s vaším botem.",
       user: "Uživatel",
-      "chat-id": "ID chatu",
       "pairing-code": "Kód pro párování",
       "no-pending": "Žádné čekající požadavky",
       "no-approved": "Žádní registrovaní uživatelé",

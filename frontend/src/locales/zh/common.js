@@ -48,7 +48,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "工作区名称",
-    user: "用户",
     selection: "模型选择",
     save: "保存更改",
     saving: "保存中...",
@@ -186,18 +185,12 @@ const TRANSLATIONS = {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        description:
-          "将提供答案，利用LLM的通用知识和相关文档的上下文信息。您需要使用 `@agent` 命令来使用工具。",
       },
       query: {
         title: "查询",
-        description:
-          "将在找到文档上下文时提供答案 <b>仅限</b>。您需要使用 @agent 命令来使用工具。",
       },
       automatic: {
         title: "自动",
-        description:
-          "如果模型和提供商支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，则需要使用 `@agent` 命令来使用工具。",
       },
     },
     history: {
@@ -786,7 +779,6 @@ const TRANSLATIONS = {
     see_less: "查看更多",
     see_more: "查看更多",
     tools: "工具",
-    browse: "浏览",
     text_size_label: "字体大小",
     select_model: "选择型号",
     sources: "来源",
@@ -799,7 +791,6 @@ const TRANSLATIONS = {
     edit: "编辑",
     publish: "出版",
     stop_generating: "停止生成回复",
-    pause_tts_speech_message: "暂停消息的语音合成（TTS）功能",
     slash_commands: "快捷命令",
     agent_skills: "代理人技能",
     manage_agent_skills: "管理代理人技能",
@@ -990,9 +981,7 @@ const TRANSLATIONS = {
           "使用一个不显眼的机器人用户名，以降低其被发现的可能性。",
       },
       "toast-enter-token": "请您输入一个机器人令牌。",
-      "toast-select-workspace": "请选择一个工作区域。",
       "toast-connect-failed": "未能连接机器人。",
-      "toast-connect-success": "Telegram 机器人已成功连接！",
     },
     connected: {
       status: "连接",
@@ -1007,18 +996,12 @@ const TRANSLATIONS = {
       "voice-text-only": "仅提供文字",
       "voice-mirror": "回声（当用户发送语音时，会以语音形式回复）",
       "voice-always": "请务必在回复中添加语音（发送音频）。",
-      "toast-enter-token": "请在此处输入机器人令牌。",
       "toast-disconnect-failed": "未能成功断开机器人。",
-      "toast-disconnect-success": "Telegram 机器人已断开连接。",
       "toast-reconnect-failed": "机器人连接失败。",
-      "toast-reconnect-success": "Telegram 机器人已重新连接！",
       "toast-voice-failed": "无法更新语音模式。",
       "toast-approve-failed": "未能批准用户。",
-      "toast-approve-success": "用户已确认。",
       "toast-deny-failed": "未能拒绝用户请求。",
-      "toast-deny-success": "用户权限被拒绝。",
       "toast-revoke-failed": "未能撤销用户权限。",
-      "toast-revoke-success": "用户访问权限已被撤销。",
     },
     users: {
       "pending-title": "待审批",
@@ -1027,7 +1010,6 @@ const TRANSLATIONS = {
       "approved-title": "已批准的用户",
       "approved-description": "已获得批准，可以与您的机器人进行对话的用户。",
       user: "用户",
-      "chat-id": "聊天ID",
       "pairing-code": "配对代码",
       "no-pending": "目前没有待处理的请求",
       "no-approved": "未批准的用户",

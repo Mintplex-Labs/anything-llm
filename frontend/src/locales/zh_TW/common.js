@@ -48,7 +48,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "工作區名稱",
-    user: "使用者",
     selection: "模型選擇",
     saving: "儲存中...",
     save: "儲存變更",
@@ -178,18 +177,12 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        description:
-          "將提供答案，利用 LLM 的一般知識和相關文件內容。您需要使用 `@agent` 命令來使用工具。",
       },
       query: {
         title: "查詢",
-        description:
-          "將提供答案，僅在找到文件上下文時 <b>。您需要使用 @agent 指令來使用工具。",
       },
       automatic: {
         title: "自動",
-        description:
-          "如果模型和供應商支援原生工具調用，則系統會自動使用這些工具。<br />如果原生工具調用不受支援，您需要使用 `@agent` 命令來使用工具。",
       },
     },
     history: {
@@ -696,7 +689,6 @@ const TRANSLATIONS = {
     see_less: "顯示較少",
     see_more: "查看更多",
     tools: "工具",
-    browse: "瀏覽",
     text_size_label: "文字大小",
     select_model: "選擇模型",
     sources: "來源",
@@ -709,7 +701,6 @@ const TRANSLATIONS = {
     edit: "編輯",
     publish: "發佈",
     stop_generating: "停止產生回應",
-    pause_tts_speech_message: "暫停語音合成的訊息",
     slash_commands: "斜線指令",
     agent_skills: "智慧代理人技能",
     manage_agent_skills: "管理智慧代理人技能",
@@ -983,9 +974,7 @@ const TRANSLATIONS = {
           "使用一個不顯眼的機器人帳號名稱，以降低被發現的機會。",
       },
       "toast-enter-token": "請輸入機器人憑證。",
-      "toast-select-workspace": "請選擇一個工作空間。",
       "toast-connect-failed": "無法連接機器人。",
-      "toast-connect-success": "Telegram 機器人已成功連接！",
     },
     connected: {
       status: "連接",
@@ -1000,18 +989,12 @@ const TRANSLATIONS = {
       "voice-text-only": "僅提供文字",
       "voice-mirror": "語音回覆 (使用者發送語音時，系統會回覆語音)",
       "voice-always": "請務必在回覆中加入語音 (發送音訊)。",
-      "toast-enter-token": "請輸入機器人憑證。",
       "toast-disconnect-failed": "未能成功斷開機器人。",
-      "toast-disconnect-success": "Telegram 機器人已與伺服器斷線。",
       "toast-reconnect-failed": "無法重新連線機器人。",
-      "toast-reconnect-success": "Telegram 機器人已重新連接！",
       "toast-voice-failed": "無法更新語音模式。",
       "toast-approve-failed": "無法驗證使用者。",
-      "toast-approve-success": "已獲得使用者同意。",
       "toast-deny-failed": "未能阻止使用者。",
-      "toast-deny-success": "使用者登入失敗。",
       "toast-revoke-failed": "未能取消使用者權限。",
-      "toast-revoke-success": "使用者權限已被撤銷。",
     },
     users: {
       "pending-title": "待審核",
@@ -1020,7 +1003,6 @@ const TRANSLATIONS = {
       "approved-title": "已授權的使用者",
       "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
       user: "使用者",
-      "chat-id": "聊天 ID",
       "pairing-code": "編碼組合",
       "no-pending": "目前沒有待處理的請求",
       "no-approved": "目前沒有已授權的使用者",

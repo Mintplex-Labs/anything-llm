@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Darba telpas nosaukums",
-    user: "Lietotājs",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
     save: "Saglabāt izmaiņas",
@@ -192,18 +191,12 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
-        description:
-          'sniedz atbildes, izmantojot LLM vispārīgo zināšanu un dokumenta kontekstu, kas ir pieejams.<br />Lai izmantotu rīkus, jums jāizmantojat komandu "@agent".',
       },
       query: {
         title: "Vaicājums",
-        description:
-          'sniedz atbildes <b> tikai </b>, ja dokumenta konteksts ir atrasts. <br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
       },
       automatic: {
         title: "Automobiļs",
-        description:
-          'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izmantošanu. <br />Ja vietējā rīku izmantošana netiek atbalstīta, jums būs jāizmantojas "@agent" komanda, lai izmantotu rīkus.',
       },
     },
     history: {
@@ -844,7 +837,6 @@ const TRANSLATIONS = {
     see_less: "Skatīt mazāk",
     see_more: "Skatīt vairāk",
     tools: "Rīki",
-    browse: "Izpētiet",
     text_size_label: "Teksta izmērs",
     select_model: "Izvēlieties modeli",
     sources: "Avotus",
@@ -857,8 +849,6 @@ const TRANSLATIONS = {
     edit: "Rediģēt",
     publish: "Publicēt",
     stop_generating: "Atsauciet atbildes ģenerēšanu",
-    pause_tts_speech_message:
-      "Pārtrauciet TTS (teksta-izrunas) žēstā vēstījuma izrunu.",
     slash_commands: "Īs termini komandās",
     agent_skills: "Aģenta prasmes",
     manage_agent_skills: "Iesaista aģenta prasmes",
@@ -1062,9 +1052,7 @@ const TRANSLATIONS = {
           "Izmantojiet neparādu botu lietotāju vārdu, lai samazinātu atklājamo iespēju.",
       },
       "toast-enter-token": "Lūdzu, ievadiet bot tokenu.",
-      "toast-select-workspace": "Lūdzu, izvēlieties darba vietu.",
       "toast-connect-failed": "Neizdevās pievienot botu.",
-      "toast-connect-success": "Telegram bot veiksmīgi savienots!",
     },
     connected: {
       status: "Saistīts",
@@ -1082,18 +1070,12 @@ const TRANSLATIONS = {
         "Atspoguļošana (atbildēt ar balsi, kad lietotājs nosauc balsi)",
       "voice-always":
         "Vienmēr pievienojiet audio (sūtiet audio ar katru atbildi).",
-      "toast-enter-token": "Lūdzu, ievadiet bot tokenu.",
       "toast-disconnect-failed": "Neizdevās izslēgt botu.",
-      "toast-disconnect-success": "Telegram botam ir pārtraukta saite.",
       "toast-reconnect-failed": "Neizdevās atjaunot saikni ar botu.",
-      "toast-reconnect-success": "Telegram bot atkal ir pievienots!",
       "toast-voice-failed": "Neizdevās atjaunināt balsī noteiktās režimas.",
       "toast-approve-failed": "Nespēja apstiprināt lietotāju.",
-      "toast-approve-success": "Izmantotājs apstiprinājis.",
       "toast-deny-failed": "Nespēja atspējot lietotāju.",
-      "toast-deny-success": "Izmantotājs atturned.",
       "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
-      "toast-revoke-success": "Lietotāja piekļuve atcelta.",
     },
     users: {
       "pending-title": "Atkarībā no apstākļiem",
@@ -1103,7 +1085,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
       user: "Izmantotājs",
-      "chat-id": "Čata ID",
       "pairing-code": "Kopējā koda numura kombinācija",
       "no-pending": "Neizpildīti pieprasījumi",
       "no-approved": "No apstiprinātiem lietotājiem",

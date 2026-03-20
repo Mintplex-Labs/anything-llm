@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "ワークスペース名",
-    user: "ユーザー",
     selection: "モデル選択",
     saving: "保存中...",
     save: "変更を保存",
@@ -184,18 +183,12 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        description:
-          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        description:
-          "該当する情報が見つかった場合、回答を<b>のみ</b>提供します。ツールを使用するには、@agentコマンドを使用する必要があります。",
       },
       automatic: {
         title: "自動車",
-        description:
-          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。<br />ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -740,7 +733,6 @@ const TRANSLATIONS = {
     see_less: "詳細を見る",
     see_more: "詳細を見る",
     tools: "道具",
-    browse: "閲覧",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
     sources: "出典",
@@ -753,7 +745,6 @@ const TRANSLATIONS = {
     edit: "編集",
     publish: "出版",
     stop_generating: "応答の生成を停止する",
-    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
     slash_commands: "スラッシュコマンド",
     agent_skills: "エージェントのスキル",
     manage_agent_skills: "エージェントのスキル管理",
@@ -1058,9 +1049,7 @@ const TRANSLATIONS = {
           "目立たないユーザー名をbotに使用することで、発見されにくくする。",
       },
       "toast-enter-token": "ボットのトークンを入力してください。",
-      "toast-select-workspace": "ワークスペースを選択してください。",
       "toast-connect-failed": "ボットとの接続に失敗しました。",
-      "toast-connect-success": "テレグラムのボットとの接続が成功しました！",
     },
     connected: {
       status: "接続されている",
@@ -1076,19 +1065,12 @@ const TRANSLATIONS = {
       "voice-text-only": "テキストのみ",
       "voice-mirror": "（ユーザーが音声で送信した場合、音声で返信）",
       "voice-always": "常に音声メッセージ（返信ごとに音声データを送信）",
-      "toast-enter-token": "ボットのトークンを入力してください。",
       "toast-disconnect-failed": "ボットとの接続を解除できませんでした。",
-      "toast-disconnect-success":
-        "テレグラムのボットとの接続が切断されました。",
       "toast-reconnect-failed": "ボットとの再接続に失敗しました。",
-      "toast-reconnect-success": "テレグラムのボットが再接続されました！",
       "toast-voice-failed": "音声モードの更新に失敗しました。",
       "toast-approve-failed": "ユーザーの承認に失敗しました。",
-      "toast-approve-success": "ユーザーによる承認。",
       "toast-deny-failed": "ユーザーからの拒否を拒否できませんでした。",
-      "toast-deny-success": "利用拒否。",
       "toast-revoke-failed": "ユーザーの権限停止に失敗。",
-      "toast-revoke-success": "ユーザーへのアクセス権を剥奪しました。",
     },
     users: {
       "pending-title": "承認待ち",
@@ -1098,7 +1080,6 @@ const TRANSLATIONS = {
       "approved-description":
         "あなたのボットとのチャットを許可されたユーザー。",
       user: "利用者",
-      "chat-id": "チャットID",
       "pairing-code": "組み合わせコード",
       "no-pending": "処理中のリクエストはありません",
       "no-approved": "承認されたユーザーはいません",

@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "워크스페이스 이름",
-    user: "사용자",
     selection: "모델 선택",
     saving: "저장 중...",
     save: "저장",
@@ -189,18 +188,12 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        description:
-          "LLM의 일반적인 지식과 관련 문맥 정보를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령어를 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        description:
-          "문서 맥락이 발견되면 <b>에만</b> 답변을 제공합니다.<br /> 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
       automatic: {
         title: "자동",
-        description:
-          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br /> 네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
     },
     history: {
@@ -825,7 +818,6 @@ const TRANSLATIONS = {
     see_less: "더 보기",
     see_more: "더 보기",
     tools: "도구",
-    browse: "검색",
     text_size_label: "글자 크기",
     select_model: "모델 선택",
     sources: "출처",
@@ -838,7 +830,6 @@ const TRANSLATIONS = {
     edit: "수정",
     publish: "출판",
     stop_generating: "응답 생성 중단",
-    pause_tts_speech_message: "메시지의 텍스트 음성 변환(TTS) 기능을 일시 중지",
     slash_commands: "슬래시 명령어",
     agent_skills: "에이전트의 역량",
     manage_agent_skills: "에이전트 역량 관리",
@@ -1036,9 +1027,7 @@ const TRANSLATIONS = {
           "자명한 봇 사용자 이름을 피하고, 발견 가능성을 줄이기 위해",
       },
       "toast-enter-token": "봇 토큰을 입력해 주세요.",
-      "toast-select-workspace": "원하는 작업 공간을 선택해 주세요.",
       "toast-connect-failed": "봇 연결에 실패했습니다.",
-      "toast-connect-success": "텔레그램 봇 연결 성공!",
     },
     connected: {
       status: "연결된",
@@ -1054,18 +1043,12 @@ const TRANSLATIONS = {
       "voice-text-only": "텍스트만",
       "voice-mirror": "(사용자가 음성으로 응답하면, 음성으로 답변)",
       "voice-always": "항상 음성 메시지 (답변과 함께 오디오 전송)",
-      "toast-enter-token": "로봇 토큰을 입력해 주세요.",
       "toast-disconnect-failed": "봇과의 연결을 해제하는 데 실패했습니다.",
-      "toast-disconnect-success": "텔레그램 봇 연결이 끊어졌습니다.",
       "toast-reconnect-failed": "봇과의 연결에 실패했습니다.",
-      "toast-reconnect-success": "텔레그램 봇이 다시 연결되었습니다!",
       "toast-voice-failed": "음성 모드 업데이트에 실패했습니다.",
       "toast-approve-failed": "사용자 승인에 실패했습니다.",
-      "toast-approve-success": "사용자 승인 완료.",
       "toast-deny-failed": "사용자에게 거부 권한을 부여하지 못함.",
-      "toast-deny-success": "사용자 접근 거부",
       "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
-      "toast-revoke-success": "사용자 접근 권한이 취소되었습니다.",
     },
     users: {
       "pending-title": "승인 대기 중",
@@ -1074,7 +1057,6 @@ const TRANSLATIONS = {
       "approved-title": "승인된 사용자",
       "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
       user: "사용자",
-      "chat-id": "채팅 ID",
       "pairing-code": "코드 매칭",
       "no-pending": "처리 중인 요청이 없습니다.",
       "no-approved": "승인된 사용자가 없습니다",

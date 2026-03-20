@@ -49,7 +49,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "שם סביבת העבודה",
-    user: "משתמש",
     selection: "בחירת מודל",
     saving: "שומר...",
     save: "שמור שינויים",
@@ -188,18 +187,12 @@ const TRANSLATIONS = {
       title: "מצב צ'אט",
       chat: {
         title: "צ'אט",
-        description:
-          'יוכל לספק תשובות בהתבסס על הידע הכללי של ה-LLM ועל ההקשר הרלוונטי מתוך המסמך. <b> ו-</b>\nתצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלי.',
       },
       query: {
         title: "שאילתה",
-        description:
-          "יספק תשובות <b>רק</b>במידה ויהיה ניתן למצוא הקשר של המסמך.<br />תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
       },
       automatic: {
         title: "רכב",
-        description:
-          'הכלי ישתמש באופן אוטומטי בכלים אם המודל והספק תומכים בהם. <br />אם אין תמיכה בכלים מקומיים, תצטרכו להשתמש בפקודה "@agent" כדי להשתמש בכלים.',
       },
     },
     history: {
@@ -815,7 +808,6 @@ const TRANSLATIONS = {
     see_less: "ראה פחות",
     see_more: "לראות עוד",
     tools: "כלים",
-    browse: "גלו",
     text_size_label: "גודל הטקסט",
     select_model: "בחר מודל",
     sources: "מקורות",
@@ -828,8 +820,6 @@ const TRANSLATIONS = {
     edit: "עריכה",
     publish: "להוציא לאור",
     stop_generating: "הפסיקו ליצור תגובה",
-    pause_tts_speech_message:
-      "השהייה של קריאת טקסט באמצעות תוכנת TTS (Text-to-Speech)",
     slash_commands: "פקודות קיצור",
     agent_skills: "כישורים של סוכן",
     manage_agent_skills: "ניהול מיומנויות של סוכנים",
@@ -1022,9 +1012,7 @@ const TRANSLATIONS = {
           "השתמש בשם משתמש של בוט שאינו בולט, כדי להקטין את הסיכוי שהוא יימצא.",
       },
       "toast-enter-token": "אנא הזן את טוקן הבוט.",
-      "toast-select-workspace": "אנא בחרו מקום עבודה.",
       "toast-connect-failed": "לא הצליח להתחבר עם הבוט.",
-      "toast-connect-success": "בוט הטלגרם מחובר בהצלחה!",
     },
     connected: {
       status: "מחובר",
@@ -1039,18 +1027,12 @@ const TRANSLATIONS = {
       "voice-text-only": "טקסט בלבד",
       "voice-mirror": "משקף (להגיב בקול כאשר המשתמש שולח קול)",
       "voice-always": "יש לציין תמיד (לשלוח קבצי אודיו עם כל תגובה)",
-      "toast-enter-token": "אנא הזן את טוקן הבוט.",
       "toast-disconnect-failed": "לא הצלחתי לבטל את פעולת הבוט.",
-      "toast-disconnect-success": "הבוט של טלגרם הפסיק לתקשר.",
       "toast-reconnect-failed": "לא הצליח לשחזר את הבוט.",
-      "toast-reconnect-success": "בוט הטלגרם התחבר מחדש!",
       "toast-voice-failed": "לא הצליח לעדכן את מצב השמע.",
       "toast-approve-failed": "לא ניתן לאשר את המשתמש.",
-      "toast-approve-success": "אושר על ידי המשתמש.",
       "toast-deny-failed": "לא הצליח לסרב לבקשה של המשתמש.",
-      "toast-deny-success": "גישה נדחתה.",
       "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
-      "toast-revoke-success": "הרשאות המשתמש הוחזרו.",
     },
     users: {
       "pending-title": "נמצא בהמתנה לאישור",
@@ -1059,7 +1041,6 @@ const TRANSLATIONS = {
       "approved-title": "משתמשים מורשים",
       "approved-description": "משתמשים שאושרו לנהל שיחה עם הבוט שלכם.",
       user: "משתמש",
-      "chat-id": "מזהה צ'אט",
       "pairing-code": "קוד התאמה",
       "no-pending": "אין בקשות בתהליך",
       "no-approved": "אין משתמשים מורשים",

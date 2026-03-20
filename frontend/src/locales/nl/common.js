@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Werkruimten Naam",
-    user: "Gebruiker",
     selection: "Model Selectie",
     saving: "Opslaan...",
     save: "Wijzigingen opslaan",
@@ -185,18 +184,12 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
-        description:
-          "zal antwoorden geven met de algemene kennis van het LLM en de relevante context uit het document. U moet het `@agent`-commando gebruiken om tools te gebruiken.",
       },
       query: {
         title: "Query",
-        description:
-          "zal antwoorden <b>alleen</b> geven, indien de context van het document wordt gevonden.<br />U moet het commando @agent gebruiken om tools te gebruiken.",
       },
       automatic: {
         title: "Auto",
-        description:
-          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen.<br />Als native tooling niet wordt ondersteund, moet u het `@agent`-commando gebruiken om tools te gebruiken.",
       },
     },
     history: {
@@ -748,7 +741,6 @@ const TRANSLATIONS = {
     see_less: "Minder zien",
     see_more: "Meer zien",
     tools: "Gereedschap",
-    browse: "Bladeren",
     text_size_label: "Lettergrootte",
     select_model: "Kies het model",
     sources: "Bronnen",
@@ -761,7 +753,6 @@ const TRANSLATIONS = {
     edit: "Bewerk",
     publish: "Publiceren",
     stop_generating: "Stoppen met het genereren van antwoorden",
-    pause_tts_speech_message: "Pauzeer de spraak van de tekstberichten.",
     slash_commands: "Korte commando's",
     agent_skills: "Vaardigheden van agenten",
     manage_agent_skills: "Beheer van de vaardigheden van de agent",
@@ -1062,9 +1053,7 @@ const TRANSLATIONS = {
           "Gebruik een bot-username dat niet direct herkenbaar is, om de vindbaarheid te verminderen.",
       },
       "toast-enter-token": "Voer alstublieft een bot-token in.",
-      "toast-select-workspace": "Kies alstublieft een werkruimte.",
       "toast-connect-failed": "Verbinding met de bot is mislukt.",
-      "toast-connect-success": "De Telegram-bot is succesvol verbonden!",
     },
     connected: {
       status: "Verbonden",
@@ -1082,20 +1071,14 @@ const TRANSLATIONS = {
         "Spiegel (antwoord met spraak wanneer de gebruiker spraak verzendt)",
       "voice-always":
         "Zorg ervoor dat er altijd een audio-opname (een geluidsfragment) bij de reactie wordt toegevoegd.",
-      "toast-enter-token": "Voer alstublieft een bot-token in.",
       "toast-disconnect-failed":
         "Het was niet mogelijk om de robot los te koppelen.",
-      "toast-disconnect-success": "De Telegram-bot is verbonden.",
       "toast-reconnect-failed": "Fout bij het opnieuw verbinden van de bot.",
-      "toast-reconnect-success": "De Telegram-bot is opnieuw verbonden!",
       "toast-voice-failed": "Niet mogelijk om de spraakmodus bij te werken.",
       "toast-approve-failed": "Fout bij goedkeuren van gebruiker.",
-      "toast-approve-success": "Gebruiker goedgekeurd.",
       "toast-deny-failed": "Niet in staat om gebruiker te weigeren.",
-      "toast-deny-success": "Toegang geweigerd.",
       "toast-revoke-failed":
         "Fout bij het intrekken van het gebruikersaccount.",
-      "toast-revoke-success": "Toegang voor de gebruiker is ingetrokken.",
     },
     users: {
       "pending-title": "Afhankelijk van goedkeuring",
@@ -1105,7 +1088,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Gebruikers die zijn goedgekeurd om met uw bot te communiceren.",
       user: "Gebruiker",
-      "chat-id": "Chat-ID",
       "pairing-code": "Code voor het koppelen",
       "no-pending": "Er zijn geen lopende verzoeken.",
       "no-approved": "Geen goedgekeurde gebruikers",

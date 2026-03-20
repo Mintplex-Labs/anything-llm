@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nazwa obszaru roboczego",
-    user: "Użytkownik",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
     save: "Zapisz zmiany",
@@ -192,18 +191,12 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
-        description:
-          "zapewni odpowiedzi, wykorzystując ogólną wiedzę LLM oraz kontekst dokumentu, w którym ta wiedza znajduje się.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
-        description:
-          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },
       automatic: {
         title: "Samochód",
-        description:
-          "automatycznie będzie wykorzystywał narzędzia, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. Jeśli natywne narzędzia nie są obsługiwane, konieczne będzie użycie polecenia `@agent` w celu wykorzystania narzędzi.",
       },
     },
     history: {
@@ -841,7 +834,6 @@ const TRANSLATIONS = {
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
     tools: "Narzędzia",
-    browse: "Przeglądaj",
     text_size_label: "Rozmiar czcionki",
     select_model: "Wybierz model",
     sources: "Źródła",
@@ -854,7 +846,6 @@ const TRANSLATIONS = {
     edit: "Edytuj",
     publish: "Opublikować",
     stop_generating: "Przestań generować odpowiedź",
-    pause_tts_speech_message: "Wstrzymać odtwarzanie mowy z wiadomości",
     slash_commands: "Polecenia skrótowe",
     agent_skills: "Umiejętności agenta",
     manage_agent_skills: "Zarządzanie umiejętnościami agentów",
@@ -1059,9 +1050,7 @@ const TRANSLATIONS = {
           "Użyj nietypowej nazwy użytkownika dla bota, aby zmniejszyć jego widoczność.",
       },
       "toast-enter-token": "Prosimy o wprowadzenie tokena dla bota.",
-      "toast-select-workspace": "Prosimy, wybierz przestrzeń roboczą.",
       "toast-connect-failed": "Nie udało się nawiązać połączenia z botem.",
-      "toast-connect-success": "Bot Telegram został pomyślnie połączony!",
     },
     connected: {
       status: "Połączony",
@@ -1079,18 +1068,12 @@ const TRANSLATIONS = {
         "Odbiór (odpowiedź za pomocą głosu, gdy użytkownik wysyła głos)",
       "voice-always":
         "Zawsze dołączaj nagranie (wysyłaj dźwięk wraz z każdą odpowiedzią)",
-      "toast-enter-token": "Prosimy o podanie tokena dla bota.",
       "toast-disconnect-failed": "Nie udało się odłączyć bota.",
-      "toast-disconnect-success": "Bot na Telegramie stracił połączenie.",
       "toast-reconnect-failed": "Nie udało się nawiązać połączenia z botem.",
-      "toast-reconnect-success": "Bot na Telegramie ponownie połączony!",
       "toast-voice-failed": "Nie udało się zaktualizować trybu głosu.",
       "toast-approve-failed": "Nie udało się zatwierdzić użytkownika.",
-      "toast-approve-success": "Potwierdzone przez użytkownika.",
       "toast-deny-failed": "Nie udało się odrzucić żądania użytkownika.",
-      "toast-deny-success": "Użytkownik odrzucony.",
       "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
-      "toast-revoke-success": "Uprawnienia użytkownika zostały cofnięte.",
     },
     users: {
       "pending-title": "Czekając na zatwierdzenie",
@@ -1100,7 +1083,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Użytkownicy, którzy zostali zatwierdzeni do rozmowy z Twoim botem.",
       user: "Użytkownik",
-      "chat-id": "ID czatu",
       "pairing-code": "Kod dopasowania",
       "no-pending": "Brak oczekujących żądań",
       "no-approved": "Brak zatwierdzonych użytkowników",

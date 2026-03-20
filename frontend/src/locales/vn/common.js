@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Tên không gian làm việc",
-    user: "Người dùng",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
     save: "Lưu thay đổi",
@@ -185,18 +184,12 @@ const TRANSLATIONS = {
       title: "Chế độ trò chuyện",
       chat: {
         title: "Trò chuyện",
-        description:
-          "sẽ cung cấp câu trả lời dựa trên kiến thức chung của LLM và ngữ cảnh tài liệu được cung cấp.<br />Bạn cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       query: {
         title: "Truy vấn",
-        description:
-          "sẽ cung cấp câu trả lời <b>chỉ</b> khi ngữ cảnh của tài liệu được tìm thấy.<br />Bạn cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       automatic: {
         title: "Tự động",
-        description:
-          "sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc.<br />Nếu không hỗ trợ gọi công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
       },
     },
     history: {
@@ -743,7 +736,6 @@ const TRANSLATIONS = {
     see_less: "Xem ít hơn",
     see_more: "Xem thêm",
     tools: "Dụng cụ",
-    browse: "Duyệt",
     text_size_label: "Kích thước văn bản",
     select_model: "Chọn mẫu",
     sources: "Nguồn",
@@ -756,7 +748,6 @@ const TRANSLATIONS = {
     edit: "Chỉnh sửa",
     publish: "Đăng tải",
     stop_generating: "Dừng tạo ra phản hồi",
-    pause_tts_speech_message: "Tạm dừng phát giọng đọc của tin nhắn",
     slash_commands: "Lệnh tắt/bật",
     agent_skills: "Kỹ năng của đại lý",
     manage_agent_skills: "Quản lý kỹ năng của đại lý",
@@ -1054,9 +1045,7 @@ const TRANSLATIONS = {
           "Sử dụng tên người dùng bot không phổ biến để giảm khả năng được tìm thấy.",
       },
       "toast-enter-token": "Vui lòng nhập mã token cho bot.",
-      "toast-select-workspace": "Vui lòng chọn một không gian làm việc.",
       "toast-connect-failed": "Không thể kết nối với trợ lý.",
-      "toast-connect-success": "Bot Telegram đã kết nối thành công!",
     },
     connected: {
       status: "Kết nối",
@@ -1073,18 +1062,12 @@ const TRANSLATIONS = {
       "voice-mirror": "Trả lời bằng giọng nói (khi người dùng gửi giọng nói)",
       "voice-always":
         "Luôn luôn có thể gửi phản hồi bằng giọng nói (gửi kèm âm thanh trong mỗi phản hồi).",
-      "toast-enter-token": "Vui lòng nhập mã token cho bot.",
       "toast-disconnect-failed": "Không thể ngắt kết nối bot.",
-      "toast-disconnect-success": "Bot trên Telegram đã bị ngắt kết nối.",
       "toast-reconnect-failed": "Không thể kết nối lại với trình bot.",
-      "toast-reconnect-success": "Bot Telegram đã được kết nối lại!",
       "toast-voice-failed": "Không thể cập nhật chế độ giọng nói.",
       "toast-approve-failed": "Không thể xác nhận tài khoản người dùng.",
-      "toast-approve-success": "Đã được xác nhận bởi người dùng.",
       "toast-deny-failed": "Không thể từ chối yêu cầu của người dùng.",
-      "toast-deny-success": "Không được phép truy cập.",
       "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
-      "toast-revoke-success": "Quyền truy cập đã bị thu hồi.",
     },
     users: {
       "pending-title": "Chờ phê duyệt",
@@ -1094,7 +1077,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
       user: "Người dùng",
-      "chat-id": "Mã định danh trò chuyện",
       "pairing-code": "Mã ghép",
       "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
       "no-approved": "Không có người dùng được xác nhận",

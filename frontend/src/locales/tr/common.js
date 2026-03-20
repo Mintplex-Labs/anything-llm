@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Çalışma Alanları Adı",
-    user: "Kullanıcı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
     save: "Değişiklikleri Kaydet",
@@ -185,18 +184,12 @@ const TRANSLATIONS = {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        description:
-          "LLM'nin genel bilgisi ve bulunan doküman bağlamıyla cevaplar sunacaktır. Araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
       query: {
         title: "Sorgu",
-        description:
-          "yalnızca doküman bağlamı bulunursa yanıtlar sağlayacaktır.<b>İhtiyaç duyacağınız araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
       },
       automatic: {
         title: "Oto",
-        description:
-          "<br />Varsa, model ve sağlayıcı tarafından desteklenen yerel araçları otomatik olarak kullanacaktır. Yerel araç kullanımı desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
     },
     history: {
@@ -746,7 +739,6 @@ const TRANSLATIONS = {
     see_less: "Daha az",
     see_more: "Daha Fazla",
     tools: "Araçlar",
-    browse: "Gezin",
     text_size_label: "Metin Boyutu",
     select_model: "Model Seçimi",
     sources: "Kaynaklar",
@@ -759,7 +751,6 @@ const TRANSLATIONS = {
     edit: "Düzenle",
     publish: "Yayınla",
     stop_generating: "Yanıt üretmeyi durdurun",
-    pause_tts_speech_message: "Mesajın metin okuma (TTS) özelliğini durdur",
     slash_commands: "Komut Satırı Komutları",
     agent_skills: "Ajansın Yetenekleri",
     manage_agent_skills: "Temsilcinin becerilerini yönetin",
@@ -1055,9 +1046,7 @@ const TRANSLATIONS = {
           "Daha az bilinen bir bot kullanıcı adı kullanarak görünürlüğünü azaltın.",
       },
       "toast-enter-token": "Lütfen bir bot belirteci girin.",
-      "toast-select-workspace": "Lütfen bir çalışma alanı seçin.",
       "toast-connect-failed": "Bot ile bağlantı kurulamadı.",
-      "toast-connect-success": "Telegram bot başarıyla kuruldu!",
     },
     connected: {
       status: "Bağlı",
@@ -1074,18 +1063,12 @@ const TRANSLATIONS = {
       "voice-mirror":
         "Sesli yanıt (kullanıcı ses gönderdiğinde, sesli yanıtla cevaplayın)",
       "voice-always": "Her yanıtla birlikte sesli (sesli yanıt gönderme)",
-      "toast-enter-token": "Lütfen bir bot belirteci girin.",
       "toast-disconnect-failed": "Bot'u ayırmada başarısız.",
-      "toast-disconnect-success": "Telegram bot bağlantısı kesildi.",
       "toast-reconnect-failed": "Bot yeniden bağlantı kuramadı.",
-      "toast-reconnect-success": "Telegram bot yeniden bağlantı kuruldu!",
       "toast-voice-failed": "Ses modunu güncelleme başarısız oldu.",
       "toast-approve-failed": "Kullanıcıın onaylanması başarısız oldu.",
-      "toast-approve-success": "Kullanıcı tarafından onaylandı.",
       "toast-deny-failed": "Kullanıcıyı reddetmeyi başaramadı.",
-      "toast-deny-success": "Kullanıcı reddedildi.",
       "toast-revoke-failed": "Kullanıcıyı silme işlemi başarısız oldu.",
-      "toast-revoke-success": "Kullanıcı erişimi iptal edildi.",
     },
     users: {
       "pending-title": "Onay Bekliyor",
@@ -1095,7 +1078,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Botunuzla sohbet etmeye yetkili olan kullanıcılar.",
       user: "Kullanıcı",
-      "chat-id": "Sohbet Kimliği",
       "pairing-code": "Eşleştirme Kodu",
       "no-pending": "Henüz tamamlanmamış herhangi bir istek bulunmamaktadır.",
       "no-approved": "Onaylanmış kullanıcı bulunmamaktadır",

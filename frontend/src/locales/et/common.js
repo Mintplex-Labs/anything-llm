@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
     save: "Salvesta muudatused",
@@ -190,18 +189,12 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        description:
-          'teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumentide konteksti, mida on leitav.<br /> Selleks peate kasutama käsku "@agent".',
       },
       query: {
         title: "Päring",
-        description:
-          'teenib vastuseid <b>ainult__, kui dokumendi kontekst on leitud.</b> Vajate kasutama käesu "agent", et kasutada tööriime.',
       },
       automatic: {
         title: "Automaailm",
-        description:
-          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native tööriistade kasutamist. <br />Kui native tööriistade kasutamine pole toetatud, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -811,7 +804,6 @@ const TRANSLATIONS = {
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
     tools: "Vahendid",
-    browse: "Sirva",
     text_size_label: "Teksti suurus",
     select_model: "Valige mudel",
     sources: "Allikasid",
@@ -824,7 +816,6 @@ const TRANSLATIONS = {
     edit: "Redigeerimine",
     publish: "Avaldada",
     stop_generating: "Lõpeta vastuste genereerimine",
-    pause_tts_speech_message: "Peata sõna-sünteesi (TTS) rääkimine sõnumis",
     slash_commands: "Lihtsasti kasutatavad käsud",
     agent_skills: "Agentide oskused",
     manage_agent_skills: "Halda agentide oskusi",
@@ -1017,9 +1008,7 @@ const TRANSLATIONS = {
           "Kasutage mitteolivaid kasutajanime, et vähendada avastamise võimalust.",
       },
       "toast-enter-token": "Palun sisestage bot'i token.",
-      "toast-select-workspace": "Palun valige tööruum.",
       "toast-connect-failed": "Bot ei suutnud ühendust tehes.",
-      "toast-connect-success": "Telegrami bot on edukalt ühendatud!",
     },
     connected: {
       status: "Ühendatud",
@@ -1036,18 +1025,12 @@ const TRANSLATIONS = {
       "voice-mirror":
         "Helisüsteem (vastake häältega, kui kasutaja kasutab helifunktsiooni)",
       "voice-always": "Alati lisage hääl (saada helifail koos iga vastusega)",
-      "toast-enter-token": "Palun sisestage bot'i token.",
       "toast-disconnect-failed": "Impeer ei õnnestunud seadistada.",
-      "toast-disconnect-success": "Telegrami bot on lahti ühendatud.",
       "toast-reconnect-failed": "Bot ei suutnud ühendust taastada.",
-      "toast-reconnect-success": "Telegrami bot on taas tööle!",
       "toast-voice-failed": "Ärkimõõtmeid ei õnnestunud uuendada.",
       "toast-approve-failed": "Kasutaja kinnitamise ebaõnnestumine.",
-      "toast-approve-success": "Kasutaja kinnitas.",
       "toast-deny-failed": "Ei suutnud kasutaja kohta infot väita.",
-      "toast-deny-success": "Kasutaja pääset ei ole lubatud.",
       "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
-      "toast-revoke-success": "Kasutaja pääset muudati.",
     },
     users: {
       "pending-title": "Ootea faasis, ootamas heakskiitu",
@@ -1057,7 +1040,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
       user: "Kasutaja",
-      "chat-id": "Чат ID",
       "pairing-code": "Koosamis kood",
       "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
       "no-approved": "Pole heakskiidud kasutajaid",
