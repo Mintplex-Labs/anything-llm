@@ -62,6 +62,11 @@ const TRANSLATIONS = {
     search: "검색",
     username_requirements:
       "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
+    on: "~에 대해",
+    none: "없음",
+    stopped: "멈춤",
+    loading: "로딩 중",
+    refresh: "새롭게",
   },
   settings: {
     title: "인스턴스 설정",
@@ -318,6 +323,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+    },
+    mcp: {
+      title: "MCP 서버",
+      "loading-from-config": "구성 파일에서 MCP 서버 로드",
+      "learn-more": "MCP 서버에 대해 더 자세히 알아보세요.",
+      "no-servers-found": "MCP 서버를 찾을 수 없습니다.",
+      "tool-warning":
+        "최상의 성능을 위해, 불필요한 도구를 비활성화하여 컨텍스트를 보존하는 것을 고려해 보세요.",
+      "stop-server": "MCP 서버 중단",
+      "start-server": "MCP 서버 시작",
+      "delete-server": "MCP 서버 삭제",
+      "tool-count-warning":
+        "이 MCP 서버에는 <b>에 설정된 {{count}} 도구가 있으며, 이는 모든 채팅에서 컨텍스트를 소비합니다. </b> 불필요한 도구를 비활성화하여 컨텍스트를 절약하는 것을 고려해 보세요.",
+      "startup-command": "시작 명령어",
+      command: "명령",
+      arguments: "논쟁",
+      "not-running-warning":
+        "이 MCP 서버는 현재 실행 상태가 아닙니다. 중단되었거나, 시작 시 오류가 발생했을 수 있습니다.",
+      "tool-call-arguments": "툴 호출 인자",
+      "tools-enabled": "도구 사용 기능 활성화",
+    },
+    settings: {
+      title: "에이전트 스킬 설정",
+      "max-tool-calls": {
+        title: "응답당 최대 툴 호출 횟수",
+        description:
+          "에이전트가 단일 응답을 생성하기 위해 사용할 수 있는 최대 툴의 개수입니다. 이를 통해 불필요한 툴 호출과 무한 루프를 방지합니다.",
+      },
+      "intelligent-skill-selection": {
+        title: "지능형 기술 선택",
+        "beta-badge": "베타",
+        description:
+          "쿼리당 무제한의 도구 사용 및 컷 토큰 사용량을 최대 80%까지 줄일 수 있습니다 – AnythingLLM은 모든 프롬프트에 적합한 기술을 자동으로 선택합니다.",
+        "max-tools": {
+          title: "맥스 툴스",
+          description:
+            "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
+        },
+      },
     },
   },
   recorded: {

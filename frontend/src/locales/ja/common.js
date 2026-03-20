@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "検索",
     username_requirements:
       "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
+    on: "～について",
+    none: "なし",
+    stopped: "停止",
+    loading: "読み込み中",
+    refresh: "リフレッシュ",
   },
   settings: {
     title: "インスタンス設定",
@@ -314,6 +319,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
+    },
+    mcp: {
+      title: "MCP サーバー",
+      "loading-from-config": "構成ファイルからMCPサーバーを読み込む",
+      "learn-more": "MCP サーバーに関する詳細情報を入手してください。",
+      "no-servers-found": "MCP サーバーは見つかりませんでした",
+      "tool-warning":
+        "最高のパフォーマンスを得るためには、不要なツールを無効にして、コンテキストを維持することを検討してください。",
+      "stop-server": "MCP サーバーの停止",
+      "start-server": "MCP サーバーを開始する",
+      "delete-server": "MCP サーバーを削除",
+      "tool-count-warning":
+        "このMCPサーバーには、<b>のツールが有効になっており、これらはチャットのコンテキストを消費します</b>。コンテキストを節約するために、不要なツールを無効にすることを検討してください。",
+      "startup-command": "起動コマンド",
+      command: "指示",
+      arguments: "議論",
+      "not-running-warning":
+        "このMCPサーバーは稼働していません。停止しているか、起動時にエラーが発生している可能性があります。",
+      "tool-call-arguments": "ツール呼び出しの引数",
+      "tools-enabled": "ツールが有効化されました",
+    },
+    settings: {
+      title: "エージェントのスキル設定",
+      "max-tool-calls": {
+        title: "1回の応答で実行できる最大ツール数",
+        description:
+          "エージェントが単一の応答を生成するために使用できるツールの一意な最大数。これにより、ツール呼び出しの過剰や無限ループを防ぐことができます。",
+      },
+      "intelligent-skill-selection": {
+        title: "知的なスキル選択",
+        "beta-badge": "ベータ版",
+        description:
+          "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
+        "max-tools": {
+          title: "マックスツールズ",
+          description:
+            "各クエリで選択できるツール数の上限。大規模なコンテキストモデルを使用する場合は、この値をより高い値に設定することをお勧めします。",
+        },
+      },
     },
   },
   recorded: {

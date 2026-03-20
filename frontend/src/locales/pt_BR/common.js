@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "Pesquisar",
     username_requirements:
       "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
+    on: "Sobre",
+    none: "Nenhum",
+    stopped: "Parado",
+    loading: "Carregando",
+    refresh: "Atualizar",
   },
   settings: {
     title: "Configurações da Instância",
@@ -322,6 +327,46 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
+    },
+    mcp: {
+      title: "Servidores MCP",
+      "loading-from-config":
+        "Carregar servidores MCP a partir do arquivo de configuração",
+      "learn-more": "Saiba mais sobre os servidores MCP.",
+      "no-servers-found": "Nenhum servidor MCP encontrado.",
+      "tool-warning":
+        "Para obter o melhor desempenho, considere desativar as ferramentas desnecessárias para preservar o contexto.",
+      "stop-server": "Pare o servidor MCP",
+      "start-server": "Iniciar o servidor MCP",
+      "delete-server": "Excluir o servidor MCP",
+      "tool-count-warning":
+        "Este servidor MCP tem as seguintes ferramentas habilitadas: {{count}}, que consumirão contexto em cada conversa.</b> Considere desativar as ferramentas indesejadas para economizar contexto.",
+      "startup-command": "Comando de inicialização",
+      command: "Ordem",
+      arguments: "Argumentos",
+      "not-running-warning":
+        "Este servidor MCP não está em funcionamento – pode estar parado ou estar apresentando um erro durante a inicialização.",
+      "tool-call-arguments": "Argumentos de chamada de ferramenta",
+      "tools-enabled": "ferramentas ativadas",
+    },
+    settings: {
+      title: "Configurações de Habilidades do Agente",
+      "max-tool-calls": {
+        title: "Número máximo de chamadas de ferramenta por resposta",
+        description:
+          "O número máximo de ferramentas que um agente pode encadear para gerar uma única resposta. Isso evita chamadas excessivas de ferramentas e loops infinitos.",
+      },
+      "intelligent-skill-selection": {
+        title: "Seleção Inteligente de Habilidades",
+        "beta-badge": "Beta",
+        description:
+          "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
+        "max-tools": {
+          title: "Ferramentas Max",
+          description:
+            "O número máximo de ferramentas que podem ser selecionadas para cada consulta. Recomendamos definir este valor para modelos com contextos maiores.",
+        },
+      },
     },
   },
   recorded: {

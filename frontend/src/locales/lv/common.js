@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "Meklēšana",
     username_requirements:
       "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
+    on: "Par",
+    none: "Nav",
+    stopped: "Apstājās",
+    loading: "Ielāde",
+    refresh: "Atjaunot",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -323,6 +328,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
+    },
+    mcp: {
+      title: "MCP serveri",
+      "loading-from-config": "Ielādot MCP serverus no konfigūrācijas faila",
+      "learn-more": "Uzziniet vairāk par MCP serveriem.",
+      "no-servers-found": "Neizdevās atrast kādus MCP serverus.",
+      "tool-warning":
+        "Lai nodrošinātu optimālu darbību, apsveriet iespēju atspēlot nevajadzīgus rīkus, lai saglabātu kontekstu.",
+      "stop-server": "Aizvert MCP serveri",
+      "start-server": "Sākt MCP serveri",
+      "delete-server": "Dzēst MCP serveri",
+      "tool-count-warning":
+        "Šis MCP servers ir aktivizētas <b> instrumenti, kas izmantos kontekstu katrā sarunā.</b> Iespējams, ir labāk deaktivizēt nevēlamus instrumentus, lai saglabātu kontekstu.",
+      "startup-command": "Sākuma komanda",
+      command: "Instrukcijas",
+      arguments: "Pamatatpersonas",
+      "not-running-warning":
+        "Šis MCP servers darbojas – iespējams, tas ir izslēgts vai piedzīvo kļūdu, kad tiek ieslēgts.",
+      "tool-call-arguments": "Parametri, kas tiek nosūtīti rīkam",
+      "tools-enabled": "rīki atļauti",
+    },
+    settings: {
+      title: "Aģenta spēju iestatījumi",
+      "max-tool-calls": {
+        title: "Maksimālais rēķinu skaits vienam atbildē",
+        description:
+          "Maksimālais rīku skaits, ko aģents var apvienot, lai ģenerētu vienu atbildi. Tas novērina neierobežotu rīku izmantošanu un beidzoties.",
+      },
+      "intelligent-skill-selection": {
+        title: "Izglītības un prasmu izvēle, kas balstota uz spējām",
+        "beta-badge": "Beta",
+        description:
+          'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – AnythingLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimālais rīku skaits, kas var tikt izvēlts katrai meklēšanai. Mēs iesakām iestatīt šo vērtību, lai iegūtu lielāku kontekstu modelus.",
+        },
+      },
     },
   },
   recorded: {

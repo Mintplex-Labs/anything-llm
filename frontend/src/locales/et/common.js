@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "otsing",
     username_requirements:
       "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
+    on: "On",
+    none: "Ei",
+    stopped: "Peatas",
+    loading: "Laadimine",
+    refresh: "Värskendada",
   },
   settings: {
     title: "Instantsi seaded",
@@ -315,6 +320,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+    },
+    mcp: {
+      title: "MCP-serverid",
+      "loading-from-config": "MCP-serverid laaditakse konfiguraadifailist",
+      "learn-more": "Lisateabe saamiseks tutvuge MCP-serveridega.",
+      "no-servers-found": "MCP-servereid ei leitud.",
+      "tool-warning":
+        "Parima tulemuse saavutamiseks, võtke kaalutluseks, et välja lülitada tarbetud vahendid, et säilitada kontekst.",
+      "stop-server": "Lülitage MCP-server välja",
+      "start-server": "Alusta MCP-serverit",
+      "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
+      "tool-count-warning":
+        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+      "startup-command": "Alustamine",
+      command: "Juhendamine",
+      arguments: "Argumentid",
+      "not-running-warning":
+        "See MCP-server ei tööta – see võib olla peatatud või alguses võib tekkida viga.",
+      "tool-call-arguments": '"Tooli käivitamise argumentid"',
+      "tools-enabled": "vahendid on lubatud",
+    },
+    settings: {
+      title: "Agenti oskuste seaded",
+      "max-tool-calls": {
+        title: "Maximaalne töö-kõned vastuse kohta",
+        description:
+          "Максимаalne arv, mis agent võib ühendada, et genereerida ühe vastuse. See takistab liigse töö tegevuse ja lõpmatute ringide tekkimist.",
+      },
+      "intelligent-skill-selection": {
+        title: "Nutikad oskuste valiku meetodid",
+        "beta-badge": "Beeta",
+        description:
+          "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
+        },
+      },
     },
   },
   recorded: {
