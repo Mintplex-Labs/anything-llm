@@ -389,27 +389,42 @@ function apiWorkspaceThreadEndpoints(app) {
           userId,
           attachments = [],
           reset = false,
+          stream = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
-        const thread = await WorkspaceThread.get({
-          slug: threadSlug,
-          workspace_id: workspace.id,
-        });
+        const thread = workspace
+          ? await WorkspaceThread.get({
+              slug: threadSlug,
+              workspace_id: workspace.id,
+            })
+          : null;
+        const shouldStream = !!stream;
 
         if (!workspace || !thread) {
-          response.status(400).json({
+          const payload = {
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
             error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
-          });
+          };
+          if (shouldStream) {
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Content-Type", "text/event-stream");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Connection", "keep-alive");
+            response.flushHeaders();
+            writeResponseChunk(response, payload);
+            response.end();
+          } else {
+            response.status(400).json(payload);
+          }
           return;
         }
 
         if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
-          response.status(400).json({
+          const payload = {
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -418,20 +433,51 @@ function apiWorkspaceThreadEndpoints(app) {
             error: !message?.length
               ? "Message is empty"
               : `${mode} is not a valid mode.`,
-          });
+          };
+          if (shouldStream) {
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Content-Type", "text/event-stream");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Connection", "keep-alive");
+            response.flushHeaders();
+            writeResponseChunk(response, payload);
+            response.end();
+          } else {
+            response.status(400).json(payload);
+          }
           return;
         }
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
-        const result = await ApiChatHandler.chatSync({
-          workspace,
-          message,
-          mode,
-          user,
-          thread,
-          attachments,
-          reset,
-        });
+        if (shouldStream) {
+          response.setHeader("Cache-Control", "no-cache");
+          response.setHeader("Content-Type", "text/event-stream");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.setHeader("Connection", "keep-alive");
+          response.flushHeaders();
+
+          await ApiChatHandler.streamChat({
+            response,
+            workspace,
+            message,
+            mode,
+            user,
+            thread,
+            attachments,
+            reset,
+          });
+        } else {
+          const result = await ApiChatHandler.chatSync({
+            workspace,
+            message,
+            mode,
+            user,
+            thread,
+            attachments,
+            reset,
+          });
+          response.status(200).json({ ...result });
+        }
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -445,17 +491,27 @@ function apiWorkspaceThreadEndpoints(app) {
           threadName: thread?.name,
           userId: user?.id,
         });
-        response.status(200).json({ ...result });
+        if (shouldStream) {
+          response.end();
+          return;
+        }
+        return;
       } catch (e) {
         console.error(e.message, e);
-        response.status(500).json({
+        const payload = {
           id: uuidv4(),
           type: "abort",
           textResponse: null,
           sources: [],
           close: true,
           error: e.message,
-        });
+        };
+        if (response.headersSent) {
+          writeResponseChunk(response, payload);
+          response.end();
+          return;
+        }
+        response.status(500).json(payload);
       }
     }
   );
@@ -559,10 +615,12 @@ function apiWorkspaceThreadEndpoints(app) {
           reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
-        const thread = await WorkspaceThread.get({
-          slug: threadSlug,
-          workspace_id: workspace.id,
-        });
+        const thread = workspace
+          ? await WorkspaceThread.get({
+              slug: threadSlug,
+              workspace_id: workspace.id,
+            })
+          : null;
 
         if (!workspace || !thread) {
           response.status(400).json({
