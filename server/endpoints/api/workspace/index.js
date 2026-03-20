@@ -654,23 +654,36 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
           reset = false,
+          stream = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
+        const shouldStream = !!stream;
 
         if (!workspace) {
-          response.status(400).json({
+          const payload = {
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
             error: `Workspace ${slug} is not a valid workspace.`,
-          });
+          };
+          if (shouldStream) {
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Content-Type", "text/event-stream");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Connection", "keep-alive");
+            response.flushHeaders();
+            writeResponseChunk(response, payload);
+            response.end();
+          } else {
+            response.status(400).json(payload);
+          }
           return;
         }
 
         if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
-          response.status(400).json({
+          const payload = {
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -679,20 +692,52 @@ function apiWorkspaceEndpoints(app) {
             error: !message?.length
               ? "Message is empty"
               : `${mode} is not a valid mode.`,
-          });
+          };
+          if (shouldStream) {
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Content-Type", "text/event-stream");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Connection", "keep-alive");
+            response.flushHeaders();
+            writeResponseChunk(response, payload);
+            response.end();
+          } else {
+            response.status(400).json(payload);
+          }
           return;
         }
 
-        const result = await ApiChatHandler.chatSync({
-          workspace,
-          message,
-          mode,
-          user: null,
-          thread: null,
-          sessionId: !!sessionId ? String(sessionId) : null,
-          attachments,
-          reset,
-        });
+        if (shouldStream) {
+          response.setHeader("Cache-Control", "no-cache");
+          response.setHeader("Content-Type", "text/event-stream");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.setHeader("Connection", "keep-alive");
+          response.flushHeaders();
+
+          await ApiChatHandler.streamChat({
+            response,
+            workspace,
+            message,
+            mode,
+            user: null,
+            thread: null,
+            sessionId: !!sessionId ? String(sessionId) : null,
+            attachments,
+            reset,
+          });
+        } else {
+          const result = await ApiChatHandler.chatSync({
+            workspace,
+            message,
+            mode,
+            user: null,
+            thread: null,
+            sessionId: !!sessionId ? String(sessionId) : null,
+            attachments,
+            reset,
+          });
+          response.status(200).json({ ...result });
+        }
 
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
@@ -705,17 +750,27 @@ function apiWorkspaceEndpoints(app) {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });
-        return response.status(200).json({ ...result });
+        if (shouldStream) {
+          response.end();
+          return;
+        }
+        return;
       } catch (e) {
         console.error(e.message, e);
-        response.status(500).json({
+        const payload = {
           id: uuidv4(),
           type: "abort",
           textResponse: null,
           sources: [],
           close: true,
           error: e.message,
-        });
+        };
+        if (response.headersSent) {
+          writeResponseChunk(response, payload);
+          response.end();
+          return;
+        }
+        response.status(500).json(payload);
       }
     }
   );
