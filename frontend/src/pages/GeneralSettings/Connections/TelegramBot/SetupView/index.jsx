@@ -61,7 +61,7 @@ export default function SetupView({ workspaces, onConnected }) {
           <button
             type="submit"
             disabled={connecting}
-            className="flex items-center justify-center gap-x-2 text-sm font-medium text-white bg-primary-button hover:bg-primary-button/80 rounded-lg px-4 py-2.5 w-fit transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-x-2 text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 rounded-lg px-4 py-2.5 w-fit transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {connecting ? (
               <>

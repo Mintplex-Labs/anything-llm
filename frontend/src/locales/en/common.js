@@ -594,13 +594,12 @@ const TRANSLATIONS = {
     setup: {
       step1: {
         title: "Step 1: Create your Telegram bot",
-        "description-start": "Open @BotFather in Telegram, send ",
-        "description-end": ", follow the prompts, and copy the API token.",
-        "qr-label": "Scan to open @BotFather",
+        description:
+          "Open @BotFather in Telegram, send <code>/newbot</code> to <code>@BotFather</code>, follow the prompts, and copy the API token.",
         "open-botfather": "Open BotFather",
         "instruction-1": "1. Open the link or scan the QR code",
-        "instruction-2-start": "2. Send ",
-        "instruction-2-end": " to @BotFather",
+        "instruction-2":
+          "2. Send <code>/newbot</code> to <code>@BotFather</code>",
         "instruction-3": "3. Choose a name and username for your bot",
         "instruction-4": "4. Copy the API token you receive",
       },

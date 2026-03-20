@@ -8,6 +8,7 @@ const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
 const { EventLogs } = require("../models/eventLogs");
 const { Workspace } = require("../models/workspace");
+const { encryptToken } = require("../utils/telegramBot/utils");
 
 function telegramEndpoints(app) {
   if (!app) return;
@@ -102,7 +103,11 @@ function telegramEndpoints(app) {
         // Save config with encrypted token
         const { error } = await ExternalCommunicationConnector.upsert(
           "telegram",
-          { ...storedConfig, active: true }
+          {
+            ...storedConfig,
+            bot_token: encryptToken(String(bot_token)),
+            active: true,
+          }
         );
         if (error) return response.status(500).json({ success: false, error });
 

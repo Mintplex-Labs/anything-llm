@@ -134,29 +134,39 @@ async function streamResponse({
     rawHistory
   );
 
-  const { completeText, metrics } = await generateResponse({
-    LLMConnector,
-    messages,
-    workspace,
-    ctx,
-    chatId,
-    voiceResponse,
-    typingInterval,
-  });
+  try {
+    const { completeText, metrics } = await generateResponse({
+      LLMConnector,
+      messages,
+      workspace,
+      ctx,
+      chatId,
+      voiceResponse,
+      typingInterval,
+    });
 
-  await persistAndDeliver({
-    workspace,
-    thread,
-    message,
-    completeText,
-    sources,
-    chatMode,
-    metrics,
-    attachments,
-    voiceResponse,
-    ctx,
-    chatId,
-  });
+    await persistAndDeliver({
+      workspace,
+      thread,
+      message,
+      completeText,
+      sources,
+      chatMode,
+      metrics,
+      attachments,
+      voiceResponse,
+      ctx,
+      chatId,
+    });
+  } catch (error) {
+    console.error("Error streaming response:", error);
+    await ctx.bot.sendMessage(
+      chatId,
+      "An error occurred while streaming the response."
+    );
+  } finally {
+    clearInterval(typingInterval);
+  }
 }
 
 /**
@@ -247,42 +257,37 @@ async function generateResponse({
   ctx,
   chatId,
   voiceResponse,
-  typingInterval,
 }) {
   let completeText = "";
   let metrics = {};
 
-  try {
-    if (LLMConnector.streamingEnabled() === true) {
-      const stream = await LLMConnector.streamGetChatCompletion(messages, {
+  if (LLMConnector.streamingEnabled() === true) {
+    const stream = await LLMConnector.streamGetChatCompletion(messages, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
+
+    const { responseHandler, flushEdit } = createStreamHandler({
+      ctx,
+      chatId,
+      voiceResponse,
+    });
+
+    completeText = await LLMConnector.handleStream(responseHandler, stream, {
+      uuid: chatId.toString(),
+    });
+
+    if (!voiceResponse) await flushEdit(true);
+    metrics = stream.metrics || {};
+  } else {
+    const { textResponse, metrics: performanceMetrics } =
+      await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+        user: null,
       });
-
-      const { responseHandler, flushEdit } = createStreamHandler({
-        ctx,
-        chatId,
-        voiceResponse,
-      });
-
-      completeText = await LLMConnector.handleStream(responseHandler, stream, {
-        uuid: chatId.toString(),
-      });
-
-      if (!voiceResponse) await flushEdit(true);
-      metrics = stream.metrics || {};
-    } else {
-      const { textResponse, metrics: performanceMetrics } =
-        await LLMConnector.getChatCompletion(messages, {
-          temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-          user: null,
-        });
-      completeText = textResponse;
-      metrics = performanceMetrics || {};
-      if (!voiceResponse && completeText?.length > 0)
-        await sendFormattedMessage(ctx.bot, chatId, completeText);
-    }
-  } finally {
-    clearInterval(typingInterval);
+    completeText = textResponse;
+    metrics = performanceMetrics || {};
+    if (!voiceResponse && completeText?.length > 0)
+      await sendFormattedMessage(ctx.bot, chatId, completeText);
   }
 
   return { completeText, metrics };

@@ -7,6 +7,7 @@ const {
   sendFormattedMessage,
   upsertMessage,
 } = require("../utils");
+const { sendVoiceResponse } = require("../utils/media");
 const {
   STREAM_EDIT_INTERVAL,
   MAX_MSG_LEN,
