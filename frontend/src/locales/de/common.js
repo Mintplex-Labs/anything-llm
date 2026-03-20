@@ -352,6 +352,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumente für die Funktionsaufrufe",
       "tools-enabled": "Werkzeuge aktiviert",
     },
+    settings: {
+      title: "Einstellungen für Agenten-Fähigkeiten",
+      "max-tool-calls": {
+        title: "Maximale Anzahl an Tool-Anfragen pro Antwort",
+        description:
+          "Die maximale Anzahl an Werkzeugen, die ein Agent verketten kann, um eine einzelne Antwort zu generieren. Dies verhindert, dass Werkzeuge unkontrolliert aufgerufen werden und zu endlosen Schleifen führen.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligente Auswahl von Fähigkeiten",
+        "beta-badge": "Beta-Version",
+        description:
+          "Ermöglichen Sie die uneingeschränkte Nutzung von Werkzeugen und reduzieren Sie die Token-Nutzung pro Anfrage um bis zu 80 % – AnythingLLM wählt automatisch die passenden Fähigkeiten für jede Anfrage aus.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Die maximale Anzahl der auszuwählenden Werkzeuge für jede Abfrage. Wir empfehlen, diesen Wert für größere Modelle mit größerem Kontext auf einen höheren Wert einzustellen.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Workspace-Chats",

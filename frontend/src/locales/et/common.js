@@ -341,6 +341,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": '"Tooli käivitamise argumentid"',
       "tools-enabled": "vahendid on lubatud",
     },
+    settings: {
+      title: "Agenti oskuste seaded",
+      "max-tool-calls": {
+        title: "Maximaalne töö-kõned vastuse kohta",
+        description:
+          "Максимаalne arv, mis agent võib ühendada, et genereerida ühe vastuse. See takistab liigse töö tegevuse ja lõpmatute ringide tekkimist.",
+      },
+      "intelligent-skill-selection": {
+        title: "Nutikad oskuste valiku meetodid",
+        "beta-badge": "Beeta",
+        description:
+          "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Tööruumi vestlused",

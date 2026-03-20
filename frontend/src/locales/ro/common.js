@@ -796,6 +796,26 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Argumente pentru apelarea unei funcții",
       "tools-enabled": "instrumentele sunt activate",
     },
+    settings: {
+      title: "Setări pentru abilitățile agenților",
+      "max-tool-calls": {
+        title:
+          "Numărul maxim de solicitări de instrument (Max Tool Calls Per Response)",
+        description:
+          "Numărul maxim de instrumente pe care un agent le poate utiliza în mod consecutiv pentru a genera un singur răspuns. Această funcție previne apelurile inutile ale instrumentelor și buclele infinite.",
+      },
+      "intelligent-skill-selection": {
+        title: "Selecție inteligentă a abilităților",
+        "beta-badge": "Beta",
+        description:
+          "Permite utilizarea nelimitată a instrumentelor și reduce utilizarea token-urilor cu până la 80% pentru fiecare interogare – AnythingLLM selectează automat abilitățile potrivite pentru fiecare solicitare.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Conversații spațiu de lucru",

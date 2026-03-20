@@ -4,6 +4,7 @@ const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
+const { ToolReranker } = require("./utils/toolReranker.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -44,12 +45,34 @@ class AIbitat {
    */
   _pendingCitations = [];
 
+  /**
+   * Get the default maximum number of tools an agent can chain for a single response.
+   * @returns {number}
+   */
+  static defaultMaxToolCalls() {
+    const envMaxToolCalls = parseInt(process.env.AGENT_MAX_TOOL_CALLS, 10);
+    return !isNaN(envMaxToolCalls) && envMaxToolCalls > 0
+      ? envMaxToolCalls
+      : 10;
+  }
+
+  /**
+   * Create a new AIbitat instance.
+   * @param {Object} props - The properties for the AIbitat instance.
+   * @param {Array} props.chats - [default: []] The chat history between agents and channels.
+   * @param {string} props.interrupt - [default: "NEVER"] The interrupt mode for the AIbitat instance.
+   * @param {number} props.maxRounds - [default: 100] The maximum number of rounds for the AIbitat instance.
+   * @param {number} props.maxToolCalls - [default: AIbitat.defaultMaxToolCalls()] The maximum number of tools an agent can chain for a single response.
+   * @param {string} props.provider - [default: "openai"] The provider for the AIbitat instance.
+   * @param {Object} props.handlerProps - The handler properties for the AIbitat instance.
+   * @param {Object} rest - The rest of the properties for the AIbitat instance.
+   */
   constructor(props = {}) {
     const {
       chats = [],
       interrupt = "NEVER",
       maxRounds = 100,
-      maxToolCalls = 10,
+      maxToolCalls = AIbitat.defaultMaxToolCalls(),
       provider = "openai",
       handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
@@ -534,9 +557,7 @@ class AIbitat {
       {
         role: "user",
         content: `You are in a role play game. The following roles are available:
-${availableNodes
-  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
-  .join("\n")}.
+${availableNodes.map((node) => `@${node}: ${this.getAgentConfig(node).role}`).join("\n")}.
 
 Read the following conversation.
 
@@ -572,6 +593,27 @@ Only return the role.
       return pluginName;
     if (pluginName.startsWith("@@")) return pluginName.replace("@@", "");
     return pluginName.split("#")[1];
+  }
+
+  /**
+   * Extract the user's prompt from the messages array for tool reranking.
+   * Gets the content of the last user message.
+   * @param {Array} messages - Array of chat messages
+   * @returns {string|null} The user's prompt or null if not found
+   */
+  #extractUserPrompt(messages) {
+    if (!messages || !Array.isArray(messages)) return null;
+
+    // Find the last user message
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg.role === "user" && msg.content) {
+        return typeof msg.content === "string"
+          ? msg.content
+          : JSON.stringify(msg.content);
+      }
+    }
+    return null;
   }
 
   /**
@@ -665,9 +707,29 @@ ${this.getHistory({ to: route.to })
     ];
 
     // get the functions that the node can call
-    const functions = fromConfig.functions
+    let functions = fromConfig.functions
       ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
+
+    // Rerank tools based on user prompt if enabled
+    if (ToolReranker.isEnabled() && functions?.length) {
+      const toolReranker = new ToolReranker();
+      const userPrompt = this.#extractUserPrompt(messages);
+      if (userPrompt)
+        functions = await toolReranker.rerank(userPrompt, functions);
+    } else {
+      if (functions?.length > ToolReranker.defaultTopN) {
+        this.handlerProps.log?.(
+          `
+
+\x1b[44m[HINT]\x1b[0m: You are injecting \x1b[0;93m${functions.length} tools\x1b[0m into every request.
+Consider enabling \x1b[0;93mIntelligent Skill Selection\x1b[0m to reduce token usage from tool call bloat by up to \x1b[0;93m80% per request\x1b[0m.
+https://docs.anythingllm.com/agent/intelligent-tool-selection
+
+`
+        );
+      }
+    }
 
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,

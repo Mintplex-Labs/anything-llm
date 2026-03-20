@@ -342,6 +342,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Tham số khi gọi hàm/thao tác",
       "tools-enabled": "các công cụ đã được kích hoạt",
     },
+    settings: {
+      title: "Cài đặt kỹ năng của đại lý",
+      "max-tool-calls": {
+        title: "Số lượng lệnh gọi công cụ tối đa cho mỗi phản hồi",
+        description:
+          "Số lượng công cụ tối đa mà một người dùng có thể liên kết để tạo ra một phản hồi duy nhất. Điều này ngăn chặn việc gọi công cụ quá mức và tạo ra các vòng lặp vô hạn.",
+      },
+      "intelligent-skill-selection": {
+        title: "Lựa chọn kỹ năng thông minh",
+        "beta-badge": "Phiên bản thử nghiệm",
+        description:
+          "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
+        "max-tools": {
+          title: "Công cụ Max",
+          description:
+            "Số lượng công cụ tối đa có thể chọn cho mỗi truy vấn. Chúng tôi khuyến nghị đặt giá trị này thành các giá trị lớn hơn đối với các mô hình có ngữ cảnh lớn hơn.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Hội thoại không gian làm việc",

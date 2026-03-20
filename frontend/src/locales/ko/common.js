@@ -344,6 +344,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "툴 호출 인자",
       "tools-enabled": "도구 사용 기능 활성화",
     },
+    settings: {
+      title: "에이전트 스킬 설정",
+      "max-tool-calls": {
+        title: "응답당 최대 툴 호출 횟수",
+        description:
+          "에이전트가 단일 응답을 생성하기 위해 사용할 수 있는 최대 툴의 개수입니다. 이를 통해 불필요한 툴 호출과 무한 루프를 방지합니다.",
+      },
+      "intelligent-skill-selection": {
+        title: "지능형 기술 선택",
+        "beta-badge": "베타",
+        description:
+          "쿼리당 무제한의 도구 사용 및 컷 토큰 사용량을 최대 80%까지 줄일 수 있습니다 – AnythingLLM은 모든 프롬프트에 적합한 기술을 자동으로 선택합니다.",
+        "max-tools": {
+          title: "맥스 툴스",
+          description:
+            "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
+        },
+      },
+    },
   },
   recorded: {
     title: "워크스페이스 채팅",

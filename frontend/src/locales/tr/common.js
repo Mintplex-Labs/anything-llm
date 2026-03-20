@@ -343,6 +343,25 @@ const TRANSLATIONS = {
       "tool-call-arguments": "Araç çağrı argümanları",
       "tools-enabled": "gerektiren araçlar etkinleştirildi",
     },
+    settings: {
+      title: "Ajant Yetenek Ayarları",
+      "max-tool-calls": {
+        title: "Her yanıt için maksimum araç çağrı sayısı",
+        description:
+          "Bir ajantın, tek bir yanıt oluşturmak için zincirlemesini kullanabileceği maksimum araç sayısı. Bu, araçların kontrolsüz bir şekilde çağrılmasını ve sonsuz döngülerin oluşmasını engeller.",
+      },
+      "intelligent-skill-selection": {
+        title: "Akıllı Becerilerin Seçimi",
+        "beta-badge": "Beta",
+        description:
+          'Her sorgu için sınırsız araç kullanımı ve "cut token" kullanımını %80\'e kadar azaltma imkanı sunar — AnythingLLM, her talep için doğru becerileri otomatik olarak seçer.',
+        "max-tools": {
+          title: "Max Araçları",
+          description:
+            "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
+        },
+      },
+    },
   },
   recorded: {
     title: "Çalışma Alanı Sohbetleri",

@@ -15,30 +15,27 @@ const saveFileInBrowser = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Save content to a file when the user explicitly asks for a download of the file.",
+            "Download or export content as a file. Save text, code, data, or conversation content to a downloadable file. Use when the user wants to save, download, or export something as a file.",
           examples: [
+            {
+              prompt: "Download that as a file",
+              call: JSON.stringify({
+                file_content: "<content to save>",
+                filename: "download.txt",
+              }),
+            },
+            {
+              prompt: "Save that code to a file",
+              call: JSON.stringify({
+                file_content: "<code content>",
+                filename: "code.js",
+              }),
+            },
             {
               prompt: "Save me that to a file named 'output'",
               call: JSON.stringify({
-                file_content:
-                  "<content of the file we will write previous conversation>",
+                file_content: "<content of the file>",
                 filename: "output.txt",
-              }),
-            },
-            {
-              prompt: "Save me that to my desktop",
-              call: JSON.stringify({
-                file_content:
-                  "<content of the file we will write previous conversation>",
-                filename: "<relevant filename>.txt",
-              }),
-            },
-            {
-              prompt: "Save me that to a file",
-              call: JSON.stringify({
-                file_content:
-                  "<content of the file we will write from previous conversation>",
-                filename: "<descriptive filename>.txt",
               }),
             },
           ],
