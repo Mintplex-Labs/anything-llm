@@ -61,7 +61,12 @@ class TelegramBotService {
   async start(config) {
     if (this.#bot) await this.stop();
     this.#config = config;
-    this.#bot = new TelegramBot(config.bot_token, { polling: true });
+
+    // Clear pending updates on startup, keeping only the last message per chat
+    // This prevents processing a backlog of messages when the bot restarts.
+    this.#bot = new TelegramBot(config.bot_token, { polling: false });
+    const lastMessages = await this.#clearPendingUpdates();
+    this.#bot.startPolling();
 
     // Restore per-user workspace/thread state from saved config
     for (const user of config.approved_users || []) {
@@ -76,6 +81,43 @@ class TelegramBotService {
     this.#setupHandlers();
     await this.#registerCommands();
     this.#log(`Started polling as @${config.bot_username || "unknown"}`);
+
+    // Process only the last message from each chat that was pending
+    if (lastMessages.size > 0) {
+      this.#log(
+        `Processing ${lastMessages.size} pending message(s) from startup`
+      );
+      const ctx = this.#createContext();
+      for (const [chatId, msg] of lastMessages) {
+        if (!isVerified(this.#config.approved_users, chatId)) continue;
+        this.#processPendingMessage(ctx, msg);
+      }
+    }
+  }
+
+  /**
+   * Process a single pending message from startup.
+   * Handles both commands and regular messages.
+   */
+  #processPendingMessage(ctx, msg) {
+    const text = msg.text || "";
+
+    // Handle commands
+    if (text.startsWith("/")) {
+      const commandMatch = text.match(/^\/(\w+)/);
+      if (!commandMatch) return;
+
+      const commandName = commandMatch[1];
+      const command = BOT_COMMANDS.find((c) => c.command === commandName);
+      if (command) {
+        const handler = command.initHandler();
+        handler(ctx, msg.chat.id, text);
+        return;
+      }
+    }
+
+    // Handle regular messages
+    this.#handleMessage(ctx, msg);
   }
 
   /**
@@ -105,6 +147,47 @@ class TelegramBotService {
     this.#chatState.clear();
     this.#pendingPairings.clear();
     this.#log("Stopped");
+  }
+
+  /**
+   * Clear pending updates on startup, keeping only the last user message per chat.
+   * This prevents processing a backlog of messages when the bot restarts.
+   * @returns {Promise<Map<number, object>>} Map of chatId -> last message to process
+   */
+  async #clearPendingUpdates() {
+    const lastMessages = new Map();
+    try {
+      // Fetch all pending updates (up to 100)
+      const updates = await this.#bot.getUpdates({ limit: 100, timeout: 0 });
+      if (!updates || updates.length === 0) return lastMessages;
+
+      this.#log(`Found ${updates.length} pending update(s) on startup`);
+
+      // Find the last message per chat (including commands)
+      for (const update of updates) {
+        const msg = update.message;
+        if (!msg) continue;
+
+        const chatId = msg.chat.id;
+        // Keep overwriting to get the last message per chat
+        lastMessages.set(chatId, msg);
+      }
+
+      // Mark all updates as processed by requesting with offset past the last one
+      const lastUpdateId = updates[updates.length - 1].update_id;
+      await this.#bot.getUpdates({
+        offset: lastUpdateId + 1,
+        limit: 1,
+        timeout: 0,
+      });
+
+      this.#log(
+        `Cleared pending updates, will process ${lastMessages.size} last message(s)`
+      );
+    } catch (error) {
+      this.#log("Failed to clear pending updates:", error.message);
+    }
+    return lastMessages;
   }
 
   async #registerCommands() {
