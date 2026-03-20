@@ -3,12 +3,9 @@ const {
 } = require("../models/externalCommunicationConnector");
 const { Telemetry } = require("../models/telemetry");
 const { TelegramBotService } = require("../utils/telegramBot");
-const { encryptToken, decryptToken } = require("../utils/telegramBot/utils");
+const { encryptToken } = require("../utils/telegramBot/utils");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
+const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
 const { EventLogs } = require("../models/eventLogs");
 const { Workspace } = require("../models/workspace");
@@ -16,27 +13,16 @@ const { Workspace } = require("../models/workspace");
 function telegramEndpoints(app) {
   if (!app) return;
 
-  /**
-   * Get the current Telegram bot configuration (token masked).
-   */
   app.get(
     "/telegram/config",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
-        if (response.locals?.multiUserMode) {
-          return response.status(403).json({
-            config: null,
-            error: "Telegram bot is only available in single-user mode.",
-          });
-        }
-
         const connector = await ExternalCommunicationConnector.get("telegram");
         if (!connector) {
           return response.status(200).json({ config: null });
         }
 
-        const plainToken = decryptToken(connector.config.bot_token);
         const service = new TelegramBotService();
         return response.status(200).json({
           config: {
@@ -44,8 +30,6 @@ function telegramEndpoints(app) {
             connected: service.isRunning,
             bot_username: connector.config.bot_username || null,
             default_workspace: connector.config.default_workspace || null,
-            bot_token_masked:
-              ExternalCommunicationConnector.maskToken(plainToken),
             voice_response_mode:
               connector.config.voice_response_mode || "text_only",
           },
@@ -62,16 +46,9 @@ function telegramEndpoints(app) {
    */
   app.post(
     "/telegram/connect",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
-        if (response.locals?.multiUserMode) {
-          return response.status(403).json({
-            success: false,
-            error: "Telegram bot is only available in single-user mode.",
-          });
-        }
-
         const { bot_token, default_workspace = null } = reqBody(request);
         if (!bot_token) {
           return response.status(400).json({
@@ -149,12 +126,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Stop the Telegram bot and deactivate the connector.
-   */
   app.post(
     "/telegram/disconnect",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         const service = new TelegramBotService();
@@ -171,12 +145,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Get the bot's current connection status.
-   */
   app.get(
     "/telegram/status",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         const connector = await ExternalCommunicationConnector.get("telegram");
@@ -192,12 +163,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Get pending pairing requests waiting for approval.
-   */
   app.get(
     "/telegram/pending-users",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         const service = new TelegramBotService();
@@ -211,12 +179,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Get approved users list from connector config.
-   */
   app.get(
     "/telegram/approved-users",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         const connector = await ExternalCommunicationConnector.get("telegram");
@@ -229,12 +194,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Approve a pending user's pairing request.
-   */
   app.post(
     "/telegram/approve-user",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { chatId } = reqBody(request);
@@ -254,12 +216,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Deny a pending user's pairing request.
-   */
   app.post(
     "/telegram/deny-user",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { chatId } = reqBody(request);
@@ -279,12 +238,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Revoke an approved user's access.
-   */
   app.post(
     "/telegram/revoke-user",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { chatId } = reqBody(request);
@@ -304,12 +260,9 @@ function telegramEndpoints(app) {
     }
   );
 
-  /**
-   * Update the Telegram bot configuration (voice mode, etc).
-   */
   app.post(
     "/telegram/update-config",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { voice_response_mode } = reqBody(request);

@@ -42,13 +42,19 @@ const ExternalCommunicationConnector = {
         create = {};
 
       if (config.hasOwnProperty("active")) {
-        delete config.active;
         update.active = Boolean(config.active);
         create.active = Boolean(config.active);
+        delete config.active;
       }
 
-      update = { config: JSON.stringify(config), lastUpdatedAt: new Date() };
-      create = { config: JSON.stringify(config), type: String(type) };
+      update = Object.assign(update, {
+        config: JSON.stringify(config),
+        lastUpdatedAt: new Date(),
+      });
+      create = Object.assign(create, {
+        config: JSON.stringify(config),
+        type: String(type),
+      });
 
       const connector = await prisma.external_communication_connectors.upsert({
         where: { type: String(type) },
@@ -84,25 +90,6 @@ const ExternalCommunicationConnector = {
   },
 
   /**
-   * Toggle a connector's active state.
-   * @param {'telegram'} type
-   * @param {boolean} active
-   * @returns {Promise<{success: boolean, error: string|null}>}
-   */
-  setActive: async function (type, active) {
-    try {
-      await prisma.external_communication_connectors.update({
-        where: { type },
-        data: { active, lastUpdatedAt: new Date() },
-      });
-      return { success: true, error: null };
-    } catch (error) {
-      console.error("ExternalCommunicationConnector.setActive", error.message);
-      return { success: false, error: error.message };
-    }
-  },
-
-  /**
    * Delete a connector entirely.
    * @param {'telegram'} type
    * @returns {Promise<boolean>}
@@ -117,19 +104,6 @@ const ExternalCommunicationConnector = {
       console.error("ExternalCommunicationConnector.delete", error.message);
       return false;
     }
-  },
-
-  /**
-   * Mask a bot token for safe display: shows first segment and last 4 chars.
-   * @param {string} token
-   * @returns {string}
-   */
-  maskToken: function (token) {
-    if (!token || token.length < 10) return "****";
-    const [id, ...rest] = token.split(":");
-    const secret = rest.join(":");
-    if (!secret) return "****";
-    return `${id}:${"*".repeat(Math.max(secret.length - 4, 4))}${secret.slice(-4)}`;
   },
 };
 

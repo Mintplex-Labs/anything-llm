@@ -10,7 +10,6 @@ const BOT_COMMANDS = [
     command: "history",
     description: "Show recent messages (e.g. /history 25)",
   },
-  { command: "resume", description: "Show current workspace and thread" },
   { command: "status", description: "Show current workspace and model" },
   { command: "reset", description: "Clear chat history in current thread" },
   { command: "help", description: "Show available commands" },

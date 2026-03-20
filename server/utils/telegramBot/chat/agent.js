@@ -275,27 +275,31 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
   // Ensure the initial sendMessage has resolved before deciding how to deliver
   if (responsePending) await responsePending;
 
-  if (finalResponse) {
+  // Fall back to the accumulated streamed text when no explicit
+  // fullTextResponse event was received (e.g. audio/voice messages).
+  const responseText = finalResponse || streamingText;
+
+  if (responseText) {
     if (responseMsgId) {
       await editMessage(
         ctx.bot,
         chatId,
         responseMsgId,
-        finalResponse,
+        finalResponse || currentResponseText(),
         ctx.log,
         {
           format: true,
         }
       ).catch(() => {});
     } else {
-      await sendFormattedMessage(ctx.bot, chatId, finalResponse);
+      await sendFormattedMessage(ctx.bot, chatId, responseText);
     }
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
       response: {
-        text: finalResponse,
+        text: responseText,
         sources,
         type: "chat",
         metrics,

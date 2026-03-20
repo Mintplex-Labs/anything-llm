@@ -30,8 +30,6 @@ export default function SetupView({ workspaces, onConnected }) {
       showToast(res.error || t("telegram.setup.toast-connect-failed"), "error");
       return;
     }
-
-    showToast(t("telegram.setup.toast-connect-success"), "success");
     onConnected({
       active: true,
       connected: true,

@@ -106,43 +106,6 @@ async function handleReset(ctx, chatId) {
   );
 }
 
-/** /resume - finds the most recent conversation and switches to it */
-async function handleResume(ctx, chatId) {
-  const latestChat = await WorkspaceChats.get(
-    { user_id: null, api_session_id: null, include: true },
-    null,
-    { id: "desc" }
-  );
-
-  if (!latestChat) {
-    await ctx.bot.sendMessage(chatId, "No recent conversations found.");
-    return;
-  }
-
-  const workspace = await Workspace.get({ id: latestChat.workspaceId });
-  if (!workspace) {
-    await ctx.bot.sendMessage(chatId, "No recent conversations found.");
-    return;
-  }
-
-  let threadSlug = null;
-  let threadName = "Default";
-  if (latestChat.thread_id) {
-    const thread = await WorkspaceThread.get({ id: latestChat.thread_id });
-    if (thread) {
-      threadSlug = thread.slug;
-      threadName = thread.name;
-    }
-  }
-
-  ctx.setState(chatId, { workspaceSlug: workspace.slug, threadSlug });
-
-  await ctx.bot.sendMessage(
-    chatId,
-    `Resumed "${workspace.name}" → ${threadName}\n\nUse /history to view recent messages.`
-  );
-}
-
 /** /new - creates a new thread */
 async function handleNewThread(ctx, chatId) {
   const state = ctx.getState(chatId);
@@ -257,7 +220,6 @@ const COMMAND_HANDLERS = {
   switch: showWorkspaceMenu,
   new: handleNewThread,
   reset: handleReset,
-  resume: handleResume,
   history: handleHistory,
 };
 
