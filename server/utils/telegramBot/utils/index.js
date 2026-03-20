@@ -167,6 +167,24 @@ function decryptToken(encryptedToken) {
   return manager.decrypt(encryptedToken.slice(ENCRYPTED_PREFIX.length));
 }
 
+/**
+ * Resolve the LLM provider for a workspace.
+ * @param {object} workspace
+ * @returns {{ provider: string, model: string }}
+ */
+function resolveWorkspaceProvider(workspace) {
+  const { getBaseLLMProviderModel } = require("../../helpers");
+  const provider =
+    workspace?.agentProvider ??
+    workspace?.chatProvider ??
+    process.env.LLM_PROVIDER;
+  const model =
+    workspace?.agentModel ??
+    workspace?.chatModel ??
+    getBaseLLMProviderModel({ provider });
+  return { provider, model };
+}
+
 module.exports = {
   clearTelegramChat,
   editMessage,
@@ -174,4 +192,5 @@ module.exports = {
   sendFormattedMessage,
   encryptToken,
   decryptToken,
+  resolveWorkspaceProvider,
 };

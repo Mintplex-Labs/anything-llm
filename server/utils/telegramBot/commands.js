@@ -4,7 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { convertToChatHistory } = require("../helpers/chat/responses");
 const { BOT_COMMANDS } = require("./constants");
 const { sendBatchedMessages, sendFormattedMessage } = require("./utils");
-const { showWorkspaceMenu } = require("./utils/navigation");
+const { showWorkspaceMenu, showModelMenu } = require("./utils/navigation");
 
 /**
  * All command handler functions receive a `ctx` object:
@@ -61,16 +61,9 @@ ${workspace.name}
 _${threadName}_
 --------------------------------`);
 
-  const { getBaseLLMProviderModel } = require("../helpers");
+  const { resolveWorkspaceProvider } = require("./utils");
   const AIbitat = require("../agents/aibitat");
-  const provider =
-    workspace?.agentProvider ??
-    workspace?.chatProvider ??
-    process.env.LLM_PROVIDER;
-  const model =
-    workspace?.agentModel ??
-    workspace?.chatModel ??
-    getBaseLLMProviderModel({ provider });
+  const { provider, model } = resolveWorkspaceProvider(workspace);
   const agentConfig = { provider, model };
   const agentProvider = new AIbitat(agentConfig).getProviderForConfig(
     agentConfig
@@ -242,6 +235,7 @@ const COMMAND_HANDLERS = {
   help: handleHelp,
   status: handleStatus,
   switch: showWorkspaceMenu,
+  model: showModelMenu,
   new: handleNewThread,
   reset: handleReset,
   history: handleHistory,

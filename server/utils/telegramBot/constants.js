@@ -5,6 +5,7 @@ const STREAM_EDIT_INTERVAL = 600;
 const MAX_MSG_LEN = 4000;
 const BOT_COMMANDS = [
   { command: "switch", description: "Switch workspace or thread" },
+  { command: "model", description: "Change the LLM model" },
   { command: "new", description: "Start a new thread" },
   {
     command: "history",
@@ -15,4 +16,15 @@ const BOT_COMMANDS = [
   { command: "help", description: "Show available commands" },
 ];
 
-module.exports = { STREAM_EDIT_INTERVAL, MAX_MSG_LEN, BOT_COMMANDS };
+const WORKSPACES_PER_PAGE = 8;
+const THREADS_PER_PAGE = 8;
+const MODELS_PER_PAGE = 8;
+
+module.exports = {
+  STREAM_EDIT_INTERVAL,
+  MAX_MSG_LEN,
+  BOT_COMMANDS,
+  WORKSPACES_PER_PAGE,
+  THREADS_PER_PAGE,
+  MODELS_PER_PAGE,
+};
