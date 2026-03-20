@@ -7,7 +7,6 @@ const {
 } = require("../../models/externalCommunicationConnector");
 const { MessageQueue } = require("../connectorMessageQueue");
 const { BackgroundService } = require("../BackgroundWorkers");
-const { BOT_COMMANDS } = require("./constants");
 const { decryptToken } = require("./utils");
 const {
   WorkspaceAgentInvocation,
@@ -19,7 +18,7 @@ const {
   denyUser,
   revokeUser,
 } = require("./utils/verification");
-const { COMMAND_HANDLERS } = require("./commands");
+const { BOT_COMMANDS } = require("./utils/commands");
 const { handleKeyboardQueryCallback } = require("./utils/navigation");
 const {
   downloadTelegramFile,
@@ -110,7 +109,11 @@ class TelegramBotService {
 
   async #registerCommands() {
     try {
-      await this.#bot.setMyCommands(BOT_COMMANDS);
+      const commands = BOT_COMMANDS.map((c) => ({
+        command: c.command,
+        description: c.description,
+      }));
+      await this.#bot.setMyCommands(commands);
     } catch (error) {
       this.#log("Failed to register commands:", error.message);
     }
@@ -208,18 +211,22 @@ class TelegramBotService {
     };
 
     // Register all commands (history is registered separately below)
-    for (const [command, handler] of Object.entries(COMMAND_HANDLERS)) {
-      if (command === "history") continue;
-      this.#bot.onText(new RegExp(`\\/${command}`), (msg) =>
-        guard(msg, () => handler(ctx, msg.chat.id))
+    for (const command of BOT_COMMANDS) {
+      if (command.skipAutoSetup) continue;
+      const handler = command.initHandler();
+      this.#bot.onText(new RegExp(`\\/${command.command}`), (msg) =>
+        guard(msg, () => handler(ctx, msg.chat.id, msg.text))
       );
     }
 
     // Register /history separately so we can pass the message text for argument parsing
     // Ex: /history 25 shows last 25 messages
-    this.#bot.onText(/\/history(.*)/, (msg) =>
-      guard(msg, () => COMMAND_HANDLERS.history(ctx, msg.chat.id, msg.text))
-    );
+    this.#bot.onText(/\/history(.*)/, (msg) => {
+      const handler = BOT_COMMANDS.find(
+        (c) => c.command === "history"
+      ).initHandler();
+      guard(msg, () => handler(ctx, msg.chat.id, msg.text));
+    });
 
     // Register callback queries, used for workspace/thread selection interactive menus
     this.#bot.on("callback_query", (query) =>

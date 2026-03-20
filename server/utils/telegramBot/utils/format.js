@@ -175,5 +175,6 @@ function convertTableToPreformatted(tableMarkdown) {
 }
 
 module.exports = {
+  escapeHTML,
   markdownToTelegram,
 };
