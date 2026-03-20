@@ -75,7 +75,9 @@ function telegramEndpoints(app) {
           if (workspaces.length) workspaceSlug = workspaces[0].slug;
           else {
             const { workspace } = await Workspace.new(
-              `${verification.username} Workspace`
+              `${verification.username} Workspace`,
+              null,
+              { chatMode: "automatic" }
             );
             if (workspace) workspaceSlug = workspace.slug;
           }
@@ -114,7 +116,6 @@ function telegramEndpoints(app) {
           bot_username: verification.username,
         });
         await Telemetry.sendTelemetry("telegram_bot_connected");
-
         return response.status(200).json({
           success: true,
           bot_username: verification.username,
@@ -134,9 +135,7 @@ function telegramEndpoints(app) {
         const service = new TelegramBotService();
         service.stop();
         await ExternalCommunicationConnector.delete("telegram");
-
         await EventLogs.logEvent("telegram_bot_disconnected");
-
         return response.status(200).json({ success: true });
       } catch (e) {
         console.error(e.message, e);

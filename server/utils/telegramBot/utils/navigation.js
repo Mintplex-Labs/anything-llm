@@ -1,4 +1,5 @@
 const { Workspace } = require("../../../models/workspace");
+const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { isVerified } = require("./verification");
 
@@ -11,7 +12,17 @@ const { isVerified } = require("./verification");
 async function showWorkspaceMenu(ctx, chatId, messageId = null) {
   const workspaces = await Workspace.where({});
   if (!workspaces.length) {
-    await ctx.bot.sendMessage(chatId, "No workspaces found.");
+    await ctx.bot.sendMessage(
+      chatId,
+      "No workspaces found. Create one to get started!",
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "➕ Create Workspace", callback_data: "ws-create" }],
+          ],
+        },
+      }
+    );
     return;
   }
 
@@ -21,7 +32,7 @@ async function showWorkspaceMenu(ctx, chatId, messageId = null) {
     return [
       {
         text: isCurrent ? `🟢 ${ws.name} (active)` : ws.name,
-        callback_data: `ws:${ws.slug}`,
+        callback_data: `ws:${ws.id}`,
       },
     ];
   });
@@ -45,11 +56,11 @@ async function showWorkspaceMenu(ctx, chatId, messageId = null) {
  * Show the thread selection inline keyboard for a workspace.
  * @param {BotContext} ctx
  * @param {number} chatId
- * @param {string} workspaceSlug
+ * @param {number} workspaceId - must be ID, not slug due to 69-byte limit on callback data
  * @param {number|null} messageId
  */
-async function showThreadMenu(ctx, chatId, workspaceSlug, messageId = null) {
-  const workspace = await Workspace.get({ slug: workspaceSlug });
+async function showThreadMenu(ctx, chatId, workspaceId, messageId = null) {
+  const workspace = await Workspace.get({ id: workspaceId });
   if (!workspace) return;
 
   const threads = await WorkspaceThread.where(
@@ -59,21 +70,36 @@ async function showThreadMenu(ctx, chatId, workspaceSlug, messageId = null) {
   );
 
   const state = ctx.getState(chatId);
+  const defaultThreadChatCount = await WorkspaceChats.count({
+    workspaceId: workspace.id,
+    thread_id: null,
+  });
+  let defaultThreadText =
+    defaultThreadChatCount > 0 ? "🟢 Default (active)" : "Default";
+  if (defaultThreadChatCount > 0)
+    defaultThreadText += ` - ${defaultThreadChatCount} chats`;
   const buttons = [
     [
       {
-        text: !state.threadSlug ? "🟢 Default (active)" : "Default",
-        callback_data: `th:${workspaceSlug}:main`,
+        text: defaultThreadText,
+        callback_data: `th:${workspace.id}:0`,
       },
     ],
   ];
 
   for (const thread of threads) {
+    const threadChatCount = await WorkspaceChats.count({
+      workspaceId: workspace.id,
+      thread_id: thread.id,
+    });
+
     const isCurrent = thread.slug === state.threadSlug;
+    let threadText = isCurrent ? `🟢 ${thread.name} (active)` : thread.name;
+    if (threadChatCount > 0) threadText += ` - ${threadChatCount} chats`;
     buttons.push([
       {
-        text: isCurrent ? `🟢 ${thread.name} (active)` : thread.name,
-        callback_data: `th:${workspaceSlug}:${thread.slug}`,
+        text: threadText,
+        callback_data: `th:${workspace.id}:${thread.id}`,
       },
     ]);
   }
@@ -119,28 +145,58 @@ async function handleKeyboardQueryCallback(ctx, query) {
   }
 
   try {
-    if (data.startsWith("ws:")) {
-      const workspaceSlug = data.slice(3);
-      await showThreadMenu(ctx, chatId, workspaceSlug, messageId);
+    if (data === "ws-create") {
+      const botName = ctx.config.bot_username || "Bot";
+      const wsName = `${botName} Workspace`;
+      const { workspace, message: error } = await Workspace.new(wsName);
+      if (error || !workspace) {
+        await ctx.bot.answerCallbackQuery(query.id, {
+          text: "Failed to create workspace.",
+        });
+        return;
+      }
+
+      ctx.setState(chatId, { workspaceSlug: workspace.slug, threadSlug: null });
+      await ctx.bot.answerCallbackQuery(query.id, {
+        text: "Workspace created!",
+      });
+      await ctx.bot.sendMessage(
+        chatId,
+        `Created and switched to "${workspace.name}". You can start chatting now!`
+      );
+      return;
+    } else if (data.startsWith("ws:")) {
+      const workspaceId = parseInt(data.slice(3), 10);
+      await showThreadMenu(ctx, chatId, workspaceId, messageId);
       await ctx.bot.answerCallbackQuery(query.id);
     } else if (data.startsWith("th:")) {
       const parts = data.slice(3).split(":");
-      const workspaceSlug = parts[0];
-      const threadSlug = parts[1] === "main" ? null : parts[1];
+      const workspaceId = parseInt(parts[0], 10);
+      const threadId = parseInt(parts[1], 10);
 
-      ctx.setState(chatId, { workspaceSlug, threadSlug });
-      await ctx.bot.answerCallbackQuery(query.id, { text: "Switched!" });
-
-      const workspace = await Workspace.get({ slug: workspaceSlug });
-      let threadName = "Default";
-      if (threadSlug) {
-        const thread = await WorkspaceThread.get({ slug: threadSlug });
-        threadName = thread?.name || threadSlug;
+      const workspace = await Workspace.get({ id: workspaceId });
+      if (!workspace) {
+        await ctx.bot.answerCallbackQuery(query.id, {
+          text: "Workspace not found.",
+        });
+        return;
       }
 
+      let threadSlug = null;
+      let threadName = "Default";
+      if (threadId !== 0) {
+        const thread = await WorkspaceThread.get({ id: threadId });
+        if (thread) {
+          threadSlug = thread.slug;
+          threadName = thread.name;
+        }
+      }
+
+      ctx.setState(chatId, { workspaceSlug: workspace.slug, threadSlug });
+      await ctx.bot.answerCallbackQuery(query.id, { text: "Switched!" });
       await ctx.bot.sendMessage(
         chatId,
-        `Switched to "${workspace?.name}" → ${threadName}`
+        `Switched to "${workspace.name}" → ${threadName}`
       );
     } else if (data === "back:workspaces") {
       await showWorkspaceMenu(ctx, chatId, messageId);
