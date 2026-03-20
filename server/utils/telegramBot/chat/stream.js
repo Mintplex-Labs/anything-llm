@@ -14,14 +14,33 @@ const { sendVoiceResponse } = require("../utils/media");
 const { safeJsonParse } = require("../../http");
 const { handleAgentResponse } = require("./agent");
 
-const QUERY_REFUSAL_DEFAULT =
-  "There is no relevant information in this workspace to answer your query.";
 const CURSOR_CHAR = " \u258d";
 
 /**
+ * Check if the history is agentic by checking if any user messages start with "@agent"
+ * so that "chat" mode workspaces can still carry on with agentic conversations
+ * otherwise this is handled with "automatic" mode.
+ * @param {'chat' | 'automatic' | 'query'} chatMode - The chat mode.
+ * @param {{role: 'user' | 'assistant', content: string}[]} chatHistory - The chat history.
+ * @returns {boolean} - True if the history is agentic, false otherwise.
+ */
+function historyIsAgentic(chatMode, chatHistory) {
+  if (chatMode !== "chat") return false;
+  return chatHistory.some(
+    (message) => message.role === "user" && message.content.startsWith("@agent")
+  );
+}
+
+/**
  * Stream a response to Telegram by running the full RAG pipeline.
- * Uses the same pipeline as the web UI (RAG, pinned docs, etc.)
+ * Uses the same pipeline as the web UI (RAG, parsed docs, pinned docs, etc.)
  * and stores chats with thread_id so they appear in the AnythingLLM UI.
+ *
+ * However, we are able to consistently handle agentic conversations in "chat" mode by checking the chat history
+ * without needing to open/close an agent invocation every chat which is wasteful on the DB.
+ *
+ * Query mode is also not supported in this flow - as it would be pretty useless.
+ *
  * @param {object} context - The context object.
  * @param {import("../commands").BotContext} context.ctx - The bot object.
  * @param {number} context.chatId - The chat ID.
@@ -44,12 +63,22 @@ async function streamResponse({
     throw new Error("Invalid context or missing required parameters!");
 
   await ctx.bot.sendChatAction(chatId, "typing");
+
+  const chatMode = workspace.chatMode || "chat";
+  const messageLimit = workspace?.openAiHistory || 20;
+  const { rawHistory, chatHistory } = await recentChatHistory({
+    workspace,
+    thread,
+    messageLimit,
+  });
+
   if (
-    await AgentHandler.isAgentInvocation({
+    historyIsAgentic(chatMode, chatHistory) ||
+    (await AgentHandler.isAgentInvocation({
       message,
       workspace,
       chatMode: workspace.chatMode ?? "chat",
-    })
+    }))
   ) {
     return await handleAgentResponse(ctx, chatId, workspace, thread, message);
   }
@@ -58,28 +87,12 @@ async function streamResponse({
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
 
-  const chatMode = workspace.chatMode || "chat";
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const messageLimit = workspace?.openAiHistory || 20;
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-
-  if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
-    clearInterval(typingInterval);
-    return await sendQueryRefusal(ctx.bot, chatId, workspace);
-  }
-
-  const { rawHistory, chatHistory } = await recentChatHistory({
-    user: null,
-    workspace,
-    thread,
-    messageLimit,
-    apiSessionId: null,
-  });
 
   const {
     contextTexts: pinnedContextTexts,
@@ -108,12 +121,6 @@ async function streamResponse({
 
   const contextTexts = [...pinnedContextTexts, ...searchContextTexts];
   const sources = [...pinnedSources, ...searchSources];
-
-  if (chatMode === "query" && contextTexts.length === 0) {
-    clearInterval(typingInterval);
-    return await sendQueryRefusal(ctx.bot, chatId, workspace);
-  }
-
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: await chatPrompt(workspace),
@@ -150,16 +157,9 @@ async function streamResponse({
   });
 }
 
-async function sendQueryRefusal(bot, chatId, workspace) {
-  await bot.sendMessage(
-    chatId,
-    workspace?.queryRefusalResponse ?? QUERY_REFUSAL_DEFAULT
-  );
-}
-
 /**
  * Gather context texts, sources, and identifiers from pinned documents.
- * @returns {{ contextTexts: string[], sources: object[], pinnedDocIdentifiers: string[] }}
+ * @returns {Promise<{ contextTexts: string[], sources: object[], pinnedDocIdentifiers: string[] }>}
  */
 async function collectPinnedDocs(workspace, LLMConnector) {
   const contextTexts = [];
@@ -187,7 +187,7 @@ async function collectPinnedDocs(workspace, LLMConnector) {
 
 /**
  * Run vector similarity search and fill the source window.
- * @returns {{ contextTexts: string[], sources: object[], error: string|null }}
+ * @returns {Promise<{ contextTexts: string[], sources: object[], error: string|null }>}
  */
 async function buildSearchContext({
   workspace,
@@ -236,7 +236,7 @@ async function buildSearchContext({
 /**
  * Run the LLM completion (streaming or non-streaming) and deliver the in-progress response.
  * Clears the typing indicator when done.
- * @returns {{ completeText: string, metrics: object }}
+ * @returns {Promise<{ completeText: string, metrics: object }>}
  */
 async function generateResponse({
   LLMConnector,

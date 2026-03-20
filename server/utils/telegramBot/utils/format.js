@@ -3,9 +3,11 @@
  * Telegram HTML supports: <b>, <i>, <u>, <s>, <code>, <pre>, <a href="">, <tg-spoiler>
  *
  * @param {string} text - The markdown text to convert
+ * @param {object} [opts]
+ * @param {boolean} [opts.escapeHtml=true] - Whether to escape HTML in non-code text
  * @returns {string} - HTML formatted text for Telegram
  */
-function markdownToTelegram(text) {
+function markdownToTelegram(text, { escapeHtml = true } = {}) {
   if (!text) return "";
 
   let result = text;
@@ -81,7 +83,7 @@ function markdownToTelegram(text) {
   });
 
   // Escape HTML in remaining text
-  result = escapeHTML(result);
+  if (escapeHtml) result = escapeHTML(result);
 
   // Convert markdown to HTML (order matters - do bold before italic)
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");

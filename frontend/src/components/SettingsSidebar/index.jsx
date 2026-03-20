@@ -365,6 +365,19 @@ const SidebarOptions = ({ user = null, t }) => (
           ]}
         />
         <Option
+          btnText={t("settings.channels")}
+          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
+          user={user}
+          childOptions={[
+            {
+              btnText: t("settings.available-channels.telegram"),
+              href: paths.settings.telegram(),
+              flex: true,
+              hidden: !!user,
+            },
+          ]}
+        />
+        <Option
           btnText={t("settings.tools")}
           icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
           user={user}
@@ -405,20 +418,6 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.mobile(),
               flex: true,
               roles: ["admin"],
-            },
-          ]}
-        />
-        <Option
-          btnText={t("settings.channels")}
-          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
-          user={user}
-          childOptions={[
-            {
-              btnText: t("settings.available-channels.telegram"),
-              href: paths.settings.telegram(),
-              flex: true,
-              roles: ["admin"],
-              hidden: !!user?.role,
             },
           ]}
         />

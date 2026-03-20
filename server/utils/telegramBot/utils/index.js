@@ -86,17 +86,18 @@ async function editMessage(bot, chatId, messageId, text, log, opts = {}) {
  * @param {string} text
  * @param {object} [opts]
  * @param {boolean} [opts.format=true] - Whether to format markdown as HTML
+ * @param {boolean} [opts.escapeHtml=true] - Whether to escape HTML tags in non-code text (unsafe - use only with fixed input)
  * @returns {Promise<object>} The sent message object
  */
 async function sendFormattedMessage(bot, chatId, text, opts = {}) {
-  const { format = true } = opts;
+  const { format = true, escapeHtml = true } = opts;
 
   if (!format) {
     return bot.sendMessage(chatId, text);
   }
 
   try {
-    const formatted = markdownToTelegram(text);
+    const formatted = markdownToTelegram(text, { escapeHtml });
     return await bot.sendMessage(chatId, formatted, { parse_mode: "HTML" });
   } catch (error) {
     // If HTML parsing failed, retry without formatting

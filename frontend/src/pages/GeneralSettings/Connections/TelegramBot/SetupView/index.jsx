@@ -13,8 +13,9 @@ import { useTranslation } from "react-i18next";
 export default function SetupView({ workspaces, onConnected }) {
   const { t } = useTranslation();
   const [botToken, setBotToken] = useState("");
-  const [showToken, setShowToken] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState("");
+  const [selectedWorkspace, setSelectedWorkspace] = useState(
+    workspaces[0]?.slug || ""
+  );
   const [connecting, setConnecting] = useState(false);
 
   async function handleConnect(e) {
@@ -51,56 +52,12 @@ export default function SetupView({ workspaces, onConnected }) {
           </p>
         </div>
         <div className="flex flex-col gap-y-4 max-w-[480px]">
-          <div className="flex flex-col gap-y-1">
-            <label className="text-xs font-medium text-theme-text-secondary">
-              {t("telegram.setup.step2.bot-token")}
-            </label>
-            <div className="relative">
-              <input
-                type={showToken ? "text" : "password"}
-                value={botToken}
-                onChange={(e) => setBotToken(e.target.value)}
-                placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v..."
-                className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pr-10"
-                autoComplete="off"
-              />
-              <button
-                type="button"
-                onMouseDown={() => setShowToken(true)}
-                onMouseUp={() => setShowToken(false)}
-                onMouseLeave={() => setShowToken(false)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-              >
-                {showToken ? (
-                  <Eye className="h-5 w-5" />
-                ) : (
-                  <EyeSlash className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          </div>
-          <div className="flex flex-col gap-y-1">
-            <label className="text-xs font-medium text-theme-text-secondary">
-              {t("telegram.setup.step2.default-workspace")}{" "}
-              <span className="italic font-normal">
-                ({t("common.optional")})
-              </span>
-            </label>
-            <select
-              value={selectedWorkspace}
-              onChange={(e) => setSelectedWorkspace(e.target.value)}
-              className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            >
-              <option disabled value="">
-                {t("telegram.setup.step2.no-workspace")}
-              </option>
-              {workspaces.map((ws) => (
-                <option key={ws.slug} value={ws.slug}>
-                  {ws.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <BotTokenInput botToken={botToken} setBotToken={setBotToken} />
+          <WorkspaceSelect
+            workspaces={workspaces}
+            selectedWorkspace={selectedWorkspace}
+            setSelectedWorkspace={setSelectedWorkspace}
+          />
           <button
             type="submit"
             disabled={connecting}
@@ -120,6 +77,83 @@ export default function SetupView({ workspaces, onConnected }) {
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+function BotTokenInput({ botToken, setBotToken }) {
+  const { t } = useTranslation();
+  const [showToken, setShowToken] = useState(false);
+  const Icon = showToken ? Eye : EyeSlash;
+
+  return (
+    <div className="flex flex-col gap-y-1">
+      <label className="text-xs font-medium text-theme-text-secondary">
+        {t("telegram.setup.step2.bot-token")}
+      </label>
+      <div className="relative">
+        <input
+          type={showToken ? "text" : "password"}
+          value={botToken}
+          onChange={(e) => setBotToken(e.target.value)}
+          placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v..."
+          className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 pr-10"
+          autoComplete="off"
+        />
+        {botToken.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowToken(!showToken)}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-theme-text-secondary hover:text-theme-text-primary transition-colors"
+          >
+            <Icon className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function WorkspaceSelect({
+  workspaces,
+  selectedWorkspace,
+  setSelectedWorkspace,
+}) {
+  const { t } = useTranslation();
+
+  if (!workspaces.length) {
+    return (
+      <div className="flex flex-col gap-y-1">
+        <label className="text-xs font-medium text-theme-text-secondary">
+          {t("telegram.setup.step2.default-workspace")}{" "}
+          <span className="italic font-normal">({t("common.optional")})</span>
+        </label>
+        <input
+          disabled
+          placeholder={t("telegram.setup.step2.no-workspace")}
+          className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-y-1">
+      <label className="text-xs font-medium text-theme-text-secondary">
+        {t("telegram.setup.step2.default-workspace")}{" "}
+        <span className="italic font-normal">({t("common.optional")})</span>
+      </label>
+      <select
+        value={selectedWorkspace}
+        onChange={(e) => setSelectedWorkspace(e.target.value)}
+        className="bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+      >
+        {workspaces.map((ws) => (
+          <option key={ws.slug} value={ws.slug}>
+            {ws.name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

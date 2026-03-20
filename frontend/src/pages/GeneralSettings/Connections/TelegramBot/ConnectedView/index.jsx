@@ -235,7 +235,7 @@ export default function ConnectedView({
               <select
                 value={voiceMode}
                 onChange={handleVoiceModeChange}
-                className="text-xs bg-theme-settings-input-bg text-theme-text-primary rounded-md px-2 py-1 outline-none max-w-[260px]"
+                className="text-xs text-right bg-theme-settings-input-bg text-theme-text-primary rounded-md px-2 py-1 outline-none max-w-[260px]"
               >
                 {VOICE_MODE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>

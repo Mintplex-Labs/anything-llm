@@ -55,10 +55,6 @@ class TelegramBotService {
     return pairings;
   }
 
-  static #slog(text, ...args) {
-    console.log(`\x1b[35m[TelegramBot]\x1b[0m ${text}`, ...args);
-  }
-
   #log(text, ...args) {
     console.log(`\x1b[35m[TelegramBot]\x1b[0m ${text}`, ...args);
   }
@@ -81,6 +77,15 @@ class TelegramBotService {
     this.#setupHandlers();
     await this.#registerCommands();
     this.#log(`Started polling as @${config.bot_username || "unknown"}`);
+  }
+
+  /**
+   * Check if the instance is running in multi-user mode
+   * @returns {Promise<boolean>}
+   */
+  async checkMultiUserMode() {
+    const { SystemSettings } = require("../../models/systemSettings");
+    return await SystemSettings.isMultiUserMode();
   }
 
   updateConfig(updates) {
@@ -170,13 +175,35 @@ class TelegramBotService {
     await revokeUser(chatId, this.#config);
   }
 
+  /**
+   * Assert that the bot is running in single-user mode.
+   * If the instance is running in multi-user mode, it will stop the bot and delete the connector.
+   * - Returns true if the bot is running in single-user mode.
+   * - Returns false if the bot is running in multi-user mode.
+   * @returns {Promise<boolean>}
+   */
+  async #assertSingleUserMode() {
+    const isMultiUserMode = await this.checkMultiUserMode();
+    if (!isMultiUserMode) return true;
+
+    this.#log(
+      "Invalid state: Multi-user mode detected. Cleaning up and deleting connector."
+    );
+    await this.stop();
+    await ExternalCommunicationConnector.delete("telegram");
+    return false;
+  }
+
   #setupHandlers() {
     const ctx = this.#createContext();
-    const guard = (msg, handler) => {
+    const guard = async (msg, handler) => {
       if (!isVerified(this.#config.approved_users, msg.chat.id)) {
         sendPairingRequest(this.#bot, msg, this.#pendingPairings);
         return;
       }
+
+      const isSingleUserMode = await this.#assertSingleUserMode();
+      if (!isSingleUserMode) return;
       handler();
     };
 
@@ -374,32 +401,31 @@ class TelegramBotService {
   /**
    * Boot the bot from database config on server startup.
    * Decrypts the stored bot token before starting.
+   * If the instance is running in multi-user mode, it will skip boot and delete the connector if it exists.
+   * @returns {Promise<void>}
    */
   static async bootIfActive() {
+    const service = new TelegramBotService();
     try {
-      const { SystemSettings } = require("../../models/systemSettings");
-      if (await SystemSettings.isMultiUserMode()) {
-        TelegramBotService.#slog("Disabled in multi-user mode. Skipping boot.");
-        return;
-      }
-
       const connector = await ExternalCommunicationConnector.get("telegram");
       if (!connector || !connector.active || !connector.config?.bot_token)
         return;
 
+      // If there is a valid config, but the instance is running in multi-user mode - skip boot
+      // but also cleanup the config and approved users
+      const isSingleUserMode = await service.#assertSingleUserMode();
+      if (!isSingleUserMode) return;
+
       const config = { ...connector.config };
       config.bot_token = decryptToken(config.bot_token);
       if (!config.bot_token) {
-        TelegramBotService.#slog(
-          "Failed to decrypt bot token. Re-connect to fix."
-        );
+        service.#log("Failed to decrypt bot token. Re-connect to fix.");
         return;
       }
 
-      const service = new TelegramBotService();
       await service.start(config);
     } catch (error) {
-      console.error("[TelegramBot] Failed to boot:", error.message);
+      service.#log("Failed to boot:", error.message);
     }
   }
 }

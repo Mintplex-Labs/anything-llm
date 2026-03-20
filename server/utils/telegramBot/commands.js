@@ -3,7 +3,7 @@ const { WorkspaceThread } = require("../../models/workspaceThread");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { convertToChatHistory } = require("../helpers/chat/responses");
 const { BOT_COMMANDS } = require("./constants");
-const { sendBatchedMessages } = require("./utils");
+const { sendBatchedMessages, sendFormattedMessage } = require("./utils");
 const { showWorkspaceMenu } = require("./utils/navigation");
 
 /**
@@ -52,7 +52,14 @@ async function handleStatus(ctx, chatId) {
     if (thread) threadName = thread.name;
   }
 
-  const lines = [`<b>${workspace.name}</b>`, `<i>${threadName}</i>`];
+  const markdown = [];
+
+  markdown.push(`# Workspace:
+${workspace.name}
+
+# Thread:
+_${threadName}_
+--------------------------------`);
 
   const { getBaseLLMProviderModel } = require("../helpers");
   const AIbitat = require("../agents/aibitat");
@@ -70,16 +77,33 @@ async function handleStatus(ctx, chatId) {
   );
   const nativeToolCalling = await agentProvider.supportsNativeToolCalling?.();
 
-  lines.push(`<b>Chat Mode:</b> ${workspace.chatMode ?? "chat"}`);
-  lines.push(`--------------------------------`);
-  lines.push(`<b>Provider:</b> ${provider}`);
-  lines.push(`<b>Model:</b> ${model}`);
-  lines.push(
-    `<b>Native Tool Calling:</b> ${nativeToolCalling ? "Enabled" : "Disabled"}`
-  );
+  markdown.push(`# LLM Provider: 
+${provider}
 
-  await ctx.bot.sendMessage(chatId, lines.join("\n"), {
-    parse_mode: "HTML",
+# LLM Model: 
+${model}
+
+# Native Tool Calling: 
+${nativeToolCalling ? "Enabled" : "Disabled"}
+
+# Chat Mode: 
+${workspace.chatMode ?? "chat"}`);
+
+  if (workspace.chatMode === "chat") {
+    if (nativeToolCalling) {
+      markdown.unshift(
+        `<blockquote>**💡 Tip**\nChange this workspace's chat mode to "automatic" to use tools without the @agent command.</blockquote>`
+      );
+    } else {
+      markdown.unshift(
+        `<blockquote>**⚠️ Note**\nNative tool calling is unavailable for this provider/model. You can only use tools with the @agent command.</blockquote>`
+      );
+    }
+  }
+
+  await sendFormattedMessage(ctx.bot, chatId, markdown.join("\n"), {
+    format: true,
+    escapeHtml: false,
   });
 }
 
