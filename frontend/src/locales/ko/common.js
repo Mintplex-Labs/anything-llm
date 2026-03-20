@@ -104,6 +104,10 @@ const TRANSLATIONS = {
       "your-account": "당신의 계정",
       "import-item": "수입 품목",
     },
+    channels: "채널",
+    "available-channels": {
+      telegram: "텔레그램",
+    },
   },
   login: {
     "multi-user": {
@@ -994,6 +998,91 @@ const TRANSLATIONS = {
     notAssigned:
       "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
     goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
+  },
+  telegram: {
+    title: "텔레그램 봇",
+    description:
+      "AnyLLM 인스턴스를 Telegram과 연결하여, 어떤 기기에서든 워크스페이스와 채팅할 수 있도록 합니다.",
+    setup: {
+      step1: {
+        title: "1단계: 텔레그램 봇을 만드세요",
+        description:
+          "텔레그램에서 @BotFather를 열고, <code>/newbot</code>를 <code>@BotFather</code>에게 보내고, 안내에 따라 진행하여 API 토큰을 복사합니다.",
+        "open-botfather": "BotFather 시작",
+        "instruction-1": "1. 링크를 열거나 QR 코드를 스캔",
+        "instruction-2":
+          "2. <code>/newbot</code>를 <code>@BotFather</code>에게 전송",
+        "instruction-3": "3. 봇의 이름과 사용자 이름을 선택하세요.",
+        "instruction-4": "4. 받은 API 토큰을 복사합니다.",
+      },
+      step2: {
+        title: "2단계: 봇을 연결합니다.",
+        description:
+          "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
+        "bot-token": "봇 토큰",
+        "default-workspace": "기본 워크스페이스",
+        "no-workspace":
+          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
+        connecting: "연결 중...",
+        "connect-bot": "연결 봇",
+      },
+      security: {
+        title: "권장 보안 설정",
+        description:
+          "추가적인 보안을 위해, @BotFather에서 다음 설정을 구성해 주세요.",
+        "disable-groups": "— 그룹에 봇 추가 방지",
+        "disable-inline": "— 인라인 검색에서 봇 사용을 방지",
+        "obscure-username":
+          "자명한 봇 사용자 이름을 피하고, 발견 가능성을 줄이기 위해",
+      },
+      "toast-enter-token": "봇 토큰을 입력해 주세요.",
+      "toast-select-workspace": "원하는 작업 공간을 선택해 주세요.",
+      "toast-connect-failed": "봇 연결에 실패했습니다.",
+      "toast-connect-success": "텔레그램 봇 연결 성공!",
+    },
+    connected: {
+      status: "연결된",
+      "status-disconnected":
+        "연결되지 않음 – 토큰이 만료되었거나 유효하지 않을 수 있습니다",
+      "placeholder-token": "새로운 봇 토큰을 붙여넣으세요...",
+      reconnect: "재 연결",
+      workspace: "업무 공간",
+      "bot-link": "봇 링크",
+      "voice-response": "음성 응답",
+      disconnecting: "연결 해제 중...",
+      disconnect: "연결 해제",
+      "voice-text-only": "텍스트만",
+      "voice-mirror": "(사용자가 음성으로 응답하면, 음성으로 답변)",
+      "voice-always": "항상 음성 메시지 (답변과 함께 오디오 전송)",
+      "toast-enter-token": "로봇 토큰을 입력해 주세요.",
+      "toast-disconnect-failed": "봇과의 연결을 해제하는 데 실패했습니다.",
+      "toast-disconnect-success": "텔레그램 봇 연결이 끊어졌습니다.",
+      "toast-reconnect-failed": "봇과의 연결에 실패했습니다.",
+      "toast-reconnect-success": "텔레그램 봇이 다시 연결되었습니다!",
+      "toast-voice-failed": "음성 모드 업데이트에 실패했습니다.",
+      "toast-approve-failed": "사용자 승인에 실패했습니다.",
+      "toast-approve-success": "사용자 승인 완료.",
+      "toast-deny-failed": "사용자에게 거부 권한을 부여하지 못함.",
+      "toast-deny-success": "사용자 접근 거부",
+      "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
+      "toast-revoke-success": "사용자 접근 권한이 취소되었습니다.",
+    },
+    users: {
+      "pending-title": "승인 대기 중",
+      "pending-description":
+        "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
+      "approved-title": "승인된 사용자",
+      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
+      user: "사용자",
+      "chat-id": "채팅 ID",
+      "pairing-code": "코드 매칭",
+      "no-pending": "처리 중인 요청이 없습니다.",
+      "no-approved": "승인된 사용자가 없습니다",
+      unknown: "알 수 없음",
+      approve: "승인",
+      deny: "부인",
+      revoke: "취소",
+    },
   },
 };
 

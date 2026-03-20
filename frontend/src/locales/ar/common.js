@@ -104,6 +104,10 @@ const TRANSLATIONS = {
       "your-account": "حسابك",
       "import-item": "استيراد العنصر",
     },
+    channels: "القنوات",
+    "available-channels": {
+      telegram: "تليجرام",
+    },
   },
   login: {
     "multi-user": {
@@ -997,6 +1001,91 @@ const TRANSLATIONS = {
     notAssigned:
       "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
     goToWorkspace: 'الذهاب إلى "{{workspace}}"',
+  },
+  telegram: {
+    title: "روبوت تيليجرام",
+    description:
+      "قم بتوصيل مثيل AnyLLM الخاص بك بـ Telegram، حتى تتمكن من الدردشة مع مساحات العمل الخاصة بك من أي جهاز.",
+    setup: {
+      step1: {
+        title: "الخطوة الأولى: إنشاء روبوت Telegram الخاص بك.",
+        description:
+          "افتح حساب @BotFather على تطبيق تيليجرام، وأرسل الرسالة `/newbot` إلى حساب @BotFather، واتبع التعليمات، وانسخ رمز API.",
+        "open-botfather": "ابدأ محادثة مع BotFather",
+        "instruction-1": "1. افتح الرابط أو قم بمسح رمز QR.",
+        "instruction-2":
+          "2. أرسل <code>/newbot</code> إلى <code>@BotFather</code>",
+        "instruction-3": "3. اختر اسمًا واسم مستخدم لروبوتك.",
+        "instruction-4": "4. انسخ رمز واجهة برمجة التطبيقات الذي تتلقاه.",
+      },
+      step2: {
+        title: "الخطوة الثانية: قم بتوصيل روبوتك.",
+        description:
+          "الصق رمز API الذي تلقيته من @BotFather، ثم اختر مساحة عمل افتراضية لجهازك التابع للروبوت للدردشة فيها.",
+        "bot-token": "رمز الرمز (Token)",
+        "default-workspace": "مساحة العمل الافتراضية",
+        "no-workspace": "لا توجد مساحات عمل متاحة. سيتم إنشاء مساحة عمل جديدة.",
+        connecting: "التحميل...",
+        "connect-bot": "روبوت الاتصال",
+      },
+      security: {
+        title: "إعدادات الأمان الموصى بها",
+        description:
+          'لزيادة الأمان، قم بتكوين هذه الإعدادات في حساب "@BotFather".',
+        "disable-groups": "– منع إضافة الروبوتات إلى المجموعات",
+        "disable-inline": "– منع استخدام الروبوت في عمليات البحث المباشرة.",
+        "obscure-username":
+          "استخدم اسم مستخدم روبوت غير تقليدي لتقليل فرص اكتشافه.",
+      },
+      "toast-enter-token": "الرجاء إدخال رمز البوت.",
+      "toast-select-workspace": "الرجاء اختيار مساحة عمل.",
+      "toast-connect-failed": "فشل الاتصال بالروبوت.",
+      "toast-connect-success": "تم توصيل روبوت Telegram بنجاح!",
+    },
+    connected: {
+      status: "متصل",
+      "status-disconnected":
+        "غير متصل — قد يكون الرمز منتهي الصلاحية أو غير صالح",
+      "placeholder-token": "ألصق رمز البوت الجديد...",
+      reconnect: "إعادة الاتصال",
+      workspace: "مساحة العمل",
+      "bot-link": "رابط الروبوت",
+      "voice-response": "رد صوتي",
+      disconnecting: "قطع الاتصال...",
+      disconnect: "افصل",
+      "voice-text-only": "النص فقط",
+      "voice-mirror": "مرآة (يرد الصوت عند إرسال المستخدم له)",
+      "voice-always": "يرجى تضمين تسجيل صوتي (إرسال تسجيل صوتي مع كل رد).",
+      "toast-enter-token": "الرجاء إدخال رمز البوت.",
+      "toast-disconnect-failed": "فشل فصل الوحدة الآلية.",
+      "toast-disconnect-success": "تم فصل الروبوت الخاص بتطبيق تيليجرام.",
+      "toast-reconnect-failed": "فشل إعادة الاتصال بالروبوت.",
+      "toast-reconnect-success": "تم إعادة توصيل روبوت تليجرام!",
+      "toast-voice-failed": "فشلت عملية تحديث وضع الصوت.",
+      "toast-approve-failed": "فشل في الموافقة على المستخدم.",
+      "toast-approve-success": "تمت الموافقة عليه من قبل المستخدم.",
+      "toast-deny-failed": "فشل في رفض طلب المستخدم.",
+      "toast-deny-success": "رفض المستخدم.",
+      "toast-revoke-failed": "فشل إلغاء صلاحية المستخدم.",
+      "toast-revoke-success": "تم إلغاء صلاحية الوصول للمستخدم.",
+    },
+    users: {
+      "pending-title": "معلق على الموافقة",
+      "pending-description":
+        "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
+      "approved-title": "المستخدمون المعتمدون",
+      "approved-description":
+        "المستخدمون الذين تم منحهم الإذن للتواصل مع روبوتك.",
+      user: "المستخدم",
+      "chat-id": "معرّف الدردشة",
+      "pairing-code": "رمز التوفيق",
+      "no-pending": "لا توجد طلبات معلقة.",
+      "no-approved": "لا يوجد مستخدمون معتمدون.",
+      unknown: "غير معروف",
+      approve: "الموافقة",
+      deny: "رفض",
+      revoke: "إلغاء",
+    },
   },
 };
 

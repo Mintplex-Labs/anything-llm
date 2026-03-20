@@ -102,6 +102,10 @@ const TRANSLATIONS = {
       "your-account": "您的帳戶",
       "import-item": "匯入項目",
     },
+    channels: "頻道",
+    "available-channels": {
+      telegram: "電訊",
+    },
   },
   login: {
     "multi-user": {
@@ -943,6 +947,88 @@ const TRANSLATIONS = {
     notAssigned:
       "您目前尚未被分配到任何工作區。\n請聯絡您的管理員以申請工作區的存取權限。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram 機器人",
+    description:
+      "將您的 AnythingLLM 實例連接到 Telegram，以便您可以在任何裝置上與您的工作空間進行對話。",
+    setup: {
+      step1: {
+        title: "第一步：建立您的 Telegram 機器人",
+        description:
+          '在 Telegram 中開啟 @BotFather，將 "<code>/newbot" 訊息發送至 <code>@BotFather</code>，按照指示操作，並複製 API 令牌。',
+        "open-botfather": "開啟 BotFather",
+        "instruction-1": "1. 點擊連結或掃描 QR 碼",
+        "instruction-2":
+          "2. 將 <code>/newbot</code> 傳送至 <code>@BotFather</code>",
+        "instruction-3": "3. 為您的機器人選擇一個名稱和使用者名稱。",
+        "instruction-4": "4. 複製您收到的 API 令牌",
+      },
+      step2: {
+        title: "步驟 2：連接您的機器人",
+        description:
+          "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
+        "bot-token": "機器人代幣",
+        "default-workspace": "預設工作空間",
+        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
+        connecting: "正在連接...",
+        "connect-bot": "連線機器人",
+      },
+      security: {
+        title: "建議的安全設定",
+        description: "為了額外保障，請在 @BotFather 中設定這些選項。",
+        "disable-groups": "— 阻止自動程式加入群組",
+        "disable-inline": "— 阻止機器人被用於內嵌式搜尋",
+        "obscure-username":
+          "使用一個不顯眼的機器人帳號名稱，以降低被發現的機會。",
+      },
+      "toast-enter-token": "請輸入機器人憑證。",
+      "toast-select-workspace": "請選擇一個工作空間。",
+      "toast-connect-failed": "無法連接機器人。",
+      "toast-connect-success": "Telegram 機器人已成功連接！",
+    },
+    connected: {
+      status: "連接",
+      "status-disconnected": "無法連接 — 可能是 token 已經過期或無效",
+      "placeholder-token": "黏貼新的機器人代碼...",
+      reconnect: "重新建立聯繫",
+      workspace: "工作空間",
+      "bot-link": "機器人連結",
+      "voice-response": "語音回應",
+      disconnecting: "斷線...",
+      disconnect: "斷開連接",
+      "voice-text-only": "僅提供文字",
+      "voice-mirror": "語音回覆 (使用者發送語音時，系統會回覆語音)",
+      "voice-always": "請務必在回覆中加入語音 (發送音訊)。",
+      "toast-enter-token": "請輸入機器人憑證。",
+      "toast-disconnect-failed": "未能成功斷開機器人。",
+      "toast-disconnect-success": "Telegram 機器人已與伺服器斷線。",
+      "toast-reconnect-failed": "無法重新連線機器人。",
+      "toast-reconnect-success": "Telegram 機器人已重新連接！",
+      "toast-voice-failed": "無法更新語音模式。",
+      "toast-approve-failed": "無法驗證使用者。",
+      "toast-approve-success": "已獲得使用者同意。",
+      "toast-deny-failed": "未能阻止使用者。",
+      "toast-deny-success": "使用者登入失敗。",
+      "toast-revoke-failed": "未能取消使用者權限。",
+      "toast-revoke-success": "使用者權限已被撤銷。",
+    },
+    users: {
+      "pending-title": "待審核",
+      "pending-description":
+        "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
+      "approved-title": "已授權的使用者",
+      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
+      user: "使用者",
+      "chat-id": "聊天 ID",
+      "pairing-code": "編碼組合",
+      "no-pending": "目前沒有待處理的請求",
+      "no-approved": "目前沒有已授權的使用者",
+      unknown: "未知的",
+      approve: "批准",
+      deny: "拒絕",
+      revoke: "撤銷",
+    },
   },
 };
 

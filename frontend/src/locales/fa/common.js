@@ -107,6 +107,10 @@ const TRANSLATIONS = {
       "your-account": "حساب شما",
       "import-item": "وارد کردن کالا",
     },
+    channels: "کانال‌ها",
+    "available-channels": {
+      telegram: "تلگرام",
+    },
   },
   login: {
     "multi-user": {
@@ -1011,6 +1015,93 @@ const TRANSLATIONS = {
     notAssigned:
       "شما در حال حاضر به هیچ فضای کاری اختصاص نیافته‌اید.\nلطفاً با مدیر خود تماس بگیرید تا دسترسی به یک فضای کار را درخواست کنید.",
     goToWorkspace: 'به فضای کار "{{workspace}}" بروید',
+  },
+  telegram: {
+    title: "ربات تلگرام",
+    description:
+      "با اتصال نمونه AnythingLLM خود به تلگرام، می‌توانید از هر دستگاهی با فضاهای کاری خود گفتگو کنید.",
+    setup: {
+      step1: {
+        title: "مرحله ۱: ایجاد ربات Telegram خود",
+        description:
+          "اپلیکیشن @BotFather را در تلگرام باز کنید، دستور <code>/newbot</code> را برای <code>@BotFather</code> ارسال کنید، دستورالعمل‌ها را دنبال کنید و توکن API را کپی کنید.",
+        "open-botfather": "شروع با ربات BotFather",
+        "instruction-1": "1. لینک را باز کنید یا کد QR را اسکن کنید",
+        "instruction-2":
+          "2. پیام <code>/newbot را برای <code>@BotFather ارسال کنید.",
+        "instruction-3": "3. یک نام و نام کاربری برای ربات خود انتخاب کنید.",
+        "instruction-4": "4. توکنی که دریافت می‌کنید را کپی کنید.",
+      },
+      step2: {
+        title: "مرحله دوم: اتصال ربات خود",
+        description:
+          "توکن API را که از @BotFather دریافت کرده‌اید، کپی کنید و یک فضای کاری پیش‌فرض را برای ربات خود انتخاب کنید تا بتواند با کاربران ارتباط برقرار کند.",
+        "bot-token": "توکن ربات",
+        "default-workspace": "فضای کاری پیش‌فرض",
+        "no-workspace":
+          "فضاهای کاری موجود نیست. یک فضای کاری جدید ایجاد خواهد شد.",
+        connecting: "در حال اتصال...",
+        "connect-bot": "اتصال ربات",
+      },
+      security: {
+        title: "تنظیمات امنیتی پیشنهادی",
+        description:
+          "برای افزایش امنیت، این تنظیمات را در حساب @BotFather پیکربندی کنید.",
+        "disable-groups": "— جلوگیری از اضافه کردن ربات به گروه‌ها",
+        "disable-inline":
+          "— از استفاده ربات‌ها در جستجوی درون‌صفحه‌ای جلوگیری کنید.",
+        "obscure-username":
+          "از یک نام کاربری برای ربات که به راحتی قابل تشخیص نباشد، استفاده کنید تا میزان شناسایی آن را کاهش دهید.",
+      },
+      "toast-enter-token": "لطفاً یک توکن برای ربات وارد کنید.",
+      "toast-select-workspace": "لطفاً یک فضای کاری را انتخاب کنید.",
+      "toast-connect-failed": "عدم امکان اتصال ربات.",
+      "toast-connect-success": "ربات تلگرام با موفقیت متصل شد!",
+    },
+    connected: {
+      status: "اتصال یافته",
+      "status-disconnected":
+        "قطع شده – احتمال دارد توکن منقضی شده یا نامعتبر باشد",
+      "placeholder-token": "وارد کردن توکن جدید برای ربات...",
+      reconnect: "بازسازی ارتباط",
+      workspace: "فضای کاری",
+      "bot-link": "لینک ربات",
+      "voice-response": "پاسخ صوتی",
+      disconnecting: "قطع ارتباط...",
+      disconnect: "قطع ارتباط",
+      "voice-text-only": "فقط متن",
+      "voice-mirror": "بازتاب (پاسخگویی با صدا هنگام ارسال صدا توسط کاربر)",
+      "voice-always":
+        "همیشه، حتماً، یک صدای صوتی (ارسال فایل صوتی همراه با هر پاسخ)",
+      "toast-enter-token": "لطفاً یک توکن برای ربات وارد کنید.",
+      "toast-disconnect-failed": "عدم توانایی در قطع ارتباط با ربات.",
+      "toast-disconnect-success": "ربات تلگرام قطع ارتباط کرد.",
+      "toast-reconnect-failed": "عدم امکان برقراری ارتباط مجدد با ربات.",
+      "toast-reconnect-success": "ربات تلگرام دوباره به حالت آنلاین برگشت!",
+      "toast-voice-failed": "عدم امکان به‌روزرسانی حالت صدا.",
+      "toast-approve-failed": "عدم تایید کاربر.",
+      "toast-approve-success": "تایید شده توسط کاربر.",
+      "toast-deny-failed": "امکان رد درخواست کاربر وجود نداشت.",
+      "toast-deny-success": "دسترسی برای این کاربر غیر ممکن است.",
+      "toast-revoke-failed": "امکان لغو کردن حساب کاربری وجود نداشت.",
+      "toast-revoke-success": "دسترسی کاربر لغو شد.",
+    },
+    users: {
+      "pending-title": "منتظر تایید",
+      "pending-description":
+        "کاربرانی که منتظر تایید هستند. کد تطبیقی که در اینجا نشان داده شده را با کد موجود در چت تلگرام خود مطابقت دهید.",
+      "approved-title": "کاربران تایید شده",
+      "approved-description": "کاربرانی که مجوز دارند با ربات شما گفتگو کنند.",
+      user: "کاربر",
+      "chat-id": "شناسه چت",
+      "pairing-code": "کد جفت‌سازی",
+      "no-pending": "هیچ درخواست در حال انجام وجود ندارد.",
+      "no-approved": "کاربران تایید شده وجود ندارد",
+      unknown: "نامشخص",
+      approve: "تایید",
+      deny: "رد",
+      revoke: "اعلام لغو",
+    },
   },
 };
 

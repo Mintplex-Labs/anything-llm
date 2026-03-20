@@ -102,6 +102,10 @@ const TRANSLATIONS = {
       "your-account": "您的账户",
       "import-item": "进口商品",
     },
+    channels: "频道",
+    "available-channels": {
+      telegram: "电报",
+    },
   },
   login: {
     "multi-user": {
@@ -950,6 +954,88 @@ const TRANSLATIONS = {
     notAssigned:
       "你目前还没有分配到任何工作区。\n请联系你的管理员请求访问一个工作区。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram 机器人",
+    description:
+      "将您的 AnythingLLM 实例与 Telegram 连接起来，这样您就可以从任何设备与您的工作空间进行聊天。",
+    setup: {
+      step1: {
+        title: "第一步：创建您的 Telegram 机器人",
+        description:
+          "打开 Telegram 上的 @BotFather，发送 `/newbot` 到 <code>@BotFather</code>，按照提示操作，并复制 API 令牌。",
+        "open-botfather": "启动 BotFather",
+        "instruction-1": "1. 打开链接或扫描二维码",
+        "instruction-2":
+          "2. 将 <code>/newbot</code> 发送给 <code>@BotFather</code>",
+        "instruction-3": "3. 为您的机器人选择一个名称和用户名",
+        "instruction-4": "4. 复制您收到的 API 令牌",
+      },
+      step2: {
+        title: "步骤 2：连接您的机器人",
+        description:
+          "将您从 @BotFather 获得的 API 令牌粘贴到指定位置，并选择一个默认的工作区，以便您的机器人可以进行对话。",
+        "bot-token": "机器人代币",
+        "default-workspace": "默认工作区",
+        "no-workspace": "目前没有可用的工作空间。将会创建一个新的工作空间。",
+        connecting: "正在连接...",
+        "connect-bot": "连接机器人",
+      },
+      security: {
+        title: "推荐的安全设置",
+        description: "为了进一步增强安全性，请在 @BotFather 中配置这些设置。",
+        "disable-groups": "— 阻止机器人加入群组",
+        "disable-inline": "— 阻止机器人被用于内联搜索",
+        "obscure-username":
+          "使用一个不显眼的机器人用户名，以降低其被发现的可能性。",
+      },
+      "toast-enter-token": "请您输入一个机器人令牌。",
+      "toast-select-workspace": "请选择一个工作区域。",
+      "toast-connect-failed": "未能连接机器人。",
+      "toast-connect-success": "Telegram 机器人已成功连接！",
+    },
+    connected: {
+      status: "连接",
+      "status-disconnected": "未连接—— 令牌可能已过期或无效",
+      "placeholder-token": "粘贴新的机器人令牌...",
+      reconnect: "重新连接",
+      workspace: "工作空间",
+      "bot-link": "机器人链接",
+      "voice-response": "语音响应",
+      disconnecting: "断开连接...",
+      disconnect: "断开",
+      "voice-text-only": "仅提供文字",
+      "voice-mirror": "回声（当用户发送语音时，会以语音形式回复）",
+      "voice-always": "请务必在回复中添加语音（发送音频）。",
+      "toast-enter-token": "请在此处输入机器人令牌。",
+      "toast-disconnect-failed": "未能成功断开机器人。",
+      "toast-disconnect-success": "Telegram 机器人已断开连接。",
+      "toast-reconnect-failed": "机器人连接失败。",
+      "toast-reconnect-success": "Telegram 机器人已重新连接！",
+      "toast-voice-failed": "无法更新语音模式。",
+      "toast-approve-failed": "未能批准用户。",
+      "toast-approve-success": "用户已确认。",
+      "toast-deny-failed": "未能拒绝用户请求。",
+      "toast-deny-success": "用户权限被拒绝。",
+      "toast-revoke-failed": "未能撤销用户权限。",
+      "toast-revoke-success": "用户访问权限已被撤销。",
+    },
+    users: {
+      "pending-title": "待审批",
+      "pending-description":
+        "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
+      "approved-title": "已批准的用户",
+      "approved-description": "已获得批准，可以与您的机器人进行对话的用户。",
+      user: "用户",
+      "chat-id": "聊天ID",
+      "pairing-code": "配对代码",
+      "no-pending": "目前没有待处理的请求",
+      "no-approved": "未批准的用户",
+      unknown: "未知",
+      approve: "批准",
+      deny: "否认",
+      revoke: "撤销",
+    },
   },
 };
 

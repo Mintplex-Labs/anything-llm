@@ -106,6 +106,10 @@ const TRANSLATIONS = {
       "your-account": "Contul dumneavoastră",
       "import-item": "Importați articolul",
     },
+    channels: "Canale",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -1020,6 +1024,97 @@ const TRANSLATIONS = {
     notAssigned:
       "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
     goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot pentru Telegram",
+    description:
+      "Conectați instanța dumneavoastră AnythingLLM cu Telegram, astfel încât să puteți interacționa cu spațiile de lucru de pe orice dispozitiv.",
+    setup: {
+      step1: {
+        title: "Pasul 1: Creați botul dumneavoastră Telegram",
+        description:
+          "Deschide chatul cu @BotFather pe Telegram, trimite mesajul `/newbot` către <code>@BotFather</code>, urmează instrucțiunile și copiază token-ul API.",
+        "open-botfather": "Deschide aplicația BotFather",
+        "instruction-1": "1. Deschideți link-ul sau scanați codul QR",
+        "instruction-2":
+          "2. Trimite <code>/newbot</code> către <code>@BotFather</code>",
+        "instruction-3":
+          "3. Alege un nume și un nume de utilizator pentru botul tău.",
+        "instruction-4": "4. Copiați token-ul API pe care îl primiți.",
+      },
+      step2: {
+        title: "Pasul 2: Conectați-vă bot-ul",
+        description:
+          "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Spațiu de lucru implicit",
+        "no-workspace":
+          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
+        connecting: "Conectare...",
+        "connect-bot": "Conectare automată",
+      },
+      security: {
+        title: "Recomandări privind setările de securitate",
+        description:
+          "Pentru o securitate suplimentară, configurați aceste setări în contul @BotFather.",
+        "disable-groups": "— Preveniți adăugarea de bot-uri în grupuri",
+        "disable-inline":
+          "— Previne utilizarea bot-urilor în căutările directe",
+        "obscure-username":
+          "Utilizați un nume de utilizator pentru bot, care nu este evident, pentru a reduce vizibilitatea acestuia.",
+      },
+      "toast-enter-token": "Vă rugăm să introduceți un token pentru bot.",
+      "toast-select-workspace": "Vă rugăm să selectați un spațiu de lucru.",
+      "toast-connect-failed": "Nu a reușit să se conecteze bot-ul.",
+      "toast-connect-success": "Robotul Telegram a fost conectat cu succes!",
+    },
+    connected: {
+      status: "Conectat",
+      "status-disconnected":
+        "Deconectat – token-ul poate fi expirat sau invalid",
+      "placeholder-token": "Creați un nou token pentru bot...",
+      reconnect: "Restabilește conexiunea",
+      workspace: "Spațiu de lucru",
+      "bot-link": "Link către bot",
+      "voice-response": "Răspuns vocal",
+      disconnecting: "Deconectare...",
+      disconnect: "Dezactivează",
+      "voice-text-only": "Doar text",
+      "voice-mirror":
+        "Reflectare (răspunde cu voce atunci când utilizatorul trimite înregistrare audio)",
+      "voice-always":
+        "Asigurați-vă întotdeauna că includeți un mesaj audio (trimiteți înregistrarea audio împreună cu fiecare răspuns).",
+      "toast-enter-token": "Vă rugăm să introduceți un token pentru robot.",
+      "toast-disconnect-failed": "Nu s-a reușit deconectarea bot-ului.",
+      "toast-disconnect-success": "Bot-ul Telegram a pierdut conexiunea.",
+      "toast-reconnect-failed": "Nu a reușit să se reconecteze.",
+      "toast-reconnect-success": "Bot-ul Telegram s-a reconectat!",
+      "toast-voice-failed": "Nu a reușit să actualizeze modul de voce.",
+      "toast-approve-failed": "Nu a fost posibilă aprobarea utilizatorului.",
+      "toast-approve-success": "Aprobare de către utilizator.",
+      "toast-deny-failed": "Nu a reușit să respingă cererea utilizatorului.",
+      "toast-deny-success": "Accesul a fost refuzat.",
+      "toast-revoke-failed":
+        "Nu a fost posibil să se anuleze contul utilizatorului.",
+      "toast-revoke-success": "Accesul utilizatorului a fost anulat.",
+    },
+    users: {
+      "pending-title": "Așteptare aprobare",
+      "pending-description":
+        "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
+      "approved-title": "Utilizatori autorizați",
+      "approved-description":
+        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
+      user: "Utilizator",
+      "chat-id": "Identificatorul de chat",
+      "pairing-code": "Cod de asociere",
+      "no-pending": "Nu există cereri în așteptare.",
+      "no-approved": "Nu există utilizatori autorizați.",
+      unknown: "Necunoscut",
+      approve: "Aprobă",
+      deny: "Negarea",
+      revoke: "Anula",
+    },
   },
 };
 

@@ -106,6 +106,10 @@ const TRANSLATIONS = {
       "your-account": "Tài khoản của bạn",
       "import-item": "Nhập hàng",
     },
+    channels: "Kênh",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -1011,6 +1015,94 @@ const TRANSLATIONS = {
     notAssigned:
       "Bạn hiện không được giao việc nào.\nLiên hệ với quản trị viên của bạn để yêu cầu truy cập vào khu vực làm việc.",
     goToWorkspace: 'Chuyển đến khu vực làm việc "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Kết nối phiên bản AnythingLLM của bạn với Telegram để bạn có thể trò chuyện với các không gian làm việc của mình từ bất kỳ thiết bị nào.",
+    setup: {
+      step1: {
+        title: "Bước 1: Tạo bot Telegram của bạn",
+        description:
+          "Mở ứng dụng @BotFather trên Telegram, gửi lệnh <code>/newbot</code> đến tài khoản <code>@BotFather</code>, làm theo hướng dẫn và sao chép mã API.",
+        "open-botfather": "Mở BotFather",
+        "instruction-1": "1. Mở liên kết hoặc quét mã QR",
+        "instruction-2":
+          "2. Gửi <code>/newbot</code> đến <code>@BotFather</code>",
+        "instruction-3": "3. Chọn tên và tên người dùng cho bot của bạn",
+        "instruction-4": "4. Sao chép mã API mà bạn nhận được",
+      },
+      step2: {
+        title: "Bước 2: Kết nối bot của bạn",
+        description:
+          "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Không gian làm việc mặc định",
+        "no-workspace":
+          "Không có không gian làm việc nào khả dụng. Một không gian mới sẽ được tạo ra.",
+        connecting: "Kết nối...",
+        "connect-bot": "Bot kết nối",
+      },
+      security: {
+        title: "Các cài đặt bảo mật được khuyến nghị",
+        description:
+          "Để tăng cường bảo mật, hãy cấu hình các cài đặt này trên tài khoản @BotFather.",
+        "disable-groups": "— Ngăn chặn việc thêm bot vào các nhóm",
+        "disable-inline":
+          "— Ngăn chặn việc sử dụng bot trong tìm kiếm trực tiếp.",
+        "obscure-username":
+          "Sử dụng tên người dùng bot không phổ biến để giảm khả năng được tìm thấy.",
+      },
+      "toast-enter-token": "Vui lòng nhập mã token cho bot.",
+      "toast-select-workspace": "Vui lòng chọn một không gian làm việc.",
+      "toast-connect-failed": "Không thể kết nối với trợ lý.",
+      "toast-connect-success": "Bot Telegram đã kết nối thành công!",
+    },
+    connected: {
+      status: "Kết nối",
+      "status-disconnected":
+        "Không kết nối — mã token có thể đã hết hạn hoặc không hợp lệ",
+      "placeholder-token": "Dán mã token mới cho bot...",
+      reconnect: "Khôi phục kết nối",
+      workspace: "Không gian làm việc",
+      "bot-link": "Liên kết Bot",
+      "voice-response": "Phản hồi bằng giọng nói",
+      disconnecting: "Ngắt kết nối...",
+      disconnect: "Ngắt kết nối",
+      "voice-text-only": "Chỉ nội dung",
+      "voice-mirror": "Trả lời bằng giọng nói (khi người dùng gửi giọng nói)",
+      "voice-always":
+        "Luôn luôn có thể gửi phản hồi bằng giọng nói (gửi kèm âm thanh trong mỗi phản hồi).",
+      "toast-enter-token": "Vui lòng nhập mã token cho bot.",
+      "toast-disconnect-failed": "Không thể ngắt kết nối bot.",
+      "toast-disconnect-success": "Bot trên Telegram đã bị ngắt kết nối.",
+      "toast-reconnect-failed": "Không thể kết nối lại với trình bot.",
+      "toast-reconnect-success": "Bot Telegram đã được kết nối lại!",
+      "toast-voice-failed": "Không thể cập nhật chế độ giọng nói.",
+      "toast-approve-failed": "Không thể xác nhận tài khoản người dùng.",
+      "toast-approve-success": "Đã được xác nhận bởi người dùng.",
+      "toast-deny-failed": "Không thể từ chối yêu cầu của người dùng.",
+      "toast-deny-success": "Không được phép truy cập.",
+      "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
+      "toast-revoke-success": "Quyền truy cập đã bị thu hồi.",
+    },
+    users: {
+      "pending-title": "Chờ phê duyệt",
+      "pending-description":
+        "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
+      "approved-title": "Người dùng đã được phê duyệt",
+      "approved-description":
+        "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
+      user: "Người dùng",
+      "chat-id": "Mã định danh trò chuyện",
+      "pairing-code": "Mã ghép",
+      "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
+      "no-approved": "Không có người dùng được xác nhận",
+      unknown: "Không xác định",
+      approve: "Chấp thuận",
+      deny: "Từ chối",
+      revoke: "Thu hồi",
+    },
   },
 };
 

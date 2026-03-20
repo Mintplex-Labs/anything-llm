@@ -105,6 +105,10 @@ const TRANSLATIONS = {
       "your-account": "Jūsu konts",
       "import-item": "Importētā prece",
     },
+    channels: "Kanāli",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -1019,6 +1023,95 @@ const TRANSLATIONS = {
     notAssigned:
       "Jūs nav piešķirts nevienai darba vietai.\nLūdzu, sazinieties ar savu administratoru, lai pieprasītu piekļuvi darba vietai.",
     goToWorkspace: 'Pāriet uz darba vietu "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram bot",
+    description:
+      "Iespējiet savu AnythingLLM instanci, lai varētu tikt savienots ar Telegram, un tāpēc varēsat runāt ar saviem darba grupām no jebkura ierīces.",
+    setup: {
+      step1: {
+        title: "1. darbība: Izveidot savu Telegram botu",
+        description:
+          "Atveriet `@BotFather` Telegramā, nosūtiet `/newbot` un ievietojiet to adresē <code>@BotFather</code>, sekojiet norādījumiem un kopējiet API atslēgu.",
+        "open-botfather": "Atvērt BotFather",
+        "instruction-1": "1. Atveriet saiti vai skenējiet QR kodu",
+        "instruction-2":
+          "2. Nosūtiet <code>/newbot</code> uz <code>@BotFather</code>",
+        "instruction-3":
+          "3. Izvēlieties nosaukumu un lietotājvārdu savam botam",
+        "instruction-4": "4. Kopējiet API atslēgu, ko saņemat",
+      },
+      step2: {
+        title: "2. darbība: Pievienojiet savu botu",
+        description:
+          "Ievietojiet API atslēgu, ko saņēsit no @BotFather, un izvēlieties nokārtotā darba telpu, kuras jūsu bots varēs veikt sazi.",
+        "bot-token": "Bots tokens",
+        "default-workspace": "Pamatojas darba videne",
+        "no-workspace": "Nav pieejamas darba vietas. Tiks izveidota jauna.",
+        connecting: "Savienojums...",
+        "connect-bot": "Saistītais bot",
+      },
+      security: {
+        title: "Ieteicamās drošības iestatījumi",
+        description:
+          "Lai nodrošinātu papildu drošību, konfigurējiet šos iestatījumus, izmantojot @BotFather.",
+        "disable-groups": "— Novērst, lai boti tiktu pievienoti grupām",
+        "disable-inline":
+          "— Novērst, lai bots tiktu izmantoti tiešajā meklēšanā.",
+        "obscure-username":
+          "Izmantojiet neparādu botu lietotāju vārdu, lai samazinātu atklājamo iespēju.",
+      },
+      "toast-enter-token": "Lūdzu, ievadiet bot tokenu.",
+      "toast-select-workspace": "Lūdzu, izvēlieties darba vietu.",
+      "toast-connect-failed": "Neizdevās pievienot botu.",
+      "toast-connect-success": "Telegram bot veiksmīgi savienots!",
+    },
+    connected: {
+      status: "Saistīts",
+      "status-disconnected":
+        "Atvienots — tokens var būt nolaidēts vai nederīgs",
+      "placeholder-token": "Ievietojiet jaunu bot tokenu...",
+      reconnect: "Atjaunot sazi",
+      workspace: "Darba telpa",
+      "bot-link": "Bots saite",
+      "voice-response": "Balss atbildes",
+      disconnecting: "Atvienojot...",
+      disconnect: "Izslēgt",
+      "voice-text-only": "Tikai teksts",
+      "voice-mirror":
+        "Atspoguļošana (atbildēt ar balsi, kad lietotājs nosauc balsi)",
+      "voice-always":
+        "Vienmēr pievienojiet audio (sūtiet audio ar katru atbildi).",
+      "toast-enter-token": "Lūdzu, ievadiet bot tokenu.",
+      "toast-disconnect-failed": "Neizdevās izslēgt botu.",
+      "toast-disconnect-success": "Telegram botam ir pārtraukta saite.",
+      "toast-reconnect-failed": "Neizdevās atjaunot saikni ar botu.",
+      "toast-reconnect-success": "Telegram bot atkal ir pievienots!",
+      "toast-voice-failed": "Neizdevās atjaunināt balsī noteiktās režimas.",
+      "toast-approve-failed": "Nespēja apstiprināt lietotāju.",
+      "toast-approve-success": "Izmantotājs apstiprinājis.",
+      "toast-deny-failed": "Nespēja atspējot lietotāju.",
+      "toast-deny-success": "Izmantotājs atturned.",
+      "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
+      "toast-revoke-success": "Lietotāja piekļuve atcelta.",
+    },
+    users: {
+      "pending-title": "Atkarībā no apstākļiem",
+      "pending-description":
+        "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
+      "approved-title": "Atļautie lietotāji",
+      "approved-description":
+        "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
+      user: "Izmantotājs",
+      "chat-id": "Čata ID",
+      "pairing-code": "Kopējā koda numura kombinācija",
+      "no-pending": "Neizpildīti pieprasījumi",
+      "no-approved": "No apstiprinātiem lietotājiem",
+      unknown: "Nezināms",
+      approve: "Aptver",
+      deny: "Atbrīsties; atgrūst",
+      revoke: "Atcel",
+    },
   },
 };
 

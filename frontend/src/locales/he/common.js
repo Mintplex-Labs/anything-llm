@@ -103,6 +103,10 @@ const TRANSLATIONS = {
       "your-account": "החשבון שלך",
       "import-item": "ייבוא פריט",
     },
+    channels: "ערוצים",
+    "available-channels": {
+      telegram: "טלגרם",
+    },
   },
   login: {
     "multi-user": {
@@ -981,6 +985,89 @@ const TRANSLATIONS = {
     notAssigned:
       "אינך מוקצה לכל סביבת עבודה.\nיש ליצור קשר עם המנהל שלך כדי לבקש גישה לסביבת עבודה.",
     goToWorkspace: 'עבור לסביבת עבודה "{{workspace}}"',
+  },
+  telegram: {
+    title: "בוט של טלגרם",
+    description:
+      "חברו את ההתקנה של AnythingLLM ל-Telegram, כך שתוכלו לתקשר עם סביבות העבודה שלכם ממכשיר כלשהו.",
+    setup: {
+      step1: {
+        title: "שלב 1: צרו את הבוט שלכם ב-Telegram",
+        description:
+          "פתח את <code> ב-Telegram, שלח </code> לכתובת <code>@BotFather, עקוב אחר ההוראות, והעתק את מזהה ה-API.",
+        "open-botfather": "פתוח את BotFather",
+        "instruction-1": "1. פתחו את הקישור או סרקו את קוד ה-QR",
+        "instruction-2":
+          "2. שלחו את <code>/newbot</code> לכתובת <code>@BotFather</code>",
+        "instruction-3": "3. בחרו שם וכינוי משתמש עבור הבוט שלכם",
+        "instruction-4": "4. העתק את מזהה ה-API שקיבלת.",
+      },
+      step2: {
+        title: "שלב 2: חברו את הבוט שלכם",
+        description:
+          "הדבק את טוקן ה-API שקיבלת מחשבון @BotFather ובחר את חלל העבודה הראשי עבור הבוט שלך, כדי שיוכל לתקשר.",
+        "bot-token": "טוקן בוט",
+        "default-workspace": "סביבת עבודה ברירת מחדל",
+        "no-workspace": "אין מקומות עבודה זמינים. ייקבע מקום עבודה חדש.",
+        connecting: "חיבור...",
+        "connect-bot": "צ'אטבוט",
+      },
+      security: {
+        title: "הגדרות אבטחה מומלצות",
+        description:
+          "לנוחיות נוספת, יש לבצע את ההגדרות הללו דרך חשבון ה-@BotFather.",
+        "disable-groups": "— למנוע הוספת רובוטים לקבוצות",
+        "disable-inline": "– למנוע שימוש בבוט בחיפוש ישיר",
+        "obscure-username":
+          "השתמש בשם משתמש של בוט שאינו בולט, כדי להקטין את הסיכוי שהוא יימצא.",
+      },
+      "toast-enter-token": "אנא הזן את טוקן הבוט.",
+      "toast-select-workspace": "אנא בחרו מקום עבודה.",
+      "toast-connect-failed": "לא הצליח להתחבר עם הבוט.",
+      "toast-connect-success": "בוט הטלגרם מחובר בהצלחה!",
+    },
+    connected: {
+      status: "מחובר",
+      "status-disconnected": "נתקע – הטוקן עשוי להיות פג או לא תקין",
+      "placeholder-token": "הדבק את מפתח הבוט החדש...",
+      reconnect: "שוב קשר",
+      workspace: "חלל עבודה",
+      "bot-link": "קישור לבוט",
+      "voice-response": "תגובה קולית",
+      disconnecting: "ניתוק...",
+      disconnect: "ניתוק",
+      "voice-text-only": "טקסט בלבד",
+      "voice-mirror": "משקף (להגיב בקול כאשר המשתמש שולח קול)",
+      "voice-always": "יש לציין תמיד (לשלוח קבצי אודיו עם כל תגובה)",
+      "toast-enter-token": "אנא הזן את טוקן הבוט.",
+      "toast-disconnect-failed": "לא הצלחתי לבטל את פעולת הבוט.",
+      "toast-disconnect-success": "הבוט של טלגרם הפסיק לתקשר.",
+      "toast-reconnect-failed": "לא הצליח לשחזר את הבוט.",
+      "toast-reconnect-success": "בוט הטלגרם התחבר מחדש!",
+      "toast-voice-failed": "לא הצליח לעדכן את מצב השמע.",
+      "toast-approve-failed": "לא ניתן לאשר את המשתמש.",
+      "toast-approve-success": "אושר על ידי המשתמש.",
+      "toast-deny-failed": "לא הצליח לסרב לבקשה של המשתמש.",
+      "toast-deny-success": "גישה נדחתה.",
+      "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
+      "toast-revoke-success": "הרשאות המשתמש הוחזרו.",
+    },
+    users: {
+      "pending-title": "נמצא בהמתנה לאישור",
+      "pending-description":
+        "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
+      "approved-title": "משתמשים מורשים",
+      "approved-description": "משתמשים שאושרו לנהל שיחה עם הבוט שלכם.",
+      user: "משתמש",
+      "chat-id": "מזהה צ'אט",
+      "pairing-code": "קוד התאמה",
+      "no-pending": "אין בקשות בתהליך",
+      "no-approved": "אין משתמשים מורשים",
+      unknown: "לא ידוע",
+      approve: "אישור",
+      deny: "לדחות",
+      revoke: "בטל",
+    },
   },
 };
 

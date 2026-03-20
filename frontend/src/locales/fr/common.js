@@ -105,6 +105,10 @@ const TRANSLATIONS = {
       "your-account": "Votre compte",
       "import-item": "Importer",
     },
+    channels: "Canaux",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -1015,6 +1019,96 @@ const TRANSLATIONS = {
     notAssigned:
       "Vous n'êtes actuellement pas affecté à aucun espace de travail.\nPour accéder à un espace de travail, veuillez contacter votre administrateur.",
     goToWorkspace: 'Aller à "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Connectez votre instance de AnythingLLM à Telegram afin de pouvoir communiquer avec vos espaces de travail depuis n'importe quel appareil.",
+    setup: {
+      step1: {
+        title: "Étape 1 : Créez votre bot Telegram",
+        description:
+          "Ouvrez @BotFather sur Telegram, envoyez `/newbot` à <code>@BotFather</code>, suivez les instructions, et copiez le jeton API.",
+        "open-botfather": "Ouvrir BotFather",
+        "instruction-1": "1. Ouvrez le lien ou numérisez le code QR.",
+        "instruction-2":
+          "2. Envoyer <code>/newbot</code> à <code>@BotFather</code>",
+        "instruction-3":
+          "3. Choisissez un nom et un nom d'utilisateur pour votre bot.",
+        "instruction-4": "4. Copiez le jeton API que vous recevez.",
+      },
+      step2: {
+        title: "Étape 2 : Connectez votre bot",
+        description:
+          "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Espace de travail par défaut",
+        "no-workspace":
+          "Il n'y a pas d'espaces de travail disponibles. Un nouvel espace sera créé.",
+        connecting: "Connexion...",
+        "connect-bot": "Bot de connexion",
+      },
+      security: {
+        title: "Paramètres de sécurité recommandés",
+        description:
+          "Pour une sécurité supplémentaire, configurez ces paramètres via @BotFather.",
+        "disable-groups": "— Empêcher l'ajout de bots aux groupes",
+        "disable-inline":
+          "— Empêcher l'utilisation de bots dans les recherches en ligne.",
+        "obscure-username":
+          "Utilisez un nom d'utilisateur de bot non évident pour réduire sa visibilité.",
+      },
+      "toast-enter-token": "Veuillez saisir un jeton de bot.",
+      "toast-select-workspace": "Veuillez sélectionner un espace de travail.",
+      "toast-connect-failed": "Échec de la connexion du bot.",
+      "toast-connect-success": "Le bot Telegram s'est connecté avec succès !",
+    },
+    connected: {
+      status: "Connecté",
+      "status-disconnected":
+        "Non connecté – le jeton pourrait être expiré ou invalide.",
+      "placeholder-token": "Coller le nouveau jeton de bot...",
+      reconnect: "Reconnexion",
+      workspace: "Espace de travail",
+      "bot-link": "Lien vers le bot",
+      "voice-response": "Réponse vocale",
+      disconnecting: "Déconnexion...",
+      disconnect: "Déconnecter",
+      "voice-text-only": "Texte uniquement",
+      "voice-mirror":
+        "Écho (répondre par la voix lorsque l'utilisateur envoie une voix)",
+      "voice-always":
+        "Toujours inclure une voix (envoyer un enregistrement audio avec chaque réponse)",
+      "toast-enter-token": "Veuillez saisir un jeton de bot.",
+      "toast-disconnect-failed": "Échec de la déconnexion du robot.",
+      "toast-disconnect-success": "Le bot Telegram a perdu la connexion.",
+      "toast-reconnect-failed": "Échec de la reconnexion du bot.",
+      "toast-reconnect-success": "Le bot Telegram a été rétabli !",
+      "toast-voice-failed": "Impossible de mettre à jour le mode vocal.",
+      "toast-approve-failed": "Échec de la validation de l'utilisateur.",
+      "toast-approve-success": "Approuvé par l'utilisateur.",
+      "toast-deny-failed": "Impossible de refuser l'accès à l'utilisateur.",
+      "toast-deny-success": "Accès refusé.",
+      "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
+      "toast-revoke-success": "Accès de l'utilisateur annulé.",
+    },
+    users: {
+      "pending-title": "En attente d'approbation",
+      "pending-description":
+        "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
+      "approved-title": "Utilisateurs autorisés",
+      "approved-description":
+        "Utilisateurs qui ont été autorisés à communiquer avec votre bot.",
+      user: "Utilisateur",
+      "chat-id": "Identifiant de la conversation",
+      "pairing-code": "Code de correspondance",
+      "no-pending": "Aucune demande en cours",
+      "no-approved": "Aucun utilisateur autorisé",
+      unknown: "Inconnu",
+      approve: "Approuver",
+      deny: "Rejeter",
+      revoke: "Annuler",
+    },
   },
 };
 
