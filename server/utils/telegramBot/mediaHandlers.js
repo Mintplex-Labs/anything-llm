@@ -125,7 +125,7 @@ async function sendVoiceResponse(bot, chatId, text) {
         chatId,
         "Voice responses require a text-to-speech provider. Set one up in Settings > Voice & Speech > Text-to-Speech Preference."
       )
-      .catch(() => { });
+      .catch(() => {});
     return false;
   }
 }
