@@ -6,12 +6,17 @@ const {
   recentChatHistory,
   chatPrompt,
 } = require("../../chats");
+const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
 const { STREAM_EDIT_INTERVAL, MAX_MSG_LEN } = require("../constants");
 const { editMessage, sendFormattedMessage } = require("../utils");
 const { sendVoiceResponse } = require("../utils/media");
 const { safeJsonParse } = require("../../http");
 const { handleAgentResponse } = require("./agent");
+
+const QUERY_REFUSAL_DEFAULT =
+  "There is no relevant information in this workspace to answer your query.";
+const CURSOR_CHAR = " \u258d";
 
 /**
  * Stream a response to Telegram by running the full RAG pipeline.
@@ -39,7 +44,6 @@ async function streamResponse({
     throw new Error("Invalid context or missing required parameters!");
 
   await ctx.bot.sendChatAction(chatId, "typing");
-  // Handle @agent invocations via the agent pipeline
   if (
     await AgentHandler.isAgentInvocation({
       message,
@@ -50,10 +54,10 @@ async function streamResponse({
     return await handleAgentResponse(ctx, chatId, workspace, thread, message);
   }
 
-  // Start typing indicator renewal for traditional chat, agent has its own typing indicator.
   const typingInterval = setInterval(() => {
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
+
   const chatMode = workspace.chatMode || "chat";
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
@@ -65,12 +69,8 @@ async function streamResponse({
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
-    await ctx.bot.sendMessage(
-      chatId,
-      workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query."
-    );
-    return;
+    clearInterval(typingInterval);
+    return await sendQueryRefusal(ctx.bot, chatId, workspace);
   }
 
   const { rawHistory, chatHistory } = await recentChatHistory({
@@ -81,29 +81,123 @@ async function streamResponse({
     apiSessionId: null,
   });
 
-  let contextTexts = [];
-  let sources = [];
-  let pinnedDocIdentifiers = [];
+  const {
+    contextTexts: pinnedContextTexts,
+    sources: pinnedSources,
+    pinnedDocIdentifiers,
+  } = await collectPinnedDocs(workspace, LLMConnector);
 
-  await new DocumentManager({
+  const {
+    contextTexts: searchContextTexts,
+    sources: searchSources,
+    error: searchError,
+  } = await buildSearchContext({
+    workspace,
+    message,
+    VectorDb,
+    LLMConnector,
+    embeddingsCount,
+    rawHistory,
+    pinnedDocIdentifiers,
+  });
+
+  if (searchError) {
+    clearInterval(typingInterval);
+    return await ctx.bot.sendMessage(chatId, searchError);
+  }
+
+  const contextTexts = [...pinnedContextTexts, ...searchContextTexts];
+  const sources = [...pinnedSources, ...searchSources];
+
+  if (chatMode === "query" && contextTexts.length === 0) {
+    clearInterval(typingInterval);
+    return await sendQueryRefusal(ctx.bot, chatId, workspace);
+  }
+
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: await chatPrompt(workspace),
+      userPrompt: message,
+      contextTexts,
+      chatHistory,
+      attachments,
+    },
+    rawHistory
+  );
+
+  const { completeText, metrics } = await generateResponse({
+    LLMConnector,
+    messages,
+    workspace,
+    ctx,
+    chatId,
+    voiceResponse,
+    typingInterval,
+  });
+
+  await persistAndDeliver({
+    workspace,
+    thread,
+    message,
+    completeText,
+    sources,
+    chatMode,
+    metrics,
+    attachments,
+    voiceResponse,
+    ctx,
+    chatId,
+  });
+}
+
+async function sendQueryRefusal(bot, chatId, workspace) {
+  await bot.sendMessage(
+    chatId,
+    workspace?.queryRefusalResponse ?? QUERY_REFUSAL_DEFAULT
+  );
+}
+
+/**
+ * Gather context texts, sources, and identifiers from pinned documents.
+ * @returns {{ contextTexts: string[], sources: object[], pinnedDocIdentifiers: string[] }}
+ */
+async function collectPinnedDocs(workspace, LLMConnector) {
+  const contextTexts = [];
+  const sources = [];
+  const pinnedDocIdentifiers = [];
+
+  const pinnedDocs = await new DocumentManager({
     workspace,
     maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
-    });
+  }).pinnedDocs();
 
+  for (const doc of pinnedDocs) {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
+  }
+
+  return { contextTexts, sources, pinnedDocIdentifiers };
+}
+
+/**
+ * Run vector similarity search and fill the source window.
+ * @returns {{ contextTexts: string[], sources: object[], error: string|null }}
+ */
+async function buildSearchContext({
+  workspace,
+  message,
+  VectorDb,
+  LLMConnector,
+  embeddingsCount,
+  rawHistory,
+  pinnedDocIdentifiers,
+}) {
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
@@ -118,14 +212,13 @@ async function streamResponse({
       : { contextTexts: [], sources: [], message: null };
 
   if (vectorSearchResults.message) {
-    await ctx.bot.sendMessage(
-      chatId,
-      "Vector search failed. Please try again."
-    );
-    return;
+    return {
+      contextTexts: [],
+      sources: [],
+      error: "Vector search failed. Please try again.",
+    };
   }
 
-  const { fillSourceWindow } = require("../../helpers/chat");
   const filledSources = fillSourceWindow({
     nDocs: workspace?.topN || 4,
     searchResults: vectorSearchResults.sources,
@@ -133,29 +226,27 @@ async function streamResponse({
     filterIdentifiers: pinnedDocIdentifiers,
   });
 
-  contextTexts = [...contextTexts, ...filledSources.contextTexts];
-  sources = [...sources, ...vectorSearchResults.sources];
+  return {
+    contextTexts: filledSources.contextTexts,
+    sources: vectorSearchResults.sources,
+    error: null,
+  };
+}
 
-  if (chatMode === "query" && contextTexts.length === 0) {
-    await ctx.bot.sendMessage(
-      chatId,
-      workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query."
-    );
-    return;
-  }
-
-  const messages = await LLMConnector.compressMessages(
-    {
-      systemPrompt: await chatPrompt(workspace),
-      userPrompt: message,
-      contextTexts,
-      chatHistory,
-      attachments,
-    },
-    rawHistory
-  );
-
+/**
+ * Run the LLM completion (streaming or non-streaming) and deliver the in-progress response.
+ * Clears the typing indicator when done.
+ * @returns {{ completeText: string, metrics: object }}
+ */
+async function generateResponse({
+  LLMConnector,
+  messages,
+  workspace,
+  ctx,
+  chatId,
+  voiceResponse,
+  typingInterval,
+}) {
   let completeText = "";
   let metrics = {};
 
@@ -192,26 +283,57 @@ async function streamResponse({
     clearInterval(typingInterval);
   }
 
+  return { completeText, metrics };
+}
+
+/**
+ * Save the completed chat to the database and optionally deliver a voice response.
+ */
+async function persistAndDeliver({
+  workspace,
+  thread,
+  message,
+  completeText,
+  sources,
+  chatMode,
+  metrics,
+  attachments,
+  voiceResponse,
+  ctx,
+  chatId,
+}) {
   if (!completeText?.length) {
     await ctx.bot.sendMessage(chatId, "No response generated.");
-  } else {
-    await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message,
-      response: {
-        text: completeText,
-        sources,
-        type: chatMode,
-        metrics,
-        attachments,
-      },
-      threadId: thread?.id || null,
-    });
-
-    if (!voiceResponse) return;
-    const ttsSent = await sendVoiceResponse(ctx.bot, chatId, completeText);
-    if (!ttsSent) await ctx.bot.sendMessage(chatId, completeText);
+    return;
   }
+
+  await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: {
+      text: completeText,
+      sources,
+      type: chatMode,
+      metrics,
+      attachments,
+    },
+    threadId: thread?.id || null,
+  });
+
+  if (!voiceResponse) return;
+  const ttsSent = await sendVoiceResponse(ctx.bot, chatId, completeText);
+  if (!ttsSent) await ctx.bot.sendMessage(chatId, completeText);
+}
+
+/**
+ * Parse an SSE data chunk and return the text token, or null if not a text token.
+ */
+function parseSSEChunk(data) {
+  const match = data.match(/^data: (.+)\n\n$/s);
+  if (!match) return null;
+  const parsed = safeJsonParse(match[1], null);
+  if (!parsed || !parsed.textResponse || parsed.close) return null;
+  return parsed.textResponse;
 }
 
 /**
@@ -233,13 +355,84 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
 
   const currentText = () => completeText.slice(msgOffset);
 
+  /**
+   * Finalize the current message and reset state when accumulated text
+   * exceeds Telegram's max message length.
+   */
+  function splitMessageIfOverflow() {
+    if (messageId === null || currentText().length <= MAX_MSG_LEN) return;
+    clearTimeout(editTimer);
+    editTimer = null;
+    editMessage(
+      ctx.bot,
+      chatId,
+      messageId,
+      completeText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
+      ctx.log,
+      { format: true }
+    ).catch(() => {});
+    msgOffset += MAX_MSG_LEN;
+    messageId = null;
+    messagePending = null;
+  }
+
+  /**
+   * Send a new Telegram message when none exists yet.
+   * @returns {boolean} true if a new message was initiated (caller should skip edit).
+   */
+  function startNewMessageIfNeeded() {
+    if (messageId !== null || messagePending || voiceResponse) return false;
+    messagePending = ctx.bot
+      .sendMessage(chatId, currentText() + CURSOR_CHAR)
+      .then((sent) => {
+        messageId = sent.message_id;
+        lastEditTime = Date.now();
+      })
+      .catch(() => {
+        messagePending = null;
+      });
+    return true;
+  }
+
+  /**
+   * Throttle edits to the current message so we don't exceed Telegram rate limits.
+   */
+  function scheduleThrottledEdit() {
+    if (!messageId) return;
+
+    const now = Date.now();
+    if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
+      clearTimeout(editTimer);
+      lastEditTime = now;
+      editMessage(
+        ctx.bot,
+        chatId,
+        messageId,
+        currentText() + CURSOR_CHAR,
+        ctx.log
+      ).catch(() => {});
+    } else if (!editTimer) {
+      editTimer = setTimeout(() => {
+        lastEditTime = Date.now();
+        editMessage(
+          ctx.bot,
+          chatId,
+          messageId,
+          currentText() + CURSOR_CHAR,
+          ctx.log
+        ).catch(() => {});
+        editTimer = null;
+      }, STREAM_EDIT_INTERVAL);
+    }
+  }
+
   const flushEdit = async (final = false) => {
     if (messagePending) await messagePending;
     if (!messageId) return;
     clearTimeout(editTimer);
     editTimer = null;
     const text = currentText();
-    const display = final ? text : text + " \u258d";
+    const display = final ? text : text + CURSOR_CHAR;
     await editMessage(ctx.bot, chatId, messageId, display, ctx.log, {
       format: final,
     }).catch(() => {});
@@ -249,70 +442,12 @@ function createStreamHandler({ ctx, chatId, voiceResponse }) {
     on: () => {},
     removeListener: () => {},
     write: (data) => {
-      const match = data.match(/^data: (.+)\n\n$/s);
-      if (!match) return;
-      const parsed = safeJsonParse(match[1], null);
-      if (!parsed) return;
+      const token = parseSSEChunk(data);
+      if (!token) return;
 
-      if (parsed.textResponse && !parsed.close) {
-        completeText += parsed.textResponse;
-
-        if (messageId !== null && currentText().length > MAX_MSG_LEN) {
-          clearTimeout(editTimer);
-          editTimer = null;
-          editMessage(
-            ctx.bot,
-            chatId,
-            messageId,
-            completeText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
-            ctx.log,
-            { format: true }
-          ).catch(() => {});
-          msgOffset += MAX_MSG_LEN;
-          messageId = null;
-          messagePending = null;
-        }
-
-        if (messageId === null && !messagePending && !voiceResponse) {
-          messagePending = ctx.bot
-            .sendMessage(chatId, currentText() + " \u258d")
-            .then((sent) => {
-              messageId = sent.message_id;
-              lastEditTime = Date.now();
-            })
-            .catch(() => {
-              messagePending = null;
-            });
-          return;
-        }
-
-        if (!messageId) return;
-
-        const now = Date.now();
-        if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
-          clearTimeout(editTimer);
-          lastEditTime = now;
-          editMessage(
-            ctx.bot,
-            chatId,
-            messageId,
-            currentText() + " \u258d",
-            ctx.log
-          ).catch(() => {});
-        } else if (!editTimer) {
-          editTimer = setTimeout(() => {
-            lastEditTime = Date.now();
-            editMessage(
-              ctx.bot,
-              chatId,
-              messageId,
-              currentText() + " \u258d",
-              ctx.log
-            ).catch(() => {});
-            editTimer = null;
-          }, STREAM_EDIT_INTERVAL);
-        }
-      }
+      completeText += token;
+      splitMessageIfOverflow();
+      if (!startNewMessageIfNeeded()) scheduleThrottledEdit();
     },
   };
 

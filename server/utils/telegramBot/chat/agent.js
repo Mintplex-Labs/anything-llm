@@ -36,6 +36,8 @@ async function upsertMessage(bot, chatId, msgId, text, log) {
  */
 async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
   let finalResponse = "";
+  let metrics = {};
+  const sources = [];
   const thoughts = [];
   const charts = [];
   const files = [];
@@ -132,13 +134,20 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
         case "reportStreamEvent":
           const inner = parsed.content;
           if (!inner) return;
-          // Handle streaming text chunks for snappy response updates
           if (inner.type === "textResponseChunk" && inner.content) {
             handleStreamChunk(inner.content);
             return;
           }
           if (inner.type === "fullTextResponse" && inner.content) {
             finalResponse = inner.content;
+            return;
+          }
+          if (inner.type === "usageMetrics" && inner.metrics) {
+            metrics = inner.metrics;
+            return;
+          }
+          if (inner.type === "citations" && inner.citations) {
+            sources.push(...inner.citations);
           }
           return;
         default:
@@ -287,8 +296,9 @@ async function handleAgentResponse(ctx, chatId, workspace, thread, message) {
       prompt: message,
       response: {
         text: finalResponse,
-        sources: [],
+        sources,
         type: "chat",
+        metrics,
       },
       threadId: thread?.id || null,
     });
