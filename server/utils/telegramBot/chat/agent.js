@@ -309,6 +309,7 @@ async function handleAgentResponse(
         sources,
         type: "chat",
         metrics,
+        attachments,
       },
       threadId: thread?.id || null,
     });
