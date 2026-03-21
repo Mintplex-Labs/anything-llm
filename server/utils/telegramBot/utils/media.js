@@ -12,13 +12,36 @@ async function downloadTelegramFile(bot, fileId) {
 }
 
 /**
+ * Get appropriate file extension from MIME type.
+ * @param {string} mimeType
+ * @returns {string}
+ */
+function getExtensionFromMime(mimeType) {
+  const mimeToExt = {
+    "audio/ogg": ".ogg",
+    "audio/oga": ".ogg",
+    "audio/opus": ".opus",
+    "audio/mp3": ".mp3",
+    "audio/mpeg": ".mp3",
+    "audio/wav": ".wav",
+    "audio/x-wav": ".wav",
+    "audio/mp4": ".m4a",
+    "audio/m4a": ".m4a",
+    "audio/webm": ".webm",
+    "audio/flac": ".flac",
+  };
+  return mimeToExt[mimeType] || ".ogg"; // Default to .ogg for unknown (common for Telegram mobile)
+}
+
+/**
  * Transcribe an audio buffer using the configured whisper provider.
  * Writes the audio to the collector hotdir and runs it through the
  * same parse pipeline used for document processing.
  * @param {Buffer} audioBuffer
+ * @param {string} [mimeType] - The MIME type of the audio (e.g., "audio/ogg")
  * @returns {Promise<string>}
  */
-async function transcribeAudio(audioBuffer) {
+async function transcribeAudio(audioBuffer, mimeType = "audio/ogg") {
   const fs = require("fs");
   const path = require("path");
   const { CollectorApi } = require("../../collectorApi");
@@ -26,7 +49,8 @@ async function transcribeAudio(audioBuffer) {
 
   if (!fs.existsSync(hotdirPath)) fs.mkdirSync(hotdirPath, { recursive: true });
 
-  const filename = `telegram-voice-${Date.now()}.wav`;
+  const ext = getExtensionFromMime(mimeType);
+  const filename = `telegram-voice-${Date.now()}${ext}`;
   fs.writeFileSync(path.join(hotdirPath, filename), audioBuffer);
 
   const collector = new CollectorApi();

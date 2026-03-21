@@ -26,6 +26,7 @@ const THOUGHT_FLUSH_INTERVAL_MS = 1500;
  * @param {object|null} thread
  * @param {string} message
  * @param {boolean} voiceResponse - Whether to send the response as voice audio
+ * @param {Array<{name: string, mime: string, contentString: string}>} attachments - Image/file attachments for multimodal support
  */
 async function handleAgentResponse(
   ctx,
@@ -33,7 +34,8 @@ async function handleAgentResponse(
   workspace,
   thread,
   message,
-  voiceResponse = false
+  voiceResponse = false,
+  attachments = []
 ) {
   let finalResponse = "";
   let metrics = {};
@@ -228,6 +230,7 @@ async function handleAgentResponse(
       prompt: message,
       userId: null,
       threadId: thread?.id || null,
+      attachments,
     }).init();
     await agentHandler.createAIbitat({ handler });
 
