@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Çalışma Alanları Adı",
-    user: "Kullanıcı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
     save: "Değişiklikleri Kaydet",
@@ -105,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Popüler olanları keşfedin",
       "your-account": "Hesabınız",
       "import-item": "İthal Edilen Ürün",
+    },
+    channels: "Kanalalar",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -181,18 +184,12 @@ const TRANSLATIONS = {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        description:
-          "LLM'nin genel bilgisi ve bulunan doküman bağlamıyla cevaplar sunacaktır. Araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
       query: {
         title: "Sorgu",
-        description:
-          "yalnızca doküman bağlamı bulunursa yanıtlar sağlayacaktır.<b>İhtiyaç duyacağınız araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
       },
       automatic: {
         title: "Oto",
-        description:
-          "<br />Varsa, model ve sağlayıcı tarafından desteklenen yerel araçları otomatik olarak kullanacaktır. Yerel araç kullanımı desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
     },
     history: {
@@ -742,7 +739,6 @@ const TRANSLATIONS = {
     see_less: "Daha az",
     see_more: "Daha Fazla",
     tools: "Araçlar",
-    browse: "Gezin",
     text_size_label: "Metin Boyutu",
     select_model: "Model Seçimi",
     sources: "Kaynaklar",
@@ -755,7 +751,6 @@ const TRANSLATIONS = {
     edit: "Düzenle",
     publish: "Yayınla",
     stop_generating: "Yanıt üretmeyi durdurun",
-    pause_tts_speech_message: "Mesajın metin okuma (TTS) özelliğini durdur",
     slash_commands: "Komut Satırı Komutları",
     agent_skills: "Ajansın Yetenekleri",
     manage_agent_skills: "Temsilcinin becerilerini yönetin",
@@ -1012,6 +1007,85 @@ const TRANSLATIONS = {
     notAssigned:
       "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
     goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram Bot'u",
+    description:
+      "AnythingLLM örneğinizi Telegram ile bağlantılandırarak, herhangi bir cihazdan çalışma alanlarınızla sohbet edebilmelisiniz.",
+    setup: {
+      step1: {
+        title: "1. Adım: Telegram botunuzu oluşturun",
+        description:
+          "Telegram uygulamasında @BotFather'ı açın, \"<code>/newbot</code>\" komutunu <code>@BotFather</code>'e gönderin, talimatları izleyin ve API anahtarını kopyalayın.",
+        "open-botfather": "BotFather'ı aç",
+        "instruction-1": "1. Bağlantıyı açın veya QR kodunu tarayın",
+        "instruction-2":
+          "2. <code>/newbot</code> adresine <code>@BotFather</code>'e gönderin.",
+        "instruction-3": "3. Botunuz için bir isim ve kullanıcı adı seçin",
+        "instruction-4": "4. Alınan API token'ı kopyalayın",
+      },
+      step2: {
+        title: "Adım 2: Botunuzu bağlayın",
+        description:
+          "Aldığınız API token'ı (@BotFather) kopyalayın ve botunuzun iletişim kuracağı varsayılan çalışma alanını seçin.",
+        "bot-token": "Bot Token",
+        "default-workspace": "Varsayılan Çalışma Alanı",
+        "no-workspace":
+          "Mevcut çalışma alanları bulunmamaktadır. Yeni bir çalışma alanı oluşturulacaktır.",
+        connecting: "Bağlantı kuruluyor...",
+        "connect-bot": "Bağlantı Botu",
+      },
+      security: {
+        title: "Önerilen Güvenlik Ayarları",
+        description:
+          "Ek güvenlik için, bu ayarları @BotFather üzerinden yapılandırın.",
+        "disable-groups": "— Gruplara bot eklenmesini engelleme",
+        "disable-inline":
+          "— Bot'un, arama çubuklarında kullanılmasını engellemek",
+        "obscure-username":
+          "Daha az bilinen bir bot kullanıcı adı kullanarak görünürlüğünü azaltın.",
+      },
+      "toast-enter-token": "Lütfen bir bot belirteci girin.",
+      "toast-connect-failed": "Bot ile bağlantı kurulamadı.",
+    },
+    connected: {
+      status: "Bağlı",
+      "status-disconnected":
+        "Bağlantı kesildi — belirteç geçersiz veya süresi dolmuş olabilir",
+      "placeholder-token": "Yeni bot token'ı yapıştırın...",
+      reconnect: "Yeniden bağlantı kur",
+      workspace: "Çalışma alanı",
+      "bot-link": "Bot bağlantısı",
+      "voice-response": "Sesle etkileşim",
+      disconnecting: "Bağlantıyı kesiyorum...",
+      disconnect: "Bağlantıyı kes",
+      "voice-text-only": "Sadece metin",
+      "voice-mirror":
+        "Sesli yanıt (kullanıcı ses gönderdiğinde, sesli yanıtla cevaplayın)",
+      "voice-always": "Her yanıtla birlikte sesli (sesli yanıt gönderme)",
+      "toast-disconnect-failed": "Bot'u ayırmada başarısız.",
+      "toast-reconnect-failed": "Bot yeniden bağlantı kuramadı.",
+      "toast-voice-failed": "Ses modunu güncelleme başarısız oldu.",
+      "toast-approve-failed": "Kullanıcıın onaylanması başarısız oldu.",
+      "toast-deny-failed": "Kullanıcıyı reddetmeyi başaramadı.",
+      "toast-revoke-failed": "Kullanıcıyı silme işlemi başarısız oldu.",
+    },
+    users: {
+      "pending-title": "Onay Bekliyor",
+      "pending-description":
+        "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
+      "approved-title": "Onaylanmış Kullanıcılar",
+      "approved-description":
+        "Botunuzla sohbet etmeye yetkili olan kullanıcılar.",
+      user: "Kullanıcı",
+      "pairing-code": "Eşleştirme Kodu",
+      "no-pending": "Henüz tamamlanmamış herhangi bir istek bulunmamaktadır.",
+      "no-approved": "Onaylanmış kullanıcı bulunmamaktadır",
+      unknown: "Bilinmiyor",
+      approve: "Onayla",
+      deny: "İnkar",
+      revoke: "İptal et",
+    },
   },
 };
 

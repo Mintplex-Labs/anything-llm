@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "ワークスペース名",
-    user: "ユーザー",
     selection: "モデル選択",
     saving: "保存中...",
     save: "変更を保存",
@@ -104,6 +103,10 @@ const TRANSLATIONS = {
       trending: "人気のあるものを探す",
       "your-account": "あなたのアカウント",
       "import-item": "輸入品",
+    },
+    channels: "チャンネル",
+    "available-channels": {
+      telegram: "テレグラム",
     },
   },
   login: {
@@ -180,18 +183,12 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        description:
-          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        description:
-          "該当する情報が見つかった場合、回答を<b>のみ</b>提供します。ツールを使用するには、@agentコマンドを使用する必要があります。",
       },
       automatic: {
         title: "自動車",
-        description:
-          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。<br />ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -736,7 +733,6 @@ const TRANSLATIONS = {
     see_less: "詳細を見る",
     see_more: "詳細を見る",
     tools: "道具",
-    browse: "閲覧",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
     sources: "出典",
@@ -749,7 +745,6 @@ const TRANSLATIONS = {
     edit: "編集",
     publish: "出版",
     stop_generating: "応答の生成を停止する",
-    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
     slash_commands: "スラッシュコマンド",
     agent_skills: "エージェントのスキル",
     manage_agent_skills: "エージェントのスキル管理",
@@ -1016,6 +1011,83 @@ const TRANSLATIONS = {
     notAssigned:
       "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
     goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
+  },
+  telegram: {
+    title: "テレグラムボット",
+    description:
+      "AnyLLM のインスタンスを Telegram に接続することで、あらゆるデバイスからワークスペースとのチャットが可能になります。",
+    setup: {
+      step1: {
+        title: "ステップ1：Telegramボットを作成する",
+        description:
+          "Telegramの@BotFatherを開き、「/newbot」と入力して<code>@BotFather</code>に送信します。指示に従い、APIトークンをコピーしてください。",
+        "open-botfather": "BotFather を起動する",
+        "instruction-1": "1. リンクを開くか、QRコードをスキャンする",
+        "instruction-2":
+          "2. 「<code>」/「newbot」を「</code>」で、「<code>」@「BotFather」に送信してください。",
+        "instruction-3": "3. 独自の名前とユーザー名をボットに設定してください",
+        "instruction-4": "4. 受け取ったAPIトークンをコピーしてください",
+      },
+      step2: {
+        title: "ステップ2：ボットとの接続",
+        description:
+          "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
+        "bot-token": "ボット トークン",
+        "default-workspace": "デフォルトのワークスペース",
+        "no-workspace":
+          "利用可能な作業スペースがありません。新しい作業スペースが作成されます。",
+        connecting: "接続中...",
+        "connect-bot": "コネクトボット",
+      },
+      security: {
+        title: "推奨されるセキュリティ設定",
+        description:
+          "追加のセキュリティのため、@BotFatherでこれらの設定を設定してください。",
+        "disable-groups": "— グループへのボットの追加を防止",
+        "disable-inline": "— インライン検索でのボットの使用を防止",
+        "obscure-username":
+          "目立たないユーザー名をbotに使用することで、発見されにくくする。",
+      },
+      "toast-enter-token": "ボットのトークンを入力してください。",
+      "toast-connect-failed": "ボットとの接続に失敗しました。",
+    },
+    connected: {
+      status: "接続されている",
+      "status-disconnected":
+        "通信エラー - トークンが無効または期限切れになっている可能性があります",
+      "placeholder-token": "新しいボットのトークンを貼り付け...",
+      reconnect: "再接続",
+      workspace: "作業スペース",
+      "bot-link": "ボットへのリンク",
+      "voice-response": "音声応答",
+      disconnecting: "接続を解除...",
+      disconnect: "接続を解除する",
+      "voice-text-only": "テキストのみ",
+      "voice-mirror": "（ユーザーが音声で送信した場合、音声で返信）",
+      "voice-always": "常に音声メッセージ（返信ごとに音声データを送信）",
+      "toast-disconnect-failed": "ボットとの接続を解除できませんでした。",
+      "toast-reconnect-failed": "ボットとの再接続に失敗しました。",
+      "toast-voice-failed": "音声モードの更新に失敗しました。",
+      "toast-approve-failed": "ユーザーの承認に失敗しました。",
+      "toast-deny-failed": "ユーザーからの拒否を拒否できませんでした。",
+      "toast-revoke-failed": "ユーザーの権限停止に失敗。",
+    },
+    users: {
+      "pending-title": "承認待ち",
+      "pending-description":
+        "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
+      "approved-title": "承認されたユーザー",
+      "approved-description":
+        "あなたのボットとのチャットを許可されたユーザー。",
+      user: "利用者",
+      "pairing-code": "組み合わせコード",
+      "no-pending": "処理中のリクエストはありません",
+      "no-approved": "承認されたユーザーはいません",
+      unknown: "不明",
+      approve: "承認",
+      deny: "否定",
+      revoke: "無効化する",
+    },
   },
 };
 

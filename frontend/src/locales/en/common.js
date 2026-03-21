@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Workspace Name",
-    user: "User",
     selection: "Model Selection",
     saving: "Saving...",
     save: "Save changes",
@@ -199,18 +198,12 @@ const TRANSLATIONS = {
       title: "Chat mode",
       automatic: {
         title: "Auto",
-        description:
-          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
       },
       chat: {
         title: "Chat",
-        description:
-          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
-        description:
-          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {
@@ -623,9 +616,7 @@ const TRANSLATIONS = {
           "Use a non-obvious bot handle username to reduce discoverability",
       },
       "toast-enter-token": "Please enter a bot token.",
-      "toast-select-workspace": "Please select a workspace.",
       "toast-connect-failed": "Failed to connect bot.",
-      "toast-connect-success": "Telegram bot connected successfully!",
     },
     connected: {
       status: "Connected",
@@ -640,18 +631,12 @@ const TRANSLATIONS = {
       "voice-text-only": "Text only",
       "voice-mirror": "Mirror (reply with voice when user sends voice)",
       "voice-always": "Always voice (send audio with every reply)",
-      "toast-enter-token": "Please enter a bot token.",
       "toast-disconnect-failed": "Failed to disconnect bot.",
-      "toast-disconnect-success": "Telegram bot disconnected.",
       "toast-reconnect-failed": "Failed to reconnect bot.",
-      "toast-reconnect-success": "Telegram bot reconnected!",
       "toast-voice-failed": "Failed to update voice mode.",
       "toast-approve-failed": "Failed to approve user.",
-      "toast-approve-success": "User approved.",
       "toast-deny-failed": "Failed to deny user.",
-      "toast-deny-success": "User denied.",
       "toast-revoke-failed": "Failed to revoke user.",
-      "toast-revoke-success": "User access revoked.",
     },
     users: {
       "pending-title": "Pending Approval",
@@ -661,7 +646,6 @@ const TRANSLATIONS = {
       "approved-description":
         "Users who have been approved to chat with your bot.",
       user: "User",
-      "chat-id": "Chat ID",
       "pairing-code": "Pairing Code",
       "no-pending": "No pending requests",
       "no-approved": "No approved users",
@@ -922,7 +906,6 @@ const TRANSLATIONS = {
     source_count_other: "{{count}} references",
     document: "Document",
     similarity_match: "match",
-    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     cancel: "Cancel",
@@ -953,7 +936,6 @@ const TRANSLATIONS = {
     normal: "Normal",
     large: "Large",
     tools: "Tools",
-    browse: "Browse",
     text_size_label: "Text Size",
     select_model: "Select Model",
     slash_commands: "Slash Commands",

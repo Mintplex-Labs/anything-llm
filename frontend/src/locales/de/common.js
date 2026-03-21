@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Namen der Workspaces",
-    user: "Benutzer",
     selection: "Modellauswahl",
     saving: "Speichern...",
     save: "Änderungen speichern",
@@ -105,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Entdecken Sie die aktuell beliebtesten Themen",
       "your-account": "Ihr Konto",
       "import-item": "Artikel importieren",
+    },
+    channels: "Kanäle",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -189,18 +192,12 @@ const TRANSLATIONS = {
       title: "Chat-Modus",
       chat: {
         title: "Chat",
-        description:
-          "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem relevanten Kontext aus den Dokumenten <b> und </b> liefern. <br /> Sie benötigen den Befehl `@agent`, um die Tools zu nutzen.",
       },
       query: {
         title: "Abfrage",
-        description:
-          'wird nur Antworten <b> und </b> bereitstellen, falls der Kontext des Dokuments gefunden wurde.<br />Sie müssen den Befehl "@agent" verwenden, um die Tools zu nutzen.',
       },
       automatic: {
         title: "Auto",
-        description:
-          'wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl "@agent" verwenden, um Werkzeuge zu nutzen.',
       },
     },
     history: {
@@ -842,7 +839,6 @@ const TRANSLATIONS = {
     see_less: "Weniger anzeigen",
     see_more: "Mehr anzeigen",
     tools: "Werkzeuge",
-    browse: "Durchsuchen",
     text_size_label: "Schriftgröße",
     select_model: "Modell auswählen",
     sources: "Quellen",
@@ -855,7 +851,6 @@ const TRANSLATIONS = {
     edit: "Bearbeiten",
     publish: "Veröffentlichen",
     stop_generating: "Stoppen Sie die Generierung von Antworten",
-    pause_tts_speech_message: "Pause die Text-to-Speech-Funktion der Nachricht",
     slash_commands: "Befehlszeilen",
     agent_skills: "Fähigkeiten von Agenten",
     manage_agent_skills: "Verwalten Sie die Fähigkeiten von Agenten",
@@ -1023,6 +1018,93 @@ const TRANSLATIONS = {
     notAssigned:
       "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
     goToWorkspace: 'Zurück zum Arbeitsbereich "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram-Bot",
+    description:
+      "Verbinden Sie Ihre AnyLLM-Instanz mit Telegram, damit Sie von jedem Gerät mit Ihren Arbeitsbereichen chatten können.",
+    setup: {
+      step1: {
+        title: "Schritt 1: Erstellen Sie Ihren Telegram-Bot",
+        description:
+          "Öffnen Sie @BotFather in Telegram, senden Sie <code>/newbot</code> an <code>@BotFather</code>, befolgen Sie die Anweisungen und kopieren Sie den API-Token.",
+        "open-botfather": "Öffnen Sie BotFather",
+        "instruction-1": "1. Öffnen Sie den Link oder scannen Sie den QR-Code",
+        "instruction-2":
+          "2. Senden Sie <code>/newbot</code> an <code>@BotFather</code>",
+        "instruction-3":
+          "3. Wählen Sie einen Namen und einen Benutzernamen für Ihren Bot aus.",
+        "instruction-4": "4. Kopieren Sie den API-Token, den Sie erhalten.",
+      },
+      step2: {
+        title: "Schritt 2: Verbinden Sie Ihren Bot",
+        description:
+          "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
+        "bot-token": "Bot-Token",
+        "default-workspace": "Standardarbeitsbereich",
+        "no-workspace":
+          "Keine verfügbaren Arbeitsbereiche. Ein neuer Bereich wird erstellt.",
+        connecting: "Verbinde...",
+        "connect-bot": "Connect-Bot",
+      },
+      security: {
+        title: "Empfohlene Sicherheitseinstellungen",
+        description:
+          "Für zusätzliche Sicherheit, konfigurieren Sie diese Einstellungen über @BotFather.",
+        "disable-groups":
+          "– Verhinderung der automatisierten Anmeldung von Bots in Gruppen",
+        "disable-inline":
+          "– Verhindern Sie die Verwendung von Bots in der Inline-Suche",
+        "obscure-username":
+          "Verwenden Sie einen Benutzernamen für den Bot, der nicht offensichtlich ist, um die Auffindbarkeit zu reduzieren.",
+      },
+      "toast-enter-token": "Bitte geben Sie einen Bot-Token ein.",
+      "toast-connect-failed":
+        "Verbindung zum Bot konnte nicht hergestellt werden.",
+    },
+    connected: {
+      status: "Verbunden",
+      "status-disconnected":
+        "Abgekoppelt – Token möglicherweise abgelaufen oder ungültig",
+      "placeholder-token": "Neuen Bot-Token einfügen...",
+      reconnect: "Wiederherstellen",
+      workspace: "Arbeitsbereich",
+      "bot-link": "Link",
+      "voice-response": "Sprachantwort",
+      disconnecting: "Abmelden...",
+      disconnect: "Abkoppeln",
+      "voice-text-only": "Nur Text",
+      "voice-mirror":
+        "Echo (Antworten mit Sprache, wenn der Benutzer Sprache sendet)",
+      "voice-always":
+        "Bitte immer Sprachnachrichten senden (Audio mit jeder Antwort hinzufügen)",
+      "toast-disconnect-failed":
+        "Es konnte nicht erfolgreich die Verbindung zum Bot trennen.",
+      "toast-reconnect-failed":
+        "Verbindung zum Bot konnte nicht hergestellt werden.",
+      "toast-voice-failed":
+        "Fehlgeschlagen bei der Aktualisierung des Sprachmodus.",
+      "toast-approve-failed": "Benutzer konnte nicht autorisiert werden.",
+      "toast-deny-failed": "Nicht in der Lage, den Benutzer abzuweisen.",
+      "toast-revoke-failed":
+        "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren.",
+    },
+    users: {
+      "pending-title": "Warte auf Genehmigung",
+      "pending-description":
+        "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
+      "approved-title": "Benutzer mit Genehmigung",
+      "approved-description":
+        "Nutzer, denen die Erlaubnis erteilt wurde, mit Ihrem Bot zu kommunizieren.",
+      user: "Benutzer",
+      "pairing-code": "Paarcode",
+      "no-pending": "Keine ausstehenden Anfragen",
+      "no-approved": "Keine autorisierten Benutzer",
+      unknown: "Unbekannt",
+      approve: "Genehmigen",
+      deny: "Leugnen",
+      revoke: "Aufheben",
+    },
   },
 };
 
