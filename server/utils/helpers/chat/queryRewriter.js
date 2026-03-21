@@ -4,9 +4,12 @@ If the question already contains its own subject or topic, return it EXACTLY as 
 
 Only reformulate when the question contains pronouns (it, that, they), demonstratives (this, these), or incomplete references (the first one, the second) that refer to the chat history.
 
-When reformulating, respond with ONLY the reformulated question (max 15 words).
-Include the key subject/topic from conversation history. Do NOT add information not present in the conversation.
-Write in the same language as the user.`;
+When reformulating:
+- By default, the topic comes from the most recent user question. Only use an older topic if the latest question explicitly refers back to it (e.g. "back to the yoga", "the dance course from earlier").
+- Preserve the question type: if the user asks "who" keep it as "who", do not change "who" to "which" or "for whom" to "when".
+- Respond with ONLY the reformulated question (max 15 words).
+- Include the key subject/topic from conversation history. Do NOT add information not present in the conversation.
+- Write in the same language as the LATEST user question (not previous messages).`;
 
 function shouldRewrite(userQuery, chatHistory, workspace) {
   if (!chatHistory || chatHistory.length === 0) return false;
