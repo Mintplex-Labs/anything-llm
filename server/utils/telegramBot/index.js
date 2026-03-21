@@ -437,6 +437,7 @@ class TelegramBotService {
   }
 
   #shouldVoiceRespond(isVoiceMessage) {
+    if (!this.#config) return false;
     const mode = this.#config.voice_response_mode || "text_only";
     if (mode === "always_voice") return true;
     if (mode === "mirror" && isVoiceMessage) return true;
