@@ -450,10 +450,12 @@ class TelegramBotService {
     if (msg.voice || msg.audio) {
       this.#queue.enqueue(chatId, async () => {
         try {
-          const fileId = (msg.voice || msg.audio).file_id;
+          const audioInfo = msg.voice || msg.audio;
+          const fileId = audioInfo.file_id;
+          const mimeType = audioInfo.mime_type || "audio/ogg";
           await ctx.bot.sendChatAction(chatId, "typing");
           const audioBuffer = await downloadTelegramFile(ctx.bot, fileId);
-          const transcription = await transcribeAudio(audioBuffer);
+          const transcription = await transcribeAudio(audioBuffer, mimeType);
           if (!transcription?.trim()) {
             await ctx.bot.sendMessage(
               chatId,
