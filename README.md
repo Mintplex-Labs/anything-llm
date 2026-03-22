@@ -20,6 +20,9 @@
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
+  <a href="https://gitcgr.com/Mintplex-Labs/anything-llm">
+    <img src="https://gitcgr.com/badge/Mintplex-Labs/anything-llm.svg" alt="gitcgr" />
+  </a>
   <a href="https://docs.anythingllm.com" target="_blank">
     Docs
   </a> |
