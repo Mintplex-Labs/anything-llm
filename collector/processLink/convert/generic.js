@@ -199,7 +199,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         // Remove noise elements (nav, cookie banners, etc.) before extraction
         await page.evaluate(() => {
           document.querySelectorAll(
-            'header, footer, aside, [class*="cookie"], [id*="cookie"], ' +
+            'header, footer, nav, aside, [class*="cookie"], [id*="cookie"], ' +
             '[class*="consent"], [id*="consent"], [class*="banner"]'
           ).forEach(el => el.remove());
         });

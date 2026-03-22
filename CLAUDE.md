@@ -58,6 +58,13 @@ yarn start        # Production Start
 - SQLite mit Prisma ORM
 - Migrations: `cd server && npx prisma migrate dev`
 
+### WICHTIG: Prisma-Migrationen bei Schema-Änderungen
+Wenn das Prisma-Schema (`server/prisma/schema.prisma`) geändert wird (neue Spalten, geänderte Felder), **MUSS** eine Migration erstellt werden:
+```bash
+cd server && npx prisma migrate dev --name beschreibung_der_aenderung
+```
+**Ohne Migration wird die Änderung NICHT auf bestehende Datenbanken angewendet!** Der Container-Startup führt `prisma migrate deploy` aus — das funktioniert nur, wenn eine Migration-Datei existiert. Schema-Änderungen ohne Migration führen zu Runtime-Fehlern bei allen bestehenden Clients (Beispiel: `queryRewriteMode`-Spalte fehlte bei 69 Clients).
+
 ## Key Features (Kufer Fork)
 
 - Workspace-basierte Chat-Organisation
