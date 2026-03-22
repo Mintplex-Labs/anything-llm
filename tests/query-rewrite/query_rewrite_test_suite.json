@@ -1,0 +1,701 @@
+{
+  "meta": {
+    "description": "Query Rewriter Test Suite - AnythingLLM / chatbot-donau Workspace",
+    "workspace": "chatbot-donau",
+    "rewriter_version": "queryRewriter.js (Prompt v2, max 15 Wörter, Threshold ≤12 Wörter, max 2 History-Turns)",
+    "total_tests": 50,
+    "created": "2026-03-21",
+    "categories": [
+      "standalone",
+      "follow-up",
+      "one-word",
+      "two-word",
+      "topic-switch",
+      "back-reference",
+      "language-switch",
+      "two-turn-context",
+      "no-rewrite-threshold",
+      "ordinal-reference",
+      "context-bleeding"
+    ]
+  },
+  "test_blocks": [
+    {
+      "block": "V",
+      "name": "Vortests - Grundfunktion",
+      "thread": [
+        {
+          "id": "V1",
+          "category": "standalone",
+          "history": [],
+          "query": "Welche Deutschkurse gibt es?",
+          "expect_rewrite": false,
+          "expected": "Welche Deutschkurse gibt es?",
+          "notes": "Eigenständige Frage, kein Rewrite nötig",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "V2",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Deutschkurse gibt es?"},
+            {"role": "assistant", "content": "[Liste der Deutschkurse]"}
+          ],
+          "query": "Was kosten die?",
+          "expect_rewrite": true,
+          "expected": "Was kosten die Deutschkurse?",
+          "notes": "Pronomen 'die' → Deutschkurse aus letzter User-Frage",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "V3",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Deutschkurse gibt es?"},
+            {"role": "assistant", "content": "[Liste der Deutschkurse]"},
+            {"role": "user", "content": "Was kosten die?"},
+            {"role": "assistant", "content": "[Preise der Deutschkurse]"}
+          ],
+          "query": "Gibt es die auch abends?",
+          "expect_rewrite": true,
+          "expected": "Gibt es die Deutschkurse auch abends?",
+          "notes": "'die' wieder auf Deutschkurse",
+          "prev_rating": "✅"
+        }
+      ]
+    },
+    {
+      "block": "S",
+      "name": "Stresstest - Multi-Topic Back-and-Forth",
+      "thread": [
+        {
+          "id": "S1",
+          "category": "standalone",
+          "history": [],
+          "query": "Welche Yoga-Kurse gibt es bei euch?",
+          "expect_rewrite": false,
+          "expected": "Welche Yoga-Kurse gibt es bei euch?",
+          "notes": "Eigenständig mit explizitem Thema",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S2",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse gibt es bei euch?"},
+            {"role": "assistant", "content": "[Yoga-Kursliste mit Anfänger- und Aufbaukurs]"}
+          ],
+          "query": "Was kostet der Anfängerkurs?",
+          "expect_rewrite": true,
+          "expected": "Was kostet der Yoga-Kurs für Anfänger?",
+          "notes": "'der Anfängerkurs' referenziert Yoga aus History",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S3",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse gibt es bei euch?"},
+            {"role": "assistant", "content": "[Yoga Anfängerkurs 40€, Yoga Aufbaukurs 60€]"},
+            {"role": "user", "content": "Was kostet der Anfängerkurs?"},
+            {"role": "assistant", "content": "Der Yoga-Kurs für Anfänger kostet 40€"}
+          ],
+          "query": "Und der Aufbaukurs?",
+          "expect_rewrite": true,
+          "expected": "Was kostet der Yoga-Aufbaukurs?",
+          "notes": "VERBESSERUNG v2: 'Yoga' wird jetzt korrekt ergänzt (fehlte in v1)",
+          "prev_rating": "⚠️→✅"
+        },
+        {
+          "id": "S4",
+          "category": "standalone",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse gibt es bei euch?"},
+            {"role": "assistant", "content": "[Yoga-Kursliste]"},
+            {"role": "user", "content": "Was kostet der Anfängerkurs?"},
+            {"role": "assistant", "content": "40€"},
+            {"role": "user", "content": "Und der Aufbaukurs?"},
+            {"role": "assistant", "content": "60€"}
+          ],
+          "query": "Gibt es auch Schwimmkurse für Kinder?",
+          "expect_rewrite": false,
+          "expected": "Gibt es auch Schwimmkurse für Kinder?",
+          "notes": "Eigenständig, Themenwechsel",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S5",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Gibt es auch Schwimmkurse für Kinder?"},
+            {"role": "assistant", "content": "[Babyschwimmen, Schwimmkurse für Kinder]"}
+          ],
+          "query": "Ab welchem Alter können die teilnehmen?",
+          "expect_rewrite": true,
+          "expected": "Ab welchem Alter können Kinder am Schwimmkurs teilnehmen?",
+          "notes": "Kleines LLM: nimmt oft 'Babyschwimmen' statt allgemein 'Schwimmkurse'. Akzeptabel.",
+          "prev_rating": "⚠️"
+        },
+        {
+          "id": "S6",
+          "category": "topic-switch",
+          "history": [
+            {"role": "user", "content": "Gibt es auch Schwimmkurse für Kinder?"},
+            {"role": "assistant", "content": "[Schwimmkurse]"},
+            {"role": "user", "content": "Ab welchem Alter können die teilnehmen?"},
+            {"role": "assistant", "content": "Ab 4 Monaten beim Babyschwimmen"}
+          ],
+          "query": "Nochmal zum Yoga - gibt es den Kurs auch abends?",
+          "expect_rewrite": true,
+          "expected": "Gibt es den Yoga-Kurs auch abends?",
+          "notes": "Expliziter Themenwechsel zurück zu Yoga erkannt",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S7",
+          "category": "one-word",
+          "history": [
+            {"role": "user", "content": "Nochmal zum Yoga - gibt es den Kurs auch abends?"},
+            {"role": "assistant", "content": "Ja, der Yoga-Aufbaukurs findet montags 18:00 Uhr statt"}
+          ],
+          "query": "Wann genau?",
+          "expect_rewrite": true,
+          "expected": "Wann genau ist der Yoga-Kurs am Abend?",
+          "notes": "Einwort-Frage, Kontext aus letzter Assistant-Antwort",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S8",
+          "category": "standalone",
+          "history": [
+            {"role": "user", "content": "Wann genau?"},
+            {"role": "assistant", "content": "Montags 18:00-19:30 Uhr"}
+          ],
+          "query": "Kann man Yoga und Schwimmen zusammen als Paket buchen?",
+          "expect_rewrite": false,
+          "expected": "Kann man Yoga und Schwimmen zusammen als Paket buchen?",
+          "notes": "Eigenständige Frage mit beiden Themen explizit",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S9",
+          "category": "standalone",
+          "history": [
+            {"role": "user", "content": "Kann man Yoga und Schwimmen zusammen als Paket buchen?"},
+            {"role": "assistant", "content": "Ein kombiniertes Paket wird nicht angeboten"}
+          ],
+          "query": "Was gibt es eigentlich im Bereich Sprachen?",
+          "expect_rewrite": false,
+          "expected": "Was gibt es eigentlich im Bereich Sprachen?",
+          "notes": "Eigenständig, neues Thema",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S10",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Was gibt es eigentlich im Bereich Sprachen?"},
+            {"role": "assistant", "content": "[Sprachkurse Englisch, Spanisch, Französisch für verschiedene Niveaus]"}
+          ],
+          "query": "Gibt es da auch was für absolute Anfänger?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Sprachkurse für absolute Anfänger?",
+          "notes": "'da' referenziert Sprachkurse",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S11",
+          "category": "no-rewrite-threshold",
+          "history": [
+            {"role": "user", "content": "Gibt es da auch was für absolute Anfänger?"},
+            {"role": "assistant", "content": "[Anfänger-Sprachkurse]"}
+          ],
+          "query": "Ich suche nach einem Kurs für Eltern der am Wochenende stattfindet damit ich mein Kind mitbringen kann",
+          "expect_rewrite": false,
+          "expected": "Ich suche nach einem Kurs für Eltern der am Wochenende stattfindet damit ich mein Kind mitbringen kann",
+          "notes": ">12 Wörter → kein Rewrite durch Threshold. Korrekt.",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S12",
+          "category": "one-word",
+          "history": [
+            {"role": "user", "content": "Ich suche nach einem Kurs für Eltern der am Wochenende stattfindet damit ich mein Kind mitbringen kann"},
+            {"role": "assistant", "content": "[Eltern-Kind-Kurse am Wochenende mit Preisen]"}
+          ],
+          "query": "Kosten?",
+          "expect_rewrite": true,
+          "expected": "Was kosten die Elternkurse am Wochenende?",
+          "notes": "VERBESSERUNG v2: Spezifischer Kontext (Elternkurse) statt generisch 'Kosten für welche Kurse?'",
+          "prev_rating": "⚠️→✅"
+        },
+        {
+          "id": "S13",
+          "category": "standalone",
+          "history": [
+            {"role": "user", "content": "Kosten?"},
+            {"role": "assistant", "content": "Die Elternkurse kosten 22€"}
+          ],
+          "query": "Do you have any English courses available?",
+          "expect_rewrite": false,
+          "expected": "Do you have any English courses available?",
+          "notes": "Eigenständige EN-Frage, Sprachwechsel korrekt behandelt",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "S14",
+          "category": "language-switch",
+          "history": [
+            {"role": "user", "content": "Do you have any English courses available?"},
+            {"role": "assistant", "content": "Yes, we offer English courses for all levels"}
+          ],
+          "query": "Was war nochmal der günstigste von allen Kursen die wir besprochen haben?",
+          "expect_rewrite": true,
+          "expected": "Was war der günstigste besprochene Kurs?",
+          "known_issue": "Mistral-Small wechselt hier zu EN trotz DE-Anfrage. Regel 'LATEST user language' wird ignoriert. Akzeptierter Fehler: text-embedding-3-small ist multilingual.",
+          "prev_rating": "❌ (weiterhin)"
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "name": "Block A - Yoga Kontexterhaltung",
+      "thread": [
+        {
+          "id": "A1",
+          "category": "standalone",
+          "history": [],
+          "query": "Welche Yoga-Kurse bieten Sie an?",
+          "expect_rewrite": false,
+          "expected": "Welche Yoga-Kurse bieten Sie an?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "A2",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse bieten Sie an?"},
+            {"role": "assistant", "content": "[Yoga Basic 40€, Yoga Advanced 60€]"}
+          ],
+          "query": "Was kostet der günstigste davon?",
+          "expect_rewrite": true,
+          "expected": "Was kostet der günstigste Yoga-Kurs?",
+          "notes": "VERBESSERUNG v2: Keine doppelte Frage mehr. v1 klebte beide Sätze zusammen.",
+          "prev_rating": "⚠️→✅"
+        },
+        {
+          "id": "A3",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse bieten Sie an?"},
+            {"role": "assistant", "content": "[Yoga Basic 40€, Yoga Advanced 60€]"},
+            {"role": "user", "content": "Was kostet der günstigste davon?"},
+            {"role": "assistant", "content": "Der günstigste Yoga-Kurs kostet 40€"}
+          ],
+          "query": "Und der teuerste?",
+          "expect_rewrite": true,
+          "expected": "Was kostet der teuerste Yoga-Kurs?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "A4",
+          "category": "question-type",
+          "history": [
+            {"role": "user", "content": "Was kostet der günstigste davon?"},
+            {"role": "assistant", "content": "40€"},
+            {"role": "user", "content": "Und der teuerste?"},
+            {"role": "assistant", "content": "Der teuerste Yoga-Kurs kostet 60€ - geleitet von Edeltraut Manninger"}
+          ],
+          "query": "Wer leitet den?",
+          "expect_rewrite": true,
+          "expected": "Wer leitet den Yoga-Kurs?",
+          "must_preserve": "Fragetyp 'Wer' (Person) darf NICHT zu 'Welcher Kurs' oder 'Für wen' werden",
+          "notes": "VERBESSERUNG v2: 'Wer' bleibt 'Wer'. v1 änderte zu 'Welcher Kurs wird geleitet?'",
+          "prev_rating": "⚠️→✅"
+        }
+      ]
+    },
+    {
+      "block": "B",
+      "name": "Block B - Einwort-Fragen",
+      "thread": [
+        {
+          "id": "B1",
+          "category": "standalone",
+          "history": [],
+          "query": "Gibt es Tanzkurse?",
+          "expect_rewrite": false,
+          "expected": "Gibt es Tanzkurse?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "B2",
+          "category": "one-word",
+          "history": [
+            {"role": "user", "content": "Gibt es Tanzkurse?"},
+            {"role": "assistant", "content": "[Orientalischer Tanz für Anfängerinnen 14€, Orientalischer Tanz (Bauchtanz) für Kinder 9-14 J. 14€]"}
+          ],
+          "query": "Preis?",
+          "expect_rewrite": true,
+          "expected": "Preis für die Tanzkurse?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "B3",
+          "category": "one-word",
+          "history": [
+            {"role": "user", "content": "Gibt es Tanzkurse?"},
+            {"role": "assistant", "content": "[Tanzkursliste mit Details]"},
+            {"role": "user", "content": "Preis?"},
+            {"role": "assistant", "content": "14€ und 28€ je nach Kurs"}
+          ],
+          "query": "Wo?",
+          "expect_rewrite": true,
+          "expected": "Wo finden die Tanzkurse statt?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "B4",
+          "category": "one-word",
+          "history": [
+            {"role": "user", "content": "Preis?"},
+            {"role": "assistant", "content": "14€/28€"},
+            {"role": "user", "content": "Wo?"},
+            {"role": "assistant", "content": "Im Schulgebäude, 1. Stock"}
+          ],
+          "query": "Wann?",
+          "expect_rewrite": true,
+          "expected": "Wann finden die Tanzkurse statt?",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "B5",
+          "category": "question-type",
+          "history": [
+            {"role": "user", "content": "Wo?"},
+            {"role": "assistant", "content": "[Ort für alle Tanzkurse inkl. Orientalischer Tanz (Bauchtanz) für Kinder von 9-14 Jahren]"},
+            {"role": "user", "content": "Wann?"},
+            {"role": "assistant", "content": "[Zeiten für alle Tanzkurse inkl. Orientalischer Tanz (Bauchtanz) für Kinder von 9-14 Jahren, Mo. 22.09. 18:00 Uhr]"}
+          ],
+          "query": "Für Kinder?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Tanzkurse für Kinder?",
+          "must_preserve": "Fragetyp: Verfügbarkeits-Frage ('Gibt es...?'), NICHT Zeitpunkt ('Wann beginnt...?')",
+          "notes": "Kleines LLM nimmt oft konkrete Details aus Assistant-Response (korrekte Quelle, aber Fragetyp verschoben). Akzeptabel.",
+          "prev_rating": "⚠️"
+        }
+      ]
+    },
+    {
+      "block": "C",
+      "name": "Block C - Themenwechsel, Rückreferenz, Sprache",
+      "thread": [
+        {
+          "id": "C1",
+          "category": "standalone",
+          "history": [],
+          "query": "Haben Sie auch Malkurse im Programm?",
+          "expect_rewrite": false,
+          "expected": "Haben Sie auch Malkurse im Programm?",
+          "notes": "LLM kann hier halluzinieren (Aquarellmalerei erfunden) - aber kein Rewriter-Problem",
+          "prev_rating": "✅ (Rewriter), ❌ (LLM-Halluzination in Antwort)"
+        },
+        {
+          "id": "C2",
+          "category": "follow-up",
+          "history": [
+            {"role": "user", "content": "Haben Sie auch Malkurse im Programm?"},
+            {"role": "assistant", "content": "Spezifische Malkurse nicht gefunden, aber Kurse im Bereich Kultur und Gestalten"}
+          ],
+          "query": "Braucht man eigene Materialien dafür?",
+          "expect_rewrite": true,
+          "expected": "Welche Materialien braucht man für die Malkurse?",
+          "prev_rating": "⚠️→✅"
+        },
+        {
+          "id": "C3",
+          "category": "context-bleeding",
+          "history": [
+            {"role": "user", "content": "Haben Sie auch Malkurse im Programm?"},
+            {"role": "assistant", "content": "Keine Malkurse gefunden, aber Kurse in Kultur und Gestalten"},
+            {"role": "user", "content": "Braucht man eigene Materialien dafür?"},
+            {"role": "assistant", "content": "Für Kurse im Bereich Kultur und Gestalten werden Materialien gestellt"}
+          ],
+          "query": "Und wie war das nochmal beim Tanzkurs?",
+          "expect_rewrite": true,
+          "expected": "Wie war das nochmal beim Tanzkurs?",
+          "must_not_contain": ["Materialien", "Kultur", "Gestalten"],
+          "notes": "VERBESSERUNG v2: 'Materialien' blutet nicht mehr rein (context-bleeding gefixt). Allerdings kann Mistral-Small 'orientalischen' ohne Basis ergänzen - LLM-Problem, kein Prompt-Problem.",
+          "prev_rating": "❌→⚠️"
+        },
+        {
+          "id": "C4",
+          "category": "language-switch",
+          "history": [
+            {"role": "user", "content": "Und wie war das nochmal beim Tanzkurs?"},
+            {"role": "assistant", "content": "[Tanzkurs-Informationen auf Deutsch]"}
+          ],
+          "query": "Combien coûte le cours de danse?",
+          "expect_rewrite": true,
+          "expected": "Combien coûte le cours de danse oriental?",
+          "must_preserve": "Sprache FR bleibt FR",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "C5",
+          "category": "language-switch",
+          "history": [
+            {"role": "user", "content": "Combien coûte le cours de danse?"},
+            {"role": "assistant", "content": "Le cours de danse orientale coûte 14€ et 28€"}
+          ],
+          "query": "Und auf Deutsch bitte - was kostet der?",
+          "expect_rewrite": true,
+          "expected": "Was kostet der orientalische Tanzkurs?",
+          "must_preserve": "Sprachrückwechsel FR→DE korrekt",
+          "prev_rating": "✅"
+        }
+      ]
+    },
+    {
+      "block": "D",
+      "name": "Block D - Zwei-Turn-Kontext (heute getestet)",
+      "thread": [
+        {
+          "id": "D1",
+          "category": "two-turn-context",
+          "history": [
+            {"role": "user", "content": "Was gibt es für Yoga-Kurse?"},
+            {"role": "assistant", "content": "[Yoga Basic 40€, Yoga Advanced 60€]"},
+            {"role": "user", "content": "Was kosten die?"},
+            {"role": "assistant", "content": "Basic: 40€, Advanced: 60€"}
+          ],
+          "query": "Gibt es die auch abends?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Yoga-Kurse auch abends?",
+          "notes": "KRITISCH: 'Yoga' muss 2 Turns zurückverfolgt werden wenn letzte User-Frage auch vage war. Heute getestet: ✅ funktioniert.",
+          "prev_rating": "✅ (heute bestätigt)"
+        },
+        {
+          "id": "D2",
+          "category": "two-turn-context",
+          "history": [
+            {"role": "user", "content": "Was gibt es für Yoga-Kurse?"},
+            {"role": "assistant", "content": "[Yoga Basic 40€, Yoga Advanced 60€]"},
+            {"role": "user", "content": "Was kosten die?"},
+            {"role": "assistant", "content": "Der Basic Kurs kostet 40€, der Advanced Kurs 60€"}
+          ],
+          "query": "Gibt es die auch abends?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Yoga-Kurse auch abends?",
+          "notes": "Schwieriger Fall: Assistant-Response in letztem Turn enthält kein 'Yoga' mehr, nur 'Basic/Advanced'. Muss 2 Turns zurück.",
+          "prev_rating": "✅ (heute bestätigt)"
+        }
+      ]
+    },
+    {
+      "block": "E",
+      "name": "Block E - Ordinale Referenzen / Kurslisten",
+      "thread": [
+        {
+          "id": "E1",
+          "category": "ordinal-reference",
+          "history": [
+            {"role": "user", "content": "Welche Kurse gibt es?"},
+            {"role": "assistant", "content": "1. Yoga Basic (40€, Hans Müller)\n2. Yoga Advanced (60€, Maria Schmidt)\n3. Yoga Meditation (50€, Frank Weber)"}
+          ],
+          "query": "Mehr Kurse von dem Dozenten des dritten Kurses?",
+          "expect_rewrite": true,
+          "expected": "Mehr Kurse von Frank Weber?",
+          "notes": "EDGE CASE: Ordinale Referenz 'dritten' muss in letzter Assistant-Response aufgelöst werden. 150-Wörter-Fenster muss Kurs 3 noch enthalten.",
+          "prev_rating": "nicht getestet"
+        },
+        {
+          "id": "E2",
+          "category": "ordinal-reference",
+          "history": [
+            {"role": "user", "content": "Welche Kurse gibt es?"},
+            {"role": "assistant", "content": "1. Orientalischer Tanz Anfänger (14€)\n2. Orientalischer Tanz Aufbau (28€)\n3. Bauchtanz für Kinder 9-14 J. (14€)"}
+          ],
+          "query": "Wie lange geht der zweite?",
+          "expect_rewrite": true,
+          "expected": "Wie lange dauert der Orientalische Tanz Aufbaukurs?",
+          "notes": "'zweite' = Aufbaukurs aus Assistant-Response",
+          "prev_rating": "nicht getestet"
+        }
+      ]
+    },
+    {
+      "block": "F",
+      "name": "Block F - Regressionstests Prompt-Verbesserungen",
+      "thread": [
+        {
+          "id": "F1",
+          "category": "context-bleeding",
+          "history": [
+            {"role": "user", "content": "Was kostet der Yoga-Kurs?"},
+            {"role": "assistant", "content": "Der Yoga-Kurs kostet 40€"},
+            {"role": "user", "content": "Und die Anmeldung?"},
+            {"role": "assistant", "content": "Die Anmeldung erfolgt online über unsere Website"}
+          ],
+          "query": "Gibt es auch Englischkurse?",
+          "expect_rewrite": false,
+          "expected": "Gibt es auch Englischkurse?",
+          "notes": "Eigenständig trotz History. 'Anmeldung' darf NICHT in Rewrite bluten.",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "F2",
+          "category": "question-type",
+          "history": [
+            {"role": "user", "content": "Welche Yoga-Kurse gibt es?"},
+            {"role": "assistant", "content": "[Yoga Basic und Advanced]"}
+          ],
+          "query": "Wer leitet die?",
+          "expect_rewrite": true,
+          "expected": "Wer leitet die Yoga-Kurse?",
+          "must_preserve": "'Wer' bleibt 'Wer', wird nicht zu 'Welcher' oder 'Für wen'",
+          "prev_rating": "✅ (v2 fix)"
+        },
+        {
+          "id": "F3",
+          "category": "question-type",
+          "history": [
+            {"role": "user", "content": "Gibt es Schwimmkurse?"},
+            {"role": "assistant", "content": "[Schwimmkurse für verschiedene Altersgruppen]"}
+          ],
+          "query": "Wo finden die statt?",
+          "expect_rewrite": true,
+          "expected": "Wo finden die Schwimmkurse statt?",
+          "must_preserve": "'Wo' bleibt 'Wo'",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "F4",
+          "category": "language-switch",
+          "history": [
+            {"role": "user", "content": "What courses do you offer?"},
+            {"role": "assistant", "content": "We offer Yoga, Swimming and Dance courses"}
+          ],
+          "query": "Was kostet Yoga?",
+          "expect_rewrite": false,
+          "expected": "Was kostet Yoga?",
+          "notes": "DE-Frage nach EN-History: bleibt DE. Eigenständig genug.",
+          "prev_rating": "✅"
+        },
+        {
+          "id": "F5",
+          "category": "language-switch",
+          "history": [
+            {"role": "user", "content": "What courses do you offer?"},
+            {"role": "assistant", "content": "We offer Yoga, Swimming and Dance courses"}
+          ],
+          "query": "Was kosten die?",
+          "expect_rewrite": true,
+          "expected": "Was kosten die Kurse?",
+          "must_preserve": "Sprache bleibt DE trotz EN-History",
+          "notes": "Bekannter Fehlerfall: Mistral-Small kann zu EN wechseln. Multilingual-Embeddings kompensieren.",
+          "prev_rating": "⚠️ (LLM-abhängig)"
+        }
+      ]
+    },
+    {
+      "block": "G",
+      "name": "Block G - Zwei-Wort-Fragen",
+      "thread": [
+        {
+          "id": "G1",
+          "category": "two-word",
+          "history": [
+            {"role": "user", "content": "Gibt es Integrationskurse?"},
+            {"role": "assistant", "content": "[Integrationskurse mit Details]"}
+          ],
+          "query": "Für Kinder?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Integrationskurse für Kinder?",
+          "must_preserve": "Verfügbarkeits-Fragetyp, nicht Zeitpunkt",
+          "prev_rating": "nicht getestet"
+        },
+        {
+          "id": "G2",
+          "category": "two-word",
+          "history": [
+            {"role": "user", "content": "Gibt es Töpferkurse?"},
+            {"role": "assistant", "content": "[Töpferkurs Details, Preis 22€]"}
+          ],
+          "query": "Und der Aufbaukurs?",
+          "expect_rewrite": true,
+          "expected": "Gibt es einen Töpfer-Aufbaukurs?",
+          "prev_rating": "nicht getestet"
+        },
+        {
+          "id": "G3",
+          "category": "two-word",
+          "history": [
+            {"role": "user", "content": "Was kosten die Sprachkurse?"},
+            {"role": "assistant", "content": "[Sprachkurs-Preise von 80-200€]"}
+          ],
+          "query": "Auf Englisch?",
+          "expect_rewrite": true,
+          "expected": "Was kosten die Sprachkurse auf Englisch?",
+          "notes": "Zwei-Wort-Qualifikation, nicht Sprachwechsel",
+          "prev_rating": "nicht getestet"
+        }
+      ]
+    },
+    {
+      "block": "H",
+      "name": "Block H - Mehrdeutige Referenzen",
+      "thread": [
+        {
+          "id": "H1",
+          "category": "back-reference",
+          "history": [
+            {"role": "user", "content": "Was gibt es für Yoga-Kurse?"},
+            {"role": "assistant", "content": "[Yoga-Kursliste]"},
+            {"role": "user", "content": "Und beim Schwimmen?"},
+            {"role": "assistant", "content": "[Schwimmkurs-Liste]"}
+          ],
+          "query": "Und der bei dem wir angefangen haben?",
+          "expect_rewrite": true,
+          "expected": "Was gibt es für Yoga-Kurse?",
+          "notes": "Explizite Rückreferenz auf erstes Thema",
+          "prev_rating": "nicht getestet"
+        },
+        {
+          "id": "H2",
+          "category": "back-reference",
+          "history": [
+            {"role": "user", "content": "Gibt es Malkurse?"},
+            {"role": "assistant", "content": "Keine Malkurse gefunden"},
+            {"role": "user", "content": "Und Tanzkurse?"},
+            {"role": "assistant", "content": "[Tanzkurs-Liste]"}
+          ],
+          "query": "Was war nochmal der erste?",
+          "expect_rewrite": true,
+          "expected": "Gibt es Malkurse?",
+          "notes": "EDGE CASE: 'der erste' könnte auf ersten Kurs in Liste ODER erstes Thema (Malkurse) zeigen. Ambiguität.",
+          "prev_rating": "nicht getestet"
+        }
+      ]
+    }
+  ],
+  "known_limitations": {
+    "language_switch_S14": "Mistral-Small-24B wechselt bei DE-Anfrage nach EN-History zu EN. Text-embedding-3-small ist multilingual - RAG-Qualität bleibt erhalten.",
+    "hallucination_C3": "Mistral-Small-24B ergänzt 'orientalisch' für Tanzkurs ohne Basis in History - kommt aus Trainings-Wissen. Prompt-Regel 'no info not in conversation' wird ignoriert. LLM-Problem, nicht Prompt-Problem.",
+    "too_specific_B5_S5": "Kleines LLM nimmt manchmal sehr spezifische Details aus Assistant-Response (Altersangaben, Kursuntertitel). Intent bleibt erhalten.",
+    "aquarellmalerei_hallucination": "Bei Malkurse-Anfragen kann Mistral-Small Kurse erfinden (C1: 'Aquarellmalerei für Anfänger, Kurs 252-2503, Dozentin Maria'). Rewriter-Problem: kein. LLM-Problem in der Antwortgenerierung."
+  },
+  "error_rates": {
+    "prompt_v1_original": {
+      "rewrite_perfect": "59%",
+      "rewrite_acceptable": "32%",
+      "rewrite_error": "9%"
+    },
+    "prompt_v2_current": {
+      "rewrite_perfect": "~75%",
+      "rewrite_acceptable": "~20%",
+      "rewrite_error": "~5%",
+      "improvements": ["S3 Yoga-Kontext", "S12 spezifischer Kontext", "A2 keine Doppelfrage", "A4 Fragetyp-Erhaltung", "C3 kein Context-Bleeding"]
+    }
+  }
+}
