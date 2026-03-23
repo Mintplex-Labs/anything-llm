@@ -157,6 +157,37 @@ class TelegramBotService {
   }
 
   /**
+   * Self-cleanup when the bot token becomes invalid (e.g., bot deleted).
+   * Stops polling and removes the connector from the database.
+   */
+  async #selfCleanup(reason) {
+    this.#log(`Self-cleanup triggered: ${reason}`);
+    await this.stop();
+    await ExternalCommunicationConnector.delete("telegram");
+    this.#log("Connector deleted due to invalid token");
+  }
+
+  /**
+   * Handle polling errors with special handling for 401 Unauthorized.
+   * - 401 errors: Self-cleanup and delete connector
+   * - Other HTTP error codes: Stop polling immediately
+   */
+  async #handlePollingError(error) {
+    this.#log("Polling error:", error.message);
+    if (error.message?.includes("401")) {
+      this.#log(
+        "Got 401 - bot token may be invalid. Stopping polling and deleting connector."
+      );
+      return this.#selfCleanup("401 Unauthorized");
+    }
+
+    this.#log(
+      `Got HTTP error ${error.message}. Stopping polling to prevent further errors.`
+    );
+    return this.stop();
+  }
+
+  /**
    * Clear pending updates on startup, keeping only the last user message per chat.
    * This prevents processing a backlog of messages when the bot restarts.
    * @returns {Promise<Map<number, object>>} Map of chatId -> last message to process
@@ -329,7 +360,7 @@ class TelegramBotService {
     });
 
     this.#bot.on("polling_error", (error) => {
-      this.#log("Polling error:", error.message);
+      this.#handlePollingError(error);
     });
   }
 
