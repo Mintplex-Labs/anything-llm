@@ -1335,7 +1335,6 @@ function dumpENV() {
 
     // Native worker process TTL (in seconds)
     "NATIVE_EMBEDDING_WORKER_TTL",
-    "NATIVE_RERANKING_WORKER_TTL",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

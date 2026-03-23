@@ -5,7 +5,6 @@ const { embeddingProgressBus } = require("./EmbeddingProgressBus");
 // Queue instances & environment helpers
 // ---------------------------------------------------------------------------
 const DEFAULT_EMBEDDING_TTL_SEC = 300;
-const DEFAULT_RERANKING_TTL_SEC = 900;
 
 function envTTLSec(envKey, fallback) {
   const raw = process.env[envKey];
@@ -38,12 +37,6 @@ const embeddingQueue = new WorkerQueue({
   },
 });
 
-const rerankingQueue = new WorkerQueue({
-  workerScript: "../../workers/rerankingWorker.js",
-  ttl:
-    envTTLSec("NATIVE_RERANKING_WORKER_TTL", DEFAULT_RERANKING_TTL_SEC) * 1000,
-});
-
 /**
  * Queue an embedding job for the native embedder worker.
  * @param {{ textChunks: string[] }} payload
@@ -57,28 +50,14 @@ async function queueEmbedding(payload, context = null) {
   return result.vectors;
 }
 
-/**
- * Queue a reranking job for the native reranker worker.
- * @param {{ query: string, documents: Array<{text: string}>, topK?: number }} payload
- * @returns {Promise<Array>} The reranked documents
- */
-async function queueReranking(payload) {
-  rerankingQueue.ttl =
-    envTTLSec("NATIVE_RERANKING_WORKER_TTL", DEFAULT_RERANKING_TTL_SEC) * 1000;
-  const { result } = await rerankingQueue.enqueue({ payload });
-  return result.reranked;
-}
-
 // Graceful shutdown: kill forked workers so they don't become orphaned.
 for (const signal of ["SIGTERM", "SIGINT"]) {
   process.on(signal, () => {
     embeddingQueue.killWorker();
-    rerankingQueue.killWorker();
   });
 }
 
 module.exports = {
   queueEmbedding,
-  queueReranking,
   embeddingProgressBus,
 };
