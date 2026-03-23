@@ -13,13 +13,10 @@ function envTTLSec(envKey, fallback) {
   return !isNaN(val) && val >= 0 ? val : fallback;
 }
 
-// Embedding spawns via Bree/BackgroundService (breeManaged: true),
-// standardizing all background process spawning through the same base.
 const embeddingQueue = new WorkerQueue({
   workerScript: "../../jobs/embedding-worker.js",
   ttl:
     envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000,
-  breeManaged: true,
   // Final step in the chunk progress chain: receives IPC progress from the
   // worker (via WorkerQueue.#onMessage), reads the document context from the
   // active job, and emits a "chunk_progress" event on the bus.

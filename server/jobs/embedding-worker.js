@@ -4,7 +4,7 @@
  * Runs NativeEmbedder in an isolated child process so that OOM from large
  * document batches only kills this worker, not the main server.
  *
- * Spawned on-demand by WorkerQueue (breeManaged) via BackgroundService/Bree.
+ * Spawned on-demand by WorkerQueue via BackgroundService/Bree.
  * Stays alive between jobs (TTL-based lifecycle) to keep the ML model loaded.
  *
  * IPC protocol:

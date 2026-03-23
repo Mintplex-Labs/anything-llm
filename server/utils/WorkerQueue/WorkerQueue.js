@@ -1,16 +1,13 @@
-const { fork } = require("child_process");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
 /**
  * Generic serial job queue backed by a forked child process.
- * Manages worker lifecycle (fork, ready handshake, TTL, graceful shutdown)
+ * Manages worker lifecycle (spawn via Bree, ready handshake, TTL, graceful shutdown)
  * and processes jobs one at a time in FIFO order.
  *
- * Supports two spawn strategies:
- * - Direct fork (default) — uses child_process.fork() directly.
- * - Bree-managed — spawns via BackgroundService/Bree so all background
- *   processes use the same base infrastructure. Enable with `breeManaged: true`.
+ * Workers are spawned through BackgroundService/Bree so all background
+ * processes use the same base infrastructure.
  *
  * For chunk-level progress: when a worker sends { type: "progress" } IPC messages,
  * this class receives them in #onMessage and forwards them to the onProgress
@@ -31,26 +28,17 @@ class WorkerQueue {
    * @param {string} options.workerScript - Path to worker JS file (relative to this file or absolute)
    * @param {number} options.ttl - Ms the worker stays alive after finishing work before being killed
    * @param {function|null} options.onProgress - Callback for progress messages from the worker
-   * @param {boolean} options.breeManaged - If true, spawn via BackgroundService/Bree instead of direct fork
    */
-  constructor({
-    workerScript,
-    ttl = 300_000,
-    onProgress = null,
-    breeManaged = false,
-  }) {
+  constructor({ workerScript, ttl = 300_000, onProgress = null }) {
     this.workerScript = path.isAbsolute(workerScript)
       ? workerScript
       : path.resolve(__dirname, workerScript);
     this.ttl = ttl;
     this._onProgress = onProgress;
-    this.breeManaged = breeManaged;
   }
 
   get isRunning() {
-    return (
-      this.#worker !== null && (this.breeManaged || this.#worker.connected)
-    );
+    return this.#worker !== null;
   }
 
   /**
@@ -73,7 +61,7 @@ class WorkerQueue {
   }
 
   /**
-   * Gracefully shutdown the worker.
+   * Gracefully shutdown the worker and clean up the Bree job registration.
    */
   killWorker() {
     this.#clearTTLTimer();
@@ -98,7 +86,7 @@ class WorkerQueue {
       }
     }, 5_000);
 
-    if (this.breeManaged) this.#cleanupBreeJob(breeJobId);
+    this.#cleanupBreeJob(breeJobId);
   }
 
   // -- internal ---------------------------------------------------------------
@@ -131,39 +119,12 @@ class WorkerQueue {
   }
 
   /**
-   * Spawn the worker if not already running. Resolves when it sends { type: "ready" }.
-   * Uses either direct fork or Bree depending on the breeManaged flag.
+   * Spawn the worker via Bree if not already running.
+   * Resolves when it sends { type: "ready" }.
    */
-  #ensureWorker() {
-    if (this.isRunning) return Promise.resolve();
+  async #ensureWorker() {
+    if (this.isRunning) return;
 
-    return this.breeManaged ? this.#spawnViaBree() : this.#spawnViaFork();
-  }
-
-  /**
-   * Spawn the worker directly via child_process.fork().
-   */
-  #spawnViaFork() {
-    return new Promise((resolve, reject) => {
-      this.#readyResolve = resolve;
-
-      try {
-        this.#worker = fork(this.workerScript, [], {
-          stdio: ["pipe", "pipe", "pipe", "ipc"],
-        });
-      } catch (err) {
-        this.#readyResolve = null;
-        return reject(new Error(`Failed to fork worker: ${err.message}`));
-      }
-
-      this.#setupWorkerHandlers(reject);
-    });
-  }
-
-  /**
-   * Spawn the worker via BackgroundService/Bree.
-   */
-  async #spawnViaBree() {
     const { BackgroundService } = require("../BackgroundWorkers");
     const bg = new BackgroundService();
 
@@ -185,20 +146,7 @@ class WorkerQueue {
       throw new Error("Failed to get worker reference from Bree");
     }
 
-    return new Promise((resolve, reject) => {
-      this.#readyResolve = resolve;
-      this.#setupWorkerHandlers(reject);
-    });
-  }
-
-  /**
-   * Wire up IPC, stdout/stderr piping, error handling, and ready timeout
-   * on the current #worker. Shared by both spawn strategies.
-   * @param {function} reject - Reject callback for the ready promise
-   */
-  #setupWorkerHandlers(reject) {
     const label = path.basename(this.workerScript);
-
     this.#worker.stdout?.on("data", (data) =>
       process.stdout.write(`[Worker:${label}] ${data}`)
     );
@@ -208,21 +156,26 @@ class WorkerQueue {
 
     this.#worker.on("message", (msg) => this.#onMessage(msg));
     this.#worker.on("exit", (code, signal) => this.#onExit(code, signal));
-    this.#worker.on("error", (err) => {
-      console.error(`[WorkerQueue] Worker error: ${err.message}`);
-      if (this.#readyResolve) {
-        this.#readyResolve = null;
-        reject(err);
-      }
-    });
 
-    setTimeout(() => {
-      if (this.#readyResolve) {
-        this.#readyResolve = null;
-        this.killWorker();
-        reject(new Error("Worker did not become ready within 30s"));
-      }
-    }, 30_000);
+    return new Promise((resolve, reject) => {
+      this.#readyResolve = resolve;
+
+      this.#worker.on("error", (err) => {
+        console.error(`[WorkerQueue] Worker error: ${err.message}`);
+        if (this.#readyResolve) {
+          this.#readyResolve = null;
+          reject(err);
+        }
+      });
+
+      setTimeout(() => {
+        if (this.#readyResolve) {
+          this.#readyResolve = null;
+          this.killWorker();
+          reject(new Error("Worker did not become ready within 30s"));
+        }
+      }, 30_000);
+    });
   }
 
   /**
@@ -304,7 +257,7 @@ class WorkerQueue {
     this.#activeJob = null;
     this.#clearTTLTimer();
 
-    if (this.breeManaged) this.#cleanupBreeJob(breeJobId);
+    this.#cleanupBreeJob(breeJobId);
 
     if (job) {
       const errorMsg = `Worker exited unexpectedly (code=${code}, signal=${signal}) while processing job ${job.jobId}`;
