@@ -267,6 +267,7 @@ class OCRLoader {
       this.log(`Error: ${e.message}`);
       return null;
     } finally {
+      //eslint-disable-next-line
       if (!worker) return;
       await worker.terminate();
     }

@@ -136,7 +136,7 @@ async function getDocumentsByFolder(folderName = "") {
     const filePath = path.join(folderPath, file);
     const rawData = fs.readFileSync(filePath, "utf8");
     const cachefilename = `${folderName}/${file}`;
-    const { pageContent, ...metadata } = JSON.parse(rawData);
+    const { pageContent: _pageContent, ...metadata } = JSON.parse(rawData);
     documents.push({
       name: file,
       type: "file",
@@ -251,7 +251,7 @@ async function findDocumentInDocuments(documentName = null) {
 
     const fileData = fs.readFileSync(targetFileLocation, "utf8");
     const cachefilename = `${folder}/${targetFilename}`;
-    const { pageContent, ...metadata } = JSON.parse(fileData);
+    const { pageContent: _pageContent, ...metadata } = JSON.parse(fileData);
     return {
       name: targetFilename,
       type: "file",

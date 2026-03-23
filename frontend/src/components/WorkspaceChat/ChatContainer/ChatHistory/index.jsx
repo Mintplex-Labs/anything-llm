@@ -13,7 +13,6 @@ import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
-import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
@@ -21,8 +20,6 @@ import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
-import { useTranslation } from "react-i18next";
-import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
 
 export default forwardRef(function (
@@ -32,22 +29,18 @@ export default forwardRef(function (
     sendCommand,
     updateHistory,
     regenerateAssistantMessage,
-    hasAttachments = false,
   },
   ref
 ) {
-  const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
   const chatHistoryRef = useRef(null);
-  const { user } = useUser();
   const { threadSlug = null } = useParams();
-  const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const { showing, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -57,7 +50,7 @@ export default forwardRef(function (
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isBottom = scrollHeight - scrollTop === clientHeight;
+    const isBottom = scrollHeight - scrollTop - clientHeight < 2;
 
     // Detect if this is a user-initiated scroll
     if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
@@ -98,19 +91,33 @@ export default forwardRef(function (
     scrollToBottom,
   });
 
-  const handleSendSuggestedMessage = (heading, message) => {
-    sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
-  };
-
   const saveEditedMessage = async ({
     editedMessage,
     chatId,
     role,
     attachments = [],
+    saveOnly = false,
   }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
-    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // "Save" on a user message: update the prompt text without regenerating
+    if (role === "user" && saveOnly) {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex((msg) => msg.chatId === chatId);
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChat(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage,
+        "user"
+      );
+      return;
+    }
+
+    // "Submit" on a user message: auto-regenerate the response and delete all
     // messages post modified message
     if (role === "user") {
       // remove all messages after the edited message
@@ -142,7 +149,7 @@ export default forwardRef(function (
       if (targetIdx < 0) return;
       updatedHistory[targetIdx].content = editedMessage;
       updateHistory(updatedHistory);
-      await Workspace.updateChatResponse(
+      await Workspace.updateChat(
         workspace.slug,
         threadSlug,
         chatId,
@@ -172,7 +179,6 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
-        getMessageAlignment,
       }),
     [
       workspace,
@@ -197,35 +203,18 @@ export default forwardRef(function (
     [compiledHistory.length, lastMessageInfo]
   );
 
-  if (history.length === 0 && !hasAttachments) {
-    return (
-      <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
-        <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
-          <p className="text-white/60 text-lg font-base py-4">
-            {t("chat_window.welcome")}
-          </p>
-          {!user || user.role !== "default" ? (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              {t("chat_window.get_started")}
-              <span
-                className="underline font-medium cursor-pointer"
-                onClick={showModal}
-              >
-                {t("chat_window.upload")}
-              </span>
-              {t("chat_window.or")}{" "}
-              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
-            </p>
-          ) : (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              {t("chat_window.get_started_default")}{" "}
-              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
-            </p>
+  return (
+    <ThoughtExpansionProvider>
+      <div
+        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+        id="chat-history"
+        ref={chatHistoryRef}
+        onScroll={handleScroll}
+      >
+        <div className="w-full max-w-[750px]">
+          {compiledHistory.map((item, index) =>
+            Array.isArray(item) ? renderStatusResponse(item, index) : item
           )}
-          <WorkspaceChatSuggestions
-            suggestions={workspace?.suggestedMessages ?? []}
-            sendSuggestion={handleSendSuggestedMessage}
-          />
         </div>
         {showing && (
           <ManageWorkspace
@@ -234,42 +223,21 @@ export default forwardRef(function (
           />
         )}
       </div>
-    );
-  }
-
-  return (
-    <ThoughtExpansionProvider>
-      <div
-        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
-        id="chat-history"
-        ref={chatHistoryRef}
-        onScroll={handleScroll}
-      >
-        {compiledHistory.map((item, index) =>
-          Array.isArray(item) ? renderStatusResponse(item, index) : item
-        )}
-        {showing && (
-          <ManageWorkspace
-            hideModal={hideModal}
-            providedSlug={workspace.slug}
-          />
-        )}
-        {!isAtBottom && (
-          <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
-            <div className="flex flex-col items-center">
-              <div
-                className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-                onClick={() => {
-                  scrollToBottom(isStreaming ? false : true);
-                  setIsUserScrolling(false);
-                }}
-              >
-                <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
-              </div>
+      {!isAtBottom && (
+        <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
+          <div className="flex flex-col items-center">
+            <div
+              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              onClick={() => {
+                scrollToBottom(isStreaming ? false : true);
+                setIsUserScrolling(false);
+              }}
+            >
+              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </ThoughtExpansionProvider>
   );
 });
@@ -281,24 +249,6 @@ const getLastMessageInfo = (history) => {
     isStatusResponse: lastMessage?.type === "statusResponse",
   };
 };
-
-function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
-  if (suggestions.length === 0) return null;
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-theme-text-primary text-xs mt-10 w-full justify-center">
-      {suggestions.map((suggestion, index) => (
-        <button
-          key={index}
-          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
-          onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
-        >
-          <p className="font-semibold">{suggestion.heading}</p>
-          <p>{suggestion.message}</p>
-        </button>
-      ))}
-    </div>
-  );
-}
 
 /**
  * Builds the history of messages for the chat.
@@ -312,7 +262,6 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
- * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -321,7 +270,6 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
-  getMessageAlignment,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -337,9 +285,7 @@ function buildMessages({
     }
 
     if (props.type === "rechartVisualize" && !!props.content) {
-      acc.push(
-        <Chartable key={props.uuid} workspace={workspace} props={props} />
-      );
+      acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -349,7 +295,6 @@ function buildMessages({
           pending={props.pending}
           sources={props.sources}
           error={props.error}
-          workspace={workspace}
           closed={props.closed}
         />
       );
@@ -371,7 +316,6 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
-          alignmentCls={getMessageAlignment?.(props.role)}
         />
       );
     }

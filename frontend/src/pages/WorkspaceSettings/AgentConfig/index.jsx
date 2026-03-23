@@ -21,8 +21,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
-      const _preferences = await Admin.systemPreferences();
-      setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
+      setSettings(_settings ?? {});
       setLoading(false);
     }
     fetchSettings();

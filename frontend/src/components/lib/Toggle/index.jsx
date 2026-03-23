@@ -161,3 +161,50 @@ function TextContent({ label, description, labelStyles = {}, hint }) {
     </div>
   );
 }
+
+/**
+ * Simple toggle switch that doesn't use label/input to avoid focus-scroll issues
+ */
+export function SimpleToggleSwitch({
+  className,
+  enabled,
+  onChange,
+  disabled = false,
+  size = "sm",
+}) {
+  return (
+    <div
+      role="switch"
+      aria-checked={enabled}
+      tabIndex={0}
+      onClick={(e) => {
+        e.stopPropagation();
+        onChange(!enabled);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          onChange(!enabled);
+        }
+      }}
+      className={`
+        relative shrink-0 cursor-pointer rounded-full ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+        ${size === "sm" ? "h-[12px] w-[20px]" : size === "md" ? "h-[16px] w-[28px]" : "h-[19px] w-[36px]"}
+        transition-colors duration-200
+        ${enabled ? "bg-green-400" : "bg-zinc-500"}
+        ${className}
+      `}
+    >
+      <div
+        className={`
+          absolute top-[2px] left-[2px]
+          ${size === "sm" ? "h-[8px] w-[8px]" : size === "md" ? "h-[12px] w-[12px]" : "h-[15px] w-[15px]"}
+          rounded-full bg-white
+          transition-transform duration-200
+          ${enabled ? "translate-x-full" : "translate-x-0"}
+        `}
+      />
+    </div>
+  );
+}

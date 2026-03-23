@@ -20,12 +20,34 @@ const documentsPath =
     ? path.resolve(__dirname, "../../../storage/documents")
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
+/**
+ * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.
+ * @param {*} request
+ * @param {*} response
+ * @param {*} next
+ * @returns
+ */
+function validateWorkspaceSlugQuery(request, response, next) {
+  const { addToWorkspaces = "" } = reqBody(request);
+  if (!addToWorkspaces) return next();
+  if (typeof addToWorkspaces !== "string") {
+    return response
+      .status(422)
+      .json({
+        success: false,
+        error: `addToWorkspaces must be a string of comma-separated workspace slugs. Got ${typeof addToWorkspaces}`,
+      })
+      .end();
+  }
+  next();
+}
+
 function apiDocumentEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/v1/document/upload",
-    [validApiKey, handleAPIFileUpload],
+    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -150,7 +172,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload/:folderName",
-    [validApiKey, handleAPIFileUpload],
+    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -331,7 +353,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload-link",
-    [validApiKey],
+    [validApiKey, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -455,7 +477,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/raw-text",
-    [validApiKey],
+    [validApiKey, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
      #swagger.tags = ['Documents']

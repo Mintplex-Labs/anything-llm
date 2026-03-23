@@ -1,9 +1,9 @@
 const { ApiKey } = require("../models/apiKeys");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
-const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
@@ -138,6 +138,7 @@ function adminEndpoints(app) {
           return;
         }
 
+        await BrowserExtensionApiKey.deleteAllForUser(Number(id));
         await User.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "user_deleted",
@@ -325,6 +326,7 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
         const requestedSettings = {};
         const labels = request.query.labels?.split(",") || [];
         const needEmbedder = [
@@ -340,9 +342,26 @@ function adminEndpoints(app) {
           "meta_page_favicon",
         ];
 
+        // Managers can only read a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        const managerAllowedFields = [
+          "custom_app_name",
+          "footer_data",
+          "support_email",
+          "meta_page_title",
+          "meta_page_favicon",
+        ];
+
         for (const label of labels) {
           // Skip any settings that are not explicitly defined as public
           if (!SystemSettings.publicFields.includes(label)) continue;
+
+          // Managers can only read manager-allowed fields
+          if (
+            user?.role === ROLES.manager &&
+            !managerAllowedFields.includes(label)
+          )
+            continue;
 
           // Only get the embedder if the setting actually needs it
           let embedder = needEmbedder.includes(label)
@@ -415,74 +434,34 @@ function adminEndpoints(app) {
     }
   );
 
-  // TODO: Delete this endpoint
-  // DEPRECATED - use /admin/system-preferences-for instead with ?labels=... comma separated string of labels
-  app.get(
-    "/admin/system-preferences",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_, response) => {
-      try {
-        const embedder = getEmbeddingEngineSelection();
-        const settings = {
-          footer_data:
-            (await SystemSettings.get({ label: "footer_data" }))?.value ||
-            JSON.stringify([]),
-          support_email:
-            (await SystemSettings.get({ label: "support_email" }))?.value ||
-            null,
-          text_splitter_chunk_size:
-            (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
-              ?.value ||
-            embedder?.embeddingMaxChunkLength ||
-            null,
-          text_splitter_chunk_overlap:
-            (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
-              ?.value || null,
-          max_embed_chunk_size: embedder?.embeddingMaxChunkLength || 1000,
-          agent_search_provider:
-            (await SystemSettings.get({ label: "agent_search_provider" }))
-              ?.value || null,
-          agent_sql_connections: await SystemSettings.agent_sql_connections(),
-          default_agent_skills:
-            safeJsonParse(
-              (await SystemSettings.get({ label: "default_agent_skills" }))
-                ?.value,
-              []
-            ) || [],
-          disabled_agent_skills:
-            safeJsonParse(
-              (await SystemSettings.get({ label: "disabled_agent_skills" }))
-                ?.value,
-              []
-            ) || [],
-          imported_agent_skills: ImportedPlugin.listImportedPlugins(),
-          custom_app_name:
-            (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
-            null,
-          feature_flags: (await SystemSettings.getFeatureFlags()) || {},
-          meta_page_title: await SystemSettings.getValueOrFallback(
-            { label: "meta_page_title" },
-            null
-          ),
-          meta_page_favicon: await SystemSettings.getValueOrFallback(
-            { label: "meta_page_favicon" },
-            null
-          ),
-        };
-        response.status(200).json({ settings });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   app.post(
     "/admin/system-preferences",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const updates = reqBody(request);
+        const user = await userFromSession(request, response);
+        let updates = reqBody(request);
+
+        // Managers can only update a limited set of settings.
+        // These match the ManagerRoute pages in the frontend.
+        // Admin users can update all supportedFields without restriction.
+        if (user?.role === ROLES.manager) {
+          const managerAllowedFields = [
+            "custom_app_name",
+            "footer_data",
+            "support_email",
+            "meta_page_title",
+            "meta_page_favicon",
+          ];
+          const filteredUpdates = {};
+          for (const key of Object.keys(updates)) {
+            if (managerAllowedFields.includes(key)) {
+              filteredUpdates[key] = updates[key];
+            }
+          }
+          updates = filteredUpdates;
+        }
+
         await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
       } catch (e) {

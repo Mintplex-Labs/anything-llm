@@ -71,6 +71,27 @@ const MCPServers = {
         error: e.message,
       }));
   },
+
+  /**
+   * Toggle a tool's suppression status for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @param {string} toolName - The name of the tool to toggle
+   * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
+   * @returns {Promise<{success: boolean, error: string | null, suppressedTools: string[]}>}
+   */
+  toggleTool: async (serverName, toolName, enabled) => {
+    return await fetch(`${API_BASE}/mcp-servers/toggle-tool`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ serverName, toolName, enabled }),
+    })
+      .then((res) => res.json())
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+        suppressedTools: [],
+      }));
+  },
 };
 
 export default MCPServers;

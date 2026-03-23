@@ -52,7 +52,7 @@ function isKnownTextMime(filepath) {
     if (mimeLib.nonTextTypes.includes(type))
       return { valid: false, reason: "non_text_mime" };
     return { valid: true, reason: "valid_mime" };
-  } catch (e) {
+  } catch {
     return { valid: false, reason: "generic" };
   }
 }
@@ -72,6 +72,7 @@ function parseableAsText(filepath) {
 
     const content = buffer.subarray(0, bytesRead).toString("utf8");
     const nullCount = (content.match(/\0/g) || []).length;
+    //eslint-disable-next-line
     const controlCount = (content.match(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g) || [])
       .length;
 
@@ -211,6 +212,7 @@ function normalizePath(filepath = "") {
 
 function sanitizeFileName(fileName) {
   if (!fileName) return fileName;
+  //eslint-disable-next-line
   return fileName.replace(/[<>:"\/\\|?*]/g, "");
 }
 

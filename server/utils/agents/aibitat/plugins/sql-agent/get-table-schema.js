@@ -6,6 +6,18 @@ module.exports.SqlAgentGetTableSchema = {
       getDBClient,
     } = require("./SQLConnectors/index.js");
 
+    function formatQueryForDisplay(query, params = []) {
+      if (!params.length) return query;
+      let formatted = query;
+      params.forEach((param, index) => {
+        const value = typeof param === "string" ? `'${param}'` : param;
+        formatted = formatted.replace(`$${index + 1}`, value);
+        formatted = formatted.replace(`@p${index}`, value);
+        formatted = formatted.replace("?", value);
+      });
+      return formatted;
+    }
+
     return {
       name: "sql-get-table-schema",
       setup(aibitat) {
@@ -67,12 +79,17 @@ module.exports.SqlAgentGetTableSchema = {
               this.super.introspect(
                 `${this.caller}: Querying the table schema for ${table_name} in the ${databaseConfig.database_id} database.`
               );
+
+              const sqlQuery = db.getTableSchemaSql(table_name);
+              const isParameterized =
+                typeof sqlQuery === "object" && sqlQuery.query;
+              const queryString = isParameterized ? sqlQuery.query : sqlQuery;
+              const queryParams = isParameterized ? sqlQuery.params : [];
+
               this.super.introspect(
-                `Running SQL: ${db.getTableSchemaSql(table_name)}`
+                `Running SQL: ${formatQueryForDisplay(queryString, queryParams)}`
               );
-              const result = await db.runQuery(
-                db.getTableSchemaSql(table_name)
-              );
+              const result = await db.runQuery(queryString, queryParams);
 
               if (result.error) {
                 this.super.handlerProps.log(
