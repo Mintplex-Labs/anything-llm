@@ -123,6 +123,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/search-retrieval",
+        lazy: async () => {
+          const { default: SearchRetrievalPreference } = await import(
+            "@/pages/GeneralSettings/SearchRetrievalPreference"
+          );
+          return {
+            element: <AdminRoute Component={SearchRetrievalPreference} />,
+          };
+        },
+      },
+      {
         path: "/settings/vector-database",
         lazy: async () => {
           const { default: GeneralVectorDatabase } = await import(

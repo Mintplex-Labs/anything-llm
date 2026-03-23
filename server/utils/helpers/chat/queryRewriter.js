@@ -13,7 +13,7 @@ When reformulating:
 
 function shouldRewrite(userQuery, chatHistory, workspace) {
   if (!chatHistory || chatHistory.length === 0) return false;
-  const mode = workspace?.queryRewriteMode ?? (process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off");
+  const mode = workspace?.queryRewriteMode ?? (process.env.QUERY_REWRITING === "true" ? "on" : "off");
   if (mode !== "on") return false;
   const wordCount = userQuery.trim().split(/\s+/).length;
   const threshold = parseInt(process.env.QUERY_REWRITE_WORD_THRESHOLD) || 12;

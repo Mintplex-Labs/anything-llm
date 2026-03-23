@@ -39,6 +39,7 @@ const SystemSettings = {
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "query_rewrite_default",
   ],
   supportedFields: [
     "logo_filename",
@@ -61,6 +62,9 @@ const SystemSettings = {
 
     // beta feature flags
     "experimental_live_file_sync",
+
+    // Search & Retrieval
+    "query_rewrite_default",
 
     // Hub settings
     "hub_api_key",
@@ -167,6 +171,11 @@ const SystemSettings = {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
+    },
+    query_rewrite_default: (update) => {
+      if (!update || typeof update !== "string" || !["on", "off"].includes(update))
+        return "off";
+      return String(update);
     },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")

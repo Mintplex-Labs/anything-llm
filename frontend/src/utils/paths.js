@@ -127,6 +127,7 @@ export default {
       modelPreference: () => "/settings/embedding-preference",
       chunkingPreference: () => "/settings/text-splitter-preference",
     },
+    searchRetrieval: () => "/settings/search-retrieval",
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },

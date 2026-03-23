@@ -98,6 +98,7 @@ const TRANSLATIONS = {
     transcription: "Transcription",
     embedder: "Embedder",
     "text-splitting": "Text Splitter & Chunking",
+    "search-retrieval": "Search & Retrieval",
     "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
@@ -638,6 +639,20 @@ const TRANSLATIONS = {
       title: "Text Chunk Overlap",
       description:
         "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
+    },
+  },
+
+  // Search & Retrieval
+  searchRetrieval: {
+    title: "Search & Retrieval",
+    description:
+      "Configure how workspace searches are enhanced before querying the vector database.",
+    queryRewrite: {
+      title: "Query Rewriting",
+      description:
+        "When enabled, follow-up questions are rewritten into standalone search queries using chat history, improving RAG results in multi-turn conversations.",
+      on: "On — rewrite follow-up queries (recommended)",
+      off: "Off — send queries as-is",
     },
   },
 

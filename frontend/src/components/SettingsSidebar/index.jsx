@@ -245,6 +245,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.search-retrieval"),
+              href: paths.settings.searchRetrieval(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.voice-speech"),
               href: paths.settings.audioPreference(),
               flex: true,

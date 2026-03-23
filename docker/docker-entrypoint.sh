@@ -18,6 +18,14 @@ fi
 
 {
   cd /app/server/ &&
+
+    # Ensure DB file is writable by the container user (fixes UID mismatch after docker cp)
+    DB_PATH="${STORAGE_DIR:-/app/server/storage}/anythingllm.db"
+    if [ -f "$DB_PATH" ] && [ ! -w "$DB_PATH" ]; then
+      echo "[entrypoint] ⚠️  DB file is not writable — fixing ownership..."
+      chown "$(id -u):$(id -g)" "$DB_PATH" 2>/dev/null || true
+    fi
+
     # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)
     export CHECKPOINT_DISABLE=1 &&
     npx prisma generate --schema=./prisma/schema.prisma &&

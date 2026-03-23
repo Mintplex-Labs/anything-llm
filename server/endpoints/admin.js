@@ -402,6 +402,11 @@ function adminEndpoints(app) {
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
               break;
+            case "query_rewrite_default":
+              requestedSettings[label] =
+                setting?.value ??
+                (process.env.QUERY_REWRITING === "true" ? "on" : "off");
+              break;
             default:
               break;
           }

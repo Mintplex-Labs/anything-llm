@@ -33,6 +33,19 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
+  /**
+   * Resolve the effective query rewrite mode for a workspace.
+   * Priority: workspace override > system setting > ENV > "off"
+   */
+  _resolveQueryRewriteMode: async function (workspaceValue) {
+    if (workspaceValue === "on" || workspaceValue === "off") return workspaceValue;
+    const systemDefault = (
+      await SystemSettings.getValueOrFallback({ label: "query_rewrite_default" }, null)
+    );
+    if (systemDefault === "on" || systemDefault === "off") return systemDefault;
+    return process.env.QUERY_REWRITING === "true" ? "on" : "off";
+  },
+
   // Default settings for workspaces
   defaults: {
     // Default temperature values by provider
@@ -156,12 +169,8 @@ const Workspace = {
       return value;
     },
     queryRewriteMode: (value) => {
-      if (
-        !value ||
-        typeof value !== "string" ||
-        !["on", "off"].includes(value)
-      )
-        return process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off";
+      if (!value || typeof value !== "string" || !["on", "off"].includes(value))
+        return null;
       return value;
     },
     messagesLimit: (value) => {
@@ -345,8 +354,8 @@ const Workspace = {
 
       return {
         ...workspace,
-        queryRewriteMode: workspace.queryRewriteMode
-          ?? (process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off"),
+        queryRewriteModeRaw: workspace.queryRewriteMode,
+        queryRewriteMode: await this._resolveQueryRewriteMode(workspace.queryRewriteMode),
         documents: await Document.forWorkspace(workspace.id),
         contextWindow: this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
@@ -407,8 +416,8 @@ const Workspace = {
       if (!workspace) return null;
       return {
         ...workspace,
-        queryRewriteMode: workspace.queryRewriteMode
-          ?? (process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off"),
+        queryRewriteModeRaw: workspace.queryRewriteMode,
+        queryRewriteMode: await this._resolveQueryRewriteMode(workspace.queryRewriteMode),
         contextWindow: this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
           workspace.id

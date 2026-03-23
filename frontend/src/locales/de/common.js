@@ -90,6 +90,7 @@ const TRANSLATIONS = {
     transcription: "Transkription",
     embedder: "Einbettung",
     "text-splitting": "Textsplitting & Chunking",
+    "search-retrieval": "Suche & Retrieval",
     "voice-speech": "Sprache & Sprachausgabe",
     "vector-database": "Vektordatenbank",
     embeds: "Chat-Einbettung",
@@ -619,6 +620,20 @@ const TRANSLATIONS = {
         "Dies ist die maximale Überlappung von Zeichen, die während des Chunkings zwischen zwei benachbarten Textchunks auftritt.",
     },
   },
+  // Suche & Retrieval
+  searchRetrieval: {
+    title: "Suche & Retrieval",
+    description:
+      "Konfigurieren Sie, wie Workspace-Suchen vor der Abfrage der Vektordatenbank verbessert werden.",
+    queryRewrite: {
+      title: "Query Rewriting",
+      description:
+        "Wenn aktiviert, werden Folgefragen anhand des Chat-Verlaufs in eigenständige Suchanfragen umgeschrieben, was die RAG-Ergebnisse in mehrstufigen Gesprächen verbessert.",
+      on: "An — Folgefragen umschreiben (empfohlen)",
+      off: "Aus — Anfragen unverändert senden",
+    },
+  },
+
   vector: {
     title: "Vektordatenbank",
     description:
