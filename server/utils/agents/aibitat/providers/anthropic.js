@@ -25,7 +25,6 @@ class AnthropicProvider extends Provider {
       ...options,
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
-        ...options?.defaultHeaders,
       },
     });
 
