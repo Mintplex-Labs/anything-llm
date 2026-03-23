@@ -229,7 +229,7 @@ class NativeEmbedder {
       pooling: "mean",
       normalize: true,
     });
-    return output.length > 0 ? output.tolist()[0] : [];
+    return output.tolist()[0] || [];
   }
 
   /**
