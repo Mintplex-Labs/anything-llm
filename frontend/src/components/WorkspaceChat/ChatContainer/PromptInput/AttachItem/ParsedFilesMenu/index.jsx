@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { X, CircleNotch, Warning } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
-import { useParams } from "react-router-dom";
 import { nFormatter } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
@@ -17,13 +16,14 @@ export default function ParsedFilesMenu({
   setCurrentTokens,
   contextWindow,
   isLoading,
+  workspaceSlug,
+  threadSlug = null,
 }) {
   const { user } = useUser();
   const canEmbed = !user || user.role !== "default";
   const initialContextWindowLimitExceeded =
     contextWindow &&
     currentTokens >= contextWindow * Workspace.maxContextWindowLimit;
-  const { slug, threadSlug = null } = useParams();
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [embedProgress, setEmbedProgress] = useState(1);
   const [contextWindowLimitExceeded, setContextWindowLimitExceeded] = useState(
@@ -35,7 +35,7 @@ export default function ParsedFilesMenu({
     e.stopPropagation();
     if (!file?.id) return;
 
-    const success = await Workspace.deleteParsedFiles(slug, [file.id]);
+    const success = await Workspace.deleteParsedFiles(workspaceSlug, [file.id]);
     if (!success) return;
 
     // Update the local files list and current tokens
@@ -48,7 +48,7 @@ export default function ParsedFilesMenu({
       })
     );
     const { currentContextTokenCount } = await Workspace.getParsedFiles(
-      slug,
+      workspaceSlug,
       threadSlug
     );
     const newContextWindowLimitExceeded =
@@ -73,7 +73,7 @@ export default function ParsedFilesMenu({
       let completed = 0;
       await Promise.all(
         files.map((file) =>
-          Workspace.embedParsedFile(slug, file.id).then(() => {
+          Workspace.embedParsedFile(workspaceSlug, file.id).then(() => {
             completed++;
             setEmbedProgress(completed + 1);
           })
@@ -81,7 +81,7 @@ export default function ParsedFilesMenu({
       );
       setFiles([]);
       const { currentContextTokenCount } = await Workspace.getParsedFiles(
-        slug,
+        workspaceSlug,
         threadSlug
       );
       setCurrentTokens(currentContextTokenCount);

@@ -79,7 +79,7 @@ const DEFAULT_CONFIG = {
  * @param {Function} props.closeModal - Callback to close the modal
  * @param {Function} props.onSubmit - Callback when connection is successfully validated and saved
  * @param {Function} props.setHasChanges - Callback to mark that changes have been made
- * @param {Object|null} [props.existingConnection=null] - Existing connection data for edit mode (contains database_id, engine, username, password, host, port, database, scheme, encrypt)
+ * @param {Object|null} [props.existingConnection=null] - Existing connection data for edit mode (contains database_id, engine, username, password, host, port, database, schema, encrypt)
  * @param {Array} [props.connections=[]] - List of all existing connections for duplicate detection
  * @returns {React.ReactPortal|null} - Portal containing the modal UI, or null if not open
  */
@@ -110,7 +110,7 @@ export default function SQLConnectionModal({
         host: existingConnection.host,
         port: existingConnection.port,
         database: existingConnection.database,
-        scheme: existingConnection.scheme,
+        schema: existingConnection.schema,
         encrypt: existingConnection?.encrypt,
       });
     } else {
@@ -139,6 +139,7 @@ export default function SQLConnectionModal({
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
+      schema: form.get("schema")?.trim() || null,
       encrypt: form.get("encrypt") === "true",
     });
   }
@@ -217,6 +218,7 @@ export default function SQLConnectionModal({
         engine,
         database_id: slugifiedDatabaseId,
         connectionString,
+        schema: engine === "postgresql" ? config.schema : null,
       };
 
       if (isEditMode) {

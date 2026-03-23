@@ -116,14 +116,6 @@ model document_vectors {
   lastUpdatedAt DateTime @default(now())
 }
 
-model welcome_messages {
-  id         Int      @id @default(autoincrement())
-  user       String
-  response   String
-  orderIndex Int?
-  createdAt  DateTime @default(now())
-}
-
 model workspaces {
   id                           Int                            @id @default(autoincrement())
   name                         String
@@ -392,4 +384,13 @@ model workspace_parsed_files {
 
   @@index([workspaceId])
   @@index([userId])
+}
+
+model external_communication_connectors {
+  id            Int      @id @default(autoincrement())
+  type          String   @unique
+  config        String   @default("{}")
+  active        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
 }

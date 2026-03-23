@@ -5,7 +5,6 @@ const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
-const { SystemPromptVariables } = require("../../models/systemPromptVariables");
 
 // This is a list of skills that are built-in and default enabled.
 const DEFAULT_SKILLS = [
@@ -34,8 +33,14 @@ const WORKSPACE_AGENT = {
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
   getDefinition: async (provider = null, workspace = null, user = null) => {
+    const basePrompt = await Provider.systemPrompt({
+      provider,
+      workspace,
+      user,
+    });
+
     return {
-      role: await Provider.systemPrompt({ provider, workspace, user }),
+      role: basePrompt,
       functions: [
         ...(await agentSkillsFromSystemSettings()),
         ...ImportedPlugin.activeImportedPlugins(),

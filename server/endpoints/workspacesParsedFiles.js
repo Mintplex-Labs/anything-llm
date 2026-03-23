@@ -50,10 +50,16 @@ function workspaceParsedFilesEndpoints(app) {
       try {
         const { fileIds = [] } = reqBody(request);
         if (!fileIds.length) return response.sendStatus(400).end();
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
         const success = await WorkspaceParsedFiles.delete({
-          id: { in: fileIds.map((id) => parseInt(id)) },
+          id: {
+            in: fileIds.map((id) => parseInt(id)),
+          },
+          ...(user ? { userId: user.id } : {}),
+          workspaceId: workspace.id,
         });
-        return response.status(success ? 200 : 500).end();
+        return response.status(success ? 200 : 403).end();
       } catch (e) {
         console.error(e.message, e);
         return response.sendStatus(500).end();
@@ -77,7 +83,11 @@ function workspaceParsedFilesEndpoints(app) {
 
         if (!fileId) return response.sendStatus(400).end();
         const { success, error, document } =
-          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(fileId, workspace);
+          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(
+            user,
+            fileId,
+            workspace
+          );
 
         if (!success) {
           return response.status(500).json({
@@ -105,6 +115,7 @@ function workspaceParsedFilesEndpoints(app) {
         console.error(e.message, e);
         return response.sendStatus(500).end();
       } finally {
+        // eslint-disable-next-line
         if (!fileId) return;
         await WorkspaceParsedFiles.delete({ id: parseInt(fileId) });
       }

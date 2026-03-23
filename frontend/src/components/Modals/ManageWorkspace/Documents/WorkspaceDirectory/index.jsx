@@ -28,6 +28,10 @@ function WorkspaceDirectory({
 }) {
   const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
+  const embeddedDocCount = (files?.items ?? []).reduce(
+    (sum, folder) => sum + (folder.items?.length ?? 0),
+    0
+  );
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -101,7 +105,6 @@ function WorkspaceDirectory({
               <div className="shrink-0 w-3 h-3" />
               <p className="ml-[7px] text-theme-text-primary">Name</p>
             </div>
-            <p className="col-span-2" />
           </div>
           <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
@@ -157,7 +160,13 @@ function WorkspaceDirectory({
                 )}
                 <p className="ml-[7px] text-theme-text-primary">Name</p>
               </div>
-              <p className="col-span-2" />
+              {embeddedDocCount > 0 && (
+                <p className="col-span-2 text-right text-theme-text-secondary pr-2">
+                  {t(`connectors.directory.total-documents`, {
+                    count: embeddedDocCount,
+                  })}
+                </p>
+              )}
             </div>
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||

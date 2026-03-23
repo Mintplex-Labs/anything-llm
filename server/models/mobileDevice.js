@@ -42,7 +42,7 @@ const MobileDevice = {
       const tokenData = TemporaryMobileDeviceRequests.get(token);
       if (tokenData.expiresAt < Date.now()) return null;
       return tokenData;
-    } catch (error) {
+    } catch {
       return null;
     } finally {
       TemporaryMobileDeviceRequests.delete(token);
