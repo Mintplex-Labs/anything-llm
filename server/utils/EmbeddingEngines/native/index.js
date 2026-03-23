@@ -271,7 +271,7 @@ class NativeEmbedder {
    *
    *   embedChunksInProcess (onProgress callback)
    *     → embedding-worker.js (converts callback to process.send IPC message)
-   *       → EmbeddingWorkerManager (receives IPC, calls its own onProgress callback)
+   *       → WorkerQueue (receives IPC, calls its own onProgress callback)
    *         → WorkerQueue/index.js (emits "chunk_progress" on EmbeddingProgressBus)
    *           → SSE endpoint streams it to the frontend
    *

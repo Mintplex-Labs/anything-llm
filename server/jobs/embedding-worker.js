@@ -4,7 +4,7 @@
  * Runs NativeEmbedder in an isolated child process so that OOM from large
  * document batches only kills this worker, not the main server.
  *
- * Spawned on-demand by EmbeddingWorkerManager via BackgroundService/Bree.
+ * Spawned on-demand by WorkerQueue (breeManaged) via BackgroundService/Bree.
  * Stays alive between jobs (TTL-based lifecycle) to keep the ML model loaded.
  *
  * IPC protocol:
@@ -42,7 +42,7 @@ process.on("message", async (msg) => {
 
       // Bridge chunk progress from embedChunksInProcess to the parent process.
       // This callback converts in-process progress into IPC messages that the
-      // parent's EmbeddingWorkerManager receives and forwards to the EmbeddingProgressBus.
+      // parent's WorkerQueue receives and forwards to the EmbeddingProgressBus.
       const result = await embedder.embedChunksInProcess(
         textChunks,
         (progress) => {

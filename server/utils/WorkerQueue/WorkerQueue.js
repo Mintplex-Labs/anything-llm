@@ -7,6 +7,11 @@ const { v4: uuidv4 } = require("uuid");
  * Manages worker lifecycle (fork, ready handshake, TTL, graceful shutdown)
  * and processes jobs one at a time in FIFO order.
  *
+ * Supports two spawn strategies:
+ * - Direct fork (default) — uses child_process.fork() directly.
+ * - Bree-managed — spawns via BackgroundService/Bree so all background
+ *   processes use the same base infrastructure. Enable with `breeManaged: true`.
+ *
  * For chunk-level progress: when a worker sends { type: "progress" } IPC messages,
  * this class receives them in #onMessage and forwards them to the onProgress
  * callback provided at construction. This is how progress crosses the child→parent
@@ -15,6 +20,7 @@ const { v4: uuidv4 } = require("uuid");
  */
 class WorkerQueue {
   #worker = null;
+  #breeJobId = null;
   #ttlTimer = null;
   #readyResolve = null;
   #queue = [];
@@ -25,17 +31,24 @@ class WorkerQueue {
    * @param {string} options.workerScript - Path to worker JS file (relative to this file or absolute)
    * @param {number} options.ttl - Ms the worker stays alive after finishing work before being killed
    * @param {function|null} options.onProgress - Callback for progress messages from the worker
+   * @param {boolean} options.breeManaged - If true, spawn via BackgroundService/Bree instead of direct fork
    */
-  constructor({ workerScript, ttl = 300_000, onProgress = null }) {
+  constructor({
+    workerScript,
+    ttl = 300_000,
+    onProgress = null,
+    breeManaged = false,
+  }) {
     this.workerScript = path.isAbsolute(workerScript)
       ? workerScript
       : path.resolve(__dirname, workerScript);
     this.ttl = ttl;
     this._onProgress = onProgress;
+    this.breeManaged = breeManaged;
   }
 
   get isRunning() {
-    return this.#worker !== null && this.#worker.connected;
+    return this.#worker !== null && (this.breeManaged || this.#worker.connected);
   }
 
   /**
@@ -65,13 +78,15 @@ class WorkerQueue {
     if (!this.#worker) return;
 
     try {
-      if (this.#worker.connected) this.#worker.send({ type: "shutdown" });
+      this.#worker.send({ type: "shutdown" });
     } catch {
       // Worker may already be disconnected
     }
 
     const worker = this.#worker;
+    const breeJobId = this.#breeJobId;
     this.#worker = null;
+    this.#breeJobId = null;
 
     setTimeout(() => {
       try {
@@ -80,6 +95,8 @@ class WorkerQueue {
         /* already dead */
       }
     }, 5_000);
+
+    if (this.breeManaged) this.#cleanupBreeJob(breeJobId);
   }
 
   // -- internal ---------------------------------------------------------------
@@ -112,11 +129,21 @@ class WorkerQueue {
   }
 
   /**
-   * Fork the worker if not already running. Resolves when it sends { type: "ready" }.
+   * Spawn the worker if not already running. Resolves when it sends { type: "ready" }.
+   * Uses either direct fork or Bree depending on the breeManaged flag.
    */
   #ensureWorker() {
     if (this.isRunning) return Promise.resolve();
 
+    return this.breeManaged
+      ? this.#spawnViaBree()
+      : this.#spawnViaFork();
+  }
+
+  /**
+   * Spawn the worker directly via child_process.fork().
+   */
+  #spawnViaFork() {
     return new Promise((resolve, reject) => {
       this.#readyResolve = resolve;
 
@@ -129,32 +156,88 @@ class WorkerQueue {
         return reject(new Error(`Failed to fork worker: ${err.message}`));
       }
 
-      const label = path.basename(this.workerScript);
-      this.#worker.stdout?.on("data", (data) =>
-        process.stdout.write(`[Worker:${label}] ${data}`)
-      );
-      this.#worker.stderr?.on("data", (data) =>
-        process.stderr.write(`[Worker:${label}] ${data}`)
-      );
-
-      this.#worker.on("message", (msg) => this.#onMessage(msg));
-      this.#worker.on("exit", (code, signal) => this.#onExit(code, signal));
-      this.#worker.on("error", (err) => {
-        console.error(`[WorkerQueue] Worker error: ${err.message}`);
-        if (this.#readyResolve) {
-          this.#readyResolve = null;
-          reject(err);
-        }
-      });
-
-      setTimeout(() => {
-        if (this.#readyResolve) {
-          this.#readyResolve = null;
-          this.killWorker();
-          reject(new Error("Worker did not become ready within 30s"));
-        }
-      }, 30_000);
+      this.#setupWorkerHandlers(reject);
     });
+  }
+
+  /**
+   * Spawn the worker via BackgroundService/Bree.
+   */
+  async #spawnViaBree() {
+    const { BackgroundService } = require("../BackgroundWorkers");
+    const bg = new BackgroundService();
+
+    if (!bg.bree) {
+      throw new Error("BackgroundService has not been booted yet");
+    }
+
+    this.#breeJobId = `${path.basename(this.workerScript, ".js")}-${Date.now()}`;
+
+    await bg.bree.add({
+      name: this.#breeJobId,
+      path: this.workerScript,
+    });
+
+    await bg.bree.run(this.#breeJobId);
+    this.#worker = bg.bree.workers.get(this.#breeJobId);
+
+    if (!this.#worker) {
+      throw new Error("Failed to get worker reference from Bree");
+    }
+
+    return new Promise((resolve, reject) => {
+      this.#readyResolve = resolve;
+      this.#setupWorkerHandlers(reject);
+    });
+  }
+
+  /**
+   * Wire up IPC, stdout/stderr piping, error handling, and ready timeout
+   * on the current #worker. Shared by both spawn strategies.
+   * @param {function} reject - Reject callback for the ready promise
+   */
+  #setupWorkerHandlers(reject) {
+    const label = path.basename(this.workerScript);
+
+    this.#worker.stdout?.on("data", (data) =>
+      process.stdout.write(`[Worker:${label}] ${data}`)
+    );
+    this.#worker.stderr?.on("data", (data) =>
+      process.stderr.write(`[Worker:${label}] ${data}`)
+    );
+
+    this.#worker.on("message", (msg) => this.#onMessage(msg));
+    this.#worker.on("exit", (code, signal) => this.#onExit(code, signal));
+    this.#worker.on("error", (err) => {
+      console.error(`[WorkerQueue] Worker error: ${err.message}`);
+      if (this.#readyResolve) {
+        this.#readyResolve = null;
+        reject(err);
+      }
+    });
+
+    setTimeout(() => {
+      if (this.#readyResolve) {
+        this.#readyResolve = null;
+        this.killWorker();
+        reject(new Error("Worker did not become ready within 30s"));
+      }
+    }, 30_000);
+  }
+
+  /**
+   * Remove the one-off Bree job registration so stale entries don't accumulate.
+   * @param {string|null} jobId
+   */
+  async #cleanupBreeJob(jobId) {
+    if (!jobId) return;
+    try {
+      const { BackgroundService } = require("../BackgroundWorkers");
+      const bg = new BackgroundService();
+      if (bg.bree) await bg.bree.remove(jobId);
+    } catch {
+      /* Job may already be removed */
+    }
   }
 
   #onMessage(msg) {
@@ -215,9 +298,13 @@ class WorkerQueue {
 
   #onExit(code, signal) {
     const job = this.#activeJob;
+    const breeJobId = this.#breeJobId;
     this.#worker = null;
+    this.#breeJobId = null;
     this.#activeJob = null;
     this.#clearTTLTimer();
+
+    if (this.breeManaged) this.#cleanupBreeJob(breeJobId);
 
     if (job) {
       const errorMsg = `Worker exited unexpectedly (code=${code}, signal=${signal}) while processing job ${job.jobId}`;
