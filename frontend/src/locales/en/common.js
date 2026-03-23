@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Workspace Name",
-    user: "User",
     selection: "Model Selection",
     saving: "Saving...",
     save: "Save changes",
@@ -111,6 +110,10 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
+    channels: "Channels",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -195,18 +198,12 @@ const TRANSLATIONS = {
       title: "Chat mode",
       automatic: {
         title: "Auto",
-        description:
-          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
       },
       chat: {
         title: "Chat",
-        description:
-          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
-        description:
-          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {
@@ -583,6 +580,81 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
+  telegram: {
+    title: "Telegram Bot",
+    description:
+      "Connect your AnythingLLM instance to Telegram so you can chat with your workspaces from any device.",
+    setup: {
+      step1: {
+        title: "Step 1: Create your Telegram bot",
+        description:
+          "Open @BotFather in Telegram, send <code>/newbot</code> to <code>@BotFather</code>, follow the prompts, and copy the API token.",
+        "open-botfather": "Open BotFather",
+        "instruction-1": "1. Open the link or scan the QR code",
+        "instruction-2":
+          "2. Send <code>/newbot</code> to <code>@BotFather</code>",
+        "instruction-3": "3. Choose a name and username for your bot",
+        "instruction-4": "4. Copy the API token you receive",
+      },
+      step2: {
+        title: "Step 2: Connect your bot",
+        description:
+          "Paste the API token you received from @BotFather and select a default workspace for your bot to chat with.",
+        "bot-token": "Bot Token",
+        "default-workspace": "Default Workspace",
+        "no-workspace": "No available workspaces. A new one will be created.",
+        connecting: "Connecting...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Recommended Security Settings",
+        description:
+          "For additional security, configure these settings in @BotFather.",
+        "disable-groups": "— Prevent adding bot to groups",
+        "disable-inline": "— Prevent bot from being used in inline search",
+        "obscure-username":
+          "Use a non-obvious bot handle username to reduce discoverability",
+      },
+      "toast-enter-token": "Please enter a bot token.",
+      "toast-connect-failed": "Failed to connect bot.",
+    },
+    connected: {
+      status: "Connected",
+      "status-disconnected": "Disconnected — token may be expired or invalid",
+      "placeholder-token": "Paste new bot token...",
+      reconnect: "Reconnect",
+      workspace: "Workspace",
+      "bot-link": "Bot Link",
+      "voice-response": "Voice Response",
+      disconnecting: "Disconnecting...",
+      disconnect: "Disconnect",
+      "voice-text-only": "Text only",
+      "voice-mirror": "Mirror (reply with voice when user sends voice)",
+      "voice-always": "Always voice (send audio with every reply)",
+      "toast-disconnect-failed": "Failed to disconnect bot.",
+      "toast-reconnect-failed": "Failed to reconnect bot.",
+      "toast-voice-failed": "Failed to update voice mode.",
+      "toast-approve-failed": "Failed to approve user.",
+      "toast-deny-failed": "Failed to deny user.",
+      "toast-revoke-failed": "Failed to revoke user.",
+    },
+    users: {
+      "pending-title": "Pending Approval",
+      "pending-description":
+        "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
+      "approved-title": "Approved Users",
+      "approved-description":
+        "Users who have been approved to chat with your bot.",
+      user: "User",
+      "pairing-code": "Pairing Code",
+      "no-pending": "No pending requests",
+      "no-approved": "No approved users",
+      unknown: "Unknown",
+      approve: "Approve",
+      deny: "Deny",
+      revoke: "Revoke",
+    },
+  },
   security: {
     title: "Security",
     multiuser: {
@@ -834,7 +906,6 @@ const TRANSLATIONS = {
     source_count_other: "{{count}} references",
     document: "Document",
     similarity_match: "match",
-    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     cancel: "Cancel",
@@ -865,7 +936,6 @@ const TRANSLATIONS = {
     normal: "Normal",
     large: "Large",
     tools: "Tools",
-    browse: "Browse",
     text_size_label: "Text Size",
     select_model: "Select Model",
     slash_commands: "Slash Commands",

@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Navn på arbejdsområder",
-    user: "Bruger",
     selection: "Modelvalg",
     saving: "Gemmer...",
     save: "Gem ændringer",
@@ -106,6 +105,10 @@ const TRANSLATIONS = {
       trending: "Udforsk populære emner",
       "your-account": "Dit konti",
       "import-item": "Importeret vare",
+    },
+    channels: "Kanaler",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -182,18 +185,12 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        description:
-          'vil give svar baseret på LLM\'s generelle viden og den relevante kontekst fra dokumentet. Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
-        description:
-          "vil give svar <b>kun</b>, hvis dokumentets kontekst er fundet.<br />Du skal bruge kommandoen @agent for at bruge værktøjerne.",
       },
       automatic: {
         title: "Bil",
-        description:
-          'vil automatisk bruge værktøjer, hvis modellen og leverandøren understøtter native værktøjskald.<br />Hvis native værktøjskald ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {
@@ -748,7 +745,6 @@ const TRANSLATIONS = {
     see_less: "Se mindre",
     see_more: "Se flere",
     tools: "Værktøj",
-    browse: "Gennemse",
     text_size_label: "Tekststørrelse",
     select_model: "Vælg model",
     sources: "Kilder",
@@ -761,7 +757,6 @@ const TRANSLATIONS = {
     edit: "Rediger",
     publish: "Udgive",
     stop_generating: "Stop med at generere svar",
-    pause_tts_speech_message: "Pause TTS-læsningen af beskeden",
     slash_commands: "Kommandoer",
     agent_skills: "Agenters kompetencer",
     manage_agent_skills: "Administrer agenters kompetencer",
@@ -1019,6 +1014,86 @@ const TRANSLATIONS = {
     notAssigned:
       "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
     goToWorkspace: 'Gå til "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram-bot",
+    description:
+      "Forbind dit AnythingLLM-instans med Telegram, så du kan kommunikere med dine arbejdsområder fra enhver enhed.",
+    setup: {
+      step1: {
+        title: "Trin 1: Opret din Telegram-bot",
+        description:
+          "Åbn @BotFather i Telegram, send `/newbot` til <code>@BotFather</code>, følg instruktionerne, og kopier API-tokenet.",
+        "open-botfather": "Åbn BotFather",
+        "instruction-1": "1. Åbn linket eller scann QR-koden",
+        "instruction-2":
+          "2. Send <code>/newbot</code> til <code>@BotFather</code>",
+        "instruction-3": "3. Vælg et navn og et brugernavn til din bot",
+        "instruction-4": "4. Kopier API-tokenet, du modtager.",
+      },
+      step2: {
+        title: "Trin 2: Forbind din bot",
+        description:
+          "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
+        "bot-token": "Bot-token",
+        "default-workspace": "Standardarbejdsområde",
+        "no-workspace":
+          "Ingen ledige arbejdsområder. Et nyt vil blive oprettet.",
+        connecting: "Forbindes...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Anbefalede sikkerhedsindstillinger",
+        description:
+          "For yderligere sikkerhed, kan du konfigurere disse indstillinger via @BotFather.",
+        "disable-groups": "— Forhindre tilføjelse af bots til grupper",
+        "disable-inline":
+          "— Forhindr brugen af bot i søgninger direkte i søgefeltet",
+        "obscure-username":
+          "Brug et brugernavn til en bot, der ikke er åbenlyst, for at reducere synligheden.",
+      },
+      "toast-enter-token": "Vær venligst opført et bot-token.",
+      "toast-connect-failed": "Kunne ikke etablere forbindelse med botten.",
+    },
+    connected: {
+      status: "Forbundet",
+      "status-disconnected":
+        "Afbrudt – tokenet kan være udløbet eller ugyldigt",
+      "placeholder-token": "Indsæt nyt bot-token...",
+      reconnect: "Genopslå",
+      workspace: "Arbejdsområde",
+      "bot-link": "Bot-link",
+      "voice-response": "Stemmebesvarelse",
+      disconnecting: "Afbryde...",
+      disconnect: "Afbryde",
+      "voice-text-only": "Kun tekst",
+      "voice-mirror": "Spejl (svar med stemme, når brugeren sender en stemme)",
+      "voice-always":
+        "Sørg altid for at inkludere en lydbesked (send lyd sammen med hvert svar).",
+      "toast-disconnect-failed": "Kunne ikke afbryde robotten.",
+      "toast-reconnect-failed":
+        "Kunne ikke genoprette forbindelsen med botten.",
+      "toast-voice-failed": "Kunne ikke opdatere stemmemodus.",
+      "toast-approve-failed": "Mislykkedes med at godkende bruger.",
+      "toast-deny-failed": "Kunne ikke afvise brugeren.",
+      "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
+    },
+    users: {
+      "pending-title": "Afventer godkendelse",
+      "pending-description":
+        "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
+      "approved-title": "Godkendte brugere",
+      "approved-description":
+        "Brugere, der er blevet godkendt til at kommunikere med din bot.",
+      user: "Bruger",
+      "pairing-code": "Kombinationskode",
+      "no-pending": "Ingen igangværende anmodninger",
+      "no-approved": "Ingen godkendte brugere",
+      unknown: "Ukendt",
+      approve: "Godkend",
+      deny: "Afvise",
+      revoke: "Annullere",
+    },
   },
 };
 

@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Darbo srities pavadinimas",
-    user: "Vartotojas",
     selection: "Modelio pasirinkimas",
     saving: "Saugoma...",
     save: "Išsaugoti pakeitimus",
@@ -112,6 +111,10 @@ const TRANSLATIONS = {
     contact: "Susisiekti su pagalba",
     "browser-extension": "Naršyklės plėtinys",
     "mobile-app": "AnythingLLM mobiliesiems",
+    channels: "Kanalai",
+    "available-channels": {
+      telegram: "„Telegram“",
+    },
   },
   login: {
     "multi-user": {
@@ -195,18 +198,12 @@ const TRANSLATIONS = {
       title: "Pokalbio režimas",
       automatic: {
         title: "Auto",
-        description:
-          "automatiškai naudos įrankius, jei modelis ir tiekėjas palaiko natūralų įrankių iškvietimą.<br />Jei natūralus įrankių iškvietimas nepalaikomas, norėdami naudoti įrankius turėsite naudoti @agent komandą.",
       },
       chat: {
         title: "Pokalbis",
-        description:
-          "pateiks atsakymus remdamasis LLM bendrosiomis žiniomis <b>ir</b> rastu dokumentų kontekstu.<br />Norėdami naudoti įrankius, turėsite naudoti @agent komandą.",
       },
       query: {
         title: "Užklausa",
-        description:
-          "pateiks atsakymus <b>tik</b> jei bus rastas dokumentų kontekstas.<br />Norėdami naudoti įrankius, turėsite naudoti @agent komandą.",
       },
     },
     history: {
@@ -834,7 +831,6 @@ const TRANSLATIONS = {
     source_count_other: "{{count}} nuorodos",
     document: "Dokumentas",
     similarity_match: "atitikimas",
-    pause_tts_speech_message: "Sustabdyti garsinį žinutės skaitymą",
     fork: "Atskirti (Fork)",
     delete: "Ištrinti",
     cancel: "Atšaukti",
@@ -866,7 +862,6 @@ const TRANSLATIONS = {
     normal: "Normalus",
     large: "Didelis",
     tools: "Įrankiai",
-    browse: "Naršyti",
     text_size_label: "Teksto dydis",
     select_model: "Pasirinkti modelį",
     slash_commands: "Komandos su „/“",
@@ -1014,6 +1009,86 @@ const TRANSLATIONS = {
           button: "Prisijungti prie bendruomenės centro",
         },
       },
+    },
+  },
+  telegram: {
+    title: "Telegram robotas",
+    description:
+      "Prisijunkite savo „AnythingLLM“ instanciją prie „Telegram“, kad galėtumėte kalbėti su savo darbo vietomis iš bet kurio įrenginio.",
+    setup: {
+      step1: {
+        title: "1 žingsnis: Sukurkite savo Telegram botą",
+        description:
+          "Atidarykite @BotFather kanalą Telegram, atsiųskite `/newbot` į <code>@BotFather</code>, sekite instrukcijas ir kopijuokite API raktą.",
+        "open-botfather": "Atidarykite „BotFather“",
+        "instruction-1": "1. Atidarykite nuorodą arba nuskaitykite QR kodą",
+        "instruction-2":
+          "2. Siųkite <code>/newbot</code> adresą <code>@BotFather</code>",
+        "instruction-3":
+          "3. Pasirinkite pavadinimą ir vartotojo vardą savo botui.",
+        "instruction-4": "4. Paškopuokite gautą API žymiklį.",
+      },
+      step2: {
+        title: "2 etapas: Prisijunkite prie savo „bot“",
+        description:
+          "Įveskite API žymiklį, kurį gavote iš @BotFather, ir pasirinkite numatytą darbo vietą, kur jūsų bot galės kalbėti.",
+        "bot-token": "„Bot Token“",
+        "default-workspace": "Numatytasis darbo erdvė",
+        "no-workspace": "Nėra laisvų darbo vietų. Bus sukurta nauja.",
+        connecting: "Prisijungiam...",
+        "connect-bot": "„Connect Bot“",
+      },
+      security: {
+        title: "Išvardytos saugos nustatymai",
+        description:
+          "Papildomos saugumo užtikrinimui, konfigūruokite šias ​​nustatymus @BotFather.",
+        "disable-groups": "– Prieš pridėdamas botą į grupes",
+        "disable-inline":
+          "– Užtikrinkite, kad „bot“ negali būti naudojamas paieškoje.",
+        "obscure-username":
+          "Naudokite neatsinaužytą „bot“ vardą, kad sumažintumėte jo aptikimo galimybes.",
+      },
+      "toast-enter-token": "Prašome įvesti boto žymę.",
+      "toast-connect-failed": "Nepavyko susieti robotą.",
+    },
+    connected: {
+      status: "Susijęs",
+      "status-disconnected":
+        "Nusijungtas – žetonas gali būti neregistruotas arba netinkamas",
+      "placeholder-token": "Įdiekite naują „bot“ žetoną…",
+      reconnect: "Vykdyti ryšį",
+      workspace: "Darbo zona",
+      "bot-link": "„Bot Link“",
+      "voice-response": "Garsas kaip atsakymas",
+      disconnecting: "Atsijungimas...",
+      disconnect: "Nutraukti ryšį",
+      "voice-text-only": "Tik tekstas",
+      "voice-mirror":
+        "Atspindžio funkcija (atsakymas balsu, kai vartotojas siunčia balsą)",
+      "voice-always":
+        "Visada naudokite balsą (siųsdami garsą su kiekvienu atsakymu)",
+      "toast-disconnect-failed": "Nepavyko atjungti robotą.",
+      "toast-reconnect-failed": "Nepavyko atkurti ryšį su botu.",
+      "toast-voice-failed": "Nepavyko atnaujinti balsinio režimo.",
+      "toast-approve-failed": "Nepavyko patvirtinti vartotojo.",
+      "toast-deny-failed": "Nepavyko užtikrinti vartotojo saugumo.",
+      "toast-revoke-failed": "Nepavyko atšalinti vartotojo.",
+    },
+    users: {
+      "pending-title": "Laikant patvirtinimo",
+      "pending-description":
+        "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
+      "approved-title": "Įsijungę vartotojai",
+      "approved-description":
+        "Naudotojai, kuriems suteikiama galimybė kalbėti su jūsų botu.",
+      user: "Naudotojas",
+      "pairing-code": "Kombinacijos kodas",
+      "no-pending": "Nėra atidėtų užklausų",
+      "no-approved": "Nėra patvirtintų vartotojų",
+      unknown: "Nenurodytas",
+      approve: "Aptinka",
+      deny: "Atsisakyti",
+      revoke: "Anuliuoti",
     },
   },
 };
