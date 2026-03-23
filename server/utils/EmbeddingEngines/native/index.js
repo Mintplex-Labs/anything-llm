@@ -223,13 +223,10 @@ class NativeEmbedder {
    */
   async embedTextInput(textInput) {
     textInput = this.#applyQueryPrefix(textInput);
-    const input = Array.isArray(textInput) ? textInput : [textInput];
-    const pipeline = await this.embedderClient();
-    const output = await pipeline(input, {
-      pooling: "mean",
-      normalize: true,
-    });
-    return output.tolist()[0] || [];
+    const result = await this.embedChunksInProcess(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
+    return result?.[0] || [];
   }
 
   /**
