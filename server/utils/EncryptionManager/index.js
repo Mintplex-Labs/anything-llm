@@ -39,7 +39,7 @@ class EncryptionManager {
       this.log("Self-assigning key & salt for encrypting arbitrary data.");
       process.env[this.#keyENV] = crypto.randomBytes(32).toString("hex");
       process.env[this.#saltENV] = crypto.randomBytes(32).toString("hex");
-      if (process.env.NODE_ENV === "production") dumpENV();
+      dumpENV();
     } else
       this.log("Loaded existing key & salt for encrypting arbitrary data.");
 

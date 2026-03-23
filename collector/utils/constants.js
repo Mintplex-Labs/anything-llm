@@ -27,6 +27,11 @@ const ACCEPTED_MIMES = {
 
   "audio/wav": [".wav"],
   "audio/mpeg": [".mp3"],
+  "audio/ogg": [".ogg", ".oga"],
+  "audio/opus": [".opus"],
+  "audio/mp4": [".m4a"],
+  "audio/x-m4a": [".m4a"],
+  "audio/webm": [".webm"],
 
   "video/mp4": [".mp4"],
   "video/mpeg": [".mpeg"],
@@ -68,6 +73,11 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".wav": "./convert/asAudio.js",
   ".mp4": "./convert/asAudio.js",
   ".mpeg": "./convert/asAudio.js",
+  ".ogg": "./convert/asAudio.js",
+  ".oga": "./convert/asAudio.js",
+  ".opus": "./convert/asAudio.js",
+  ".m4a": "./convert/asAudio.js",
+  ".webm": "./convert/asAudio.js",
 
   ".png": "./convert/asImage.js",
   ".jpg": "./convert/asImage.js",

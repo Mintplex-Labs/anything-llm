@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
     save: "Salvesta muudatused",
@@ -104,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Avasta populaarseid",
       "your-account": "Teie konto",
       "import-item": "Importeeritud toode",
+    },
+    channels: "Kaasavad",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -186,18 +189,12 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        description:
-          'teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumentide konteksti, mida on leitav.<br /> Selleks peate kasutama käsku "@agent".',
       },
       query: {
         title: "Päring",
-        description:
-          'teenib vastuseid <b>ainult__, kui dokumendi kontekst on leitud.</b> Vajate kasutama käesu "agent", et kasutada tööriime.',
       },
       automatic: {
         title: "Automaailm",
-        description:
-          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native tööriistade kasutamist. <br />Kui native tööriistade kasutamine pole toetatud, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -807,7 +804,6 @@ const TRANSLATIONS = {
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
     tools: "Vahendid",
-    browse: "Sirva",
     text_size_label: "Teksti suurus",
     select_model: "Valige mudel",
     sources: "Allikasid",
@@ -820,7 +816,6 @@ const TRANSLATIONS = {
     edit: "Redigeerimine",
     publish: "Avaldada",
     stop_generating: "Lõpeta vastuste genereerimine",
-    pause_tts_speech_message: "Peata sõna-sünteesi (TTS) rääkimine sõnumis",
     slash_commands: "Lihtsasti kasutatavad käsud",
     agent_skills: "Agentide oskused",
     manage_agent_skills: "Halda agentide oskusi",
@@ -975,6 +970,84 @@ const TRANSLATIONS = {
     notAssigned:
       "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
     goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegrami bot",
+    description:
+      "Ühendage oma AnythingLLM instants Telegramiga, et saaksite vestleda oma tööruumidega igast seadmist.",
+    setup: {
+      step1: {
+        title: "1. samm: Looge oma Telegrami bot",
+        description:
+          "Ava Telegramis konto @BotFather, saat <code>/newbot</code> aadressile <code>@BotFather</code>, järgige juhiseid ja kopeerige API-token.",
+        "open-botfather": "Ava BotFather",
+        "instruction-1": "1. Avage link või skannige QR-kood",
+        "instruction-2":
+          "2. Saada <code>/newbot</code> aadressile <code>@BotFather</code>",
+        "instruction-3": "3. Valige oma botile nimi ja kasutajanimi.",
+        "instruction-4": "4. Kopeerige API-token, mida teile antakse.",
+      },
+      step2: {
+        title: "2. Samuti ühendage oma bot",
+        description:
+          "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
+        "bot-token": "Bot token",
+        "default-workspace": "Vaikimisi kasutatav tööruum",
+        "no-workspace":
+          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
+        connecting: "Ühendamine...",
+        "connect-bot": "Ühendusrobott",
+      },
+      security: {
+        title: "Soovitavad turvameetmed",
+        description:
+          "Lisaks turvalisusele, konfigureerige need seaded @BotFatheris.",
+        "disable-groups": "— Ennetada, et botid ei lisataks gruppi",
+        "disable-inline": "— Vältida, et bot kasutaks otsingut reaalajas.",
+        "obscure-username":
+          "Kasutage mitteolivaid kasutajanime, et vähendada avastamise võimalust.",
+      },
+      "toast-enter-token": "Palun sisestage bot'i token.",
+      "toast-connect-failed": "Bot ei suutnud ühendust tehes.",
+    },
+    connected: {
+      status: "Ühendatud",
+      "status-disconnected":
+        "Vabandus, toet – toet võib olla kehtimatuna või kehtima lõppenud",
+      "placeholder-token": "Sisestage uus bot'i token...",
+      reconnect: "Taastada ühendus",
+      workspace: "Tööruum",
+      "bot-link": "Bot link",
+      "voice-response": "Häälreaktsioon",
+      disconnecting: "Ühendus katkestatud...",
+      disconnect: "Ühenduse katkestamine",
+      "voice-text-only": "Tekst ainult",
+      "voice-mirror":
+        "Helisüsteem (vastake häältega, kui kasutaja kasutab helifunktsiooni)",
+      "voice-always": "Alati lisage hääl (saada helifail koos iga vastusega)",
+      "toast-disconnect-failed": "Impeer ei õnnestunud seadistada.",
+      "toast-reconnect-failed": "Bot ei suutnud ühendust taastada.",
+      "toast-voice-failed": "Ärkimõõtmeid ei õnnestunud uuendada.",
+      "toast-approve-failed": "Kasutaja kinnitamise ebaõnnestumine.",
+      "toast-deny-failed": "Ei suutnud kasutaja kohta infot väita.",
+      "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
+    },
+    users: {
+      "pending-title": "Ootea faasis, ootamas heakskiitu",
+      "pending-description":
+        "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
+      "approved-title": "Heakskiidud kasutajad",
+      "approved-description":
+        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
+      user: "Kasutaja",
+      "pairing-code": "Koosamis kood",
+      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
+      "no-approved": "Pole heakskiidud kasutajaid",
+      unknown: "Tuntud pole",
+      approve: "Heakskiid",
+      deny: "Nõgata",
+      revoke: "Tingimata",
+    },
   },
 };
 

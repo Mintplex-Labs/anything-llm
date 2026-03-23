@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nome do Workspace",
-    user: "Usuário",
     selection: "Seleção de Modelo",
     saving: "Salvando...",
     save: "Salvar alterações",
@@ -104,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Explore as tendências",
       "your-account": "Sua Conta",
       "import-item": "Importar Item",
+    },
+    channels: "Canais",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -188,18 +191,12 @@ const TRANSLATIONS = {
       title: "Modo de Chat",
       chat: {
         title: "Chat",
-        description:
-          'fornecerá respostas com base no conhecimento geral do LLM e no contexto do documento encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
       query: {
         title: "Consulta",
-        description:
-          'fornecerá respostas <b>apenas</b> caso o contexto do documento seja encontrado.<br />Você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
       automatic: {
         title: "Automóvel",
-        description:
-          'utilizará automaticamente as ferramentas, se o modelo e o provedor suportarem a chamada nativa de ferramentas. Se a chamada nativa de ferramentas não for suportada, você precisará usar o comando "@agent" para utilizar as ferramentas.',
       },
     },
     history: {
@@ -821,7 +818,6 @@ const TRANSLATIONS = {
     see_less: "Ver menos",
     see_more: "Ver mais",
     tools: "Ferramentas",
-    browse: "Navegar",
     text_size_label: "Tamanho do texto",
     select_model: "Selecione o modelo",
     sources: "Fontes",
@@ -834,7 +830,6 @@ const TRANSLATIONS = {
     edit: "Editar",
     publish: "Publicar",
     stop_generating: "Pare de gerar respostas",
-    pause_tts_speech_message: "Pausar a leitura de voz da mensagem",
     slash_commands: "Comandos Rápidos",
     agent_skills: "Habilidades do Agente",
     manage_agent_skills: "Gerenciar as habilidades dos agentes",
@@ -991,6 +986,86 @@ const TRANSLATIONS = {
     notAssigned:
       "Você ainda não está atribuído a nenhum espaço de trabalho.\nEntre em contato com seu administrador para solicitar acesso a um espaço de trabalho.",
     goToWorkspace: 'Ir para o espaço de trabalho "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot do Telegram",
+    description:
+      "Conecte sua instância do AnythingLLM ao Telegram para que possa conversar com seus espaços de trabalho a partir de qualquer dispositivo.",
+    setup: {
+      step1: {
+        title: "Passo 1: Crie seu bot do Telegram",
+        description:
+          "Abra o @BotFather no Telegram, envie /newbot</code> para <code>@BotFather</code>, siga as instruções e copie o token da API.",
+        "open-botfather": "Iniciar o BotFather",
+        "instruction-1": "1. Abra o link ou escaneie o código QR.",
+        "instruction-2":
+          "2. Envie <code>/newbot</code> para <code>@BotFather</code>",
+        "instruction-3":
+          "3. Escolha um nome e um nome de usuário para o seu bot.",
+        "instruction-4": "4. Copie o token da API que você receber.",
+      },
+      step2: {
+        title: "Passo 2: Conecte seu bot",
+        description:
+          "Cole o token da API que recebeu do @BotFather e selecione um espaço de trabalho padrão para que seu bot possa conversar.",
+        "bot-token": "Token do Bot",
+        "default-workspace": "Espaço de Trabalho Padrão",
+        "no-workspace":
+          "Não há espaços de trabalho disponíveis. Um novo será criado.",
+        connecting: "Conectando...",
+        "connect-bot": "Bot de Conexão",
+      },
+      security: {
+        title: "Configurações de segurança recomendadas",
+        description:
+          "Para maior segurança, configure estas opções no @BotFather.",
+        "disable-groups": "— Impedir a adição de bots a grupos",
+        "disable-inline": "— Impedir que o bot seja usado na pesquisa inline.",
+        "obscure-username":
+          "Utilize um nome de usuário de bot menos óbvio para reduzir a sua visibilidade.",
+      },
+      "toast-enter-token": "Por favor, insira um token de bot.",
+      "toast-connect-failed": "Falhou a conexão com o bot.",
+    },
+    connected: {
+      status: "Conectado",
+      "status-disconnected":
+        "Desconectado — o token pode ter expirado ou ser inválido",
+      "placeholder-token": "Cole o novo token do bot...",
+      reconnect: "Reconectar",
+      workspace: "Espaço de trabalho",
+      "bot-link": "Link do bot",
+      "voice-response": "Resposta por voz",
+      disconnecting: "Desconectando...",
+      disconnect: "Desconectar",
+      "voice-text-only": "Apenas texto",
+      "voice-mirror":
+        "Espelho (responder com voz quando o usuário enviar uma mensagem de voz)",
+      "voice-always":
+        "Sempre inclua uma gravação de áudio (envie um áudio com cada resposta).",
+      "toast-disconnect-failed": "Falhou ao desconectar o bot.",
+      "toast-reconnect-failed": "Falha ao tentar reconectar o bot.",
+      "toast-voice-failed": "Falhou ao atualizar o modo de voz.",
+      "toast-approve-failed": "Falhou ao aprovar o usuário.",
+      "toast-deny-failed": "Não foi possível negar o acesso ao usuário.",
+      "toast-revoke-failed": "Falhou ao revogar o acesso do usuário.",
+    },
+    users: {
+      "pending-title": "Aguardando Aprovação",
+      "pending-description":
+        "Usuários aguardando a verificação. Compare o código de pareamento exibido aqui com o que aparece em seu chat do Telegram.",
+      "approved-title": "Usuários Aprovados",
+      "approved-description":
+        "Usuários que foram aprovados para conversar com o seu bot.",
+      user: "Usuário",
+      "pairing-code": "Código de emparelhamento",
+      "no-pending": "Não há solicitações pendentes.",
+      "no-approved": "Sem usuários autorizados",
+      unknown: "Desconhecido",
+      approve: "Aprovar",
+      deny: "Negar",
+      revoke: "Anular",
+    },
   },
 };
 
