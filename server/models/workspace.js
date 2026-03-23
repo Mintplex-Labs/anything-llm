@@ -345,6 +345,8 @@ const Workspace = {
 
       return {
         ...workspace,
+        queryRewriteMode: workspace.queryRewriteMode
+          ?? (process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off"),
         documents: await Document.forWorkspace(workspace.id),
         contextWindow: this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
@@ -405,6 +407,8 @@ const Workspace = {
       if (!workspace) return null;
       return {
         ...workspace,
+        queryRewriteMode: workspace.queryRewriteMode
+          ?? (process.env.ENABLE_QUERY_REWRITING === "true" ? "on" : "off"),
         contextWindow: this._getContextWindow(workspace),
         currentContextTokenCount: await this._getCurrentContextTokenCount(
           workspace.id
