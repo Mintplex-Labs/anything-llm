@@ -1,5 +1,8 @@
 const { WorkerQueue } = require("./WorkerQueue");
 const { embeddingProgressBus } = require("./EmbeddingProgressBus");
+const {
+  EmbeddingWorkerManager,
+} = require("../BackgroundWorkers/EmbeddingWorkerManager");
 
 // ---------------------------------------------------------------------------
 // Queue instances & environment helpers
@@ -14,13 +17,14 @@ function envTTLSec(envKey, fallback) {
   return !isNaN(val) && val >= 0 ? val : fallback;
 }
 
-const embeddingQueue = new WorkerQueue({
-  workerScript: "../../workers/embeddingWorker.js",
+// Embedding uses the new EmbeddingWorkerManager which spawns via Bree/BackgroundService,
+// standardizing all background process spawning through the same base.
+const embeddingManager = new EmbeddingWorkerManager({
   ttl:
     envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000,
   // Final step in the chunk progress chain: receives IPC progress from the
-  // worker (via WorkerQueue.#onMessage), reads the document context from the
-  // active job, and emits a "chunk_progress" event on the bus.
+  // worker (via EmbeddingWorkerManager.#onMessage), reads the document context
+  // from the active job, and emits a "chunk_progress" event on the bus.
   // From here the existing SSE infrastructure streams it to the frontend.
   onProgress: (progress) => {
     if (!progress.context) return;
@@ -35,6 +39,7 @@ const embeddingQueue = new WorkerQueue({
   },
 });
 
+// Reranking still uses the direct-fork WorkerQueue for now.
 const rerankingQueue = new WorkerQueue({
   workerScript: "../../workers/rerankingWorker.js",
   ttl:
@@ -48,9 +53,9 @@ const rerankingQueue = new WorkerQueue({
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
 async function queueEmbedding(payload, context = null) {
-  embeddingQueue.ttl =
+  embeddingManager.ttl =
     envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000;
-  const { result } = await embeddingQueue.enqueue({ payload, context });
+  const { result } = await embeddingManager.enqueue({ payload, context });
   return result.vectors;
 }
 
@@ -69,7 +74,7 @@ async function queueReranking(payload) {
 // Graceful shutdown: kill forked workers so they don't become orphaned.
 for (const signal of ["SIGTERM", "SIGINT"]) {
   process.on(signal, () => {
-    embeddingQueue.killWorker();
+    embeddingManager.killWorker();
     rerankingQueue.killWorker();
   });
 }

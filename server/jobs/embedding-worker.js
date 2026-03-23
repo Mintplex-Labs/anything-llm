@@ -1,14 +1,11 @@
 /**
- * Embedding Worker Process
+ * Embedding Worker Job
  *
  * Runs NativeEmbedder in an isolated child process so that OOM from large
  * document batches only kills this worker, not the main server.
  *
- * This is one step in the chunk-level progress reporting chain. The worker
- * passes an onProgress callback to embedChunksInProcess that converts each
- * progress update into an IPC message (process.send). The parent process's
- * WorkerQueue receives these IPC messages and forwards them to the
- * EmbeddingProgressBus, which streams them to the frontend via SSE.
+ * Spawned on-demand by EmbeddingWorkerManager via BackgroundService/Bree.
+ * Stays alive between jobs (TTL-based lifecycle) to keep the ML model loaded.
  *
  * IPC protocol:
  * - Receives: { type: "job", jobId, payload: { textChunks } }
@@ -45,7 +42,7 @@ process.on("message", async (msg) => {
 
       // Bridge chunk progress from embedChunksInProcess to the parent process.
       // This callback converts in-process progress into IPC messages that the
-      // parent's WorkerQueue receives and forwards to the EmbeddingProgressBus.
+      // parent's EmbeddingWorkerManager receives and forwards to the EmbeddingProgressBus.
       const result = await embedder.embedChunksInProcess(
         textChunks,
         (progress) => {

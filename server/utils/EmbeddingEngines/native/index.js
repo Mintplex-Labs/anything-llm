@@ -264,14 +264,14 @@ class NativeEmbedder {
    * {@link embedChunks} which routes work to the isolated worker process.
    *
    * Chunk-level progress reporting:
-   * This method runs inside a forked child process (embeddingWorker.js), so it
-   * cannot emit events on the main process's EmbeddingProgressBus directly.
+   * This method runs inside a forked child process (jobs/embedding-worker.js),
+   * so it cannot emit events on the main process's EmbeddingProgressBus directly.
    * Instead, the worker passes an onProgress callback that sends IPC messages
    * back to the parent. The full flow is:
    *
    *   embedChunksInProcess (onProgress callback)
-   *     → embeddingWorker.js (converts callback to process.send IPC message)
-   *       → WorkerQueue.js (receives IPC, calls its own onProgress callback)
+   *     → embedding-worker.js (converts callback to process.send IPC message)
+   *       → EmbeddingWorkerManager (receives IPC, calls its own onProgress callback)
    *         → WorkerQueue/index.js (emits "chunk_progress" on EmbeddingProgressBus)
    *           → SSE endpoint streams it to the frontend
    *
