@@ -48,7 +48,9 @@ class WorkerQueue {
   }
 
   get isRunning() {
-    return this.#worker !== null && (this.breeManaged || this.#worker.connected);
+    return (
+      this.#worker !== null && (this.breeManaged || this.#worker.connected)
+    );
   }
 
   /**
@@ -135,9 +137,7 @@ class WorkerQueue {
   #ensureWorker() {
     if (this.isRunning) return Promise.resolve();
 
-    return this.breeManaged
-      ? this.#spawnViaBree()
-      : this.#spawnViaFork();
+    return this.breeManaged ? this.#spawnViaBree() : this.#spawnViaFork();
   }
 
   /**
