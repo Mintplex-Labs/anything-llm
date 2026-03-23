@@ -21,7 +21,33 @@ fi
     # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)
     export CHECKPOINT_DISABLE=1 &&
     npx prisma generate --schema=./prisma/schema.prisma &&
-    npx prisma migrate deploy --schema=./prisma/schema.prisma &&
+
+    # Run migrations — if deploy fails (e.g. column already exists from manual ALTER),
+    # auto-resolve failed migrations and retry once.
+    if ! npx prisma migrate deploy --schema=./prisma/schema.prisma 2>&1; then
+      echo "[entrypoint] ⚠️  prisma migrate deploy failed — attempting auto-resolve..."
+      DB_PATH="${STORAGE_DIR:-/app/server/storage}/anythingllm.db"
+      if [ -f "$DB_PATH" ]; then
+        # Find failed migrations (finished_at is NULL) and mark them as applied
+        FAILED=$(sqlite3 "$DB_PATH" "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL OR finished_at = '';" 2>/dev/null)
+        if [ -n "$FAILED" ]; then
+          NOW_MS=$(date +%s)000
+          for MIG in $FAILED; do
+            echo "[entrypoint] Marking migration '$MIG' as applied..."
+            sqlite3 "$DB_PATH" "UPDATE _prisma_migrations SET finished_at = $NOW_MS, rolled_back_at = NULL, applied_steps_count = 1, logs = NULL WHERE migration_name = '$MIG';"
+          done
+          echo "[entrypoint] Retrying prisma migrate deploy..."
+          npx prisma migrate deploy --schema=./prisma/schema.prisma
+        else
+          echo "[entrypoint] ❌ No failed migrations found — unknown error"
+          exit 1
+        fi
+      else
+        echo "[entrypoint] ❌ DB not found at $DB_PATH — cannot auto-resolve"
+        exit 1
+      fi
+    fi &&
+
     node /app/server/index.js
 } &
 { node /app/collector/index.js; } &
