@@ -17,16 +17,14 @@ class AnthropicProvider extends Provider {
       options = {
         apiKey: process.env.ANTHROPIC_API_KEY,
         maxRetries: 3,
+        defaultHeaders: {
+          "User-Agent": getAnythingLLMUserAgent(),
+        },
       },
       model = "claude-3-5-sonnet-20240620",
     } = config;
 
-    const client = new Anthropic({
-      ...options,
-      defaultHeaders: {
-        "User-Agent": getAnythingLLMUserAgent(),
-      },
-    });
+    const client = new Anthropic(options);
 
     super(client);
     this.model = model;
