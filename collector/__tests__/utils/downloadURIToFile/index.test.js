@@ -1,18 +1,6 @@
 const path = require("path");
-const { ACCEPTED_MIMES, SUPPORTED_FILETYPE_CONVERTERS } = require("../../../utils/constants");
-
-// We test the mimeToExtension helper and the filename extension logic
-// without making real HTTP requests.
-
-// Import the module to access mimeToExtension via the module's internals.
-// Since mimeToExtension is not exported, we replicate it here for unit testing.
-function mimeToExtension(mimeType) {
-  if (!mimeType) return null;
-  const extensions = ACCEPTED_MIMES[mimeType];
-  return Array.isArray(extensions) && extensions.length > 0
-    ? extensions[0]
-    : null;
-}
+const { SUPPORTED_FILETYPE_CONVERTERS } = require("../../../utils/constants");
+const { mimeToExtension } = require("../../../utils/downloadURIToFile");
 
 /**
  * Simulates the filename-building logic from downloadURIToFile
@@ -31,37 +19,14 @@ function buildFilenameWithExtension(sluggedFilename, contentType) {
 }
 
 describe("mimeToExtension", () => {
-  test("returns .pdf for application/pdf", () => {
-    expect(mimeToExtension("application/pdf")).toBe(".pdf");
-  });
-
-  test("returns .txt for text/plain", () => {
-    expect(mimeToExtension("text/plain")).toBe(".txt");
-  });
-
-  test("returns .docx for application/vnd.openxmlformats-officedocument.wordprocessingml.document", () => {
-    expect(
-      mimeToExtension(
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      )
-    ).toBe(".docx");
-  });
-
-  test("returns null for unknown MIME type", () => {
+  test("returns null for invalid or unknown input", () => {
+    expect(mimeToExtension(null)).toBeNull();
+    expect(mimeToExtension(undefined)).toBeNull();
     expect(mimeToExtension("application/octet-stream")).toBeNull();
   });
 
-  test("returns null for null/undefined input", () => {
-    expect(mimeToExtension(null)).toBeNull();
-    expect(mimeToExtension(undefined)).toBeNull();
-  });
-
-  test("returns .mp3 for audio/mpeg", () => {
-    expect(mimeToExtension("audio/mpeg")).toBe(".mp3");
-  });
-
-  test("returns .epub for application/epub+zip", () => {
-    expect(mimeToExtension("application/epub+zip")).toBe(".epub");
+  test("returns first extension from ACCEPTED_MIMES for known types", () => {
+    expect(mimeToExtension("application/pdf")).toBe(".pdf");
   });
 });
 

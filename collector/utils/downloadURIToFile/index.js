@@ -5,18 +5,20 @@ const { pipeline } = require("stream/promises");
 const { validURL } = require("../url");
 const { default: slugify } = require("slugify");
 
+// Add a custom slugify extension for slashing to handle URLs with paths.
+slugify.extend({ "/": "-" });
+
 /**
  * Maps a MIME type to the preferred file extension using ACCEPTED_MIMES.
- * Returns null if the MIME type is not recognized.
+ * Returns null if the MIME type is not recognized or if there are no possible extensions.
  * @param {string} mimeType - The MIME type to resolve (e.g., "application/pdf")
  * @returns {string|null} - The file extension (e.g., ".pdf") or null
  */
 function mimeToExtension(mimeType) {
-  if (!mimeType) return null;
-  const extensions = ACCEPTED_MIMES[mimeType];
-  return Array.isArray(extensions) && extensions.length > 0
-    ? extensions[0]
-    : null;
+  if (!mimeType || !ACCEPTED_MIMES.hasOwnProperty(mimeType)) return null;
+  const possibleExtensions = ACCEPTED_MIMES[mimeType] ?? [];
+  if (possibleExtensions.length === 0) return null;
+  return possibleExtensions[0];
 }
 
 /**
@@ -47,30 +49,26 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
       .finally(() => clearTimeout(timeout));
 
     const urlObj = new URL(url);
-    const sluggedPath = slugify(urlObj.pathname.replace(/\//g, "-"), {
-      lower: true,
-    });
+    const sluggedPath = slugify(urlObj.pathname, { lower: true });
     let filename = `${urlObj.hostname}-${sluggedPath}`;
+
+    const existingExt = path.extname(filename).toLowerCase();
+    const { SUPPORTED_FILETYPE_CONVERTERS } = require("../constants");
 
     // If the filename does not already have a supported file extension,
     // try to infer one from the response Content-Type header.
     // This handles URLs like https://arxiv.org/pdf/2307.10265 where the
     // path has no explicit extension but the server responds with
     // Content-Type: application/pdf.
-    const existingExt = path.extname(filename).toLowerCase();
-    const { SUPPORTED_FILETYPE_CONVERTERS } = require("../constants");
     if (!SUPPORTED_FILETYPE_CONVERTERS.hasOwnProperty(existingExt)) {
-      const contentType = res.headers
-        .get("Content-Type")
-        ?.toLowerCase()
-        ?.split(";")[0]
-        ?.trim();
+      const { parseContentType } = require("../../processLink/helpers");
+      const contentType = parseContentType(res.headers.get("Content-Type"));
       const inferredExt = mimeToExtension(contentType);
       if (inferredExt) {
-        filename += inferredExt;
         console.log(
           `[Collector] URL path has no recognized extension. Inferred ${inferredExt} from Content-Type: ${contentType}`
         );
+        filename += inferredExt;
       }
     }
 
@@ -88,4 +86,5 @@ async function downloadURIToFile(url, maxTimeout = 10_000) {
 
 module.exports = {
   downloadURIToFile,
+  mimeToExtension,
 };
