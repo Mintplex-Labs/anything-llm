@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Werkruimten Naam",
-    user: "Gebruiker",
     selection: "Model Selectie",
     saving: "Opslaan...",
     save: "Wijzigingen opslaan",
@@ -105,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Bekijk populaire onderwerpen",
       "your-account": "Uw account",
       "import-item": "Importeren",
+    },
+    channels: "Kanaal",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -181,18 +184,12 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
-        description:
-          "zal antwoorden geven met de algemene kennis van het LLM en de relevante context uit het document. U moet het `@agent`-commando gebruiken om tools te gebruiken.",
       },
       query: {
         title: "Query",
-        description:
-          "zal antwoorden <b>alleen</b> geven, indien de context van het document wordt gevonden.<br />U moet het commando @agent gebruiken om tools te gebruiken.",
       },
       automatic: {
         title: "Auto",
-        description:
-          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen.<br />Als native tooling niet wordt ondersteund, moet u het `@agent`-commando gebruiken om tools te gebruiken.",
       },
     },
     history: {
@@ -744,7 +741,6 @@ const TRANSLATIONS = {
     see_less: "Minder zien",
     see_more: "Meer zien",
     tools: "Gereedschap",
-    browse: "Bladeren",
     text_size_label: "Lettergrootte",
     select_model: "Kies het model",
     sources: "Bronnen",
@@ -757,7 +753,6 @@ const TRANSLATIONS = {
     edit: "Bewerk",
     publish: "Publiceren",
     stop_generating: "Stoppen met het genereren van antwoorden",
-    pause_tts_speech_message: "Pauzeer de spraak van de tekstberichten.",
     slash_commands: "Korte commando's",
     agent_skills: "Vaardigheden van agenten",
     manage_agent_skills: "Beheer van de vaardigheden van de agent",
@@ -1019,6 +1014,88 @@ const TRANSLATIONS = {
     notAssigned:
       "Je bent nog niet toegewezen aan een werkruimte.\nNeem contact op met je beheerder om toegang te vragen tot een werkruimte.",
     goToWorkspace: 'Ga naar de werkruimte "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram Bot",
+    description:
+      "Verbind uw AnythingLLM-instantie met Telegram, zodat u vanuit elk apparaat kunt communiceren met uw werkruimtes.",
+    setup: {
+      step1: {
+        title: "Stap 1: Maak je Telegram-bot",
+        description:
+          "Open het @BotFather-kanaal in Telegram, stuur `/newbot` naar @BotFather, volg de instructies en kopieer het API-token.",
+        "open-botfather": "Open BotFather",
+        "instruction-1": "1. Open het link of scan de QR-code",
+        "instruction-2":
+          "2. Stuur <code>/newbot</code> naar <code>@BotFather</code>",
+        "instruction-3": "3. Kies een naam en gebruikersnaam voor je bot",
+        "instruction-4": "4. Kopieer de API-token die je ontvangt",
+      },
+      step2: {
+        title: "Stap 2: Verbind uw bot",
+        description:
+          "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
+        "bot-token": "Bot-token",
+        "default-workspace": "Standaard werkruimte",
+        "no-workspace":
+          "Er zijn geen beschikbare werkplekken. Een nieuwe zal worden aangemaakt.",
+        connecting: "Verbinding wordt gemaakt...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Aanbevolen beveiligingsinstellingen",
+        description:
+          "Voor extra beveiliging, configureer deze instellingen via @BotFather.",
+        "disable-groups": "— Voorkom het toevoegen van bots aan groepen",
+        "disable-inline":
+          "— Voorkom dat de bot wordt gebruikt in inline zoekopdrachten",
+        "obscure-username":
+          "Gebruik een bot-username dat niet direct herkenbaar is, om de vindbaarheid te verminderen.",
+      },
+      "toast-enter-token": "Voer alstublieft een bot-token in.",
+      "toast-connect-failed": "Verbinding met de bot is mislukt.",
+    },
+    connected: {
+      status: "Verbonden",
+      "status-disconnected":
+        "Niet verbonden – het token kan verlopen zijn of ongeldig",
+      "placeholder-token": "Plak het nieuwe bot-token...",
+      reconnect: "Herstellen van de verbinding",
+      workspace: "Werkplek",
+      "bot-link": "Bot-link",
+      "voice-response": "Spraakherkenning",
+      disconnecting: "Verbinding verbreken...",
+      disconnect: "Aansluiting verbreiden",
+      "voice-text-only": "Alleen tekst",
+      "voice-mirror":
+        "Spiegel (antwoord met spraak wanneer de gebruiker spraak verzendt)",
+      "voice-always":
+        "Zorg ervoor dat er altijd een audio-opname (een geluidsfragment) bij de reactie wordt toegevoegd.",
+      "toast-disconnect-failed":
+        "Het was niet mogelijk om de robot los te koppelen.",
+      "toast-reconnect-failed": "Fout bij het opnieuw verbinden van de bot.",
+      "toast-voice-failed": "Niet mogelijk om de spraakmodus bij te werken.",
+      "toast-approve-failed": "Fout bij goedkeuren van gebruiker.",
+      "toast-deny-failed": "Niet in staat om gebruiker te weigeren.",
+      "toast-revoke-failed":
+        "Fout bij het intrekken van het gebruikersaccount.",
+    },
+    users: {
+      "pending-title": "Afhankelijk van goedkeuring",
+      "pending-description":
+        "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
+      "approved-title": "Goedgekeurde gebruikers",
+      "approved-description":
+        "Gebruikers die zijn goedgekeurd om met uw bot te communiceren.",
+      user: "Gebruiker",
+      "pairing-code": "Code voor het koppelen",
+      "no-pending": "Er zijn geen lopende verzoeken.",
+      "no-approved": "Geen goedgekeurde gebruikers",
+      unknown: "Onbekend",
+      approve: "Goedkeuren",
+      deny: "Afgewijzen",
+      revoke: "Intrekken",
+    },
   },
 };
 

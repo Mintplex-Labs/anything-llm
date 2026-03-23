@@ -10,6 +10,7 @@ import {
   PencilSimpleLine,
   Nut,
   Toolbox,
+  Plugs,
 } from "@phosphor-icons/react";
 import AgentIcon from "@/media/animations/agent-static.png";
 import CommunityHubIcon from "@/media/illustrations/community-hub.png";
@@ -360,6 +361,19 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.chat(),
               flex: true,
               roles: ["admin", "manager"],
+            },
+          ]}
+        />
+        <Option
+          btnText={t("settings.channels")}
+          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
+          user={user}
+          childOptions={[
+            {
+              btnText: t("settings.available-channels.telegram"),
+              href: paths.settings.telegram(),
+              flex: true,
+              hidden: !!user,
             },
           ]}
         />

@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nazwa obszaru roboczego",
-    user: "Użytkownik",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
     save: "Zapisz zmiany",
@@ -105,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Odkryj popularne",
       "your-account": "Twój profil",
       "import-item": "Importuj element",
+    },
+    channels: "Kanały",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -188,18 +191,12 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
-        description:
-          "zapewni odpowiedzi, wykorzystując ogólną wiedzę LLM oraz kontekst dokumentu, w którym ta wiedza znajduje się.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
-        description:
-          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy `@agent` w celu korzystania z narzędzi.",
       },
       automatic: {
         title: "Samochód",
-        description:
-          "automatycznie będzie wykorzystywał narzędzia, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. Jeśli natywne narzędzia nie są obsługiwane, konieczne będzie użycie polecenia `@agent` w celu wykorzystania narzędzi.",
       },
     },
     history: {
@@ -837,7 +834,6 @@ const TRANSLATIONS = {
     see_less: "Zobacz mniej",
     see_more: "Zobacz więcej",
     tools: "Narzędzia",
-    browse: "Przeglądaj",
     text_size_label: "Rozmiar czcionki",
     select_model: "Wybierz model",
     sources: "Źródła",
@@ -850,7 +846,6 @@ const TRANSLATIONS = {
     edit: "Edytuj",
     publish: "Opublikować",
     stop_generating: "Przestań generować odpowiedź",
-    pause_tts_speech_message: "Wstrzymać odtwarzanie mowy z wiadomości",
     slash_commands: "Polecenia skrótowe",
     agent_skills: "Umiejętności agenta",
     manage_agent_skills: "Zarządzanie umiejętnościami agentów",
@@ -1015,6 +1010,87 @@ const TRANSLATIONS = {
     notAssigned:
       "Nie jesteś przypisany do żadnego obszaru roboczego.\nSkontaktuj się z administratorem, aby poprosić o dostęp do obszaru roboczego.",
     goToWorkspace: 'Przejdź do obszaru roboczego "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot na Telegramie",
+    description:
+      "Połącz swoją instancję AnythingLLM z Telegramem, aby móc rozmawiać z przestrzeniami roboczymi z dowolnego urządzenia.",
+    setup: {
+      step1: {
+        title: "Krok 1: Utwórz swojego bota w Telegramie",
+        description:
+          "Otwórz aplikację @BotFather w Telegramie, wyślij wiadomość <code>/newbot</code> do <code>@BotFather</code>, postępuj zgodnie z instrukcjami i skopiuj token API.",
+        "open-botfather": "Otwórz BotFather",
+        "instruction-1": "1. Otwórz link lub zeskanuj kod QR",
+        "instruction-2":
+          "2. Wyślij <code>/newbot</code> na adres <code>@BotFather</code>",
+        "instruction-3":
+          "3. Wybierz nazwę i nazwę użytkownika dla swojego robota.",
+        "instruction-4": "4. Skopiuj token API, który otrzymasz.",
+      },
+      step2: {
+        title: "Krok 2: Połącz swojego robota",
+        description:
+          "Wklej token API, który otrzymałeś od @BotFather, i wybierz domyślny przestrzeń roboczą, z której Twój bot będzie mógł komunikować się.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Domyślne miejsce pracy",
+        "no-workspace":
+          "Brak dostępnych miejsc pracy. Nowe zostanie utworzone.",
+        connecting: "Połączenie...",
+        "connect-bot": "Bot łączący",
+      },
+      security: {
+        title: "Zalecane ustawienia bezpieczeństwa",
+        description:
+          "W celu zwiększenia bezpieczeństwa, skonfiguruj te ustawienia w kanale @BotFather.",
+        "disable-groups": "— Zapobiegaj dodawaniu botów do grup",
+        "disable-inline":
+          "— Zapobieg użyciu robota w wyszukiwaniach w czasie rzeczywistym.",
+        "obscure-username":
+          "Użyj nietypowej nazwy użytkownika dla bota, aby zmniejszyć jego widoczność.",
+      },
+      "toast-enter-token": "Prosimy o wprowadzenie tokena dla bota.",
+      "toast-connect-failed": "Nie udało się nawiązać połączenia z botem.",
+    },
+    connected: {
+      status: "Połączony",
+      "status-disconnected":
+        "Brak połączenia – token może być nieprawidłowy lub wygasł",
+      "placeholder-token": "Wklej nowy token dla bota...",
+      reconnect: "Ponowne połączenie",
+      workspace: "Przestrzeń robocza",
+      "bot-link": "Link do bota",
+      "voice-response": "Reakcja na głos",
+      disconnecting: "Odłączanie...",
+      disconnect: "Odłączyć",
+      "voice-text-only": "Tylko tekst",
+      "voice-mirror":
+        "Odbiór (odpowiedź za pomocą głosu, gdy użytkownik wysyła głos)",
+      "voice-always":
+        "Zawsze dołączaj nagranie (wysyłaj dźwięk wraz z każdą odpowiedzią)",
+      "toast-disconnect-failed": "Nie udało się odłączyć bota.",
+      "toast-reconnect-failed": "Nie udało się nawiązać połączenia z botem.",
+      "toast-voice-failed": "Nie udało się zaktualizować trybu głosu.",
+      "toast-approve-failed": "Nie udało się zatwierdzić użytkownika.",
+      "toast-deny-failed": "Nie udało się odrzucić żądania użytkownika.",
+      "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
+    },
+    users: {
+      "pending-title": "Czekając na zatwierdzenie",
+      "pending-description":
+        "Użytkownicy, którzy czekają na weryfikację. Dopasuj kod parowania, który znajduje się tutaj, z tym, który widnieje w ich rozmowie na Telegramie.",
+      "approved-title": "Użytkownicy, którym przyznano uprawnienia",
+      "approved-description":
+        "Użytkownicy, którzy zostali zatwierdzeni do rozmowy z Twoim botem.",
+      user: "Użytkownik",
+      "pairing-code": "Kod dopasowania",
+      "no-pending": "Brak oczekujących żądań",
+      "no-approved": "Brak zatwierdzonych użytkowników",
+      unknown: "Nieznany",
+      approve: "Zaakceptować",
+      deny: "Odrzucać",
+      revoke: "Odstrzegać",
+    },
   },
 };
 
