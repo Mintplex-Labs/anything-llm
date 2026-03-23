@@ -121,6 +121,7 @@ const SystemSettings = {
             "tavily-search",
             "duckduckgo-engine",
             "exa-search",
+            "perplexity-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -207,6 +208,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
+    const {
+      ToolReranker,
+    } = require("../utils/agents/aibitat/utils/toolReranker");
+    const AIbitat = require("../utils/agents/aibitat");
+
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
@@ -300,6 +306,7 @@ const SystemSettings = {
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
       AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
+      AgentPerplexityApiKey: !!process.env.AGENT_PERPLEXITY_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -314,6 +321,13 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // Agent Skill Settings
+      // --------------------------------------------------------
+      AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
+      AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
+      AgentSkillRerankerTopN: ToolReranker.getTopN(),
     };
   },
 

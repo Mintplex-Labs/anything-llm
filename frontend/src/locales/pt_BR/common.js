@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nome do Workspace",
-    user: "Usuário",
     selection: "Seleção de Modelo",
     saving: "Salvando...",
     save: "Salvar alterações",
@@ -63,6 +62,11 @@ const TRANSLATIONS = {
     search: "Pesquisar",
     username_requirements:
       "O nome de usuário deve ter de 2 a 32 caracteres, começar com uma letra minúscula e conter apenas letras minúsculas, números, sublinhados, hífens e pontos.",
+    on: "Sobre",
+    none: "Nenhum",
+    stopped: "Parado",
+    loading: "Carregando",
+    refresh: "Atualizar",
   },
   settings: {
     title: "Configurações da Instância",
@@ -99,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Explore as tendências",
       "your-account": "Sua Conta",
       "import-item": "Importar Item",
+    },
+    channels: "Canais",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -183,15 +191,12 @@ const TRANSLATIONS = {
       title: "Modo de Chat",
       chat: {
         title: "Chat",
-        "desc-start": "fornecerá respostas com conhecimento geral do LLM",
-        and: "e",
-        "desc-end": "contexto dos documentos encontrados.",
       },
       query: {
         title: "Consulta",
-        "desc-start": "fornecerá respostas",
-        only: "apenas",
-        "desc-end": "se contexto for encontrado nos documentos.",
+      },
+      automatic: {
+        title: "Automóvel",
       },
     },
     history: {
@@ -319,6 +324,46 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
+    },
+    mcp: {
+      title: "Servidores MCP",
+      "loading-from-config":
+        "Carregar servidores MCP a partir do arquivo de configuração",
+      "learn-more": "Saiba mais sobre os servidores MCP.",
+      "no-servers-found": "Nenhum servidor MCP encontrado.",
+      "tool-warning":
+        "Para obter o melhor desempenho, considere desativar as ferramentas desnecessárias para preservar o contexto.",
+      "stop-server": "Pare o servidor MCP",
+      "start-server": "Iniciar o servidor MCP",
+      "delete-server": "Excluir o servidor MCP",
+      "tool-count-warning":
+        "Este servidor MCP tem as seguintes ferramentas habilitadas: {{count}}, que consumirão contexto em cada conversa.</b> Considere desativar as ferramentas indesejadas para economizar contexto.",
+      "startup-command": "Comando de inicialização",
+      command: "Ordem",
+      arguments: "Argumentos",
+      "not-running-warning":
+        "Este servidor MCP não está em funcionamento – pode estar parado ou estar apresentando um erro durante a inicialização.",
+      "tool-call-arguments": "Argumentos de chamada de ferramenta",
+      "tools-enabled": "ferramentas ativadas",
+    },
+    settings: {
+      title: "Configurações de Habilidades do Agente",
+      "max-tool-calls": {
+        title: "Número máximo de chamadas de ferramenta por resposta",
+        description:
+          "O número máximo de ferramentas que um agente pode encadear para gerar uma única resposta. Isso evita chamadas excessivas de ferramentas e loops infinitos.",
+      },
+      "intelligent-skill-selection": {
+        title: "Seleção Inteligente de Habilidades",
+        "beta-badge": "Beta",
+        description:
+          "Permita o uso ilimitado de ferramentas e reduza o consumo de tokens em até 80% por consulta — O AnythingLLM seleciona automaticamente as habilidades mais adequadas para cada solicitação.",
+        "max-tools": {
+          title: "Ferramentas Max",
+          description:
+            "O número máximo de ferramentas que podem ser selecionadas para cada consulta. Recomendamos definir este valor para modelos com contextos maiores.",
+        },
+      },
     },
   },
   recorded: {
@@ -685,6 +730,8 @@ const TRANSLATIONS = {
       remove_selected: "Remover Selecionados",
       costs: "*Custo único para vínculos",
       save_embed: "Salvar e Inserir",
+      "total-documents_one": "{{count}} documento",
+      "total-documents_other": "{{count}} documentos",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",
@@ -771,7 +818,6 @@ const TRANSLATIONS = {
     see_less: "Ver menos",
     see_more: "Ver mais",
     tools: "Ferramentas",
-    browse: "Navegar",
     text_size_label: "Tamanho do texto",
     select_model: "Selecione o modelo",
     sources: "Fontes",
@@ -784,7 +830,6 @@ const TRANSLATIONS = {
     edit: "Editar",
     publish: "Publicar",
     stop_generating: "Pare de gerar respostas",
-    pause_tts_speech_message: "Pausar a leitura de voz da mensagem",
     slash_commands: "Comandos Rápidos",
     agent_skills: "Habilidades do Agente",
     manage_agent_skills: "Gerenciar as habilidades dos agentes",
@@ -941,6 +986,86 @@ const TRANSLATIONS = {
     notAssigned:
       "Você ainda não está atribuído a nenhum espaço de trabalho.\nEntre em contato com seu administrador para solicitar acesso a um espaço de trabalho.",
     goToWorkspace: 'Ir para o espaço de trabalho "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot do Telegram",
+    description:
+      "Conecte sua instância do AnythingLLM ao Telegram para que possa conversar com seus espaços de trabalho a partir de qualquer dispositivo.",
+    setup: {
+      step1: {
+        title: "Passo 1: Crie seu bot do Telegram",
+        description:
+          "Abra o @BotFather no Telegram, envie /newbot</code> para <code>@BotFather</code>, siga as instruções e copie o token da API.",
+        "open-botfather": "Iniciar o BotFather",
+        "instruction-1": "1. Abra o link ou escaneie o código QR.",
+        "instruction-2":
+          "2. Envie <code>/newbot</code> para <code>@BotFather</code>",
+        "instruction-3":
+          "3. Escolha um nome e um nome de usuário para o seu bot.",
+        "instruction-4": "4. Copie o token da API que você receber.",
+      },
+      step2: {
+        title: "Passo 2: Conecte seu bot",
+        description:
+          "Cole o token da API que recebeu do @BotFather e selecione um espaço de trabalho padrão para que seu bot possa conversar.",
+        "bot-token": "Token do Bot",
+        "default-workspace": "Espaço de Trabalho Padrão",
+        "no-workspace":
+          "Não há espaços de trabalho disponíveis. Um novo será criado.",
+        connecting: "Conectando...",
+        "connect-bot": "Bot de Conexão",
+      },
+      security: {
+        title: "Configurações de segurança recomendadas",
+        description:
+          "Para maior segurança, configure estas opções no @BotFather.",
+        "disable-groups": "— Impedir a adição de bots a grupos",
+        "disable-inline": "— Impedir que o bot seja usado na pesquisa inline.",
+        "obscure-username":
+          "Utilize um nome de usuário de bot menos óbvio para reduzir a sua visibilidade.",
+      },
+      "toast-enter-token": "Por favor, insira um token de bot.",
+      "toast-connect-failed": "Falhou a conexão com o bot.",
+    },
+    connected: {
+      status: "Conectado",
+      "status-disconnected":
+        "Desconectado — o token pode ter expirado ou ser inválido",
+      "placeholder-token": "Cole o novo token do bot...",
+      reconnect: "Reconectar",
+      workspace: "Espaço de trabalho",
+      "bot-link": "Link do bot",
+      "voice-response": "Resposta por voz",
+      disconnecting: "Desconectando...",
+      disconnect: "Desconectar",
+      "voice-text-only": "Apenas texto",
+      "voice-mirror":
+        "Espelho (responder com voz quando o usuário enviar uma mensagem de voz)",
+      "voice-always":
+        "Sempre inclua uma gravação de áudio (envie um áudio com cada resposta).",
+      "toast-disconnect-failed": "Falhou ao desconectar o bot.",
+      "toast-reconnect-failed": "Falha ao tentar reconectar o bot.",
+      "toast-voice-failed": "Falhou ao atualizar o modo de voz.",
+      "toast-approve-failed": "Falhou ao aprovar o usuário.",
+      "toast-deny-failed": "Não foi possível negar o acesso ao usuário.",
+      "toast-revoke-failed": "Falhou ao revogar o acesso do usuário.",
+    },
+    users: {
+      "pending-title": "Aguardando Aprovação",
+      "pending-description":
+        "Usuários aguardando a verificação. Compare o código de pareamento exibido aqui com o que aparece em seu chat do Telegram.",
+      "approved-title": "Usuários Aprovados",
+      "approved-description":
+        "Usuários que foram aprovados para conversar com o seu bot.",
+      user: "Usuário",
+      "pairing-code": "Código de emparelhamento",
+      "no-pending": "Não há solicitações pendentes.",
+      "no-approved": "Sem usuários autorizados",
+      unknown: "Desconhecido",
+      approve: "Aprovar",
+      deny: "Negar",
+      revoke: "Anular",
+    },
   },
 };
 

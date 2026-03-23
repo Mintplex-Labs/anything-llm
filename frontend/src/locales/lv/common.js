@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Darba telpas nosaukums",
-    user: "Lietotājs",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
     save: "Saglabāt izmaiņas",
@@ -63,6 +62,11 @@ const TRANSLATIONS = {
     search: "Meklēšana",
     username_requirements:
       "Lietotājvārdam jābūt 2–32 rakstzīmju garam, jāsākas ar mazo burtu un jāsatur tikai mazie burti, cipari, apakšsvītras, domuzīmes un punkti.",
+    on: "Par",
+    none: "Nav",
+    stopped: "Apstājās",
+    loading: "Ielāde",
+    refresh: "Atjaunot",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -99,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Izpētiet populārākās",
       "your-account": "Jūsu konts",
       "import-item": "Importētā prece",
+    },
+    channels: "Kanāli",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -183,15 +191,12 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
-        "desc-start": "sniegs atbildes ar LLM vispārējām zināšanām",
-        and: "un",
-        "desc-end": "dokumentu kontekstu, kas tiek atrasts.",
       },
       query: {
         title: "Vaicājums",
-        "desc-start": "sniegs atbildes",
-        only: "tikai",
-        "desc-end": "ja tiek atrasts dokumentu konteksts.",
+      },
+      automatic: {
+        title: "Automobiļs",
       },
     },
     history: {
@@ -320,6 +325,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
+    },
+    mcp: {
+      title: "MCP serveri",
+      "loading-from-config": "Ielādot MCP serverus no konfigūrācijas faila",
+      "learn-more": "Uzziniet vairāk par MCP serveriem.",
+      "no-servers-found": "Neizdevās atrast kādus MCP serverus.",
+      "tool-warning":
+        "Lai nodrošinātu optimālu darbību, apsveriet iespēju atspēlot nevajadzīgus rīkus, lai saglabātu kontekstu.",
+      "stop-server": "Aizvert MCP serveri",
+      "start-server": "Sākt MCP serveri",
+      "delete-server": "Dzēst MCP serveri",
+      "tool-count-warning":
+        "Šis MCP servers ir aktivizētas <b> instrumenti, kas izmantos kontekstu katrā sarunā.</b> Iespējams, ir labāk deaktivizēt nevēlamus instrumentus, lai saglabātu kontekstu.",
+      "startup-command": "Sākuma komanda",
+      command: "Instrukcijas",
+      arguments: "Pamatatpersonas",
+      "not-running-warning":
+        "Šis MCP servers darbojas – iespējams, tas ir izslēgts vai piedzīvo kļūdu, kad tiek ieslēgts.",
+      "tool-call-arguments": "Parametri, kas tiek nosūtīti rīkam",
+      "tools-enabled": "rīki atļauti",
+    },
+    settings: {
+      title: "Aģenta spēju iestatījumi",
+      "max-tool-calls": {
+        title: "Maksimālais rēķinu skaits vienam atbildē",
+        description:
+          "Maksimālais rīku skaits, ko aģents var apvienot, lai ģenerētu vienu atbildi. Tas novērina neierobežotu rīku izmantošanu un beidzoties.",
+      },
+      "intelligent-skill-selection": {
+        title: "Izglītības un prasmu izvēle, kas balstota uz spējām",
+        "beta-badge": "Beta",
+        description:
+          'Ievērojiet neierobežotu rīku un "cut token" izmantošanas samazinājumu līdz 80% uz katru pieprasījumu – AnythingLLM automātiski izvēlas piemērotākās prasmes katram pieprasījumam.',
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimālais rīku skaits, kas var tikt izvēlts katrai meklēšanai. Mēs iesakām iestatīt šo vērtību, lai iegūtu lielāku kontekstu modelus.",
+        },
+      },
     },
   },
   recorded: {
@@ -700,6 +744,8 @@ const TRANSLATIONS = {
       remove_selected: "Noņemt atlasītos",
       costs: "*Vienreizējas izmaksas iegulšanai",
       save_embed: "Saglabāt un iegult",
+      "total-documents_one": "{{count}} dokumenta",
+      "total-documents_other": "{{count}} dokumenti",
     },
     upload: {
       "processor-offline": "Dokumentu apstrādātājs nav pieejams",
@@ -791,7 +837,6 @@ const TRANSLATIONS = {
     see_less: "Skatīt mazāk",
     see_more: "Skatīt vairāk",
     tools: "Rīki",
-    browse: "Izpētiet",
     text_size_label: "Teksta izmērs",
     select_model: "Izvēlieties modeli",
     sources: "Avotus",
@@ -804,8 +849,6 @@ const TRANSLATIONS = {
     edit: "Rediģēt",
     publish: "Publicēt",
     stop_generating: "Atsauciet atbildes ģenerēšanu",
-    pause_tts_speech_message:
-      "Pārtrauciet TTS (teksta-izrunas) žēstā vēstījuma izrunu.",
     slash_commands: "Īs termini komandās",
     agent_skills: "Aģenta prasmes",
     manage_agent_skills: "Iesaista aģenta prasmes",
@@ -970,6 +1013,86 @@ const TRANSLATIONS = {
     notAssigned:
       "Jūs nav piešķirts nevienai darba vietai.\nLūdzu, sazinieties ar savu administratoru, lai pieprasītu piekļuvi darba vietai.",
     goToWorkspace: 'Pāriet uz darba vietu "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram bot",
+    description:
+      "Iespējiet savu AnythingLLM instanci, lai varētu tikt savienots ar Telegram, un tāpēc varēsat runāt ar saviem darba grupām no jebkura ierīces.",
+    setup: {
+      step1: {
+        title: "1. darbība: Izveidot savu Telegram botu",
+        description:
+          "Atveriet `@BotFather` Telegramā, nosūtiet `/newbot` un ievietojiet to adresē <code>@BotFather</code>, sekojiet norādījumiem un kopējiet API atslēgu.",
+        "open-botfather": "Atvērt BotFather",
+        "instruction-1": "1. Atveriet saiti vai skenējiet QR kodu",
+        "instruction-2":
+          "2. Nosūtiet <code>/newbot</code> uz <code>@BotFather</code>",
+        "instruction-3":
+          "3. Izvēlieties nosaukumu un lietotājvārdu savam botam",
+        "instruction-4": "4. Kopējiet API atslēgu, ko saņemat",
+      },
+      step2: {
+        title: "2. darbība: Pievienojiet savu botu",
+        description:
+          "Ievietojiet API atslēgu, ko saņēsit no @BotFather, un izvēlieties nokārtotā darba telpu, kuras jūsu bots varēs veikt sazi.",
+        "bot-token": "Bots tokens",
+        "default-workspace": "Pamatojas darba videne",
+        "no-workspace": "Nav pieejamas darba vietas. Tiks izveidota jauna.",
+        connecting: "Savienojums...",
+        "connect-bot": "Saistītais bot",
+      },
+      security: {
+        title: "Ieteicamās drošības iestatījumi",
+        description:
+          "Lai nodrošinātu papildu drošību, konfigurējiet šos iestatījumus, izmantojot @BotFather.",
+        "disable-groups": "— Novērst, lai boti tiktu pievienoti grupām",
+        "disable-inline":
+          "— Novērst, lai bots tiktu izmantoti tiešajā meklēšanā.",
+        "obscure-username":
+          "Izmantojiet neparādu botu lietotāju vārdu, lai samazinātu atklājamo iespēju.",
+      },
+      "toast-enter-token": "Lūdzu, ievadiet bot tokenu.",
+      "toast-connect-failed": "Neizdevās pievienot botu.",
+    },
+    connected: {
+      status: "Saistīts",
+      "status-disconnected":
+        "Atvienots — tokens var būt nolaidēts vai nederīgs",
+      "placeholder-token": "Ievietojiet jaunu bot tokenu...",
+      reconnect: "Atjaunot sazi",
+      workspace: "Darba telpa",
+      "bot-link": "Bots saite",
+      "voice-response": "Balss atbildes",
+      disconnecting: "Atvienojot...",
+      disconnect: "Izslēgt",
+      "voice-text-only": "Tikai teksts",
+      "voice-mirror":
+        "Atspoguļošana (atbildēt ar balsi, kad lietotājs nosauc balsi)",
+      "voice-always":
+        "Vienmēr pievienojiet audio (sūtiet audio ar katru atbildi).",
+      "toast-disconnect-failed": "Neizdevās izslēgt botu.",
+      "toast-reconnect-failed": "Neizdevās atjaunot saikni ar botu.",
+      "toast-voice-failed": "Neizdevās atjaunināt balsī noteiktās režimas.",
+      "toast-approve-failed": "Nespēja apstiprināt lietotāju.",
+      "toast-deny-failed": "Nespēja atspējot lietotāju.",
+      "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
+    },
+    users: {
+      "pending-title": "Atkarībā no apstākļiem",
+      "pending-description":
+        "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
+      "approved-title": "Atļautie lietotāji",
+      "approved-description":
+        "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
+      user: "Izmantotājs",
+      "pairing-code": "Kopējā koda numura kombinācija",
+      "no-pending": "Neizpildīti pieprasījumi",
+      "no-approved": "No apstiprinātiem lietotājiem",
+      unknown: "Nezināms",
+      approve: "Aptver",
+      deny: "Atbrīsties; atgrūst",
+      revoke: "Atcel",
+    },
   },
 };
 

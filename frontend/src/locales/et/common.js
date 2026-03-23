@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
     save: "Salvesta muudatused",
@@ -63,6 +62,11 @@ const TRANSLATIONS = {
     search: "otsing",
     username_requirements:
       "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
+    on: "On",
+    none: "Ei",
+    stopped: "Peatas",
+    loading: "Laadimine",
+    refresh: "Värskendada",
   },
   settings: {
     title: "Instantsi seaded",
@@ -99,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Avasta populaarseid",
       "your-account": "Teie konto",
       "import-item": "Importeeritud toode",
+    },
+    channels: "Kaasavad",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -181,15 +189,12 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        "desc-start": "annab vastuseid LLM-i üldteadmistest",
-        and: "ja",
-        "desc-end": "leitud dokumendikontekstist.",
       },
       query: {
         title: "Päring",
-        "desc-start": "annab vastuseid",
-        only: "ainult",
-        "desc-end": "kui leitakse dokumendikontekst.",
+      },
+      automatic: {
+        title: "Automaailm",
       },
     },
     history: {
@@ -312,6 +317,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+    },
+    mcp: {
+      title: "MCP-serverid",
+      "loading-from-config": "MCP-serverid laaditakse konfiguraadifailist",
+      "learn-more": "Lisateabe saamiseks tutvuge MCP-serveridega.",
+      "no-servers-found": "MCP-servereid ei leitud.",
+      "tool-warning":
+        "Parima tulemuse saavutamiseks, võtke kaalutluseks, et välja lülitada tarbetud vahendid, et säilitada kontekst.",
+      "stop-server": "Lülitage MCP-server välja",
+      "start-server": "Alusta MCP-serverit",
+      "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
+      "tool-count-warning":
+        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+      "startup-command": "Alustamine",
+      command: "Juhendamine",
+      arguments: "Argumentid",
+      "not-running-warning":
+        "See MCP-server ei tööta – see võib olla peatatud või alguses võib tekkida viga.",
+      "tool-call-arguments": '"Tooli käivitamise argumentid"',
+      "tools-enabled": "vahendid on lubatud",
+    },
+    settings: {
+      title: "Agenti oskuste seaded",
+      "max-tool-calls": {
+        title: "Maximaalne töö-kõned vastuse kohta",
+        description:
+          "Максимаalne arv, mis agent võib ühendada, et genereerida ühe vastuse. See takistab liigse töö tegevuse ja lõpmatute ringide tekkimist.",
+      },
+      "intelligent-skill-selection": {
+        title: "Nutikad oskuste valiku meetodid",
+        "beta-badge": "Beeta",
+        description:
+          "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
+        },
+      },
     },
   },
   recorded: {
@@ -675,6 +719,8 @@ const TRANSLATIONS = {
       remove_selected: "Eemalda valitud",
       costs: "*Ühekordne embeddingu kulu",
       save_embed: "Salvesta ja põimi",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumendid",
     },
     upload: {
       "processor-offline": "Dokumenditöötleja pole saadaval",
@@ -758,7 +804,6 @@ const TRANSLATIONS = {
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
     tools: "Vahendid",
-    browse: "Sirva",
     text_size_label: "Teksti suurus",
     select_model: "Valige mudel",
     sources: "Allikasid",
@@ -771,7 +816,6 @@ const TRANSLATIONS = {
     edit: "Redigeerimine",
     publish: "Avaldada",
     stop_generating: "Lõpeta vastuste genereerimine",
-    pause_tts_speech_message: "Peata sõna-sünteesi (TTS) rääkimine sõnumis",
     slash_commands: "Lihtsasti kasutatavad käsud",
     agent_skills: "Agentide oskused",
     manage_agent_skills: "Halda agentide oskusi",
@@ -926,6 +970,84 @@ const TRANSLATIONS = {
     notAssigned:
       "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
     goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegrami bot",
+    description:
+      "Ühendage oma AnythingLLM instants Telegramiga, et saaksite vestleda oma tööruumidega igast seadmist.",
+    setup: {
+      step1: {
+        title: "1. samm: Looge oma Telegrami bot",
+        description:
+          "Ava Telegramis konto @BotFather, saat <code>/newbot</code> aadressile <code>@BotFather</code>, järgige juhiseid ja kopeerige API-token.",
+        "open-botfather": "Ava BotFather",
+        "instruction-1": "1. Avage link või skannige QR-kood",
+        "instruction-2":
+          "2. Saada <code>/newbot</code> aadressile <code>@BotFather</code>",
+        "instruction-3": "3. Valige oma botile nimi ja kasutajanimi.",
+        "instruction-4": "4. Kopeerige API-token, mida teile antakse.",
+      },
+      step2: {
+        title: "2. Samuti ühendage oma bot",
+        description:
+          "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
+        "bot-token": "Bot token",
+        "default-workspace": "Vaikimisi kasutatav tööruum",
+        "no-workspace":
+          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
+        connecting: "Ühendamine...",
+        "connect-bot": "Ühendusrobott",
+      },
+      security: {
+        title: "Soovitavad turvameetmed",
+        description:
+          "Lisaks turvalisusele, konfigureerige need seaded @BotFatheris.",
+        "disable-groups": "— Ennetada, et botid ei lisataks gruppi",
+        "disable-inline": "— Vältida, et bot kasutaks otsingut reaalajas.",
+        "obscure-username":
+          "Kasutage mitteolivaid kasutajanime, et vähendada avastamise võimalust.",
+      },
+      "toast-enter-token": "Palun sisestage bot'i token.",
+      "toast-connect-failed": "Bot ei suutnud ühendust tehes.",
+    },
+    connected: {
+      status: "Ühendatud",
+      "status-disconnected":
+        "Vabandus, toet – toet võib olla kehtimatuna või kehtima lõppenud",
+      "placeholder-token": "Sisestage uus bot'i token...",
+      reconnect: "Taastada ühendus",
+      workspace: "Tööruum",
+      "bot-link": "Bot link",
+      "voice-response": "Häälreaktsioon",
+      disconnecting: "Ühendus katkestatud...",
+      disconnect: "Ühenduse katkestamine",
+      "voice-text-only": "Tekst ainult",
+      "voice-mirror":
+        "Helisüsteem (vastake häältega, kui kasutaja kasutab helifunktsiooni)",
+      "voice-always": "Alati lisage hääl (saada helifail koos iga vastusega)",
+      "toast-disconnect-failed": "Impeer ei õnnestunud seadistada.",
+      "toast-reconnect-failed": "Bot ei suutnud ühendust taastada.",
+      "toast-voice-failed": "Ärkimõõtmeid ei õnnestunud uuendada.",
+      "toast-approve-failed": "Kasutaja kinnitamise ebaõnnestumine.",
+      "toast-deny-failed": "Ei suutnud kasutaja kohta infot väita.",
+      "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
+    },
+    users: {
+      "pending-title": "Ootea faasis, ootamas heakskiitu",
+      "pending-description":
+        "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
+      "approved-title": "Heakskiidud kasutajad",
+      "approved-description":
+        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
+      user: "Kasutaja",
+      "pairing-code": "Koosamis kood",
+      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
+      "no-approved": "Pole heakskiidud kasutajaid",
+      unknown: "Tuntud pole",
+      approve: "Heakskiid",
+      deny: "Nõgata",
+      revoke: "Tingimata",
+    },
   },
 };
 

@@ -48,7 +48,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "工作區名稱",
-    user: "使用者",
     selection: "模型選擇",
     saving: "儲存中...",
     save: "儲存變更",
@@ -60,6 +59,11 @@ const TRANSLATIONS = {
     search: "搜尋",
     username_requirements:
       "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
+    on: "關於",
+    none: "沒有",
+    stopped: "停止",
+    loading: "載入",
+    refresh: "重新整理",
   },
   settings: {
     title: "系統設定",
@@ -96,6 +100,10 @@ const TRANSLATIONS = {
       trending: "探索熱門",
       "your-account": "您的帳戶",
       "import-item": "匯入項目",
+    },
+    channels: "頻道",
+    "available-channels": {
+      telegram: "電訊",
     },
   },
   login: {
@@ -169,15 +177,12 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        "desc-start": "會結合 LLM 的一般知識",
-        and: "以及",
-        "desc-end": "已找到的文件內容來回答。",
       },
       query: {
         title: "查詢",
-        "desc-start": "會",
-        only: "只",
-        "desc-end": "在找到文件內容時回答。",
+      },
+      automatic: {
+        title: "自動",
       },
     },
     history: {
@@ -294,6 +299,44 @@ const TRANSLATIONS = {
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
       default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+    },
+    mcp: {
+      title: "MCP 伺服器",
+      "loading-from-config": "從設定檔中載入 MCP 伺服器",
+      "learn-more": "了解更多關於 MCP 伺服器的資訊。",
+      "no-servers-found": "未找到任何 MCP 伺服器",
+      "tool-warning": "為了獲得最佳效能，建議關閉不必要的工具，以節省資源。",
+      "stop-server": "停止 MCP 伺服器",
+      "start-server": "啟動 MCP 伺服器",
+      "delete-server": "刪除 MCP 伺服器",
+      "tool-count-warning":
+        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
+      "startup-command": "啟動指令",
+      command: "指令",
+      arguments: "辯論",
+      "not-running-warning":
+        "這個 MCP 伺服器目前處於停止狀態，可能是因為已停止運作，或是啟動時出現錯誤。",
+      "tool-call-arguments": "工具呼叫的參數",
+      "tools-enabled": "已啟用工具",
+    },
+    settings: {
+      title: "代理人技能設定",
+      "max-tool-calls": {
+        title: "每次回應的最大工具呼叫次數",
+        description:
+          "這設定了代理可以串聯使用的最大工具數量，以確保每次回應只會呼叫有限的工具，並避免無限循環。",
+      },
+      "intelligent-skill-selection": {
+        title: "智能技能選擇",
+        "beta-badge": "β 版本",
+        description:
+          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
+        "max-tools": {
+          title: "馬克斯工具",
+          description:
+            "可選取的工具的最大數量，適用於每個查詢。我們建議將此值設定為較高的值，以適用於較大的模型。",
+        },
+      },
     },
   },
   recorded: {
@@ -553,6 +596,8 @@ const TRANSLATIONS = {
       remove_selected: "移除選擇的項目",
       costs: "*嵌入僅會計費一次",
       save_embed: "儲存並嵌入",
+      "total-documents_one": "{{count}} 文件",
+      "total-documents_other": "{{count}} 文件",
     },
     upload: {
       "processor-offline": "文件處理器無法使用",
@@ -644,7 +689,6 @@ const TRANSLATIONS = {
     see_less: "顯示較少",
     see_more: "查看更多",
     tools: "工具",
-    browse: "瀏覽",
     text_size_label: "文字大小",
     select_model: "選擇模型",
     sources: "來源",
@@ -657,7 +701,6 @@ const TRANSLATIONS = {
     edit: "編輯",
     publish: "發佈",
     stop_generating: "停止產生回應",
-    pause_tts_speech_message: "暫停語音合成的訊息",
     slash_commands: "斜線指令",
     agent_skills: "智慧代理人技能",
     manage_agent_skills: "管理智慧代理人技能",
@@ -895,6 +938,79 @@ const TRANSLATIONS = {
     notAssigned:
       "您目前尚未被分配到任何工作區。\n請聯絡您的管理員以申請工作區的存取權限。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram 機器人",
+    description:
+      "將您的 AnythingLLM 實例連接到 Telegram，以便您可以在任何裝置上與您的工作空間進行對話。",
+    setup: {
+      step1: {
+        title: "第一步：建立您的 Telegram 機器人",
+        description:
+          '在 Telegram 中開啟 @BotFather，將 "<code>/newbot" 訊息發送至 <code>@BotFather</code>，按照指示操作，並複製 API 令牌。',
+        "open-botfather": "開啟 BotFather",
+        "instruction-1": "1. 點擊連結或掃描 QR 碼",
+        "instruction-2":
+          "2. 將 <code>/newbot</code> 傳送至 <code>@BotFather</code>",
+        "instruction-3": "3. 為您的機器人選擇一個名稱和使用者名稱。",
+        "instruction-4": "4. 複製您收到的 API 令牌",
+      },
+      step2: {
+        title: "步驟 2：連接您的機器人",
+        description:
+          "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
+        "bot-token": "機器人代幣",
+        "default-workspace": "預設工作空間",
+        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
+        connecting: "正在連接...",
+        "connect-bot": "連線機器人",
+      },
+      security: {
+        title: "建議的安全設定",
+        description: "為了額外保障，請在 @BotFather 中設定這些選項。",
+        "disable-groups": "— 阻止自動程式加入群組",
+        "disable-inline": "— 阻止機器人被用於內嵌式搜尋",
+        "obscure-username":
+          "使用一個不顯眼的機器人帳號名稱，以降低被發現的機會。",
+      },
+      "toast-enter-token": "請輸入機器人憑證。",
+      "toast-connect-failed": "無法連接機器人。",
+    },
+    connected: {
+      status: "連接",
+      "status-disconnected": "無法連接 — 可能是 token 已經過期或無效",
+      "placeholder-token": "黏貼新的機器人代碼...",
+      reconnect: "重新建立聯繫",
+      workspace: "工作空間",
+      "bot-link": "機器人連結",
+      "voice-response": "語音回應",
+      disconnecting: "斷線...",
+      disconnect: "斷開連接",
+      "voice-text-only": "僅提供文字",
+      "voice-mirror": "語音回覆 (使用者發送語音時，系統會回覆語音)",
+      "voice-always": "請務必在回覆中加入語音 (發送音訊)。",
+      "toast-disconnect-failed": "未能成功斷開機器人。",
+      "toast-reconnect-failed": "無法重新連線機器人。",
+      "toast-voice-failed": "無法更新語音模式。",
+      "toast-approve-failed": "無法驗證使用者。",
+      "toast-deny-failed": "未能阻止使用者。",
+      "toast-revoke-failed": "未能取消使用者權限。",
+    },
+    users: {
+      "pending-title": "待審核",
+      "pending-description":
+        "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
+      "approved-title": "已授權的使用者",
+      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
+      user: "使用者",
+      "pairing-code": "編碼組合",
+      "no-pending": "目前沒有待處理的請求",
+      "no-approved": "目前沒有已授權的使用者",
+      unknown: "未知的",
+      approve: "批准",
+      deny: "拒絕",
+      revoke: "撤銷",
+    },
   },
 };
 

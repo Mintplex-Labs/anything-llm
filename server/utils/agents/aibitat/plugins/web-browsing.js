@@ -20,19 +20,21 @@ const webBrowsing = {
               .toString()
               .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
           description:
-            "Searches for a given query using a search engine to get better results for the user query.",
+            "Search the internet for real-time information. Look online for current news, recent updates, latest changes, or any information not available locally. Browse the web to find answers about current events, prices, weather, or live data.",
           examples: [
             {
-              prompt: "Who won the world series today?",
-              call: JSON.stringify({ query: "Winner of today's world series" }),
+              prompt: "Look online for recent changes to AnythingLLM",
+              call: JSON.stringify({
+                query: "AnythingLLM recent changes updates",
+              }),
             },
             {
-              prompt: "What is AnythingLLM?",
-              call: JSON.stringify({ query: "AnythingLLM" }),
+              prompt: "Search the internet for the latest news",
+              call: JSON.stringify({ query: "latest news today" }),
             },
             {
-              prompt: "Current AAPL stock price",
-              call: JSON.stringify({ query: "AAPL stock price today" }),
+              prompt: "What's the current weather in NYC?",
+              call: JSON.stringify({ query: "current weather New York City" }),
             },
           ],
           parameters: {
@@ -92,6 +94,9 @@ const webBrowsing = {
                 break;
               case "exa-search":
                 engine = "_exaSearch";
+                break;
+              case "perplexity-search":
+                engine = "_perplexitySearch";
                 break;
               default:
                 engine = "_duckDuckGoEngine";
@@ -976,6 +981,84 @@ const webBrowsing = {
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
             );
+            return result;
+          },
+
+          _perplexitySearch: async function (query) {
+            if (!process.env.AGENT_PERPLEXITY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Perplexity searching because the user has not defined the required API key.\nVisit: [https://console.perplexity.ai](https://console.perplexity.ai) to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Perplexity to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.perplexity.ai/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
+                },
+                body: JSON.stringify({
+                  query: query,
+                  max_results: 5,
+                  max_tokens_per_page: 2048,
+                }),
+              }
+            )
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    auth: this.middleTruncate(
+                      process.env.AGENT_PERPLEXITY_API_KEY,
+                      5
+                    ),
+                    q: query,
+                  })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `Perplexity Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            if (response.results) {
+              response.results.forEach((result) => {
+                data.push({
+                  title: result.title,
+                  link: result.url,
+                  snippet: result.snippet || "",
+                });
+              });
+            }
+
+            if (data.length === 0)
+              return "No information was found online for the search query.";
+
+            this.reportSearchResultsCitations(data);
+
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+
             return result;
           },
         });

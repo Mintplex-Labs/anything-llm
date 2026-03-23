@@ -96,13 +96,16 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const feedback = await socket.askForFeedback(socket, node);
+          const { feedback, attachments } = await socket.askForFeedback(
+            socket,
+            node
+          );
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
             socket.close();
             return;
           }
 
-          await aibitat.continue(feedback);
+          await aibitat.continue(feedback, attachments);
         });
 
         /**
@@ -110,7 +113,7 @@ const websocket = {
          *
          * @param socket The content to summarize. // AIbitatWebSocket & { receive: any, echo: any }
          * @param node The chat node // { from: string; to: string }
-         * @returns The summarized content.
+         * @returns {{ feedback: string, attachments: Array }} The feedback and any attachments.
          */
         socket.askForFeedback = (socket, node) => {
           socket.awaitResponse = (question = "waiting...") => {
@@ -123,7 +126,10 @@ const websocket = {
                 if (data.type !== "awaitingFeedback") return;
                 delete socket.handleFeedback;
                 clearTimeout(socketTimeout);
-                resolve(data.feedback);
+                resolve({
+                  feedback: data.feedback,
+                  attachments: data.attachments || [],
+                });
                 return;
               };
 
@@ -133,7 +139,7 @@ const websocket = {
                     `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                   )
                 );
-                resolve("exit");
+                resolve({ feedback: "exit", attachments: [] });
                 return;
               }, SOCKET_TIMEOUT_MS);
             });

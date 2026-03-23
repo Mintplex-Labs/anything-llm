@@ -54,12 +54,14 @@ function collectFiles(dir, results = []) {
 const sourceFiles = collectFiles(FRONTEND_SRC);
 
 // ---------------------------------------------------------------------------
-// 3. Scan source files for t() references (literal and dynamic)
+// 3. Scan source files for t() and i18nKey references (literal and dynamic)
 // ---------------------------------------------------------------------------
 const referencedKeys = new Set();
 const tCallRegex = /\bt\(\s*["'`]([^"'`]+)["'`]/g;
 const dynamicTCallRegex = /\bt\(\s*([a-zA-Z_$][a-zA-Z0-9_$.]*)\s*[,)]/g;
 const templateTCallRegex = /\bt\(\s*`([^`]*\$\{[^`]*)`\s*[,)]/g;
+const i18nKeyRegex = /i18nKey=["'`]([^"'`]+)["'`]/g;
+const i18nKeyJsxRegex = /i18nKey=\{["'`]([^"'`]+)["'`]\}/g;
 const dynamicUsages = [];
 
 for (const file of sourceFiles) {
@@ -67,6 +69,14 @@ for (const file of sourceFiles) {
 
   let match;
   while ((match = tCallRegex.exec(content)) !== null) {
+    referencedKeys.add(match[1]);
+  }
+
+  while ((match = i18nKeyRegex.exec(content)) !== null) {
+    referencedKeys.add(match[1]);
+  }
+
+  while ((match = i18nKeyJsxRegex.exec(content)) !== null) {
     referencedKeys.add(match[1]);
   }
 

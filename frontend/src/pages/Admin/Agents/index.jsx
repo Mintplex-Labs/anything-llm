@@ -4,6 +4,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
+import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
 import {
   CaretLeft,
@@ -28,6 +29,13 @@ import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
+import AgentSkillSettings from "./AgentSkillSettings";
+
+const IGNORE_CHANGE_SETTINGS = [
+  "agentSkillRerankerEnabled",
+  "agentSkillRerankerTopN",
+  "agentSkillMaxToolCalls",
+];
 
 export default function AdminAgents() {
   const { t } = useTranslation();
@@ -234,6 +242,49 @@ export default function AdminAgents() {
     );
   };
 
+  const handleMCPToolToggle = async (serverName, toolName, enabled) => {
+    const { success, error, suppressedTools } = await MCPServers.toggleTool(
+      serverName,
+      toolName,
+      enabled
+    );
+
+    if (!success) {
+      showToast(error || "Failed to toggle tool.", "error", { clear: true });
+      return;
+    }
+
+    setMcpServers((prev) =>
+      prev.map((server) => {
+        if (server.name !== serverName) return server;
+        return {
+          ...server,
+          config: {
+            ...server.config,
+            anythingllm: {
+              ...server.config?.anythingllm,
+              suppressedTools,
+            },
+          },
+        };
+      })
+    );
+
+    setSelectedMcpServer((prev) => {
+      if (!prev || prev.name !== serverName) return prev;
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          anythingllm: {
+            ...prev.config?.anythingllm,
+            suppressedTools,
+          },
+        },
+      };
+    });
+  };
+
   if (loading) {
     return (
       <div
@@ -365,6 +416,7 @@ export default function AdminAgents() {
                             server={selectedMcpServer}
                             toggleServer={toggleMCP}
                             onDelete={handleMCPServerDelete}
+                            onToggleTool={handleMCPToolToggle}
                           />
                         ) : selectedFlow ? (
                           <FlowPanel
@@ -438,9 +490,10 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() =>
-          !selectedSkill?.imported && !selectedFlow && setHasChanges(true)
-        }
+        onChange={(e) => {
+          if (IGNORE_CHANGE_SETTINGS.includes(e.target.name)) return;
+          if (!selectedSkill?.imported && !selectedFlow) setHasChanges(true);
+        }}
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
@@ -463,11 +516,12 @@ export default function AdminAgents() {
 
         {/* Skill settings nav - Make this section scrollable */}
         <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
-          <div className="flex-none mb-4">
+          <div className="flex-none flex justify-between items-center mb-4">
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
+            <AgentSkillSettings />
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 pb-4">
@@ -557,6 +611,7 @@ export default function AdminAgents() {
                     server={selectedMcpServer}
                     toggleServer={toggleMCP}
                     onDelete={handleMCPServerDelete}
+                    onToggleTool={handleMCPToolToggle}
                   />
                 ) : selectedFlow ? (
                   <FlowPanel

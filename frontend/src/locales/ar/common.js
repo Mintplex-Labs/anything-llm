@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "اسم مساحة العمل",
-    user: "مستعمِل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
     save: "حفظ التغييرات",
@@ -62,6 +61,11 @@ const TRANSLATIONS = {
     search: "بحث",
     username_requirements:
       "يجب أن يتكون اسم المستخدم من 2 إلى 32 حرفًا، ويبدأ بحرف صغير، ويحتوي فقط على حروف وأرقام وعلامات التسطير والنقاط.",
+    on: "على",
+    none: "لا",
+    stopped: "توقف",
+    loading: "تحميل",
+    refresh: "استعيد/جدد",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -98,6 +102,10 @@ const TRANSLATIONS = {
       trending: "استكشف الاتجاهات الرائجة",
       "your-account": "حسابك",
       "import-item": "استيراد العنصر",
+    },
+    channels: "القنوات",
+    "available-channels": {
+      telegram: "تليجرام",
     },
   },
   login: {
@@ -175,15 +183,12 @@ const TRANSLATIONS = {
       title: "وضع المحادثة",
       chat: {
         title: "المحادثة",
-        "desc-start": "سيقدم إجابات حسب المعرفة العامة لنموذج التعلم العميق",
-        and: "and",
-        "desc-end": "المستند الذي تم العثور عليه حسب السياق.",
       },
       query: {
         title: "استعلام",
-        "desc-start": "سوف تقدم الإجابات",
-        only: "فقط",
-        "desc-end": "إذا وجد المستند في السياق",
+      },
+      automatic: {
+        title: "سيارة",
       },
     },
     history: {
@@ -313,6 +318,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "افتراضيًا، يتم تفعيل هذه الميزة، ولكن يمكنك تعطيلها إذا لم ترغب في أن تكون متاحة للممثل.",
+    },
+    mcp: {
+      title: "خوادم نظام MCP",
+      "loading-from-config": "تحميل خوادم MCP من ملف التكوين",
+      "learn-more": "اعرف المزيد عن خوادم MCP.",
+      "no-servers-found": "لم يتم العثور على أي خوادم MCP.",
+      "tool-warning":
+        "لتحقيق أفضل أداء، ضع في اعتبارك تعطيل الأدوات غير الضرورية للحفاظ على السياق.",
+      "stop-server": "أوقف خادم MCP",
+      "start-server": "ابدأ خادم MCP",
+      "delete-server": "حذف خادم MCP",
+      "tool-count-warning":
+        "يحتوي هذا خادم MCP على <b> أدوات مُفعّلة</b> والتي ستستهلك السياق في كل محادثة. <br /> ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
+      "startup-command": "أمر البدء",
+      command: "الأمر",
+      arguments: "حجج",
+      "not-running-warning":
+        "هذا الخادم الخاص بـ MCP غير قيد التشغيل - قد يكون متوقفًا أو يواجه مشكلة عند التشغيل.",
+      "tool-call-arguments": "وسائط استدعاء الدالة",
+      "tools-enabled": "الأدوات مفعّلة",
+    },
+    settings: {
+      title: "إعدادات مهارات الوكيل",
+      "max-tool-calls": {
+        title: "الحد الأقصى لعدد طلبات الأدوات في الاستجابة.",
+        description:
+          "أقصى عدد من الأدوات التي يمكن للممثل (الوكيل) ربطها لإنشاء استجابة واحدة. وهذا يمنع استدعاءات الأدوات غير المنضبطة والحلقات اللانهائية.",
+      },
+      "intelligent-skill-selection": {
+        title: "اختيار المهارات الذكية",
+        "beta-badge": "بيتا",
+        description:
+          "تمكين استخدام أدوات غير محدودة وتقليل استخدام رموز القطع بنسبة تصل إلى 80٪ لكل استعلام - يقوم AnythingLLM تلقائيًا باختيار المهارات المناسبة لكل طلب.",
+        "max-tools": {
+          title: "أدوات ماكس",
+          description:
+            "الحد الأقصى لعدد الأدوات التي يمكن اختيارها لكل استعلام. ونوصي بتعيين هذه القيمة على قيم أعلى بالنسبة للنماذج ذات السياق الأكبر.",
+        },
+      },
     },
   },
   recorded: {
@@ -590,6 +634,8 @@ const TRANSLATIONS = {
       remove_selected: "حذف المحدد",
       costs: "*تكلفة ثابتة لإنشاء التمثيلات",
       save_embed: "حفظ و تضمين",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} المستندات",
     },
     upload: {
       "processor-offline": "غير متاح",
@@ -685,7 +731,6 @@ const TRANSLATIONS = {
     see_less: "اقرأ المزيد",
     see_more: "عرض المزيد",
     tools: "الأدوات",
-    browse: "تصفح",
     text_size_label: "حجم النص",
     select_model: "اختر الطراز",
     sources: "مصادر",
@@ -698,7 +743,6 @@ const TRANSLATIONS = {
     edit: "تحرير",
     publish: "نشر",
     stop_generating: "توقف عن إنشاء رد",
-    pause_tts_speech_message: "توقف عن قراءة النص بصوت مسجل.",
     slash_commands: "أوامر مختصرة",
     agent_skills: "مهارات الوكيل",
     manage_agent_skills: "إدارة مهارات الوكلاء",
@@ -948,6 +992,82 @@ const TRANSLATIONS = {
     notAssigned:
       "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
     goToWorkspace: 'الذهاب إلى "{{workspace}}"',
+  },
+  telegram: {
+    title: "روبوت تيليجرام",
+    description:
+      "قم بتوصيل مثيل AnyLLM الخاص بك بـ Telegram، حتى تتمكن من الدردشة مع مساحات العمل الخاصة بك من أي جهاز.",
+    setup: {
+      step1: {
+        title: "الخطوة الأولى: إنشاء روبوت Telegram الخاص بك.",
+        description:
+          "افتح حساب @BotFather على تطبيق تيليجرام، وأرسل الرسالة `/newbot` إلى حساب @BotFather، واتبع التعليمات، وانسخ رمز API.",
+        "open-botfather": "ابدأ محادثة مع BotFather",
+        "instruction-1": "1. افتح الرابط أو قم بمسح رمز QR.",
+        "instruction-2":
+          "2. أرسل <code>/newbot</code> إلى <code>@BotFather</code>",
+        "instruction-3": "3. اختر اسمًا واسم مستخدم لروبوتك.",
+        "instruction-4": "4. انسخ رمز واجهة برمجة التطبيقات الذي تتلقاه.",
+      },
+      step2: {
+        title: "الخطوة الثانية: قم بتوصيل روبوتك.",
+        description:
+          "الصق رمز API الذي تلقيته من @BotFather، ثم اختر مساحة عمل افتراضية لجهازك التابع للروبوت للدردشة فيها.",
+        "bot-token": "رمز الرمز (Token)",
+        "default-workspace": "مساحة العمل الافتراضية",
+        "no-workspace": "لا توجد مساحات عمل متاحة. سيتم إنشاء مساحة عمل جديدة.",
+        connecting: "التحميل...",
+        "connect-bot": "روبوت الاتصال",
+      },
+      security: {
+        title: "إعدادات الأمان الموصى بها",
+        description:
+          'لزيادة الأمان، قم بتكوين هذه الإعدادات في حساب "@BotFather".',
+        "disable-groups": "– منع إضافة الروبوتات إلى المجموعات",
+        "disable-inline": "– منع استخدام الروبوت في عمليات البحث المباشرة.",
+        "obscure-username":
+          "استخدم اسم مستخدم روبوت غير تقليدي لتقليل فرص اكتشافه.",
+      },
+      "toast-enter-token": "الرجاء إدخال رمز البوت.",
+      "toast-connect-failed": "فشل الاتصال بالروبوت.",
+    },
+    connected: {
+      status: "متصل",
+      "status-disconnected":
+        "غير متصل — قد يكون الرمز منتهي الصلاحية أو غير صالح",
+      "placeholder-token": "ألصق رمز البوت الجديد...",
+      reconnect: "إعادة الاتصال",
+      workspace: "مساحة العمل",
+      "bot-link": "رابط الروبوت",
+      "voice-response": "رد صوتي",
+      disconnecting: "قطع الاتصال...",
+      disconnect: "افصل",
+      "voice-text-only": "النص فقط",
+      "voice-mirror": "مرآة (يرد الصوت عند إرسال المستخدم له)",
+      "voice-always": "يرجى تضمين تسجيل صوتي (إرسال تسجيل صوتي مع كل رد).",
+      "toast-disconnect-failed": "فشل فصل الوحدة الآلية.",
+      "toast-reconnect-failed": "فشل إعادة الاتصال بالروبوت.",
+      "toast-voice-failed": "فشلت عملية تحديث وضع الصوت.",
+      "toast-approve-failed": "فشل في الموافقة على المستخدم.",
+      "toast-deny-failed": "فشل في رفض طلب المستخدم.",
+      "toast-revoke-failed": "فشل إلغاء صلاحية المستخدم.",
+    },
+    users: {
+      "pending-title": "معلق على الموافقة",
+      "pending-description":
+        "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
+      "approved-title": "المستخدمون المعتمدون",
+      "approved-description":
+        "المستخدمون الذين تم منحهم الإذن للتواصل مع روبوتك.",
+      user: "المستخدم",
+      "pairing-code": "رمز التوفيق",
+      "no-pending": "لا توجد طلبات معلقة.",
+      "no-approved": "لا يوجد مستخدمون معتمدون.",
+      unknown: "غير معروف",
+      approve: "الموافقة",
+      deny: "رفض",
+      revoke: "إلغاء",
+    },
   },
 };
 

@@ -91,6 +91,50 @@ class BackgroundService {
       origin: message.name,
     });
   }
+
+  /**
+   * Run a one-off job via Bree with a data payload sent over IPC.
+   * The job file receives the payload via process.on('message').
+   * @param {string} name - Job filename (without .js) in the jobs directory
+   * @param {object} payload - Data to send to the job via IPC
+   * @param {object} [opts]
+   * @param {function} [opts.onMessage] - Callback for IPC messages from the child process
+   * @returns {Promise<void>} Resolves when the job exits with code 0
+   */
+  async runJob(name, payload = {}, { onMessage } = {}) {
+    const jobId = `${name}-${Date.now()}`;
+
+    await this.bree.add({
+      name: jobId,
+      path: path.resolve(this.#root, `${name}.js`),
+    });
+
+    await this.bree.run(jobId);
+    const worker = this.bree.workers.get(jobId);
+    if (worker && typeof worker.send === "function") {
+      worker.send(payload);
+    }
+    if (worker && onMessage) {
+      worker.on("message", onMessage);
+    }
+
+    return new Promise((resolve, reject) => {
+      worker.on("exit", async (code) => {
+        try {
+          await this.bree.remove(jobId);
+        } catch {}
+        if (code === 0) resolve();
+        else reject(new Error(`Job ${jobId} exited with code ${code}`));
+      });
+
+      worker.on("error", async (err) => {
+        try {
+          await this.bree.remove(jobId);
+        } catch {}
+        reject(err);
+      });
+    });
+  }
 }
 
 module.exports.BackgroundService = BackgroundService;

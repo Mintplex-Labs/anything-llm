@@ -92,9 +92,50 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
+   * Parse a data URL into base64 data for Ollama images
+   * @param {string} dataUrl - Data URL like "data:image/jpeg;base64,/9j/..."
+   * @returns {string|null} Base64 encoded image data
+   */
+  #parseImageDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:[^;]+;base64,(.+)$/);
+    if (!matches) return null;
+    return matches[1];
+  }
+
+  /**
+   * Override formatMessageWithAttachments for Ollama's specific format.
+   * Ollama expects images in a separate 'images' array with base64 data (no data URI prefix),
+   * not the OpenAI-style content array format.
+   * **This is only used for Ollama:untooled fallback mode.**
+   * @param {Object} message - Message with potential attachments
+   * @returns {Object} Formatted message for Ollama
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    const images = [];
+    for (const attachment of message.attachments) {
+      const imageData = this.#parseImageDataUrl(attachment.contentString);
+      if (imageData) {
+        images.push(imageData);
+      }
+    }
+
+    const { attachments: _, ...restOfMessage } = message;
+    return {
+      ...restOfMessage,
+      ...(images.length > 0 ? { images } : {}),
+    };
+  }
+
+  /**
    * Convert aibitat's internal message history (which uses role:"function" with
    * originalFunctionCall metadata) into the Ollama tool-calling message format
    * (assistant tool_calls + role:"tool" result pairs).
+   * Handles image attachments for vision/multimodal support.
    * @param {Array} messages
    * @returns {Array}
    */
@@ -128,7 +169,21 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
               : JSON.stringify(message.content),
         });
       } else {
-        formatted.push(message);
+        // Handle messages with attachments (images) for multimodal support
+        if (message.attachments && message.attachments.length > 0) {
+          const images = [];
+          for (const attachment of message.attachments) {
+            const imageData = this.#parseImageDataUrl(attachment.contentString);
+            if (imageData) images.push(imageData);
+          }
+          const { attachments: _, ...restOfMessage } = message;
+          formatted.push({
+            ...restOfMessage,
+            ...(images.length > 0 ? { images } : {}),
+          });
+        } else {
+          formatted.push(message);
+        }
       }
     }
     return formatted;

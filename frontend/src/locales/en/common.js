@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Workspace Name",
-    user: "User",
     selection: "Model Selection",
     saving: "Saving...",
     save: "Save changes",
@@ -59,9 +58,14 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    on: "On",
+    none: "None",
+    stopped: "Stopped",
     search: "Search",
     username_requirements:
       "Username must be 2-32 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
+    loading: "Loading",
+    refresh: "Refresh",
   },
   home: {
     welcome: "Welcome",
@@ -106,6 +110,10 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
+    channels: "Channels",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -188,17 +196,14 @@ const TRANSLATIONS = {
     },
     mode: {
       title: "Chat mode",
+      automatic: {
+        title: "Auto",
+      },
       chat: {
         title: "Chat",
-        "desc-start": "will provide answers with the LLM's general knowledge",
-        and: "and",
-        "desc-end": "document context that is found.",
       },
       query: {
         title: "Query",
-        "desc-start": "will provide answers",
-        only: "only",
-        "desc-end": "if document context is found.",
       },
     },
     history: {
@@ -333,6 +338,45 @@ const TRANSLATIONS = {
       },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
+    },
+    mcp: {
+      title: "MCP Servers",
+      "loading-from-config": "Loading MCP Servers from configuration file",
+      "learn-more": "Learn more about MCP Servers.",
+      "no-servers-found": "No MCP servers found",
+      "tool-warning":
+        "For the best performance, consider disabling unwanted tools to conserve context.",
+      "tools-enabled": "tools enabled",
+      "stop-server": "Stop MCP Server",
+      "start-server": "Start MCP Server",
+      "delete-server": "Delete MCP Server",
+      "tool-count-warning":
+        "This MCP server has <b>{{count}} tools enabled</b> that will consume context in every chat.<br />Consider disabling unwanted tools to conserve context.",
+      "startup-command": "Startup Command",
+      command: "Command",
+      arguments: "Arguments",
+      "not-running-warning":
+        "This MCP server is not running - it may be stopped or experiencing an error on startup.",
+      "tool-call-arguments": "Tool call arguments",
+    },
+    settings: {
+      title: "Agent Skill Settings",
+      "max-tool-calls": {
+        title: "Max Tool Calls Per Response",
+        description:
+          "The maximum number of tools an agent can chain to generate a single response. This prevents runaway tool calls and infinite loops.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent Skill Selection",
+        "beta-badge": "Beta",
+        description:
+          "Enable unlimited tools and cut token usage by up to 80% per query — AnythingLLM automatically selects the right skills for every prompt.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
+        },
+      },
     },
   },
   recorded: {
@@ -541,6 +585,81 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
+  telegram: {
+    title: "Telegram Bot",
+    description:
+      "Connect your AnythingLLM instance to Telegram so you can chat with your workspaces from any device.",
+    setup: {
+      step1: {
+        title: "Step 1: Create your Telegram bot",
+        description:
+          "Open @BotFather in Telegram, send <code>/newbot</code> to <code>@BotFather</code>, follow the prompts, and copy the API token.",
+        "open-botfather": "Open BotFather",
+        "instruction-1": "1. Open the link or scan the QR code",
+        "instruction-2":
+          "2. Send <code>/newbot</code> to <code>@BotFather</code>",
+        "instruction-3": "3. Choose a name and username for your bot",
+        "instruction-4": "4. Copy the API token you receive",
+      },
+      step2: {
+        title: "Step 2: Connect your bot",
+        description:
+          "Paste the API token you received from @BotFather and select a default workspace for your bot to chat with.",
+        "bot-token": "Bot Token",
+        "default-workspace": "Default Workspace",
+        "no-workspace": "No available workspaces. A new one will be created.",
+        connecting: "Connecting...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Recommended Security Settings",
+        description:
+          "For additional security, configure these settings in @BotFather.",
+        "disable-groups": "— Prevent adding bot to groups",
+        "disable-inline": "— Prevent bot from being used in inline search",
+        "obscure-username":
+          "Use a non-obvious bot handle username to reduce discoverability",
+      },
+      "toast-enter-token": "Please enter a bot token.",
+      "toast-connect-failed": "Failed to connect bot.",
+    },
+    connected: {
+      status: "Connected",
+      "status-disconnected": "Disconnected — token may be expired or invalid",
+      "placeholder-token": "Paste new bot token...",
+      reconnect: "Reconnect",
+      workspace: "Workspace",
+      "bot-link": "Bot Link",
+      "voice-response": "Voice Response",
+      disconnecting: "Disconnecting...",
+      disconnect: "Disconnect",
+      "voice-text-only": "Text only",
+      "voice-mirror": "Mirror (reply with voice when user sends voice)",
+      "voice-always": "Always voice (send audio with every reply)",
+      "toast-disconnect-failed": "Failed to disconnect bot.",
+      "toast-reconnect-failed": "Failed to reconnect bot.",
+      "toast-voice-failed": "Failed to update voice mode.",
+      "toast-approve-failed": "Failed to approve user.",
+      "toast-deny-failed": "Failed to deny user.",
+      "toast-revoke-failed": "Failed to revoke user.",
+    },
+    users: {
+      "pending-title": "Pending Approval",
+      "pending-description":
+        "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
+      "approved-title": "Approved Users",
+      "approved-description":
+        "Users who have been approved to chat with your bot.",
+      user: "User",
+      "pairing-code": "Pairing Code",
+      "no-pending": "No pending requests",
+      "no-approved": "No approved users",
+      unknown: "Unknown",
+      approve: "Approve",
+      deny: "Deny",
+      revoke: "Revoke",
+    },
+  },
   security: {
     title: "Security",
     multiuser: {
@@ -720,6 +839,8 @@ const TRANSLATIONS = {
     directory: {
       "my-documents": "My Documents",
       "new-folder": "New Folder",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
       "search-document": "Search for document",
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
@@ -790,7 +911,6 @@ const TRANSLATIONS = {
     source_count_other: "{{count}} references",
     document: "Document",
     similarity_match: "match",
-    pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
     delete: "Delete",
     cancel: "Cancel",
@@ -821,7 +941,6 @@ const TRANSLATIONS = {
     normal: "Normal",
     large: "Large",
     tools: "Tools",
-    browse: "Browse",
     text_size_label: "Text Size",
     select_model: "Select Model",
     slash_commands: "Slash Commands",
