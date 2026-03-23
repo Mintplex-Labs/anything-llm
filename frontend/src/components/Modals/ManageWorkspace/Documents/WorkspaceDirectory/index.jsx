@@ -10,6 +10,7 @@ import {
   XCircle,
   CircleNotch,
   Clock,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
@@ -518,7 +519,7 @@ const getStatusStyles = () => ({
     icon: (
       <Clock size={16} className="text-white/40 shrink-0" weight="regular" />
     ),
-    textColor: "",
+    textColor: "text-zinc-400",
     label: "Queued",
   },
 
@@ -526,11 +527,11 @@ const getStatusStyles = () => ({
     icon: (
       <CircleNotch
         size={16}
-        className="text-sky-400 animate-spin shrink-0"
+        className="text-white animate-spin shrink-0"
         weight="bold"
       />
     ),
-    textColor: "text-sky-400",
+    textColor: "text-white",
     label: "Embedding",
   },
 
@@ -555,15 +556,16 @@ function EmbeddingFileRow({ filename, status: fileStatus }) {
   const { status, chunksProcessed = 0, totalChunks = 0 } = fileStatus;
   const displayName = getDisplayName(filename);
   const statusStyles = getStatusStyles();
-  const isEmbedding = status === "embedding" && totalChunks > 0;
-  const pct = isEmbedding
-    ? Math.round((chunksProcessed / totalChunks) * 100)
-    : 0;
+  const isEmbedding = status === "embedding";
+  const pct =
+    isEmbedding && totalChunks > 0
+      ? Math.round((chunksProcessed / totalChunks) * 100)
+      : 0;
 
   return (
     <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
       <div className="col-span-8 flex items-center gap-x-2 overflow-hidden">
-        {statusStyles[status].icon || statusStyles.pending.icon}
+        {statusStyles[status]?.icon || statusStyles.pending.icon}
         <p
           className={`whitespace-nowrap overflow-hidden text-ellipsis ${
             status === "failed" ? "text-red-400" : ""
@@ -576,21 +578,26 @@ function EmbeddingFileRow({ filename, status: fileStatus }) {
       <div className="col-span-4 flex justify-end items-center gap-x-2">
         {isEmbedding ? (
           <div className="flex items-center gap-x-2 w-full justify-end">
-            <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="w-20 h-[1.5px] bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-sky-400 rounded-full transition-all duration-300"
+                className="h-full bg-white rounded-full transition-all duration-300"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <p className="text-[10px] whitespace-nowrap text-sky-400 w-8 text-right">
-              {pct}%
-            </p>
+            <p className="text-xs whitespace-nowrap w-8 text-right">{pct}%</p>
           </div>
         ) : (
           <p
-            className={`text-[10px] whitespace-nowrap ${statusStyles[status].textColor}`}
+            className={`text-xs italic whitespace-nowrap flex gap-2 justify-center items-center ${statusStyles[status]?.textColor}`}
           >
-            {statusStyles[status].label || "Queued"}
+            {statusStyles[status]?.label || "Queued"}
+            {status === "failed" && (
+              <WarningCircle
+                className="text-red-400"
+                strokeWidth={1.5}
+                size={12}
+              />
+            )}
           </p>
         )}
       </div>
