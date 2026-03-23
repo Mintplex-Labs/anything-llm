@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-document-collector",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Document collector server endpoints",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
+    "lint": "eslint --fix .",
+    "lint:check": "eslint ."
   },
   "dependencies": {
     "@langchain/community": "^0.2.23",
@@ -49,7 +50,13 @@
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "cross-env": "^7.0.3",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-unused-imports": "^4.0.0",
+    "globals": "^17.4.0",
     "nodemon": "^2.0.22",
     "prettier": "^2.4.1"
   },

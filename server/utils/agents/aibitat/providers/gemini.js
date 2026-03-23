@@ -30,14 +30,13 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
-  get supportsToolCalling() {
-    if (!this.model.startsWith("gemini")) return false;
-    return true;
-  }
-
+  /**
+   * Whether this provider supports agent streaming.
+   * - Tool call streaming results in a 400/503 error for all non-gemini models
+   * using the compatible v1beta/openai/ endpoint
+   * @returns {boolean}
+   */
   get supportsAgentStreaming() {
-    // Tool call streaming results in a 400/503 error for all non-gemini models
-    // using the compatible v1beta/openai/ endpoint
     if (!this.model.startsWith("gemini")) {
       this.providerLog(
         `Gemini: ${this.model} does not support tool call streaming.`
@@ -45,6 +44,20 @@ class GeminiProvider extends Provider {
       return false;
     }
     return true;
+  }
+
+  get supportsToolCalling() {
+    if (!this.model.startsWith("gemini")) return false;
+    return true;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Gemini only supports tool calling for Gemini models.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return this.supportsToolCalling;
   }
 
   /**
@@ -83,6 +96,10 @@ class GeminiProvider extends Provider {
    * Format the messages to the Gemini API Responses format.
    * - Gemini has some loosely documented format for tool calls and it can change at any time.
    * - We need to map the function call to the correct id and Gemini will throw an error if it does not.
+   * - Gemini requires a `thought_signature` (via `extra_content.google.thought_signature`) on function call
+   *   parts in multi-turn tool conversations. This is an encrypted token Gemini attaches to every tool call
+   *   it makes, and it must be passed back when sending tool results or Gemini rejects the request with a 400.
+   *   See: https://ai.google.dev/gemini-api/docs/thought-signatures
    * @param {any[]} messages - The messages to format.
    * @returns {OpenAI.OpenAI.Responses.ResponseInput[]} The formatted messages.
    */
@@ -101,17 +118,27 @@ class GeminiProvider extends Provider {
           return;
         }
 
+        const prefixedName = this.prefixToolCall(
+          message.originalFunctionCall.name,
+          "add"
+        );
         formattedMessages.push(
           {
             role: "assistant",
+            content: "",
             tool_calls: [
               {
                 type: "function",
+                ...(message.originalFunctionCall.extra_content
+                  ? {
+                      extra_content: message.originalFunctionCall.extra_content,
+                    }
+                  : {}),
                 function: {
                   arguments: JSON.stringify(
                     message.originalFunctionCall.arguments
                   ),
-                  name: message.originalFunctionCall.name,
+                  name: prefixedName,
                 },
                 id: message.originalFunctionCall.id,
               },
@@ -120,9 +147,28 @@ class GeminiProvider extends Provider {
           {
             role: "tool",
             tool_call_id: message.originalFunctionCall.id,
+            name: prefixedName,
             content: message.content,
           }
         );
+        return;
+      }
+
+      // Handle messages with attachments (images) for multimodal support
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
         return;
       }
 
@@ -150,6 +196,8 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.stream - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
       /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
@@ -157,6 +205,7 @@ class GeminiProvider extends Provider {
         model: this.model,
         messages: this.#formatMessages(messages),
         stream: true,
+        stream_options: { include_usage: true },
         ...(Array.isArray(functions) && functions?.length > 0
           ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
           : {}),
@@ -171,6 +220,9 @@ class GeminiProvider extends Provider {
       for await (const streamEvent of response) {
         /** @type {OpenAI.OpenAI.Chat.ChatCompletionChunk} */
         const chunk = streamEvent;
+
+        // Capture usage from final chunk (when stream_options.include_usage is true)
+        if (chunk?.usage) this.recordUsage(chunk.usage);
         const { content, tool_calls } = chunk?.choices?.[0]?.delta || {};
 
         if (content) {
@@ -188,6 +240,8 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
             arguments: toolCall.function.arguments,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
+            extra_content: toolCall.extra_content ?? null,
           };
           eventHandler?.("reportStreamEvent", {
             type: "toolCallInvocation",
@@ -208,8 +262,10 @@ class GeminiProvider extends Provider {
             id: completion.functionCall.call_id,
             name: completion.functionCall.name,
             arguments: completion.functionCall.arguments,
+            extra_content: completion.functionCall.extra_content,
           },
           cost: this.getCost(),
+          uuid: msgUUID,
         };
       }
 
@@ -217,6 +273,7 @@ class GeminiProvider extends Provider {
         textResponse: completion.content,
         functionCall: null,
         cost: this.getCost(),
+        uuid: msgUUID,
       };
     } catch (error) {
       if (error instanceof OpenAI.AuthenticationError) throw error;
@@ -243,6 +300,8 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.complete - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
@@ -252,6 +311,8 @@ class GeminiProvider extends Provider {
           ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
           : {}),
       });
+
+      if (response.usage) this.recordUsage(response.usage);
 
       /** @type {OpenAI.OpenAI.Chat.ChatCompletionMessage} */
       const completion = response.choices[0].message;
@@ -265,14 +326,18 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             arguments: functionArgs,
             id: toolCall.id,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
+            extra_content: toolCall.extra_content ?? null,
           },
           cost,
+          usage: this.getUsage(),
         };
       }
 
       return {
         textResponse: completion.content,
         cost,
+        usage: this.getUsage(),
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting

@@ -193,6 +193,11 @@ function Directory({
     setContextMenu({ visible: false, x: 0, y: 0 });
   };
 
+  const totalDocCount = (files?.items ?? []).reduce((acc, folder) => {
+    if (folder.type === "folder") return folder.items.length + acc;
+    return acc;
+  }, 0);
+
   return (
     <>
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
@@ -232,6 +237,13 @@ function Directory({
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
             <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
+              {totalDocCount > 0 && (
+                <p className="col-span-6 text-right text-theme-text-secondary">
+                  {t(`connectors.directory.total-documents`, {
+                    count: totalDocCount,
+                  })}
+                </p>
+              )}
             </div>
 
             <div className="overflow-y-auto h-full pt-8">
@@ -249,6 +261,7 @@ function Directory({
                       <FolderRow
                         key={index}
                         item={item}
+                        totalItems={item.items?.length ?? 0}
                         selected={isSelected(
                           item.id,
                           item.type === "folder" ? item : null
@@ -310,7 +323,6 @@ function Directory({
               </div>
             )}
           </div>
-
           <UploadFile
             workspace={workspace}
             fetchKeys={fetchKeys}

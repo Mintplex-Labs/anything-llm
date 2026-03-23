@@ -16,8 +16,12 @@ const webScraping = {
           name: this.name,
           controller: new AbortController(),
           description:
-            "Scrapes the content of a webpage or online resource from a provided URL.",
+            "Read and extract content from a specific webpage URL. Fetch the text from a website, get the contents of a link, or visit a URL to see what it says. Use when you have a specific web address to read.",
           examples: [
+            {
+              prompt: "Read that URL for me",
+              call: JSON.stringify({ url: "https://example.com" }),
+            },
             {
               prompt: "What is anythingllm.com about?",
               call: JSON.stringify({ url: "https://anythingllm.com" }),
@@ -56,6 +60,33 @@ const webScraping = {
           },
 
           /**
+           * Report a URL citation to be displayed in the chat UI.
+           * @param {string} url - The URL that was accessed
+           * @param {string} content - The content retrieved from the URL
+           */
+          reportUrlCitation: function (url, content) {
+            try {
+              const urlObj = new URL(url);
+              this.super.addCitation?.({
+                id: url,
+                title: urlObj.hostname + urlObj.pathname,
+                text: content,
+                chunkSource: `link://${url}`,
+                score: null,
+              });
+            } catch {
+              // URL parsing failed, still add citation without parsed title
+              this.super.addCitation?.({
+                id: url,
+                title: url,
+                text: content,
+                chunkSource: `link://${url}`,
+                score: null,
+              });
+            }
+          },
+
+          /**
            * Scrape a website and summarize the content based on objective if the content is too large.
            * Objective is the original objective & task that user give to the agent, url is the url of the website to be scraped.
            * Here we can leverage the document collector to get raw website text quickly.
@@ -83,6 +114,7 @@ const webScraping = {
               throw new Error("There was no content to be collected or read.");
             }
 
+            this.reportUrlCitation(url, content);
             const { TokenManager } = require("../../../helpers/tiktoken");
             const tokenEstimate = new TokenManager(
               this.super.model

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 
 export default function useProviderEndpointAutoDiscovery({
   provider = null,
@@ -48,20 +47,12 @@ export default function useProviderEndpointAutoDiscovery({
       setBasePath(endpoint);
       setBasePathValue(endpoint);
       setLoading(false);
-      showToast("Provider endpoint discovered automatically.", "success", {
-        clear: true,
-      });
       setShowAdvancedControls(false);
       return;
     }
 
     setLoading(false);
     setShowAdvancedControls(true);
-    showToast(
-      "Couldn't automatically discover the provider endpoint. Please enter it manually.",
-      "info",
-      { clear: true }
-    );
   }
 
   function handleAutoDetectClick(e) {

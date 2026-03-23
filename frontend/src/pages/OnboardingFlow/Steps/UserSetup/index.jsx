@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
 import { USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH } from "@/utils/username";
+import { PW_REGEX } from "@/pages/GeneralSettings/Security";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -122,6 +123,15 @@ const JustMe = ({
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+
+    if (!PW_REGEX.test(formData.get("password"))) {
+      showToast(
+        `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`,
+        "error"
+      );
+      return;
+    }
+
     const { error } = await System.updateSystemPassword({
       usePassword: true,
       newPassword: formData.get("password"),

@@ -30,7 +30,6 @@ const {
   isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
-const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
@@ -962,50 +961,6 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get(
-    "/system/welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async function (_, response) {
-      try {
-        const welcomeMessages = await WelcomeMessages.getMessages();
-        response.status(200).json({ success: true, welcomeMessages });
-      } catch (error) {
-        console.error("Error fetching welcome messages:", error);
-        response
-          .status(500)
-          .json({ success: false, message: "Internal server error" });
-      }
-    }
-  );
-
-  app.post(
-    "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const { messages = [] } = reqBody(request);
-        if (!Array.isArray(messages)) {
-          return response.status(400).json({
-            success: false,
-            message: "Invalid message format. Expected an array of messages.",
-          });
-        }
-
-        await WelcomeMessages.saveAll(messages);
-        return response.status(200).json({
-          success: true,
-          message: "Welcome messages saved successfully.",
-        });
-      } catch (error) {
-        console.error("Error processing the welcome messages:", error);
-        response.status(500).json({
-          success: true,
-          message: "Error saving the welcome messages.",
-        });
-      }
-    }
-  );
-
   app.get("/system/api-keys", [validatedRequest], async (_, response) => {
     try {
       if (response.locals.multiUserMode) {
@@ -1506,8 +1461,8 @@ function systemEndpoints(app) {
     "/system/validate-sql-connection",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
+      const { engine, connectionString } = reqBody(request);
       try {
-        const { engine, connectionString } = reqBody(request);
         if (!engine || !connectionString) {
           return response.status(400).json({
             success: false,

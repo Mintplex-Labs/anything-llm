@@ -40,6 +40,7 @@ const ENABLED_PROVIDERS = [
   "docker-model-runner",
   "privatemode",
   "sambanova",
+  "lemonade",
   // TODO: More agent support.
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];

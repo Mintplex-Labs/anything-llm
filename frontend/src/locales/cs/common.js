@@ -49,17 +49,9 @@ const TRANSLATIONS = {
       skip: "Přeskočit průzkum",
       thankYou: "Děkujeme za vaši zpětnou vazbu!",
     },
-    workspace: {
-      title: "Vytvořte svůj první pracovní prostor",
-      description:
-        "Vytvořte svůj první pracovní prostor a začněte s AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Název pracovního prostoru",
-    error: "chyba",
-    success: "úspěch",
-    user: "Uživatel",
     selection: "Výběr modelu",
     saving: "Ukládání...",
     save: "Uložit změny",
@@ -71,6 +63,11 @@ const TRANSLATIONS = {
     search: "Hledat",
     username_requirements:
       "Uživatelské jméno musí mít 2–32 znaků, začínat malým písmenem a obsahovat pouze malá písmena, číslice, podtržítka, pomlčky a tečky.",
+    on: "Na",
+    none: "Žádné",
+    stopped: "Zastaveno",
+    loading: "Načítání",
+    refresh: "Obnovit",
   },
   home: {
     welcome: "Vítejte",
@@ -81,7 +78,6 @@ const TRANSLATIONS = {
   },
   settings: {
     title: "Nastavení instance",
-    system: "Obecná nastavení",
     invites: "Pozvánky",
     users: "Uživatelé",
     workspaces: "Pracovní prostory",
@@ -98,7 +94,6 @@ const TRANSLATIONS = {
     "voice-speech": "Hlas a řeč",
     "vector-database": "Vektorová databáze",
     embeds: "Vložený chat",
-    "embed-chats": "Historie vložených chatů",
     security: "Zabezpečení",
     "event-logs": "Protokoly událostí",
     privacy: "Soukromí a data",
@@ -111,6 +106,16 @@ const TRANSLATIONS = {
     contact: "Kontaktovat podporu",
     "browser-extension": "Rozšíření prohlížeče",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrální místo pro komunitu",
+      trending: "Prozkoumejte aktuální trendy",
+      "your-account": "Váš účet",
+      "import-item": "Importovat položku",
+    },
+    channels: "Kanály",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -127,94 +132,10 @@ const TRANSLATIONS = {
       title: "Reset hesla",
       description: "Níže uveďte potřebné informace pro resetování hesla.",
       "recovery-codes": "Záchranné kódy",
-      "recovery-code": "Záchranný kód {{index}}",
       "back-to-login": "Zpět k přihlášení",
     },
   },
   "main-page": {
-    noWorkspaceError: "Před zahájením chatu prosím vytvořte pracovní prostor.",
-    checklist: {
-      title: "Začínáme",
-      tasksLeft: "zbylých úkolů",
-      completed: "Jste na cestě stát se odborníkem na AnythingLLM!",
-      dismiss: "zavřít",
-      tasks: {
-        create_workspace: {
-          title: "Vytvořit pracovní prostor",
-          description: "Vytvořte svůj první pracovní prostor pro začátek",
-          action: "Vytvořit",
-        },
-        send_chat: {
-          title: "Odeslat chat",
-          description: "Začněte konverzaci se svým asistentem AI",
-          action: "Chatovat",
-        },
-        embed_document: {
-          title: "Vložit dokument",
-          description:
-            "Přidejte svůj první dokument do svého pracovního prostoru",
-          action: "Vložit",
-        },
-        setup_system_prompt: {
-          title: "Nastavit systémovou výzvu",
-          description: "Nakonfigurujte chování svého asistenta AI",
-          action: "Nastavit",
-        },
-        define_slash_command: {
-          title: "Definovat lomítkový příkaz",
-          description: "Vytvořte vlastní příkazy pro svého asistenta",
-          action: "Definovat",
-        },
-        visit_community: {
-          title: "Navštívit komunitní centrum",
-          description: "Prozkoumejte komunitní zdroje a šablony",
-          action: "Procházet",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Rychlé odkazy",
-      sendChat: "Odeslat chat",
-      embedDocument: "Vložit dokument",
-      createWorkspace: "Vytvořit pracovní prostor",
-    },
-    exploreMore: {
-      title: "Prozkoumat další funkce",
-      features: {
-        customAgents: {
-          title: "Vlastní agenti AI",
-          description:
-            "Vytvářejte výkonné agenty AI a automatizace bez kódování.",
-          primaryAction: "Chatovat pomocí @agenta",
-          secondaryAction: "Sestavit tok agenta",
-        },
-        slashCommands: {
-          title: "Lomítkové příkazy",
-          description:
-            "Ušetřete čas a vkládejte výzvy pomocí vlastních lomítkových příkazů.",
-          primaryAction: "Vytvořit lomítkový příkaz",
-          secondaryAction: "Prozkoumat v centru",
-        },
-        systemPrompts: {
-          title: "Systémové výzvy",
-          description:
-            "Upravte systémovou výzvu pro přizpůsobení odpovědí AI pracovního prostoru.",
-          primaryAction: "Upravit systémovou výzvu",
-          secondaryAction: "Spravovat proměnné výzvy",
-        },
-      },
-    },
-    announcements: {
-      title: "Aktualizace a oznámení",
-    },
-    resources: {
-      title: "Zdroje",
-      links: {
-        docs: "Dokumentace",
-        star: "Označit hvězdou na Githubu",
-      },
-      keyboardShortcuts: "Klávesové zkratky",
-    },
     quickActions: {
       createAgent: "Vytvořte agenta",
       editWorkspace: "Upravit pracovní prostor",
@@ -251,13 +172,6 @@ const TRANSLATIONS = {
       heading: "Vysvětlit mi",
       body: "výhody AnythingLLM",
     },
-    pfp: {
-      title: "Profilový obrázek asistenta",
-      description:
-        "Přizpůsobte profilový obrázek asistenta pro tento pracovní prostor.",
-      image: "Obrázek pracovního prostoru",
-      remove: "Odebrat obrázek pracovního prostoru",
-    },
     delete: {
       title: "Smazat pracovní prostor",
       description:
@@ -280,21 +194,17 @@ const TRANSLATIONS = {
       title: "Chatovací model pracovního prostoru",
       description:
         "Konkrétní chatovací model, který bude použit pro tento pracovní prostor. Pokud je prázdné, použije se systémová preference LLM.",
-      wait: "-- čekání na modely --",
     },
     mode: {
       title: "Režim chatu",
       chat: {
         title: "Chat",
-        "desc-start": "bude poskytovat odpovědi s obecnými znalostmi LLM",
-        and: "a",
-        "desc-end": "kontext dokumentu, který je nalezen.",
       },
       query: {
         title: "Dotaz",
-        "desc-start": "bude poskytovat odpovědi",
-        only: "pouze",
-        "desc-end": "pokud je nalezen kontext dokumentu.",
+      },
+      automatic: {
+        title: "Auto",
       },
     },
     history: {
@@ -387,9 +297,6 @@ const TRANSLATIONS = {
       wait: "-- čekání na modely --",
     },
     skill: {
-      title: "Výchozí dovednosti agenta",
-      description:
-        "Vylepšte přirozené schopnosti výchozího agenta pomocí těchto předpřipravených dovedností. Toto nastavení se vztahuje na všechny pracovní prostory.",
       rag: {
         title: "RAG a dlouhodobá paměť",
         description:
@@ -417,10 +324,54 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
-        "desc-start":
-          "Umožněte svému agentovi vyhledávat web pro odpovědi na vaše otázky připojením k poskytovateli webového vyhledávání (SERP).",
-        "desc-end":
-          "Webové vyhledávání během relací agenta nebude fungovat, dokud to nebude nastaveno.",
+        description:
+          "Umožněte svému agentovi, aby prohledával internet a odpovídal na vaše otázky, propojením se poskytovatelem vyhledávacího servisu (SERP).",
+      },
+      sql: {
+        title: "Připojení k databázi SQL",
+        description:
+          "Umožněte svému agentovi, aby mohl využívat SQL k zodpovězení vašich otázek, a to prostřednictvím připojení k různým poskytovatelům databází.",
+      },
+      default_skill:
+        "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
+    },
+    mcp: {
+      title: "Servery společnosti MCP",
+      "loading-from-config": "Načítání serverů MCP z konfiguračního souboru",
+      "learn-more": "Zjistěte více o serverech MCP.",
+      "no-servers-found": "Nebyl nalezen žádný server pro správu MCP.",
+      "tool-warning":
+        "Pro optimální výkon zvažte vypnutí nepoužívaných nástrojů, abyste ušetřili zdroje.",
+      "stop-server": "Zastavte server MCP",
+      "start-server": "Spustit server MCP",
+      "delete-server": "Odstranit server MCP",
+      "tool-count-warning":
+        "Tento server pro správu chatů má povolené nástroje <b>{{count}}, které spotřebovávají kontext v každém chatu. </b> Zvažte vypnutí nepotřebných nástrojů, abyste ušetřili kontext.",
+      "startup-command": "Příkaz pro spuštění",
+      command: "Příkaz",
+      arguments: "Argumenty",
+      "not-running-warning":
+        "Tento server pro správu MCP není aktivní – buď byl vypnut, nebo se při spuštění vyskytuje chyba.",
+      "tool-call-arguments": "Argumenty pro volání nástroje",
+      "tools-enabled": "nástroje jsou aktivovány",
+    },
+    settings: {
+      title: "Nastavení dovedností agenta",
+      "max-tool-calls": {
+        title: "Maximální počet volání nástrojů na jednu odpověď",
+        description:
+          "Maximální počet nástrojů, které může agent spouštět v řetězci za účelem generování jedné odpovědi. To zabraňuje nekontrolovanému spouštění nástrojů a vytváření nekonečných smyček.",
+      },
+      "intelligent-skill-selection": {
+        title: "Inteligentní výběr dovedností",
+        "beta-badge": "Beta",
+        description:
+          "Umožněte použití libovolného počtu nástrojů a snížit využití tokenů až o 80 % pro každou dotaz — AnythingLLM automaticky vybírá vhodné dovednosti pro každou žádost.",
+        "max-tools": {
+          title: "Nástroje Max",
+          description:
+            "Maximální počet nástrojů, které lze vybrat pro každou dotaz. Doporučujeme nastavit tuto hodnotu na vyšší, pro modely s větším kontextem.",
+        },
       },
     },
   },
@@ -484,11 +435,6 @@ const TRANSLATIONS = {
         description:
           "Nastavte název, který je zobrazen na přihlašovací stránce všem uživatelům.",
       },
-      "chat-message-alignment": {
-        title: "Zarovnání zpráv chatu",
-        description:
-          "Vyberte režim zarovnání zpráv při použití rozhraní chatu.",
-      },
       "display-language": {
         title: "Zobrazovací jazyk",
         description:
@@ -502,18 +448,6 @@ const TRANSLATIONS = {
         recommended: "Doporučená velikost: 800 x 200",
         remove: "Odebrat",
         replace: "Nahradit",
-      },
-      "welcome-messages": {
-        title: "Uvítací zprávy",
-        description:
-          "Přizpůsobte uvítací zprávy zobrazené vašim uživatelům. Pouze neadministrátoři uvidí tyto zprávy.",
-        new: "Nové",
-        system: "systém",
-        user: "uživatel",
-        message: "zpráva",
-        assistant: "Chatovací asistent AnythingLLM",
-        "double-click": "Dvojitým kliknutím upravit...",
-        save: "Uložit zprávy",
       },
       "browser-appearance": {
         title: "Vzhled prohlížeče",
@@ -683,17 +617,12 @@ const TRANSLATIONS = {
     title: "Soukromí a zpracování dat",
     description:
       "Toto je vaše konfigurace, jak připojené třetí strany a AnythingLLM zpracovávají vaše data.",
-    llm: "Poskytovatel LLM",
-    embedding: "Preferovaný embedding",
-    vector: "Vektorová databáze",
     anonymous: "Anonymní telemetrie je povolena",
   },
   connectors: {
     "search-placeholder": "Hledat datové konektory",
     "no-connectors": "Nebyly nalezeny žádné datové konektory.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importovat trezor Obsidian jedním kliknutím.",
       vault_location: "Umístění trezoru",
       vault_description:
         "Vyberte složku trezoru Obsidian pro import všech poznámek a jejich spojení.",
@@ -741,7 +670,6 @@ const TRANSLATIONS = {
       URL_explained: "URL úložiště GitLab, které chcete sbírat.",
       token: "Přístupový token GitLab",
       optional: "volitelné",
-      token_explained: "Přístupový token pro prevenci omezení rychlosti.",
       token_description: "Vyberte další entity k načtení z API GitLab.",
       token_explained_start: "Bez ",
       token_explained_link1: "Osobního přístupového tokenu",
@@ -773,9 +701,6 @@ const TRANSLATIONS = {
       URL_explained_end: " k dispozici.",
       task_explained:
         "Po dokončení bude přepis k dispozici pro vložení do pracovních prostorů ve výběru dokumentů.",
-      language: "Jazyk přepisu",
-      language_explained: "Vyberte jazyk přepisu, který chcete sbírat.",
-      loading_languages: "-- načítání dostupných jazyků --",
     },
     "website-depth": {
       name: "Hromadný stahovač odkazů",
@@ -836,20 +761,19 @@ const TRANSLATIONS = {
       "search-document": "Hledat dokument",
       "no-documents": "Žádné dokumenty",
       "move-workspace": "Přesunout do pracovního prostoru",
-      name: "Název",
       "delete-confirmation":
         "Jste si jisti, že chcete smazat tyto soubory a složky?\nToto odstraní soubory ze systému a automaticky je odstraní ze všech existujících pracovních prostorů.\nTato akce je nevratná.",
       "removing-message":
         "Odstraňování {{count}} dokumentů a {{folderCount}} složek. Prosím čekejte.",
       "move-success": "Úspěšně přesunuto {{count}} dokumentů.",
-      date: "Datum",
-      type: "Typ",
       no_docs: "Žádné dokumenty",
       select_all: "Vybrat vše",
       deselect_all: "Zrušit výběr všeho",
       remove_selected: "Odebrat vybrané",
       costs: "*Jednorázové náklady pro embeddingy",
       save_embed: "Uložit a vložit",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentů nedostupný",
@@ -889,18 +813,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Vítejte ve svém novém pracovním prostoru.",
-    get_started: "Začněte buď",
-    get_started_default: "Začněte",
-    upload: "nahrát dokument",
-    or: "nebo",
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
-    send_chat: "odeslat chat.",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",
-    slash: "Zobrazit všechny dostupné lomítkové příkazy pro chatování.",
-    agents:
-      "Zobrazit všechny dostupné agenty, které můžete použít pro chatování.",
     text_size: "Změnit velikost textu.",
     microphone: "Mluvit svou výzvu.",
     send: "Odeslat zprávu výzvy do pracovního prostoru",
@@ -910,19 +825,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerovat odpověď",
     good_response: "Dobrá odpověď",
     more_actions: "Další akce",
-    hide_citations: "Skrýt citace",
-    show_citations: "Zobrazit citace",
-    pause_tts_speech_message: "Pozastavit TTS čtení zprávy",
     fork: "Rozdělit",
     delete: "Smazat",
-    save_submit: "Uložit a odeslat",
     cancel: "Zrušit",
     edit_prompt: "Upravit výzvu",
     edit_response: "Upravit odpověď",
-    at_agent: "@agent",
-    default_agent_description: " - výchozí agent pro tento pracovní prostor.",
-    custom_agents_coming_soon: "vlastní agenti přicházejí brzy!",
-    slash_reset: "/reset",
     preset_reset_description: "Vymazat historii chatu a začít nový chat",
     add_new_preset: " Přidat novou předvolbu",
     command: "Příkaz",
@@ -946,6 +853,33 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Klikněte pro nastavení přihlašovacích údajů",
     },
+    submit: "Odeslat",
+    edit_info_user:
+      "„Odeslat“ znovu vygeneruje odpověď od AI. „Uložit“ aktualizuje pouze vaši zprávu.",
+    edit_info_assistant: "Vaše změny budou uloženy přímo v tomto odpovědi.",
+    see_less: "Zobrazit méně",
+    see_more: "Více",
+    tools: "Nářadí",
+    text_size_label: "Velikost písma",
+    select_model: "Vyberte model",
+    sources: "Zdroje",
+    document: "Dokument",
+    similarity_match: "zápas",
+    source_count_one: "{{count}} – odkaz",
+    source_count_other: "{{count}} – odkazy",
+    preset_exit_description: "Zastavte aktuální relaci s agentem",
+    add_new: "Přidat nové",
+    edit: "Upravit",
+    publish: "Publikovat",
+    stop_generating: "Zastavte generování odpovědi",
+    slash_commands: "Příkazy v řádku",
+    agent_skills: "Dovednosti agenta",
+    manage_agent_skills: "Řízení dovedností agentů",
+    agent_skills_disabled_in_session:
+      "Není možné upravovat dovednosti během aktivního sezení s agentem. Nejprve použijte příkaz `/exit` pro ukončení sezení.",
+    start_agent_session: "Spustit relaci s agentem",
+    use_agent_session_to_use_tools:
+      "Můžete využít nástroje v chatu spuštěním sezení s agentem pomocí příkazu '@agent' na začátku vašeho vstupu.",
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1006,15 +940,12 @@ const TRANSLATIONS = {
           "Soukromé systémové výzvy jsou viditelné pouze vám.",
         publish_button: "Publikovat do komunitního centra",
         submitting: "Publikování...",
-        submit: "Publikovat do komunitního centra",
         prompt_label: "Výzva",
         prompt_description:
           "Toto je skutečná systémová výzva, která bude použita k vedení LLM.",
         prompt_placeholder: "Zadejte svou systémovou výzvu zde...",
       },
       agent_flow: {
-        public_description: "Veřejné toky agentů jsou viditelné všem.",
-        private_description: "Soukromé toky agentů jsou viditelné pouze vám.",
         success_title: "Úspěch!",
         success_description:
           "Váš tok agenta byl publikován do komunitního centra!",
@@ -1032,7 +963,6 @@ const TRANSLATIONS = {
           "Štítky slouží k označení vašeho toku agenta pro snadnější vyhledávání. Můžete přidat více štítků. Max 5 štítků. Max 20 znaků na štítek.",
         tags_placeholder: "Zadejte a stiskněte Enter pro přidání štítků",
         visibility_label: "Viditelnost",
-        publish_button: "Publikovat do komunitního centra",
         submitting: "Publikování...",
         submit: "Publikovat do komunitního centra",
         privacy_note:
@@ -1052,10 +982,6 @@ const TRANSLATIONS = {
         description_label: "Popis",
         description_description:
           "Toto je popis vašeho lomítkového příkazu. Použijte k popisu účelu vašeho lomítkového příkazu.",
-        command_label: "Příkaz",
-        command_description:
-          "Toto je lomítkový příkaz, který uživatelé zadají pro spuštění této předvolby.",
-        command_placeholder: "můj-příkaz",
         tags_label: "Štítky",
         tags_description:
           "Štítky slouží k označení vašeho lomítkového příkazu pro snadnější vyhledávání. Můžete přidat více štítků. Max 5 štítků. Max 20 znaků na štítek.",
@@ -1079,6 +1005,86 @@ const TRANSLATIONS = {
           button: "Připojit se ke komunitnímu centru",
         },
       },
+    },
+  },
+  telegram: {
+    title: "Bot pro Telegram",
+    description:
+      "Propojte svůj instance AnythingLLM s aplikací Telegram, abyste mohli komunikovat se svými pracovními prostory odkudkoli.",
+    setup: {
+      step1: {
+        title: "Krok 1: Vytvořte svého Telegramového robota",
+        description:
+          "Otevřete aplikaci @BotFather na Telegramu, odešlete příkaz `/newbot` na adresu <code>@BotFather</code>, postupujte podle pokynů a zkopírujte API token.",
+        "open-botfather": "Spusťte BotFather",
+        "instruction-1": "1. Otevřete odkaz nebo naskenujte QR kód",
+        "instruction-2":
+          "2. Pošlete <code>/newbot</code> na adresu <code>@BotFather</code>",
+        "instruction-3":
+          "3. Vyberte jméno a uživatelské jméno pro svého robota.",
+        "instruction-4": "4. Zkopírujte API token, který obdržíte.",
+      },
+      step2: {
+        title: "Krok 2: Připojte svého robota",
+        description:
+          "Vložte API token, který jste obdrželi od účtu @BotFather, a vyberte výchozí pracovní prostor, se kterým bude váš bot komunikovat.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Výchozí pracovní prostor",
+        "no-workspace":
+          "Nejsou k dispozici žádné pracovní prostory. Bude vytvořeno nové.",
+        connecting: "Připojování...",
+        "connect-bot": "Bot pro připojení",
+      },
+      security: {
+        title: "Doporučené bezpečnostní nastavení",
+        description:
+          "Pro zvýšení bezpečnosti, nakonfigurujte tyto nastavení v účtu @BotFather.",
+        "disable-groups": "— Zabránit přidávání bot do skupin",
+        "disable-inline":
+          "— Zabraňte použití robota při vyhledávání v reálném čase.",
+        "obscure-username":
+          "Použijte neobvyklé uživatelské jméno pro robota, abyste snížili jeho snadnou identifikovatelnost.",
+      },
+      "toast-enter-token": "Prosím, zadejte token pro robota.",
+      "toast-connect-failed": "Nedaří se připojit k botovi.",
+    },
+    connected: {
+      status: "Spojené",
+      "status-disconnected": "Neaktivní – token může být prošlý nebo neplatný",
+      "placeholder-token": "Vložte nový token pro robota...",
+      reconnect: "Znovu se spojit",
+      workspace: "Pracovní prostor",
+      "bot-link": "Odkaz na robota",
+      "voice-response": "Reakce na hlasový vstup",
+      disconnecting: "Odpojování...",
+      disconnect: "Odpojit",
+      "voice-text-only": "Pouze text",
+      "voice-mirror":
+        "Zrcadlo (odpovězte hlasem, když uživatel pošle hlasovou zprávu)",
+      "voice-always":
+        "Vždy uveďte zvukový záznam (odesílejte zvukový záznam ke každé odpovědi)",
+      "toast-disconnect-failed": "Nepodařilo se odpojit automat.",
+      "toast-reconnect-failed": "Nedaří se znovu navázat spojení s botem.",
+      "toast-voice-failed": "Nepodařilo se aktualizovat hlasový režim.",
+      "toast-approve-failed": "Neúspěšné schválení uživatele.",
+      "toast-deny-failed": "Nezucceededo v odmítnutí uživatele.",
+      "toast-revoke-failed": "Nezdařilo se zrušit uživatelskou účet.",
+    },
+    users: {
+      "pending-title": "Čeká na schválení",
+      "pending-description":
+        "Uživatelé, kteří čekají na ověření. Porovnejte kód pro spárování, který je zde uveden, s tím, který je zobrazen v jejich chatu na Telegramu.",
+      "approved-title": "Schválení uživatelů",
+      "approved-description":
+        "Uživatelé, kteří byli schváleni pro komunikaci s vaším botem.",
+      user: "Uživatel",
+      "pairing-code": "Kód pro párování",
+      "no-pending": "Žádné čekající požadavky",
+      "no-approved": "Žádní registrovaní uživatelé",
+      unknown: "Neznámé",
+      approve: "Schválit",
+      deny: "Odmítnout",
+      revoke: "Zrušit",
     },
   },
 };

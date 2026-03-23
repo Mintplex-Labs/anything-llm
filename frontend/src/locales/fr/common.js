@@ -48,17 +48,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Ces paramètres peuvent être modifiés ultérieurement dans les paramètres.",
     },
-    workspace: {
-      title: "Créer votre premier espace de travail",
-      description:
-        "Créez votre premier espace de travail pour commencer à utiliser AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nom des espaces de travail",
-    error: "erreur",
-    success: "succès",
-    user: "Utilisateur",
     selection: "Sélection du modèle",
     saving: "Enregistrement...",
     save: "Enregistrer les modifications",
@@ -70,10 +62,14 @@ const TRANSLATIONS = {
     search: "Rechercher",
     username_requirements:
       "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+    on: "Sur",
+    none: "Aucun",
+    stopped: "Arrêté",
+    loading: "Chargement",
+    refresh: "Rafraîchir",
   },
   settings: {
     title: "Paramètres de l'instance",
-    system: "Préférences système",
     invites: "Invitation",
     users: "Utilisateurs",
     workspaces: "Espaces de travail",
@@ -87,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voix et Parole",
     "vector-database": "Base de données vectorielle",
     embeds: "Widgets de chat intégrés",
-    "embed-chats": "Historique des chats intégrés",
     security: "Sécurité",
     "event-logs": "Journaux d'événements",
     privacy: "Confidentialité et données",
@@ -103,6 +98,16 @@ const TRANSLATIONS = {
     branding: "Personnalisation",
     chat: "Chat",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centre communautaire",
+      trending: "Découvrez les tendances",
+      "your-account": "Votre compte",
+      "import-item": "Importer",
+    },
+    channels: "Canaux",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -120,7 +125,6 @@ const TRANSLATIONS = {
       description:
         "Fournissez les informations nécessaires ci-dessous pour réinitialiser votre mot de passe.",
       "recovery-codes": "Codes de récupération",
-      "recovery-code": "Code de récupération {{index}}",
       "back-to-login": "Retour à la connexion",
     },
   },
@@ -154,13 +158,6 @@ const TRANSLATIONS = {
       heading: "Expliquez-moi",
       body: "les avantages de AnythingLLM",
     },
-    pfp: {
-      title: "Image de profil de l'assistant",
-      description:
-        "Personnalisez l'image de profil de l'assistant pour cet espace de travail.",
-      image: "Image de l'espace de travail",
-      remove: "Supprimer l'image de l'espace de travail",
-    },
     delete: {
       title: "Supprimer l'Espace de Travail",
       description:
@@ -183,22 +180,17 @@ const TRANSLATIONS = {
       title: "Modèle de chat de l'espace de travail",
       description:
         "Le modèle de chat spécifique qui sera utilisé pour cet espace de travail. Si vide, utilisera la préférence LLM du système.",
-      wait: "-- en attente des modèles --",
     },
     mode: {
       title: "Mode de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "fournira des réponses avec les connaissances générales du LLM",
-        and: "et",
-        "desc-end": "le contexte du document trouvé.",
       },
       query: {
         title: "Requête",
-        "desc-start": "fournira des réponses",
-        only: "uniquement",
-        "desc-end": "si un contexte de document est trouvé.",
+      },
+      automatic: {
+        title: "Voiture",
       },
     },
     history: {
@@ -292,9 +284,6 @@ const TRANSLATIONS = {
       wait: "-- en attente des modèles --",
     },
     skill: {
-      title: "Compétences par défaut de l'agent",
-      description:
-        "Améliorez les capacités naturelles de l'agent par défaut avec ces compétences préconstruites. Cette configuration s'applique à tous les espaces de travail.",
       rag: {
         title: "RAG et mémoire à long terme",
         description:
@@ -322,10 +311,55 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Recherche web en direct et navigation",
-        "desc-start":
-          "Permettez à votre agent de rechercher sur le web pour répondre à vos questions en se connectant à un fournisseur de recherche web (SERP).",
-        "desc-end":
-          "La recherche web pendant les sessions d'agent ne fonctionnera pas tant que cela ne sera pas configuré.",
+        description:
+          "Permettez à votre agent de rechercher sur le web pour répondre à vos questions en vous connectant à un fournisseur de recherche web (SERP).",
+      },
+      sql: {
+        title: "Connecteur SQL",
+        description:
+          "Permettez à votre agent d'utiliser SQL pour répondre à vos questions en lui fournissant un accès à divers fournisseurs de bases de données SQL.",
+      },
+      default_skill:
+        "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+    },
+    mcp: {
+      title: "Serveurs MCP",
+      "loading-from-config":
+        "Chargement des serveurs MCP à partir du fichier de configuration",
+      "learn-more": "En savoir plus sur les serveurs MCP.",
+      "no-servers-found": "Aucun serveur MCP n'a été trouvé.",
+      "tool-warning":
+        "Pour obtenir les meilleures performances, envisagez de désactiver les outils inutiles afin de préserver le contexte.",
+      "stop-server": "Arrêter le serveur MCP",
+      "start-server": "Démarrer le serveur MCP",
+      "delete-server": "Supprimer le serveur MCP",
+      "tool-count-warning":
+        "Ce serveur MCP a <b> des outils {{count}} activés</b> qui consommeront du contexte dans chaque conversation.<br /> Envisagez de désactiver les outils inutiles pour préserver le contexte.",
+      "startup-command": "Commande de démarrage",
+      command: "Ordre",
+      arguments: "Arguments",
+      "not-running-warning":
+        "Ce serveur MCP n'est pas en cours de fonctionnement ; il peut être arrêté ou rencontrer une erreur lors du démarrage.",
+      "tool-call-arguments": "Arguments des appels de fonctions/outils",
+      "tools-enabled": "outils activés",
+    },
+    settings: {
+      title: "Paramètres des compétences des agents",
+      "max-tool-calls": {
+        title: "Nombre maximal de requêtes Max Tool par réponse",
+        description:
+          "Le nombre maximal d'outils qu'un agent peut utiliser en chaîne pour générer une seule réponse. Cela empêche les appels excessifs aux outils et les boucles infinies.",
+      },
+      "intelligent-skill-selection": {
+        title: "Sélection de compétences basée sur l'intelligence",
+        "beta-badge": "Bêta",
+        description:
+          "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
+        },
       },
     },
   },
@@ -463,9 +497,6 @@ const TRANSLATIONS = {
     title: "Confidentialité et gestion des données",
     description:
       "Voici votre configuration pour la gestion des données et des fournisseurs tiers connectés avec AnythingLLM.",
-    llm: "Sélection LLM",
-    embedding: "Préférence d'intégration",
-    vector: "Base de données vectorielle",
     anonymous: "Télémétrie anonyme activée",
   },
   connectors: {
@@ -504,7 +535,6 @@ const TRANSLATIONS = {
       URL_explained: "URL du dépôt GitLab que vous souhaitez collecter.",
       token: "Jeton d'accès GitLab",
       optional: "Optionnel",
-      token_explained: "Jeton d'accès pour les dépôts privés.",
       token_description:
         "Sélectionnez les portées d'accès au dépôt lors de la création du jeton.",
       token_explained_start:
@@ -537,10 +567,6 @@ const TRANSLATIONS = {
       URL_explained_end: ".",
       task_explained:
         "Une fois terminé, la transcription sera disponible pour être intégrée dans les espaces de travail dans le menu de documents.",
-      language: "Langue de la transcription",
-      language_explained:
-        "Sélectionnez la langue de la transcription à récupérer.",
-      loading_languages: "-- chargement des langues disponibles --",
     },
     "website-depth": {
       name: "Récupération de site web en masse",
@@ -603,20 +629,19 @@ const TRANSLATIONS = {
       "search-document": "Rechercher un document",
       "no-documents": "Aucun document",
       "move-workspace": "Déplacer vers l'espace de travail",
-      name: "Nom",
       "delete-confirmation":
         "Êtes-vous sûr de vouloir supprimer ces fichiers et dossiers ?\nCela supprimera les fichiers du système et les retirera automatiquement de tout espace de travail existant.\nCette action est irréversible.",
       "removing-message":
         "Suppression de {{count}} documents et dossiers. Veuillez patienter.",
       "move-success": "{{count}} documents déplacés avec succès.",
-      date: "Date",
-      type: "Type",
       no_docs: "Aucun document",
       select_all: "Tout sélectionner",
       deselect_all: "Tout désélectionner",
       remove_selected: "Supprimer la sélection",
       costs: "Coûts",
       save_embed: "Sauvegarder et intégrer",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documents",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
@@ -655,8 +680,6 @@ const TRANSLATIONS = {
       accept: "J'ai compris",
     },
     obsidian: {
-      name: "Coffre Obsidian",
-      description: "Importez un coffre Obsidian depuis votre machine locale.",
       vault_location: "Emplacement du coffre",
       vault_description:
         "Sélectionnez le dossier racine de votre coffre Obsidian.",
@@ -670,17 +693,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Bienvenue dans votre nouvel espace de travail.",
-    get_started: "Pour commencer, vous pouvez",
-    get_started_default:
-      "Pour commencer, envoyez un message ou téléchargez un document.",
-    upload: "téléverser un document",
-    or: "ou",
-    send_chat: "envoyer un message",
     send_message: "Envoyer un message",
     attach_file: "Joindre un fichier",
-    slash: "Voir les commandes slash disponibles",
-    agents: "Voir les agents disponibles",
     text_size: "Modifier la taille du texte",
     microphone: "Enregistrer un message vocal",
     send: "Envoyer le message au chatbot",
@@ -692,19 +706,11 @@ const TRANSLATIONS = {
     regenerate_response: "Régénérer la réponse",
     good_response: "Bonne réponse",
     more_actions: "Plus d'actions",
-    hide_citations: "Masquer les citations",
-    show_citations: "Afficher les citations",
-    pause_tts_speech_message: "Mettre en pause la lecture vocale",
     fork: "Dupliquer",
     delete: "Supprimer",
-    save_submit: "Sauvegarder et envoyer",
     cancel: "Annuler",
     edit_prompt: "Modifier le prompt",
     edit_response: "Modifier la réponse",
-    at_agent: "@agent",
-    default_agent_description: "l'agent par défaut de cet espace de travail",
-    custom_agents_coming_soon: "Agents personnalisés bientôt disponibles",
-    slash_reset: "/reset",
     preset_reset_description:
       "Efface l'historique du chat actuel et commence une nouvelle conversation.",
     add_new_preset: "Ajouter une nouvelle commande preset",
@@ -730,6 +736,34 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Vous devez configurer vos identifiants de fournisseur LLM avant de pouvoir sélectionner un modèle.",
     },
+    submit: "Soumettre",
+    edit_info_user:
+      '"Soumettre" permet de régénérer la réponse de l\'IA. "Enregistrer" met uniquement à jour votre message.',
+    edit_info_assistant:
+      "Vos modifications seront enregistrées directement dans cette réponse.",
+    see_less: "Voir moins",
+    see_more: "Voir plus",
+    tools: "Outils",
+    text_size_label: "Taille du texte",
+    select_model: "Sélectionner le modèle",
+    sources: "Sources",
+    document: "Document",
+    similarity_match: "match",
+    source_count_one: "{{count}} référence",
+    source_count_other: "Références à {{count}}",
+    preset_exit_description: "Arrêter la session actuelle de l'agent",
+    add_new: "Ajouter",
+    edit: "Modifier",
+    publish: "Publier",
+    stop_generating: "Arrêtez de générer des réponses",
+    slash_commands: "Commandes abrégées",
+    agent_skills: "Compétences des agents",
+    manage_agent_skills: "Gérer les compétences des agents",
+    agent_skills_disabled_in_session:
+      "Il n'est pas possible de modifier les compétences pendant une session avec un agent actif. Utilisez la commande `/exit` pour terminer la session en premier.",
+    start_agent_session: "Démarrer la session de l'agent",
+    use_agent_session_to_use_tools:
+      'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
   },
   profile_settings: {
     edit_account: "Modifier le compte",
@@ -797,10 +831,6 @@ const TRANSLATIONS = {
         title: "Nom de l'application",
         description: "Définissez le nom affiché dans l'interface.",
       },
-      "chat-message-alignment": {
-        title: "Alignement des messages",
-        description: "Choisissez l'alignement des messages dans le chat.",
-      },
       "display-language": {
         title: "Langue d'affichage",
         description: "Sélectionnez la langue de l'interface utilisateur.",
@@ -812,18 +842,6 @@ const TRANSLATIONS = {
         recommended: "Taille recommandée : 800 x 200",
         remove: "Supprimer",
         replace: "Remplacer",
-      },
-      "welcome-messages": {
-        title: "Messages de bienvenue",
-        description:
-          "Personnalisez les messages affichés aux nouveaux utilisateurs.",
-        new: "Nouveau",
-        system: "système",
-        user: "utilisateur",
-        message: "message",
-        assistant: "assistant",
-        "double-click": "Double-cliquez pour modifier.",
-        save: "Sauvegarder les messages",
       },
       "browser-appearance": {
         title: "Apparence du navigateur",
@@ -854,94 +872,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "Veuillez créer un espace de travail pour commencer.",
-    checklist: {
-      title: "Liste de démarrage",
-      tasksLeft: "tâches restantes",
-      completed: "Terminé !",
-      dismiss: "Fermer",
-      tasks: {
-        create_workspace: {
-          title: "Créer un espace de travail",
-          description:
-            "Créez votre premier espace de travail pour organiser vos documents et conversations.",
-          action: "Créer",
-        },
-        send_chat: {
-          title: "Envoyer un message",
-          description:
-            "Démarrez une conversation avec l'IA dans votre espace de travail.",
-          action: "Chatter",
-        },
-        embed_document: {
-          title: "Intégrer un document",
-          description:
-            "Ajoutez des documents à votre espace de travail pour enrichir les réponses de l'IA.",
-          action: "Télécharger",
-        },
-        setup_system_prompt: {
-          title: "Configurer le prompt système",
-          description:
-            "Personnalisez les instructions de l'IA pour votre espace de travail.",
-          action: "Configurer",
-        },
-        define_slash_command: {
-          title: "Définir une commande slash",
-          description:
-            "Créez des raccourcis pour des prompts fréquemment utilisés.",
-          action: "Créer",
-        },
-        visit_community: {
-          title: "Visiter la communauté",
-          description:
-            "Rejoignez la communauté AnythingLLM pour obtenir de l'aide et partager vos expériences.",
-          action: "Visiter",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Accès rapide",
-      sendChat: "Envoyer un message",
-      embedDocument: "Intégrer un document",
-      createWorkspace: "Créer un espace de travail",
-    },
-    exploreMore: {
-      title: "Explorer plus",
-      features: {
-        customAgents: {
-          title: "Agents personnalisés",
-          description:
-            "Créez des agents IA spécialisés avec des compétences et des comportements personnalisés.",
-          primaryAction: "Créer un agent",
-          secondaryAction: "En savoir plus",
-        },
-        slashCommands: {
-          title: "Commandes slash",
-          description:
-            "Créez des raccourcis pour des actions et des prompts fréquemment utilisés.",
-          primaryAction: "Créer une commande",
-          secondaryAction: "En savoir plus",
-        },
-        systemPrompts: {
-          title: "Prompts système",
-          description:
-            "Personnalisez les instructions et le comportement de l'IA pour chaque espace de travail.",
-          primaryAction: "Configurer",
-          secondaryAction: "En savoir plus",
-        },
-      },
-    },
-    announcements: {
-      title: "Annonces",
-    },
-    resources: {
-      title: "Ressources",
-      links: {
-        docs: "Documentation",
-        star: "Étoiler sur GitHub",
-      },
-      keyboardShortcuts: "Raccourcis clavier",
-    },
     quickActions: {
       createAgent: "Créer un agent",
       editWorkspace: "Modifier l'espace de travail",
@@ -987,14 +917,11 @@ const TRANSLATIONS = {
         private_description: "Visible uniquement par vous.",
         publish_button: "Publier",
         submitting: "Publication...",
-        submit: "Soumettre",
         prompt_label: "Prompt",
         prompt_description: "Le contenu de votre prompt système.",
         prompt_placeholder: "Vous êtes un assistant IA utile...",
       },
       agent_flow: {
-        public_description: "Visible par tous sur le Community Hub.",
-        private_description: "Visible uniquement par vous.",
         success_title: "Flux d'agent publié avec succès !",
         success_description:
           "Votre flux d'agent a été publié sur le Community Hub.",
@@ -1012,7 +939,6 @@ const TRANSLATIONS = {
           "Ajoutez des tags pour aider les autres à trouver votre flux.",
         tags_placeholder: "automatisation, productivité...",
         visibility_label: "Visibilité",
-        publish_button: "Publier",
         submitting: "Publication...",
         submit: "Soumettre",
         privacy_note:
@@ -1039,9 +965,6 @@ const TRANSLATIONS = {
         description_label: "Description",
         description_description:
           "Décrivez ce que fait votre commande et comment l'utiliser.",
-        command_label: "Commande",
-        command_description: "La commande slash (sans le /).",
-        command_placeholder: "resume",
         tags_label: "Tags",
         tags_description:
           "Ajoutez des tags pour aider les autres à trouver votre commande.",
@@ -1086,6 +1009,87 @@ const TRANSLATIONS = {
     notAssigned:
       "Vous n'êtes actuellement pas affecté à aucun espace de travail.\nPour accéder à un espace de travail, veuillez contacter votre administrateur.",
     goToWorkspace: 'Aller à "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Connectez votre instance de AnythingLLM à Telegram afin de pouvoir communiquer avec vos espaces de travail depuis n'importe quel appareil.",
+    setup: {
+      step1: {
+        title: "Étape 1 : Créez votre bot Telegram",
+        description:
+          "Ouvrez @BotFather sur Telegram, envoyez `/newbot` à <code>@BotFather</code>, suivez les instructions, et copiez le jeton API.",
+        "open-botfather": "Ouvrir BotFather",
+        "instruction-1": "1. Ouvrez le lien ou numérisez le code QR.",
+        "instruction-2":
+          "2. Envoyer <code>/newbot</code> à <code>@BotFather</code>",
+        "instruction-3":
+          "3. Choisissez un nom et un nom d'utilisateur pour votre bot.",
+        "instruction-4": "4. Copiez le jeton API que vous recevez.",
+      },
+      step2: {
+        title: "Étape 2 : Connectez votre bot",
+        description:
+          "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Espace de travail par défaut",
+        "no-workspace":
+          "Il n'y a pas d'espaces de travail disponibles. Un nouvel espace sera créé.",
+        connecting: "Connexion...",
+        "connect-bot": "Bot de connexion",
+      },
+      security: {
+        title: "Paramètres de sécurité recommandés",
+        description:
+          "Pour une sécurité supplémentaire, configurez ces paramètres via @BotFather.",
+        "disable-groups": "— Empêcher l'ajout de bots aux groupes",
+        "disable-inline":
+          "— Empêcher l'utilisation de bots dans les recherches en ligne.",
+        "obscure-username":
+          "Utilisez un nom d'utilisateur de bot non évident pour réduire sa visibilité.",
+      },
+      "toast-enter-token": "Veuillez saisir un jeton de bot.",
+      "toast-connect-failed": "Échec de la connexion du bot.",
+    },
+    connected: {
+      status: "Connecté",
+      "status-disconnected":
+        "Non connecté – le jeton pourrait être expiré ou invalide.",
+      "placeholder-token": "Coller le nouveau jeton de bot...",
+      reconnect: "Reconnexion",
+      workspace: "Espace de travail",
+      "bot-link": "Lien vers le bot",
+      "voice-response": "Réponse vocale",
+      disconnecting: "Déconnexion...",
+      disconnect: "Déconnecter",
+      "voice-text-only": "Texte uniquement",
+      "voice-mirror":
+        "Écho (répondre par la voix lorsque l'utilisateur envoie une voix)",
+      "voice-always":
+        "Toujours inclure une voix (envoyer un enregistrement audio avec chaque réponse)",
+      "toast-disconnect-failed": "Échec de la déconnexion du robot.",
+      "toast-reconnect-failed": "Échec de la reconnexion du bot.",
+      "toast-voice-failed": "Impossible de mettre à jour le mode vocal.",
+      "toast-approve-failed": "Échec de la validation de l'utilisateur.",
+      "toast-deny-failed": "Impossible de refuser l'accès à l'utilisateur.",
+      "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
+    },
+    users: {
+      "pending-title": "En attente d'approbation",
+      "pending-description":
+        "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
+      "approved-title": "Utilisateurs autorisés",
+      "approved-description":
+        "Utilisateurs qui ont été autorisés à communiquer avec votre bot.",
+      user: "Utilisateur",
+      "pairing-code": "Code de correspondance",
+      "no-pending": "Aucune demande en cours",
+      "no-approved": "Aucun utilisateur autorisé",
+      unknown: "Inconnu",
+      approve: "Approuver",
+      deny: "Rejeter",
+      revoke: "Annuler",
+    },
   },
 };
 
