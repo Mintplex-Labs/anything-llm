@@ -119,7 +119,7 @@ export default function OnboardingHome() {
         </div>
 
         <h1 className="relative font-medium text-white light:text-slate-700 text-[64px] md:text-[96px] lg:text-[160px] leading-none tracking-[-0.06em] select-none">
-          Welcome
+          {t("onboarding.home.welcome")}
         </h1>
 
         <button
