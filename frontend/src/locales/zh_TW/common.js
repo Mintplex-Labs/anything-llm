@@ -715,6 +715,14 @@ const TRANSLATIONS = {
     start_agent_session: "開始智慧代理人工作階段",
     use_agent_session_to_use_tools:
       "若要在對話中使用工具，請在提示詞開頭加上 '@agent'，即可開始智慧代理人工作階段。",
+    agent_invocation: {
+      model_wants_to_call: "模型想要撥打電話",
+      approve: "批准",
+      reject: "拒絕",
+      always_allow: "請務必確保 {{skillName}}",
+      tool_call_was_approved: "工具請求已獲得批准。",
+      tool_call_was_rejected: "請求已遭拒絕",
+    },
   },
   profile_settings: {
     edit_account: "編輯帳戶",

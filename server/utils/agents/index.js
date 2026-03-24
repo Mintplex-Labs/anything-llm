@@ -726,6 +726,7 @@ class AgentHandler {
         socket: args.socket,
         muteUserReply: true,
         introspection: true,
+        userId: this.invocation.user_id || null,
       })
     );
 

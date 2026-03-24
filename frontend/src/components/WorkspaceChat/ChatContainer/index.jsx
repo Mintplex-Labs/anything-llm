@@ -428,6 +428,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
                     sendCommand={sendCommand}
                     updateHistory={setChatHistory}
                     regenerateAssistantMessage={regenerateAssistantMessage}
+                    websocket={websocket}
                   />
                 </MetricsProvider>
                 <PromptInput

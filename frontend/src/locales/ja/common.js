@@ -759,6 +759,14 @@ const TRANSLATIONS = {
     start_agent_session: "エージェントセッションを開始",
     use_agent_session_to_use_tools:
       "チャットでツールを使用するには、プロンプトの冒頭に'@agent'を使用してエージェントセッションを開始してください。",
+    agent_invocation: {
+      model_wants_to_call: "モデルは電話をかけたい。",
+      approve: "承認",
+      reject: "拒否",
+      always_allow: "常に、{{skillName}}を確保してください。",
+      tool_call_was_approved: "ツールの使用許可が承認されました",
+      tool_call_was_rejected: "ツール呼び出しは拒否されました",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

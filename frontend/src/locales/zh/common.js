@@ -805,6 +805,14 @@ const TRANSLATIONS = {
     start_agent_session: "开始代理会",
     use_agent_session_to_use_tools:
       "您可以通过在提示词的开头使用'@agent'来启动与代理的聊天，从而使用聊天工具。",
+    agent_invocation: {
+      model_wants_to_call: "该型号希望进行通话。",
+      approve: "批准",
+      reject: "拒绝",
+      always_allow: "请务必留出 {{skillName}}",
+      tool_call_was_approved: "工具使用申请已获得批准。",
+      tool_call_was_rejected: "请求获取工具已被拒绝。",
+    },
   },
   profile_settings: {
     edit_account: "编辑帐户",
