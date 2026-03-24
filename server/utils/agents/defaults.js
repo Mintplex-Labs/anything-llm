@@ -96,13 +96,16 @@ async function agentSkillsFromSystemSettings() {
     // need to be named via `${parent}#${child}` naming convention
     if (Array.isArray(AgentPlugins[skillName].plugin)) {
       for (const subPlugin of AgentPlugins[skillName].plugin) {
-        // Check if this sub-skill is disabled (for filesystem-agent)
-        if (
-          skillName === "filesystem-agent" &&
-          _disabledFilesystemSkills.includes(subPlugin.name)
-        ) {
-          continue;
+        /**
+         * If the filesystem tool is not available, or the sub-skill is explicitly disabled, skip it
+         * This is a docker specific skill so it cannot be used in other environments.
+         */
+        if (skillName === "filesystem-agent") {
+          const filesystemTool = require("./aibitat/plugins/filesystem/lib");
+          if (!filesystemTool.isToolAvailable()) continue;
+          if (_disabledFilesystemSkills.includes(subPlugin.name)) continue;
         }
+
         systemFunctions.push(
           `${AgentPlugins[skillName].name}#${subPlugin.name}`
         );

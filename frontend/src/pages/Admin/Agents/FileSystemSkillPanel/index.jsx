@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Toggle, { SimpleToggleSwitch } from "@/components/lib/Toggle";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import {
   Warning,
   File,
@@ -21,64 +21,72 @@ const getFileSystemSubSkills = (t) => {
   return [
     {
       name: "filesystem-read-text-file",
-      title: "Read File",
-      description: "Read contents of files (text, code, PDF, images, etc.)",
+      title: t("agent.skill.filesystem.skills.read-text-file.title"),
+      description: t(
+        "agent.skill.filesystem.skills.read-text-file.description"
+      ),
       icon: File,
       category: "read",
     },
     {
       name: "filesystem-read-multiple-files",
-      title: "Read Multiple Files",
-      description: "Read multiple files at once",
+      title: t("agent.skill.filesystem.skills.read-multiple-files.title"),
+      description: t(
+        "agent.skill.filesystem.skills.read-multiple-files.description"
+      ),
       icon: Files,
       category: "read",
     },
     {
       name: "filesystem-list-directory",
-      title: "List Directory",
-      description: "List files and directories in a folder",
+      title: t("agent.skill.filesystem.skills.list-directory.title"),
+      description: t(
+        "agent.skill.filesystem.skills.list-directory.description"
+      ),
       icon: FolderOpen,
       category: "read",
     },
     {
       name: "filesystem-search-files",
-      title: "Search Files",
-      description: "Search for files by name or content",
+      title: t("agent.skill.filesystem.skills.search-files.title"),
+      description: t("agent.skill.filesystem.skills.search-files.description"),
       icon: MagnifyingGlass,
       category: "read",
     },
     {
       name: "filesystem-get-file-info",
-      title: "Get File Info",
-      description: "Get detailed metadata about files",
+      title: t("agent.skill.filesystem.skills.get-file-info.title"),
+      description: t("agent.skill.filesystem.skills.get-file-info.description"),
       icon: Info,
       category: "read",
     },
     {
       name: "filesystem-write-file",
-      title: "Write File",
-      description: "Create new files or overwrite existing files",
+      title: t("agent.skill.filesystem.skills.write-file.title"),
+      description: t("agent.skill.filesystem.skills.write-file.description"),
       icon: FloppyDisk,
       category: "write",
     },
     {
       name: "filesystem-edit-file",
-      title: "Edit File",
-      description: "Make line-based edits to text files",
+      title: t("agent.skill.filesystem.skills.edit-file.title"),
+      description: t("agent.skill.filesystem.skills.edit-file.description"),
       icon: PencilSimple,
       category: "write",
     },
     {
       name: "filesystem-create-directory",
-      title: "Create Directory",
-      description: "Create new directories",
+      title: t("agent.skill.filesystem.skills.create-directory.title"),
+      description: t(
+        "agent.skill.filesystem.skills.create-directory.description"
+      ),
       icon: FolderPlus,
       category: "write",
     },
     {
       name: "filesystem-move-file",
-      title: "Move/Rename File",
-      description: "Move or rename files and directories",
+      title: t("agent.skill.filesystem.skills.move-file.title"),
+      description: t("agent.skill.filesystem.skills.move-file.description"),
       icon: ArrowsLeftRight,
       category: "write",
     },
@@ -174,7 +182,7 @@ export default function FileSystemSkillPanel({
             target="_blank"
             className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
           >
-            Learn more about this how to use this skill &rarr;
+            {t("agent.skill.filesystem.learnMore")} &rarr;
           </Link>
         </div>
 
@@ -188,7 +196,7 @@ export default function FileSystemSkillPanel({
             <div className="flex flex-col mt-2 gap-y-4">
               <div className="flex justify-between items-center">
                 <p className="text-theme-text-primary font-semibold text-sm">
-                  Configuration
+                  {t("agent.skill.filesystem.configuration")}
                 </p>
               </div>
               {loading ? (
@@ -202,7 +210,7 @@ export default function FileSystemSkillPanel({
                 <>
                   <div className="flex flex-col gap-y-2">
                     <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide">
-                      Read Actions
+                      {t("agent.skill.filesystem.readActions")}
                     </p>
                     <div className="flex flex-col gap-y-1">
                       {readSkills.map((subSkill) => (
@@ -218,12 +226,12 @@ export default function FileSystemSkillPanel({
 
                   <div className="flex flex-col gap-y-2">
                     <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      Write Actions
                       <Warning
                         size={12}
                         className="text-orange-400"
                         weight="fill"
                       />
+                      {t("agent.skill.filesystem.writeActions")}
                     </p>
                     <div className="flex flex-col gap-y-1">
                       {writeSkills.map((subSkill) => (
@@ -248,21 +256,22 @@ export default function FileSystemSkillPanel({
 }
 
 function WarningBanner() {
-  const { t } = useTranslation();
   return (
     <div className="flex items-start gap-x-2.5 p-2.5 bg-orange-800/20 light:bg-orange-800/10 text-orange-400 light:text-orange-600 border border-orange-400/30 rounded-lg items-center">
       <Warning size={20} className="flex-shrink-0 mt-0.5" weight="fill" />
       <p className="text-xs font-medium">
-        Filesystem access can be dangerous as it can modify or delete files.
-        Please consult the{" "}
-        <Link
-          to="/docs/guides/agent-skills/filesystem-agent"
-          target="_blank"
-          className="underline hover:text-orange-300 light:hover:text-orange-700"
-        >
-          documentation
-        </Link>{" "}
-        before enabling.
+        <Trans
+          i18nKey="agent.skill.filesystem.warning"
+          components={{
+            link: (
+              <Link
+                to="/docs/guides/agent-skills/filesystem-agent"
+                target="_blank"
+                className="underline hover:text-orange-300 light:hover:text-orange-700"
+              />
+            ),
+          }}
+        />
       </p>
     </div>
   );
@@ -276,7 +285,7 @@ function SubSkillRow({ subSkill, disabled, onToggle, isWriteOperation }) {
         disabled
           ? "bg-theme-bg-secondary/30 border-theme-sidebar-border/30"
           : isWriteOperation
-            ? "bg-orange-900/10 border-orange-400/20"
+            ? "bg-orange-900/10 border-orange-400/20 light:bg-orange-800/10 text-orange-400 light:text-orange-600"
             : "bg-theme-bg-secondary/50 border-theme-sidebar-border/50"
       }`}
     >

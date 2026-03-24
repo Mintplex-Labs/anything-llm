@@ -31,6 +31,17 @@ class FilesystemManager {
     ".bmp": "image/bmp",
   };
 
+  /**
+   * Checks if the filesystem tool is available.
+   * The filesystem tool is only available when running in a docker container
+   * or in development mode.
+   * @returns {boolean} True if the tool is available
+   */
+  isToolAvailable() {
+    if (process.env.NODE_ENV === "development") return true;
+    return process.env.ANYTHING_LLM_RUNTIME === "docker";
+  }
+
   #allowedDirectories = [];
   #isInitialized = false;
 
