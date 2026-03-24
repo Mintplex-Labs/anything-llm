@@ -18,6 +18,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenue",
       getStarted: "Commencer",
+      welcome: null,
     },
     llm: {
       title: "Préférence LLM",

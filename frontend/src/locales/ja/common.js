@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "ようこそ",
       getStarted: "はじめる",
+      welcome: null,
     },
     llm: {
       title: "LLMの設定",
