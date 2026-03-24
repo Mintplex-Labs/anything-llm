@@ -765,6 +765,14 @@ const TRANSLATIONS = {
     start_agent_session: "Temsilci Oturumu Başlat",
     use_agent_session_to_use_tools:
       'Çatınızdaki araçları kullanmak için, isteminizin başında "@agent" ile bir ajan oturumu başlatabilirsiniz.',
+    agent_invocation: {
+      model_wants_to_call: "Model, arama yapmak istiyor",
+      approve: "Onayla",
+      reject: "Reddet",
+      always_allow: "Her zaman {{skillName}}'ı sağlayın.",
+      tool_call_was_approved: "Araç talebi onaylandı.",
+      tool_call_was_rejected: "Ara çağrısı reddedildi.",
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

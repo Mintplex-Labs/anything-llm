@@ -865,6 +865,15 @@ const TRANSLATIONS = {
     start_agent_session: "Starte eine Agent-Sitzung",
     use_agent_session_to_use_tools:
       'Sie können Tools im Chat nutzen, indem Sie eine Agentensitzung mit "@agent" am Anfang Ihrer Anfrage starten.',
+    agent_invocation: {
+      model_wants_to_call: "Das Modell möchte anrufen.",
+      approve: "Genehmigen",
+      reject: "Ablehnen",
+      always_allow: "Bitte stellen Sie immer {{skillName}} sicher.",
+      tool_call_was_approved:
+        "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
+      tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

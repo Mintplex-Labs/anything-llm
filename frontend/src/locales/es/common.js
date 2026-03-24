@@ -879,6 +879,14 @@ const TRANSLATIONS = {
     start_agent_session: "Iniciar sesión como agente",
     use_agent_session_to_use_tools:
       "Puede utilizar las herramientas disponibles en el chat iniciando una sesión con un agente utilizando el prefijo '@agent' al principio de su mensaje.",
+    agent_invocation: {
+      model_wants_to_call: "El modelo quiere llamar",
+      approve: "Aprobar",
+      reject: "Rechazar",
+      always_allow: "Siempre asegúrese de que haya {{skillName}}",
+      tool_call_was_approved: "La solicitud de herramientas ha sido aprobada.",
+      tool_call_was_rejected: "La solicitud de herramienta fue rechazada.",
+    },
   },
   profile_settings: {
     edit_account: "Editar cuenta",

@@ -771,6 +771,15 @@ const TRANSLATIONS = {
     start_agent_session: "Start Agent-session",
     use_agent_session_to_use_tools:
       "Du kan bruge værktøjer i chat ved at starte en agent-session med '@agent' i starten af din forespørgsel.",
+    agent_invocation: {
+      model_wants_to_call: "Modellen ønsker at ringe",
+      approve: "Godkend",
+      reject: "Afvise",
+      always_allow: "Sørg altid for, at {{skillName}} er tilgængeligt.",
+      tool_call_was_approved:
+        "Anmodningen om at bruge værktøjet blev godkendt.",
+      tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",

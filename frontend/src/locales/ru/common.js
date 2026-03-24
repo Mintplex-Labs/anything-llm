@@ -770,6 +770,16 @@ const TRANSLATIONS = {
     start_agent_session: "Начать сеанс для агента",
     use_agent_session_to_use_tools:
       "Вы можете использовать инструменты в чате, начав сеанс с агентом, добавив '@agent' в начало вашего сообщения.",
+    agent_invocation: {
+      model_wants_to_call: "Модель хочет позвонить",
+      approve: "Одобрить",
+      reject: "Отказ",
+      always_allow: "Всегда оставляйте {{skillName}}",
+      tool_call_was_approved:
+        "Запрос на предоставление инструмента был одобрен.",
+      tool_call_was_rejected:
+        "Запрос на предоставление инструмента был отклонен.",
+    },
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",
