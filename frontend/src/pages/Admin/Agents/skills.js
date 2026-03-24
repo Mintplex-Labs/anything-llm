@@ -2,6 +2,7 @@ import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkillPanel from "./GenericSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
+import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import {
   Brain,
   File,
@@ -45,6 +46,14 @@ export const getDefaultSkills = (t) => ({
 });
 
 export const getConfigurableSkills = (t) => ({
+  "filesystem-agent": {
+    title: t("agent.skill.filesystem.title"),
+    description: t("agent.skill.filesystem.description"),
+    component: FileSystemSkillPanel,
+    skill: "filesystem-agent",
+    icon: FolderOpen,
+    image: FileSystemImage,
+  },
   "save-file-to-browser": {
     title: t("agent.skill.save.title"),
     description: t("agent.skill.save.description"),
@@ -72,13 +81,5 @@ export const getConfigurableSkills = (t) => ({
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
-  },
-  "filesystem-agent": {
-    title: t("agent.skill.filesystem.title"),
-    description: t("agent.skill.filesystem.description"),
-    component: GenericSkillPanel,
-    skill: "filesystem-agent",
-    icon: FolderOpen,
-    image: FileSystemImage,
   },
 });

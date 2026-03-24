@@ -12,6 +12,24 @@ const { humanFileSize } = require("../../../../helpers");
 class FilesystemManager {
   static FILE_READ_CHUNK_SIZE = 1024;
   static CONTEXT_RESERVE_RATIO = 0.25;
+  static IMAGE_EXTENSIONS = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".svg",
+    ".bmp",
+  ];
+  static IMAGE_MIME_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+    ".bmp": "image/bmp",
+  };
 
   #allowedDirectories = [];
   #isInitialized = false;
@@ -707,6 +725,51 @@ class FilesystemManager {
       content: truncated + "\n\n" + message,
       wasTruncated: true,
     };
+  }
+
+  /**
+   * Check if a file path points to an image file.
+   * @param {string} filePath - Path to the file
+   * @returns {boolean} True if the file is an image
+   */
+  isImageFile(filePath) {
+    const ext = path.extname(filePath).toLowerCase();
+    return FilesystemManager.IMAGE_EXTENSIONS.includes(ext);
+  }
+
+  /**
+   * Get the MIME type for an image file.
+   * @param {string} filePath - Path to the file
+   * @returns {string|null} MIME type or null if not an image
+   */
+  getImageMimeType(filePath) {
+    const ext = path.extname(filePath).toLowerCase();
+    return FilesystemManager.IMAGE_MIME_TYPES[ext] || null;
+  }
+
+  /**
+   * Read an image file and return it as an attachment object.
+   * @param {string} filePath - Validated absolute path to the image file
+   * @returns {Promise<{name: string, mime: string, contentString: string}|null>} Attachment object or null on error
+   */
+  async readImageAsAttachment(filePath) {
+    try {
+      const mime = this.getImageMimeType(filePath);
+      if (!mime) return null;
+
+      const buffer = await fs.readFile(filePath);
+      const base64 = buffer.toString("base64");
+      const filename = path.basename(filePath);
+
+      return {
+        name: filename,
+        mime,
+        contentString: `data:${mime};base64,${base64}`,
+      };
+    } catch (error) {
+      console.error(`Error reading image file ${filePath}:`, error.message);
+      return null;
+    }
   }
 }
 

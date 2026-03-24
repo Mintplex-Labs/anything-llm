@@ -53,15 +53,12 @@ module.exports.FilesystemWriteFile = {
               );
 
               const validPath = await filesystem.validatePath(filePath);
-
               this.super.introspect(
                 `${this.caller}: Writing to file ${filePath}`
               );
 
               await filesystem.writeFileContent(validPath, content);
-
               this.super.introspect(`Successfully wrote to ${filePath}`);
-
               return `Successfully wrote to ${filePath}`;
             } catch (e) {
               this.super.handlerProps.log(

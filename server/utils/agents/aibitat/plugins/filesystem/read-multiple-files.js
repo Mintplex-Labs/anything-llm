@@ -12,6 +12,8 @@ module.exports.FilesystemReadMultipleFiles = {
           name: this.name,
           description:
             "Read multiple files at once when you know their exact paths. " +
+            "Supports many file types: text, code, PDFs, Word docs, audio/video (transcribed to text), and more. " +
+            "Image files (png, jpg, jpeg, gif, webp, svg, bmp) are automatically attached for you to view and analyze visually. " +
             "IMPORTANT: If you don't know the file paths, use 'filesystem-search-files' first " +
             "with 'includeFileContents: true' to find and read files in one step. " +
             "Each file's content is returned with its path. Failed reads won't stop the operation.",
@@ -24,6 +26,12 @@ module.exports.FilesystemReadMultipleFiles = {
               prompt: "Compare the config files in dev and prod folders",
               call: JSON.stringify({
                 paths: ["dev/config.json", "prod/config.json"],
+              }),
+            },
+            {
+              prompt: "Show me all the screenshots",
+              call: JSON.stringify({
+                paths: ["screenshot1.png", "screenshot2.png"],
               }),
             },
           ],
@@ -60,8 +68,28 @@ module.exports.FilesystemReadMultipleFiles = {
                 paths.map(async (filePath) => {
                   try {
                     const validPath = await filesystem.validatePath(filePath);
-                    const content = await filesystem.readFileContent(validPath);
                     const filename = path.basename(validPath);
+
+                    if (filesystem.isImageFile(validPath)) {
+                      const attachment =
+                        await filesystem.readImageAsAttachment(validPath);
+                      if (attachment) {
+                        this.super.addToolAttachment?.(attachment);
+                        return {
+                          filePath,
+                          content: `[Image "${filename}" attached for viewing]`,
+                          success: true,
+                          isImage: true,
+                        };
+                      }
+                      return {
+                        filePath,
+                        content: `Error - Could not read image file`,
+                        success: false,
+                      };
+                    }
+
+                    const content = await filesystem.readFileContent(validPath);
 
                     this.super.addCitation?.({
                       id: `fs-${Buffer.from(validPath).toString("base64url").slice(0, 32)}`,
@@ -103,9 +131,15 @@ module.exports.FilesystemReadMultipleFiles = {
                 );
               }
 
-              this.super.introspect(
-                `Successfully processed ${paths.length} files`
-              );
+              const imageCount = results.filter((r) => r.isImage).length;
+              const textCount = results.filter(
+                (r) => r.success && !r.isImage
+              ).length;
+              let introspectMsg = `Successfully processed ${paths.length} files`;
+              if (imageCount > 0) {
+                introspectMsg += ` (${imageCount} image${imageCount > 1 ? "s" : ""} attached, ${textCount} text file${textCount !== 1 ? "s" : ""} read)`;
+              }
+              this.super.introspect(introspectMsg);
 
               return finalContent;
             } catch (e) {
