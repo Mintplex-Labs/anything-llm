@@ -185,12 +185,18 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
+        description:
+          'vil levere svar baseret på LLM\'s generelle viden og den relevante dokumentkontekst.<br />Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
+        description:
+          "vil kun give svar <b>hvis konteksten i dokumentet er fundet.</b>Du skal bruge kommandoen @agent for at bruge værktøjerne.",
       },
       automatic: {
         title: "Bil",
+        description:
+          'vil automatisk bruge værktøjer, hvis modellen og udbyderen understøtter native værktøjsanrop. <br />Hvis native værktøjsanrop ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {

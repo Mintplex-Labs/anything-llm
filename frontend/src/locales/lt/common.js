@@ -198,12 +198,18 @@ const TRANSLATIONS = {
       title: "Pokalbio režimas",
       automatic: {
         title: "Auto",
+        description:
+          'automatiškai naudosis įrankiais, jei modelis ir paslaugos teikėjas palaiko įrankių vadovavimą. <br />Jei įrankių vadovavimas nepaliekamas, jums reikės naudoti "@agent" komandą, kad galėtumėte naudoti įrankius.',
       },
       chat: {
         title: "Pokalbis",
+        description:
+          "pasiūlys atsakymus, remdamasis LLM bendrais žinynais ir dokumento kontekstu, kuris yra prieinamas. Norėdami naudoti įrankus, reikės naudoti @agent komandą.",
       },
       query: {
         title: "Užklausa",
+        description:
+          'bus teikiamos atsakomybė <b>tik</b>, jei dokumento kontekstas bus nustatytas. <br />Norėdami naudoti įrankius, jums reikės naudoti "@agent" komandą.',
       },
     },
     history: {

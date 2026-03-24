@@ -184,12 +184,18 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
+        description:
+          "zal antwoorden genereren met behulp van de algemene kennis van het LLM en de context uit het document <b>en</b>. <br />Om tools te gebruiken, moet u het commando `@agent` gebruiken.",
       },
       query: {
         title: "Query",
+        description:
+          "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken.",
       },
       automatic: {
         title: "Auto",
+        description:
+          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
       },
     },
     history: {

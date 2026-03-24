@@ -188,12 +188,18 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
+        description:
+          "LLM의 일반적인 지식과 문서 컨텍스트를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
+        description:
+          "문서의 맥락이 발견되면 답변만 제공합니다.<b>필요한 경우, @agent 명령어를 사용하여 도구를 사용해야 합니다.</b>",
       },
       automatic: {
         title: "자동",
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br />네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
     },
     history: {

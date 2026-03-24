@@ -189,12 +189,18 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
+        description:
+          "teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumenti konteksti, mis on leitav.<br /> Selleks peate kasutama @agent käsku, et kasutada erinevaid tööriime.",
       },
       query: {
         title: "Päring",
+        description:
+          'teenib vastuseid <b> ainult__, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
       },
       automatic: {
         title: "Automaailm",
+        description:
+          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native töörieste kasutamist. <br />Kui native töörieste kasutamine ei toeta, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
