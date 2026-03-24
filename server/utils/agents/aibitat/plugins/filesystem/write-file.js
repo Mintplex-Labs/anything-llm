@@ -1,4 +1,4 @@
-const { validatePath, writeFileContent } = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemWriteFile = {
   name: "filesystem-write-file",
@@ -52,13 +52,13 @@ module.exports.FilesystemWriteFile = {
                 `Using the filesystem-write-file tool.`
               );
 
-              const validPath = await validatePath(filePath);
+              const validPath = await filesystem.validatePath(filePath);
 
               this.super.introspect(
                 `${this.caller}: Writing to file ${filePath}`
               );
 
-              await writeFileContent(validPath, content);
+              await filesystem.writeFileContent(validPath, content);
 
               this.super.introspect(`Successfully wrote to ${filePath}`);
 

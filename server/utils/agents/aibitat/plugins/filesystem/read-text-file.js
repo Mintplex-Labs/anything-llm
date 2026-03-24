@@ -1,11 +1,5 @@
 const path = require("path");
-const {
-  validatePath,
-  readFileContent,
-  tailFile,
-  headFile,
-  truncateContentForContext,
-} = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemReadTextFile = {
   name: "filesystem-read-text-file",
@@ -70,28 +64,28 @@ module.exports.FilesystemReadTextFile = {
                 return "Error: Cannot specify both head and tail parameters simultaneously.";
               }
 
-              const validPath = await validatePath(filePath);
+              const validPath = await filesystem.validatePath(filePath);
 
               this.super.introspect(`${this.caller}: Reading file ${filePath}`);
 
               let content;
               if (tail) {
-                content = await tailFile(validPath, tail);
+                content = await filesystem.tailFile(validPath, tail);
                 this.super.introspect(
                   `Retrieved last ${tail} lines of ${filePath}`
                 );
               } else if (head) {
-                content = await headFile(validPath, head);
+                content = await filesystem.headFile(validPath, head);
                 this.super.introspect(
                   `Retrieved first ${head} lines of ${filePath}`
                 );
               } else {
-                content = await readFileContent(validPath);
+                content = await filesystem.readFileContent(validPath);
                 this.super.introspect(`Successfully read ${filePath}`);
               }
 
               const { content: finalContent, wasTruncated } =
-                truncateContentForContext(
+                filesystem.truncateContentForContext(
                   content,
                   this.super,
                   "[Content truncated - file exceeds context limit. Use head/tail parameters to read specific portions.]"

@@ -1,11 +1,5 @@
 const path = require("path");
-const {
-  searchFilesWithGlob,
-  getAllowedDirectories,
-  ensureInitialized,
-  readFileContent,
-  truncateContentForContext,
-} = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemSearchFiles = {
   name: "filesystem-search-files",
@@ -131,8 +125,8 @@ module.exports.FilesystemSearchFiles = {
                 `Using the filesystem-search-files tool.`
               );
 
-              await ensureInitialized();
-              const allowedDirs = getAllowedDirectories();
+              await filesystem.ensureInitialized();
+              const allowedDirs = filesystem.getAllowedDirectories();
 
               if (allowedDirs.length === 0) {
                 return "Error: No allowed directories configured";
@@ -162,7 +156,7 @@ module.exports.FilesystemSearchFiles = {
                   try {
                     // Search with each pattern and collect results
                     for (const effectivePattern of effectivePatterns) {
-                      const results = await searchFilesWithGlob(
+                      const results = await filesystem.searchFilesWithGlob(
                         dir,
                         effectivePattern,
                         { excludePatterns }
@@ -352,6 +346,7 @@ async function searchWithRipgrep({
 
 /**
  * Fallback search implementation without ripgrep.
+ * Uses collector to parse binary files (PDFs, etc.) for content search.
  */
 async function searchWithFallback({
   searchPath,
@@ -366,6 +361,7 @@ async function searchWithFallback({
 
   const regex = new RegExp(pattern, caseSensitive ? "g" : "gi");
   const results = [];
+  const matchOptions = { dot: true, nocase: true };
 
   async function searchDir(currentPath) {
     if (results.length >= maxResults) return;
@@ -381,8 +377,8 @@ async function searchWithFallback({
       // Check exclude patterns
       const shouldExclude = excludePatterns.some(
         (p) =>
-          minimatch(relativePath, p, { dot: true }) ||
-          minimatch(entry.name, p, { dot: true })
+          minimatch(relativePath, p, matchOptions) ||
+          minimatch(entry.name, p, matchOptions)
       );
 
       if (shouldExclude) continue;
@@ -391,13 +387,13 @@ async function searchWithFallback({
         await searchDir(fullPath);
       } else if (entry.isFile()) {
         // Check file pattern
-        if (filePattern && !minimatch(entry.name, filePattern, { dot: true })) {
+        if (filePattern && !minimatch(entry.name, filePattern, matchOptions)) {
           continue;
         }
 
-        // Search file contents
+        // Search file contents using collector for binary file support
         try {
-          const content = await fs.readFile(fullPath, "utf-8");
+          const content = await filesystem.readFileContent(fullPath);
           const lines = content.split("\n");
 
           for (
@@ -415,7 +411,7 @@ async function searchWithFallback({
             regex.lastIndex = 0; // Reset regex state
           }
         } catch {
-          // Skip files that can't be read (binary, permissions, etc.)
+          // Skip files that can't be read
         }
       }
     }
@@ -463,7 +459,7 @@ async function readMatchingFileContents(filePaths, maxFiles) {
   const results = [];
   for (const filePath of filesToRead) {
     try {
-      const content = await readFileContent(filePath);
+      const content = await filesystem.readFileContent(filePath);
       const filename = path.basename(filePath);
 
       this.super.addCitation?.({
@@ -496,11 +492,12 @@ async function readMatchingFileContents(filePaths, maxFiles) {
     )
     .join("\n\n---\n\n");
 
-  const { content: finalContent, wasTruncated } = truncateContentForContext(
-    combinedContent,
-    this.super,
-    `[Content truncated - file contents exceed context limit. Try reducing maxFilesToRead or searching more specifically.]`
-  );
+  const { content: finalContent, wasTruncated } =
+    filesystem.truncateContentForContext(
+      combinedContent,
+      this.super,
+      `[Content truncated - file contents exceed context limit. Try reducing maxFilesToRead or searching more specifically.]`
+    );
 
   if (wasTruncated) {
     this.super.introspect(

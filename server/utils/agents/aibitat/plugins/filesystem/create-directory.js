@@ -1,5 +1,5 @@
 const fs = require("fs/promises");
-const { validatePath } = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemCreateDirectory = {
   name: "filesystem-create-directory",
@@ -44,7 +44,7 @@ module.exports.FilesystemCreateDirectory = {
                 `Using the filesystem-create-directory tool.`
               );
 
-              const validPath = await validatePath(dirPath);
+              const validPath = await filesystem.validatePath(dirPath);
               this.super.introspect(
                 `${this.caller}: Creating directory ${dirPath}`
               );

@@ -1,4 +1,4 @@
-const { validatePath, getFileStats } = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemGetFileInfo = {
   name: "filesystem-get-file-info",
@@ -43,13 +43,13 @@ module.exports.FilesystemGetFileInfo = {
                 `Using the filesystem-get-file-info tool.`
               );
 
-              const validPath = await validatePath(filePath);
+              const validPath = await filesystem.validatePath(filePath);
 
               this.super.introspect(
                 `${this.caller}: Getting info for ${filePath}`
               );
 
-              const info = await getFileStats(validPath);
+              const info = await filesystem.getFileStats(validPath);
 
               const formatted = Object.entries(info)
                 .map(([key, value]) => `${key}: ${value}`)

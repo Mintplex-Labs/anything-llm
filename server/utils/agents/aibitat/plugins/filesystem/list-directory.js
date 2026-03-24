@@ -1,6 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { validatePath } = require("./lib.js");
+const filesystem = require("./lib.js");
 const { humanFileSize } = require("../../../../helpers");
 
 module.exports.FilesystemListDirectory = {
@@ -69,7 +69,7 @@ module.exports.FilesystemListDirectory = {
                 `Using the filesystem-list-directory tool.`
               );
 
-              const validPath = await validatePath(dirPath);
+              const validPath = await filesystem.validatePath(dirPath);
 
               this.super.introspect(
                 `${this.caller}: Listing directory ${dirPath}`

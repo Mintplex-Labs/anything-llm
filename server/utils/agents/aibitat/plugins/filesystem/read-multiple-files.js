@@ -1,9 +1,5 @@
 const path = require("path");
-const {
-  validatePath,
-  readFileContent,
-  truncateContentForContext,
-} = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemReadMultipleFiles = {
   name: "filesystem-read-multiple-files",
@@ -63,8 +59,8 @@ module.exports.FilesystemReadMultipleFiles = {
               const results = await Promise.all(
                 paths.map(async (filePath) => {
                   try {
-                    const validPath = await validatePath(filePath);
-                    const content = await readFileContent(validPath);
+                    const validPath = await filesystem.validatePath(filePath);
+                    const content = await filesystem.readFileContent(validPath);
                     const filename = path.basename(validPath);
 
                     this.super.addCitation?.({
@@ -95,7 +91,7 @@ module.exports.FilesystemReadMultipleFiles = {
                 .join("\n---\n");
 
               const { content: finalContent, wasTruncated } =
-                truncateContentForContext(
+                filesystem.truncateContentForContext(
                   combinedContent,
                   this.super,
                   "[Content truncated - combined files exceed context limit. Consider reading fewer files at once.]"

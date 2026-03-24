@@ -1,4 +1,4 @@
-const { validatePath, applyFileEdits } = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemEditFile = {
   name: "filesystem-edit-file",
@@ -86,13 +86,17 @@ module.exports.FilesystemEditFile = {
                 return "Error: At least one edit operation must be provided.";
               }
 
-              const validPath = await validatePath(filePath);
+              const validPath = await filesystem.validatePath(filePath);
 
               this.super.introspect(
                 `${this.caller}: ${dryRun ? "Previewing" : "Applying"} ${edits.length} edit(s) to ${filePath}`
               );
 
-              const result = await applyFileEdits(validPath, edits, dryRun);
+              const result = await filesystem.applyFileEdits(
+                validPath,
+                edits,
+                dryRun
+              );
 
               if (dryRun) {
                 this.super.introspect(`Preview of changes to ${filePath}:`);

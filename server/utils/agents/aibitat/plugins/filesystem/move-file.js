@@ -1,5 +1,5 @@
 const fs = require("fs/promises");
-const { validatePath } = require("./lib.js");
+const filesystem = require("./lib.js");
 
 module.exports.FilesystemMoveFile = {
   name: "filesystem-move-file",
@@ -54,8 +54,8 @@ module.exports.FilesystemMoveFile = {
                 `Using the filesystem-move-file tool.`
               );
 
-              const validSourcePath = await validatePath(source);
-              const validDestPath = await validatePath(destination);
+              const validSourcePath = await filesystem.validatePath(source);
+              const validDestPath = await filesystem.validatePath(destination);
 
               this.super.introspect(
                 `${this.caller}: Moving ${source} to ${destination}`
