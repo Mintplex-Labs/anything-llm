@@ -8,12 +8,14 @@ import {
   Browser,
   ChartBar,
   FileMagnifyingGlass,
+  FolderOpen,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
 import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
+import FileSystemImage from "@/media/agents/file-system.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -70,5 +72,13 @@ export const getConfigurableSkills = (t) => ({
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "filesystem-agent": {
+    title: t("agent.skill.filesystem.title"),
+    description: t("agent.skill.filesystem.description"),
+    component: GenericSkillPanel,
+    skill: "filesystem-agent",
+    icon: FolderOpen,
+    image: FileSystemImage,
   },
 });
