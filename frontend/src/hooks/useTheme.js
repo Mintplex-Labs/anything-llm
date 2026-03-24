@@ -65,7 +65,5 @@ export function useTheme() {
     _setTheme(newTheme);
   }
 
-  const isLight = resolvedTheme === "light";
-
-  return { theme, setTheme, availableThemes, isLight };
+  return { theme, setTheme, availableThemes };
 }
