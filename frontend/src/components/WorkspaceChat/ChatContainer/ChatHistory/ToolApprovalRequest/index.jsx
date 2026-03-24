@@ -22,7 +22,6 @@ export default function ToolApprovalRequest({
 
   useEffect(() => {
     if (!timeoutMs || responded) return;
-
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now();
     }
@@ -206,7 +205,7 @@ function ToolApprovalResponseOption({
         <button
           type="button"
           onClick={onApprove}
-          className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+          className="border-none transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
         >
           Approve
         </button>
