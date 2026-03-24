@@ -191,12 +191,18 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
+        description:
+          "zapewni odpowiedzi oparte na ogólnym zasobie wiedzy LLM i kontekście dokumentu, który zostanie znaleziony. <br />Będziesz musiał użyć polecenia `@agent`, aby korzystać z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
+        description:
+          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy @agent, aby korzystać z narzędzi.",
       },
       automatic: {
         title: "Samochód",
+        description:
+          "automatycznie będzie korzystać z narzędzi, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. <br />Jeśli natywne wywoływanie narzędzi nie jest obsługiwane, konieczne będzie użycie komendy `@agent` w celu korzystania z narzędzi.",
       },
     },
     history: {

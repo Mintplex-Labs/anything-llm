@@ -193,12 +193,18 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
+        description:
+          'va oferi răspunsuri folosind cunoștințele generale ale LLM și contextul documentului, așa cum este disponibil.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
+        description:
+          "vor oferi răspunsuri doar dacă contextul documentului este identificat.<b>Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
       },
       automatic: {
         title: "Mașină",
+        description:
+          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {

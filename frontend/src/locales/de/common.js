@@ -192,12 +192,18 @@ const TRANSLATIONS = {
       title: "Chat-Modus",
       chat: {
         title: "Chat",
+        description:
+          "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem gegebenen Dokumentkontext liefern.<br />Um die Tools zu nutzen, müssen Sie den Befehl `@agent` verwenden.",
       },
       query: {
         title: "Abfrage",
+        description:
+          'werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl "@agent" verwenden.',
       },
       automatic: {
         title: "Auto",
+        description:
+          "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
       },
     },
     history: {

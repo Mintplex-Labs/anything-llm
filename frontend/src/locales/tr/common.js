@@ -184,12 +184,18 @@ const TRANSLATIONS = {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
+        description:
+          'LLM\'nin genel bilgisi ve bulunan doküman bağlamıyla cevaplar sağlayacaktır. Araçları kullanmak için "@agent" komutunu kullanmanız gerekecektir.',
       },
       query: {
         title: "Sorgu",
+        description:
+          "yalnızca ilgili belgenin bağlamında yanıtlar sağlayacaktır.<b>Kullanılabilir araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
       },
       automatic: {
         title: "Oto",
+        description:
+          "Model ve sağlayıcı tarafından desteklenen araçları otomatik olarak kullanacaktır. Eğer yerel araç çağırma desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
     },
     history: {

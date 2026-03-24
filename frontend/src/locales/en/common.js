@@ -198,12 +198,18 @@ const TRANSLATIONS = {
       title: "Chat mode",
       automatic: {
         title: "Auto",
+        description:
+          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
       },
       chat: {
         title: "Chat",
+        description:
+          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
+        description:
+          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {

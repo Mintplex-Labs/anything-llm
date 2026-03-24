@@ -191,12 +191,18 @@ const TRANSLATIONS = {
       title: "Sarunas režīms",
       chat: {
         title: "Saruna",
+        description:
+          'sniedz atbildes, izmantojot LLM vispārīgo zināšanu <b> un </b> dokumenta kontekstu, kas ir pieejams. Lai izmantotu rīkus, jums jāizmantojat komandu "@agent".',
       },
       query: {
         title: "Vaicājums",
+        description:
+          'sniedz atbildes <b>tikai__, </b>ja dokumenta konteksts ir atrasts.<br />Lai izmantotu rīkus, jums būs jāizmanto komanda "@agent".',
       },
       automatic: {
         title: "Automobiļs",
+        description:
+          'automātiski izmantos rīkus, ja modelis un sniedzējs atbalsta vietējo rīku izmantošanu. <br />Ja vietējā rīku izmantošana nav atbalstīta, jums būs jāizmantojat "@agent" komandu, lai izmantotu rīkus.',
       },
     },
     history: {

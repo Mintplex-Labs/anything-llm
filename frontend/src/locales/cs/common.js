@@ -199,12 +199,18 @@ const TRANSLATIONS = {
       title: "Režim chatu",
       chat: {
         title: "Chat",
+        description:
+          "bude poskytovat odpovědi založené na obecných znalostech LLM a kontextu dokumentu, který je k dispozici. Budete muset použít příkaz `@agent` pro použití nástrojů.",
       },
       query: {
         title: "Dotaz",
+        description:
+          "budou poskytovat odpovědi <b>pouze__, pokud je nalezen kontext dokumentu.</b>Budete muset použít příkaz @agent pro použití nástrojů.",
       },
       automatic: {
         title: "Auto",
+        description:
+          "automaticky použije nástroje, pokud to podporují model a poskytovatel. <br />Pokud není podporováno nativní volání nástrojů, budete muset použít příkaz `@agent` pro použití nástrojů.",
       },
     },
     history: {
