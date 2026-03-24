@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
-export const TOOL_APPROVAL_EVENT = "toolApprovalUpdate";
 const handledEvents = [
   "statusResponse",
   "fileDownload",

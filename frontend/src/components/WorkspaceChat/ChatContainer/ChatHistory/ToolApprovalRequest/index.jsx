@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CaretDown, Check, X, Hammer } from "@phosphor-icons/react";
-import { TOOL_APPROVAL_EVENT } from "@/utils/chat/agent";
 import AgentSkillWhitelist from "@/models/agentSkillWhitelist";
 import { useTranslation } from "react-i18next";
 
@@ -45,13 +44,6 @@ export default function ToolApprovalRequest({
     if (responded) return;
     setResponded(true);
     setApproved(false);
-
-    window.dispatchEvent(
-      new CustomEvent(TOOL_APPROVAL_EVENT, {
-        detail: { requestId, approved: false },
-      })
-    );
-
     onResponse?.(false);
   }
 
@@ -75,12 +67,6 @@ export default function ToolApprovalRequest({
         })
       );
     }
-
-    window.dispatchEvent(
-      new CustomEvent(TOOL_APPROVAL_EVENT, {
-        detail: { requestId, approved: isApproved },
-      })
-    );
 
     onResponse?.(isApproved);
   }

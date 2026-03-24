@@ -23,6 +23,12 @@ function agentSkillWhitelistEndpoints(app) {
         }
 
         const user = await userFromSession(request, response);
+        if (!user && response.locals?.multiUserMode) {
+          return response
+            .status(401)
+            .json({ success: false, error: "Unauthorized" });
+        }
+
         const userId = user?.id || null;
         const { success, error } = await AgentSkillWhitelist.add(
           skillName,

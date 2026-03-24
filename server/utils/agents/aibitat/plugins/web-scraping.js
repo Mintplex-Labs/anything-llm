@@ -95,22 +95,6 @@ const webScraping = {
            * @returns
            */
           scrape: async function (url) {
-            // Request user approval before scraping
-            if (this.super.requestToolApproval) {
-              const approval = await this.super.requestToolApproval({
-                skillName: this.name,
-                payload: { url },
-                description: this.description,
-              });
-
-              if (!approval.approved) {
-                this.super.introspect(
-                  `${this.caller}: User rejected the web scraping request.`
-                );
-                return approval.message;
-              }
-            }
-
             this.super.introspect(
               `${this.caller}: Scraping the content of ${url}`
             );
