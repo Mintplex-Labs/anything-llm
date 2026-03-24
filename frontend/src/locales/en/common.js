@@ -963,6 +963,14 @@ const TRANSLATIONS = {
       missing_credentials: "This provider is missing credentials!",
       missing_credentials_description: "Set up now",
     },
+    agent_invocation: {
+      model_wants_to_call: "Model wants to call",
+      approve: "Approve",
+      reject: "Reject",
+      always_allow: "Always allow {{skillName}}",
+      tool_call_was_approved: "Tool call was approved",
+      tool_call_was_rejected: "Tool call was rejected",
+    },
   },
   profile_settings: {
     edit_account: "Edit Account",

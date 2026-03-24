@@ -845,6 +845,14 @@ const TRANSLATIONS = {
     start_agent_session: "에이전트 세션 시작",
     use_agent_session_to_use_tools:
       "채팅에서 도구를 사용하려면, 프롬프트의 시작 부분에 '@agent'을 사용하여 에이전트 세션을 시작할 수 있습니다.",
+    agent_invocation: {
+      model_wants_to_call: "모델이 통화하고 싶어",
+      approve: "승인",
+      reject: "거부",
+      always_allow: "항상 {{skillName}}을 허용",
+      tool_call_was_approved: "도구 사용 승인",
+      tool_call_was_rejected: "도구 호출이 거부되었습니다.",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

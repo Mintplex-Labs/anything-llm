@@ -831,6 +831,14 @@ const TRANSLATIONS = {
     start_agent_session: "Alusta agenti sessiooni",
     use_agent_session_to_use_tools:
       "Saate kasutada vahendeid vestluses, alustades agenti sessiooni, lisades käskile '@agent' sõna.",
+    agent_invocation: {
+      model_wants_to_call: "Mudel soovib helistada",
+      approve: "Heakskiid",
+      reject: "Hüvasti, keelan",
+      always_allow: "Aeg-ajalt lubage {{skillName}}",
+      tool_call_was_approved: "Vahendite tellimuse kinnitati.",
+      tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",

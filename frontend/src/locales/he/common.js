@@ -835,6 +835,14 @@ const TRANSLATIONS = {
     start_agent_session: "התחלת סשן עם סוכן",
     use_agent_session_to_use_tools:
       "ניתן להשתמש בכלי הדיון באמצעות פתיחת סשן עם נציג על ידי שימוש בסימן '@agent' בתחילת ההודעה.",
+    agent_invocation: {
+      model_wants_to_call: "המודל רוצה להתקשר",
+      approve: "אישור",
+      reject: "דחייה",
+      always_allow: "יש תמיד להקצות {{skillName}}",
+      tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
+      tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

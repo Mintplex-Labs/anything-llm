@@ -767,6 +767,14 @@ const TRANSLATIONS = {
     start_agent_session: "شروع جلسه با نماینده",
     use_agent_session_to_use_tools:
       "شما می‌توانید از ابزارهای موجود در چت با شروع یک جلسه با یک عامل از طریق استفاده از '@agent' در ابتدای پیام خود استفاده کنید.",
+    agent_invocation: {
+      model_wants_to_call: "مدل می‌خواهد تماس بگیرد",
+      approve: "تایید",
+      reject: "رد",
+      always_allow: "همیشه، {{skillName}} را در نظر بگیرید.",
+      tool_call_was_approved: "درخواست برای تهیه ابزار تأیید شد.",
+      tool_call_was_rejected: "درخواست استفاده از ابزار رد شد.",
+    },
   },
   profile_settings: {
     edit_account: "ویرایش حساب",
