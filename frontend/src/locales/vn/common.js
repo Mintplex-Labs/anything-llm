@@ -763,6 +763,14 @@ const TRANSLATIONS = {
     start_agent_session: "Bắt đầu phiên làm việc với đại lý",
     use_agent_session_to_use_tools:
       "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
+    agent_invocation: {
+      model_wants_to_call: "Người mẫu muốn gọi",
+      approve: "Chấp thuận",
+      reject: "Từ chối",
+      always_allow: "Luôn luôn đảm bảo {{skillName}}",
+      tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
+      tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

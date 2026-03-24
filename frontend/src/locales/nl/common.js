@@ -768,6 +768,16 @@ const TRANSLATIONS = {
     start_agent_session: "Start Agent Sessie",
     use_agent_session_to_use_tools:
       'U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met "@agent" aan het begin van uw bericht.',
+    agent_invocation: {
+      model_wants_to_call: "De klant wil een gesprek plannen.",
+      approve: "Goedkeuren",
+      reject: "Afgewijzen",
+      always_allow: "Zorg er altijd voor dat {{skillName}} aanwezig is.",
+      tool_call_was_approved:
+        "De aanvraag voor het gereedschap is goedgekeurd.",
+      tool_call_was_rejected:
+        "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

@@ -38,6 +38,8 @@ class TelegramBotService {
   #pendingPairings = new Map();
   // Active workers per chat: chatId -> { worker, jobId }
   #activeWorkers = new Map();
+  // Pending tool approval requests: requestId -> { worker, chatId, messageId }
+  #pendingToolApprovals = new Map();
 
   constructor() {
     if (TelegramBotService._instance) return TelegramBotService._instance;
@@ -153,6 +155,7 @@ class TelegramBotService {
     this.#chatState.clear();
     this.#pendingPairings.clear();
     this.#activeWorkers.clear();
+    this.#pendingToolApprovals.clear();
     this.#log("Stopped");
   }
 
@@ -349,9 +352,12 @@ class TelegramBotService {
       guard(msg, () => handler(ctx, msg.chat.id, msg.text));
     });
 
-    // Register callback queries, used for workspace/thread selection interactive menus
+    // Register callback queries, used for workspace/thread selection, tool approval, etc.
     this.#bot.on("callback_query", (query) =>
-      handleKeyboardQueryCallback(ctx, query)
+      handleKeyboardQueryCallback(ctx, query, {
+        pendingToolApprovals: this.#pendingToolApprovals,
+        log: this.#log.bind(this),
+      })
     );
 
     this.#bot.on("message", (msg) => {
@@ -396,6 +402,9 @@ class TelegramBotService {
       if (worker) {
         worker.on("message", (msg) => {
           if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
+          if (msg?.type === "toolApprovalRequest") {
+            this.#handleToolApprovalRequest(worker, msg);
+          }
         });
         this.#activeWorkers.set(chatId, { worker, jobId, bgService });
       }
@@ -465,6 +474,91 @@ class TelegramBotService {
     } catch {}
 
     return true;
+  }
+
+  /**
+   * Handle a tool approval request from a worker process.
+   * Sends a Telegram message with Approve/Deny inline keyboard buttons.
+   * @param {Worker} worker - The worker process requesting approval
+   * @param {Object} msg - The tool approval request message
+   */
+  async #handleToolApprovalRequest(worker, msg) {
+    const { requestId, chatId, skillName, payload, description, timeoutMs } =
+      msg;
+
+    this.#log(
+      `Tool approval request received: ${skillName} (requestId: ${requestId})`
+    );
+
+    try {
+      const payloadText =
+        payload && Object.keys(payload).length > 0
+          ? `\n\n<b>Parameters:</b>\n<code>${JSON.stringify(payload, null, 2)}</code>`
+          : "";
+
+      const descText = description ? `\n${description}` : "";
+
+      const messageText =
+        `🔧 <b>Tool Approval Required</b>\n\n` +
+        `The agent wants to execute: <b>${skillName}</b>${descText}${payloadText}\n\n` +
+        `Do you want to allow this action?`;
+
+      const keyboard = {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ Approve",
+              callback_data: `tool:approve:${requestId}`,
+            },
+            { text: "❌ Deny", callback_data: `tool:deny:${requestId}` },
+          ],
+        ],
+      };
+
+      const sent = await this.#bot.sendMessage(chatId, messageText, {
+        parse_mode: "HTML",
+        reply_markup: keyboard,
+      });
+
+      this.#pendingToolApprovals.set(requestId, {
+        worker,
+        chatId,
+        messageId: sent.message_id,
+        skillName,
+      });
+
+      // Auto-cleanup if timeout expires (worker will also timeout)
+      setTimeout(() => {
+        if (this.#pendingToolApprovals.has(requestId)) {
+          this.#pendingToolApprovals.delete(requestId);
+          this.#bot
+            .editMessageText(
+              `⏱️ Tool approval for <b>${skillName}</b> timed out.`,
+              {
+                chat_id: chatId,
+                message_id: sent.message_id,
+                parse_mode: "HTML",
+              }
+            )
+            .catch(() => {});
+        }
+      }, timeoutMs + 1000);
+    } catch (error) {
+      this.#log("Failed to send tool approval request:", error.message);
+      // Send denial back to worker if we can't show the UI
+      try {
+        const response = {
+          type: "toolApprovalResponse",
+          requestId,
+          approved: false,
+        };
+        if (worker && typeof worker.send === "function") {
+          worker.send(response);
+        } else if (worker && typeof worker.postMessage === "function") {
+          worker.postMessage(response);
+        }
+      } catch {}
+    }
   }
 
   #shouldVoiceRespond(isVoiceMessage) {

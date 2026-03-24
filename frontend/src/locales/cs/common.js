@@ -887,6 +887,14 @@ const TRANSLATIONS = {
     start_agent_session: "Spustit relaci s agentem",
     use_agent_session_to_use_tools:
       "Můžete využít nástroje v chatu spuštěním sezení s agentem pomocí příkazu '@agent' na začátku vašeho vstupu.",
+    agent_invocation: {
+      model_wants_to_call: "Model chce zavolat",
+      approve: "Schválit",
+      reject: "Zamítnout",
+      always_allow: "Vždy dbejte na to, aby {{skillName}}",
+      tool_call_was_approved: "Žádost o použití nástroje byla schválena.",
+      tool_call_was_rejected: "Žádost o použití nástroje byla zamítnuta.",
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",

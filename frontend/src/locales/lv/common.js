@@ -864,6 +864,15 @@ const TRANSLATIONS = {
     start_agent_session: "Sākt aģenta sesiju",
     use_agent_session_to_use_tools:
       'Jūs varat izmantot rīkus čatā, sākot aģenta sesiju, ievietojot "@agent" jūsu iniciālajā tekstā.',
+    agent_invocation: {
+      model_wants_to_call: "Modeļa vēlējas izrunāt",
+      approve: "Aizmaksā, apstiprināts",
+      reject: "Atgrūst",
+      always_allow: "Vienmēr nodrošiniet {{skillName}}",
+      tool_call_was_approved: "Instrumentu pieprasījums tika apstiprināts.",
+      tool_call_was_rejected:
+        "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

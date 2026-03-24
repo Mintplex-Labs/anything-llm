@@ -570,6 +570,15 @@ const TRANSLATIONS = {
     start_agent_session: "Începe sesiunea de agent",
     use_agent_session_to_use_tools:
       'Puteți utiliza instrumentele disponibile în chat, inițiind o sesiune cu un agent, începând mesajul cu "@agent".',
+    agent_invocation: {
+      model_wants_to_call: "Persoana respectivă dorește să facă o telefonare.",
+      approve: "Aprobă",
+      reject: "Refuz",
+      always_allow: "Asigurați-vă întotdeauna că {{skillName}}",
+      tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
+      tool_call_was_rejected:
+        "Cererea de utilizare a instrumentului a fost respinsă.",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",

@@ -758,6 +758,14 @@ const TRANSLATIONS = {
     start_agent_session: "ابدأ جلسة الممثل",
     use_agent_session_to_use_tools:
       "يمكنك استخدام الأدوات المتاحة في الدردشة عن طريق بدء جلسة مع ممثل خدمة العملاء باستخدام الرمز '@agent' في بداية رسالتك.",
+    agent_invocation: {
+      model_wants_to_call: "النموذج يرغب في الاتصال.",
+      approve: "الموافقة",
+      reject: "رفض",
+      always_allow: "تأكد دائمًا من {{skillName}}",
+      tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
+      tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
+    },
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

@@ -232,7 +232,7 @@ async function handleAgentResponse(
       threadId: thread?.id || null,
       attachments,
     }).init();
-    await agentHandler.createAIbitat({ handler });
+    await agentHandler.createAIbitat({ handler, telegramChatId: chatId });
 
     // httpSocket terminates after the first agent message, but cap rounds
     // as a safety net so the agent can't loop indefinitely.
