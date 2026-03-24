@@ -1,6 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { validatePath, formatSize } = require("./lib.js");
+const { validatePath } = require("./lib.js");
+const { humanFileSize } = require("../../../../helpers");
 
 module.exports.FilesystemListDirectory = {
   name: "filesystem-list-directory",
@@ -74,7 +75,9 @@ module.exports.FilesystemListDirectory = {
                 `${this.caller}: Listing directory ${dirPath}`
               );
 
-              const entries = await fs.readdir(validPath, { withFileTypes: true });
+              const entries = await fs.readdir(validPath, {
+                withFileTypes: true,
+              });
 
               if (!includeSizes) {
                 // Simple listing without sizes
@@ -128,13 +131,19 @@ module.exports.FilesystemListDirectory = {
               const formattedEntries = sortedEntries.map(
                 (entry) =>
                   `${entry.isDirectory ? "[DIR]" : "[FILE]"} ${entry.name.padEnd(30)} ${
-                    entry.isDirectory ? "" : formatSize(entry.size).padStart(10)
+                    entry.isDirectory
+                      ? ""
+                      : humanFileSize(entry.size, true, 2).padStart(10)
                   }`
               );
 
               // Add summary
-              const totalFiles = detailedEntries.filter((e) => !e.isDirectory).length;
-              const totalDirs = detailedEntries.filter((e) => e.isDirectory).length;
+              const totalFiles = detailedEntries.filter(
+                (e) => !e.isDirectory
+              ).length;
+              const totalDirs = detailedEntries.filter(
+                (e) => e.isDirectory
+              ).length;
               const totalSize = detailedEntries.reduce(
                 (sum, entry) => sum + (entry.isDirectory ? 0 : entry.size),
                 0
@@ -143,7 +152,7 @@ module.exports.FilesystemListDirectory = {
               const summary = [
                 "",
                 `Total: ${totalFiles} files, ${totalDirs} directories`,
-                `Combined size: ${formatSize(totalSize)}`,
+                `Combined size: ${humanFileSize(totalSize, true, 2)}`,
               ];
 
               this.super.introspect(

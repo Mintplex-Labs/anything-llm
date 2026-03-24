@@ -1,4 +1,9 @@
-const { validatePath, readFileContent } = require("./lib.js");
+const path = require("path");
+const {
+  validatePath,
+  readFileContent,
+  truncateContentForContext,
+} = require("./lib.js");
 
 module.exports.FilesystemReadMultipleFiles = {
   name: "filesystem-read-multiple-files",
@@ -10,11 +15,10 @@ module.exports.FilesystemReadMultipleFiles = {
           super: aibitat,
           name: this.name,
           description:
-            "Read the contents of multiple files simultaneously. This is more " +
-            "efficient than reading files one by one when you need to analyze " +
-            "or compare multiple files. Each file's content is returned with its " +
-            "path as a reference. Failed reads for individual files won't stop " +
-            "the entire operation. Only works within allowed directories.",
+            "Read multiple files at once when you know their exact paths. " +
+            "IMPORTANT: If you don't know the file paths, use 'filesystem-search-files' first " +
+            "with 'includeFileContents: true' to find and read files in one step. " +
+            "Each file's content is returned with its path. Failed reads won't stop the operation.",
           examples: [
             {
               prompt: "Read both the package.json and README.md files",
@@ -61,18 +65,53 @@ module.exports.FilesystemReadMultipleFiles = {
                   try {
                     const validPath = await validatePath(filePath);
                     const content = await readFileContent(validPath);
-                    return `${filePath}:\n${content}\n`;
+                    const filename = path.basename(validPath);
+
+                    this.super.addCitation?.({
+                      id: `fs-${Buffer.from(validPath).toString("base64url").slice(0, 32)}`,
+                      title: filename,
+                      text: content,
+                      chunkSource: validPath,
+                      score: null,
+                    });
+
+                    return { filePath, content, success: true };
                   } catch (error) {
-                    return `${filePath}: Error - ${error.message}`;
+                    return {
+                      filePath,
+                      content: `Error - ${error.message}`,
+                      success: false,
+                    };
                   }
                 })
               );
+
+              const combinedContent = results
+                .map((r) =>
+                  r.success
+                    ? `${r.filePath}:\n${r.content}\n`
+                    : `${r.filePath}: ${r.content}`
+                )
+                .join("\n---\n");
+
+              const { content: finalContent, wasTruncated } =
+                truncateContentForContext(
+                  combinedContent,
+                  this.super,
+                  "[Content truncated - combined files exceed context limit. Consider reading fewer files at once.]"
+                );
+
+              if (wasTruncated) {
+                this.super.introspect(
+                  `${this.caller}: Combined content was truncated to fit context limit`
+                );
+              }
 
               this.super.introspect(
                 `Successfully processed ${paths.length} files`
               );
 
-              return results.join("\n---\n");
+              return finalContent;
             } catch (e) {
               this.super.handlerProps.log(
                 `filesystem-read-multiple-files error: ${e.message}`

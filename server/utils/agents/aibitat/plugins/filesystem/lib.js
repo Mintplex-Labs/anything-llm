@@ -3,6 +3,10 @@ const path = require("path");
 const os = require("os");
 const { randomBytes } = require("crypto");
 const { createTwoFilesPatch } = require("diff");
+const { humanFileSize } = require("../../../../helpers");
+
+const FILE_READ_CHUNK_SIZE = 1024;
+const CONTEXT_RESERVE_RATIO = 0.25;
 
 /**
  * Default allowed directories for filesystem operations.
@@ -11,15 +15,6 @@ const { createTwoFilesPatch } = require("diff");
  */
 let allowedDirectories = [];
 let isInitialized = false;
-
-/**
- * Sets the allowed directories for filesystem operations.
- * @param {string[]} directories - Array of absolute directory paths
- */
-function setAllowedDirectories(directories) {
-  allowedDirectories = [...directories];
-  isInitialized = true;
-}
 
 /**
  * Gets the current allowed directories.
@@ -76,9 +71,7 @@ async function initializeFilesystem(directories = null) {
  * @returns {Promise<void>}
  */
 async function ensureInitialized() {
-  if (!isInitialized) {
-    await initializeFilesystem();
-  }
+  if (!isInitialized) await initializeFilesystem();
 }
 
 /**
@@ -98,17 +91,31 @@ function expandHome(filepath) {
  * - Removes surrounding quotes and whitespace
  * - For Unix paths, just normalize without converting
  * - For Windows paths, use Node's path normalization
+ * Note: Not the same as the normalizePath function in the files utils
+ * do not use this for path validation or other security checks outside of this module.
  * @param {string} p - The path to normalize
  * @returns {string} Normalized path
  */
 function normalizePath(p) {
   p = p.trim().replace(/^["']|["']$/g, "");
-
-  if (p.startsWith("/")) {
-    return p.replace(/\/+/g, "/").replace(/(?<!^)\/$/, "");
-  }
-
+  if (p.startsWith("/")) return p.replace(/\/+/g, "/").replace(/(?<!^)\/$/, "");
   return path.normalize(p);
+}
+
+/**
+ * Validates and normalizes a path string for security checks.
+ * Returns null if the path is invalid.
+ * @param {string} p - The path to validate
+ * @returns {string|null} Normalized absolute path or null if invalid
+ */
+function normalizeAndValidatePath(p) {
+  if (typeof p !== "string" || !p || p.includes("\x00")) return null;
+  try {
+    const normalized = path.resolve(path.normalize(p));
+    return path.isAbsolute(normalized) ? normalized : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -118,51 +125,16 @@ function normalizePath(p) {
  * @returns {boolean} True if path is within allowed directories
  */
 function isPathWithinAllowedDirectories(absolutePath, allowedDirs) {
-  if (typeof absolutePath !== "string" || !Array.isArray(allowedDirs)) {
-    return false;
-  }
+  if (!Array.isArray(allowedDirs) || allowedDirs.length === 0) return false;
 
-  if (!absolutePath || allowedDirs.length === 0) {
-    return false;
-  }
-
-  // Reject null bytes (forbidden in paths)
-  if (absolutePath.includes("\x00")) {
-    return false;
-  }
-
-  // Normalize the input path
-  let normalizedPath;
-  try {
-    normalizedPath = path.resolve(path.normalize(absolutePath));
-  } catch {
-    return false;
-  }
-
-  if (!path.isAbsolute(normalizedPath)) {
-    return false;
-  }
+  const normalizedPath = normalizeAndValidatePath(absolutePath);
+  if (!normalizedPath) return false;
 
   return allowedDirs.some((dir) => {
-    if (typeof dir !== "string" || !dir || dir.includes("\x00")) {
-      return false;
-    }
+    const normalizedDir = normalizeAndValidatePath(dir);
+    if (!normalizedDir) return false;
 
-    let normalizedDir;
-    try {
-      normalizedDir = path.resolve(path.normalize(dir));
-    } catch {
-      return false;
-    }
-
-    if (!path.isAbsolute(normalizedDir)) {
-      return false;
-    }
-
-    if (normalizedPath === normalizedDir) {
-      return true;
-    }
-
+    if (normalizedPath === normalizedDir) return true;
     return normalizedPath.startsWith(normalizedDir + path.sep);
   });
 }
@@ -212,17 +184,21 @@ async function validatePath(requestedPath) {
     allowedDirectories
   );
   if (!isAllowed) {
-    throw new Error(
-      `Access denied - path outside allowed directories: ${absolute} not in ${allowedDirectories.join(", ")}`
+    console.log(
+      `[validatePath] Access denied - path outside allowed directories: ${absolute} not in ${allowedDirectories.join(", ")}`
     );
+    throw new Error(`Access denied - path outside allowed directories.`);
   }
 
   try {
     const realPath = await fs.realpath(absolute);
     const normalizedReal = normalizePath(realPath);
     if (!isPathWithinAllowedDirectories(normalizedReal, allowedDirectories)) {
+      console.log(
+        `[validatePath] Access denied - symlink target outside allowed directories: ${realPath} not in ${allowedDirectories.join(", ")}`
+      );
       throw new Error(
-        `Access denied - symlink target outside allowed directories: ${realPath} not in ${allowedDirectories.join(", ")}`
+        `Access denied - symlink target outside allowed directories.`
       );
     }
     return realPath;
@@ -235,8 +211,11 @@ async function validatePath(requestedPath) {
         if (
           !isPathWithinAllowedDirectories(normalizedParent, allowedDirectories)
         ) {
+          console.log(
+            `[validatePath] Access denied - parent directory outside allowed directories: ${realParentPath} not in ${allowedDirectories.join(", ")}`
+          );
           throw new Error(
-            `Access denied - parent directory outside allowed directories: ${realParentPath} not in ${allowedDirectories.join(", ")}`
+            `Access denied - parent directory outside allowed directories.`
           );
         }
         return absolute;
@@ -249,29 +228,47 @@ async function validatePath(requestedPath) {
 }
 
 /**
- * Formats file size in human-readable format.
- * @param {number} bytes - Size in bytes
- * @returns {string} Formatted size string
- */
-function formatSize(bytes) {
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  if (bytes === 0) return "0 B";
-
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-
-  if (i < 0 || i === 0) return `${bytes} ${units[0]}`;
-
-  const unitIndex = Math.min(i, units.length - 1);
-  return `${(bytes / Math.pow(1024, unitIndex)).toFixed(2)} ${units[unitIndex]}`;
-}
-
-/**
  * Normalizes line endings to Unix-style.
  * @param {string} text - Text to normalize
  * @returns {string} Text with normalized line endings
  */
 function normalizeLineEndings(text) {
   return text.replace(/\r\n/g, "\n");
+}
+
+/**
+ * Writes content to a file atomically using a temp file and rename.
+ * @param {string} filePath - Path to the file
+ * @param {string} content - Content to write
+ * @returns {Promise<void>}
+ */
+async function atomicWrite(filePath, content) {
+  const tempPath = `${filePath}.${randomBytes(16).toString("hex")}.tmp`;
+  try {
+    await fs.writeFile(tempPath, content, "utf-8");
+    await fs.rename(tempPath, filePath);
+  } catch (error) {
+    try {
+      await fs.unlink(tempPath);
+    } catch {}
+    throw error;
+  }
+}
+
+/**
+ * Reads file content with collector API fallback.
+ * Tries collector first for binary files, falls back to raw function.
+ * @param {string} filePath - Path to the file
+ * @param {Function} processContent - Function to process parsed content
+ * @param {Function} rawFallback - Function to call if collector fails
+ * @returns {Promise<string>} Processed content
+ */
+async function withCollectorFallback(filePath, processContent, rawFallback) {
+  const parseResult = await parseFileWithCollector(filePath);
+  if (parseResult.parsed && parseResult.content) {
+    return processContent(parseResult.content);
+  }
+  return rawFallback();
 }
 
 /**
@@ -304,7 +301,7 @@ async function getFileStats(filePath) {
   const stats = await fs.stat(filePath);
   return {
     size: stats.size,
-    sizeFormatted: formatSize(stats.size),
+    sizeFormatted: humanFileSize(stats.size, true, 2),
     created: stats.birthtime.toISOString(),
     modified: stats.mtime.toISOString(),
     accessed: stats.atime.toISOString(),
@@ -315,13 +312,77 @@ async function getFileStats(filePath) {
 }
 
 /**
- * Reads file content as text.
+ * Reads file content as text using direct file read.
+ * @param {string} filePath - Path to the file
+ * @param {string} encoding - File encoding (default: utf-8)
+ * @returns {Promise<string>} File content
+ */
+async function readFileContentRaw(filePath, encoding = "utf-8") {
+  return await fs.readFile(filePath, encoding);
+}
+
+/**
+ * Parses a file using the collector API to extract text content.
+ * Uses absolutePath option to parse files directly without copying.
+ * This handles binary files (PDFs, images, etc.) properly.
+ * @param {string} filePath - Absolute path to the file
+ * @returns {Promise<{content: string, parsed: boolean}>} Parsed content and whether collector was used
+ */
+async function parseFileWithCollector(filePath) {
+  try {
+    const { CollectorApi } = require("../../../../collectorApi");
+    const collectorApi = new CollectorApi();
+
+    const isOnline = await collectorApi.online();
+    if (!isOnline) {
+      return {
+        content: null,
+        parsed: false,
+        error: "Collector service offline",
+      };
+    }
+
+    const filename = path.basename(filePath);
+    const result = await collectorApi.parseDocument(filename, {
+      absolutePath: filePath,
+    });
+
+    if (!result || !result.success) {
+      return {
+        content: null,
+        parsed: false,
+        error: result?.reason || "Failed to parse document",
+      };
+    }
+
+    if (result.content) return { content: result.content, parsed: true };
+    if (result.documents && result.documents.length > 0) {
+      const content = result.documents
+        .map((doc) => doc.pageContent || doc.content || "")
+        .filter(Boolean)
+        .join("\n\n");
+      if (content) return { content, parsed: true };
+    }
+
+    return { content: null, parsed: false, error: "No content in response" };
+  } catch (error) {
+    return { content: null, parsed: false, error: error.message };
+  }
+}
+
+/**
+ * Reads file content, using the collector API to parse binary files.
+ * Falls back to direct file read for text files or if collector fails.
  * @param {string} filePath - Path to the file
  * @param {string} encoding - File encoding (default: utf-8)
  * @returns {Promise<string>} File content
  */
 async function readFileContent(filePath, encoding = "utf-8") {
-  return await fs.readFile(filePath, encoding);
+  return withCollectorFallback(
+    filePath,
+    (content) => content,
+    () => readFileContentRaw(filePath, encoding)
+  );
 }
 
 /**
@@ -335,16 +396,7 @@ async function writeFileContent(filePath, content) {
     await fs.writeFile(filePath, content, { encoding: "utf-8", flag: "wx" });
   } catch (error) {
     if (error.code === "EEXIST") {
-      const tempPath = `${filePath}.${randomBytes(16).toString("hex")}.tmp`;
-      try {
-        await fs.writeFile(tempPath, content, "utf-8");
-        await fs.rename(tempPath, filePath);
-      } catch (renameError) {
-        try {
-          await fs.unlink(tempPath);
-        } catch {}
-        throw renameError;
-      }
+      await atomicWrite(filePath, content);
     } else {
       throw error;
     }
@@ -421,29 +473,19 @@ async function applyFileEdits(filePath, edits, dryRun = false) {
   const formattedDiff = `${"`".repeat(numBackticks)}diff\n${diffResult}${"`".repeat(numBackticks)}\n\n`;
 
   if (!dryRun) {
-    const tempPath = `${filePath}.${randomBytes(16).toString("hex")}.tmp`;
-    try {
-      await fs.writeFile(tempPath, modifiedContent, "utf-8");
-      await fs.rename(tempPath, filePath);
-    } catch (error) {
-      try {
-        await fs.unlink(tempPath);
-      } catch {}
-      throw error;
-    }
+    await atomicWrite(filePath, modifiedContent);
   }
 
   return formattedDiff;
 }
 
 /**
- * Gets the last N lines of a file efficiently.
+ * Gets the last N lines of a file efficiently using raw file operations.
  * @param {string} filePath - Path to the file
  * @param {number} numLines - Number of lines to return
  * @returns {Promise<string>} Last N lines of the file
  */
-async function tailFile(filePath, numLines) {
-  const CHUNK_SIZE = 1024;
+async function tailFileRaw(filePath, numLines) {
   const stats = await fs.stat(filePath);
   const fileSize = stats.size;
 
@@ -453,12 +495,12 @@ async function tailFile(filePath, numLines) {
   try {
     const lines = [];
     let position = fileSize;
-    const chunk = Buffer.alloc(CHUNK_SIZE);
+    const chunk = Buffer.alloc(FILE_READ_CHUNK_SIZE);
     let linesFound = 0;
     let remainingText = "";
 
     while (position > 0 && linesFound < numLines) {
-      const size = Math.min(CHUNK_SIZE, position);
+      const size = Math.min(FILE_READ_CHUNK_SIZE, position);
       position -= size;
 
       const { bytesRead } = await fileHandle.read(chunk, 0, size, position);
@@ -491,18 +533,36 @@ async function tailFile(filePath, numLines) {
 }
 
 /**
- * Gets the first N lines of a file efficiently.
+ * Gets the last N lines of a file.
+ * Uses collector API to parse binary files, falls back to raw read.
+ * @param {string} filePath - Path to the file
+ * @param {number} numLines - Number of lines to return
+ * @returns {Promise<string>} Last N lines of the file
+ */
+async function tailFile(filePath, numLines) {
+  return withCollectorFallback(
+    filePath,
+    (content) => {
+      const lines = normalizeLineEndings(content).split("\n");
+      return lines.slice(-numLines).join("\n");
+    },
+    () => tailFileRaw(filePath, numLines)
+  );
+}
+
+/**
+ * Gets the first N lines of a file efficiently using raw file operations.
  * @param {string} filePath - Path to the file
  * @param {number} numLines - Number of lines to return
  * @returns {Promise<string>} First N lines of the file
  */
-async function headFile(filePath, numLines) {
+async function headFileRaw(filePath, numLines) {
   const fileHandle = await fs.open(filePath, "r");
   try {
     const lines = [];
     let buffer = "";
     let bytesRead = 0;
-    const chunk = Buffer.alloc(1024);
+    const chunk = Buffer.alloc(FILE_READ_CHUNK_SIZE);
 
     while (lines.length < numLines) {
       const result = await fileHandle.read(chunk, 0, chunk.length, bytesRead);
@@ -532,6 +592,24 @@ async function headFile(filePath, numLines) {
 }
 
 /**
+ * Gets the first N lines of a file.
+ * Uses collector API to parse binary files, falls back to raw read.
+ * @param {string} filePath - Path to the file
+ * @param {number} numLines - Number of lines to return
+ * @returns {Promise<string>} First N lines of the file
+ */
+async function headFile(filePath, numLines) {
+  return withCollectorFallback(
+    filePath,
+    (content) => {
+      const lines = normalizeLineEndings(content).split("\n");
+      return lines.slice(0, numLines).join("\n");
+    },
+    () => headFileRaw(filePath, numLines)
+  );
+}
+
+/**
  * Searches for files matching a glob pattern.
  * @param {string} rootPath - Root path to search from
  * @param {string} pattern - Glob pattern to match
@@ -540,7 +618,7 @@ async function headFile(filePath, numLines) {
  * @returns {Promise<string[]>} Array of matching file paths
  */
 async function searchFilesWithGlob(rootPath, pattern, options = {}) {
-  const { minimatch } = require("minimatch");
+  const minimatch = require("minimatch");
   const { excludePatterns = [] } = options;
   const results = [];
 
@@ -554,13 +632,20 @@ async function searchFilesWithGlob(rootPath, pattern, options = {}) {
         await validatePath(fullPath);
 
         const relativePath = path.relative(rootPath, fullPath);
-        const shouldExclude = excludePatterns.some((excludePattern) =>
-          minimatch(relativePath, excludePattern, { dot: true })
+        const shouldExclude = excludePatterns.some(
+          (excludePattern) =>
+            minimatch(relativePath, excludePattern, { dot: true }) ||
+            minimatch(entry.name, excludePattern, { dot: true })
         );
 
         if (shouldExclude) continue;
 
-        if (minimatch(relativePath, pattern, { dot: true })) {
+        // Match against full relative path OR just the filename
+        // This ensures patterns like *sales* match files in subdirectories
+        const matchesPath = minimatch(relativePath, pattern, { dot: true });
+        const matchesName = minimatch(entry.name, pattern, { dot: true });
+
+        if (matchesPath || matchesName) {
           results.push(fullPath);
         }
 
@@ -577,24 +662,57 @@ async function searchFilesWithGlob(rootPath, pattern, options = {}) {
   return results;
 }
 
+/**
+ * Truncates content if it exceeds the model's context limit.
+ * Uses TokenManager for accurate token counting.
+ * @param {string} content - The content to potentially truncate
+ * @param {object} aibitat - The aibitat instance with model/provider info
+ * @param {string} [truncationMessage] - Optional custom message to append when truncated
+ * @returns {{content: string, wasTruncated: boolean}} The content and truncation status
+ */
+function truncateContentForContext(content, aibitat, truncationMessage = null) {
+  const { TokenManager } = require("../../../../helpers/tiktoken");
+  const Provider = require("../../providers/ai-provider");
+
+  const contextLimit = Provider.contextLimit(aibitat.provider, aibitat.model);
+  const reserveForResponse = Math.floor(contextLimit * CONTEXT_RESERVE_RATIO);
+  const maxTokens = contextLimit - reserveForResponse;
+
+  const tokenManager = new TokenManager(aibitat.model);
+  const tokenCount = tokenManager.countFromString(content);
+
+  if (tokenCount <= maxTokens) {
+    return { content, wasTruncated: false };
+  }
+
+  const avgCharsPerToken = content.length / tokenCount;
+  let targetChars = Math.floor(maxTokens * avgCharsPerToken);
+  let truncated = content.slice(0, targetChars);
+
+  const lastNewline = truncated.lastIndexOf("\n");
+  if (lastNewline > targetChars * 0.8) {
+    truncated = truncated.slice(0, lastNewline);
+  }
+
+  const defaultMessage =
+    "[Content truncated - exceeds context limit. Consider reading smaller portions.]";
+  const message = truncationMessage || defaultMessage;
+
+  return {
+    content: truncated + "\n\n" + message,
+    wasTruncated: true,
+  };
+}
+
 module.exports = {
   // Configuration
-  setAllowedDirectories,
   getAllowedDirectories,
-  getDefaultFilesystemRoot,
-  initializeFilesystem,
   ensureInitialized,
 
   // Path utilities
-  expandHome,
-  normalizePath,
-  isPathWithinAllowedDirectories,
   validatePath,
 
   // File operations
-  formatSize,
-  normalizeLineEndings,
-  createUnifiedDiff,
   getFileStats,
   readFileContent,
   writeFileContent,
@@ -602,4 +720,7 @@ module.exports = {
   tailFile,
   headFile,
   searchFilesWithGlob,
+
+  // Content utilities
+  truncateContentForContext,
 };

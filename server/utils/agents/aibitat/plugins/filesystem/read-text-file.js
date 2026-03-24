@@ -1,8 +1,10 @@
+const path = require("path");
 const {
   validatePath,
   readFileContent,
   tailFile,
   headFile,
+  truncateContentForContext,
 } = require("./lib.js");
 
 module.exports.FilesystemReadTextFile = {
@@ -16,11 +18,11 @@ module.exports.FilesystemReadTextFile = {
           name: this.name,
           description:
             "Read the complete contents of a file from the file system as text. " +
-            "Handles various text encodings and provides detailed error messages " +
-            "if the file cannot be read. Use this tool when you need to examine " +
-            "the contents of a single file. Use the 'head' parameter to read only " +
-            "the first N lines of a file, or the 'tail' parameter to read only " +
-            "the last N lines of a file. Only works within allowed directories.",
+            "IMPORTANT: Only use this tool when you know the exact file path. " +
+            "If you don't know where a file is located, use 'filesystem-search-files' first " +
+            "to find it (e.g., search for '*.csv' or the filename). " +
+            "Use the 'head' parameter to read only the first N lines, or 'tail' for the last N lines. " +
+            "Only works within allowed directories.",
           examples: [
             {
               prompt: "Read the contents of config.json",
@@ -60,7 +62,9 @@ module.exports.FilesystemReadTextFile = {
           },
           handler: async function ({ path: filePath = "", head, tail }) {
             try {
-              this.super.handlerProps.log(`Using the filesystem-read-text-file tool.`);
+              this.super.handlerProps.log(
+                `Using the filesystem-read-text-file tool.`
+              );
 
               if (head && tail) {
                 return "Error: Cannot specify both head and tail parameters simultaneously.";
@@ -68,23 +72,47 @@ module.exports.FilesystemReadTextFile = {
 
               const validPath = await validatePath(filePath);
 
-              this.super.introspect(
-                `${this.caller}: Reading file ${filePath}`
-              );
+              this.super.introspect(`${this.caller}: Reading file ${filePath}`);
 
               let content;
               if (tail) {
                 content = await tailFile(validPath, tail);
-                this.super.introspect(`Retrieved last ${tail} lines of ${filePath}`);
+                this.super.introspect(
+                  `Retrieved last ${tail} lines of ${filePath}`
+                );
               } else if (head) {
                 content = await headFile(validPath, head);
-                this.super.introspect(`Retrieved first ${head} lines of ${filePath}`);
+                this.super.introspect(
+                  `Retrieved first ${head} lines of ${filePath}`
+                );
               } else {
                 content = await readFileContent(validPath);
                 this.super.introspect(`Successfully read ${filePath}`);
               }
 
-              return content;
+              const { content: finalContent, wasTruncated } =
+                truncateContentForContext(
+                  content,
+                  this.super,
+                  "[Content truncated - file exceeds context limit. Use head/tail parameters to read specific portions.]"
+                );
+
+              if (wasTruncated) {
+                this.super.introspect(
+                  `${this.caller}: File content was truncated to fit context limit`
+                );
+              }
+
+              const filename = path.basename(validPath);
+              this.super.addCitation?.({
+                id: `fs-${Buffer.from(validPath).toString("base64url").slice(0, 32)}`,
+                title: filename,
+                text: finalContent,
+                chunkSource: validPath,
+                score: null,
+              });
+
+              return finalContent;
             } catch (e) {
               this.super.handlerProps.log(
                 `filesystem-read-text-file error: ${e.message}`

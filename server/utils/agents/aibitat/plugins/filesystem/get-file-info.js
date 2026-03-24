@@ -55,7 +55,9 @@ module.exports.FilesystemGetFileInfo = {
                 .map(([key, value]) => `${key}: ${value}`)
                 .join("\n");
 
-              this.super.introspect(`Successfully retrieved info for ${filePath}`);
+              this.super.introspect(
+                `Successfully retrieved info for ${filePath}`
+              );
 
               return formatted;
             } catch (e) {
