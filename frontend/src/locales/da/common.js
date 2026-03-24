@@ -328,6 +328,56 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
+      filesystem: {
+        title: "Adgang til filsystem",
+        description:
+          "Giv din agent mulighed for at læse, skrive, søge og administrere filer inden for en bestemt mappe. Understøtter filredigering, mappe navigation og indholds søgning.",
+        learnMore: "Lær mere om, hvordan du kan bruge denne færdighed",
+        configuration: "Konfiguration",
+        readActions: "Læs handlinger",
+        writeActions: "Skriv handlinger",
+        warning:
+          "Adgang til filsystemet kan være farligt, da det kan ændre eller slette filer. Se venligst <link>dokumentationen</link> før du aktiverer denne funktion.",
+        skills: {
+          "read-text-file": {
+            title: "Åbn fil",
+            description:
+              "Læs indholdet af filer (tekst, kode, PDF-filer, billeder osv.)",
+          },
+          "read-multiple-files": {
+            title: "Læs flere filer",
+            description: "Læs flere filer samtidigt",
+          },
+          "list-directory": {
+            title: "Telefonkatalog",
+            description: "Vis filer og mapper i en mappe",
+          },
+          "search-files": {
+            title: "Søg efter filer",
+            description: "Søg efter filer efter navn eller indhold",
+          },
+          "get-file-info": {
+            title: "Få filinformation",
+            description: "Få detaljerede metadata om filer",
+          },
+          "write-file": {
+            title: "Opret fil",
+            description: "Opret nye filer eller skriv over eksisterende filer.",
+          },
+          "edit-file": {
+            title: "Rediger fil",
+            description: "Rediger tekstfiler baseret på linjer",
+          },
+          "create-directory": {
+            title: "Opret mappe",
+            description: "Opret nye mapper",
+          },
+          "move-file": {
+            title: "Flyt/Omdøb fil",
+            description: "Flyt eller omdøb filer og mapper",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servere",
