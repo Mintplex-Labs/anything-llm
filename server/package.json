@@ -96,7 +96,9 @@
   },
   "resolutions": {
     "**/graphql-request/form-data": "3.0.4",
-    "form-data": "4.0.4"
+    "form-data": "4.0.4",
+    "got": "13.0.0",
+    "execa": "9.1.0"
   },
   "devDependencies": {
     "@eslint/js": "9",
