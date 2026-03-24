@@ -104,24 +104,24 @@ export default function OnboardingHome() {
         }}
       />
 
-      <div className="relative z-10 flex justify-center pt-8">
-        <p className="text-white/80 light:text-zinc-800 text-sm italic font-light tracking-[0.15em]">
+      <div className="relative z-10 flex justify-center pt-[58px]">
+        <p className="text-white/80 light:text-zinc-600 text-3xl font-semibold">
           AnythingLLM
         </p>
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center -mt-8">
-        <div className="absolute flex items-center justify-center w-full px-4 md:px-0 md:w-[65%] lg:w-[55%]">
+        <div className="absolute flex items-center justify-center w-full px-4 md:px-0 md:max-w-[852px] md:w-[56%]">
           <OnboardingLogoSVG isLight={isLight} />
         </div>
 
-        <h1 className="relative font-medium text-white light:text-zinc-800 text-[64px] md:text-[96px] lg:text-[100px]  leading-none select-none">
+        <h1 className="relative font-medium text-white light:text-zinc-700 text-[64px] md:text-[96px] lg:text-[160px] leading-none select-none">
           Welcome
         </h1>
 
         <button
           onClick={() => navigate(paths.onboarding.llmPreference())}
-          className="relative mt-8 px-16 py-3 rounded-full text-sm font-medium transition-colors border border-white/20 text-white bg-transparent hover:bg-white/10 light:border-transparent light:bg-zinc-900 light:text-white light:hover:bg-zinc-800"
+          className="relative z-10 h-[42px] w-[300px] py-3 px-5 rounded-lg bg-white font-semibold text-base mt-[51px] text-zinc-900 light:text-white light:bg-slate-900 text-center flex justify-center items-center"
         >
           {t("onboarding.home.getStarted")}
         </button>
