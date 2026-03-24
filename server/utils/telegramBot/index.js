@@ -38,6 +38,8 @@ class TelegramBotService {
   #pendingPairings = new Map();
   // Active workers per chat: chatId -> { worker, jobId }
   #activeWorkers = new Map();
+  // Pending tool approval requests: requestId -> { worker, chatId, messageId }
+  #pendingToolApprovals = new Map();
 
   constructor() {
     if (TelegramBotService._instance) return TelegramBotService._instance;
@@ -153,6 +155,7 @@ class TelegramBotService {
     this.#chatState.clear();
     this.#pendingPairings.clear();
     this.#activeWorkers.clear();
+    this.#pendingToolApprovals.clear();
     this.#log("Stopped");
   }
 
@@ -350,9 +353,20 @@ class TelegramBotService {
     });
 
     // Register callback queries, used for workspace/thread selection interactive menus
-    this.#bot.on("callback_query", (query) =>
-      handleKeyboardQueryCallback(ctx, query)
-    );
+    // and tool approval buttons from agent invocations
+    this.#bot.on("callback_query", (query) => {
+      const data = query.data || "";
+      // Route tool approval callbacks to the service handler
+      if (data.startsWith("tool:")) {
+        return this.handleToolApprovalCallback({
+          ctx,
+          chatId: query.message.chat.id,
+          query,
+          data,
+        });
+      }
+      return handleKeyboardQueryCallback(ctx, query);
+    });
 
     this.#bot.on("message", (msg) => {
       if (msg.text?.startsWith("/")) return;
@@ -396,6 +410,9 @@ class TelegramBotService {
       if (worker) {
         worker.on("message", (msg) => {
           if (msg?.type === "closeInvocation") invocationUuid = msg.uuid;
+          if (msg?.type === "toolApprovalRequest") {
+            this.#handleToolApprovalRequest(worker, msg);
+          }
         });
         this.#activeWorkers.set(chatId, { worker, jobId, bgService });
       }
@@ -465,6 +482,181 @@ class TelegramBotService {
     } catch {}
 
     return true;
+  }
+
+  /**
+   * Handle a tool approval request from a worker process.
+   * Sends a Telegram message with Approve/Deny inline keyboard buttons.
+   * @param {Worker} worker - The worker process requesting approval
+   * @param {Object} msg - The tool approval request message
+   */
+  async #handleToolApprovalRequest(worker, msg) {
+    const { requestId, chatId, skillName, payload, description, timeoutMs } =
+      msg;
+
+    this.#log(
+      `Tool approval request received: ${skillName} (requestId: ${requestId})`
+    );
+
+    try {
+      const payloadText =
+        payload && Object.keys(payload).length > 0
+          ? `\n\n<b>Parameters:</b>\n<code>${JSON.stringify(payload, null, 2)}</code>`
+          : "";
+
+      const descText = description ? `\n${description}` : "";
+
+      const messageText =
+        `🔧 <b>Tool Approval Required</b>\n\n` +
+        `The agent wants to execute: <b>${skillName}</b>${descText}${payloadText}\n\n` +
+        `Do you want to allow this action?`;
+
+      const keyboard = {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ Approve",
+              callback_data: `tool:approve:${requestId}`,
+            },
+            { text: "❌ Deny", callback_data: `tool:deny:${requestId}` },
+          ],
+        ],
+      };
+
+      const sent = await this.#bot.sendMessage(chatId, messageText, {
+        parse_mode: "HTML",
+        reply_markup: keyboard,
+      });
+
+      this.#pendingToolApprovals.set(requestId, {
+        worker,
+        chatId,
+        messageId: sent.message_id,
+        skillName,
+      });
+
+      // Auto-cleanup if timeout expires (worker will also timeout)
+      setTimeout(() => {
+        if (this.#pendingToolApprovals.has(requestId)) {
+          this.#pendingToolApprovals.delete(requestId);
+          this.#bot
+            .editMessageText(`⏱️ Tool approval for <b>${skillName}</b> timed out.`, {
+              chat_id: chatId,
+              message_id: sent.message_id,
+              parse_mode: "HTML",
+            })
+            .catch(() => {});
+        }
+      }, timeoutMs + 1000);
+    } catch (error) {
+      this.#log("Failed to send tool approval request:", error.message);
+      // Send denial back to worker if we can't show the UI
+      try {
+        const response = {
+          type: "toolApprovalResponse",
+          requestId,
+          approved: false,
+        };
+        if (worker && typeof worker.send === "function") {
+          worker.send(response);
+        } else if (worker && typeof worker.postMessage === "function") {
+          worker.postMessage(response);
+        }
+      } catch {}
+    }
+  }
+
+  /**
+   * Handle a tool approval callback from an inline keyboard button.
+   * @param {Object} params - Handler parameters
+   * @param {Object} params.ctx - Bot context
+   * @param {number} params.chatId - Telegram chat ID
+   * @param {Object} params.query - Callback query object
+   * @param {string} params.data - Callback data string
+   */
+  async handleToolApprovalCallback({ ctx, chatId, query, data }) {
+    this.#log(`Tool approval callback received: ${data}`);
+
+    try {
+      const parts = data.split(":");
+      if (parts.length !== 3) {
+        this.#log(`Invalid callback data format: ${data}`);
+        await ctx.bot.answerCallbackQuery(query.id, {
+          text: "Invalid request format.",
+        });
+        return;
+      }
+
+      const action = parts[1]; // "approve" or "deny"
+      const requestId = parts[2];
+
+      const pending = this.#pendingToolApprovals.get(requestId);
+      if (!pending) {
+        this.#log(`No pending approval found for requestId: ${requestId}`);
+        await ctx.bot.answerCallbackQuery(query.id, {
+          text: "This approval request has expired.",
+        });
+        return;
+      }
+
+      const { worker, messageId, skillName } = pending;
+      const approved = action === "approve";
+
+      this.#log(
+        `Processing ${approved ? "approval" : "denial"} for ${skillName}`
+      );
+
+      // Send response back to worker (Bree workers use send(), raw worker_threads use postMessage())
+      try {
+        const response = {
+          type: "toolApprovalResponse",
+          requestId,
+          approved,
+        };
+
+        if (worker && typeof worker.send === "function") {
+          worker.send(response);
+          this.#log(
+            `Sent tool approval response to worker via send(): ${approved ? "approved" : "denied"}`
+          );
+        } else if (worker && typeof worker.postMessage === "function") {
+          worker.postMessage(response);
+          this.#log(
+            `Sent tool approval response to worker via postMessage(): ${approved ? "approved" : "denied"}`
+          );
+        } else {
+          this.#log(
+            `Worker not available to send approval response (send: ${typeof worker?.send}, postMessage: ${typeof worker?.postMessage})`
+          );
+        }
+      } catch (err) {
+        this.#log(`Failed to send approval response: ${err.message}`);
+      }
+
+      this.#pendingToolApprovals.delete(requestId);
+
+      // Update the message to show the result
+      const resultText = approved
+        ? `✅ <b>${skillName}</b> was approved.`
+        : `❌ <b>${skillName}</b> was denied.`;
+
+      await ctx.bot
+        .editMessageText(resultText, {
+          chat_id: chatId,
+          message_id: messageId,
+          parse_mode: "HTML",
+        })
+        .catch((err) => this.#log(`Failed to edit message: ${err.message}`));
+
+      await ctx.bot.answerCallbackQuery(query.id, {
+        text: approved ? "Approved!" : "Denied.",
+      });
+    } catch (error) {
+      this.#log(`Error handling tool approval callback: ${error.message}`);
+      await ctx.bot.answerCallbackQuery(query.id, {
+        text: "Something went wrong.",
+      });
+    }
   }
 
   #shouldVoiceRespond(isVoiceMessage) {
