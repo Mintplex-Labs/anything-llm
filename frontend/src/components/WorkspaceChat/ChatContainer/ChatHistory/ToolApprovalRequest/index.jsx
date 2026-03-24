@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { CaretDown, Check, X, Hammer } from "@phosphor-icons/react";
 import { TOOL_APPROVAL_EVENT } from "@/utils/chat/agent";
 import AgentSkillWhitelist from "@/models/agentSkillWhitelist";
+import { useTranslation } from "react-i18next";
 
 export default function ToolApprovalRequest({
   requestId,
@@ -141,12 +142,13 @@ function ToolApprovalHeader({
   isExpanded,
   setIsExpanded,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-2">
         <Hammer size={16} />
-        <div className="text-white/80 light:text-slate-900 font-medium text-sm">
-          Model wants to call{" "}
+        <div className="text-white/80 light:text-slate-900 font-medium text-sm flex gap-x-1">
+          {t("chat_window.agent_invocation.model_wants_to_call")}
           <span className="font-semibold text-sky-400 light:text-sky-600">
             {skillName}
           </span>
@@ -197,6 +199,7 @@ function ToolApprovalResponseOption({
   onApprove,
   onReject,
 }) {
+  const { t } = useTranslation();
   if (approved !== null) return null;
 
   return (
@@ -207,14 +210,14 @@ function ToolApprovalResponseOption({
           onClick={onApprove}
           className="border-none transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
         >
-          Approve
+          {t("chat_window.agent_invocation.approve")}
         </button>
         <button
           type="button"
           onClick={onReject}
           className="border-none text-white light:text-slate-900 text-sm font-medium w-[70px] h-9 rounded-lg hover:bg-white/5 light:hover:bg-slate-300"
         >
-          Reject
+          {t("chat_window.agent_invocation.reject")}
         </button>
       </div>
       <label className="flex items-center gap-2 cursor-pointer text-white/60 light:text-slate-600 text-xs hover:text-white/80 light:hover:text-slate-800 transition-colors">
@@ -224,19 +227,23 @@ function ToolApprovalResponseOption({
           onChange={(e) => setAlwaysAllow(e.target.checked)}
           className="w-3.5 h-3.5 rounded border-white/20 bg-transparent cursor-pointer"
         />
-        <span>Always allow {skillName}</span>
+        <span>
+          {t("chat_window.agent_invocation.always_allow", { skillName })}
+        </span>
       </label>
     </div>
   );
 }
 
 function ToolApprovalResponseMessage({ approved }) {
+  const { t } = useTranslation();
+
   if (approved === null) return null;
   if (approved === false) {
     return (
       <div className="flex items-center gap-1 text-sm font-medium text-red-400 light:text-red-500">
         <X size={16} weight="bold" />
-        <span>Tool call was rejected</span>
+        <span>{t("chat_window.agent_invocation.tool_call_was_rejected")}</span>
       </div>
     );
   }
@@ -244,7 +251,7 @@ function ToolApprovalResponseMessage({ approved }) {
   return (
     <div className="flex items-center gap-1 text-sm font-medium text-green-400 light:text-green-500">
       <Check size={16} weight="bold" />
-      <span>Tool call was approved</span>
+      <span>{t("chat_window.agent_invocation.tool_call_was_approved")}</span>
     </div>
   );
 }
