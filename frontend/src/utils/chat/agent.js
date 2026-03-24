@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
+export const TOOL_APPROVAL_EVENT = "toolApprovalUpdate";
 const handledEvents = [
   "statusResponse",
   "fileDownload",
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
+  "toolApprovalRequest",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -47,7 +49,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
-  if (!handledEvents.includes(data.type) || !data.content) return;
+  // toolApprovalRequest doesn't have content field, so check separately
+  if (data.type === "toolApprovalRequest") {
+    if (!data.requestId || !data.skillName) return;
+  } else if (!handledEvents.includes(data.type) || !data.content) {
+    return;
+  }
 
   if (data.type === "reportStreamEvent") {
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
@@ -214,6 +221,31 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: data.content,
           animate: false,
           pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "toolApprovalRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "toolApprovalRequest",
+          requestId: data.requestId,
+          skillName: data.skillName,
+          payload: data.payload,
+          description: data.description,
+          timeoutMs: data.timeoutMs,
+          content: `Approval requested for ${data.skillName}`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
           metrics: {},
         },
       ];

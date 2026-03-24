@@ -619,6 +619,10 @@ function systemEndpoints(app) {
           multi_user_mode: true,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
+        const {
+          AgentSkillWhitelist,
+        } = require("../models/agentSkillWhitelist");
+        await AgentSkillWhitelist.clearSingleUserWhitelist();
 
         await updateENV(
           {
