@@ -65,10 +65,7 @@ export function useTheme() {
     _setTheme(newTheme);
   }
 
-  const isLight =
-    theme === "light" ||
-    (theme === "system" &&
-      window.matchMedia?.("(prefers-color-scheme: light)").matches);
+  const isLight = resolvedTheme === "light";
 
   return { theme, setTheme, availableThemes, isLight };
 }
