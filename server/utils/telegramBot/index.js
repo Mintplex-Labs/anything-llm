@@ -352,21 +352,13 @@ class TelegramBotService {
       guard(msg, () => handler(ctx, msg.chat.id, msg.text));
     });
 
-    // Register callback queries, used for workspace/thread selection interactive menus
-    // and tool approval buttons from agent invocations
-    this.#bot.on("callback_query", (query) => {
-      const data = query.data || "";
-      // Route tool approval callbacks to the service handler
-      if (data.startsWith("tool:")) {
-        return this.handleToolApprovalCallback({
-          ctx,
-          chatId: query.message.chat.id,
-          query,
-          data,
-        });
-      }
-      return handleKeyboardQueryCallback(ctx, query);
-    });
+    // Register callback queries, used for workspace/thread selection, tool approval, etc.
+    this.#bot.on("callback_query", (query) =>
+      handleKeyboardQueryCallback(ctx, query, {
+        pendingToolApprovals: this.#pendingToolApprovals,
+        log: this.#log.bind(this),
+      })
+    );
 
     this.#bot.on("message", (msg) => {
       if (msg.text?.startsWith("/")) return;
@@ -540,11 +532,14 @@ class TelegramBotService {
         if (this.#pendingToolApprovals.has(requestId)) {
           this.#pendingToolApprovals.delete(requestId);
           this.#bot
-            .editMessageText(`⏱️ Tool approval for <b>${skillName}</b> timed out.`, {
-              chat_id: chatId,
-              message_id: sent.message_id,
-              parse_mode: "HTML",
-            })
+            .editMessageText(
+              `⏱️ Tool approval for <b>${skillName}</b> timed out.`,
+              {
+                chat_id: chatId,
+                message_id: sent.message_id,
+                parse_mode: "HTML",
+              }
+            )
             .catch(() => {});
         }
       }, timeoutMs + 1000);
@@ -563,99 +558,6 @@ class TelegramBotService {
           worker.postMessage(response);
         }
       } catch {}
-    }
-  }
-
-  /**
-   * Handle a tool approval callback from an inline keyboard button.
-   * @param {Object} params - Handler parameters
-   * @param {Object} params.ctx - Bot context
-   * @param {number} params.chatId - Telegram chat ID
-   * @param {Object} params.query - Callback query object
-   * @param {string} params.data - Callback data string
-   */
-  async handleToolApprovalCallback({ ctx, chatId, query, data }) {
-    this.#log(`Tool approval callback received: ${data}`);
-
-    try {
-      const parts = data.split(":");
-      if (parts.length !== 3) {
-        this.#log(`Invalid callback data format: ${data}`);
-        await ctx.bot.answerCallbackQuery(query.id, {
-          text: "Invalid request format.",
-        });
-        return;
-      }
-
-      const action = parts[1]; // "approve" or "deny"
-      const requestId = parts[2];
-
-      const pending = this.#pendingToolApprovals.get(requestId);
-      if (!pending) {
-        this.#log(`No pending approval found for requestId: ${requestId}`);
-        await ctx.bot.answerCallbackQuery(query.id, {
-          text: "This approval request has expired.",
-        });
-        return;
-      }
-
-      const { worker, messageId, skillName } = pending;
-      const approved = action === "approve";
-
-      this.#log(
-        `Processing ${approved ? "approval" : "denial"} for ${skillName}`
-      );
-
-      // Send response back to worker (Bree workers use send(), raw worker_threads use postMessage())
-      try {
-        const response = {
-          type: "toolApprovalResponse",
-          requestId,
-          approved,
-        };
-
-        if (worker && typeof worker.send === "function") {
-          worker.send(response);
-          this.#log(
-            `Sent tool approval response to worker via send(): ${approved ? "approved" : "denied"}`
-          );
-        } else if (worker && typeof worker.postMessage === "function") {
-          worker.postMessage(response);
-          this.#log(
-            `Sent tool approval response to worker via postMessage(): ${approved ? "approved" : "denied"}`
-          );
-        } else {
-          this.#log(
-            `Worker not available to send approval response (send: ${typeof worker?.send}, postMessage: ${typeof worker?.postMessage})`
-          );
-        }
-      } catch (err) {
-        this.#log(`Failed to send approval response: ${err.message}`);
-      }
-
-      this.#pendingToolApprovals.delete(requestId);
-
-      // Update the message to show the result
-      const resultText = approved
-        ? `✅ <b>${skillName}</b> was approved.`
-        : `❌ <b>${skillName}</b> was denied.`;
-
-      await ctx.bot
-        .editMessageText(resultText, {
-          chat_id: chatId,
-          message_id: messageId,
-          parse_mode: "HTML",
-        })
-        .catch((err) => this.#log(`Failed to edit message: ${err.message}`));
-
-      await ctx.bot.answerCallbackQuery(query.id, {
-        text: approved ? "Approved!" : "Denied.",
-      });
-    } catch (error) {
-      this.#log(`Error handling tool approval callback: ${error.message}`);
-      await ctx.bot.answerCallbackQuery(query.id, {
-        text: "Something went wrong.",
-      });
     }
   }
 
