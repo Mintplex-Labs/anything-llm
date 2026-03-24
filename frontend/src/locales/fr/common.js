@@ -770,6 +770,15 @@ const TRANSLATIONS = {
     start_agent_session: "Démarrer la session de l'agent",
     use_agent_session_to_use_tools:
       'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
+    agent_invocation: {
+      model_wants_to_call: "Le modèle souhaite passer un appel.",
+      approve: "Approuver",
+      reject: "Refuser",
+      always_allow: "Il est toujours important de {{skillName}}",
+      tool_call_was_approved: "La demande d'outils a été approuvée.",
+      tool_call_was_rejected:
+        "La demande d'utilisation de l'outil a été rejetée.",
+    },
   },
   profile_settings: {
     edit_account: "Modifier le compte",
