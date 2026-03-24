@@ -22,9 +22,9 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
  * @returns {Promise<{success: boolean, reason: string, documents: Object[]}>} - The documents from the file processing
  */
 async function processSingleFile(targetFilename, options = {}, metadata = {}) {
-  const fullFilePath =
-    options.absolutePath ||
-    path.resolve(WATCH_DIRECTORY, normalizePath(targetFilename));
+  const fullFilePath = normalizePath(
+    options.absolutePath || path.resolve(WATCH_DIRECTORY, targetFilename)
+  );
 
   // If absolute path is not provided, check if the file is within the watch directory
   // to prevent unauthorized paths from being processed.
