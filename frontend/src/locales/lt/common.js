@@ -889,6 +889,14 @@ const TRANSLATIONS = {
       missing_credentials: "Šiam tiekėjui trūksta duomenų!",
       missing_credentials_description: "Nustatyti dabar",
     },
+    agent_invocation: {
+      model_wants_to_call: "Modelis nori paskambinti",
+      approve: "Patvirtinti",
+      reject: "Atmetti",
+      always_allow: "Visada būkite pasiruošę {{skillName}}",
+      tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
+      tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
