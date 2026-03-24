@@ -57,6 +57,20 @@ module.exports.FilesystemWriteFile = {
                 `${this.caller}: Writing to file ${filePath}`
               );
 
+              if (this.super.requestToolApproval) {
+                const approval = await this.super.requestToolApproval({
+                  skillName: this.name,
+                  payload: { path: filePath, content },
+                  description: "Write content to a file",
+                });
+                if (!approval.approved) {
+                  this.super.introspect(
+                    `${this.caller}: User rejected the ${this.name} request.`
+                  );
+                  return approval.message;
+                }
+              }
+
               await filesystem.writeFileContent(validPath, content);
               this.super.introspect(`Successfully wrote to ${filePath}`);
               return `Successfully wrote to ${filePath}`;

@@ -49,11 +49,25 @@ module.exports.FilesystemCreateDirectory = {
                 `${this.caller}: Creating directory ${dirPath}`
               );
 
+              if (this.super.requestToolApproval) {
+                const approval = await this.super.requestToolApproval({
+                  skillName: this.name,
+                  payload: { path: dirPath },
+                  description: "Create a new directory",
+                });
+
+                if (!approval.approved) {
+                  this.super.introspect(
+                    `${this.caller}: User rejected the ${this.name} request.`
+                  );
+                  return approval.message;
+                }
+              }
+
               await fs.mkdir(validPath, { recursive: true });
               this.super.introspect(
                 `Successfully created directory ${dirPath}`
               );
-
               return `Successfully created directory ${dirPath}`;
             } catch (e) {
               this.super.handlerProps.log(
