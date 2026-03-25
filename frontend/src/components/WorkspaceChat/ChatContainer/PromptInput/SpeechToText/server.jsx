@@ -21,6 +21,7 @@ export default function ServerSpeechToText({ sendCommand }) {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
+  const audioContextRef = useRef(null);
   const silenceCheckRef = useRef(null);
   const silenceTimeoutRef = useRef(null);
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ export default function ServerSpeechToText({ sendCommand }) {
       streamRef.current = stream;
 
       const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
       const source = audioContext.createMediaStreamSource(stream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
@@ -95,6 +97,10 @@ export default function ServerSpeechToText({ sendCommand }) {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
     }
     stopSilenceDetection();
     setListening(false);
