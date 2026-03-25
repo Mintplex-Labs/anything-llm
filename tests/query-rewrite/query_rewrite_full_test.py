@@ -42,7 +42,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 # ── Konfiguration ──────────────────────────────────────────────
-API_BASE  = "http://localhost:49664/api/v1"
+API_BASE  = "http://localhost:53343/api/v1"
 API_KEY   = "0MVJ179-DTPMPT7-K3SJ804-5A0VP49"
 WORKSPACE = "chatbot"
 CONTAINER = "praesentation"
@@ -687,7 +687,7 @@ def run_tests(blocks_filter=None):
         result = TestResult(
             case=case,
             rewrite=rewritten_display,
-            answer=answer[:200],
+            answer=(answer or "")[:200],
             sources=sources,
             rewrite_rating=rw_rating,
             source_rating=src_rating,
@@ -801,6 +801,131 @@ def generate_report(results):
     print(f"{'='*65}{RST}\n")
     return filename
 
+def generate_html_report(results):
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"/home/srvadmin/KI_Apps_Pipelines/Apps/query_rewrite_test_results_{ts}.html"
+
+    total = len(results)
+    def counts(results, key):
+        ok = sum(1 for r in results if getattr(r, key) == "✅")
+        acc = sum(1 for r in results if "⚠️" in getattr(r, key))
+        err = sum(1 for r in results if "❌" in getattr(r, key))
+        return ok, acc, err
+
+    rw_ok, rw_acc, rw_err = counts(results, "rewrite_rating")
+    src_ok, src_acc, src_err = counts(results, "source_rating")
+    ans_ok, ans_acc, ans_err = counts(results, "answer_rating")
+
+    def pct(n): return f"{100*n//total}%" if total else "0%"
+    def bar(ok, acc, err):
+        w_ok = 100*ok//total if total else 0
+        w_acc = 100*acc//total if total else 0
+        w_err = 100*err//total if total else 0
+        return f'<div class="bar"><span class="ok" style="width:{w_ok}%">{ok}</span><span class="warn" style="width:{w_acc}%">{acc}</span><span class="fail" style="width:{w_err}%">{err}</span></div>'
+
+    def esc(s): return (s or "").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+
+    rows = []
+    for r in results:
+        q = esc(r.case.query[:60])
+        rw = esc(r.rewrite[:60])
+        note = esc((r.case.known_issue or r.case.notes or "")[:60])
+        cat = esc(r.case.category)
+        rid = esc(r.case.id)
+
+        def cell(rating):
+            cls = "ok" if rating == "✅" else "warn" if "⚠️" in rating else "fail"
+            return f'<td class="rating {cls}">{esc(rating)}</td>'
+
+        rows.append(
+            f'<tr><td class="id">{rid}</td><td>{cat}</td>'
+            f'<td class="query">{q}</td><td class="rewrite">{rw}</td>'
+            f'{cell(r.rewrite_rating)}{cell(r.source_rating)}{cell(r.answer_rating)}'
+            f'<td class="notes">{note}</td></tr>'
+        )
+
+    html = f"""<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Query Rewrite Test-Ergebnisse — {datetime.now().strftime('%d.%m.%Y %H:%M')}</title>
+<style>
+  * {{ margin:0; padding:0; box-sizing:border-box; }}
+  body {{ font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background:#0f1117; color:#e4e4e7; padding:24px; }}
+  h1 {{ font-size:1.5rem; margin-bottom:4px; color:#fff; }}
+  .meta {{ color:#a1a1aa; font-size:0.85rem; margin-bottom:20px; }}
+  .summary {{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }}
+  .card {{ background:#1a1b23; border-radius:12px; padding:16px; border:1px solid #27272a; }}
+  .card h3 {{ font-size:0.8rem; color:#a1a1aa; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }}
+  .card .num {{ font-size:2rem; font-weight:700; }}
+  .card .num.green {{ color:#22c55e; }}
+  .card .num.yellow {{ color:#eab308; }}
+  .card .num.red {{ color:#ef4444; }}
+  .bar {{ display:flex; height:8px; border-radius:4px; overflow:hidden; margin-top:8px; background:#27272a; }}
+  .bar span {{ display:flex; align-items:center; justify-content:center; font-size:0; }}
+  .bar .ok {{ background:#22c55e; }}
+  .bar .warn {{ background:#eab308; }}
+  .bar .fail {{ background:#ef4444; }}
+  table {{ width:100%; border-collapse:collapse; font-size:0.82rem; }}
+  th {{ background:#1a1b23; color:#a1a1aa; text-align:left; padding:10px 8px; position:sticky; top:0; border-bottom:2px solid #27272a; font-weight:600; text-transform:uppercase; font-size:0.7rem; letter-spacing:0.05em; }}
+  td {{ padding:8px; border-bottom:1px solid #1e1e24; vertical-align:top; }}
+  tr:hover {{ background:#1a1b23; }}
+  .id {{ font-weight:700; color:#60a5fa; white-space:nowrap; }}
+  .query {{ max-width:250px; }}
+  .rewrite {{ max-width:250px; color:#a78bfa; }}
+  .notes {{ max-width:200px; color:#71717a; font-size:0.78rem; }}
+  .rating {{ text-align:center; font-size:1rem; white-space:nowrap; }}
+  .rating.ok {{ background:#052e16; }}
+  .rating.warn {{ background:#422006; }}
+  .rating.fail {{ background:#450a0a; }}
+  .section {{ margin-top:24px; margin-bottom:8px; }}
+  .section h2 {{ font-size:1.1rem; color:#fff; }}
+</style>
+</head>
+<body>
+<h1>Query Rewrite Test-Ergebnisse</h1>
+<div class="meta">
+  {datetime.now().strftime('%d.%m.%Y %H:%M')} &mdash; Workspace: <strong>{WORKSPACE}</strong> | Container: <strong>{CONTAINER}</strong> | {total} Tests
+</div>
+
+<div class="summary">
+  <div class="card">
+    <h3>Query Rewrite</h3>
+    <span class="num green">{pct(rw_ok)}</span> perfekt
+    {bar(rw_ok, rw_acc, rw_err)}
+    <div style="margin-top:6px;font-size:0.78rem;color:#71717a">{rw_ok} OK &middot; {rw_acc} akzeptabel &middot; {rw_err} Fehler</div>
+  </div>
+  <div class="card">
+    <h3>RAG-Quellen</h3>
+    <span class="num green">{pct(src_ok)}</span> perfekt
+    {bar(src_ok, src_acc, src_err)}
+    <div style="margin-top:6px;font-size:0.78rem;color:#71717a">{src_ok} OK &middot; {src_acc} akzeptabel &middot; {src_err} Fehler</div>
+  </div>
+  <div class="card">
+    <h3>Antwort-Qualitaet</h3>
+    <span class="num green">{pct(ans_ok)}</span> perfekt
+    {bar(ans_ok, ans_acc, ans_err)}
+    <div style="margin-top:6px;font-size:0.78rem;color:#71717a">{ans_ok} OK &middot; {ans_acc} akzeptabel &middot; {ans_err} Fehler</div>
+  </div>
+</div>
+
+<div class="section"><h2>Detailergebnisse</h2></div>
+<table>
+<thead>
+<tr><th>ID</th><th>Kategorie</th><th>Query</th><th>Rewrite</th><th>RW</th><th>SRC</th><th>ANS</th><th>Notizen</th></tr>
+</thead>
+<tbody>
+{"".join(rows)}
+</tbody>
+</table>
+</body>
+</html>"""
+
+    with open(filename, "w") as f:
+        f.write(html)
+    return filename
+
+
 # ── Main ───────────────────────────────────────────────────────
 if __name__ == "__main__":
     # Optional: --block V,S,A zum Filtern
@@ -812,4 +937,6 @@ if __name__ == "__main__":
 
     results = run_tests(blocks)
     report_file = generate_report(results)
+    html_file = generate_html_report(results)
     print(f"\nBericht gespeichert: {report_file}")
+    print(f"HTML-Bericht: {html_file}")

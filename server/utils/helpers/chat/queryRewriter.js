@@ -1,19 +1,35 @@
 const REWRITE_PROMPT = `Given a chat history and the latest user question which might reference context in the chat history, determine if the question needs to be reformulated to be understood without the chat history.
 
-If the question already contains its own subject or topic, return it EXACTLY as written — do not rephrase, expand, or modify it in any way.
+If the question already contains its own subject or topic, return it EXACTLY as written — do not rephrase, expand, or modify it in any way. This applies regardless of the language of the chat history. NEVER translate or switch the language of a self-contained question.
 
-Only reformulate when the question contains pronouns (it, that, they), demonstratives (this, these), or incomplete references (the first one, the second) that refer to the chat history.
+Only reformulate when the question contains pronouns (it, that, they), demonstratives (this, these), incomplete references, OR when the question is so short (1-3 words) that it cannot stand alone without context.
 
 When reformulating:
-- By default, the topic comes from the most recent user question. Only use an older topic if the latest question explicitly refers back to it (e.g. "back to the yoga", "the dance course from earlier").
-- Preserve the question type: if the user asks "who" keep it as "who", do not change "who" to "which" or "for whom" to "when".
+- Extract the SPECIFIC topic from the most recent USER question (not from the assistant response). Use the EXACT words the user used — never shorten, generalize, or drop qualifiers.
+- For very short questions (1-3 words), ALWAYS combine them with the topic from the last user question into a complete sentence. Short questions always refer to the most recent topic.
+- Only use an older topic if the latest question explicitly refers back to it.
+- Keep the question structure intact: the question word(s) at the start of the user's question MUST remain at the start of the reformulated question. Only append the missing topic — never restructure the sentence.
 - Respond with ONLY the reformulated question (max 15 words).
-- Include the key subject/topic from conversation history. Do NOT add information not present in the conversation.
+- NEVER generalize the topic. Keep the full compound noun or phrase from the user's question. Do not drop adjectives, prefixes, or qualifiers.
+- Do NOT add information not present in the conversation.
 - Write in the same language as the LATEST user question (not previous messages).`;
 
-function shouldRewrite(userQuery, chatHistory, workspace) {
+async function shouldRewrite(userQuery, chatHistory, workspace) {
   if (!chatHistory || chatHistory.length === 0) return false;
-  const mode = workspace?.queryRewriteMode ?? (process.env.QUERY_REWRITING === "true" ? "on" : "off");
+  let mode = workspace?.queryRewriteMode;
+  // If workspace value is not explicitly set, resolve via system setting → ENV → "off"
+  if (mode !== "on" && mode !== "off") {
+    const { SystemSettings } = require("../../../models/systemSettings");
+    const systemDefault = await SystemSettings.getValueOrFallback(
+      { label: "query_rewrite_default" },
+      null
+    );
+    if (systemDefault === "on" || systemDefault === "off") {
+      mode = systemDefault;
+    } else {
+      mode = process.env.QUERY_REWRITING === "true" ? "on" : "off";
+    }
+  }
   if (mode !== "on") return false;
   const wordCount = userQuery.trim().split(/\s+/).length;
   const threshold = parseInt(process.env.QUERY_REWRITE_WORD_THRESHOLD) || 12;
@@ -26,7 +42,7 @@ async function rewriteQueryForSearch({
   LLMConnector,
   workspace,
 }) {
-  if (!shouldRewrite(userQuery, chatHistory, workspace)) return userQuery;
+  if (!(await shouldRewrite(userQuery, chatHistory, workspace))) return userQuery;
 
   try {
     const maxTurns = parseInt(process.env.QUERY_REWRITE_MAX_HISTORY) || 2;
