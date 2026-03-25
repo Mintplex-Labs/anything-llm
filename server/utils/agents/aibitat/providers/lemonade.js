@@ -28,6 +28,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
         "openai"
       ),
       apiKey: null,
+      timeout: 60000,
       maxRetries: 3,
     });
 

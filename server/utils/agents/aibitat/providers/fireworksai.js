@@ -17,6 +17,7 @@ class FireworksAIProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.fireworks.ai/inference/v1",
       apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
+      timeout: 60000,
       maxRetries: 0,
     });
 

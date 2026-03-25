@@ -29,6 +29,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
       apiKey,
+      timeout: 60000,
       maxRetries: 3,
     });
 

@@ -20,6 +20,7 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.novita.ai/v3/openai",
       apiKey: process.env.NOVITA_LLM_API_KEY,
+      timeout: 60000,
       maxRetries: 3,
       defaultHeaders: {
         "HTTP-Referer": "https://anythingllm.com",

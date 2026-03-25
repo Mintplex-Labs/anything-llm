@@ -12,6 +12,7 @@ class GiteeAIProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = new OpenAI({
       baseURL: "https://ai.gitee.com/v1",
       apiKey: process.env.GITEE_AI_API_KEY ?? null,
+      timeout: 60000,
       maxRetries: 3,
     });
     this.model = model;
