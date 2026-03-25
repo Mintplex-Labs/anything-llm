@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Benvenuti a",
       getStarted: "Inizia",
+      welcome: null,
     },
     llm: {
       title: "Preferenza per i modelli LLM",

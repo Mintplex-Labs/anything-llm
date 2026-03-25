@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Hoş Geldiniz",
       getStarted: "Başla",
+      welcome: null,
     },
     llm: {
       title: "LLM Tercihi",

@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "به",
       getStarted: "شروع کنید",
+      welcome: null,
     },
     llm: {
       title: "ترجیحات مدل‌های زبان بزرگ",

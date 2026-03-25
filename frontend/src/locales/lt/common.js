@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Sveiki atvykę į",
       getStarted: "Pradėti",
+      welcome: null,
     },
     llm: {
       title: "LLM pasirinkimas",

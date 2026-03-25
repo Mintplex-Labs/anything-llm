@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
+      welcome: null,
     },
     llm: {
       title: "העדפות מודל שפה (LLM)",
