@@ -189,6 +189,20 @@ const System = {
         return { newValues: null, error: e.message };
       });
   },
+  transcribeAudio: async (audioBlob) => {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.wav");
+    return await fetch(`${API_BASE}/system/stt`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: formData,
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { text: null, error: e.message };
+      });
+  },
   updateSystemPassword: async (data) => {
     return await fetch(`${API_BASE}/system/update-password`, {
       method: "POST",

@@ -5,7 +5,9 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
+import OpenAiGenericSTTOptions from "@/components/SpeechToText/OpenAiGenericOptions";
 
 const PROVIDERS = [
   {
@@ -14,6 +16,14 @@ const PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
     description: "Uses your browser's built in STT service if supported.",
+  },
+  {
+    name: "OpenAI Compatible",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <OpenAiGenericSTTOptions settings={settings} />,
+    description:
+      "Connect to an OpenAI compatible STT service running locally or remotely.",
   },
 ];
 

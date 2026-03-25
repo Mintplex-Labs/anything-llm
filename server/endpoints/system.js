@@ -555,6 +555,49 @@ function systemEndpoints(app) {
   );
 
   app.post(
+    "/system/stt",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const multer = require("multer");
+        const upload = multer({ storage: multer.memoryStorage() }).single(
+          "audio"
+        );
+        upload(request, response, async function (err) {
+          if (err) {
+            return response
+              .status(500)
+              .json({ text: null, error: `Upload failed: ${err.message}` });
+          }
+
+          if (!request.file) {
+            return response
+              .status(400)
+              .json({ text: null, error: "No audio file provided." });
+          }
+
+          const { getSTTProvider } = require("../utils/SpeechToText");
+          const provider = getSTTProvider();
+          const { text, error } = await provider.transcribe(
+            request.file.buffer,
+            request.file.originalname || "audio.wav"
+          );
+
+          if (error) {
+            return response.status(500).json({ text: null, error });
+          }
+          return response.status(200).json({ text, error: null });
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response
+          .status(500)
+          .json({ text: null, error: "Failed to transcribe audio." });
+      }
+    }
+  );
+
+  app.post(
     "/system/update-password",
     [validatedRequest],
     async (request, response) => {

@@ -18,9 +18,7 @@ import handleSocketResponse, {
   setAgentSessionActive,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
+import { STOP_STT_EVENT } from "./PromptInput/SpeechToText";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
@@ -46,10 +44,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-
-  const { listening, resetTranscript } = useSpeechRecognition({
-    clearTranscriptOnListen: true,
-  });
 
   /**
    * Emit an update to the state of the prompt input without directly
@@ -91,18 +85,15 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       },
     ];
 
-    if (listening) {
-      // Stop the mic if the send button is clicked
-      endSTTSession();
-    }
+    // Stop any active STT session when the user submits a message
+    endSTTSession();
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
 
   function endSTTSession() {
-    SpeechRecognition.stopListening();
-    resetTranscript();
+    window.dispatchEvent(new CustomEvent(STOP_STT_EVENT));
   }
 
   const regenerateAssistantMessage = (chatId) => {
