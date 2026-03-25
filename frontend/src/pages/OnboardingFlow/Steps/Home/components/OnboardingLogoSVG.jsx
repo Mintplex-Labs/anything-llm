@@ -1,10 +1,7 @@
 import { useTheme } from "@/hooks/useTheme";
+
 export function OnboardingLogoSVG() {
-  const { theme } = useTheme();
-  const isLight =
-    theme === "light" ||
-    (theme === "system" &&
-      window.matchMedia?.("(prefers-color-scheme: light)").matches);
+  const { isLight } = useTheme();
   return (
     <svg
       viewBox="0 0 818 514"
