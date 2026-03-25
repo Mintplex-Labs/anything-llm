@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "مرحبا في",
       getStarted: "بسم الله",
+      welcome: null,
     },
     llm: {
       title: "إعدادات نموذج التعلم العميق المفضّلة",

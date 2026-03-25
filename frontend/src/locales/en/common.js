@@ -2,6 +2,7 @@ const TRANSLATIONS = {
   onboarding: {
     home: {
       title: "Welcome to",
+      welcome: "Welcome",
       getStarted: "Get Started",
     },
     llm: {
