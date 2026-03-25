@@ -560,9 +560,11 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const multer = require("multer");
+
         const upload = multer({ storage: multer.memoryStorage() }).single(
           "audio"
         );
+
         upload(request, response, async function (err) {
           if (err) {
             return response
