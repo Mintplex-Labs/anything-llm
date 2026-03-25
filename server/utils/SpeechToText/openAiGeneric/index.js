@@ -34,7 +34,7 @@ class GenericOpenAiSTT {
    * @param {string} [filename="audio.wav"] - The filename for the audio data.
    * @returns {Promise<{text: string|null, error: string|null}>}
    */
-  async transcribe(audioBuffer, filename = "audio.wav") {
+  async transcribe(audioBuffer, filename = "audio.webm") {
     try {
       const { toFile } = require("openai");
       const file = await toFile(audioBuffer, filename, {

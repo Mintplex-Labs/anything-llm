@@ -191,7 +191,7 @@ const System = {
   },
   transcribeAudio: async (audioBlob) => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "recording.wav");
+    formData.append("audio", audioBlob, "recording.webm");
     return await fetch(`${API_BASE}/system/stt`, {
       method: "POST",
       headers: baseHeaders(),
