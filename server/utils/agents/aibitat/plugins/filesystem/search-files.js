@@ -1,5 +1,6 @@
 const path = require("path");
 const filesystem = require("./lib.js");
+const { safeJsonParse } = require("../../../../http/index.js");
 
 module.exports.FilesystemSearchFiles = {
   name: "filesystem-search-files",
@@ -154,19 +155,17 @@ module.exports.FilesystemSearchFiles = {
 
                 for (const dir of allowedDirs) {
                   try {
-                    // Search with each pattern and collect results
-                    for (const effectivePattern of effectivePatterns) {
-                      const results = await filesystem.searchFilesWithGlob(
-                        dir,
-                        effectivePattern,
-                        { excludePatterns }
-                      );
+                    const { files } = searchFilesWithRipgrepGlob({
+                      searchPath: dir,
+                      patterns: effectivePatterns,
+                      excludePatterns,
+                      maxResults: maxResults - allResults.length,
+                    });
 
-                      for (const filePath of results) {
-                        if (!seenPaths.has(filePath)) {
-                          seenPaths.add(filePath);
-                          allResults.push(filePath);
-                        }
+                    for (const filePath of files) {
+                      if (!seenPaths.has(filePath)) {
+                        seenPaths.add(filePath);
+                        allResults.push(filePath);
                       }
                     }
                   } catch {
@@ -202,7 +201,7 @@ module.exports.FilesystemSearchFiles = {
 
               for (const dir of allowedDirs) {
                 try {
-                  const results = await searchFileContentsInDir({
+                  const results = searchWithRipgrep({
                     searchPath: dir,
                     pattern,
                     filePattern,
@@ -254,44 +253,62 @@ module.exports.FilesystemSearchFiles = {
 };
 
 /**
- * Search file contents in a single directory using ripgrep or fallback.
- * Returns raw results array for deduplication by caller.
+ * Search for files by glob pattern using ripgrep (fast file listing).
+ * @returns {{ files: string[], method: string }}
  */
-async function searchFileContentsInDir({
+function searchFilesWithRipgrepGlob({
   searchPath,
-  pattern,
-  filePattern,
-  excludePatterns,
-  caseSensitive,
-  maxResults,
+  patterns,
+  excludePatterns = [],
+  maxResults = 100,
 }) {
-  // Try to use ripgrep-node first
+  const { spawnSync } = require("child_process");
+  let rgPath;
   try {
-    return await searchWithRipgrep({
-      searchPath,
-      pattern,
-      filePattern,
-      excludePatterns,
-      caseSensitive,
-      maxResults,
-    });
+    ({ rgPath } = require("@vscode/ripgrep"));
   } catch {
-    // Fallback to manual search
-    return await searchWithFallback({
-      searchPath,
-      pattern,
-      filePattern,
-      excludePatterns,
-      caseSensitive,
-      maxResults,
-    });
+    throw new Error("@vscode/ripgrep not installed");
   }
+
+  // Build ripgrep arguments for file listing
+  const args = [
+    "--files", // List files instead of searching content
+    "--no-ignore", // Search all files, even those in .gitignore
+  ];
+
+  // Add glob patterns (ripgrep uses --glob for filtering --files output)
+  for (const pattern of patterns) args.push("--glob", pattern);
+  for (const exclude of excludePatterns) args.push("--glob", `!${exclude}`);
+
+  args.push(searchPath);
+  const result = spawnSync(rgPath, args, {
+    encoding: "utf-8",
+    maxBuffer: 10 * 1024 * 1024,
+  });
+
+  if (result.status > 1) {
+    throw new Error(
+      result.stderr || `ripgrep exited with code ${result.status}`
+    );
+  }
+
+  // unique files
+  const files = new Set();
+  if (!result.stdout) return { files: Array.from(files), method: "ripgrep" };
+
+  const lines = result.stdout.trim().split("\n").filter(Boolean);
+  for (const line of lines) {
+    files.add(line);
+    if (files.size >= maxResults) break;
+  }
+
+  return { files: Array.from(files), method: "ripgrep" };
 }
 
 /**
- * Search using ripgrep-node.
+ * Search file contents using @vscode/ripgrep binary directly via spawnSync.
  */
-async function searchWithRipgrep({
+function searchWithRipgrep({
   searchPath,
   pattern,
   filePattern,
@@ -299,125 +316,55 @@ async function searchWithRipgrep({
   caseSensitive,
   maxResults,
 }) {
-  // Try to dynamically require ripgrep-node
-  let rgSearch;
+  const { spawnSync } = require("child_process");
+  let rgPath;
   try {
-    const { rgSearch: rg } = require("ripgrep-node");
-    rgSearch = rg;
+    ({ rgPath } = require("@vscode/ripgrep"));
   } catch {
-    throw new Error("ripgrep-node not installed");
+    throw new Error("@vscode/ripgrep not installed");
   }
 
-  const args = [];
+  // Build ripgrep arguments
+  const args = [
+    "--json", // JSON output for structured parsing
+    "--line-number", // Include line numbers
+    "--no-ignore", // Search all files, even those in .gitignore
+    "--max-count",
+    String(maxResults),
+  ];
 
-  // Case sensitivity
-  if (!caseSensitive) args.push("-i");
-  // File type filter
-  if (filePattern) args.push("-g", filePattern);
-  // Exclude patterns
-  for (const exclude of excludePatterns) args.push("-g", `!${exclude}`);
-  // Max results
-  args.push("-m", String(maxResults));
-  // Line numbers
-  args.push("-n");
-  // Run ripgrep
+  if (!caseSensitive) args.push("--ignore-case");
+  if (filePattern) args.push("--glob", filePattern);
+  for (const exclude of excludePatterns) args.push("--glob", `!${exclude}`);
+
+  // Pattern and path come last
+  args.push(pattern, searchPath);
+  const result = spawnSync(rgPath, args, {
+    encoding: "utf-8",
+    maxBuffer: 10 * 1024 * 1024, // 10MB
+  });
+
+  // Exit code 1 means no matches (not an error)
+  if (result.status > 1) {
+    throw new Error(
+      result.stderr || `ripgrep exited with code ${result.status}`
+    );
+  }
+
   const results = [];
+  if (!result.stdout) return results;
+  const matches = safeJsonParse(result.stdout, []).filter(
+    (m) => m.type === "match" && m.data
+  );
 
-  try {
-    const matches = await rgSearch(pattern, searchPath, args);
-    for (const match of matches) {
-      results.push({
-        file: match.path,
-        line: match.line_number,
-        content: match.lines,
-      });
-
-      if (results.length >= maxResults) break;
-    }
-  } catch (error) {
-    // If ripgrep returns no matches, it may throw
-    if (!error.message?.includes("No matches")) {
-      throw error;
-    }
+  for (const match of matches) {
+    results.push({
+      file: match.data.path?.text || match.data.path,
+      line: match.data.line_number,
+      content: (match.data.lines?.text || "").trim(),
+    });
   }
 
-  return results;
-}
-
-/**
- * Fallback search implementation without ripgrep.
- * Uses collector to parse binary files (PDFs, etc.) for content search.
- */
-async function searchWithFallback({
-  searchPath,
-  pattern,
-  filePattern,
-  excludePatterns,
-  caseSensitive,
-  maxResults,
-}) {
-  const fs = require("fs/promises");
-  const minimatch = require("minimatch");
-
-  const regex = new RegExp(pattern, caseSensitive ? "g" : "gi");
-  const results = [];
-  const matchOptions = { dot: true, nocase: true };
-
-  async function searchDir(currentPath) {
-    if (results.length >= maxResults) return;
-
-    const entries = await fs.readdir(currentPath, { withFileTypes: true });
-
-    for (const entry of entries) {
-      if (results.length >= maxResults) break;
-
-      const fullPath = path.join(currentPath, entry.name);
-      const relativePath = path.relative(searchPath, fullPath);
-
-      // Check exclude patterns
-      const shouldExclude = excludePatterns.some(
-        (p) =>
-          minimatch(relativePath, p, matchOptions) ||
-          minimatch(entry.name, p, matchOptions)
-      );
-
-      if (shouldExclude) continue;
-
-      if (entry.isDirectory()) {
-        await searchDir(fullPath);
-      } else if (entry.isFile()) {
-        // Check file pattern
-        if (filePattern && !minimatch(entry.name, filePattern, matchOptions)) {
-          continue;
-        }
-
-        // Search file contents using collector for binary file support
-        try {
-          const content = await filesystem.readFileContent(fullPath);
-          const lines = content.split("\n");
-
-          for (
-            let i = 0;
-            i < lines.length && results.length < maxResults;
-            i++
-          ) {
-            if (regex.test(lines[i])) {
-              results.push({
-                file: fullPath,
-                line: i + 1,
-                content: lines[i].trim(),
-              });
-            }
-            regex.lastIndex = 0; // Reset regex state
-          }
-        } catch {
-          // Skip files that can't be read
-        }
-      }
-    }
-  }
-
-  await searchDir(searchPath);
   return results;
 }
 
