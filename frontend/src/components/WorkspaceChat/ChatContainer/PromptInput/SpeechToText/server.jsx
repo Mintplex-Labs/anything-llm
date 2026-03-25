@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef, useState } from "react";
-import { Microphone } from "@phosphor-icons/react";
+import { Microphone, CircleNotch } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { STOP_STT_EVENT } from "./index";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ const SILENCE_CHECK_INTERVAL = 200;
 export default function ServerSpeechToText({ sendCommand }) {
   const [listening, setListening] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
@@ -28,6 +29,7 @@ export default function ServerSpeechToText({ sendCommand }) {
 
   async function startSTTSession() {
     try {
+      setLoading(true);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
@@ -77,9 +79,11 @@ export default function ServerSpeechToText({ sendCommand }) {
       };
 
       mediaRecorder.start();
+      setLoading(false);
       setListening(true);
       startSilenceDetection(analyser);
     } catch (e) {
+      setLoading(false);
       console.error("Failed to start recording:", e);
       alert(
         "AnythingLLM does not have access to microphone. Please enable for this site to use this feature."
@@ -172,18 +176,27 @@ export default function ServerSpeechToText({ sendCommand }) {
       data-tooltip-id="tooltip-microphone-btn"
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
-      onClick={isActive ? endSTTSession : startSTTSession}
-      className={`group border-none relative flex justify-center items-center cursor-pointer w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200 ${
+      onClick={loading ? null : isActive ? endSTTSession : startSTTSession}
+      className={`group border-none relative flex justify-center items-center ${loading ? "cursor-wait" : "cursor-pointer"} w-8 h-8 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200 ${
         isActive ? "bg-zinc-700 light:bg-slate-200" : ""
       }`}
     >
-      <Microphone
-        weight="regular"
-        size={18}
-        className={`pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 shrink-0 ${
-          isActive ? "animate-pulse-glow !text-white light:!text-slate-800" : ""
-        }`}
-      />
+      {loading ? (
+        <CircleNotch
+          size={18}
+          className="pointer-events-none text-zinc-300 light:text-slate-600 shrink-0 animate-spin"
+        />
+      ) : (
+        <Microphone
+          weight="regular"
+          size={18}
+          className={`pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 shrink-0 ${
+            isActive
+              ? "animate-pulse-glow !text-white light:!text-slate-800"
+              : ""
+          }`}
+        />
+      )}
       <Tooltip
         id="tooltip-microphone-btn"
         place="top"
