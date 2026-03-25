@@ -1,13 +1,11 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
-import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import { STOP_STT_EVENT } from "./index";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
 import System from "@/models/system";
 
-let silenceTimeout;
 const SILENCE_INTERVAL = 3_200;
 const SILENCE_THRESHOLD = 0.01;
 const SILENCE_CHECK_INTERVAL = 200;
@@ -23,8 +21,8 @@ export default function ServerSpeechToText({ sendCommand }) {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
-  const analyserRef = useRef(null);
   const silenceCheckRef = useRef(null);
+  const silenceTimeoutRef = useRef(null);
   const { t } = useTranslation();
 
   async function startSTTSession() {
@@ -37,7 +35,6 @@ export default function ServerSpeechToText({ sendCommand }) {
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
       source.connect(analyser);
-      analyserRef.current = analyser;
 
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -101,7 +98,6 @@ export default function ServerSpeechToText({ sendCommand }) {
     }
     stopSilenceDetection();
     setListening(false);
-    clearTimeout(silenceTimeout);
   }
 
   function startSilenceDetection(analyser) {
@@ -115,14 +111,14 @@ export default function ServerSpeechToText({ sendCommand }) {
       const rms = Math.sqrt(sum / dataArray.length);
 
       if (rms < SILENCE_THRESHOLD) {
-        if (!silenceTimeout) {
-          silenceTimeout = setTimeout(() => {
+        if (!silenceTimeoutRef.current) {
+          silenceTimeoutRef.current = setTimeout(() => {
             endSTTSession();
           }, SILENCE_INTERVAL);
         }
       } else {
-        clearTimeout(silenceTimeout);
-        silenceTimeout = null;
+        clearTimeout(silenceTimeoutRef.current);
+        silenceTimeoutRef.current = null;
       }
     }, SILENCE_CHECK_INTERVAL);
   }
@@ -132,8 +128,8 @@ export default function ServerSpeechToText({ sendCommand }) {
       clearInterval(silenceCheckRef.current);
       silenceCheckRef.current = null;
     }
-    clearTimeout(silenceTimeout);
-    silenceTimeout = null;
+    clearTimeout(silenceTimeoutRef.current);
+    silenceTimeoutRef.current = null;
   }
 
   const handleKeyPress = useCallback(
@@ -155,26 +151,13 @@ export default function ServerSpeechToText({ sendCommand }) {
   }, [handleKeyPress]);
 
   useEffect(() => {
-    function handlePromptUpdate(e) {
-      if (!e?.detail && listening) {
-        endSTTSession();
-      }
-    }
-    window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
-    return () =>
-      window.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
-  }, [listening]);
-
-  useEffect(() => {
     const handler = () => endSTTSession();
     window.addEventListener(STOP_STT_EVENT, handler);
     return () => window.removeEventListener(STOP_STT_EVENT, handler);
   }, []);
 
   useEffect(() => {
-    return () => {
-      endSTTSession();
-    };
+    return () => endSTTSession();
   }, []);
 
   const isActive = listening || transcribing;
