@@ -5,6 +5,7 @@ const { FilesystemEditFile } = require("./edit-file.js");
 const { FilesystemCreateDirectory } = require("./create-directory.js");
 const { FilesystemListDirectory } = require("./list-directory.js");
 const { FilesystemMoveFile } = require("./move-file.js");
+const { FilesystemCopyFile } = require("./copy-file.js");
 const { FilesystemSearchFiles } = require("./search-files.js");
 const { FilesystemGetFileInfo } = require("./get-file-info.js");
 
@@ -21,6 +22,7 @@ const filesystemAgent = {
     FilesystemCreateDirectory,
     FilesystemListDirectory,
     FilesystemMoveFile,
+    FilesystemCopyFile,
     FilesystemSearchFiles,
     FilesystemGetFileInfo,
   ],

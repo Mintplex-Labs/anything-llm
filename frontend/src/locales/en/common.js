@@ -382,6 +382,10 @@ const TRANSLATIONS = {
             title: "Create Directory",
             description: "Create new directories",
           },
+          "copy-file": {
+            title: "Copy File",
+            description: "Copy files and directories",
+          },
           "move-file": {
             title: "Move/Rename File",
             description: "Move or rename files and directories",

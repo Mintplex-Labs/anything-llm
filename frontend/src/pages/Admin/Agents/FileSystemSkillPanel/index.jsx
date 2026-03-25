@@ -14,6 +14,7 @@ import {
   MagnifyingGlass,
   Info,
   CircleNotch,
+  Copy,
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 
@@ -81,6 +82,13 @@ const getFileSystemSubSkills = (t) => {
         "agent.skill.filesystem.skills.create-directory.description"
       ),
       icon: FolderPlus,
+      category: "write",
+    },
+    {
+      name: "filesystem-copy-file",
+      title: t("agent.skill.filesystem.skills.copy-file.title"),
+      description: t("agent.skill.filesystem.skills.copy-file.description"),
+      icon: Copy,
       category: "write",
     },
     {
