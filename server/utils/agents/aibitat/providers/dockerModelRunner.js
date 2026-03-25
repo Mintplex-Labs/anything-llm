@@ -28,6 +28,7 @@ class DockerModelRunnerProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.DOCKER_MODEL_RUNNER_BASE_PATH
       ),
       apiKey: null,
+      timeout: 60000,
       maxRetries: 3,
     });
 

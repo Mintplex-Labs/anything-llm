@@ -20,6 +20,7 @@ class PrivatemodelProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.PRIVATEMODE_LLM_BASE_PATH
       ),
       apiKey: null,
+      timeout: 60000,
       maxRetries: 3,
     });
 

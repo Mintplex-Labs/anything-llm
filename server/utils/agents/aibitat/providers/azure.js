@@ -15,6 +15,8 @@ class AzureOpenAiProvider extends Provider {
     const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
+      timeout: 60000,
+      maxRetries: 3,
     });
     super(client);
     this.model =

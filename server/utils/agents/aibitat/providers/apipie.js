@@ -15,6 +15,7 @@ class ApiPieProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://apipie.ai/v1",
       apiKey: process.env.APIPIE_LLM_API_KEY,
+      timeout: 60000,
       maxRetries: 3,
     });
 

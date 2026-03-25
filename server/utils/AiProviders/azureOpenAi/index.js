@@ -19,6 +19,8 @@ class AzureOpenAiLLM {
     this.openai = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
+      timeout: 60000,
+      maxRetries: 3,
     });
     this.model =
       modelPreference ||

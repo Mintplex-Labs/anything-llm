@@ -15,6 +15,7 @@ class CometApiProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.cometapi.com/v1",
       apiKey: process.env.COMETAPI_LLM_API_KEY,
+      timeout: 60000,
       maxRetries: 3,
       defaultHeaders: {
         "HTTP-Referer": "https://anythingllm.com",

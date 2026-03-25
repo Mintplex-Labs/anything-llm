@@ -18,6 +18,7 @@ class GeminiProvider extends Provider {
     const client = new OpenAI({
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       apiKey: process.env.GEMINI_API_KEY,
+      timeout: 60000,
       maxRetries: 0,
     });
 
