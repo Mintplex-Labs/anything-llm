@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Velkommen til",
       getStarted: "Kom godt i gang",
-      welcome: null,
+      welcome: "Velkommen",
     },
     llm: {
       title: "LLM-præference",
@@ -376,6 +376,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Flyt/Omdøb fil",
             description: "Flyt eller omdøb filer og mapper",
+          },
+          "copy-file": {
+            title: "Kopier fil",
+            description: "Kopier filer og mapper",
           },
         },
       },

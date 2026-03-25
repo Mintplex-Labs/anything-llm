@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Hoş Geldiniz",
       getStarted: "Başla",
-      welcome: null,
+      welcome: "Hoş geldiniz",
     },
     llm: {
       title: "LLM Tercihi",
@@ -376,6 +376,10 @@ const TRANSLATIONS = {
             title: "Dosya taşı/yeniden adlandır",
             description:
               "Dosyaları ve dizinleri taşıyın veya yeniden adlandırın.",
+          },
+          "copy-file": {
+            title: "Dosyayı Kopyala",
+            description: "Dosyaları ve dizinleri kopyala",
           },
         },
       },

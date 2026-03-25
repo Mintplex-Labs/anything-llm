@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "欢迎使用",
       getStarted: "开始",
-      welcome: null,
+      welcome: "欢迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -363,6 +363,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "移动/重命名文件",
             description: "移动或重命名文件和目录",
+          },
+          "copy-file": {
+            title: "复制文件",
+            description: "复制文件和目录",
           },
         },
       },

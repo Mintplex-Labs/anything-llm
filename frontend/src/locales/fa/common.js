@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "به",
       getStarted: "شروع کنید",
-      welcome: null,
+      welcome: "به شما خوش آمد می‌گوییم",
     },
     llm: {
       title: "ترجیحات مدل‌های زبان بزرگ",
@@ -373,6 +373,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "انتقال/تغییر نام فایل",
             description: "فایل‌ها و پوشه‌ها را جابجا یا تغییر نام دهید.",
+          },
+          "copy-file": {
+            title: "کپی فایل",
+            description: "فایل‌ها و دایرکتوری‌ها را کپی کنید.",
           },
         },
       },

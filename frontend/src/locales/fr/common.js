@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenue",
       getStarted: "Commencer",
-      welcome: null,
+      welcome: "Bienvenue",
     },
     llm: {
       title: "Préférence LLM",
@@ -379,6 +379,10 @@ const TRANSLATIONS = {
             title: "Déplacer/Renommer le fichier",
             description:
               "Déplacez ou renommez des fichiers et des répertoires.",
+          },
+          "copy-file": {
+            title: "Copier le fichier",
+            description: "Copier des fichiers et des répertoires",
           },
         },
       },

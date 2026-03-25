@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
-      welcome: null,
+      welcome: "ברוכים הבאים",
     },
     llm: {
       title: "העדפות מודל שפה (LLM)",
@@ -372,6 +372,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "העתקה/שינוי שם של קובץ",
             description: "הזיזו או שנו את שמות הקבצים והתיקיות.",
+          },
+          "copy-file": {
+            title: "העתק קובץ",
+            description: "העתקת קבצים וספריות",
           },
         },
       },

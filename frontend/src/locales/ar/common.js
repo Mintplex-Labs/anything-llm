@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "مرحبا في",
       getStarted: "بسم الله",
-      welcome: null,
+      welcome: "أهلاً وسهلاً",
     },
     llm: {
       title: "إعدادات نموذج التعلم العميق المفضّلة",
@@ -373,6 +373,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "تحريك/إعادة تسمية الملف",
             description: "انقل أو غير أسماء الملفات والمجلدات.",
+          },
+          "copy-file": {
+            title: "نسخ الملف",
+            description: "نسخ الملفات والمجلدات",
           },
         },
       },

@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bine ai venit la",
       getStarted: "Începe",
-      welcome: null,
+      welcome: "Bine ați venit",
     },
     llm: {
       title: "Preferința LLM",
@@ -833,6 +833,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Mută/Redenumirea fișierului",
             description: "Mută sau redenumește fișierele și directoarele.",
+          },
+          "copy-file": {
+            title: "Copiază fișier",
+            description: "Copiați fișiere și directoare",
           },
         },
       },

@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Welkom bij",
       getStarted: "Aan de slag",
-      welcome: null,
+      welcome: "Welkom",
     },
     llm: {
       title: "LLM-voorkeuren",
@@ -377,6 +377,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Verplaats/Hernoem bestand",
             description: "Verplaats of wijzig de naam van bestanden en mappen.",
+          },
+          "copy-file": {
+            title: "Kopieer bestand",
+            description: "Kopieer bestanden en mappen",
           },
         },
       },

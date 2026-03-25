@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "방문을 환영합니다",
       getStarted: "시작하기",
-      welcome: null,
+      welcome: "환영합니다",
     },
     llm: {
       title: "LLM 기본 설정",
@@ -374,6 +374,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "파일 이동/이름 변경",
             description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
           },
         },
       },

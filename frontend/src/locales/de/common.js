@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Willkommen bei",
       getStarted: "Jetzt starten",
-      welcome: null,
+      welcome: "Herzlich willkommen",
     },
     llm: {
       title: "LLM-Einstellung",
@@ -383,6 +383,10 @@ const TRANSLATIONS = {
             title: "Datei verschieben/umbenennen",
             description:
               "Dateien und Verzeichnisse verschieben oder umbenennen.",
+          },
+          "copy-file": {
+            title: "Datei kopieren",
+            description: "Dateien und Verzeichnisse kopieren",
           },
         },
       },

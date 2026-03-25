@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Добро пожаловать в",
       getStarted: "Начать",
-      welcome: null,
+      welcome: "Добро пожаловать",
     },
     llm: {
       title: "Предпочитаемые LLM",
@@ -374,6 +374,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Переместить/Переименовать файл",
             description: "Переместите или переименуйте файлы и каталоги.",
+          },
+          "copy-file": {
+            title: "Скопировать файл",
+            description: "Копировать файлы и каталоги",
           },
         },
       },

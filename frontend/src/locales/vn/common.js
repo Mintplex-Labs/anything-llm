@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Chào mừng đến",
       getStarted: "Bắt đầu",
-      welcome: null,
+      welcome: "Chào mừng",
     },
     llm: {
       title: "Tùy chọn LLM",
@@ -373,6 +373,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Di chuyển/Đổi tên tệp",
             description: "Di chuyển hoặc đổi tên các tệp và thư mục.",
+          },
+          "copy-file": {
+            title: "Sao chép tệp",
+            description: "Sao chép các tệp tin và thư mục",
           },
         },
       },

@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Laipni lūgti",
       getStarted: "Sākt darbu",
-      welcome: null,
+      welcome: "Laipni lūdzam",
     },
     llm: {
       title: "LLM preferences",
@@ -381,6 +381,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Pārvietot/Vārdēt failu",
             description: "Vāc vai pārdzen failus un direktorijus",
+          },
+          "copy-file": {
+            title: "Kopēt failu",
+            description: "Kopēt failus un direktorus",
           },
         },
       },

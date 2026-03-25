@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Sveiki atvykę į",
       getStarted: "Pradėti",
-      welcome: null,
+      welcome: "Sveiki",
     },
     llm: {
       title: "LLM pasirinkimas",
@@ -387,6 +387,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Perkelti/Pavadinimą failą",
             description: "Perkelti arba pervardinti failus ir katalogus",
+          },
+          "copy-file": {
+            title: "Kopijuoti failą",
+            description: "Kopijuoti failus ir katalogus",
           },
         },
       },

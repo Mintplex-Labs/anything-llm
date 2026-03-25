@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Benvenuti a",
       getStarted: "Inizia",
-      welcome: null,
+      welcome: "Benvenuti",
     },
     llm: {
       title: "Preferenza per i modelli LLM",
@@ -379,6 +379,10 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Sposta/Rinomina file",
             description: "Spostare o rinominare file e directory.",
+          },
+          "copy-file": {
+            title: "Copia file",
+            description: "Copia file e directory",
           },
         },
       },
