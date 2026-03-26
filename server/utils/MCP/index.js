@@ -254,10 +254,25 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
+   * Check if a MIME type is an image type.
+   * @param {string} mimeType
+   * @returns {boolean}
+   */
+  static isImageMimeType(mimeType) {
+    return typeof mimeType === "string" && mimeType.startsWith("image/");
+  }
+
+  /**
    * Extract image content items from an MCP tool result per MCP spec.
+   * Handles three MCP content types that can contain images:
+   * - `type: "image"` — inline base64-encoded image with data + mimeType
+   * - `type: "resource_link"` — URI to an externally hosted image
+   * - `type: "resource"` — embedded resource with a blob (base64) or URI
+   *
    * @param {Object} result - The MCP tool result
-   * @returns {{images: {data: string, mimeType: string}[], textContent: string, llmText: string}|null}
-   *   Returns null if no image content is found.
+   * @returns {{images: {src: string, mimeType: string}[], textContent: string, llmText: string}|null}
+   *   Returns null if no image content is found. Each image has a `src` that is either
+   *   a data URI (for base64) or a remote URL (for resource links).
    */
   static extractImageContent(result) {
     if (!result?.content || !Array.isArray(result.content)) return null;
@@ -267,7 +282,35 @@ class MCPCompatibilityLayer extends MCPHypervisor {
 
     for (const item of result.content) {
       if (item.type === "image" && item.data && item.mimeType) {
-        images.push({ data: item.data, mimeType: item.mimeType });
+        // Inline base64 image
+        images.push({
+          src: `data:${item.mimeType};base64,${item.data}`,
+          mimeType: item.mimeType,
+        });
+      } else if (
+        item.type === "resource_link" &&
+        item.uri &&
+        this.isImageMimeType(item.mimeType)
+      ) {
+        // Resource link pointing to a remote image
+        images.push({ src: item.uri, mimeType: item.mimeType });
+      } else if (
+        item.type === "resource" &&
+        item.resource &&
+        this.isImageMimeType(item.resource.mimeType)
+      ) {
+        // Embedded resource — can have a blob (base64) or just a URI
+        if (item.resource.blob) {
+          images.push({
+            src: `data:${item.resource.mimeType};base64,${item.resource.blob}`,
+            mimeType: item.resource.mimeType,
+          });
+        } else if (item.resource.uri) {
+          images.push({
+            src: item.resource.uri,
+            mimeType: item.resource.mimeType,
+          });
+        }
       } else if (item.type === "text" && item.text) {
         textParts.push(item.text);
       }

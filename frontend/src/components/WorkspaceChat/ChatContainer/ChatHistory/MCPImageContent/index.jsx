@@ -37,25 +37,33 @@ function MCPImageContent({ props }) {
 
 function MCPImage({ image, index }) {
   const [loading, setLoading] = useState(false);
-  const src = `data:${image.mimeType};base64,${image.data}`;
+  const isDataUri = image.src.startsWith("data:");
 
   const handleDownload = useCallback(async () => {
     setLoading(true);
     try {
-      const ext = image.mimeType.split("/")[1] || "png";
-      const byteString = atob(image.data);
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
+      const ext = (image.mimeType || "png").split("/").pop();
+      if (isDataUri) {
+        const base64 = image.src.split(",")[1];
+        const byteString = atob(base64);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: image.mimeType });
+        saveAs(blob, `mcp-image-${index}.${ext}`);
+      } else {
+        // For remote URLs, fetch and save
+        const response = await fetch(image.src);
+        const blob = await response.blob();
+        saveAs(blob, `mcp-image-${index}.${ext}`);
       }
-      const blob = new Blob([ab], { type: image.mimeType });
-      saveAs(blob, `mcp-image-${index}.${ext}`);
     } catch (e) {
       console.error("Failed to download image:", e);
     }
     setLoading(false);
-  }, [image, index]);
+  }, [image, index, isDataUri]);
 
   return (
     <div className="relative w-full">
@@ -77,7 +85,7 @@ function MCPImage({ image, index }) {
         </div>
       </div>
       <img
-        src={src}
+        src={image.src}
         alt={`MCP tool result image ${index + 1}`}
         className="max-w-full max-h-[500px] rounded-lg object-contain"
       />
