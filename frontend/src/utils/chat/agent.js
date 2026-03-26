@@ -12,6 +12,7 @@ const handledEvents = [
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
+  "mcpImageContent",
   "toolApprovalRequest",
   // Streaming events
   "reportStreamEvent",
@@ -202,6 +203,26 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           animate: false,
           pending: false,
           metrics: data.metrics || {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "mcpImageContent") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "mcpImageContent",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
         },
       ];
     });

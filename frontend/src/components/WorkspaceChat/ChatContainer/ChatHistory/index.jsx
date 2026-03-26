@@ -15,6 +15,7 @@ import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import MCPImageContent from "./MCPImageContent";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -307,6 +308,8 @@ function buildMessages({
 
     if (props.type === "rechartVisualize" && !!props.content) {
       acc.push(<Chartable key={props.uuid} props={props} />);
+    } else if (props.type === "mcpImageContent" && !!props.content) {
+      acc.push(<MCPImageContent key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply

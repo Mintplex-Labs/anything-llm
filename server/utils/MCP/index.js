@@ -102,6 +102,28 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `MCP server: ${name}:${tool.name} completed successfully`
                     );
+
+                    // Check for image content in MCP result per MCP spec
+                    // Images are sent directly to the frontend and excluded from LLM context to save tokens
+                    const imageResult =
+                      MCPCompatibilityLayer.extractImageContent(result);
+                    if (imageResult) {
+                      const payload = {
+                        images: imageResult.images,
+                        description: imageResult.textContent,
+                      };
+                      aibitat.socket.send("mcpImageContent", payload);
+                      aibitat._replySpecialAttributes = {
+                        saveAsType: "mcpImageContent",
+                        storedResponse: (additionalText = "") =>
+                          JSON.stringify({
+                            ...payload,
+                            caption: additionalText,
+                          }),
+                      };
+                      return imageResult.llmText;
+                    }
+
                     return MCPCompatibilityLayer.returnMCPResult(result);
                   } catch (error) {
                     aibitat.handlerProps.log(
@@ -229,6 +251,40 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     delete this.mcpLoadingResults[name];
     this.log(`MCP server was killed and removed from config file: ${name}`);
     return { success: true, error: null };
+  }
+
+  /**
+   * Extract image content items from an MCP tool result per MCP spec.
+   * @param {Object} result - The MCP tool result
+   * @returns {{images: {data: string, mimeType: string}[], textContent: string, llmText: string}|null}
+   *   Returns null if no image content is found.
+   */
+  static extractImageContent(result) {
+    if (!result?.content || !Array.isArray(result.content)) return null;
+
+    const images = [];
+    const textParts = [];
+
+    for (const item of result.content) {
+      if (item.type === "image" && item.data && item.mimeType) {
+        images.push({ data: item.data, mimeType: item.mimeType });
+      } else if (item.type === "text" && item.text) {
+        textParts.push(item.text);
+      }
+    }
+
+    if (images.length === 0) return null;
+
+    const textContent = textParts.join("\n");
+    const imagePlaceholders = images
+      .map(
+        (img) =>
+          `[An image was returned by this tool and displayed to the user. Image type: ${img.mimeType}]`
+      )
+      .join("\n");
+    const llmText = [textContent, imagePlaceholders].filter(Boolean).join("\n");
+
+    return { images, textContent, llmText };
   }
 
   /**
