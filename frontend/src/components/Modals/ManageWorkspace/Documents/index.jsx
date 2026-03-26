@@ -6,16 +6,7 @@ import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
-// OpenAI Cost per token
-// ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
-
-const MODEL_COSTS = {
-  "text-embedding-ada-002": 0.0000001, // $0.0001 / 1K tokens
-  "text-embedding-3-small": 0.00000002, // $0.00002 / 1K tokens
-  "text-embedding-3-large": 0.00000013, // $0.00013 / 1K tokens
-};
-
-export default function DocumentSettings({ workspace, systemSettings }) {
+export default function DocumentSettings({ workspace }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +14,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const [selectedItems, setSelectedItems] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [movedItems, setMovedItems] = useState([]);
-  const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
   const availableDocsRef = useRef([]);
 
@@ -164,25 +154,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
       }
     }
 
-    let totalTokenCount = 0;
-    newMovedItems.forEach((item) => {
-      const { cached, token_count_estimate } = item;
-      if (!cached) {
-        totalTokenCount += token_count_estimate;
-      }
-    });
-
-    // Do not do cost estimation unless the embedding engine is OpenAi.
-    if (systemSettings?.EmbeddingEngine === "openai") {
-      const COST_PER_TOKEN =
-        MODEL_COSTS[
-          systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
-        ];
-
-      const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
-      setEmbeddingsCost(dollarAmount);
-    }
-
     setMovedItems([...movedItems, ...newMovedItems]);
 
     let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));
@@ -252,7 +223,6 @@ export default function DocumentSettings({ workspace, systemSettings }) {
         fetchKeys={fetchKeys}
         hasChanges={hasChanges}
         saveChanges={updateWorkspace}
-        embeddingCosts={embeddingsCost}
         movedItems={movedItems}
       />
     </div>
