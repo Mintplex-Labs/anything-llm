@@ -400,7 +400,7 @@ model external_communication_connectors {
 
 model memories {
   id             Int         @id @default(autoincrement())
-  userId         Int         @map("user_id")
+  userId         Int?        @map("user_id")
   workspaceId    Int?        @map("workspace_id")
   scope          String      @default("workspace")
   content        String
@@ -409,7 +409,7 @@ model memories {
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @default(now()) @map("updated_at")
 
-  user           users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           users?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace      workspaces? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([userId, workspaceId])

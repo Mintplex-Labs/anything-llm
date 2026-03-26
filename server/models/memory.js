@@ -174,6 +174,19 @@ const Memory = {
     }
   },
 
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.memories.updateMany({
+        where: { userId: null },
+        data: { userId: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   get: async function (clause = {}) {
     try {
       const memory = await prisma.memories.findFirst({ where: clause });

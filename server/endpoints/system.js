@@ -61,6 +61,7 @@ const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
+const { Memory } = require("../models/memory");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -620,6 +621,8 @@ function systemEndpoints(app) {
           multi_user_mode: true,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
+        await Memory.migrateToMultiUser(user.id);
+        await WorkspaceChats.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {

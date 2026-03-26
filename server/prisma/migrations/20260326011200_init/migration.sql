@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "memories" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "user_id" INTEGER NOT NULL,
+    "user_id" INTEGER,
     "workspace_id" INTEGER,
     "scope" TEXT NOT NULL DEFAULT 'workspace',
     "content" TEXT NOT NULL,

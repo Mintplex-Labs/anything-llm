@@ -301,7 +301,7 @@ const WorkspaceChats = {
   unprocessedMemoryGroups: async function () {
     try {
       const pairs = await prisma.workspace_chats.findMany({
-        where: { memoryProcessed: false, user_id: { not: null } },
+        where: { memoryProcessed: false },
         distinct: ["user_id", "workspaceId"],
         select: { user_id: true, workspaceId: true },
       });
@@ -321,6 +321,19 @@ const WorkspaceChats = {
       });
     } catch (error) {
       console.error(error.message);
+    }
+  },
+
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_chats.updateMany({
+        where: { user_id: null },
+        data: { user_id: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
     }
   },
 
