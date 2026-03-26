@@ -63,6 +63,9 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Memory/Personalization
+    "memory_enabled",
   ],
   validations: {
     footer_data: (updates) => {
