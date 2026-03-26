@@ -15,6 +15,11 @@ class BackgroundService {
       timeout: "1m",
       interval: "12hr",
     },
+    {
+      name: "extract-memories",
+      interval: "15m",
+      timeout: "5m",
+    },
   ];
 
   #documentSyncJobs = [
