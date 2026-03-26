@@ -338,6 +338,60 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
       },
+      filesystem: {
+        title: "File System Access",
+        description:
+          "Enable your agent to read, write, search, and manage files within a designated directory. Supports file editing, directory navigation, and content search.",
+        learnMore: "Learn more about this how to use this skill",
+        configuration: "Configuration",
+        readActions: "Read Actions",
+        writeActions: "Write Actions",
+        warning:
+          "Filesystem access can be dangerous as it can modify or delete files. Please consult the <link>documentation</link> before enabling.",
+        skills: {
+          "read-text-file": {
+            title: "Read File",
+            description:
+              "Read contents of files (text, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Read Multiple Files",
+            description: "Read multiple files at once",
+          },
+          "list-directory": {
+            title: "List Directory",
+            description: "List files and directories in a folder",
+          },
+          "search-files": {
+            title: "Search Files",
+            description: "Search for files by name or content",
+          },
+          "get-file-info": {
+            title: "Get File Info",
+            description: "Get detailed metadata about files",
+          },
+          "write-file": {
+            title: "Write File",
+            description: "Create new files or overwrite existing files",
+          },
+          "edit-file": {
+            title: "Edit File",
+            description: "Make line-based edits to text files",
+          },
+          "create-directory": {
+            title: "Create Directory",
+            description: "Create new directories",
+          },
+          "copy-file": {
+            title: "Copy File",
+            description: "Copy files and directories",
+          },
+          "move-file": {
+            title: "Move/Rename File",
+            description: "Move or rename files and directories",
+          },
+        },
+      },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },

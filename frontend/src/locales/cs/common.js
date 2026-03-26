@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Vítejte v",
       getStarted: "Začít",
-      welcome: null,
+      welcome: "Vítejte",
     },
     llm: {
       title: "Preferovaný LLM",
@@ -341,6 +341,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Výchozí nastavení je, že tato schopnost je aktivní, ale můžete ji vypnout, pokud nechcete, aby ji mohl využít zástupce.",
+      filesystem: {
+        title: "Přístup k souborovému systému",
+        description:
+          "Umožněte svému zástupci, aby četl, zapisoval, vyhledával a spravoval soubory v určeném adresáři. Podporuje úpravu souborů, navigaci v adresářích a vyhledávání obsahu.",
+        learnMore: "Zjistěte více o tom, jak tuto dovednost používat.",
+        configuration: "Konfigurace",
+        readActions: "Činnosti",
+        writeActions: "Akce",
+        warning:
+          "Přístup k souborovému systému může být nebezpečný, protože může upravovat nebo mazat soubory. Před zapnutím funkce prosím nahlédněte do dokumentace <link>dokumentace</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Otevřít soubor",
+            description:
+              "Přečtěte obsah souborů (text, kód, PDF, obrázky atd.)",
+          },
+          "read-multiple-files": {
+            title: "Přečtěte více souborů",
+            description: "Přečtěte více souborů najednou",
+          },
+          "list-directory": {
+            title: "Seznam adres",
+            description: "Zobraz seznam souborů a adresářů v daném adresáři.",
+          },
+          "search-files": {
+            title: "Hledat soubory",
+            description: "Vyhledejte soubory podle názvu nebo obsahu",
+          },
+          "get-file-info": {
+            title: "Získejte informace o souboru",
+            description: "Získejte podrobné metadatumy o souborech.",
+          },
+          "write-file": {
+            title: "Vytvoř soubor",
+            description:
+              "Vytvořte nové soubory nebo přepsat stávající soubory.",
+          },
+          "edit-file": {
+            title: "Upravit soubor",
+            description:
+              "Proveďte úpravy v textových souborech na základě řádků.",
+          },
+          "create-directory": {
+            title: "Vytvořit adresář",
+            description: "Vytvořte nové adresáře",
+          },
+          "move-file": {
+            title: "Přejmenovat/přesunout soubor",
+            description: "Přesun nebo přejmenování souborů a adresářů",
+          },
+          "copy-file": {
+            title: "Zkopírovat soubor",
+            description: "Zkopírujte soubory a adresáře",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",

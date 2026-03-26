@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Welkom bij",
       getStarted: "Aan de slag",
-      welcome: null,
+      welcome: "Welkom",
     },
     llm: {
       title: "LLM-voorkeuren",
@@ -327,6 +327,63 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
+      filesystem: {
+        title: "Toegang tot het bestandssysteem",
+        description:
+          "Geef uw agent de mogelijkheid om bestanden te lezen, te schrijven, te zoeken en te beheren binnen een aangewezen map. Ondersteunt het bewerken van bestanden, het navigeren door mappen en het zoeken naar inhoud.",
+        learnMore:
+          "Meer informatie over hoe u deze vaardigheid kunt toepassen.",
+        configuration: "Configuratie",
+        readActions: "Lees acties",
+        writeActions: "Schrijf acties",
+        warning:
+          "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <link>documentatie</link> voordat u dit activeert.",
+        skills: {
+          "read-text-file": {
+            title: "Bestand openen",
+            description:
+              "Lees de inhoud van bestanden (tekst, code, PDF, afbeeldingen, enz.)",
+          },
+          "read-multiple-files": {
+            title: "Lees meerdere bestanden",
+            description: "Lees meerdere bestanden tegelijkertijd.",
+          },
+          "list-directory": {
+            title: "Lijst met contactgegevens",
+            description:
+              "Maak een lijst van bestanden en mappen binnen een map.",
+          },
+          "search-files": {
+            title: "Bestanden zoeken",
+            description: "Zoek naar bestanden op naam of inhoud",
+          },
+          "get-file-info": {
+            title: "Fijlsinformatie bekijken",
+            description: "Verkrijg gedetailleerde metadata over bestanden.",
+          },
+          "write-file": {
+            title: "Schrijf bestand",
+            description:
+              "Maak nieuwe bestanden aan of vervang bestaande bestanden.",
+          },
+          "edit-file": {
+            title: "Bestand bewerken",
+            description: "Voer wijzigingen uit op tekstbestanden, per regel.",
+          },
+          "create-directory": {
+            title: "Maak een directory",
+            description: "Maak nieuwe mappen aan",
+          },
+          "move-file": {
+            title: "Verplaats/Hernoem bestand",
+            description: "Verplaats of wijzig de naam van bestanden en mappen.",
+          },
+          "copy-file": {
+            title: "Kopieer bestand",
+            description: "Kopieer bestanden en mappen",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",

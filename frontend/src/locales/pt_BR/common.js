@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bem-vindo ao",
       getStarted: "Começar",
-      welcome: null,
+      welcome: "Bem-vindo",
     },
     llm: {
       title: "Preferência de LLM",
@@ -331,6 +331,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
+      filesystem: {
+        title: "Acesso ao Sistema de Arquivos",
+        description:
+          "Permita que seu agente leia, grave, procure e gerencie arquivos dentro de um diretório específico. Suporta a edição de arquivos, a navegação em diretórios e a pesquisa de conteúdo.",
+        learnMore: "Saiba mais sobre como utilizar esta habilidade.",
+        configuration: "Configuração",
+        readActions: "Ler ações",
+        writeActions: "Ações a serem executadas",
+        warning:
+          "O acesso ao sistema de arquivos pode ser perigoso, pois pode modificar ou excluir arquivos. Por favor, consulte a <link>documentação</link> antes de habilitar.",
+        skills: {
+          "read-text-file": {
+            title: "Abrir arquivo",
+            description:
+              "Ler o conteúdo de arquivos (texto, código, PDF, imagens, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Ler Vários Arquivos",
+            description: "Leia vários arquivos simultaneamente.",
+          },
+          "list-directory": {
+            title: "Lista de diretórios",
+            description: "Liste os arquivos e diretórios em uma pasta.",
+          },
+          "search-files": {
+            title: "Pesquisar arquivos",
+            description: "Pesquise arquivos por nome ou conteúdo.",
+          },
+          "get-file-info": {
+            title: "Obter informações do arquivo",
+            description: "Obtenha metadados detalhados sobre os arquivos.",
+          },
+          "write-file": {
+            title: "Criar arquivo",
+            description:
+              "Criar novos arquivos ou substituir arquivos existentes.",
+          },
+          "edit-file": {
+            title: "Editar arquivo",
+            description:
+              "Realize edições baseadas em linhas em arquivos de texto.",
+          },
+          "create-directory": {
+            title: "Criar Diretório",
+            description: "Criar novas pastas/diretórios",
+          },
+          "move-file": {
+            title: "Mover/Renomear arquivo",
+            description: "Mova ou renomeie arquivos e diretórios.",
+          },
+          "copy-file": {
+            title: "Copiar arquivo",
+            description: "Copie arquivos e diretórios",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "방문을 환영합니다",
       getStarted: "시작하기",
-      welcome: null,
+      welcome: "환영합니다",
     },
     llm: {
       title: "LLM 기본 설정",
@@ -327,6 +327,60 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      filesystem: {
+        title: "파일 시스템 접근",
+        description:
+          "제 에이전트가 지정된 디렉토리 내에서 파일을 읽고, 쓰고, 검색하고, 관리할 수 있도록 합니다. 파일 편집, 디렉토리 탐색, 콘텐츠 검색을 지원합니다.",
+        learnMore: "이 기술을 사용하는 방법에 대해 자세히 알아보세요.",
+        configuration: "구성",
+        readActions: "실행 내용 보기",
+        writeActions: "실행 내용",
+        warning:
+          "파일 시스템 접근은 위험할 수 있습니다. 왜냐하면 파일 내용을 변경하거나 삭제할 수 있기 때문입니다. 사용하기 전에 반드시 <link>문서</link>를 참조하십시오.",
+        skills: {
+          "read-text-file": {
+            title: "파일 읽기",
+            description:
+              "파일(텍스트, 코드, PDF, 이미지 등)의 내용을 읽습니다.",
+          },
+          "read-multiple-files": {
+            title: "여러 파일을 읽기",
+            description: "여러 파일을 한 번에 읽기",
+          },
+          "list-directory": {
+            title: "디렉토리 목록",
+            description: "폴더 내의 파일 및 디렉터리 목록 보기",
+          },
+          "search-files": {
+            title: "파일 검색",
+            description: "이름 또는 내용으로 파일을 검색",
+          },
+          "get-file-info": {
+            title: "파일 정보 확인",
+            description: "파일에 대한 자세한 메타데이터를 얻으세요.",
+          },
+          "write-file": {
+            title: "파일 작성",
+            description: "새로운 파일을 생성하거나 기존 파일을 덮어쓰기",
+          },
+          "edit-file": {
+            title: "파일 편집",
+            description: "텍스트 파일에 줄 단위로 편집",
+          },
+          "create-directory": {
+            title: "디렉토리 생성",
+            description: "새로운 디렉토리를 생성합니다.",
+          },
+          "move-file": {
+            title: "파일 이동/이름 변경",
+            description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",

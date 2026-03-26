@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Benvenuti a",
       getStarted: "Inizia",
-      welcome: null,
+      welcome: "Benvenuti",
     },
     llm: {
       title: "Preferenza per i modelli LLM",
@@ -331,6 +331,61 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Per impostazione predefinita, questa funzionalità è attiva, ma è possibile disabilitarla se non si desidera che sia disponibile per l'agente.",
+      filesystem: {
+        title: "Accesso al file system",
+        description:
+          "Permetti al tuo agente di leggere, scrivere, cercare e gestire file all'interno di una directory designata. Supporta la modifica dei file, la navigazione nelle directory e la ricerca di contenuti.",
+        learnMore: "Scopri di più su come utilizzare questa competenza.",
+        configuration: "Configurazione",
+        readActions: "Leggi le azioni",
+        writeActions: "Azioni da eseguire",
+        warning:
+          "L'accesso al file system può essere pericoloso, in quanto può modificare o eliminare file. Si prega di consultare la <link>documentazione</link> prima di abilitarlo.",
+        skills: {
+          "read-text-file": {
+            title: "Apri file",
+            description:
+              "Leggi il contenuto dei file (testo, codice, PDF, immagini, ecc.)",
+          },
+          "read-multiple-files": {
+            title: "Leggi più file",
+            description: "Apri e leggi più file contemporaneamente.",
+          },
+          "list-directory": {
+            title: "Elenco di contatti",
+            description:
+              "Elenca i file e le directory all'interno di una cartella.",
+          },
+          "search-files": {
+            title: "Cerca file",
+            description: "Cerca file per nome o contenuto",
+          },
+          "get-file-info": {
+            title: "Ottieni informazioni sul file",
+            description: "Ottenere metadati dettagliati sui file.",
+          },
+          "write-file": {
+            title: "Creare file",
+            description: "Creare nuovi file o sovrascrivere i file esistenti.",
+          },
+          "edit-file": {
+            title: "Modifica file",
+            description: "Applica modifiche basate su righe ai file di testo.",
+          },
+          "create-directory": {
+            title: "Creare una directory",
+            description: "Creare nuove directory",
+          },
+          "move-file": {
+            title: "Sposta/Rinomina file",
+            description: "Spostare o rinominare file e directory.",
+          },
+          "copy-file": {
+            title: "Copia file",
+            description: "Copia file e directory",
+          },
+        },
+      },
     },
     mcp: {
       title: "Server MCP",
