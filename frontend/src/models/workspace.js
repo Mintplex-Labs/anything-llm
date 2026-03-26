@@ -569,6 +569,27 @@ const Workspace = {
     return response;
   },
 
+  /**
+   * Checks if the agent command is available for a workspace
+   * by checking if the workspace's agent provider supports native tool calling.
+   *
+   * This can be model specific or enabled via ENV flag.
+   * @param {string} slug - workspace slug
+   * @returns {Promise<{showAgentCommand: boolean}>}
+   */
+  agentCommandAvailable: async function (slug = null) {
+    if (!slug) return { showAgentCommand: true };
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/is-agent-command-available`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { showAgentCommand: true };
+      });
+  },
+
   threads: WorkspaceThread,
 };
 

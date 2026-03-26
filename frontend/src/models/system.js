@@ -833,6 +833,21 @@ const System = {
       });
   },
 
+  /**
+   * Checks if the filesystem-agent skill is available.
+   * The filesystem-agent skill is only available when running in a Docker container.
+   * @returns {Promise<boolean>}
+   */
+  isFileSystemAgentAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/filesystem-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,

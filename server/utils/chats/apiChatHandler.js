@@ -100,7 +100,7 @@ async function processDocumentAttachments(attachments = []) {
  * @param {{
  *  workspace: import("@prisma/client").workspaces,
  *  message:string,
- *  mode: "chat"|"query",
+ *  mode: "automatic"|"chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
@@ -150,7 +150,13 @@ async function chatSync({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    await EphemeralAgentHandler.isAgentInvocation({
+      message,
+      workspace,
+      chatMode,
+    })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -162,6 +168,7 @@ async function chatSync({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -439,7 +446,7 @@ async function chatSync({
  * response: import("express").Response,
  *  workspace: import("@prisma/client").workspaces,
  *  message:string,
- *  mode: "chat"|"query",
+ *  mode: "automatic"|"chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
@@ -492,7 +499,13 @@ async function streamChat({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    await EphemeralAgentHandler.isAgentInvocation({
+      message,
+      workspace,
+      chatMode,
+    })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -504,6 +517,7 @@ async function streamChat({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls

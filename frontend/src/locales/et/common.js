@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Tere tulemast",
       getStarted: "Alusta",
+      welcome: "Tere tulemast",
     },
     llm: {
       title: "LLM-i eelistus",
@@ -51,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
     save: "Salvesta muudatused",
@@ -63,6 +63,11 @@ const TRANSLATIONS = {
     search: "otsing",
     username_requirements:
       "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
+    on: "On",
+    none: "Ei",
+    stopped: "Peatas",
+    loading: "Laadimine",
+    refresh: "Värskendada",
   },
   settings: {
     title: "Instantsi seaded",
@@ -99,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Avasta populaarseid",
       "your-account": "Teie konto",
       "import-item": "Importeeritud toode",
+    },
+    channels: "Kaasavad",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -181,15 +190,18 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        "desc-start": "annab vastuseid LLM-i üldteadmistest",
-        and: "ja",
-        "desc-end": "leitud dokumendikontekstist.",
+        description:
+          "teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumenti konteksti, mis on leitav.<br /> Selleks peate kasutama @agent käsku, et kasutada erinevaid tööriime.",
       },
       query: {
         title: "Päring",
-        "desc-start": "annab vastuseid",
-        only: "ainult",
-        "desc-end": "kui leitakse dokumendikontekst.",
+        description:
+          'teenib vastuseid <b> ainult__, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
+      },
+      automatic: {
+        title: "Automaailm",
+        description:
+          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native töörieste kasutamist. <br />Kui native töörieste kasutamine ei toeta, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -312,6 +324,99 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+      filesystem: {
+        title: "Failisüsteemi juurdepääs",
+        description:
+          "Lisage oma agentile võimalus lugeda, kirjutada, otsida ja hallata faili, mis asub kindlalt määratud kaustas. Toetab failide redakteerimist, kaustade navigeerimist ja sisu otsimist.",
+        learnMore: "Lisateabe saamiseks, kuidas seda oskust kasutada",
+        configuration: "Konfiguratsioon",
+        readActions: "Leia toimingud",
+        writeActions: "Toimingud",
+        warning:
+          "Failisüsteemi juurimine võib olla ohtlik, kuna see võib muuta või kustutada faile. Enne selle aktiveerimist, palun vaadake <link>dokumentatsiooni</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Ava fail",
+            description:
+              "Leia failide sisu (tekst, kood, PDF-failid, pildid jne)",
+          },
+          "read-multiple-files": {
+            title: "Lugege mitut faili",
+            description: "Lugege mitut faili üheaegselt",
+          },
+          "list-directory": {
+            title: "Loend",
+            description: "Looge failide ja kaustade loend ühes kaustas",
+          },
+          "search-files": {
+            title: "Failide otsimine",
+            description: "Leidke failid nime või sisu järgi",
+          },
+          "get-file-info": {
+            title: "Hankige faili teave",
+            description: "Hankige üksikasjalik teavet failide kohta",
+          },
+          "write-file": {
+            title: "Faili loomine",
+            description: "Loo uusi faili või asenda olemasoleva faili",
+          },
+          "edit-file": {
+            title: "Faili redigeerimine",
+            description: "Muuda teksti failide sisu rida- järgselt.",
+          },
+          "create-directory": {
+            title: "Loo kaust",
+            description: "Loo uusi kahteid",
+          },
+          "move-file": {
+            title: "Faili liiguta/nime muuda",
+            description: "Liigu või nime muuta failid ja kaardid",
+          },
+          "copy-file": {
+            title: "Kopeeri fail",
+            description: "Kopeeri failid ja kaardi",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP-serverid",
+      "loading-from-config": "MCP-serverid laaditakse konfiguraadifailist",
+      "learn-more": "Lisateabe saamiseks tutvuge MCP-serveridega.",
+      "no-servers-found": "MCP-servereid ei leitud.",
+      "tool-warning":
+        "Parima tulemuse saavutamiseks, võtke kaalutluseks, et välja lülitada tarbetud vahendid, et säilitada kontekst.",
+      "stop-server": "Lülitage MCP-server välja",
+      "start-server": "Alusta MCP-serverit",
+      "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
+      "tool-count-warning":
+        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+      "startup-command": "Alustamine",
+      command: "Juhendamine",
+      arguments: "Argumentid",
+      "not-running-warning":
+        "See MCP-server ei tööta – see võib olla peatatud või alguses võib tekkida viga.",
+      "tool-call-arguments": '"Tooli käivitamise argumentid"',
+      "tools-enabled": "vahendid on lubatud",
+    },
+    settings: {
+      title: "Agenti oskuste seaded",
+      "max-tool-calls": {
+        title: "Maximaalne töö-kõned vastuse kohta",
+        description:
+          "Максимаalne arv, mis agent võib ühendada, et genereerida ühe vastuse. See takistab liigse töö tegevuse ja lõpmatute ringide tekkimist.",
+      },
+      "intelligent-skill-selection": {
+        title: "Nutikad oskuste valiku meetodid",
+        "beta-badge": "Beeta",
+        description:
+          "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
+        },
+      },
     },
   },
   recorded: {
@@ -760,7 +865,6 @@ const TRANSLATIONS = {
     see_less: "Näita vähem",
     see_more: "Vaata rohkem",
     tools: "Vahendid",
-    browse: "Sirva",
     text_size_label: "Teksti suurus",
     select_model: "Valige mudel",
     sources: "Allikasid",
@@ -773,7 +877,6 @@ const TRANSLATIONS = {
     edit: "Redigeerimine",
     publish: "Avaldada",
     stop_generating: "Lõpeta vastuste genereerimine",
-    pause_tts_speech_message: "Peata sõna-sünteesi (TTS) rääkimine sõnumis",
     slash_commands: "Lihtsasti kasutatavad käsud",
     agent_skills: "Agentide oskused",
     manage_agent_skills: "Halda agentide oskusi",
@@ -782,6 +885,14 @@ const TRANSLATIONS = {
     start_agent_session: "Alusta agenti sessiooni",
     use_agent_session_to_use_tools:
       "Saate kasutada vahendeid vestluses, alustades agenti sessiooni, lisades käskile '@agent' sõna.",
+    agent_invocation: {
+      model_wants_to_call: "Mudel soovib helistada",
+      approve: "Heakskiid",
+      reject: "Hüvasti, keelan",
+      always_allow: "Aeg-ajalt lubage {{skillName}}",
+      tool_call_was_approved: "Vahendite tellimuse kinnitati.",
+      tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -928,6 +1039,84 @@ const TRANSLATIONS = {
     notAssigned:
       "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
     goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegrami bot",
+    description:
+      "Ühendage oma AnythingLLM instants Telegramiga, et saaksite vestleda oma tööruumidega igast seadmist.",
+    setup: {
+      step1: {
+        title: "1. samm: Looge oma Telegrami bot",
+        description:
+          "Ava Telegramis konto @BotFather, saat <code>/newbot</code> aadressile <code>@BotFather</code>, järgige juhiseid ja kopeerige API-token.",
+        "open-botfather": "Ava BotFather",
+        "instruction-1": "1. Avage link või skannige QR-kood",
+        "instruction-2":
+          "2. Saada <code>/newbot</code> aadressile <code>@BotFather</code>",
+        "instruction-3": "3. Valige oma botile nimi ja kasutajanimi.",
+        "instruction-4": "4. Kopeerige API-token, mida teile antakse.",
+      },
+      step2: {
+        title: "2. Samuti ühendage oma bot",
+        description:
+          "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
+        "bot-token": "Bot token",
+        "default-workspace": "Vaikimisi kasutatav tööruum",
+        "no-workspace":
+          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
+        connecting: "Ühendamine...",
+        "connect-bot": "Ühendusrobott",
+      },
+      security: {
+        title: "Soovitavad turvameetmed",
+        description:
+          "Lisaks turvalisusele, konfigureerige need seaded @BotFatheris.",
+        "disable-groups": "— Ennetada, et botid ei lisataks gruppi",
+        "disable-inline": "— Vältida, et bot kasutaks otsingut reaalajas.",
+        "obscure-username":
+          "Kasutage mitteolivaid kasutajanime, et vähendada avastamise võimalust.",
+      },
+      "toast-enter-token": "Palun sisestage bot'i token.",
+      "toast-connect-failed": "Bot ei suutnud ühendust tehes.",
+    },
+    connected: {
+      status: "Ühendatud",
+      "status-disconnected":
+        "Vabandus, toet – toet võib olla kehtimatuna või kehtima lõppenud",
+      "placeholder-token": "Sisestage uus bot'i token...",
+      reconnect: "Taastada ühendus",
+      workspace: "Tööruum",
+      "bot-link": "Bot link",
+      "voice-response": "Häälreaktsioon",
+      disconnecting: "Ühendus katkestatud...",
+      disconnect: "Ühenduse katkestamine",
+      "voice-text-only": "Tekst ainult",
+      "voice-mirror":
+        "Helisüsteem (vastake häältega, kui kasutaja kasutab helifunktsiooni)",
+      "voice-always": "Alati lisage hääl (saada helifail koos iga vastusega)",
+      "toast-disconnect-failed": "Impeer ei õnnestunud seadistada.",
+      "toast-reconnect-failed": "Bot ei suutnud ühendust taastada.",
+      "toast-voice-failed": "Ärkimõõtmeid ei õnnestunud uuendada.",
+      "toast-approve-failed": "Kasutaja kinnitamise ebaõnnestumine.",
+      "toast-deny-failed": "Ei suutnud kasutaja kohta infot väita.",
+      "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
+    },
+    users: {
+      "pending-title": "Ootea faasis, ootamas heakskiitu",
+      "pending-description":
+        "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
+      "approved-title": "Heakskiidud kasutajad",
+      "approved-description":
+        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
+      user: "Kasutaja",
+      "pairing-code": "Koosamis kood",
+      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
+      "no-approved": "Pole heakskiidud kasutajaid",
+      unknown: "Tuntud pole",
+      approve: "Heakskiid",
+      deny: "Nõgata",
+      revoke: "Tingimata",
+    },
   },
 };
 
