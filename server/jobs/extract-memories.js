@@ -68,11 +68,7 @@ function parseMemoriesResponse(text) {
       return;
     }
 
-    const lastChat = await WorkspaceChats.get(
-      {},
-      null,
-      { createdAt: "desc" }
-    );
+    const lastChat = await WorkspaceChats.get({}, null, { createdAt: "desc" });
     if (lastChat) {
       const msSinceLastChat =
         Date.now() - new Date(lastChat.createdAt).getTime();
