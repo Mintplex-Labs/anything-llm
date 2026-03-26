@@ -52,7 +52,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
       currentWorkspace.documents.map((doc) => doc.docpath) || [];
 
     // Documents that are not in the workspace
-    const availableDocs = {
+    const filteredAvailableDocs = {
       ...localFiles,
       items: localFiles.items.map((folder) => {
         if (folder.items && folder.type === "folder") {
@@ -71,7 +71,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     };
 
     // Documents that are already in the workspace
-    const workspaceDocs = {
+    const filteredWorkspaceDocs = {
       ...localFiles,
       items: localFiles.items.map((folder) => {
         if (folder.items && folder.type === "folder") {
@@ -89,12 +89,12 @@ export default function DocumentSettings({ workspace, systemSettings }) {
       }),
     };
 
-    setAvailableDocs(availableDocs);
-    setWorkspaceDocs(workspaceDocs);
+    setAvailableDocs(filteredAvailableDocs);
+    setWorkspaceDocs(filteredWorkspaceDocs);
 
     if (autoSelectNew) {
       const newSelected = {};
-      for (const folder of availableDocs.items ?? []) {
+      for (const folder of filteredAvailableDocs.items ?? []) {
         for (const file of folder.items ?? []) {
           if (file?.id && !previousIds.has(file.id)) {
             newSelected[file.id] = true;
@@ -102,7 +102,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
         }
       }
       if (Object.keys(newSelected).length > 0) {
-        setSelectedItems(newSelected);
+        setSelectedItems((prev) => ({ ...prev, ...newSelected }));
       }
     }
 
