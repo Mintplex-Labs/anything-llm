@@ -38,6 +38,7 @@ const SystemSettings = {
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "memory_enabled",
   ],
   supportedFields: [
     "logo_filename",

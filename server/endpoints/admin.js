@@ -421,6 +421,9 @@ function adminEndpoints(app) {
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
               break;
+            case "memory_enabled":
+              requestedSettings[label] = setting?.value || "off";
+              break;
             default:
               break;
           }

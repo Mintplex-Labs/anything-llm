@@ -6,8 +6,65 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 
+function ownerMatch(memory, user) {
+  const memUserId = memory.userId ?? null;
+  const reqUserId = user?.id ?? null;
+  return memUserId === reqUserId;
+}
+
 function memoryEndpoints(app) {
   if (!app) return;
+
+  // Static routes must be registered before parameterized routes
+  // so Express doesn't match "clear" or "run-extraction" as :memoryId/:workspaceId.
+
+  app.delete(
+    "/memories/clear/all",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        await Memory.deleteAllForUser(user?.id);
+        response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/memories/run-extraction",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index");
+        const bg = new BackgroundService();
+        await bg.runJob("extract-memories");
+        response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
+  app.get(
+    "/memories/all",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const memories = await Memory.forUser(user?.id ?? null);
+        response.status(200).json({ memories });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/memories/:workspaceId",
@@ -80,7 +137,7 @@ function memoryEndpoints(app) {
         }
 
         const existing = await Memory.get({ id: memoryId });
-        if (!existing || existing.userId !== user?.id) {
+        if (!existing || !ownerMatch(existing, user)) {
           response.status(404).json({ error: "Memory not found." });
           return;
         }
@@ -111,7 +168,7 @@ function memoryEndpoints(app) {
         const memoryId = Number(request.params.memoryId);
 
         const existing = await Memory.get({ id: memoryId });
-        if (!existing || existing.userId !== user?.id) {
+        if (!existing || !ownerMatch(existing, user)) {
           response.status(404).json({ error: "Memory not found." });
           return;
         }
@@ -134,7 +191,7 @@ function memoryEndpoints(app) {
         const memoryId = Number(request.params.memoryId);
 
         const existing = await Memory.get({ id: memoryId });
-        if (!existing || existing.userId !== user?.id) {
+        if (!existing || !ownerMatch(existing, user)) {
           response.status(404).json({ error: "Memory not found." });
           return;
         }
@@ -146,21 +203,6 @@ function memoryEndpoints(app) {
         }
 
         response.status(200).json({ memory });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.delete(
-    "/memories/clear/all",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        await Memory.deleteAllForUser(user?.id);
-        response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

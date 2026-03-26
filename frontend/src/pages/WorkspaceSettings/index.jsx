@@ -11,6 +11,7 @@ import {
   Database,
   Robot,
   User,
+  UserFocus,
   Wrench,
 } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
@@ -21,9 +22,11 @@ import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
+import Personalization from "./Personalization";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
+import Admin from "@/models/admin";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -31,6 +34,7 @@ const TABS = {
   "vector-database": VectorDatabase,
   members: Members,
   "agent-config": WorkspaceAgentConfiguration,
+  personalization: Personalization,
 };
 
 export default function WorkspaceSettings() {
@@ -50,6 +54,7 @@ function ShowWorkspaceChat() {
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [memoryEnabled, setMemoryEnabled] = useState(false);
 
   useEffect(() => {
     async function getWorkspace() {
@@ -67,6 +72,12 @@ function ShowWorkspaceChat() {
         vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
+
+      const { settings } = await Admin.systemPreferencesByFields([
+        "memory_enabled",
+      ]);
+      setMemoryEnabled(settings?.memory_enabled === "on");
+
       setLoading(false);
     }
     getWorkspace();
@@ -114,6 +125,12 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
+          />
+          <TabItem
+            title="Personalization"
+            icon={<UserFocus className="h-6 w-6" />}
+            to={paths.workspace.settings.personalization(slug)}
+            visible={memoryEnabled}
           />
         </div>
         <div className="px-16 py-6">

@@ -9,6 +9,7 @@ const {
   recentChatHistory,
   grepAllSlashCommands,
 } = require("./index");
+const { getMemoriesForPrompt } = require("../memories");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -383,9 +384,18 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const systemPrompt = await chatPrompt(workspace, user);
+  const memoriesContext = await getMemoriesForPrompt(
+    user?.id ?? null,
+    workspace.id,
+    message,
+    rawHistory
+  );
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt: memoriesContext
+        ? `${systemPrompt}\n\n${memoriesContext}`
+        : systemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -743,9 +753,18 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  const streamSystemPrompt = await chatPrompt(workspace, user);
+  const streamMemoriesContext = await getMemoriesForPrompt(
+    user?.id ?? null,
+    workspace.id,
+    message,
+    rawHistory
+  );
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt: streamMemoriesContext
+        ? `${streamSystemPrompt}\n\n${streamMemoriesContext}`
+        : streamSystemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,
