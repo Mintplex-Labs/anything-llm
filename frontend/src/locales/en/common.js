@@ -370,9 +370,10 @@ const TRANSLATIONS = {
             title: "Get File Info",
             description: "Get detailed metadata about files",
           },
-          "write-file": {
-            title: "Write File",
-            description: "Create new files or overwrite existing files",
+          "write-text-file": {
+            title: "Write Text File",
+            description:
+              "Create new text files or overwrite existing text files",
           },
           "edit-file": {
             title: "Edit File",
@@ -389,6 +390,28 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Move/Rename File",
             description: "Move or rename files and directories",
+          },
+        },
+      },
+      createFiles: {
+        title: "Document Creation",
+        description:
+          "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
+        configuration: "Enabled Document Types",
+        info: "Create professional documents directly from your conversations. The agent can generate presentations, spreadsheets, and more.",
+        pptxActions: "PowerPoint (PPTX)",
+        textActions: "Text Files",
+        comingSoon: "Coming Soon",
+        skills: {
+          "create-pptx": {
+            title: "Create Presentation",
+            description:
+              "Create new PowerPoint presentations with slides, titles, and bullet points",
+          },
+          "create-text-file": {
+            title: "Create Text File",
+            description:
+              "Create text files with any content and extension (.txt, .md, .json, .csv, etc.)",
           },
         },
       },

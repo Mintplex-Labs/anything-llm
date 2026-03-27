@@ -60,10 +60,13 @@ export default function AdminAgents() {
 
   const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
     useState(false);
+  const [createFilesAgentAvailable, setCreateFilesAgentAvailable] =
+    useState(false);
 
   const defaultSkills = getDefaultSkills(t);
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
+    createFilesAgentAvailable,
   });
 
   // Alert user if they try to leave the page with unsaved changes
@@ -82,18 +85,24 @@ export default function AdminAgents() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const [_settings, _preferences, flowsRes, fsAgentAvailable] =
-        await Promise.all([
-          System.keys(),
-          Admin.systemPreferencesByFields([
-            "disabled_agent_skills",
-            "default_agent_skills",
-            "imported_agent_skills",
-            "active_agent_flows",
-          ]),
-          AgentFlows.listFlows(),
-          System.isFileSystemAgentAvailable(),
-        ]);
+      const [
+        _settings,
+        _preferences,
+        flowsRes,
+        fsAgentAvailable,
+        createFilesAvailable,
+      ] = await Promise.all([
+        System.keys(),
+        Admin.systemPreferencesByFields([
+          "disabled_agent_skills",
+          "default_agent_skills",
+          "imported_agent_skills",
+          "active_agent_flows",
+        ]),
+        AgentFlows.listFlows(),
+        System.isFileSystemAgentAvailable(),
+        System.isCreateFilesAgentAvailable(),
+      ]);
 
       const { flows = [] } = flowsRes;
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
@@ -105,6 +114,7 @@ export default function AdminAgents() {
       setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
+      setCreateFilesAgentAvailable(createFilesAvailable);
       setLoading(false);
     }
     fetchSettings();
