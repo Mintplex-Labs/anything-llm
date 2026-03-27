@@ -397,37 +397,31 @@ const TRANSLATIONS = {
         title: "Document Creation",
         description:
           "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
-        configuration: "Enabled Document Types",
+        configuration: "Available Document Types",
         info: "Create professional documents directly from your conversations. The agent can generate presentations, spreadsheets, and more.",
-        pptxActions: "PowerPoint (PPTX)",
-        pdfActions: "PDF Documents",
-        textActions: "Text Files",
-        xlsxActions: "Excel Spreadsheets (XLSX)",
-        docxActions: "Word Documents (DOCX)",
-        comingSoon: "Coming Soon",
         skills: {
-          "create-pptx": {
-            title: "Create Presentation",
-            description:
-              "Create new PowerPoint presentations with slides, titles, and bullet points",
-          },
           "create-text-file": {
-            title: "Create Text File",
+            title: "Text Files",
             description:
               "Create text files with any content and extension (.txt, .md, .json, .csv, etc.)",
           },
+          "create-pptx": {
+            title: "PowerPoint Presentations",
+            description:
+              "Create new PowerPoint presentations with slides, titles, and bullet points",
+          },
           "create-pdf": {
-            title: "Create PDF Document",
+            title: "PDF Documents",
             description:
               "Create PDF documents from markdown or plain text with basic styling",
           },
           "create-xlsx": {
-            title: "Create Excel Spreadsheet",
+            title: "Excel Spreadsheets",
             description:
               "Create Excel documents for tabular data with sheets and styling",
           },
           "create-docx": {
-            title: "Create Word Document",
+            title: "Word Documents",
             description:
               "Create Word documents with basic styling and formatting",
           },

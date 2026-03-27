@@ -11,47 +11,40 @@ import {
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 
-const getCreateFileSubSkills = (t) => {
-  return [
-    {
-      name: "create-text-file",
-      title: t("agent.skill.createFiles.skills.create-text-file.title"),
-      description: t(
-        "agent.skill.createFiles.skills.create-text-file.description"
-      ),
-      icon: FileText,
-      category: "text",
-    },
-    {
-      name: "create-pptx-presentation",
-      title: t("agent.skill.createFiles.skills.create-pptx.title"),
-      description: t("agent.skill.createFiles.skills.create-pptx.description"),
-      icon: FilePpt,
-      category: "pptx",
-    },
-    {
-      name: "create-pdf-file",
-      title: t("agent.skill.createFiles.skills.create-pdf.title"),
-      description: t("agent.skill.createFiles.skills.create-pdf.description"),
-      icon: FilePdf,
-      category: "pdf",
-    },
-    {
-      name: "create-excel-file",
-      title: t("agent.skill.createFiles.skills.create-xlsx.title"),
-      description: t("agent.skill.createFiles.skills.create-xlsx.description"),
-      icon: FileXls,
-      category: "xlsx",
-    },
-    {
-      name: "create-docx-file",
-      title: t("agent.skill.createFiles.skills.create-docx.title"),
-      description: t("agent.skill.createFiles.skills.create-docx.description"),
-      icon: FileDoc,
-      category: "docx",
-    },
-  ];
-};
+const getCreateFileSkills = (t) => [
+  {
+    name: "create-text-file",
+    title: t("agent.skill.createFiles.skills.create-text-file.title"),
+    description: t(
+      "agent.skill.createFiles.skills.create-text-file.description"
+    ),
+    icon: FileText,
+  },
+  {
+    name: "create-pptx-presentation",
+    title: t("agent.skill.createFiles.skills.create-pptx.title"),
+    description: t("agent.skill.createFiles.skills.create-pptx.description"),
+    icon: FilePpt,
+  },
+  {
+    name: "create-pdf-file",
+    title: t("agent.skill.createFiles.skills.create-pdf.title"),
+    description: t("agent.skill.createFiles.skills.create-pdf.description"),
+    icon: FilePdf,
+  },
+  {
+    name: "create-excel-file",
+    title: t("agent.skill.createFiles.skills.create-xlsx.title"),
+    description: t("agent.skill.createFiles.skills.create-xlsx.description"),
+    icon: FileXls,
+  },
+  {
+    name: "create-docx-file",
+    title: t("agent.skill.createFiles.skills.create-docx.title"),
+    description: t("agent.skill.createFiles.skills.create-docx.description"),
+    icon: FileDoc,
+  },
+];
 
 export default function CreateFileSkillPanel({
   title,
@@ -65,18 +58,18 @@ export default function CreateFileSkillPanel({
   hasChanges = false,
 }) {
   const { t } = useTranslation();
-  const [disabledSubSkills, setDisabledSubSkills] = useState([]);
+  const [disabledSkills, setDisabledSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const prevHasChanges = useRef(hasChanges);
-  const CREATE_FILE_SUB_SKILLS = getCreateFileSubSkills(t);
+  const skills = getCreateFileSkills(t);
 
   useEffect(() => {
     setLoading(true);
     Admin.systemPreferencesByFields(["disabled_create_files_skills"])
       .then((res) =>
-        setDisabledSubSkills(res?.settings?.disabled_create_files_skills ?? [])
+        setDisabledSkills(res?.settings?.disabled_create_files_skills ?? [])
       )
-      .catch(() => setDisabledSubSkills([]))
+      .catch(() => setDisabledSkills([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -84,38 +77,21 @@ export default function CreateFileSkillPanel({
     if (prevHasChanges.current === true && hasChanges === false) {
       Admin.systemPreferencesByFields(["disabled_create_files_skills"])
         .then((res) =>
-          setDisabledSubSkills(
-            res?.settings?.disabled_create_files_skills ?? []
-          )
+          setDisabledSkills(res?.settings?.disabled_create_files_skills ?? [])
         )
         .catch(() => {});
     }
     prevHasChanges.current = hasChanges;
   }, [hasChanges]);
 
-  function toggleSubSkill(subSkillName) {
+  function toggleFileSkill(skillName) {
     setHasChanges(true);
-    setDisabledSubSkills((prev) => {
-      if (prev.includes(subSkillName)) {
-        return prev.filter((s) => s !== subSkillName);
-      }
-      return [...prev, subSkillName];
-    });
+    setDisabledSkills((prev) =>
+      prev.includes(skillName)
+        ? prev.filter((s) => s !== skillName)
+        : [...prev, skillName]
+    );
   }
-
-  const pptxSkills = CREATE_FILE_SUB_SKILLS.filter(
-    (s) => s.category === "pptx"
-  );
-  const textSkills = CREATE_FILE_SUB_SKILLS.filter(
-    (s) => s.category === "text"
-  );
-  const pdfSkills = CREATE_FILE_SUB_SKILLS.filter((s) => s.category === "pdf");
-  const xlsxSkills = CREATE_FILE_SUB_SKILLS.filter(
-    (s) => s.category === "xlsx"
-  );
-  const docxSkills = CREATE_FILE_SUB_SKILLS.filter(
-    (s) => s.category === "docx"
-  );
 
   return (
     <div className="p-2">
@@ -144,25 +120,21 @@ export default function CreateFileSkillPanel({
         </div>
 
         <img src={image} alt={title} className="w-full rounded-md" />
-        <div className="flex flex-col gap-y-1">
-          <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
-            {t("agent.skill.createFiles.description")}
-          </p>
-        </div>
+        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
+          {t("agent.skill.createFiles.description")}
+        </p>
 
         {enabled && (
           <>
             <input
               name="system::disabled_create_files_skills"
               type="hidden"
-              value={disabledSubSkills.join(",")}
+              value={disabledSkills.join(",")}
             />
-            <div className="flex flex-col mt-2 gap-y-4">
-              <div className="flex justify-between items-center">
-                <p className="text-theme-text-primary font-semibold text-sm">
-                  {t("agent.skill.createFiles.configuration")}
-                </p>
-              </div>
+            <div className="flex flex-col mt-2 gap-y-2">
+              <p className="text-theme-text-primary font-semibold text-sm">
+                {t("agent.skill.createFiles.configuration")}
+              </p>
               {loading ? (
                 <div className="flex items-center justify-center py-4">
                   <CircleNotch
@@ -171,92 +143,16 @@ export default function CreateFileSkillPanel({
                   />
                 </div>
               ) : (
-                <>
-                  <div className="flex flex-col gap-y-2">
-                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      <FileText size={12} weight="fill" />
-                      {t("agent.skill.createFiles.textActions")}
-                    </p>
-                    <div className="flex flex-col gap-y-1">
-                      {textSkills.map((subSkill) => (
-                        <SubSkillRow
-                          key={subSkill.name}
-                          subSkill={subSkill}
-                          disabled={disabledSubSkills.includes(subSkill.name)}
-                          onToggle={() => toggleSubSkill(subSkill.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      <FilePpt size={12} weight="fill" />
-                      {t("agent.skill.createFiles.pptxActions")}
-                    </p>
-                    <div className="flex flex-col gap-y-1">
-                      {pptxSkills.map((subSkill) => (
-                        <SubSkillRow
-                          key={subSkill.name}
-                          subSkill={subSkill}
-                          disabled={disabledSubSkills.includes(subSkill.name)}
-                          onToggle={() => toggleSubSkill(subSkill.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      <FilePdf size={12} weight="fill" />
-                      {t("agent.skill.createFiles.pdfActions")}
-                    </p>
-                    <div className="flex flex-col gap-y-1">
-                      {pdfSkills.map((subSkill) => (
-                        <SubSkillRow
-                          key={subSkill.name}
-                          subSkill={subSkill}
-                          disabled={disabledSubSkills.includes(subSkill.name)}
-                          onToggle={() => toggleSubSkill(subSkill.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      <FileXls size={12} weight="fill" />
-                      {t("agent.skill.createFiles.xlsxActions")}
-                    </p>
-                    <div className="flex flex-col gap-y-1">
-                      {xlsxSkills.map((subSkill) => (
-                        <SubSkillRow
-                          key={subSkill.name}
-                          subSkill={subSkill}
-                          disabled={disabledSubSkills.includes(subSkill.name)}
-                          onToggle={() => toggleSubSkill(subSkill.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
-                      <FileDoc size={12} weight="fill" />
-                      {t("agent.skill.createFiles.docxActions")}
-                    </p>
-                    <div className="flex flex-col gap-y-1">
-                      {docxSkills.map((subSkill) => (
-                        <SubSkillRow
-                          key={subSkill.name}
-                          subSkill={subSkill}
-                          disabled={disabledSubSkills.includes(subSkill.name)}
-                          onToggle={() => toggleSubSkill(subSkill.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </>
+                <div className="flex flex-col gap-y-2">
+                  {skills.map((fileSkill) => (
+                    <SkillRow
+                      key={fileSkill.name}
+                      skill={fileSkill}
+                      disabled={disabledSkills.includes(fileSkill.name)}
+                      onToggle={() => toggleFileSkill(fileSkill.name)}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </>
@@ -266,8 +162,8 @@ export default function CreateFileSkillPanel({
   );
 }
 
-function SubSkillRow({ subSkill, disabled, onToggle }) {
-  const Icon = subSkill.icon;
+function SkillRow({ skill, disabled, onToggle }) {
+  const Icon = skill.icon;
   return (
     <div
       className={`flex items-center justify-between p-2 rounded-lg border ${
@@ -277,14 +173,12 @@ function SubSkillRow({ subSkill, disabled, onToggle }) {
       }`}
     >
       <div className="flex items-center gap-x-2">
-        <Icon size={16} className="text-slate-100" weight="bold" />
+        <Icon size={22} className="text-slate-100 shrink-0" />
         <div className="flex flex-col">
           <span className="text-sm font-medium text-slate-100">
-            {subSkill.title}
+            {skill.title}
           </span>
-          <span className="text-xs text-slate-100/50">
-            {subSkill.description}
-          </span>
+          <span className="text-xs text-slate-100/50">{skill.description}</span>
         </div>
       </div>
       <SimpleToggleSwitch enabled={!disabled} onChange={onToggle} size="md" />
