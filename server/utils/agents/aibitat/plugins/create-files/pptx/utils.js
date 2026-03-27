@@ -1,5 +1,4 @@
-const fs = require("fs");
-const path = require("path");
+const createFilesLib = require("../lib.js");
 
 /**
  * Renders a "topbar" layout — thin accent bar across the top of the slide.
@@ -121,25 +120,6 @@ const LAYOUT_RENDERERS = {
   card: renderCardLayout,
 };
 
-const ASSETS_PATH = path.join(__dirname, "../../../../../../storage/assets");
-
-/**
- * Reads and returns the appropriate logo as a data URI.
- * @param {boolean} forDarkBackground - True to get light logo (for dark backgrounds)
- * @returns {string|null} Data URI with base64-encoded PNG, or null if file not found
- */
-function getLogo(forDarkBackground) {
-  const filename = forDarkBackground
-    ? "anything-llm.png"
-    : "anything-llm-invert.png";
-  try {
-    const base64 = fs.readFileSync(path.join(ASSETS_PATH, filename), "base64");
-    return `image/png;base64,${base64}`;
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Determines if a hex color is "dark" (should use light text/logo).
  * @param {string} hexColor - Hex color without # (e.g., "1A1A2E")
@@ -162,9 +142,12 @@ function addBranding(slide, theme) {
   const bgColor = theme.background || "FFFFFF";
   const isDark = isDarkColor(bgColor);
   const textColor = isDark ? "FFFFFF" : "000000";
-  const logo = getLogo(isDark);
+  const logo = createFilesLib.getLogo({
+    forDarkBackground: isDark,
+    format: "dataUri",
+  });
 
-  slide.addText("created with", {
+  slide.addText("Created with", {
     x: 8.2,
     y: 4.95,
     w: 1.5,
@@ -235,7 +218,6 @@ module.exports = {
   renderSidebarLayout,
   renderUnderlineLayout,
   renderCardLayout,
-  getLogo,
   isDarkColor,
   addBranding,
   addBulletContent,
