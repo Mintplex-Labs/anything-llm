@@ -14,6 +14,7 @@ const {
   MAX_MSG_LEN,
   CURSOR_CHAR,
 } = require("../constants");
+const createFilesLib = require("../../agents/aibitat/plugins/create-files/lib");
 
 const THOUGHT_FLUSH_INTERVAL_MS = 1500;
 
@@ -129,6 +130,9 @@ async function handleAgentResponse(
           return;
         case "rechartVisualize":
           if (parsed.content) charts.push(parsed.content);
+          return;
+        case "fileDownloadCard":
+          if (parsed.content) _files.push(parsed.content);
           return;
         case "reportStreamEvent":
           const inner = parsed.content;
@@ -274,22 +278,37 @@ async function handleAgentResponse(
   }
 
   // Send files as Telegram documents
-  // Currently not supported but will be soon.
-  // for (const file of files) {
-  //   try {
-  //     const base64Data = file.b64Content.split(",")[1];
-  //     const buffer = Buffer.from(base64Data, "base64");
-  //     await ctx.bot.sendDocument(
-  //       chatId,
-  //       buffer,
-  //       {},
-  //       {
-  //         filename: file.filename,
-  //         contentType: "application/octet-stream",
-  //       }
-  //     );
-  //   } catch {}
-  // }
+  for (const file of _files) {
+    try {
+      const result = await createFilesLib.getGeneratedFile(
+        file.storageFilename
+      );
+      if (!result?.buffer) {
+        ctx.log?.warn?.(
+          `Could not retrieve generated file: ${file.storageFilename}`
+        );
+        continue;
+      }
+
+      const extension = file.storageFilename.split(".").pop() || "";
+      const mimeType = createFilesLib.getMimeType(extension);
+
+      await ctx.bot.sendDocument(
+        chatId,
+        result.buffer,
+        { caption: file.filename },
+        {
+          filename: file.filename,
+          contentType: mimeType,
+        }
+      );
+    } catch (err) {
+      ctx.log?.error?.(
+        `Failed to send document ${file.filename}:`,
+        err.message
+      );
+    }
+  }
 
   // Ensure the initial sendMessage has resolved before deciding how to deliver
   if (responsePending) await responsePending;
