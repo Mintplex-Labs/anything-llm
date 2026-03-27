@@ -402,6 +402,7 @@ const TRANSLATIONS = {
         pptxActions: "PowerPoint (PPTX)",
         pdfActions: "PDF Documents",
         textActions: "Text Files",
+        xlsxActions: "Excel Spreadsheets (XLSX)",
         comingSoon: "Coming Soon",
         skills: {
           "create-pptx": {
@@ -418,6 +419,11 @@ const TRANSLATIONS = {
             title: "Create PDF Document",
             description:
               "Create PDF documents from markdown or plain text with basic styling",
+          },
+          "create-xlsx": {
+            title: "Create Excel Spreadsheet",
+            description:
+              "Create Excel documents for tabular data with sheets and styling",
           },
         },
       },

@@ -36,6 +36,13 @@ const getCreateFileSubSkills = (t) => {
       icon: FilePdf,
       category: "pdf",
     },
+    {
+      name: "create-excel-file",
+      title: t("agent.skill.createFiles.skills.create-xlsx.title"),
+      description: t("agent.skill.createFiles.skills.create-xlsx.description"),
+      icon: FileXls,
+      category: "xlsx",
+    },
   ];
 };
 
@@ -96,6 +103,9 @@ export default function CreateFileSkillPanel({
     (s) => s.category === "text"
   );
   const pdfSkills = CREATE_FILE_SUB_SKILLS.filter((s) => s.category === "pdf");
+  const xlsxSkills = CREATE_FILE_SUB_SKILLS.filter(
+    (s) => s.category === "xlsx"
+  );
 
   return (
     <div className="p-2">
@@ -202,6 +212,23 @@ export default function CreateFileSkillPanel({
                       ))}
                     </div>
                   </div>
+
+                  <div className="flex flex-col gap-y-2">
+                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
+                      <FileXls size={12} weight="fill" />
+                      {t("agent.skill.createFiles.xlsxActions")}
+                    </p>
+                    <div className="flex flex-col gap-y-1">
+                      {xlsxSkills.map((subSkill) => (
+                        <SubSkillRow
+                          key={subSkill.name}
+                          subSkill={subSkill}
+                          disabled={disabledSubSkills.includes(subSkill.name)}
+                          onToggle={() => toggleSubSkill(subSkill.name)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                   <ComingSoonSection />
                 </>
               )}
@@ -221,7 +248,6 @@ function ComingSoonSection() {
         {t("agent.skill.createFiles.comingSoon")}
       </p>
       <div className="flex flex-wrap gap-2">
-        <ComingSoonBadge icon={FileXls} label="XLSX" />
         <ComingSoonBadge icon={FileDoc} label="DOCX" />
       </div>
     </div>
@@ -248,24 +274,12 @@ function SubSkillRow({ subSkill, disabled, onToggle }) {
       }`}
     >
       <div className="flex items-center gap-x-2">
-        <Icon
-          size={16}
-          className={
-            disabled
-              ? "text-theme-text-secondary/50"
-              : "text-theme-text-primary"
-          }
-          weight="bold"
-        />
+        <Icon size={16} className="text-slate-100" weight="bold" />
         <div className="flex flex-col">
-          <span
-            className={`text-sm font-medium ${disabled ? "text-theme-text-secondary/50" : "text-theme-text-primary"}`}
-          >
+          <span className="text-sm font-medium text-slate-100">
             {subSkill.title}
           </span>
-          <span
-            className={`text-xs ${disabled ? "text-theme-text-secondary/40" : "text-theme-text-secondary"}`}
-          >
+          <span className="text-xs text-slate-100/50">
             {subSkill.description}
           </span>
         </div>

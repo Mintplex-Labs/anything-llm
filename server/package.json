@@ -57,6 +57,7 @@
     "diff": "7.0.0",
     "dotenv": "^16.0.3",
     "elevenlabs": "^0.5.0",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
     "extract-json-from-string": "^1.0.1",
     "fast-levenshtein": "^3.0.0",
