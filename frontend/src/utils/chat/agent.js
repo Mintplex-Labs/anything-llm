@@ -159,6 +159,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         }
 
         if (type === "textResponseChunk") {
+          console.log("textResponseChunk", data.content);
           return prev
             .map((msg) =>
               msg.uuid === uuid
