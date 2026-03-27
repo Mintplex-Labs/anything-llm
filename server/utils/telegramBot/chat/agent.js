@@ -42,7 +42,7 @@ async function handleAgentResponse(
   const sources = [];
   const thoughts = [];
   const charts = [];
-  const files = [];
+  const _files = [];
   let thoughtMsgId = null;
   let lastThoughtText = "";
 
@@ -129,9 +129,6 @@ async function handleAgentResponse(
           return;
         case "rechartVisualize":
           if (parsed.content) charts.push(parsed.content);
-          return;
-        case "fileDownload":
-          if (parsed.content) files.push(parsed.content);
           return;
         case "reportStreamEvent":
           const inner = parsed.content;
@@ -277,21 +274,22 @@ async function handleAgentResponse(
   }
 
   // Send files as Telegram documents
-  for (const file of files) {
-    try {
-      const base64Data = file.b64Content.split(",")[1];
-      const buffer = Buffer.from(base64Data, "base64");
-      await ctx.bot.sendDocument(
-        chatId,
-        buffer,
-        {},
-        {
-          filename: file.filename,
-          contentType: "application/octet-stream",
-        }
-      );
-    } catch {}
-  }
+  // Currently not supported but will be soon.
+  // for (const file of files) {
+  //   try {
+  //     const base64Data = file.b64Content.split(",")[1];
+  //     const buffer = Buffer.from(base64Data, "base64");
+  //     await ctx.bot.sendDocument(
+  //       chatId,
+  //       buffer,
+  //       {},
+  //       {
+  //         filename: file.filename,
+  //         contentType: "application/octet-stream",
+  //       }
+  //     );
+  //   } catch {}
+  // }
 
   // Ensure the initial sendMessage has resolved before deciding how to deliver
   if (responsePending) await responsePending;

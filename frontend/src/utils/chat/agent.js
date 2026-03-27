@@ -1,6 +1,5 @@
 import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
-import { saveAs } from "file-saver";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
 
@@ -8,7 +7,7 @@ export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
 const handledEvents = [
   "statusResponse",
-  "fileDownload",
+  "fileDownloadCard",
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
@@ -182,9 +181,24 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
-  if (data.type === "fileDownload") {
-    saveAs(data.content.b64Content, data.content.filename ?? "unknown.txt");
-    return;
+  if (data.type === "fileDownloadCard") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "fileDownloadCard",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: data.metrics || {},
+        },
+      ];
+    });
   }
 
   if (data.type === "rechartVisualize") {
