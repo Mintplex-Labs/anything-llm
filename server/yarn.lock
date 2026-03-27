@@ -2219,7 +2219,7 @@
   resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-win32-x64-msvc/-/mdpdf-win32-x64-msvc-0.1.4.tgz#75caba7ccc20d59f87bc7fa26e7597f803f13b2b"
   integrity sha512-NQBTbhbe+i1HjC4F4WXDiYiItBm0j3LFVpz3uaZgz88umF656j0n4YgOeJKRRx6S4k+l3nzvu19GFoR3ocHLdg==
 
-"@mdpdf/mdpdf@^0.1.4":
+"@mdpdf/mdpdf@0.1.4":
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf/-/mdpdf-0.1.4.tgz#5b244cccde9af845806deb949cd2530552e6cd1a"
   integrity sha512-xGaqXEsuIylP0lQiA17BLb7ERMvcY3VRuyBOGbTRu6TjgrX4BZHPdoi6oUCUOi8sV/vZJYnjy7Xo/b/cX9lzsQ==
@@ -5259,7 +5259,7 @@ doctrine@^2.1.0:
   dependencies:
     esutils "^2.0.2"
 
-docx@^9.6.1:
+docx@9.6.1:
   version "9.6.1"
   resolved "https://registry.yarnpkg.com/docx/-/docx-9.6.1.tgz#c3f173b46be5de455bc5a8eb108923e2e46224e3"
   integrity sha512-ZJja9/KBUuFC109sCMzovoq2GR2wCG/AuxivjA+OHj/q0TEgJIm3S7yrlUxIy3B+bV8YDj/BiHfWyrRFmyWpDQ==
@@ -5292,7 +5292,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
   dependencies:
     domelementtype "^2.3.0"
 
-dompurify@^3.0.8:
+dompurify@3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.3.tgz#680cae8af3e61320ddf3666a3bc843f7b291b2b6"
   integrity sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==
@@ -5837,7 +5837,7 @@ eventsource@^3.0.2:
   dependencies:
     eventsource-parser "^3.0.1"
 
-exceljs@^4.4.0:
+exceljs@4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/exceljs/-/exceljs-4.4.0.tgz#cfb1cb8dcc82c760a9fc9faa9e52dadab66b0156"
   integrity sha512-XctvKaEMaj1Ii9oDOqbW/6e1gXknSY4g/aLCDicOXqBE4M0nRWkUu0PTp++UPNzoFY12BNHMfs/VadKIS6llvg==
@@ -7298,7 +7298,7 @@ jsbn@~0.1.0:
   resolved "https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
 
-jsdom@^26.0.0:
+jsdom@26.1.0:
   version "26.1.0"
   resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-26.1.0.tgz#ab5f1c1cafc04bd878725490974ea5e8bf0c72b3"
   integrity sha512-Cvc9WUhxSMEo4McES3P7oK3QaXldCfNWp7pl2NNeiIFlCoLr3kfq9kb1fxftiwk1FLV7CvpvDfonxtzUDeSOPg==
@@ -7794,7 +7794,7 @@ lru-cache@^9.1.2:
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-9.1.2.tgz"
   integrity sha512-ERJq3FOzJTxBbFjZ7iDs+NiK4VI9Wz+RdrrAB8dio1oV+YvdPzUEE4QNiT2VD51DkIbCYRUUzCRkssXCHqSnKQ==
 
-marked@15:
+marked@15.0.12:
   version "15.0.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.12.tgz#30722c7346e12d0a2d0207ab9b0c4f0102d86c4e"
   integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
@@ -8567,7 +8567,7 @@ path-to-regexp@~0.1.12:
   resolved "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.12.tgz"
   integrity sha512-RA1GjUVMnvYFxuqovrEqZoxxW5NUZqbwKtYz/Tt7nXerk0LbLblQmrsgdeOxV5SFHf0UDggjS/bSeOZwt1pmEQ==
 
-pdf-lib@^1.17.1:
+pdf-lib@1.17.1:
   version "1.17.1"
   resolved "https://registry.yarnpkg.com/pdf-lib/-/pdf-lib-1.17.1.tgz#9e7dd21261a0c1fb17992580885b39e7d08f451f"
   integrity sha512-V/mpyJAoTsN4cnP31vc0wfNA1+p20evqqnap0KLoRUN0Yk/p3wN52DOEsL4oBFcLdb76hlpKPtzJIgo67j/XLw==
@@ -8712,7 +8712,7 @@ posthog-node@^3.1.1:
     axios "^1.6.2"
     rusha "^0.8.14"
 
-pptxgenjs@^4.0.1:
+pptxgenjs@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/pptxgenjs/-/pptxgenjs-4.0.1.tgz#cd0f202f62f74d950bcd217e90b766da8f73742e"
   integrity sha512-TeJISr8wouAuXw4C1F/mC33xbZs/FuEG6nH9FG1Zj+nuPcGMP5YRHl6X+j3HSUnS1f3at6k75ZZXPMZlA5Lj9A==
