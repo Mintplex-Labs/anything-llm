@@ -17,8 +17,7 @@ class BackgroundService {
     },
     {
       name: "cleanup-generated-files",
-      // timeout: "5m",
-      timeout: "10s",
+      timeout: "5m",
       interval: "8hr",
     },
   ];
