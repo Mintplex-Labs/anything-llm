@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "방문을 환영합니다",
       getStarted: "시작하기",
       welcome: "환영합니다",
     },
@@ -310,11 +309,6 @@ const TRANSLATIONS = {
         description:
           "기본 에이전트가 채팅에서 제공된 데이터를 이용하여 다양한 유형의 차트를 생성할 수 있도록 합니다.",
       },
-      save: {
-        title: "브라우저에서 파일 생성과 저장",
-        description:
-          "기본 에이전트가 브라우저에서 파일을 생성하고 다운로드할 수 있도록 합니다.",
-      },
       web: {
         title: "실시간 웹 검색 및 탐색",
         description:
@@ -359,10 +353,6 @@ const TRANSLATIONS = {
             title: "파일 정보 확인",
             description: "파일에 대한 자세한 메타데이터를 얻으세요.",
           },
-          "write-file": {
-            title: "파일 작성",
-            description: "새로운 파일을 생성하거나 기존 파일을 덮어쓰기",
-          },
           "edit-file": {
             title: "파일 편집",
             description: "텍스트 파일에 줄 단위로 편집",
@@ -378,6 +368,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "파일 복사",
             description: "파일 및 디렉터리를 복사",
+          },
+          "write-text-file": {
+            title: "텍스트 파일 작성",
+            description:
+              "새로운 텍스트 파일을 생성하거나 기존 텍스트 파일을 덮어쓰기",
+          },
+        },
+      },
+      createFiles: {
+        title: "문서 생성",
+        description:
+          "에이전트가 파워포인트 프레젠테이션, 엑셀 스프레드시트, 워드 문서, PDF 등 이진 파일 형식의 문서를 생성할 수 있도록 지원합니다. 파일은 채팅 창에서 직접 다운로드할 수 있습니다.",
+        configuration: "사용 가능한 문서 유형",
+        skills: {
+          "create-text-file": {
+            title: "텍스트 파일",
+            description:
+              "원하는 내용과 확장자(.txt, .md, .json, .csv 등)를 사용하여 텍스트 파일을 생성합니다.",
+          },
+          "create-pptx": {
+            title: "파워포인트 프레젠테이션",
+            description:
+              "슬라이드, 제목, 마크다운 등을 포함하여 새로운 파워포인트 프레젠테이션을 만드세요.",
+          },
+          "create-pdf": {
+            title: "PDF 문서",
+            description:
+              "기본 스타일을 적용하여 마크다운 또는 일반 텍스트에서 PDF 문서를 생성합니다.",
+          },
+          "create-xlsx": {
+            title: "엑셀 스프레드시트",
+            description:
+              "표와 스타일을 포함한 표 형태의 데이터를 위한 엑셀 문서를 만드세요.",
+          },
+          "create-docx": {
+            title: "워드 문서",
+            description:
+              "기본적인 스타일과 서식을 사용하여 워드 문서를 만드세요.",
           },
         },
       },
@@ -790,7 +818,6 @@ const TRANSLATIONS = {
       select_all: "전체 선택",
       deselect_all: "전체 선택 해제",
       remove_selected: "선택 항목 삭제",
-      costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
       "total-documents_one": "{{count}} 문서",
       "total-documents_other": "{{count}} 관련 문서",

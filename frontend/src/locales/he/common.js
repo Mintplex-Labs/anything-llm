@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
       welcome: "ברוכים הבאים",
     },
@@ -309,11 +308,6 @@ const TRANSLATIONS = {
         description:
           "אפשר לסוכן ברירת המחדל ליצור סוגים שונים של תרשימים מנתונים שסופקו או ניתנו בצ'אט.",
       },
-      save: {
-        title: "יצירה ושמירה של קבצים לדפדפן",
-        description:
-          "אפשר לסוכן ברירת המחדל ליצור ולכתוב לקבצים שנשמרים וניתנים להורדה בדפדפן שלך.",
-      },
       web: {
         title: "חיפוש וגלישה באינטרנט בזמן אמת",
         description:
@@ -357,10 +351,6 @@ const TRANSLATIONS = {
             title: "קבל מידע על הקובץ",
             description: "קבל מידע מפורט על קבצים",
           },
-          "write-file": {
-            title: "יצירת קובץ",
-            description: "יצירת קבצים חדשים או החלפת קבצים קיימים",
-          },
           "edit-file": {
             title: "ערוך קובץ",
             description: "בצעו עריכה של קבצי טקסט על בסיס שורות.",
@@ -376,6 +366,42 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "העתק קובץ",
             description: "העתקת קבצים וספריות",
+          },
+          "write-text-file": {
+            title: "יצירת קובץ טקסט",
+            description: "יצירת קבצי טקסט חדשים או החלפת קבצי טקסט קיימים",
+          },
+        },
+      },
+      createFiles: {
+        title: "יצירת מסמכים",
+        description:
+          "אפשרו למתווך שלכם ליצור פורמטים של מסמכים בינאריים, כמו מצגות של פאוורPoint, גיליונות אלקטרוניים של Excel, מסמכי Word ו-PDF. ניתן להוריד את הקבצים ישירות מהחלון של השיחה.",
+        configuration: "סוגי המסמכים הזמינים",
+        skills: {
+          "create-text-file": {
+            title: "קבצי טקסט",
+            description:
+              "צרו קבצי טקסט עם כל תוכן ותוספת (כגון .txt, .md, .json, .csv וכו').",
+          },
+          "create-pptx": {
+            title: "מצגות של פאוור פוינט",
+            description:
+              "צרו מצגות חדשות בפורמט PowerPoint, הכוללות שקופיות, כותרות ונקודות עיקריות.",
+          },
+          "create-pdf": {
+            title: "מסמכים בפורמט PDF",
+            description:
+              "יצירת מסמכים בפורמט PDF ממחרוזות markdown או טקסט פשוט, עם עיצוב בסיסי.",
+          },
+          "create-xlsx": {
+            title: "גיליונות אקסל",
+            description:
+              "צור מסמכי Excel עבור נתונים טבלאיים, הכוללים גיליונות ועריכת עיצוב.",
+          },
+          "create-docx": {
+            title: "מסמכים בפורמט Word",
+            description: "צור מסמכים בפורמט Word עם עיצוב ועיצוב בסיסיים.",
           },
         },
       },
@@ -781,7 +807,6 @@ const TRANSLATIONS = {
       select_all: "בחר הכל",
       deselect_all: "בטל בחירת הכל",
       remove_selected: "הסר נבחרים",
-      costs: "*עלות חד פעמית להטמעות",
       save_embed: "שמור והטמע",
       "total-documents_one": "{{count}} מסמך",
       "total-documents_other": "מסמכים {{count}}",

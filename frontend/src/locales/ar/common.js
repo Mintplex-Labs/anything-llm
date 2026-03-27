@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "مرحبا في",
       getStarted: "بسم الله",
       welcome: "أهلاً وسهلاً",
     },
@@ -308,11 +307,6 @@ const TRANSLATIONS = {
         description:
           "تمكين الوكيل الافتراضي لإنشاء أنواع مختلفة من المخططات من البيانات المقدمة أو المعطاة في المحادثة.",
       },
-      save: {
-        title: "إنشاء الملفات وحفظها في المتصفح",
-        description:
-          "تمكين الوكيل الافتراضي من إنشاء الملفات والكتابة عليها وحفظها و تنزيلها في متصفحك.",
-      },
       web: {
         title: "البحث والتصفح المباشر على الويب",
         description:
@@ -357,10 +351,6 @@ const TRANSLATIONS = {
             title: "الحصول على معلومات الملف",
             description: "احصل على بيانات وصف تفصيلية حول الملفات.",
           },
-          "write-file": {
-            title: "إنشاء ملف",
-            description: "إنشاء ملفات جديدة أو استبدال الملفات الموجودة.",
-          },
           "edit-file": {
             title: "تحرير الملف",
             description:
@@ -377,6 +367,43 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "نسخ الملف",
             description: "نسخ الملفات والمجلدات",
+          },
+          "write-text-file": {
+            title: "إنشاء ملف نصي",
+            description:
+              "إنشاء ملفات نصية جديدة أو استبدال الملفات النصية الموجودة.",
+          },
+        },
+      },
+      createFiles: {
+        title: "إنشاء المستندات",
+        description:
+          "اسمح لمسؤولك بإنشاء ملفات بتنسيقات ثنائية مثل عروض PowerPoint وجداول Excel ووثائق Word وملفات PDF. يمكن تنزيل الملفات مباشرة من نافذة الدردشة.",
+        configuration: "أنواع المستندات المتاحة",
+        skills: {
+          "create-text-file": {
+            title: "ملفات النصوص",
+            description:
+              "إنشاء ملفات نصية تحتوي على أي محتوى وتنسيق (مثل .txt، .md، .json، .csv، إلخ).",
+          },
+          "create-pptx": {
+            title: "عروض تقديمية باستخدام برنامج باوربوينت",
+            description:
+              "إنشاء عروض تقديمية جديدة باستخدام برنامج باوربوينت، تتضمن الشرائح والعناوين والنقاط.",
+          },
+          "create-pdf": {
+            title: "ملفات PDF",
+            description:
+              "إنشاء مستندات PDF من ملفات Markdown أو النصوص البسيطة مع تنسيق أساسي.",
+          },
+          "create-xlsx": {
+            title: "جداول بيانات في برنامج إكسل",
+            description:
+              "إنشاء مستندات Excel للبيانات الجدولية مع الأوراق والتصميم.",
+          },
+          "create-docx": {
+            title: "ملفات مستندات مايكروسوفت",
+            description: "إنشاء مستندات Word مع تنسيق وتصميم أساسي.",
           },
         },
       },
@@ -694,7 +721,6 @@ const TRANSLATIONS = {
       select_all: "حدد الكل",
       deselect_all: "إلغاء التحديد الكل",
       remove_selected: "حذف المحدد",
-      costs: "*تكلفة ثابتة لإنشاء التمثيلات",
       save_embed: "حفظ و تضمين",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} المستندات",
