@@ -1,10 +1,10 @@
 const createFilesLib = require("../lib.js");
 const { getTheme, getAvailableThemes } = require("./themes.js");
 const {
-  LAYOUT_RENDERERS,
-  renderTopbarLayout,
-  addBranding,
-  addBulletContent,
+  renderTitleSlide,
+  renderSectionSlide,
+  renderContentSlide,
+  renderBlankSlide,
 } = require("./utils.js");
 
 module.exports.CreatePptxPresentation = {
@@ -19,7 +19,7 @@ module.exports.CreatePptxPresentation = {
           description:
             "Create a new PowerPoint presentation (PPTX) with slides and optional theming. " +
             "Provide a title and an array of slides with their content. " +
-            "Each slide can have a title, content (bullet points), and optional notes. ",
+            "Each slide can have a title, content (bullet points), and optional notes.",
           examples: [
             {
               prompt: "Create a presentation about project updates",
@@ -73,7 +73,7 @@ module.exports.CreatePptxPresentation = {
               filename: {
                 type: "string",
                 description:
-                  "The filename for the presentation (should end with .pptx). If a full path is provided, it will be saved there.",
+                  "The filename for the presentation (should end with .pptx).",
               },
               title: {
                 type: "string",
@@ -103,7 +103,7 @@ module.exports.CreatePptxPresentation = {
                       type: "string",
                       enum: ["title", "content", "section", "blank"],
                       description:
-                        "Slide layout type. 'title' for title slides, 'content' for content slides with bullets, 'section' for section dividers, 'blank' for empty slides.",
+                        "Slide layout type. 'title' for title slides, 'content' for bullet content, 'section' for section dividers, 'blank' for empty slides.",
                     },
                     title: {
                       type: "string",
@@ -123,7 +123,7 @@ module.exports.CreatePptxPresentation = {
                     table: {
                       type: "object",
                       description:
-                        "Optional table data to display on the slide (use instead of content for tabular data).",
+                        "Optional table data to display on the slide.",
                       properties: {
                         headers: {
                           type: "array",
@@ -136,8 +136,7 @@ module.exports.CreatePptxPresentation = {
                             type: "array",
                             items: { type: "string" },
                           },
-                          description:
-                            "2D array of row data. Each row is an array of cell values.",
+                          description: "2D array of row data.",
                         },
                       },
                     },
@@ -153,6 +152,7 @@ module.exports.CreatePptxPresentation = {
             required: ["filename", "title", "slides"],
             additionalProperties: false,
           },
+
           handler: async function ({
             filename = "presentation.pptx",
             title = "Untitled Presentation",
@@ -165,13 +165,12 @@ module.exports.CreatePptxPresentation = {
                 `Using the create-pptx-presentation tool.`
               );
 
-              if (!filename.toLowerCase().endsWith(".pptx")) {
+              if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
-              }
 
               const theme = getTheme(themeName);
               this.super.introspect(
-                `${this.caller}: Creating PowerPoint presentation "${title}" with ${theme.name} theme (layout: ${theme.layoutStyle})`
+                `${this.caller}: Creating PowerPoint presentation "${title}" with ${theme.name} theme`
               );
 
               const PptxGenJS = require("pptxgenjs");
@@ -181,194 +180,64 @@ module.exports.CreatePptxPresentation = {
               if (author) pptx.author = author;
               pptx.company = "AnythingLLM";
 
+              const totalSlides = slides.length;
               const titleSlide = pptx.addSlide();
-              titleSlide.background = {
-                color: theme.titleSlideBackground || theme.background,
-              };
+              renderTitleSlide(titleSlide, pptx, { title, author }, theme);
 
-              titleSlide.addText(title, {
-                x: 0.5,
-                y: "32%",
-                w: "90%",
-                h: 1.5,
-                fontSize: 44,
-                bold: true,
-                color: theme.titleSlideTitleColor || theme.titleColor,
-                fontFace: theme.fontTitle,
-                align: "center",
-                shadow: theme.shadow || undefined,
-              });
-
-              if (author) {
-                titleSlide.addText(author, {
-                  x: 0.5,
-                  y: "55%",
-                  w: "90%",
-                  h: 0.5,
-                  fontSize: 18,
-                  color: theme.titleSlideSubtitleColor || theme.subtitleColor,
-                  fontFace: theme.fontBody,
-                  align: "center",
-                });
-              }
-
-              // Add branding to title slide (uses titleSlideBackground for color detection)
-              addBranding(titleSlide, {
-                ...theme,
-                background: theme.titleSlideBackground || theme.background,
-              });
-
-              for (const slideData of slides) {
+              slides.forEach((slideData, index) => {
                 const slide = pptx.addSlide();
-                slide.background = { color: theme.background };
+                const slideNumber = index + 1;
                 const layout = slideData.layout || "content";
 
-                if (layout === "title" || layout === "section") {
-                  // Section / title slides — mirror the title slide treatment
-                  slide.background = {
-                    color: theme.titleSlideBackground || theme.background,
-                  };
-
-                  slide.addText(slideData.title || "", {
-                    x: 0.5,
-                    y: "35%",
-                    w: "90%",
-                    h: 1.5,
-                    fontSize: layout === "title" ? 44 : 36,
-                    bold: true,
-                    color: theme.titleSlideTitleColor || theme.titleColor,
-                    fontFace: theme.fontTitle,
-                    align: "center",
-                    shadow: theme.shadow || undefined,
-                  });
-
-                  if (slideData.subtitle) {
-                    slide.addText(slideData.subtitle, {
-                      x: 0.5,
-                      y: layout === "title" ? "58%" : "54%",
-                      w: "90%",
-                      h: 0.6,
-                      fontSize: 20,
-                      color:
-                        theme.titleSlideSubtitleColor || theme.subtitleColor,
-                      fontFace: theme.fontBody,
-                      align: "center",
-                    });
-                  }
-                } else if (layout === "blank") {
-                  // Blank slide — nothing beyond the background
-                } else {
-                  // Standard content slide
-                  // Render the header using the theme's layout style
-                  const renderHeader =
-                    LAYOUT_RENDERERS[theme.layoutStyle] || renderTopbarLayout;
-                  renderHeader(slide, pptx, slideData, theme);
-
-                  // Body content - table or bullets
-                  if (slideData.table) {
-                    const tableData = [];
-                    const contentX =
-                      theme.layoutStyle === "sidebar"
-                        ? (theme.margin?.x || 0.5) + 0.3
-                        : theme.margin?.x || 0.5;
-
-                    // Add header row
-                    if (
-                      slideData.table.headers &&
-                      slideData.table.headers.length > 0
-                    ) {
-                      tableData.push(
-                        slideData.table.headers.map((header) => ({
-                          text: header,
-                          options: {
-                            bold: true,
-                            fontSize: 14,
-                            fontFace: theme.fontBody,
-                            color: theme.background,
-                            fill: { color: theme.accentColor },
-                            align: "center",
-                            valign: "middle",
-                          },
-                        }))
-                      );
-                    }
-
-                    // Add data rows
-                    if (
-                      slideData.table.rows &&
-                      slideData.table.rows.length > 0
-                    ) {
-                      slideData.table.rows.forEach((row, rowIndex) => {
-                        const isAltRow = rowIndex % 2 === 1;
-                        const rowFill = isAltRow
-                          ? { color: theme.accentColor, transparency: 90 }
-                          : { color: theme.background };
-                        tableData.push(
-                          row.map((cell) => ({
-                            text: cell,
-                            options: {
-                              fontSize: 12,
-                              fontFace: theme.fontBody,
-                              color: theme.bodyColor,
-                              fill: rowFill,
-                              align: "center",
-                              valign: "middle",
-                            },
-                          }))
-                        );
-                      });
-                    }
-
-                    if (tableData.length > 0) {
-                      const colCount = tableData[0].length;
-                      slide.addTable(tableData, {
-                        x: contentX,
-                        y: theme.contentY || 1.3,
-                        w: 9,
-                        colW: 9 / colCount,
-                        rowH: 0.5,
-                        border: {
-                          type: "solid",
-                          pt: 1,
-                          color: theme.accentColor,
-                        },
-                      });
-                    }
-                  } else {
-                    addBulletContent(
+                switch (layout) {
+                  case "title":
+                  case "section":
+                    renderSectionSlide(
                       slide,
-                      slideData.content,
+                      pptx,
+                      slideData,
                       theme,
-                      theme.contentY
+                      slideNumber,
+                      totalSlides
                     );
-                  }
+                    break;
+                  case "blank":
+                    renderBlankSlide(
+                      slide,
+                      pptx,
+                      theme,
+                      slideNumber,
+                      totalSlides
+                    );
+                    break;
+                  default:
+                    renderContentSlide(
+                      slide,
+                      pptx,
+                      slideData,
+                      theme,
+                      slideNumber,
+                      totalSlides
+                    );
+                    break;
                 }
-
-                // Add subtle AnythingLLM branding to every slide
-                // For section/title slides, use titleSlideBackground for color detection
-                const slideBackground =
-                  layout === "title" || layout === "section"
-                    ? theme.titleSlideBackground || theme.background
-                    : theme.background;
-                addBranding(slide, { ...theme, background: slideBackground });
-
-                if (slideData.notes) {
-                  slide.addNotes(slideData.notes);
-                }
-              }
+              });
 
               const buffer = await pptx.write({ outputType: "nodebuffer" });
               const bufferSizeKB = (buffer.length / 1024).toFixed(2);
               const bufferSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
-
               this.super.handlerProps.log(
-                `create-pptx-presentation: Generated buffer - size: ${bufferSizeKB}KB (${bufferSizeMB}MB), slides: ${slides.length}, theme: ${theme.name}, layout: ${theme.layoutStyle}`
+                `create-pptx-presentation: Generated buffer - size: ${bufferSizeKB}KB (${bufferSizeMB}MB), slides: ${slides.length}, theme: ${theme.name}`
               );
 
               if (this.super.requestToolApproval) {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
-                  payload: { filename, title, slideCount: slides.length },
+                  payload: {
+                    filename,
+                    title,
+                    slideCount: slides.length,
+                  },
                   description: `Create PowerPoint presentation with ${slides.length} slides`,
                 });
                 if (!approval.approved) {
@@ -381,7 +250,6 @@ module.exports.CreatePptxPresentation = {
 
               const displayFilename = filename.split("/").pop();
 
-              // Save file to storage with standardized naming (pptx-{uuid}.pptx)
               const savedFile = await createFilesLib.saveGeneratedFile({
                 fileType: "pptx",
                 extension: "pptx",
@@ -389,14 +257,12 @@ module.exports.CreatePptxPresentation = {
                 displayFilename,
               });
 
-              // Send file download card to the frontend with file reference (not base64)
               this.super.socket.send("fileDownloadCard", {
                 filename: savedFile.displayFilename,
                 storageFilename: savedFile.filename,
                 fileSize: savedFile.fileSize,
               });
 
-              // Register output for chat history persistence (stored as file reference, not base64)
               createFilesLib.registerOutput(this.super, "PptxFileDownload", {
                 filename: savedFile.displayFilename,
                 storageFilename: savedFile.filename,
@@ -407,7 +273,7 @@ module.exports.CreatePptxPresentation = {
                 `${this.caller}: Successfully created presentation "${title}"`
               );
 
-              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme (${theme.layoutStyle} layout).`;
+              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme.`;
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`

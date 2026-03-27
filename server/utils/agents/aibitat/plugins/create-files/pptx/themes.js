@@ -1,271 +1,181 @@
 /**
- * Predefined presentation themes for pptxgenjs.
- * Each theme defines colors, typography, layout style, spacing, and visual effects.
+ * Curated presentation themes for pptxgenjs.
+ *
+ * Each theme is a complete design system: title-slide palette, content-slide
+ * palette, table styling, footer colors, and typography.  The rendering code
+ * in utils.js consumes these tokens to produce consistent, professional slides.
+ *
+ * Themes: default · corporate · dark · minimal · creative
  */
 
 const THEMES = {
   default: {
-    name: "Default",
-    description: "Clean white background with dark text",
-    // Colors
+    name: "Professional",
+    description: "Clean and versatile — works for any presentation",
+
+    titleSlideBackground: "1E293B",
+    titleSlideTitleColor: "FFFFFF",
+    titleSlideSubtitleColor: "94A3B8",
+    titleSlideAccentColor: "3B82F6",
+
     background: "FFFFFF",
-    titleSlideBackground: "FFFFFF",
-    titleColor: "363636",
-    titleSlideTitleColor: "363636",
-    titleSlideSubtitleColor: "666666",
-    subtitleColor: "666666",
-    bodyColor: "404040",
-    accentColor: "0078D4",
-    bulletColor: "0078D4",
-    // Typography
+    titleColor: "0F172A",
+    subtitleColor: "64748B",
+    bodyColor: "334155",
+    accentColor: "2563EB",
+    bulletColor: "2563EB",
+
+    tableHeaderBg: "1E293B",
+    tableHeaderColor: "FFFFFF",
+    tableAltRowBg: "F8FAFC",
+    tableBorderColor: "E2E8F0",
+
+    footerColor: "94A3B8",
+    footerLineColor: "E2E8F0",
+
     fontTitle: "Calibri",
-    fontBody: "Calibri Light",
-    // Layout
-    layoutStyle: "topbar", // "topbar" | "sidebar" | "underline" | "card"
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    // Effects
-    shadow: null,
+    fontBody: "Calibri",
   },
 
   corporate: {
     name: "Corporate",
-    description: "Professional blue tones, ideal for business presentations",
-    background: "FFFFFF",
-    titleSlideBackground: "1A365D",
+    description: "Refined and authoritative — ideal for business and finance",
+
+    titleSlideBackground: "0C1929",
     titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "A0C4E8",
-    titleColor: "1A365D",
-    subtitleColor: "4A6FA5",
-    bodyColor: "2D3748",
-    accentColor: "2B6CB0",
-    bulletColor: "2B6CB0",
-    fontTitle: "Cambria",
-    fontBody: "Calibri",
-    layoutStyle: "sidebar",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.4,
-    shadow: {
-      type: "outer",
-      blur: 3,
-      offset: 2,
-      angle: 45,
-      color: "AAAAAA",
-      opacity: 0.3,
-    },
-  },
+    titleSlideSubtitleColor: "7B96B5",
+    titleSlideAccentColor: "C9943E",
 
-  modern: {
-    name: "Modern",
-    description: "Contemporary dark theme with vibrant accents",
-    background: "1A1A2E",
-    titleSlideBackground: "16213E",
-    titleSlideTitleColor: "EAEAEA",
-    titleSlideSubtitleColor: "A0A0A0",
-    titleColor: "EAEAEA",
-    subtitleColor: "B0B0B0",
-    bodyColor: "CCCCCC",
-    accentColor: "E94560",
-    bulletColor: "E94560",
-    fontTitle: "Segoe UI",
-    fontBody: "Segoe UI Light",
-    layoutStyle: "underline",
-    margin: { x: 0.6, y: 0.5 },
-    contentY: 1.35,
-    shadow: {
-      type: "outer",
-      blur: 6,
-      offset: 3,
-      angle: 45,
-      color: "000000",
-      opacity: 0.5,
-    },
-  },
-
-  minimal: {
-    name: "Minimal",
-    description: "Ultra-clean with subtle gray tones",
-    background: "FAFAFA",
-    titleSlideBackground: "F5F5F5",
-    titleSlideTitleColor: "1A1A1A",
-    titleSlideSubtitleColor: "757575",
-    titleColor: "1A1A1A",
-    subtitleColor: "757575",
-    bodyColor: "424242",
-    accentColor: "9E9E9E",
-    bulletColor: "BDBDBD",
-    fontTitle: "Arial",
-    fontBody: "Arial",
-    layoutStyle: "underline",
-    margin: { x: 0.75, y: 0.6 },
-    contentY: 1.5,
-    shadow: null,
-  },
-
-  vibrant: {
-    name: "Vibrant",
-    description: "Bold and colorful for creative presentations",
     background: "FFFFFF",
-    titleSlideBackground: "6B46C1",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "E9D8FD",
-    titleColor: "553C9A",
-    subtitleColor: "805AD5",
-    bodyColor: "2D3748",
-    accentColor: "ED8936",
-    bulletColor: "ED8936",
-    fontTitle: "Trebuchet MS",
+    titleColor: "0C1929",
+    subtitleColor: "5A6D82",
+    bodyColor: "2C3E50",
+    accentColor: "1A5276",
+    bulletColor: "1A5276",
+
+    tableHeaderBg: "0C1929",
+    tableHeaderColor: "FFFFFF",
+    tableAltRowBg: "F4F7FA",
+    tableBorderColor: "D5DBE2",
+
+    footerColor: "8B9DB3",
+    footerLineColor: "D5DBE2",
+
+    fontTitle: "Calibri",
     fontBody: "Calibri",
-    layoutStyle: "card",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    shadow: {
-      type: "outer",
-      blur: 8,
-      offset: 4,
-      angle: 45,
-      color: "805AD5",
-      opacity: 0.2,
-    },
   },
 
   dark: {
     name: "Dark",
-    description: "Elegant dark background for high contrast",
-    background: "121212",
-    titleSlideBackground: "000000",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "B0B0B0",
-    titleColor: "FFFFFF",
-    subtitleColor: "AAAAAA",
-    bodyColor: "E0E0E0",
-    accentColor: "BB86FC",
-    bulletColor: "BB86FC",
-    fontTitle: "Segoe UI",
-    fontBody: "Calibri Light",
-    layoutStyle: "sidebar",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    shadow: {
-      type: "outer",
-      blur: 10,
-      offset: 5,
-      angle: 45,
-      color: "000000",
-      opacity: 0.7,
-    },
-  },
+    description: "Sleek dark theme — great for tech and product presentations",
 
-  nature: {
-    name: "Nature",
-    description: "Earthy greens and warm tones",
-    background: "FFFFFF",
-    titleSlideBackground: "2D5016",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "A8D08D",
-    titleColor: "2D5016",
-    subtitleColor: "538135",
-    bodyColor: "3D3D3D",
-    accentColor: "70AD47",
-    bulletColor: "70AD47",
-    fontTitle: "Georgia",
+    titleSlideBackground: "0F0F1A",
+    titleSlideTitleColor: "F8FAFC",
+    titleSlideSubtitleColor: "7C8DB5",
+    titleSlideAccentColor: "818CF8",
+
+    background: "18181B",
+    titleColor: "F4F4F5",
+    subtitleColor: "A1A1AA",
+    bodyColor: "D4D4D8",
+    accentColor: "6366F1",
+    bulletColor: "818CF8",
+
+    tableHeaderBg: "6366F1",
+    tableHeaderColor: "FFFFFF",
+    tableAltRowBg: "1F1F24",
+    tableBorderColor: "3F3F46",
+
+    footerColor: "71717A",
+    footerLineColor: "3F3F46",
+
+    fontTitle: "Calibri",
     fontBody: "Calibri",
-    layoutStyle: "topbar",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    shadow: null,
   },
 
-  ocean: {
-    name: "Ocean",
-    description: "Calming blue gradients",
+  minimal: {
+    name: "Minimal",
+    description: "Ultra-clean with maximum whitespace — lets content speak",
+
+    titleSlideBackground: "F5F5F5",
+    titleSlideTitleColor: "171717",
+    titleSlideSubtitleColor: "737373",
+    titleSlideAccentColor: "A3A3A3",
+
     background: "FFFFFF",
-    titleSlideBackground: "0077B6",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "90E0EF",
-    titleColor: "023E8A",
-    subtitleColor: "0077B6",
-    bodyColor: "2D3748",
-    accentColor: "00B4D8",
-    bulletColor: "0096C7",
+    titleColor: "171717",
+    subtitleColor: "737373",
+    bodyColor: "404040",
+    accentColor: "525252",
+    bulletColor: "A3A3A3",
+
+    tableHeaderBg: "262626",
+    tableHeaderColor: "FFFFFF",
+    tableAltRowBg: "FAFAFA",
+    tableBorderColor: "E5E5E5",
+
+    footerColor: "A3A3A3",
+    footerLineColor: "E5E5E5",
+
     fontTitle: "Calibri",
     fontBody: "Calibri Light",
-    layoutStyle: "topbar",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    shadow: {
-      type: "outer",
-      blur: 4,
-      offset: 2,
-      angle: 45,
-      color: "0077B6",
-      opacity: 0.25,
-    },
   },
 
-  sunset: {
-    name: "Sunset",
-    description: "Warm oranges and reds",
-    background: "FFFAF0",
-    titleSlideBackground: "C53030",
+  creative: {
+    name: "Creative",
+    description: "Bold and expressive — perfect for pitches and creative work",
+
+    titleSlideBackground: "2E1065",
     titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "FED7D7",
-    titleColor: "C53030",
-    subtitleColor: "E53E3E",
-    bodyColor: "2D3748",
-    accentColor: "DD6B20",
-    bulletColor: "ED8936",
-    fontTitle: "Georgia",
+    titleSlideSubtitleColor: "C4B5FD",
+    titleSlideAccentColor: "A78BFA",
+
+    background: "FFFFFF",
+    titleColor: "3B0764",
+    subtitleColor: "7C3AED",
+    bodyColor: "374151",
+    accentColor: "7C3AED",
+    bulletColor: "7C3AED",
+
+    tableHeaderBg: "5B21B6",
+    tableHeaderColor: "FFFFFF",
+    tableAltRowBg: "FAF5FF",
+    tableBorderColor: "E9D5FF",
+
+    footerColor: "A78BFA",
+    footerLineColor: "E9D5FF",
+
+    fontTitle: "Calibri",
     fontBody: "Calibri",
-    layoutStyle: "card",
-    margin: { x: 0.5, y: 0.5 },
-    contentY: 1.3,
-    shadow: {
-      type: "outer",
-      blur: 5,
-      offset: 3,
-      angle: 45,
-      color: "C53030",
-      opacity: 0.2,
-    },
   },
 };
 
 /**
  * Get a theme by name, falling back to default if not found.
- * @param {string} themeName - Name of the theme
+ * @param {string} themeName
  * @returns {object} Theme configuration
  */
 function getTheme(themeName) {
-  const normalizedName = (themeName || "default").toLowerCase().trim();
-  return THEMES[normalizedName] || THEMES.default;
+  const key = (themeName || "default").toLowerCase().trim();
+  return THEMES[key] || THEMES.default;
 }
 
 /**
- * Get list of available theme names.
- * @returns {string[]} Array of theme names
+ * @returns {string[]} Available theme identifiers
  */
 function getAvailableThemes() {
   return Object.keys(THEMES);
 }
 
 /**
- * Get theme descriptions for documentation/help.
- * @returns {object[]} Array of {name, description} objects
+ * @returns {object[]} Array of { id, name, description } for documentation
  */
 function getThemeDescriptions() {
-  return Object.entries(THEMES).map(([key, theme]) => ({
-    id: key,
-    name: theme.name,
-    description: theme.description,
-    layoutStyle: theme.layoutStyle,
-    fonts: { title: theme.fontTitle, body: theme.fontBody },
+  return Object.entries(THEMES).map(([id, t]) => ({
+    id,
+    name: t.name,
+    description: t.description,
   }));
 }
 
-module.exports = {
-  THEMES,
-  getTheme,
-  getAvailableThemes,
-  getThemeDescriptions,
-};
+module.exports = { THEMES, getTheme, getAvailableThemes, getThemeDescriptions };
