@@ -6,6 +6,32 @@ const {
   renderContentSlide,
   renderBlankSlide,
 } = require("./utils.js");
+const { runSectionAgent } = require("./section-agent.js");
+
+/**
+ * Extracts recent conversation history from the parent AIbitat's chat log
+ * to provide context to each section sub-agent.
+ * @param {Array} chats - The parent AIbitat's _chats array
+ * @param {number} [maxMessages=10] - Maximum messages to include
+ * @returns {string} Formatted conversation context
+ */
+function extractConversationContext(chats, maxMessages = 10) {
+  if (!Array.isArray(chats) || chats.length === 0) return "";
+
+  const recent = chats
+    .filter((c) => c.state === "success" && c.content)
+    .slice(-maxMessages);
+
+  if (recent.length === 0) return "";
+
+  return recent
+    .map((c) => {
+      const content =
+        typeof c.content === "string" ? c.content.substring(0, 500) : "";
+      return `${c.from}: ${content}`;
+    })
+    .join("\n");
+}
 
 module.exports.CreatePptxPresentation = {
   name: "create-pptx-presentation",
@@ -17,9 +43,10 @@ module.exports.CreatePptxPresentation = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a new PowerPoint presentation (PPTX) with slides and optional theming. " +
-            "Provide a title and an array of slides with their content. " +
-            "Each slide can have a title, content (bullet points), and optional notes.",
+            "Create a professional PowerPoint presentation (PPTX). " +
+            "Provide a title, theme, and section outlines with key points. " +
+            "Each section is independently researched and built by a focused sub-agent " +
+            "that can use web search and web scraping to gather data.",
           examples: [
             {
               prompt: "Create a presentation about project updates",
@@ -27,10 +54,10 @@ module.exports.CreatePptxPresentation = {
                 filename: "project-updates.pptx",
                 title: "Q1 Project Updates",
                 theme: "corporate",
-                slides: [
+                sections: [
                   {
                     title: "Overview",
-                    content: [
+                    keyPoints: [
                       "Project on track for Q1 delivery",
                       "Team expanded by 2 new members",
                       "Budget within expectations",
@@ -38,29 +65,36 @@ module.exports.CreatePptxPresentation = {
                   },
                   {
                     title: "Key Achievements",
-                    content: [
+                    keyPoints: [
                       "Launched new feature X",
                       "Reduced bug count by 40%",
                       "Improved performance by 25%",
                     ],
-                    notes: "Mention the specific metrics during presentation",
+                    instructions:
+                      "Include specific metrics and quarter-over-quarter comparisons",
                   },
                 ],
               }),
             },
             {
-              prompt: "Create a dark themed presentation about AI",
+              prompt: "Create a dark themed presentation about AI trends",
               call: JSON.stringify({
-                filename: "ai-overview.pptx",
-                title: "Introduction to AI",
+                filename: "ai-trends.pptx",
+                title: "AI Trends 2025",
                 theme: "dark",
-                slides: [
+                sections: [
                   {
-                    title: "What is AI?",
-                    content: [
-                      "Artificial Intelligence defined",
-                      "Machine Learning vs Deep Learning",
+                    title: "Large Language Models",
+                    keyPoints: [
+                      "Model scaling trends",
+                      "Open vs closed source landscape",
                     ],
+                    instructions:
+                      "Research the latest developments and include recent data",
+                  },
+                  {
+                    title: "AI in Enterprise",
+                    keyPoints: ["Adoption rates", "Top use cases", "ROI data"],
                   },
                 ],
               }),
@@ -92,64 +126,34 @@ module.exports.CreatePptxPresentation = {
                   "Color theme for the presentation. Options: " +
                   getAvailableThemes().join(", "),
               },
-              slides: {
+              sections: {
                 type: "array",
                 description:
-                  "Array of slide objects to include in the presentation.",
+                  "Section outlines for the presentation. Each section is independently researched and built by a focused sub-agent.",
                 items: {
                   type: "object",
                   properties: {
-                    layout: {
-                      type: "string",
-                      enum: ["title", "content", "section", "blank"],
-                      description:
-                        "Slide layout type. 'title' for title slides, 'content' for bullet content, 'section' for section dividers, 'blank' for empty slides.",
-                    },
                     title: {
                       type: "string",
-                      description: "The slide title.",
+                      description: "The section title.",
                     },
-                    subtitle: {
-                      type: "string",
-                      description:
-                        "Optional subtitle (mainly for title and section layouts).",
-                    },
-                    content: {
+                    keyPoints: {
                       type: "array",
                       items: { type: "string" },
                       description:
-                        "Array of bullet points or text content for the slide.",
+                        "Key points this section should cover. The sub-agent will expand these into detailed slides.",
                     },
-                    table: {
-                      type: "object",
-                      description:
-                        "Optional table data to display on the slide.",
-                      properties: {
-                        headers: {
-                          type: "array",
-                          items: { type: "string" },
-                          description: "Array of column header labels.",
-                        },
-                        rows: {
-                          type: "array",
-                          items: {
-                            type: "array",
-                            items: { type: "string" },
-                          },
-                          description: "2D array of row data.",
-                        },
-                      },
-                    },
-                    notes: {
+                    instructions: {
                       type: "string",
-                      description: "Optional speaker notes for this slide.",
+                      description:
+                        "Optional guidance for the section builder (e.g. 'research recent statistics', 'compare with competitors', 'include a data table').",
                     },
                   },
                   required: ["title"],
                 },
               },
             },
-            required: ["filename", "title", "slides"],
+            required: ["filename", "title", "sections"],
             additionalProperties: false,
           },
 
@@ -158,7 +162,7 @@ module.exports.CreatePptxPresentation = {
             title = "Untitled Presentation",
             author = "",
             theme: themeName = "default",
-            slides = [],
+            sections = [],
           }) {
             try {
               this.super.handlerProps.log(
@@ -169,8 +173,71 @@ module.exports.CreatePptxPresentation = {
                 filename += ".pptx";
 
               const theme = getTheme(themeName);
+              const totalSections = sections.length;
+
               this.super.introspect(
-                `${this.caller}: Creating PowerPoint presentation "${title}" with ${theme.name} theme`
+                `${this.caller}: Planning presentation "${title}" — ${totalSections} section${totalSections !== 1 ? "s" : ""}, ${theme.name} theme`
+              );
+
+              // Ask for approval BEFORE kicking off the expensive sub-agent work
+              if (this.super.requestToolApproval) {
+                const approval = await this.super.requestToolApproval({
+                  skillName: this.name,
+                  payload: {
+                    filename,
+                    title,
+                    sectionCount: totalSections,
+                    sectionTitles: sections.map((s) => s.title),
+                  },
+                  description: `Create PowerPoint presentation "${title}" with ${totalSections} sections`,
+                });
+                if (!approval.approved) {
+                  this.super.introspect(
+                    `${this.caller}: User rejected the ${this.name} request.`
+                  );
+                  return approval.message;
+                }
+              }
+
+              const conversationContext = extractConversationContext(
+                this.super._chats
+              );
+
+              // Run a focused sub-agent for each section sequentially.
+              // Sequential execution is intentional — local models typically serve
+              // one request at a time, and it keeps introspection events ordered.
+              const allSlides = [];
+              const allCitations = [];
+              for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                this.super.introspect(
+                  `${this.caller}: [${i + 1}/${totalSections}] Building section "${section.title}"…`
+                );
+
+                const sectionResult = await runSectionAgent({
+                  parentAibitat: this.super,
+                  section,
+                  presentationTitle: title,
+                  conversationContext,
+                });
+
+                const slideCount = sectionResult.slides?.length || 0;
+                allSlides.push(...(sectionResult.slides || []));
+                if (sectionResult.citations?.length > 0)
+                  allCitations.push(...sectionResult.citations);
+
+                this.super.introspect(
+                  `${this.caller}: [${i + 1}/${totalSections}] Section "${section.title}" complete — ${slideCount} slide${slideCount !== 1 ? "s" : ""}`
+                );
+              }
+
+              // Roll up all citations from sub-agents to the parent so they
+              // appear as sources on the final assistant message.
+              if (allCitations.length > 0) this.super.addCitation(allCitations);
+
+              // Assemble the final PPTX from all section outputs
+              this.super.introspect(
+                `${this.caller}: Assembling final deck — ${allSlides.length} slides total`
               );
 
               const PptxGenJS = require("pptxgenjs");
@@ -180,11 +247,14 @@ module.exports.CreatePptxPresentation = {
               if (author) pptx.author = author;
               pptx.company = "AnythingLLM";
 
-              const totalSlides = slides.length;
+              const totalSlideCount = allSlides.length;
+
+              // Title slide
               const titleSlide = pptx.addSlide();
               renderTitleSlide(titleSlide, pptx, { title, author }, theme);
 
-              slides.forEach((slideData, index) => {
+              // Render every slide produced by the section agents
+              allSlides.forEach((slideData, index) => {
                 const slide = pptx.addSlide();
                 const slideNumber = index + 1;
                 const layout = slideData.layout || "content";
@@ -198,7 +268,7 @@ module.exports.CreatePptxPresentation = {
                       slideData,
                       theme,
                       slideNumber,
-                      totalSlides
+                      totalSlideCount
                     );
                     break;
                   case "blank":
@@ -207,7 +277,7 @@ module.exports.CreatePptxPresentation = {
                       pptx,
                       theme,
                       slideNumber,
-                      totalSlides
+                      totalSlideCount
                     );
                     break;
                   default:
@@ -217,7 +287,7 @@ module.exports.CreatePptxPresentation = {
                       slideData,
                       theme,
                       slideNumber,
-                      totalSlides
+                      totalSlideCount
                     );
                     break;
                 }
@@ -227,26 +297,8 @@ module.exports.CreatePptxPresentation = {
               const bufferSizeKB = (buffer.length / 1024).toFixed(2);
               const bufferSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
               this.super.handlerProps.log(
-                `create-pptx-presentation: Generated buffer - size: ${bufferSizeKB}KB (${bufferSizeMB}MB), slides: ${slides.length}, theme: ${theme.name}`
+                `create-pptx-presentation: Generated buffer - size: ${bufferSizeKB}KB (${bufferSizeMB}MB), slides: ${totalSlideCount}, theme: ${theme.name}`
               );
-
-              if (this.super.requestToolApproval) {
-                const approval = await this.super.requestToolApproval({
-                  skillName: this.name,
-                  payload: {
-                    filename,
-                    title,
-                    slideCount: slides.length,
-                  },
-                  description: `Create PowerPoint presentation with ${slides.length} slides`,
-                });
-                if (!approval.approved) {
-                  this.super.introspect(
-                    `${this.caller}: User rejected the ${this.name} request.`
-                  );
-                  return approval.message;
-                }
-              }
 
               const displayFilename = filename.split("/").pop();
 
@@ -273,7 +325,7 @@ module.exports.CreatePptxPresentation = {
                 `${this.caller}: Successfully created presentation "${title}"`
               );
 
-              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme.`;
+              return `Successfully created presentation "${title}" with ${totalSlideCount} slides across ${totalSections} sections using the ${theme.name} theme.`;
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`
