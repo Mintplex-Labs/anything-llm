@@ -31,11 +31,11 @@ async function getMemoriesForPrompt(userId, workspaceId, prompt, rawHistory) {
 
     let selectedWorkspace = workspaceMemories;
     if (workspaceMemories.length > INJECTED_WORKSPACE_LIMIT) {
-      selectedWorkspace = await rerankMemories(
-        workspaceMemories,
-        prompt,
-        rawHistory
-      );
+      // Skip reranking when there's no query context (agent calls)
+      const hasContext = prompt?.trim() || rawHistory?.length > 0;
+      selectedWorkspace = hasContext
+        ? await rerankMemories(workspaceMemories, prompt, rawHistory)
+        : workspaceMemories.slice(0, INJECTED_WORKSPACE_LIMIT);
     }
 
     const injectedIds = [
