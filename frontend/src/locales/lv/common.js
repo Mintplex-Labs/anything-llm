@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Laipni lūgti",
       getStarted: "Sākt darbu",
-      welcome: null,
+      welcome: "Laipni lūdzam",
     },
     llm: {
       title: "LLM preferences",
@@ -332,6 +332,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
+      filesystem: {
+        title: "Failu sistēmas piekļuves tiesības",
+        description:
+          "Iespējiet, lai jūsu pārstāvis varētu lasīt, rakstīt, meklēt un pārvaldīt failus noteiktā direktorijā. Atbalsta failu rediģēšanu, direktoriju navigāciju un satura meklēšanu.",
+        learnMore: "Uzziniet vairāk par to, kā izmantot šo prasmi",
+        configuration: "Konfigurācija",
+        readActions: "Lasīt",
+        writeActions: "Rīcības",
+        warning:
+          "Pieejums failu sistēmai var būt bīstams, jo tas var mainīt vai dzēst failus. Lūdzu, konsultējieties ar <link>dokumentāciju</link> pirms aktivizēšanas.",
+        skills: {
+          "read-text-file": {
+            title: "Atvērt failu",
+            description:
+              "Izlasiet failu saturu (tekstus, kodu, PDF failus, attēlus utt.)",
+          },
+          "read-multiple-files": {
+            title: "Izlasīt vairākus failus",
+            description: "Lasi vairākus failus vienlaikus.",
+          },
+          "list-directory": {
+            title: "Saraksta direktorijs",
+            description:
+              "Izveidot failu un direktoru sarakstu ievietotajā mapē",
+          },
+          "search-files": {
+            title: "Meklēt failus",
+            description: "Meklē failus pēc nosaukuma vai satura",
+          },
+          "get-file-info": {
+            title: "Iegūst faila informāciju",
+            description: "Iesaļojiet detalizētus failu metadatus",
+          },
+          "write-file": {
+            title: "Izveidot failu",
+            description: "Izveidot jaunas failus vai pārrakstīt esošus failus",
+          },
+          "edit-file": {
+            title: "Rediģēt failu",
+            description:
+              "Veiciet teksta failu rediģēšanu, izmantojot rindu bāzes metodi.",
+          },
+          "create-directory": {
+            title: "Izveidot direktoriju",
+            description: "Izveidot jaunas direktorijas",
+          },
+          "move-file": {
+            title: "Pārvietot/Vārdēt failu",
+            description: "Vāc vai pārdzen failus un direktorijus",
+          },
+          "copy-file": {
+            title: "Kopēt failu",
+            description: "Kopēt failus un direktorus",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveri",

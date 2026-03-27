@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "欢迎使用",
       getStarted: "开始",
-      welcome: null,
+      welcome: "欢迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -317,6 +317,59 @@ const TRANSLATIONS = {
       },
       default_skill:
         "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
+      filesystem: {
+        title: "文件系统访问",
+        description:
+          "允许您的代理能够读取、写入、搜索和管理指定目录中的文件。 支持文件编辑、目录导航和内容搜索功能。",
+        learnMore: "了解更多关于如何使用这项技能的信息。",
+        configuration: "配置",
+        readActions: "阅读操作",
+        writeActions: "编写操作",
+        warning:
+          "访问文件系统可能存在风险，因为它可能修改或删除文件。在启用之前，请务必查阅<link>文档</link>。",
+        skills: {
+          "read-text-file": {
+            title: "读取文件",
+            description: "读取文件内容（包括文本、代码、PDF、图像等）",
+          },
+          "read-multiple-files": {
+            title: "读取多个文件",
+            description: "同时读取多个文件",
+          },
+          "list-directory": {
+            title: "目录",
+            description: "列出文件夹中的文件和目录",
+          },
+          "search-files": {
+            title: "搜索文件",
+            description: "按文件名或内容搜索文件",
+          },
+          "get-file-info": {
+            title: "获取文件信息",
+            description: "获取有关文件的详细元数据",
+          },
+          "write-file": {
+            title: "创建文件",
+            description: "创建新的文件或覆盖现有文件",
+          },
+          "edit-file": {
+            title: "编辑文件",
+            description: "对文本文件进行基于行的编辑。",
+          },
+          "create-directory": {
+            title: "创建目录",
+            description: "创建新的目录",
+          },
+          "move-file": {
+            title: "移动/重命名文件",
+            description: "移动或重命名文件和目录",
+          },
+          "copy-file": {
+            title: "复制文件",
+            description: "复制文件和目录",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 服务器",

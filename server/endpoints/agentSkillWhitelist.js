@@ -9,6 +9,24 @@ const {
 function agentSkillWhitelistEndpoints(app) {
   if (!app) return;
 
+  app.get(
+    "/agent-skills/filesystem-agent/is-available",
+    [validatedRequest],
+    async (_request, response) => {
+      try {
+        const filesystemTool = require("../utils/agents/aibitat/plugins/filesystem/lib");
+        return response
+          .status(200)
+          .json({ available: filesystemTool.isToolAvailable() });
+      } catch (e) {
+        console.error(e);
+        return response
+          .status(500)
+          .json({ available: false, error: e.message });
+      }
+    }
+  );
+
   app.post(
     "/agent-skills/whitelist/add",
     [validatedRequest, flexUserRoleValid(ROLES.all)],

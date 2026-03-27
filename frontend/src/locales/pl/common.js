@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Witamy w",
       getStarted: "Rozpocznij",
-      welcome: null,
+      welcome: "Witaj",
     },
     llm: {
       title: "Preferencje modeli językowych",
@@ -333,6 +333,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
+      filesystem: {
+        title: "Dostęp do systemu plików",
+        description:
+          "Pozwól swoim agentom na odczytywanie, zapisywanie, wyszukiwanie i zarządzanie plikami w określonym katalogu. Obsługuje edycję plików, nawigację po katalogach oraz wyszukiwanie zawartości.",
+        learnMore:
+          "Dowiedz się więcej na temat tego, jak wykorzystać tę umiejętność.",
+        configuration: "Konfiguracja",
+        readActions: "Czytać akcje",
+        writeActions: "Działania",
+        warning:
+          "Dostęp do systemu plików może być niebezpieczny, ponieważ może modyfikować lub usuwać pliki. Prosimy o zapoznanie się z dokumentacją <link> przed włączeniem tej funkcji.",
+        skills: {
+          "read-text-file": {
+            title: "Otwórz plik",
+            description:
+              "Otwórz i przeczytaj zawartość plików (tekst, kod, pliki PDF, obrazy itp.)",
+          },
+          "read-multiple-files": {
+            title: "Odczytaj wiele plików",
+            description: "Otwórz i przetwórz wiele plików jednocześnie.",
+          },
+          "list-directory": {
+            title: "Lista kontaktów",
+            description: "Wyświetl pliki i katalogi w określonym folderze.",
+          },
+          "search-files": {
+            title: "Wyszukaj pliki",
+            description: "Wyszukaj pliki według nazwy lub zawartości",
+          },
+          "get-file-info": {
+            title: "Pobierz informacje o pliku",
+            description: "Uzyskaj szczegółowe metadane dotyczące plików.",
+          },
+          "write-file": {
+            title: "Utwórz plik",
+            description: "Utwórz nowe pliki lub nadpisz istniejące",
+          },
+          "edit-file": {
+            title: "Edytuj plik",
+            description:
+              "Wprowadzaj zmiany w plikach tekstowych, działając w oparciu o linie.",
+          },
+          "create-directory": {
+            title: "Utwórz katalog",
+            description: "Utwórz nowe katalogi",
+          },
+          "move-file": {
+            title: "Przenieś/Przekształć nazwę pliku",
+            description: "Przenieś lub zmień nazwę plików i katalogów",
+          },
+          "copy-file": {
+            title: "Skopiuj plik",
+            description: "Kopiuj pliki i katalogi",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serwery MCP",

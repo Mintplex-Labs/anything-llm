@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "歡迎使用",
       getStarted: "開始使用",
-      welcome: null,
+      welcome: "歡迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -306,6 +306,59 @@ const TRANSLATIONS = {
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
       default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+      filesystem: {
+        title: "檔案系統存取",
+        description:
+          "允許您的代理程式在指定目錄中讀取、寫入、搜尋和管理檔案。支援檔案編輯、目錄導航和內容搜尋功能。",
+        learnMore: "了解更多關於如何運用這項技能的資訊",
+        configuration: "設定",
+        readActions: "閱讀行動",
+        writeActions: "撰寫動作",
+        warning:
+          "訪問檔案系統可能存在風險，因為它可能會修改或刪除檔案。在啟用之前，請務必查閱相關<link>文件</link>。",
+        skills: {
+          "read-text-file": {
+            title: "開啟檔案",
+            description: "閱讀檔案內容（包括文字、程式碼、PDF 文件、圖片等）",
+          },
+          "read-multiple-files": {
+            title: "閱讀多個檔案",
+            description: "同時讀取多個檔案",
+          },
+          "list-directory": {
+            title: "名錄索引",
+            description: "列出指定資料夾中的檔案和目錄",
+          },
+          "search-files": {
+            title: "搜尋檔案",
+            description: "按檔案名稱或內容來搜尋",
+          },
+          "get-file-info": {
+            title: "取得檔案資訊",
+            description: "獲取關於檔案的詳細元數據",
+          },
+          "write-file": {
+            title: "儲存檔案",
+            description: "建立新的檔案或覆蓋現有檔案",
+          },
+          "edit-file": {
+            title: "編輯檔案",
+            description: "能夠對文字檔案進行行別編輯。",
+          },
+          "create-directory": {
+            title: "建立資料夾",
+            description: "建立新的資料夾",
+          },
+          "move-file": {
+            title: "移動/更名檔案",
+            description: "移動或更名檔案和資料夾",
+          },
+          "copy-file": {
+            title: "複製檔案",
+            description: "複製檔案和目錄",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",

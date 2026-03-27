@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenue",
       getStarted: "Commencer",
-      welcome: null,
+      welcome: "Bienvenue",
     },
     llm: {
       title: "Préférence LLM",
@@ -328,6 +328,64 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+      filesystem: {
+        title: "Accès au système de fichiers",
+        description:
+          "Permettez à votre agent de lire, écrire, rechercher et gérer des fichiers dans un répertoire spécifié. Prend en charge la modification de fichiers, la navigation dans les répertoires et la recherche de contenu.",
+        learnMore: "En savoir plus sur la manière d'utiliser cette compétence.",
+        configuration: "Configuration",
+        readActions: "Lire les actions",
+        writeActions: "Actions à effectuer",
+        warning:
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+        skills: {
+          "read-text-file": {
+            title: "Ouvrir le fichier",
+            description:
+              "Lire le contenu des fichiers (texte, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Lire plusieurs fichiers",
+            description: "Lire plusieurs fichiers simultanément.",
+          },
+          "list-directory": {
+            title: "Annuaire",
+            description:
+              "Énumérer les fichiers et les répertoires d'un dossier.",
+          },
+          "search-files": {
+            title: "Rechercher des fichiers",
+            description: "Rechercher des fichiers par nom ou par contenu",
+          },
+          "get-file-info": {
+            title: "Obtenir des informations sur le fichier",
+            description: "Obtenez des métadonnées détaillées sur les fichiers.",
+          },
+          "write-file": {
+            title: "Créer un fichier",
+            description:
+              "Créer de nouveaux fichiers ou remplacer des fichiers existants.",
+          },
+          "edit-file": {
+            title: "Modifier le fichier",
+            description:
+              "Effectuez des modifications basées sur des lignes dans les fichiers de texte.",
+          },
+          "create-directory": {
+            title: "Créer un répertoire",
+            description: "Créer de nouveaux répertoires",
+          },
+          "move-file": {
+            title: "Déplacer/Renommer le fichier",
+            description:
+              "Déplacez ou renommez des fichiers et des répertoires.",
+          },
+          "copy-file": {
+            title: "Copier le fichier",
+            description: "Copier des fichiers et des répertoires",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serveurs MCP",

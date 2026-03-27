@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Sveiki atvykę į",
       getStarted: "Pradėti",
-      welcome: null,
+      welcome: "Sveiki",
     },
     llm: {
       title: "LLM pasirinkimas",
@@ -340,6 +340,60 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Pagal numatytuosius nustatymus šis įgūdis yra įjungtas, bet galite jį išjungti, jei nenorite, kad jis būtų prieinamas agentui.",
+      filesystem: {
+        title: "Failų sistemos prieigos teisės",
+        description:
+          "Leiskite savo agentui skaityti, rašyti, ieškoti ir valdomi failus nustatytame kataloge. Paremiama failų redagavimas, katalogų navigacija ir turinio paieška.",
+        learnMore: "Sužinokite daugiau apie tai, kaip naudoti šią įgūdį.",
+        configuration: "Konfigūracija",
+        readActions: "Veikimas",
+        writeActions: "Veikimas",
+        warning:
+          "Failų sistemos prieigos vartymas gali būti pavojus, nes gali modifikuoti arba ištrinti failus. Prašome, prieš įgalindami, pasikonsultuoti su <link>dokumentacija</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Atidaryti failą",
+            description:
+              "Peržiūrėti failų turinį (tekstą, kodą, PDF, vaizdus ir kt.)",
+          },
+          "read-multiple-files": {
+            title: "Atidarykite kelis failus",
+            description: "Galia, skaitykite kelis failus vienu metu.",
+          },
+          "list-directory": {
+            title: "Pašalinis katalogas",
+            description: "Parodykite failus ir katalogus, esančius sąvade",
+          },
+          "search-files": {
+            title: "Paieškos failus",
+            description: "Paieškokite failus pagal pavadinimą arba turinį",
+          },
+          "get-file-info": {
+            title: "Gaukite failo informaciją",
+            description: "Gaukite išsamią informaciją apie failus.",
+          },
+          "write-file": {
+            title: "Sukurti failą",
+            description: "Sukurti naujus failus arba pakeisti esamus",
+          },
+          "edit-file": {
+            title: "Redaguoti failą",
+            description: "Atlikite teksto failų redakciją, remdamiesi eilėmis.",
+          },
+          "create-directory": {
+            title: "Sukurti katalogą",
+            description: "Sukurti naujas katalogus",
+          },
+          "move-file": {
+            title: "Perkelti/Pavadinimą failą",
+            description: "Perkelti arba pervardinti failus ir katalogus",
+          },
+          "copy-file": {
+            title: "Kopijuoti failą",
+            description: "Kopijuoti failus ir katalogus",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveriai",

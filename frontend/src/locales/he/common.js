@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
-      welcome: null,
+      welcome: "ברוכים הבאים",
     },
     llm: {
       title: "העדפות מודל שפה (LLM)",
@@ -326,6 +326,59 @@ const TRANSLATIONS = {
       },
       default_skill:
         "כברירת מחדל, הכישורים הזה מופעל, אך ניתן להשבית אותו אם אינכם רוצים שהוא יהיה זמין עבור הסוכן.",
+      filesystem: {
+        title: "גישה למערכת הקבצים",
+        description:
+          "אפשרו למתווך שלכם לקרוא, לכתוב, לחפש ולנהל קבצים בספריית מסוימת. תומך בעריכת קבצים, ניווט בספריות וחיפוש תוכן.",
+        learnMore: "למידע נוסף על השימוש בכישרון זה",
+        configuration: "הגדרות",
+        readActions: "קריאת פעולות",
+        writeActions: "פעולות",
+        warning:
+          "גישה למערכת הקבצים עלולה להיות מסוכנת, שכן היא עלולה לשנות או למחוק קבצים. אנא התייעצו עם ה<link>תיעוד</link> לפני הפעלתה.",
+        skills: {
+          "read-text-file": {
+            title: "קרא קובץ",
+            description: "קריאת תוכן קבצים (טקסט, קוד, PDF, תמונות וכו')",
+          },
+          "read-multiple-files": {
+            title: "קריאת מספר קבצים",
+            description: "קרא מספר קבצים בו זמנית.",
+          },
+          "list-directory": {
+            title: "רשימת אנשי קשר",
+            description: "רשימת קבצים וספריות בתיקייה",
+          },
+          "search-files": {
+            title: "חיפוש קבצים",
+            description: "חיפוש קבצים לפי שם או תוכן",
+          },
+          "get-file-info": {
+            title: "קבל מידע על הקובץ",
+            description: "קבל מידע מפורט על קבצים",
+          },
+          "write-file": {
+            title: "יצירת קובץ",
+            description: "יצירת קבצים חדשים או החלפת קבצים קיימים",
+          },
+          "edit-file": {
+            title: "ערוך קובץ",
+            description: "בצעו עריכה של קבצי טקסט על בסיס שורות.",
+          },
+          "create-directory": {
+            title: "יצירת תיקייה",
+            description: "ליצור תיקיות חדשות",
+          },
+          "move-file": {
+            title: "העתקה/שינוי שם של קובץ",
+            description: "הזיזו או שנו את שמות הקבצים והתיקיות.",
+          },
+          "copy-file": {
+            title: "העתק קובץ",
+            description: "העתקת קבצים וספריות",
+          },
+        },
+      },
     },
     mcp: {
       title: "שרתי MCP",

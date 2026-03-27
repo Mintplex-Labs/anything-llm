@@ -4,7 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenido a",
       getStarted: "Comenzar",
-      welcome: null,
+      welcome: "Bienvenido",
     },
     llm: {
       title: "Preferencia de LLM",
@@ -338,6 +338,64 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por defecto, esta función está activada, pero puede desactivarla si no desea que esté disponible para el agente.",
+      filesystem: {
+        title: "Acceso al sistema de archivos",
+        description:
+          "Permita que su agente pueda leer, escribir, buscar y administrar archivos dentro de un directorio específico. Soporta la edición de archivos, la navegación por directorios y la búsqueda de contenido.",
+        learnMore: "Aprenda más sobre cómo utilizar esta habilidad.",
+        configuration: "Configuración",
+        readActions: "Leer acciones",
+        writeActions: "Acciones a realizar",
+        warning:
+          "El acceso al sistema de archivos puede ser peligroso, ya que puede modificar o eliminar archivos. Consulte la <link>documentación</link> antes de habilitarlo.",
+        skills: {
+          "read-text-file": {
+            title: "Abrir archivo",
+            description:
+              "Leer el contenido de archivos (texto, código, archivos PDF, imágenes, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Leer varios archivos",
+            description: "Leer varios archivos a la vez.",
+          },
+          "list-directory": {
+            title: "Directorio",
+            description:
+              "Enumera los archivos y directorios dentro de una carpeta.",
+          },
+          "search-files": {
+            title: "Buscar archivos",
+            description: "Busque archivos por nombre o contenido.",
+          },
+          "get-file-info": {
+            title: "Obtener información del archivo",
+            description:
+              "Obtenga información detallada sobre los metadatos de los archivos.",
+          },
+          "write-file": {
+            title: "Crear archivo",
+            description:
+              "Crear nuevos archivos o sobrescribir archivos existentes.",
+          },
+          "edit-file": {
+            title: "Editar archivo",
+            description:
+              "Realiza modificaciones basadas en líneas en archivos de texto.",
+          },
+          "create-directory": {
+            title: "Crear directorio",
+            description: "Crear nuevas carpetas",
+          },
+          "move-file": {
+            title: "Mover/Cambiar el nombre del archivo",
+            description: "Mover o renombrar archivos y directorios.",
+          },
+          "copy-file": {
+            title: "Copiar archivo",
+            description: "Copiar archivos y directorios",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

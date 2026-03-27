@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Chào mừng đến",
       getStarted: "Bắt đầu",
-      welcome: null,
+      welcome: "Chào mừng",
     },
     llm: {
       title: "Tùy chọn LLM",
@@ -325,6 +325,61 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
+      filesystem: {
+        title: "Quyền truy cập hệ thống tệp",
+        description:
+          "Cho phép đại lý của bạn đọc, ghi, tìm kiếm và quản lý các tệp tin trong một thư mục được chỉ định. Hỗ trợ chỉnh sửa tệp, điều hướng thư mục và tìm kiếm nội dung.",
+        learnMore: "Tìm hiểu thêm về cách sử dụng kỹ năng này.",
+        configuration: "Cấu hình",
+        readActions: "Đọc hành động",
+        writeActions: "Các hành động",
+        warning:
+          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <link> trước khi kích hoạt.",
+        skills: {
+          "read-text-file": {
+            title: "Đọc tệp",
+            description:
+              "Đọc nội dung của các tệp (văn bản, mã, PDF, hình ảnh, v.v.)",
+          },
+          "read-multiple-files": {
+            title: "Đọc nhiều tệp",
+            description: "Đọc nhiều tệp tin cùng lúc.",
+          },
+          "list-directory": {
+            title: "Danh sách",
+            description: "Liệt kê các tệp tin và thư mục trong một thư mục.",
+          },
+          "search-files": {
+            title: "Tìm kiếm tệp",
+            description: "Tìm kiếm các tệp theo tên hoặc nội dung",
+          },
+          "get-file-info": {
+            title: "Lấy thông tin tệp",
+            description: "Lấy thông tin chi tiết về các tệp tin.",
+          },
+          "write-file": {
+            title: "Tạo tệp",
+            description: "Tạo các tệp mới hoặc ghi đè các tệp hiện có",
+          },
+          "edit-file": {
+            title: "Chỉnh sửa tệp",
+            description:
+              "Thực hiện chỉnh sửa dựa trên dòng trong các tệp văn bản.",
+          },
+          "create-directory": {
+            title: "Tạo thư mục",
+            description: "Tạo thư mục mới",
+          },
+          "move-file": {
+            title: "Di chuyển/Đổi tên tệp",
+            description: "Di chuyển hoặc đổi tên các tệp và thư mục.",
+          },
+          "copy-file": {
+            title: "Sao chép tệp",
+            description: "Sao chép các tệp tin và thư mục",
+          },
+        },
+      },
     },
     mcp: {
       title: "Máy chủ MCP",

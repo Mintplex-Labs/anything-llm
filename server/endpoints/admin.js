@@ -403,6 +403,9 @@ function adminEndpoints(app) {
             case "disabled_agent_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "disabled_filesystem_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
