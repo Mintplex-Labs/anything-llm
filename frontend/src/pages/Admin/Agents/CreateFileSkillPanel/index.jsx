@@ -6,6 +6,7 @@ import {
   FileXls,
   FileDoc,
   FilePdf,
+  FileText,
   CircleNotch,
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
@@ -18,6 +19,15 @@ const getCreateFileSubSkills = (t) => {
       description: t("agent.skill.createFiles.skills.create-pptx.description"),
       icon: FilePpt,
       category: "pptx",
+    },
+    {
+      name: "create-text-file",
+      title: t("agent.skill.createFiles.skills.create-text-file.title"),
+      description: t(
+        "agent.skill.createFiles.skills.create-text-file.description"
+      ),
+      icon: FileText,
+      category: "text",
     },
   ];
 };
@@ -74,6 +84,9 @@ export default function CreateFileSkillPanel({
 
   const pptxSkills = CREATE_FILE_SUB_SKILLS.filter(
     (s) => s.category === "pptx"
+  );
+  const textSkills = CREATE_FILE_SUB_SKILLS.filter(
+    (s) => s.category === "text"
   );
 
   return (
@@ -133,6 +146,23 @@ export default function CreateFileSkillPanel({
                 <>
                   <div className="flex flex-col gap-y-2">
                     <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
+                      <FileText size={12} weight="fill" />
+                      {t("agent.skill.createFiles.textActions")}
+                    </p>
+                    <div className="flex flex-col gap-y-1">
+                      {textSkills.map((subSkill) => (
+                        <SubSkillRow
+                          key={subSkill.name}
+                          subSkill={subSkill}
+                          disabled={disabledSubSkills.includes(subSkill.name)}
+                          onToggle={() => toggleSubSkill(subSkill.name)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-y-2">
+                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
                       <FilePpt size={12} weight="fill" />
                       {t("agent.skill.createFiles.pptxActions")}
                     </p>
@@ -147,7 +177,6 @@ export default function CreateFileSkillPanel({
                       ))}
                     </div>
                   </div>
-
                   <ComingSoonSection />
                 </>
               )}
