@@ -9,7 +9,6 @@ import {
   File,
   Browser,
   ChartBar,
-  FileMagnifyingGlass,
   FolderOpen,
   FilePlus,
 } from "@phosphor-icons/react";
@@ -19,7 +18,6 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
-import CreateFilesImage from "@/media/agents/generate-save-files.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -69,17 +67,9 @@ export const getConfigurableSkills = (
       component: CreateFileSkillPanel,
       skill: "create-files-agent",
       icon: FilePlus,
-      image: CreateFilesImage,
+      image: GenerateSaveImages,
     },
   }),
-  "save-file-to-browser": {
-    title: t("agent.skill.save.title"),
-    description: t("agent.skill.save.description"),
-    component: GenericSkillPanel,
-    skill: "save-file-to-browser",
-    icon: FileMagnifyingGlass,
-    image: GenerateSaveImages,
-  },
   "create-chart": {
     title: t("agent.skill.generate.title"),
     description: t("agent.skill.generate.description"),

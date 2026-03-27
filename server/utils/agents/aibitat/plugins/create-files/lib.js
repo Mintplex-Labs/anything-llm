@@ -23,51 +23,6 @@ class CreateFilesManager {
   }
 
   /**
-   * Normalizes a path by standardizing format.
-   * @param {string} p - The path to normalize
-   * @returns {string} Normalized path
-   */
-  #normalizePath(p) {
-    p = p.trim().replace(/^["']|["']$/g, "");
-    if (p.startsWith("/"))
-      return p.replace(/\/+/g, "/").replace(/(?<!^)\/$/, "");
-    return path.normalize(p);
-  }
-
-  /**
-   * Validates and normalizes a path string for security checks.
-   * @param {string} p - The path to validate
-   * @returns {string|null} Normalized absolute path or null if invalid
-   */
-  #normalizeAndValidatePath(p) {
-    if (typeof p !== "string" || !p || p.includes("\x00")) return null;
-    try {
-      const normalized = path.resolve(path.normalize(p));
-      return path.isAbsolute(normalized) ? normalized : null;
-    } catch {
-      return null;
-    }
-  }
-
-  /**
-   * Checks if an absolute path is within the output directory.
-   * @param {string} absolutePath - The absolute path to check
-   * @returns {boolean} True if path is within output directory
-   */
-  #isPathWithinOutputDirectory(absolutePath) {
-    const normalizedPath = this.#normalizeAndValidatePath(absolutePath);
-    if (!normalizedPath) return false;
-
-    const normalizedOutputDir = this.#normalizeAndValidatePath(
-      this.#outputDirectory
-    );
-    if (!normalizedOutputDir) return false;
-
-    if (normalizedPath === normalizedOutputDir) return true;
-    return normalizedPath.startsWith(normalizedOutputDir + path.sep);
-  }
-
-  /**
    * Initializes the create-files manager and ensures output directory exists.
    * @returns {Promise<string>} The output directory path
    */
@@ -113,30 +68,6 @@ class CreateFilesManager {
   }
 
   /**
-   * Validates a path for security, ensuring it's within the output directory.
-   * Relative paths are resolved against the output directory.
-   * @param {string} requestedPath - The path to validate (filename or relative path)
-   * @returns {Promise<string>} The validated absolute path within output directory
-   * @throws {Error} If path would be outside output directory
-   */
-  async validatePath(requestedPath) {
-    await this.ensureInitialized();
-
-    const filename = path.basename(requestedPath);
-    const absolute = path.resolve(this.#outputDirectory, filename);
-    const normalizedRequested = this.#normalizePath(absolute);
-
-    if (!this.#isPathWithinOutputDirectory(normalizedRequested)) {
-      console.log(
-        `[validatePath] Access denied - path outside output directory: ${absolute} not in ${this.#outputDirectory}`
-      );
-      throw new Error(`Access denied - path outside output directory.`);
-    }
-
-    return absolute;
-  }
-
-  /**
    * Writes binary content (Buffer) to a file.
    * @param {string} filePath - Validated absolute path to write to
    * @param {Buffer} buffer - Binary content to write
@@ -158,56 +89,6 @@ class CreateFilesManager {
     console.log(
       `[CreateFilesManager] writeBinaryFile completed - file saved to: ${filePath}`
     );
-  }
-
-  /**
-   * Sends a file to the browser for download via WebSocket.
-   * Falls back to filesystem persistence if file is too large for WebSocket transfer.
-   * @param {object} socket - The WebSocket instance
-   * @param {string} filename - The filename for the download
-   * @param {Buffer} buffer - The file content as a Buffer
-   * @param {string} mimeType - The MIME type of the file
-   * @returns {Promise<{sent: boolean, fallbackPath?: string}>} Result indicating if sent or saved to fallback
-   */
-  async sendFileToBrowser(socket, filename, buffer, mimeType) {
-    const fileSizeBytes = buffer.length;
-    const fileSizeKB = (fileSizeBytes / 1024).toFixed(2);
-    const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
-    const MAX_WEBSOCKET_SIZE_BYTES = 5 * 1024 * 1024; // 5MB threshold for WebSocket
-
-    console.log(
-      `[CreateFilesManager] sendFileToBrowser called - filename: ${filename}, size: ${fileSizeKB}KB (${fileSizeMB}MB), mimeType: ${mimeType}`
-    );
-
-    if (fileSizeBytes > MAX_WEBSOCKET_SIZE_BYTES) {
-      console.warn(
-        `[CreateFilesManager] File too large for WebSocket transfer (${fileSizeMB}MB > 5MB). Persisting to filesystem instead.`
-      );
-
-      const fallbackPath = await this.validatePath(filename);
-      await this.writeBinaryFile(fallbackPath, buffer);
-      console.log(
-        `[CreateFilesManager] Large file persisted to fallback location: ${fallbackPath}`
-      );
-      return { sent: false, fallbackPath };
-    }
-
-    const b64Content = `data:${mimeType};base64,${buffer.toString("base64")}`;
-    const payloadSizeKB = (b64Content.length / 1024).toFixed(2);
-
-    console.log(
-      `[CreateFilesManager] Sending file via WebSocket - base64 payload size: ${payloadSizeKB}KB`
-    );
-
-    socket.send("fileDownload", {
-      filename,
-      b64Content,
-    });
-
-    console.log(
-      `[CreateFilesManager] sendFileToBrowser completed - file sent to browser: ${filename}`
-    );
-    return { sent: true };
   }
 
   /**
@@ -241,51 +122,6 @@ class CreateFilesManager {
       ".webm": "video/webm",
     };
     return mimeTypes[ext.toLowerCase()] || "application/octet-stream";
-  }
-
-  /**
-   * Sends a file download card to the frontend for display in the chat.
-   * This shows a visual card with the file info and download button rather than auto-downloading.
-   * @param {object} socket - The WebSocket instance
-   * @param {string} filename - The filename to display
-   * @param {Buffer} buffer - The file content as a Buffer
-   * @param {string} [mimeType] - Optional MIME type (auto-detected from extension if not provided)
-   * @returns {{sent: boolean, sizeWarning?: string}} Result indicating if card was sent
-   */
-  sendFileDownloadCard(socket, filename, buffer, mimeType = null) {
-    const fileSizeBytes = buffer.length;
-    const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
-    const MAX_CARD_SIZE_BYTES = 10 * 1024 * 1024; // 10MB threshold for file cards
-
-    const ext = "." + (filename?.split(".")?.pop()?.toLowerCase() || "");
-    const resolvedMimeType = mimeType || this.getMimeType(ext);
-
-    console.log(
-      `[CreateFilesManager] sendFileDownloadCard - filename: ${filename}, size: ${fileSizeMB}MB, mimeType: ${resolvedMimeType}`
-    );
-
-    if (fileSizeBytes > MAX_CARD_SIZE_BYTES) {
-      console.warn(
-        `[CreateFilesManager] File too large for download card (${fileSizeMB}MB > 10MB). Skipping card display.`
-      );
-      return {
-        sent: false,
-        sizeWarning: `File is ${fileSizeMB}MB which may be too large for browser download via WebSocket.`,
-      };
-    }
-
-    const b64Content = `data:${resolvedMimeType};base64,${buffer.toString("base64")}`;
-
-    socket.send("fileDownloadCard", {
-      filename,
-      b64Content,
-      fileSize: fileSizeBytes,
-    });
-
-    console.log(
-      `[CreateFilesManager] sendFileDownloadCard completed - card sent for: ${filename}`
-    );
-    return { sent: true };
   }
 
   /**
@@ -334,17 +170,6 @@ class CreateFilesManager {
     console.log(
       `[CreateFilesManager] Registered output: type=${type}, total pending=${aibitat._pendingOutputs.length}`
     );
-  }
-
-  /**
-   * Clears all pending outputs from the aibitat instance.
-   * Called after outputs are persisted to chat history.
-   * @param {object} aibitat - The aibitat instance
-   */
-  clearOutputs(aibitat) {
-    if (aibitat) {
-      aibitat._pendingOutputs = [];
-    }
   }
 
   /**
@@ -426,77 +251,6 @@ class CreateFilesManager {
 
     const buffer = await this.readBinaryFile(storagePath);
     return { buffer, storagePath };
-  }
-
-  /**
-   * Lists all generated files in the storage directory with their metadata.
-   * @returns {Promise<Array<{filename: string, birthtime: Date, size: number}>>}
-   */
-  async listGeneratedFiles() {
-    await this.ensureInitialized();
-
-    try {
-      const files = await fs.readdir(this.#outputDirectory);
-      const fileStats = await Promise.all(
-        files.map(async (filename) => {
-          try {
-            const filePath = path.join(this.#outputDirectory, filename);
-            const stats = await fs.stat(filePath);
-            return {
-              filename,
-              birthtime: stats.birthtime,
-              size: stats.size,
-            };
-          } catch {
-            return null;
-          }
-        })
-      );
-      return fileStats.filter(Boolean);
-    } catch {
-      return [];
-    }
-  }
-
-  /**
-   * Deletes a generated file by its storage filename.
-   * @param {string} filename - The storage filename
-   * @returns {Promise<boolean>} True if deleted, false otherwise
-   */
-  async deleteGeneratedFile(filename) {
-    await this.ensureInitialized();
-
-    try {
-      const storagePath = path.join(this.#outputDirectory, filename);
-      await fs.unlink(storagePath);
-      console.log(
-        `[CreateFilesManager] deleteGeneratedFile - deleted ${filename}`
-      );
-      return true;
-    } catch (error) {
-      console.error(
-        `[CreateFilesManager] deleteGeneratedFile - failed to delete ${filename}: ${error.message}`
-      );
-      return false;
-    }
-  }
-
-  /**
-   * Batch deletes multiple generated files.
-   * @param {string[]} filenames - Array of storage filenames to delete
-   * @returns {Promise<{deleted: number, failed: number}>}
-   */
-  async batchDeleteGeneratedFiles(filenames) {
-    let deleted = 0;
-    let failed = 0;
-
-    for (const filename of filenames) {
-      const success = await this.deleteGeneratedFile(filename);
-      if (success) deleted++;
-      else failed++;
-    }
-
-    return { deleted, failed };
   }
 
   /**

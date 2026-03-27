@@ -2,7 +2,6 @@ const { webBrowsing } = require("./web-browsing.js");
 const { webScraping } = require("./web-scraping.js");
 const { websocket } = require("./websocket.js");
 const { docSummarizer } = require("./summarize.js");
-const { saveFileInBrowser } = require("./save-file-browser.js");
 const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
@@ -15,7 +14,6 @@ module.exports = {
   webBrowsing,
   websocket,
   docSummarizer,
-  saveFileInBrowser,
   chatHistory,
   memory,
   rechart,
@@ -28,7 +26,6 @@ module.exports = {
   [webBrowsing.name]: webBrowsing,
   [websocket.name]: websocket,
   [docSummarizer.name]: docSummarizer,
-  [saveFileInBrowser.name]: saveFileInBrowser,
   [chatHistory.name]: chatHistory,
   [memory.name]: memory,
   [rechart.name]: rechart,
