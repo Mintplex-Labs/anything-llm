@@ -83,9 +83,7 @@ module.exports.CreateTextFile = {
             try {
               this.super.handlerProps.log(`Using the create-text-file tool.`);
 
-              const normalizedExt = extension
-                .toLowerCase()
-                .replace(/^\./, "");
+              const normalizedExt = extension.toLowerCase().replace(/^\./, "");
               const hasExtension = /\.\w+$/.test(filename);
 
               if (!hasExtension) {

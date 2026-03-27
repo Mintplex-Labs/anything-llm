@@ -1,12 +1,13 @@
 import { memo } from "react";
 import FileDownloadCard from "../../FileDownloadCard";
 
-function PptxFileDownloadOutput({ payload }) {
+function FileDownloadOutput({ payload }) {
   return <FileDownloadCard props={{ content: payload }} />;
 }
 
 const OUTPUT_RENDERERS = {
-  PptxFileDownload: PptxFileDownloadOutput,
+  PptxFileDownload: FileDownloadOutput,
+  TextFileDownload: FileDownloadOutput,
 };
 
 function HistoricalOutputs({ outputs = [] }) {
