@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Memory from "@/models/memory";
 import showToast from "@/utils/toast";
 import WorkspaceMemories from "./MemoryViews/WorkspaceMemories";
 import GlobalMemories from "./MemoryViews/GlobalMemories";
 
 export default function Personalization({ workspace }) {
+  const { t } = useTranslation();
   const [memories, setMemories] = useState({ global: [], workspace: [] });
   const [loading, setLoading] = useState(true);
 
@@ -20,23 +22,23 @@ export default function Personalization({ workspace }) {
   }, [workspace?.id]);
 
   async function handleDelete(memoryId) {
-    if (!window.confirm("Delete this memory?")) return;
+    if (!window.confirm(t("personalization.toast.delete-confirm"))) return;
     const { success } = await Memory.delete(memoryId);
     if (!success) {
-      showToast("Failed to delete memory.", "error");
+      showToast(t("personalization.toast.delete-failed"), "error");
       return;
     }
-    showToast("Memory deleted.", "success");
+    showToast(t("personalization.toast.delete-success"), "success");
     fetchMemories();
   }
 
   async function handlePromote(memoryId) {
     const { memory, error } = await Memory.promoteToGlobal(memoryId);
     if (!memory) {
-      showToast(error || "Failed to promote memory.", "error");
+      showToast(error || t("personalization.toast.promote-failed"), "error");
       return;
     }
-    showToast("Memory promoted to global.", "success");
+    showToast(t("personalization.toast.promote-success"), "success");
     fetchMemories();
   }
 
@@ -46,27 +48,27 @@ export default function Personalization({ workspace }) {
       scope,
     });
     if (!memory) {
-      showToast(error || "Failed to add memory.", "error");
+      showToast(error || t("personalization.toast.add-failed"), "error");
       return;
     }
-    showToast("Memory added.", "success");
+    showToast(t("personalization.toast.add-success"), "success");
     fetchMemories();
   }
 
   async function handleUpdate(memoryId, content) {
     const { memory, error } = await Memory.update(memoryId, { content });
     if (!memory) {
-      showToast(error || "Failed to update memory.", "error");
+      showToast(error || t("personalization.toast.update-failed"), "error");
       return;
     }
-    showToast("Memory updated.", "success");
+    showToast(t("personalization.toast.update-success"), "success");
     fetchMemories();
   }
 
   if (loading) {
     return (
       <div className="text-theme-text-secondary text-sm py-8">
-        Loading personalization data...
+        {t("personalization.loading")}
       </div>
     );
   }

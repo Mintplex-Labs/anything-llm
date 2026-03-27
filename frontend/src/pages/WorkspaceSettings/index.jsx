@@ -144,7 +144,7 @@ function ShowWorkspaceChat() {
             visible={!isDefaultUser}
           />
           <TabItem
-            title="Personalization"
+            title={t("workspaces—settings.personalization")}
             icon={<UserFocus className="h-6 w-6" />}
             to={paths.workspace.settings.personalization(slug)}
             visible={memoryEnabled}

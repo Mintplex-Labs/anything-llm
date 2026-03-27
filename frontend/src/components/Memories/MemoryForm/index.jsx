@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Shared form for creating and editing memories.
@@ -11,11 +12,12 @@ import { useState } from "react";
  */
 export default function MemoryForm({
   initialContent = "",
-  placeholder = "Enter a memory (e.g. 'I prefer concise responses')",
-  submitLabel = "Save",
+  placeholder,
+  submitLabel,
   onSubmit,
   onCancel,
 }) {
+  const { t } = useTranslation();
   const [content, setContent] = useState(initialContent);
 
   function handleSubmit(e) {
@@ -33,7 +35,7 @@ export default function MemoryForm({
         autoFocus
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder || t("personalization.form.placeholder")}
         rows={2}
         className="w-full border-none bg-theme-bg-secondary placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 resize-none"
       />
@@ -43,14 +45,14 @@ export default function MemoryForm({
           onClick={onCancel}
           className="rounded-lg border border-white/10 text-theme-text-secondary hover:text-white py-1.5 px-3 text-xs"
         >
-          Cancel
+          {t("personalization.form.cancel")}
         </button>
         <button
           type="submit"
           disabled={!content.trim()}
           className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button py-1.5 px-3 text-xs font-semibold disabled:opacity-20 disabled:cursor-not-allowed"
         >
-          {submitLabel}
+          {submitLabel || t("personalization.form.save")}
         </button>
       </div>
     </form>

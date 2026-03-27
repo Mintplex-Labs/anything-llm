@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 
@@ -7,17 +8,21 @@ import { ArrowSquareOut } from "@phosphor-icons/react";
  * @param {Object[]} props.memories
  */
 export default function WorkspacesList({ workspaces, memories }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="flex flex-col gap-y-1 mb-4">
-        <label className="block input-label">Workspace Memories</label>
+        <label className="block input-label">
+          {t("personalization.workspace.list-title")}
+        </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
-          Manage workspace-specific memories from each workspace's settings.
+          {t("personalization.workspace.list-description")}
         </p>
       </div>
       {workspaces.length === 0 ? (
         <p className="text-xs text-theme-text-secondary">
-          No workspaces found.
+          {t("personalization.workspace.no-workspaces")}
         </p>
       ) : (
         <div className="overflow-x-auto">
@@ -25,10 +30,10 @@ export default function WorkspacesList({ workspaces, memories }) {
             <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
               <tr>
                 <th scope="col" className="px-6 py-3 rounded-tl-lg">
-                  Workspace
+                  {t("personalization.table.workspace")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Memories
+                  {t("personalization.table.memories")}
                 </th>
                 <th scope="col" className="px-6 py-3 rounded-tr-lg">
                   {" "}
@@ -54,7 +59,8 @@ export default function WorkspacesList({ workspaces, memories }) {
                         href={paths.workspace.settings.personalization(ws.slug)}
                         className="text-white flex items-center gap-x-1 hover:underline hover:text-sky-400"
                       >
-                        Manage <ArrowSquareOut size={14} />
+                        {t("personalization.table.manage")}{" "}
+                        <ArrowSquareOut size={14} />
                       </a>
                     </td>
                   </tr>

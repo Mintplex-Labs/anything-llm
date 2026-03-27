@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MemoryForm from "@/components/Memories/MemoryForm";
 import { PencilSimple, Trash, GlobeSimple } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 export default function MemoryItem({ memory, onDelete, onPromote, onUpdate }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const isGlobal = memory.scope === "global";
 
@@ -11,7 +13,7 @@ export default function MemoryItem({ memory, onDelete, onPromote, onUpdate }) {
     return (
       <MemoryForm
         initialContent={memory.content}
-        submitLabel="Save"
+        submitLabel={t("personalization.form.save")}
         onSubmit={(content) => {
           onUpdate(memory.id, content);
           setEditing(false);
@@ -36,7 +38,7 @@ export default function MemoryItem({ memory, onDelete, onPromote, onUpdate }) {
         <button
           onClick={() => setEditing(true)}
           data-tooltip-id="memory-actions"
-          data-tooltip-content="Edit"
+          data-tooltip-content={t("personalization.item.edit")}
           className="border-none p-1 text-theme-text-secondary hover:text-white"
         >
           <PencilSimple size={14} />
@@ -45,7 +47,7 @@ export default function MemoryItem({ memory, onDelete, onPromote, onUpdate }) {
           <button
             onClick={() => onPromote(memory.id)}
             data-tooltip-id="memory-actions"
-            data-tooltip-content="Promote to global"
+            data-tooltip-content={t("personalization.item.promote-to-global")}
             className="border-none p-1 text-theme-text-secondary hover:text-sky-400"
           >
             <GlobeSimple size={14} />
@@ -54,7 +56,7 @@ export default function MemoryItem({ memory, onDelete, onPromote, onUpdate }) {
         <button
           onClick={() => onDelete(memory.id)}
           data-tooltip-id="memory-actions"
-          data-tooltip-content="Delete"
+          data-tooltip-content={t("personalization.item.delete")}
           className="border-none p-1 text-theme-text-secondary hover:text-red-400"
         >
           <Trash size={14} />

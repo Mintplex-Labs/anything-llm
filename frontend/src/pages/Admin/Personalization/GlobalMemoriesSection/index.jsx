@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MemoryForm from "@/components/Memories/MemoryForm";
 import MemoryItem from "@/components/Memories/MemoryItem";
 import { Brain, Plus } from "@phosphor-icons/react";
@@ -16,6 +17,7 @@ export default function GlobalMemoriesSection({
   onUpdate,
   onAdd,
 }) {
+  const { t } = useTranslation();
   const [showAddForm, setShowAddForm] = useState(false);
 
   function handleAdd(content) {
@@ -28,7 +30,10 @@ export default function GlobalMemoriesSection({
       <div className="flex flex-col gap-y-1 mb-4">
         <div className="flex items-center justify-between">
           <label className="block input-label">
-            Global Memories ({memories.length}/5)
+            {t("personalization.global.title", {
+              count: memories.length,
+              max: 5,
+            })}
           </label>
           {memories.length < 5 && (
             <button
@@ -36,20 +41,20 @@ export default function GlobalMemoriesSection({
               className="flex items-center gap-x-1 border-none text-theme-text-secondary font-medium text-sm px-[10px] py-[6px] rounded-md bg-theme-bg-secondary hover:bg-theme-bg-primary"
             >
               <Plus size={14} weight="bold" />
-              Add Global Memory
+              {t("personalization.global.add-button")}
             </button>
           )}
         </div>
         <p className="text-white text-opacity-60 text-xs font-medium">
-          These memories are applied across all workspaces.
+          {t("personalization.global.description")}
         </p>
       </div>
 
       {showAddForm && (
         <div className="mb-4">
           <MemoryForm
-            placeholder="Enter a global memory (e.g. 'My name is Sean')"
-            submitLabel="Add"
+            placeholder={t("personalization.global.placeholder")}
+            submitLabel={t("personalization.form.add")}
             onSubmit={handleAdd}
             onCancel={() => setShowAddForm(false)}
           />
@@ -61,10 +66,10 @@ export default function GlobalMemoriesSection({
           <div className="flex flex-col items-center gap-y-2">
             <Brain className="h-8 w-8 text-theme-text-secondary" />
             <p className="text-sm text-theme-text-secondary">
-              No global memories yet
+              {t("personalization.global.empty-title")}
             </p>
             <p className="text-xs text-theme-text-secondary">
-              Add them manually or promote workspace memories to global.
+              {t("personalization.global.empty-description")}
             </p>
           </div>
         </div>

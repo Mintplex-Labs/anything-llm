@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import SettingsSidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
@@ -12,6 +13,7 @@ import GlobalMemoriesSection from "./GlobalMemoriesSection";
 import WorkspacesList from "./WorkspacesList";
 
 export default function Personalization() {
+  const { t } = useTranslation();
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [extracting, setExtracting] = useState(false);
@@ -51,12 +53,19 @@ export default function Personalization() {
       memory_enabled: value,
     });
     if (!success) {
-      showToast(`Failed to update setting: ${error}`, "error");
+      showToast(
+        t("personalization.toast.setting-update-failed", { error }),
+        "error"
+      );
       return;
     }
     setEnabled(checked);
     showToast(
-      `Personalization ${checked ? "enabled" : "disabled"}.`,
+      t(
+        checked
+          ? "personalization.toast.enabled"
+          : "personalization.toast.disabled"
+      ),
       "success"
     );
     if (checked) fetchData();
@@ -67,49 +76,47 @@ export default function Personalization() {
     const { success, error } = await Memory.runExtraction();
     setExtracting(false);
     if (!success) {
-      showToast(`Extraction failed: ${error}`, "error");
+      showToast(
+        t("personalization.toast.extraction-failed", { error }),
+        "error"
+      );
       return;
     }
-    showToast("Memory extraction completed.", "success");
+    showToast(t("personalization.toast.extraction-completed"), "success");
     fetchData();
   }
 
   async function handleClearAll() {
-    if (
-      !window.confirm(
-        "Are you sure? This will permanently delete all of your personalization memories."
-      )
-    )
-      return;
+    if (!window.confirm(t("personalization.toast.clear-confirm"))) return;
     setClearing(true);
     const { success, error } = await Memory.clearAll();
     setClearing(false);
     if (!success) {
-      showToast(`Failed to clear memories: ${error}`, "error");
+      showToast(t("personalization.toast.clear-failed", { error }), "error");
       return;
     }
-    showToast("All personalization memories cleared.", "success");
+    showToast(t("personalization.toast.clear-success"), "success");
     setMemories([]);
   }
 
   async function handleDeleteMemory(memoryId) {
-    if (!window.confirm("Delete this memory?")) return;
+    if (!window.confirm(t("personalization.toast.delete-confirm"))) return;
     const { success } = await Memory.delete(memoryId);
     if (!success) {
-      showToast("Failed to delete memory.", "error");
+      showToast(t("personalization.toast.delete-failed"), "error");
       return;
     }
-    showToast("Memory deleted.", "success");
+    showToast(t("personalization.toast.delete-success"), "success");
     setMemories((prev) => prev.filter((m) => m.id !== memoryId));
   }
 
   async function handleUpdateMemory(memoryId, content) {
     const { memory, error } = await Memory.update(memoryId, { content });
     if (!memory) {
-      showToast(error || "Failed to update memory.", "error");
+      showToast(error || t("personalization.toast.update-failed"), "error");
       return;
     }
-    showToast("Memory updated.", "success");
+    showToast(t("personalization.toast.update-success"), "success");
     setMemories((prev) =>
       prev.map((m) => (m.id === memoryId ? { ...m, content } : m))
     );
@@ -123,10 +130,10 @@ export default function Personalization() {
       scope: "global",
     });
     if (!memory) {
-      showToast(error || "Failed to add memory.", "error");
+      showToast(error || t("personalization.toast.add-failed"), "error");
       return;
     }
-    showToast("Global memory added.", "success");
+    showToast(t("personalization.toast.add-global-success"), "success");
     setMemories((prev) => [memory, ...prev]);
   }
 
@@ -143,13 +150,11 @@ export default function Personalization() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Personalization
+                {t("personalization.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              AnythingLLM can learn about you over time to provide more relevant
-              and personalized responses. Memories are extracted automatically
-              from your conversations.
+              {t("personalization.description")}
             </p>
           </div>
 
@@ -189,6 +194,8 @@ function PersonalizationContent({
   onUpdateMemory,
   onAddGlobal,
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <Skeleton.default
@@ -210,8 +217,8 @@ function PersonalizationContent({
           size="lg"
           enabled={enabled}
           onChange={onToggle}
-          label="Enable Personalization"
-          description="When enabled, AnythingLLM will learn user preferences and context from conversations."
+          label={t("personalization.toggle.label")}
+          description={t("personalization.toggle.description")}
         />
       </div>
     );
@@ -223,8 +230,8 @@ function PersonalizationContent({
         size="lg"
         enabled={enabled}
         onChange={onToggle}
-        label="Enable Personalization"
-        description="When enabled, AnythingLLM will learn user preferences and context from conversations."
+        label={t("personalization.toggle.label")}
+        description={t("personalization.toggle.description")}
       />
 
       <div className="flex gap-x-3">
@@ -233,14 +240,18 @@ function PersonalizationContent({
           disabled={extracting}
           className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
         >
-          {extracting ? "Extracting..." : "Run Extraction Now"}
+          {extracting
+            ? t("personalization.actions.extracting")
+            : t("personalization.actions.run-extraction")}
         </button>
         <button
           onClick={onClearAll}
           disabled={clearing || memories.length === 0}
           className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
         >
-          {clearing ? "Clearing..." : "Clear All My Memories"}
+          {clearing
+            ? t("personalization.actions.clearing")
+            : t("personalization.actions.clear-all")}
         </button>
       </div>
 

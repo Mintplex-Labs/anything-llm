@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MemoryForm from "@/components/Memories/MemoryForm";
 import MemoryItem from "@/components/Memories/MemoryItem";
 import { Plus, Brain } from "@phosphor-icons/react";
@@ -20,6 +21,7 @@ export default function WorkspaceMemories({
   onPromote,
   onUpdate,
 }) {
+  const { t } = useTranslation();
   const [showAddForm, setShowAddForm] = useState(false);
   const [addScope, setAddScope] = useState("workspace");
   const totalCount = workspaceMemories.length + globalMemories.length;
@@ -35,7 +37,10 @@ export default function WorkspaceMemories({
       <div className="flex flex-col gap-y-1 mb-4">
         <div className="flex items-center justify-between">
           <label className="block input-label">
-            Workspace Memories ({workspaceMemories.length}/20)
+            {t("personalization.workspace.title", {
+              count: workspaceMemories.length,
+              max: 20,
+            })}
           </label>
           <button
             onClick={() => {
@@ -45,19 +50,18 @@ export default function WorkspaceMemories({
             className="flex items-center gap-x-1 border-none text-theme-text-secondary font-medium text-sm px-[10px] py-[6px] rounded-md bg-theme-bg-secondary hover:bg-theme-bg-primary"
           >
             <Plus size={14} weight="bold" />
-            Add Memory
+            {t("personalization.workspace.add-button")}
           </button>
         </div>
         <p className="text-white text-opacity-60 text-xs font-medium">
-          Memories specific to this workspace. These are automatically extracted
-          from conversations and used to personalize responses.
+          {t("personalization.workspace.description")}
         </p>
       </div>
 
       {showAddForm && (
         <div className="mb-4">
           <MemoryForm
-            submitLabel="Add"
+            submitLabel={t("personalization.form.add")}
             onSubmit={handleAdd}
             onCancel={() => setShowAddForm(false)}
           />
@@ -70,7 +74,7 @@ export default function WorkspaceMemories({
                 onChange={() => setAddScope("workspace")}
                 className="accent-primary-button"
               />
-              Workspace
+              {t("personalization.scope.workspace")}
             </label>
             <label className="flex items-center gap-x-1.5 text-xs text-white cursor-pointer">
               <input
@@ -80,7 +84,7 @@ export default function WorkspaceMemories({
                 onChange={() => setAddScope("global")}
                 className="accent-primary-button"
               />
-              Global
+              {t("personalization.scope.global")}
             </label>
           </div>
         </div>
@@ -90,10 +94,11 @@ export default function WorkspaceMemories({
         <div className="flex items-center justify-center rounded-lg bg-theme-settings-input-bg py-12">
           <div className="flex flex-col items-center gap-y-2">
             <Brain className="h-8 w-8 text-theme-text-secondary" />
-            <p className="text-sm text-theme-text-secondary">No memories yet</p>
+            <p className="text-sm text-theme-text-secondary">
+              {t("personalization.workspace.empty-title")}
+            </p>
             <p className="text-xs text-theme-text-secondary max-w-[300px] text-center">
-              Memories will be extracted automatically from your conversations,
-              or you can add them manually.
+              {t("personalization.workspace.empty-description")}
             </p>
           </div>
         </div>
