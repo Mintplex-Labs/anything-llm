@@ -53,6 +53,19 @@ const SAMPLE_SLIDES = [
     ],
     notes: "Speaker notes appear here",
   },
+  {
+    layout: "content",
+    title: "Quarterly Results",
+    table: {
+      headers: ["Quarter", "Revenue", "Growth", "Target"],
+      rows: [
+        ["Q1 2024", "$1.2M", "+15%", "$1.0M"],
+        ["Q2 2024", "$1.5M", "+25%", "$1.3M"],
+        ["Q3 2024", "$1.8M", "+20%", "$1.6M"],
+        ["Q4 2024", "$2.1M", "+17%", "$1.9M"],
+      ],
+    },
+  },
 ];
 
 /**
@@ -251,7 +264,62 @@ async function generateThemePreview(themeName, themeConfig) {
         });
       }
 
-      if (
+      if (slideData.table) {
+        const tableData = [];
+        
+        // Add header row
+        if (slideData.table.headers && slideData.table.headers.length > 0) {
+          tableData.push(
+            slideData.table.headers.map((header) => ({
+              text: header,
+              options: {
+                bold: true,
+                fontSize: 14,
+                fontFace: fontBody,
+                color: themeConfig.background,
+                fill: { color: themeConfig.accentColor },
+                align: "center",
+                valign: "middle",
+              },
+            }))
+          );
+        }
+
+        // Add data rows
+        if (slideData.table.rows && slideData.table.rows.length > 0) {
+          slideData.table.rows.forEach((row, rowIndex) => {
+            const isAltRow = rowIndex % 2 === 1;
+            const rowFill = isAltRow
+              ? { color: themeConfig.accentColor, transparency: 90 }
+              : { color: themeConfig.background };
+            tableData.push(
+              row.map((cell) => ({
+                text: cell,
+                options: {
+                  fontSize: 12,
+                  fontFace: fontBody,
+                  color: themeConfig.bodyColor,
+                  fill: rowFill,
+                  align: "center",
+                  valign: "middle",
+                },
+              }))
+            );
+          });
+        }
+
+        if (tableData.length > 0) {
+          const colCount = tableData[0].length;
+          slide.addTable(tableData, {
+            x: contentX,
+            y: contentY,
+            w: 9,
+            colW: 9 / colCount,
+            rowH: 0.5,
+            border: { type: "solid", pt: 1, color: themeConfig.accentColor },
+          });
+        }
+      } else if (
         slideData.content &&
         Array.isArray(slideData.content) &&
         slideData.content.length > 0

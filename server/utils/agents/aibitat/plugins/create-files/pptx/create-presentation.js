@@ -120,6 +120,27 @@ module.exports.CreatePptxPresentation = {
                       description:
                         "Array of bullet points or text content for the slide.",
                     },
+                    table: {
+                      type: "object",
+                      description:
+                        "Optional table data to display on the slide (use instead of content for tabular data).",
+                      properties: {
+                        headers: {
+                          type: "array",
+                          items: { type: "string" },
+                          description: "Array of column header labels.",
+                        },
+                        rows: {
+                          type: "array",
+                          items: {
+                            type: "array",
+                            items: { type: "string" },
+                          },
+                          description:
+                            "2D array of row data. Each row is an array of cell values.",
+                        },
+                      },
+                    },
                     notes: {
                       type: "string",
                       description: "Optional speaker notes for this slide.",
@@ -143,7 +164,6 @@ module.exports.CreatePptxPresentation = {
             author = "",
             theme: themeName = "default",
             slides = [],
-            saveToBrowser = false,
           }) {
             try {
               this.super.handlerProps.log(
@@ -249,13 +269,84 @@ module.exports.CreatePptxPresentation = {
                     LAYOUT_RENDERERS[theme.layoutStyle] || renderTopbarLayout;
                   renderHeader(slide, pptx, slideData, theme);
 
-                  // Body content
-                  addBulletContent(
-                    slide,
-                    slideData.content,
-                    theme,
-                    theme.contentY
-                  );
+                  // Body content - table or bullets
+                  if (slideData.table) {
+                    const tableData = [];
+                    const contentX =
+                      theme.layoutStyle === "sidebar"
+                        ? (theme.margin?.x || 0.5) + 0.3
+                        : theme.margin?.x || 0.5;
+
+                    // Add header row
+                    if (
+                      slideData.table.headers &&
+                      slideData.table.headers.length > 0
+                    ) {
+                      tableData.push(
+                        slideData.table.headers.map((header) => ({
+                          text: header,
+                          options: {
+                            bold: true,
+                            fontSize: 14,
+                            fontFace: theme.fontBody,
+                            color: theme.background,
+                            fill: { color: theme.accentColor },
+                            align: "center",
+                            valign: "middle",
+                          },
+                        }))
+                      );
+                    }
+
+                    // Add data rows
+                    if (
+                      slideData.table.rows &&
+                      slideData.table.rows.length > 0
+                    ) {
+                      slideData.table.rows.forEach((row, rowIndex) => {
+                        const isAltRow = rowIndex % 2 === 1;
+                        const rowFill = isAltRow
+                          ? { color: theme.accentColor, transparency: 90 }
+                          : { color: theme.background };
+                        tableData.push(
+                          row.map((cell) => ({
+                            text: cell,
+                            options: {
+                              fontSize: 12,
+                              fontFace: theme.fontBody,
+                              color: theme.bodyColor,
+                              fill: rowFill,
+                              align: "center",
+                              valign: "middle",
+                            },
+                          }))
+                        );
+                      });
+                    }
+
+                    if (tableData.length > 0) {
+                      const colCount = tableData[0].length;
+                      slide.addTable(tableData, {
+                        x: contentX,
+                        y: theme.contentY || 1.3,
+                        w: 9,
+                        colW: 9 / colCount,
+                        rowH: 0.5,
+                        border: {
+                          type: "solid",
+                          pt: 1,
+                          color: theme.accentColor,
+                        },
+                      });
+                    }
+                  } else {
+                    addBulletContent(
+                      slide,
+                      slideData.content,
+                      theme,
+                      theme.contentY
+                    );
+                  }
                 }
 
                 // Add subtle AnythingLLM branding to every slide
@@ -298,6 +389,15 @@ module.exports.CreatePptxPresentation = {
               this.super.introspect(
                 `${this.caller}: Successfully saved presentation to ${filename}`
               );
+
+              // Send file download card to the frontend for easy browser download
+              const outputFilename = validPath.split("/").pop();
+              createFilesLib.sendFileDownloadCard(
+                this.super.socket,
+                outputFilename,
+                buffer
+              );
+
               return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme (${theme.layoutStyle} layout) and saved to ${filename}`;
             } catch (e) {
               this.super.handlerProps.log(

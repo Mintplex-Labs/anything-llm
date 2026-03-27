@@ -44,9 +44,7 @@ module.exports.EditPptxPresentation = {
               call: JSON.stringify({
                 sourcePath: "presentation.pptx",
                 outputFilename: "presentation-trimmed.pptx",
-                operations: [
-                  { type: "remove", slideNumbers: [2, 3] },
-                ],
+                operations: [{ type: "remove", slideNumbers: [2, 3] }],
               }),
             },
           ],
@@ -66,7 +64,8 @@ module.exports.EditPptxPresentation = {
               },
               operations: {
                 type: "array",
-                description: "Array of operations to perform on the presentation.",
+                description:
+                  "Array of operations to perform on the presentation.",
                 items: {
                   type: "object",
                   properties: {
@@ -101,6 +100,24 @@ module.exports.EditPptxPresentation = {
                           type: "array",
                           items: { type: "string" },
                         },
+                        table: {
+                          type: "object",
+                          description:
+                            "Table data to display (use instead of content for tabular data).",
+                          properties: {
+                            headers: {
+                              type: "array",
+                              items: { type: "string" },
+                            },
+                            rows: {
+                              type: "array",
+                              items: {
+                                type: "array",
+                                items: { type: "string" },
+                              },
+                            },
+                          },
+                        },
                         notes: { type: "string" },
                       },
                     },
@@ -117,6 +134,22 @@ module.exports.EditPptxPresentation = {
                           content: {
                             type: "array",
                             items: { type: "string" },
+                          },
+                          table: {
+                            type: "object",
+                            properties: {
+                              headers: {
+                                type: "array",
+                                items: { type: "string" },
+                              },
+                              rows: {
+                                type: "array",
+                                items: {
+                                  type: "array",
+                                  items: { type: "string" },
+                                },
+                              },
+                            },
                           },
                           notes: { type: "string" },
                         },
@@ -146,7 +179,8 @@ module.exports.EditPptxPresentation = {
                 `Using the edit-pptx-presentation tool.`
               );
 
-              const validSourcePath = await filesystemLib.validatePath(sourcePath);
+              const validSourcePath =
+                await filesystemLib.validatePath(sourcePath);
 
               if (!(await createFilesLib.fileExists(validSourcePath))) {
                 return `Error: Source file does not exist: ${sourcePath}`;
@@ -200,7 +234,9 @@ module.exports.EditPptxPresentation = {
                     break;
 
                   case "add":
-                    const slides = operation.slides || (operation.slide ? [operation.slide] : []);
+                    const slides =
+                      operation.slides ||
+                      (operation.slide ? [operation.slide] : []);
                     let position = operation.position || "end";
 
                     if (position === "start") {
@@ -282,7 +318,69 @@ module.exports.EditPptxPresentation = {
                     });
                   }
 
-                  if (
+                  if (slideData.table) {
+                    const tableData = [];
+                    const accentColor = "4472C4";
+                    const bodyColor = "404040";
+                    const bgColor = "FFFFFF";
+
+                    // Add header row
+                    if (
+                      slideData.table.headers &&
+                      slideData.table.headers.length > 0
+                    ) {
+                      tableData.push(
+                        slideData.table.headers.map((header) => ({
+                          text: header,
+                          options: {
+                            bold: true,
+                            fontSize: 14,
+                            color: bgColor,
+                            fill: { color: accentColor },
+                            align: "center",
+                            valign: "middle",
+                          },
+                        }))
+                      );
+                    }
+
+                    // Add data rows
+                    if (
+                      slideData.table.rows &&
+                      slideData.table.rows.length > 0
+                    ) {
+                      slideData.table.rows.forEach((row, rowIndex) => {
+                        const isAltRow = rowIndex % 2 === 1;
+                        const rowFill = isAltRow
+                          ? { color: accentColor, transparency: 90 }
+                          : { color: bgColor };
+                        tableData.push(
+                          row.map((cell) => ({
+                            text: cell,
+                            options: {
+                              fontSize: 12,
+                              color: bodyColor,
+                              fill: rowFill,
+                              align: "center",
+                              valign: "middle",
+                            },
+                          }))
+                        );
+                      });
+                    }
+
+                    if (tableData.length > 0) {
+                      const colCount = tableData[0].length;
+                      slide.addTable(tableData, {
+                        x: 0.5,
+                        y: 1.3,
+                        w: 9,
+                        colW: 9 / colCount,
+                        rowH: 0.5,
+                        border: { type: "solid", pt: 1, color: accentColor },
+                      });
+                    }
+                  } else if (
                     slideData.content &&
                     Array.isArray(slideData.content) &&
                     slideData.content.length > 0
@@ -352,9 +450,14 @@ module.exports.EditPptxPresentation = {
                 }
               }
 
-              const resultBuffer = await pptx.write({ outputType: "nodebuffer" });
+              const resultBuffer = await pptx.write({
+                outputType: "nodebuffer",
+              });
               const bufferSizeKB = (resultBuffer.length / 1024).toFixed(2);
-              const bufferSizeMB = (resultBuffer.length / (1024 * 1024)).toFixed(2);
+              const bufferSizeMB = (
+                resultBuffer.length /
+                (1024 * 1024)
+              ).toFixed(2);
 
               this.super.handlerProps.log(
                 `edit-pptx-presentation: Generated buffer - size: ${bufferSizeKB}KB (${bufferSizeMB}MB), operations: ${operations.length}`
@@ -405,22 +508,31 @@ module.exports.EditPptxPresentation = {
                 }
               }
 
-              await createFilesLib.writeBinaryFile(validOutputPath, resultBuffer);
+              await createFilesLib.writeBinaryFile(
+                validOutputPath,
+                resultBuffer
+              );
 
               const summary = [];
-              if (slidesToRemove.size > 0) {
+              if (slidesToRemove.size > 0)
                 summary.push(`removed ${slidesToRemove.size} slide(s)`);
-              }
-              if (slidesToAdd.length > 0) {
+              if (slidesToAdd.length > 0)
                 summary.push(`added ${slidesToAdd.length} slide(s)`);
-              }
-              if (slidesToReplace.size > 0) {
+              if (slidesToReplace.size > 0)
                 summary.push(`replaced ${slidesToReplace.size} slide(s)`);
-              }
 
               this.super.introspect(
                 `${this.caller}: Successfully saved modified presentation to ${validOutputPath}`
               );
+
+              // Send file download card to the frontend for easy browser download
+              const outputFilenameOnly = validOutputPath.split("/").pop();
+              createFilesLib.sendFileDownloadCard(
+                this.super.socket,
+                outputFilenameOnly,
+                resultBuffer
+              );
+
               return `Successfully edited presentation: ${summary.join(", ")}. Saved to ${validOutputPath}`;
             } catch (e) {
               this.super.handlerProps.log(

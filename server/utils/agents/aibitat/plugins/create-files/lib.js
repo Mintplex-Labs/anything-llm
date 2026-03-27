@@ -224,8 +224,67 @@ class CreateFilesManager {
       ".docx":
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       ".pdf": "application/pdf",
+      ".txt": "text/plain",
+      ".csv": "text/csv",
+      ".json": "application/json",
+      ".html": "text/html",
+      ".xml": "application/xml",
+      ".zip": "application/zip",
+      ".png": "image/png",
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".gif": "image/gif",
+      ".svg": "image/svg+xml",
+      ".mp3": "audio/mpeg",
+      ".mp4": "video/mp4",
+      ".webm": "video/webm",
     };
     return mimeTypes[ext.toLowerCase()] || "application/octet-stream";
+  }
+
+  /**
+   * Sends a file download card to the frontend for display in the chat.
+   * This shows a visual card with the file info and download button rather than auto-downloading.
+   * @param {object} socket - The WebSocket instance
+   * @param {string} filename - The filename to display
+   * @param {Buffer} buffer - The file content as a Buffer
+   * @param {string} [mimeType] - Optional MIME type (auto-detected from extension if not provided)
+   * @returns {{sent: boolean, sizeWarning?: string}} Result indicating if card was sent
+   */
+  sendFileDownloadCard(socket, filename, buffer, mimeType = null) {
+    const fileSizeBytes = buffer.length;
+    const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
+    const MAX_CARD_SIZE_BYTES = 10 * 1024 * 1024; // 10MB threshold for file cards
+
+    const ext = "." + (filename?.split(".")?.pop()?.toLowerCase() || "");
+    const resolvedMimeType = mimeType || this.getMimeType(ext);
+
+    console.log(
+      `[CreateFilesManager] sendFileDownloadCard - filename: ${filename}, size: ${fileSizeMB}MB, mimeType: ${resolvedMimeType}`
+    );
+
+    if (fileSizeBytes > MAX_CARD_SIZE_BYTES) {
+      console.warn(
+        `[CreateFilesManager] File too large for download card (${fileSizeMB}MB > 10MB). Skipping card display.`
+      );
+      return {
+        sent: false,
+        sizeWarning: `File is ${fileSizeMB}MB which may be too large for browser download via WebSocket.`,
+      };
+    }
+
+    const b64Content = `data:${resolvedMimeType};base64,${buffer.toString("base64")}`;
+
+    socket.send("fileDownloadCard", {
+      filename,
+      b64Content,
+      fileSize: fileSizeBytes,
+    });
+
+    console.log(
+      `[CreateFilesManager] sendFileDownloadCard completed - card sent for: ${filename}`
+    );
+    return { sent: true };
   }
 
   /**

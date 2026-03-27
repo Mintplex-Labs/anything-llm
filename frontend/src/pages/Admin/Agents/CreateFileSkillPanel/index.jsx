@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import Toggle, { SimpleToggleSwitch } from "@/components/lib/Toggle";
-import { Link } from "react-router-dom";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import {
-  Warning,
   FilePpt,
   FileXls,
   FileDoc,
   FilePdf,
-  PlusCircle,
   PencilSimple,
   CircleNotch,
 } from "@phosphor-icons/react";

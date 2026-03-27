@@ -6,10 +6,7 @@ const createFilesAgent = {
   startupConfig: {
     params: {},
   },
-  plugin: [
-    CreatePptxPresentation,
-    EditPptxPresentation,
-  ],
+  plugin: [CreatePptxPresentation, EditPptxPresentation],
 };
 
 module.exports = {
