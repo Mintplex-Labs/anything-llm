@@ -40,6 +40,8 @@ export default function LemonadeOptions({ settings }) {
     settings?.LemonadeLLMModelTokenLimit || 4096
   );
 
+  const [apiKey, setApiKey] = useState(settings?.LemonadeLLMApiKey || "");
+
   return (
     <div className="w-full flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
@@ -156,6 +158,44 @@ export default function LemonadeOptions({ settings }) {
             onChange={(e) => setMaxTokens(Number(e.target.value))}
             onScroll={(e) => e.target.blur()}
             required={true}
+            autoComplete="off"
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <div className="flex items-center gap-1 mb-3">
+            <label className="text-white text-sm font-semibold block">
+              API Key (optional)
+            </label>
+            <Tooltip
+              id="lemonade-api-key"
+              place="top"
+              delayShow={300}
+              delayHide={800}
+              clickable={true}
+              className="tooltip !text-xs !opacity-100 z-99"
+              style={{
+                maxWidth: "350px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            >
+              The API key for your Lemonade server
+            </Tooltip>
+            <div
+              className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+              data-tooltip-id="lemonade-api-key"
+              data-tooltip-place="top"
+              data-tooltip-delay-hide={800}
+            >
+              <Info size={18} className="text-theme-text-secondary" />
+            </div>
+          </div>
+          <input
+            type="password"
+            name="LemonadeLLMApiKey"
+            value={apiKey}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            onChange={(e) => setApiKey(e.target.value)}
             autoComplete="off"
           />
         </div>

@@ -22,7 +22,7 @@ class LemonadeLLM {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY,
     });
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;
@@ -343,7 +343,14 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
     );
     lemonadeUrl.pathname += "/models";
     lemonadeUrl.searchParams.append("show_all", "true");
-    await fetch(lemonadeUrl.toString())
+
+    await fetch(lemonadeUrl.toString(), {
+      headers: {
+        ...(!!process.env.LEMONADE_LLM_API_KEY
+          ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+          : {}),
+      },
+    })
       .then((res) => res.json())
       .then(({ data }) => {
         data?.forEach((model) => {

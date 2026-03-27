@@ -24,8 +24,14 @@ export default function LemonadeEmbeddingOptions({ settings }) {
     settings?.EmbeddingModelMaxChunkLength || 8192
   );
 
+  const [apiKey, setApiKey] = useState(settings?.LemonadeLLMApiKey || "");
+
   const handleMaxChunkLengthChange = (e) => {
     setMaxChunkLength(Number(e.target.value));
+  };
+
+  const handleApiKeyChange = (e) => {
+    setApiKey(e.target.value);
   };
 
   return (
@@ -59,6 +65,32 @@ export default function LemonadeEmbeddingOptions({ settings }) {
             onChange={handleMaxChunkLengthChange}
             onScroll={(e) => e.target.blur()}
             required={true}
+            autoComplete="off"
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <div
+            data-tooltip-place="top"
+            data-tooltip-id="api-key-tooltip"
+            className="flex gap-x-1 items-center mb-3"
+          >
+            <label className="text-white text-sm font-semibold block">
+              API Key (optional)
+            </label>
+            <Info
+              size={16}
+              className="text-theme-text-secondary cursor-pointer"
+            />
+            <Tooltip id="api-key-tooltip">
+              The API key for your Lemonade instance
+            </Tooltip>
+          </div>
+          <input
+            type="password"
+            name="LemonadeLLMApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            value={apiKey}
+            onChange={handleApiKeyChange}
             autoComplete="off"
           />
         </div>
