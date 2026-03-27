@@ -65,10 +65,13 @@ function agentFileServerEndpoints(app) {
 
         // Get mime type and set headers for download
         const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
+        const safeFilename = createFilesLib.sanitizeFilenameForHeader(
+          validChat.displayFilename || filename
+        );
         response.setHeader("Content-Type", mimeType);
         response.setHeader(
           "Content-Disposition",
-          `attachment; filename="${validChat.displayFilename || filename}"`
+          `attachment; filename="${safeFilename}"`
         );
         response.setHeader("Content-Length", fileData.buffer.length);
         return response.send(fileData.buffer);
@@ -90,7 +93,9 @@ function agentFileServerEndpoints(app) {
  */
 async function findValidChatForFile(storageFilename, user, isMultiUser) {
   try {
-    // Get all workspaces the user has access to
+    // Get all workspaces the user has access to.
+    // In single-user mode, all workspaces are accessible.
+    // In multi-user mode, only workspaces assigned to the user are accessible.
     let workspaceIds;
     if (isMultiUser && user) {
       const workspaces = await Workspace.whereWithUser(user);

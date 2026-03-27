@@ -1,6 +1,7 @@
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceChats } = require("../models/workspaceChats.js");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib.js");
+const { safeJsonParse } = require("../utils/http/index.js");
 
 (async () => {
   try {
@@ -18,9 +19,6 @@ const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib
     for (const filename of files) {
       const fullPath = path.join(storageDirectory, filename);
       const stat = fs.statSync(fullPath);
-      console.log({
-        filename,
-      });
 
       // Skip files/folders that don't match our naming pattern and add to deletion list
       if (!filename.match(/^[a-z]+-[a-f0-9-]{36}(\.\w+)?$/i)) {
@@ -63,32 +61,44 @@ const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib
 /**
  * Retrieves all storage filenames referenced in active (include: true) workspace chats.
  * Searches through the outputs array in chat responses.
+ * Uses pagination to avoid loading all chats into memory at once.
+ * @param {number} batchSize - Number of chats to process per batch (default: 50)
  * @returns {Promise<Set<string>>}
  */
-async function getActiveStorageFilenames() {
+async function getActiveStorageFilenames(batchSize = 50) {
   const storageFilenames = new Set();
 
   try {
-    // Get all active chats
-    const chats = await WorkspaceChats.where({ include: true });
+    let offset = 0;
+    let hasMore = true;
 
-    for (const chat of chats) {
-      try {
-        const response =
-          typeof chat.response === "string"
-            ? JSON.parse(chat.response)
-            : chat.response;
+    while (hasMore) {
+      const chats = await WorkspaceChats.where(
+        { include: true },
+        batchSize,
+        { id: "asc" },
+        offset
+      );
 
-        if (!response?.outputs || !Array.isArray(response.outputs)) continue;
-
-        for (const output of response.outputs) {
-          if (output?.payload?.storageFilename) {
-            storageFilenames.add(output.payload.storageFilename);
-          }
-        }
-      } catch {
-        continue;
+      if (chats.length === 0) {
+        hasMore = false;
+        break;
       }
+
+      for (const chat of chats) {
+        try {
+          const response = safeJsonParse(chat.response, { outputs: [] });
+          for (const output of response.outputs) {
+            if (output?.payload?.storageFilename)
+              storageFilenames.add(output.payload.storageFilename);
+          }
+        } catch {
+          continue;
+        }
+      }
+
+      offset += chats.length;
+      hasMore = chats.length === batchSize;
     }
   } catch (error) {
     console.error("[getActiveStorageFilenames] Error:", error.message);

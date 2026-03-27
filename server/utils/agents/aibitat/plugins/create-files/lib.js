@@ -406,11 +406,19 @@ class CreateFilesManager {
 
   /**
    * Retrieves a generated file by its storage filename.
-   * @param {string} filename - The storage filename
+   * @param {string} filename - The storage filename (must match {fileType}-{uuid}.{ext} format)
    * @returns {Promise<{buffer: Buffer, storagePath: string} | null>}
    */
   async getGeneratedFile(filename) {
     await this.ensureInitialized();
+
+    // Defense-in-depth: validate filename format to prevent path traversal
+    if (!this.parseFilename(filename)) {
+      console.warn(
+        `[CreateFilesManager] getGeneratedFile - rejected invalid filename format: ${filename}`
+      );
+      return null;
+    }
 
     const storagePath = path.join(this.#outputDirectory, filename);
     const exists = await this.fileExists(storagePath);
@@ -489,6 +497,20 @@ class CreateFilesManager {
     }
 
     return { deleted, failed };
+  }
+
+  /**
+   * Sanitizes a filename for use in Content-Disposition header to prevent header injection.
+   * Removes/replaces characters that could be used for header manipulation.
+   * @param {string} filename - The filename to sanitize
+   * @returns {string} Sanitized filename safe for Content-Disposition header
+   */
+  sanitizeFilenameForHeader(filename) {
+    if (!filename || typeof filename !== "string") return "download";
+    return filename
+      .replace(/[\r\n"\\]/g, "_")
+      .replace(/[^\x20-\x7E]/g, "_")
+      .substring(0, 255);
   }
 }
 
