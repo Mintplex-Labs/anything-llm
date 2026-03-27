@@ -131,7 +131,7 @@ const ASSETS_PATH = path.join(__dirname, "../../../../../../storage/assets");
 function getLogo(forDarkBackground) {
   const filename = forDarkBackground
     ? "anything-llm.png"
-    : "anything-llm-dark.png";
+    : "anything-llm-invert.png";
   try {
     const base64 = fs.readFileSync(path.join(ASSETS_PATH, filename), "base64");
     return `image/png;base64,${base64}`;

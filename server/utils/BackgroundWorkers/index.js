@@ -15,6 +15,13 @@ class BackgroundService {
       timeout: "1m",
       interval: "12hr",
     },
+    {
+      name: "cleanup-generated-files",
+      // timeout: "5m",
+      timeout: "10s",
+
+      interval: "8hr",
+    },
   ];
 
   #documentSyncJobs = [

@@ -1,17 +1,31 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { saveAs } from "file-saver";
-import { DownloadSimple } from "@phosphor-icons/react";
+import { DownloadSimple, CircleNotch } from "@phosphor-icons/react";
 import { humanFileSize } from "@/utils/numbers";
+import StorageFiles from "@/models/files";
 
 /**
- * @param {{content: {filename: string, b64Content: string, fileSize?: number}}} props
+ * @param {{content: {filename: string, storageFilename?: string, fileSize?: number}}} props
  */
 function FileDownloadCard({ props }) {
-  const { filename, b64Content, fileSize } = props.content || {};
+  const { filename, storageFilename, fileSize } = props.content || {};
   const { badge, badgeBg, badgeText, fileType } = getFileDisplayInfo(filename);
+  const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = () => {
-    if (b64Content && filename) saveAs(b64Content, filename);
+  const handleDownload = async () => {
+    if (downloading) return;
+    if (!storageFilename) return;
+
+    setDownloading(true);
+    try {
+      const blob = await StorageFiles.download(storageFilename);
+      if (!blob) throw new Error("Failed to download file");
+      saveAs(blob, filename || storageFilename);
+    } catch {
+      console.error("Failed to download file");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -37,10 +51,15 @@ function FileDownloadCard({ props }) {
           </div>
           <button
             onClick={handleDownload}
-            className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-zinc-600 light:border-theme-sidebar-border hover:bg-zinc-700 light:hover:bg-theme-bg-secondary transition-colors text-white light:text-theme-text-primary text-sm font-medium flex-shrink-0 ml-4"
+            disabled={downloading}
+            className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-zinc-600 light:border-theme-sidebar-border hover:bg-zinc-700 light:hover:bg-theme-bg-secondary transition-colors text-white light:text-theme-text-primary text-sm font-medium flex-shrink-0 ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <DownloadSimple size={16} weight="bold" />
-            <span>Download</span>
+            {downloading ? (
+              <CircleNotch size={16} weight="bold" className="animate-spin" />
+            ) : (
+              <DownloadSimple size={16} weight="bold" />
+            )}
+            <span>{downloading ? "Downloading..." : "Download"}</span>
           </button>
         </div>
       </div>

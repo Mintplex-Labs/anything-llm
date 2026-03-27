@@ -379,23 +379,28 @@ module.exports.CreatePptxPresentation = {
                 }
               }
 
-              // Send file download card to the frontend for easy browser download
-              const outputFilename = filename.split("/").pop();
-              const mimeType = createFilesLib.getMimeType(".pptx");
-              const b64Content = `data:${mimeType};base64,${buffer.toString("base64")}`;
-              const fileSize = buffer.length;
+              const displayFilename = filename.split("/").pop();
 
-              createFilesLib.sendFileDownloadCard(
-                this.super.socket,
-                outputFilename,
-                buffer
-              );
+              // Save file to storage with standardized naming (pptx-{uuid}.pptx)
+              const savedFile = await createFilesLib.saveGeneratedFile({
+                fileType: "pptx",
+                extension: "pptx",
+                buffer,
+                displayFilename,
+              });
 
-              // Register output for chat history persistence (stored as base64 in database)
+              // Send file download card to the frontend with file reference (not base64)
+              this.super.socket.send("fileDownloadCard", {
+                filename: savedFile.displayFilename,
+                storageFilename: savedFile.filename,
+                fileSize: savedFile.fileSize,
+              });
+
+              // Register output for chat history persistence (stored as file reference, not base64)
               createFilesLib.registerOutput(this.super, "PptxFileDownload", {
-                filename: outputFilename,
-                b64Content,
-                fileSize,
+                filename: savedFile.displayFilename,
+                storageFilename: savedFile.filename,
+                fileSize: savedFile.fileSize,
               });
 
               this.super.introspect(

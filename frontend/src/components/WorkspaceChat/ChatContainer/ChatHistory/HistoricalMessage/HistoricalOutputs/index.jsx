@@ -1,7 +1,9 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { saveAs } from "file-saver";
-import { DownloadSimple } from "@phosphor-icons/react";
+import { DownloadSimple, CircleNotch } from "@phosphor-icons/react";
 import { humanFileSize } from "@/utils/numbers";
+import { API_BASE } from "@/utils/constants";
+import { baseHeaders } from "@/utils/request";
 
 const OUTPUT_RENDERERS = {
   PptxFileDownload: PptxFileDownloadOutput,
@@ -27,11 +29,40 @@ function HistoricalOutputs({ outputs = [] }) {
 }
 
 function PptxFileDownloadOutput({ payload }) {
-  const { filename, b64Content, fileSize } = payload || {};
+  const { filename, storageFilename, b64Content, fileSize } = payload || {};
   const { badge, badgeBg, badgeText, fileType } = getFileDisplayInfo(filename);
+  const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = () => {
-    if (b64Content && filename) saveAs(b64Content, filename);
+  const handleDownload = async () => {
+    if (downloading) return;
+
+    // If we have a storageFilename, fetch from the server endpoint
+    if (storageFilename) {
+      setDownloading(true);
+      try {
+        const response = await fetch(
+          `${API_BASE}/agent-skills/generated-files/${encodeURIComponent(storageFilename)}`,
+          { headers: baseHeaders() }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to download file");
+        }
+
+        const blob = await response.blob();
+        saveAs(blob, filename || storageFilename);
+      } catch (error) {
+        console.error("Download failed:", error);
+      } finally {
+        setDownloading(false);
+      }
+      return;
+    }
+
+    // Fallback to b64Content for backwards compatibility
+    if (b64Content && filename) {
+      saveAs(b64Content, filename);
+    }
   };
 
   return (
@@ -57,10 +88,15 @@ function PptxFileDownloadOutput({ payload }) {
           </div>
           <button
             onClick={handleDownload}
-            className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-zinc-600 light:border-theme-sidebar-border hover:bg-zinc-700 light:hover:bg-theme-bg-secondary transition-colors text-white light:text-theme-text-primary text-sm font-medium flex-shrink-0 ml-4"
+            disabled={downloading}
+            className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-zinc-600 light:border-theme-sidebar-border hover:bg-zinc-700 light:hover:bg-theme-bg-secondary transition-colors text-white light:text-theme-text-primary text-sm font-medium flex-shrink-0 ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <DownloadSimple size={16} weight="bold" />
-            <span>Download</span>
+            {downloading ? (
+              <CircleNotch size={16} weight="bold" className="animate-spin" />
+            ) : (
+              <DownloadSimple size={16} weight="bold" />
+            )}
+            <span>{downloading ? "Downloading..." : "Download"}</span>
           </button>
         </div>
       </div>

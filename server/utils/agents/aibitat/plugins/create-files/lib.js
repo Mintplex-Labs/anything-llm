@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs/promises");
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * Manages file creation operations for binary document formats.
@@ -344,6 +345,150 @@ class CreateFilesManager {
     if (aibitat) {
       aibitat._pendingOutputs = [];
     }
+  }
+
+  /**
+   * Generates a standardized filename for generated files.
+   * Format: {fileType}-{fileUUID}.{extension}
+   * @param {string} fileType - Type identifier (e.g., 'pptx', 'xlsx')
+   * @param {string} extension - File extension (without dot)
+   * @returns {string} The generated filename
+   */
+  generateFilename(fileType, extension) {
+    const fileUUID = uuidv4();
+    return `${fileType}-${fileUUID}.${extension}`;
+  }
+
+  /**
+   * Parses a generated filename to extract its components.
+   * @param {string} filename - The filename to parse
+   * @returns {{fileType: string, fileUUID: string, extension: string} | null}
+   */
+  parseFilename(filename) {
+    const match = filename.match(/^([a-z]+)-([a-f0-9-]{36})\.(\w+)$/i);
+    if (!match) return null;
+    return {
+      fileType: match[1],
+      fileUUID: match[2],
+      extension: match[3],
+    };
+  }
+
+  /**
+   * Saves a generated file to storage and returns metadata for WebSocket/DB storage.
+   * This is the primary method for persisting agent-generated files.
+   * @param {object} params
+   * @param {string} params.fileType - Type identifier (e.g., 'pptx', 'xlsx')
+   * @param {string} params.extension - File extension (without dot)
+   * @param {Buffer} params.buffer - The file content as a Buffer
+   * @param {string} params.displayFilename - The user-friendly filename for display
+   * @returns {Promise<{filename: string, displayFilename: string, fileSize: number, storagePath: string}>}
+   */
+  async saveGeneratedFile({ fileType, extension, buffer, displayFilename }) {
+    await this.ensureInitialized();
+
+    const filename = this.generateFilename(fileType, extension);
+    const storagePath = path.join(this.#outputDirectory, filename);
+
+    await this.writeBinaryFile(storagePath, buffer);
+
+    console.log(
+      `[CreateFilesManager] saveGeneratedFile - saved ${filename} (${(buffer.length / 1024).toFixed(2)}KB)`
+    );
+
+    return {
+      filename,
+      displayFilename,
+      fileSize: buffer.length,
+      storagePath,
+    };
+  }
+
+  /**
+   * Retrieves a generated file by its storage filename.
+   * @param {string} filename - The storage filename
+   * @returns {Promise<{buffer: Buffer, storagePath: string} | null>}
+   */
+  async getGeneratedFile(filename) {
+    await this.ensureInitialized();
+
+    const storagePath = path.join(this.#outputDirectory, filename);
+    const exists = await this.fileExists(storagePath);
+    if (!exists) return null;
+
+    const buffer = await this.readBinaryFile(storagePath);
+    return { buffer, storagePath };
+  }
+
+  /**
+   * Lists all generated files in the storage directory with their metadata.
+   * @returns {Promise<Array<{filename: string, birthtime: Date, size: number}>>}
+   */
+  async listGeneratedFiles() {
+    await this.ensureInitialized();
+
+    try {
+      const files = await fs.readdir(this.#outputDirectory);
+      const fileStats = await Promise.all(
+        files.map(async (filename) => {
+          try {
+            const filePath = path.join(this.#outputDirectory, filename);
+            const stats = await fs.stat(filePath);
+            return {
+              filename,
+              birthtime: stats.birthtime,
+              size: stats.size,
+            };
+          } catch {
+            return null;
+          }
+        })
+      );
+      return fileStats.filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Deletes a generated file by its storage filename.
+   * @param {string} filename - The storage filename
+   * @returns {Promise<boolean>} True if deleted, false otherwise
+   */
+  async deleteGeneratedFile(filename) {
+    await this.ensureInitialized();
+
+    try {
+      const storagePath = path.join(this.#outputDirectory, filename);
+      await fs.unlink(storagePath);
+      console.log(
+        `[CreateFilesManager] deleteGeneratedFile - deleted ${filename}`
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        `[CreateFilesManager] deleteGeneratedFile - failed to delete ${filename}: ${error.message}`
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Batch deletes multiple generated files.
+   * @param {string[]} filenames - Array of storage filenames to delete
+   * @returns {Promise<{deleted: number, failed: number}>}
+   */
+  async batchDeleteGeneratedFiles(filenames) {
+    let deleted = 0;
+    let failed = 0;
+
+    for (const filename of filenames) {
+      const success = await this.deleteGeneratedFile(filename);
+      if (success) deleted++;
+      else failed++;
+    }
+
+    return { deleted, failed };
   }
 }
 
