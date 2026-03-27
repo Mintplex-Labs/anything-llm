@@ -14,13 +14,6 @@ import Admin from "@/models/admin";
 const getCreateFileSubSkills = (t) => {
   return [
     {
-      name: "create-pptx-presentation",
-      title: t("agent.skill.createFiles.skills.create-pptx.title"),
-      description: t("agent.skill.createFiles.skills.create-pptx.description"),
-      icon: FilePpt,
-      category: "pptx",
-    },
-    {
       name: "create-text-file",
       title: t("agent.skill.createFiles.skills.create-text-file.title"),
       description: t(
@@ -28,6 +21,13 @@ const getCreateFileSubSkills = (t) => {
       ),
       icon: FileText,
       category: "text",
+    },
+    {
+      name: "create-pptx-presentation",
+      title: t("agent.skill.createFiles.skills.create-pptx.title"),
+      description: t("agent.skill.createFiles.skills.create-pptx.description"),
+      icon: FilePpt,
+      category: "pptx",
     },
   ];
 };
