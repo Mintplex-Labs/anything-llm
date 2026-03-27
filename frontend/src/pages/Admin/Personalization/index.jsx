@@ -153,59 +153,105 @@ export default function Personalization() {
             </p>
           </div>
 
-          {loading ? (
-            <Skeleton.default
-              height="60vh"
-              width="100%"
-              highlightColor="var(--theme-bg-primary)"
-              baseColor="var(--theme-bg-secondary)"
-              count={1}
-              className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-              containerClassName="flex w-full"
-            />
-          ) : (
-            <div className="mt-6 flex flex-col gap-y-6">
-              <Toggle
-                size="lg"
-                enabled={enabled}
-                onChange={handleToggle}
-                label="Enable Personalization"
-                description="When enabled, AnythingLLM will learn user preferences and context from conversations."
-              />
-
-              {enabled && (
-                <>
-                  <div className="flex gap-x-3">
-                    <button
-                      onClick={handleRunExtraction}
-                      disabled={extracting}
-                      className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-                    >
-                      {extracting ? "Extracting..." : "Run Extraction Now"}
-                    </button>
-                    <button
-                      onClick={handleClearAll}
-                      disabled={clearing || memories.length === 0}
-                      className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-                    >
-                      {clearing ? "Clearing..." : "Clear All My Memories"}
-                    </button>
-                  </div>
-
-                  <GlobalMemoriesSection
-                    memories={globalMemories}
-                    onDelete={handleDeleteMemory}
-                    onUpdate={handleUpdateMemory}
-                    onAdd={handleAddGlobal}
-                  />
-
-                  <WorkspacesList workspaces={workspaces} memories={memories} />
-                </>
-              )}
-            </div>
-          )}
+          <PersonalizationContent
+            loading={loading}
+            enabled={enabled}
+            onToggle={handleToggle}
+            extracting={extracting}
+            onRunExtraction={handleRunExtraction}
+            clearing={clearing}
+            onClearAll={handleClearAll}
+            globalMemories={globalMemories}
+            memories={memories}
+            workspaces={workspaces}
+            onDeleteMemory={handleDeleteMemory}
+            onUpdateMemory={handleUpdateMemory}
+            onAddGlobal={handleAddGlobal}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+function PersonalizationContent({
+  loading,
+  enabled,
+  onToggle,
+  extracting,
+  onRunExtraction,
+  clearing,
+  onClearAll,
+  globalMemories,
+  memories,
+  workspaces,
+  onDeleteMemory,
+  onUpdateMemory,
+  onAddGlobal,
+}) {
+  if (loading) {
+    return (
+      <Skeleton.default
+        height="60vh"
+        width="100%"
+        highlightColor="var(--theme-bg-primary)"
+        baseColor="var(--theme-bg-secondary)"
+        count={1}
+        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        containerClassName="flex w-full"
+      />
+    );
+  }
+
+  if (!enabled) {
+    return (
+      <div className="mt-6">
+        <Toggle
+          size="lg"
+          enabled={enabled}
+          onChange={onToggle}
+          label="Enable Personalization"
+          description="When enabled, AnythingLLM will learn user preferences and context from conversations."
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 flex flex-col gap-y-6">
+      <Toggle
+        size="lg"
+        enabled={enabled}
+        onChange={onToggle}
+        label="Enable Personalization"
+        description="When enabled, AnythingLLM will learn user preferences and context from conversations."
+      />
+
+      <div className="flex gap-x-3">
+        <button
+          onClick={onRunExtraction}
+          disabled={extracting}
+          className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          {extracting ? "Extracting..." : "Run Extraction Now"}
+        </button>
+        <button
+          onClick={onClearAll}
+          disabled={clearing || memories.length === 0}
+          className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          {clearing ? "Clearing..." : "Clear All My Memories"}
+        </button>
+      </div>
+
+      <GlobalMemoriesSection
+        memories={globalMemories}
+        onDelete={onDeleteMemory}
+        onUpdate={onUpdateMemory}
+        onAdd={onAddGlobal}
+      />
+
+      <WorkspacesList workspaces={workspaces} memories={memories} />
     </div>
   );
 }
