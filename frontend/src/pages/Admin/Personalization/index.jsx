@@ -16,6 +16,7 @@ import {
   PencilSimple,
   ArrowSquareOut,
   Plus,
+  GlobeSimple,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
@@ -29,14 +30,24 @@ export default function Personalization() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   async function fetchData() {
-    const [{ settings }, allMemories, allWorkspaces] = await Promise.all([
-      Admin.systemPreferencesByFields(["memory_enabled"]),
-      Memory.all(),
-      Workspace.all(),
+    const { settings } = await Admin.systemPreferencesByFields([
+      "memory_enabled",
     ]);
-    setEnabled(settings?.memory_enabled === "on");
-    setMemories(allMemories);
-    setWorkspaces(allWorkspaces);
+    const isEnabled = settings?.memory_enabled === "on";
+    setEnabled(isEnabled);
+
+    if (isEnabled) {
+      const [allMemories, allWorkspaces] = await Promise.all([
+        Memory.all(),
+        Workspace.all(),
+      ]);
+      setMemories(allMemories);
+      setWorkspaces(allWorkspaces);
+    } else {
+      setMemories([]);
+      setWorkspaces([]);
+    }
+
     setLoading(false);
   }
 
@@ -58,6 +69,7 @@ export default function Personalization() {
       `Personalization ${checked ? "enabled" : "disabled"}.`,
       "success"
     );
+    if (checked) fetchData();
   }
 
   async function handleRunExtraction() {
@@ -172,33 +184,37 @@ export default function Personalization() {
                 description="When enabled, AnythingLLM will learn user preferences and context from conversations."
               />
 
-              <div className="flex gap-x-3">
-                <button
-                  onClick={handleRunExtraction}
-                  disabled={extracting || !enabled}
-                  className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-                >
-                  {extracting ? "Extracting..." : "Run Extraction Now"}
-                </button>
-                <button
-                  onClick={handleClearAll}
-                  disabled={clearing || memories.length === 0}
-                  className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-                >
-                  {clearing ? "Clearing..." : "Clear All My Memories"}
-                </button>
-              </div>
+              {enabled && (
+                <>
+                  <div className="flex gap-x-3">
+                    <button
+                      onClick={handleRunExtraction}
+                      disabled={extracting}
+                      className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+                    >
+                      {extracting ? "Extracting..." : "Run Extraction Now"}
+                    </button>
+                    <button
+                      onClick={handleClearAll}
+                      disabled={clearing || memories.length === 0}
+                      className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+                    >
+                      {clearing ? "Clearing..." : "Clear All My Memories"}
+                    </button>
+                  </div>
 
-              <GlobalMemoriesSection
-                memories={globalMemories}
-                onDelete={handleDeleteMemory}
-                onUpdate={handleUpdateMemory}
-                showAddForm={showAddForm}
-                setShowAddForm={setShowAddForm}
-                onAdd={handleAddGlobal}
-              />
+                  <GlobalMemoriesSection
+                    memories={globalMemories}
+                    onDelete={handleDeleteMemory}
+                    onUpdate={handleUpdateMemory}
+                    showAddForm={showAddForm}
+                    setShowAddForm={setShowAddForm}
+                    onAdd={handleAddGlobal}
+                  />
 
-              <WorkspacesList workspaces={workspaces} memories={memories} />
+                  <WorkspacesList workspaces={workspaces} memories={memories} />
+                </>
+              )}
             </div>
           )}
         </div>
@@ -357,9 +373,13 @@ function MemoryItem({ memory, onDelete, onUpdate }) {
 
   return (
     <div className="group flex items-center gap-x-2 rounded-lg bg-theme-settings-input-bg px-3 py-2">
-      <p className="flex-1 text-sm text-white leading-relaxed">
-        {memory.content}
-      </p>
+      <GlobeSimple size={14} className="text-theme-text-secondary shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-white leading-relaxed">{memory.content}</p>
+        <p className="text-xs text-theme-text-secondary mt-0.5">
+          {new Date(memory.createdAt).toLocaleDateString()}
+        </p>
+      </div>
       <div className="flex items-center gap-x-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
         <button
           onClick={() => setEditing(true)}

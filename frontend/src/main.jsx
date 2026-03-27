@@ -40,7 +40,7 @@ const router = createBrowserRouter([
           const { default: WorkspaceSettings } = await import(
             "@/pages/WorkspaceSettings"
           );
-          return { element: <ManagerRoute Component={WorkspaceSettings} /> };
+          return { element: <PrivateRoute Component={WorkspaceSettings} /> };
         },
       },
       {

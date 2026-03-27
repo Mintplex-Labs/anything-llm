@@ -229,6 +229,9 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
+      MemoryEnabled:
+        (await this.getValueOrFallback({ label: "memory_enabled" }, "off")) ===
+        "on",
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------

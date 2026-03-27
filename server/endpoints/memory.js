@@ -1,4 +1,5 @@
 const { Memory } = require("../models/memory");
+const { SystemSettings } = require("../models/systemSettings");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
@@ -12,6 +13,17 @@ function ownerMatch(memory, user) {
   return memUserId === reqUserId;
 }
 
+async function memoryEnabled(_req, response, next) {
+  const enabled =
+    (await SystemSettings.getValueOrFallback(
+      { label: "memory_enabled" },
+      "off"
+    )) === "on";
+  if (!enabled)
+    return response.status(403).json({ error: "Personalization is disabled." });
+  next();
+}
+
 function memoryEndpoints(app) {
   if (!app) return;
 
@@ -20,7 +32,7 @@ function memoryEndpoints(app) {
 
   app.delete(
     "/memories/clear/all",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -35,7 +47,7 @@ function memoryEndpoints(app) {
 
   app.post(
     "/memories/run-extraction",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin]), memoryEnabled],
     async (_request, response) => {
       try {
         const {
@@ -53,7 +65,7 @@ function memoryEndpoints(app) {
 
   app.get(
     "/memories/all",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -68,7 +80,7 @@ function memoryEndpoints(app) {
 
   app.get(
     "/memories/:workspaceId",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -90,7 +102,7 @@ function memoryEndpoints(app) {
 
   app.post(
     "/memories/:workspaceId",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -124,7 +136,7 @@ function memoryEndpoints(app) {
 
   app.put(
     "/memories/:memoryId",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -161,7 +173,7 @@ function memoryEndpoints(app) {
 
   app.delete(
     "/memories/:memoryId",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -184,7 +196,7 @@ function memoryEndpoints(app) {
 
   app.post(
     "/memories/:memoryId/promote",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);

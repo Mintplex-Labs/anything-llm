@@ -14,6 +14,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
+import System from "@/models/system";
 
 export default function ActiveWorkspaces() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function ActiveWorkspaces() {
   const [loading, setLoading] = useState(true);
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
+  const [memoryEnabled, setMemoryEnabled] = useState(false);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
@@ -28,7 +30,11 @@ export default function ActiveWorkspaces() {
 
   useEffect(() => {
     async function getWorkspaces() {
-      const workspaces = await Workspace.all();
+      const [workspaces, settings] = await Promise.all([
+        Workspace.all(),
+        System.keys(),
+      ]);
+      setMemoryEnabled(settings?.MemoryEnabled === true);
       setLoading(false);
       setWorkspaces(Workspace.orderWorkspaces(workspaces));
     }
@@ -157,33 +163,41 @@ export default function ActiveWorkspaces() {
                                 </p>
                               </div>
                             </div>
-                            {user?.role !== "default" && (
+                            {(user?.role !== "default" || memoryEnabled) && (
                               <div
                                 className={`flex items-center gap-x-[2px] transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                               >
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setSelectedWs(workspace);
-                                    showModal();
-                                  }}
-                                  className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
-                                >
-                                  <UploadSimple
-                                    className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/upload:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/upload:text-slate-950"}`}
-                                  />
-                                </button>
+                                {user?.role !== "default" && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setSelectedWs(workspace);
+                                      showModal();
+                                    }}
+                                    className={`group/upload border-none rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
+                                  >
+                                    <UploadSimple
+                                      className={`h-[20px] w-[20px] ${isActive ? "text-zinc-400 hover:text-white light:text-blue-700 light:group-hover/upload:text-blue-900" : "text-zinc-400 hover:text-white light:text-slate-600 light:group-hover/upload:text-slate-950"}`}
+                                    />
+                                  </button>
+                                )}
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    const settingsPath =
+                                      user?.role === "default"
+                                        ? paths.workspace.settings.personalization(
+                                            workspace.slug
+                                          )
+                                        : paths.workspace.settings.generalAppearance(
+                                            workspace.slug
+                                          );
                                     navigate(
                                       isInWorkspaceSettings
                                         ? paths.workspace.chat(workspace.slug)
-                                        : paths.workspace.settings.generalAppearance(
-                                            workspace.slug
-                                          )
+                                        : settingsPath
                                     );
                                   }}
                                   className={`group/gear rounded-md flex items-center justify-center ml-auto p-[2px] ${isActive ? "hover:bg-zinc-500 light:hover:bg-sky-800/30" : "hover:bg-zinc-500 light:hover:bg-slate-400"}`}
