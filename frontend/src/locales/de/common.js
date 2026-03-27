@@ -110,7 +110,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: null,
+    personalization: "Individualisierung",
   },
   login: {
     "multi-user": {
@@ -149,7 +149,7 @@ const TRANSLATIONS = {
     vector: "Vektordatenbank",
     members: "Mitglieder",
     agent: "Agentenkonfiguration",
-    personalization: null,
+    personalization: "Individualisierung",
   },
   general: {
     vector: {
@@ -1183,77 +1183,90 @@ const TRANSLATIONS = {
     },
   },
   personalization: {
-    title: null,
-    description: null,
+    title: "Individualisierung",
+    description:
+      "AnythingLLM kann im Laufe der Zeit mehr über Sie lernen, um relevantere und persönlichere Antworten zu geben. Erinnerungen werden automatisch aus Ihren Gesprächen extrahiert.",
     toggle: {
-      label: null,
-      description: null,
+      label: "Personalisierung aktivieren",
+      description:
+        "Wenn aktiviert, lernt AnythingLLM aus Gesprächen die Präferenzen und den Kontext des Nutzers.",
     },
     actions: {
-      "run-extraction": null,
-      extracting: null,
-      "clear-all": null,
-      clearing: null,
+      "run-extraction": "Datenextraktion jetzt starten",
+      extracting: "Extrahieren...",
+      "clear-all": "Alle meine Erinnerungen löschen",
+      clearing: "Aufräumen...",
     },
     global: {
-      title: null,
-      "add-button": null,
-      description: null,
-      "applied-description": null,
-      placeholder: null,
-      "empty-title": null,
-      "empty-description": null,
+      title: "Global Memories ({{count}}, {{max}})",
+      "add-button": "Fügen Sie Global Memory hinzu",
+      description:
+        "Diese Erinnerungen werden in allen Arbeitsbereichen angewendet.",
+      "applied-description":
+        "Diese Richtlinien gelten für alle Arbeitsbereiche.",
+      placeholder:
+        "Geben Sie einen globalen Speicherwert ein (z. B. „Mein Name ist Sean“)",
+      "empty-title": "Noch keine globalen Erinnerungen vorhanden.",
+      "empty-description":
+        "Fügen Sie sie manuell hinzu oder teilen Sie Arbeitsplatz-Erinnerungen mit der gesamten Organisation.",
     },
     workspace: {
-      title: null,
-      "list-title": null,
-      "list-description": null,
-      "add-button": null,
-      description: null,
-      "no-workspaces": null,
-      "empty-title": null,
-      "empty-description": null,
+      title: "Erinnerungen an den Arbeitsplatz ({{count}}/{{max}})",
+      "list-title": "Erinnerungen an den Arbeitsplatz",
+      "list-description":
+        "Verwalten Sie Arbeitsbereich-spezifische Erinnerungen aus den Einstellungen jedes Arbeitsbereichs.",
+      "add-button": "Speicher hinzufügen",
+      description:
+        "Erinnerungen, die spezifisch für diesen Arbeitsbereich sind. Diese werden automatisch aus Gesprächen extrahiert und verwendet, um die Antworten zu personalisieren.",
+      "no-workspaces": "Keine Arbeitsbereiche gefunden.",
+      "empty-title": "Noch keine Erinnerungen",
+      "empty-description":
+        "Erinnerungen werden automatisch aus Ihren Gesprächen extrahiert, oder Sie können sie manuell hinzufügen.",
     },
     form: {
-      placeholder: null,
-      save: null,
-      add: null,
-      cancel: null,
+      placeholder:
+        'Geben Sie eine Erinnerung ein (z. B. "Ich bevorzuge prägnante Antworten")',
+      save: "Speichern",
+      add: "Hinzufügen",
+      cancel: "Abbrechen",
     },
     item: {
-      edit: null,
-      "promote-to-global": null,
-      delete: null,
+      edit: "Bearbeiten",
+      "promote-to-global": "Internationalisieren/Weltweit ausweiten",
+      delete: "Löschen",
     },
     scope: {
-      workspace: null,
-      global: null,
+      workspace: "Arbeitsbereich",
+      global: "Global",
     },
     table: {
-      workspace: null,
-      memories: null,
-      manage: null,
+      workspace: "Arbeitsbereich",
+      memories: "Erinnerungen",
+      manage: "Verwalten",
     },
-    loading: null,
+    loading: "Personalisierungsdaten werden geladen...",
     toast: {
-      "setting-update-failed": null,
-      enabled: null,
-      disabled: null,
-      "extraction-failed": null,
-      "extraction-completed": null,
-      "clear-confirm": null,
-      "clear-failed": null,
-      "clear-success": null,
-      "delete-confirm": null,
-      "delete-failed": null,
-      "delete-success": null,
-      "update-failed": null,
-      "update-success": null,
-      "add-failed": null,
-      "add-global-success": null,
-      "add-success": null,
-      "promote-failed": null,
-      "promote-success": null,
+      "setting-update-failed":
+        "Fehler beim Aktualisieren der Einstellung: {{error}}",
+      enabled: "Personalisierung möglich.",
+      disabled: "Personalisierung deaktiviert.",
+      "extraction-failed": "Fehler beim Extrahieren: {{error}}",
+      "extraction-completed": "Speicherinhalt extrahiert.",
+      "clear-confirm":
+        "Sind Sie sicher? Dies löscht dauerhaft alle Ihre persönlichen Einstellungen.",
+      "clear-failed": "Fehlgeschlagen bei der Speicherbereinigung: {{error}}",
+      "clear-success": "Alle gespeicherten Personalisierungen wurden gelöscht.",
+      "delete-confirm": "Diesen Eintrag löschen?",
+      "delete-failed": "Fehlgeschlagenes Löschen des Speichers.",
+      "delete-success": "Speicher gelöscht.",
+      "update-failed": "Fehlgeschlagenes Speicherspeicher-Update.",
+      "update-success": "Speicher aktualisiert.",
+      "add-failed": "Fehlgeschlagen beim Hinzufügen von Speicher.",
+      "add-global-success": "Globaler Speicher hinzugefügt.",
+      "add-success": "Speicher hinzugefügt.",
+      "promote-failed":
+        "Nicht erfolgreich bei der Förderung der Gedächtnisleistung.",
+      "promote-success": "Memory wurde zur globalen Führungskraft befördert.",
     },
   },
 };
