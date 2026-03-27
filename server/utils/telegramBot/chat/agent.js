@@ -14,7 +14,6 @@ const {
   MAX_MSG_LEN,
   CURSOR_CHAR,
 } = require("../constants");
-const createFilesLib = require("../../agents/aibitat/plugins/create-files/lib");
 
 const THOUGHT_FLUSH_INTERVAL_MS = 1500;
 
@@ -348,6 +347,7 @@ async function handleAgentResponse(
  * @param {Array<{filename: string, storageFilename: string, fileSize: number}>} files
  */
 async function sendFilesAsTelegramDocuments(ctx, chatId, files) {
+  const createFilesLib = require("../../agents/aibitat/plugins/create-files/lib");
   for (const file of files) {
     try {
       ctx.log?.info?.(`Retrieving file: ${file.storageFilename}`);
