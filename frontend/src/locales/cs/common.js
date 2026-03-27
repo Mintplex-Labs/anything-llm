@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Vítejte v",
       getStarted: "Začít",
       welcome: "Vítejte",
     },
@@ -324,11 +323,6 @@ const TRANSLATIONS = {
         description:
           "Umožněte výchozímu agentovi generovat různé typy grafů z dat poskytnutých nebo uvedených v chatu.",
       },
-      save: {
-        title: "Generovat a ukládat soubory",
-        description:
-          "Umožněte výchozímu agentovi generovat a zapisovat do souborů, které lze uložit do počítače.",
-      },
       web: {
         title: "Živé webové vyhledávání a prohlížení",
         description:
@@ -373,11 +367,6 @@ const TRANSLATIONS = {
             title: "Získejte informace o souboru",
             description: "Získejte podrobné metadatumy o souborech.",
           },
-          "write-file": {
-            title: "Vytvoř soubor",
-            description:
-              "Vytvořte nové soubory nebo přepsat stávající soubory.",
-          },
           "edit-file": {
             title: "Upravit soubor",
             description:
@@ -394,6 +383,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Zkopírovat soubor",
             description: "Zkopírujte soubory a adresáře",
+          },
+          "write-text-file": {
+            title: "Vytvořte soubor s textem",
+            description:
+              "Vytvořte nové textové soubory nebo přepsáním existujících textových souborů.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Vytváření dokumentů",
+        description:
+          "Umožněte svému zástupci vytvářet soubory ve formátech jako PowerPoint prezentace, tabulky v Excelu, dokumenty ve formátu Word a soubory ve formátu PDF. Soubory lze stahovat přímo z chatu.",
+        configuration: "Dostupné typy dokumentů",
+        skills: {
+          "create-text-file": {
+            title: "Soubory v textovém formátu",
+            description:
+              "Vytvořte textové soubory s libovolným obsahem a příponou (např. .txt, .md, .json, .csv atd.)",
+          },
+          "create-pptx": {
+            title: "Prezentace v PowerPointu",
+            description:
+              "Vytvořte nové prezentace v programu PowerPoint, včetně slidů, nadpisů a odrážek.",
+          },
+          "create-pdf": {
+            title: "Dokumenty ve formátu PDF",
+            description:
+              "Vytvořte PDF dokumenty z Markdownu nebo jednoduchého textu s základním formátováním.",
+          },
+          "create-xlsx": {
+            title: "Tabulky v programu Excel",
+            description:
+              "Vytvořte tabulkové dokumenty v programu Excel, které budou obsahovat listy a stylování.",
+          },
+          "create-docx": {
+            title: "Dokumenty ve formátu Word",
+            description:
+              "Vytvořte dokumenty ve formátu Word s základním formátováním a stylováním.",
           },
         },
       },
@@ -833,7 +860,6 @@ const TRANSLATIONS = {
       select_all: "Vybrat vše",
       deselect_all: "Zrušit výběr všeho",
       remove_selected: "Odebrat vybrané",
-      costs: "*Jednorázové náklady pro embeddingy",
       save_embed: "Uložit a vložit",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",
