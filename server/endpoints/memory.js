@@ -58,7 +58,7 @@ function memoryEndpoints(app) {
         response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
-        response.status(500).json({ success: false, error: e.message });
+        response.sendStatus(500).end();
       }
     }
   );
