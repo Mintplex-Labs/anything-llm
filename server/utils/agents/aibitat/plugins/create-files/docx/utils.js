@@ -4,6 +4,77 @@
  */
 
 /**
+ * Document style presets for professional-looking documents.
+ */
+const DOCUMENT_STYLES = {
+  margins: {
+    normal: { top: 1440, bottom: 1440, left: 1800, right: 1800 },
+    narrow: { top: 720, bottom: 720, left: 720, right: 720 },
+    wide: { top: 1440, bottom: 1440, left: 2880, right: 2880 },
+  },
+  themes: {
+    neutral: {
+      heading: "2E4057",
+      accent: "048A81",
+      tableHeader: "E7E6E6",
+      border: "CCCCCC",
+      coverBg: "2E4057",
+      coverText: "FFFFFF",
+      footerText: "666666",
+    },
+    blue: {
+      heading: "1B3A6B",
+      accent: "2E86AB",
+      tableHeader: "D6E8F5",
+      border: "A8C8E8",
+      coverBg: "1B3A6B",
+      coverText: "FFFFFF",
+      footerText: "2E86AB",
+    },
+    warm: {
+      heading: "5C3317",
+      accent: "C1440E",
+      tableHeader: "F5ECD7",
+      border: "D4B896",
+      coverBg: "5C3317",
+      coverText: "FFFFFF",
+      footerText: "8B6914",
+    },
+  },
+  fonts: {
+    body: "Calibri",
+    heading: "Calibri",
+    mono: "Consolas",
+  },
+  borders: {
+    none: {
+      top: { style: "none" },
+      bottom: { style: "none" },
+      left: { style: "none" },
+      right: { style: "none" },
+    },
+  },
+};
+
+/**
+ * Gets the theme colors, falling back to neutral if not found.
+ * @param {string} themeName - The theme name
+ * @returns {Object} Theme color configuration
+ */
+function getTheme(themeName) {
+  return DOCUMENT_STYLES.themes[themeName] || DOCUMENT_STYLES.themes.neutral;
+}
+
+/**
+ * Gets the margin configuration, falling back to normal if not found.
+ * @param {string} marginName - The margin preset name
+ * @returns {Object} Margin configuration
+ */
+function getMargins(marginName) {
+  return DOCUMENT_STYLES.margins[marginName] || DOCUMENT_STYLES.margins.normal;
+}
+
+/**
  * Lazy-loads the required libraries for docx generation.
  * @returns {Promise<Object>} The loaded libraries
  */
@@ -17,6 +88,53 @@ async function loadLibraries() {
     JSDOM,
     docx,
   };
+}
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const IMAGE_FETCH_TIMEOUT_MS = 2000;
+
+/**
+ * Image magic bytes and their corresponding types.
+ * This is hardcoded and there might be a better way to do this but this is for simple image validation.
+ * @type {Object}
+ */
+const IMAGE_MAGIC_BYTES = {
+  png: { bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], type: "png" },
+  jpg: { bytes: [0xff, 0xd8, 0xff], type: "jpg" },
+  gif87a: { bytes: [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], type: "gif" },
+  gif89a: { bytes: [0x47, 0x49, 0x46, 0x38, 0x39, 0x61], type: "gif" },
+  bmp: { bytes: [0x42, 0x4d], type: "bmp" },
+  webp: {
+    bytes: [0x52, 0x49, 0x46, 0x46],
+    type: "webp",
+    offset4: [0x57, 0x45, 0x42, 0x50],
+  },
+};
+
+/**
+ * Validates image buffer by checking magic bytes to determine actual image type.
+ * @param {Buffer} buffer - The image buffer to validate
+ * @returns {{valid: boolean, type: string|null}} Validation result with detected type
+ */
+function validateImageMagicBytes(buffer) {
+  if (!buffer || buffer.length < 12) {
+    return { valid: false, type: null };
+  }
+
+  for (const [, signature] of Object.entries(IMAGE_MAGIC_BYTES)) {
+    const matches = signature.bytes.every((byte, i) => buffer[i] === byte);
+    if (matches) {
+      if (signature.offset4) {
+        const offset4Matches = signature.offset4.every(
+          (byte, i) => buffer[8 + i] === byte
+        );
+        if (!offset4Matches) continue;
+      }
+      return { valid: true, type: signature.type };
+    }
+  }
+
+  return { valid: false, type: null };
 }
 
 /**
@@ -33,8 +151,24 @@ async function fetchImage(src, log) {
     if (src.startsWith("data:")) {
       const match = src.match(/^data:image\/(\w+);base64,(.+)$/);
       if (match) {
-        imageType = match[1] === "jpeg" ? "jpg" : match[1];
         imageBuffer = Buffer.from(match[2], "base64");
+
+        if (imageBuffer.length > MAX_IMAGE_SIZE) {
+          log(
+            `create-docx-file: Base64 image too large (${(imageBuffer.length / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
+          );
+          return null;
+        }
+
+        const validation = validateImageMagicBytes(imageBuffer);
+        if (!validation.valid) {
+          log(
+            `create-docx-file: Base64 data is not a valid image (magic bytes check failed)`
+          );
+          return null;
+        }
+        imageType = validation.type;
+
         log(
           `create-docx-file: Processed base64 image, type: ${imageType}, size: ${imageBuffer.length} bytes`
         );
@@ -43,10 +177,30 @@ async function fetchImage(src, log) {
         return null;
       }
     } else if (src.startsWith("http://") || src.startsWith("https://")) {
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(src);
+      } catch {
+        log(`create-docx-file: Invalid URL: ${src}`);
+        return null;
+      }
+
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        log(`create-docx-file: Invalid URL protocol: ${parsedUrl.protocol}`);
+        return null;
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        IMAGE_FETCH_TIMEOUT_MS
+      );
+
       try {
         const response = await fetch(src, {
-          headers: { "User-Agent": "AnythingLLM-DocxGenerator/1.0" },
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           log(
@@ -55,26 +209,47 @@ async function fetchImage(src, log) {
           return null;
         }
 
-        const contentType = response.headers.get("content-type") || "";
-        if (contentType.includes("jpeg") || contentType.includes("jpg")) {
-          imageType = "jpg";
-        } else if (contentType.includes("gif")) {
-          imageType = "gif";
-        } else if (contentType.includes("bmp")) {
-          imageType = "bmp";
-        } else {
-          imageType = "png";
+        const contentLength = response.headers.get("content-length");
+        if (contentLength && parseInt(contentLength, 10) > MAX_IMAGE_SIZE) {
+          log(
+            `create-docx-file: Image too large (${(parseInt(contentLength, 10) / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
+          );
+          return null;
         }
 
         const arrayBuffer = await response.arrayBuffer();
         imageBuffer = Buffer.from(arrayBuffer);
+
+        if (imageBuffer.length > MAX_IMAGE_SIZE) {
+          log(
+            `create-docx-file: Downloaded image too large (${(imageBuffer.length / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
+          );
+          return null;
+        }
+
+        const validation = validateImageMagicBytes(imageBuffer);
+        if (!validation.valid) {
+          log(
+            `create-docx-file: Fetched content is not a valid image (magic bytes check failed)`
+          );
+          return null;
+        }
+        imageType = validation.type;
+
         log(
           `create-docx-file: Fetched remote image from ${src}, type: ${imageType}, size: ${imageBuffer.length} bytes`
         );
       } catch (fetchError) {
-        log(
-          `create-docx-file: Error fetching image from ${src}: ${fetchError.message}`
-        );
+        clearTimeout(timeoutId);
+        if (fetchError.name === "AbortError") {
+          log(
+            `create-docx-file: Image fetch timed out after ${IMAGE_FETCH_TIMEOUT_MS}ms: ${src}`
+          );
+        } else {
+          log(
+            `create-docx-file: Error fetching image from ${src}: ${fetchError.message}`
+          );
+        }
         return null;
       }
     } else {
@@ -199,7 +374,8 @@ async function processInlineElements(element, docx, styles = {}, log) {
           break;
         case "a": {
           const href = node.getAttribute("href");
-          if (href) {
+          const isValidHref = href && /^https?:\/\//i.test(href);
+          if (isValidHref) {
             children.push(
               new ExternalHyperlink({
                 children: [
@@ -256,9 +432,10 @@ async function processInlineElements(element, docx, styles = {}, log) {
  * @param {Element} tableElement - The table DOM element
  * @param {Object} docx - The docx library
  * @param {Function} log - Logging function
+ * @param {Object} theme - Theme color configuration
  * @returns {Promise<Object>} A docx Table
  */
-async function processTable(tableElement, docx, log) {
+async function processTable(tableElement, docx, log, theme = null) {
   const {
     Table,
     TableRow,
@@ -271,6 +448,7 @@ async function processTable(tableElement, docx, log) {
     TableLayoutType,
   } = docx;
 
+  const colors = theme || DOCUMENT_STYLES.themes.neutral;
   const rows = [];
   const tableRows = tableElement.querySelectorAll("tr");
 
@@ -286,9 +464,9 @@ async function processTable(tableElement, docx, log) {
 
     let shadingFill;
     if (isHeader) {
-      shadingFill = "E7E6E6";
+      shadingFill = colors.tableHeader;
     } else if (dataRowIndex % 2 === 1) {
-      shadingFill = "F5F5F5";
+      shadingFill = "F9F9F9";
     }
 
     for (const cell of cellElements) {
@@ -324,12 +502,20 @@ async function processTable(tableElement, docx, log) {
     width: { size: 100, type: WidthType.PERCENTAGE },
     layout: TableLayoutType.FIXED,
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-      left: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-      right: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+      top: { style: BorderStyle.SINGLE, size: 1, color: colors.border },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: colors.border },
+      left: { style: BorderStyle.SINGLE, size: 1, color: colors.border },
+      right: { style: BorderStyle.SINGLE, size: 1, color: colors.border },
+      insideHorizontal: {
+        style: BorderStyle.SINGLE,
+        size: 1,
+        color: colors.border,
+      },
+      insideVertical: {
+        style: BorderStyle.SINGLE,
+        size: 1,
+        color: colors.border,
+      },
     },
   });
 }
@@ -406,12 +592,14 @@ async function processList(listElement, docx, isOrdered, level = 0, log) {
  * @param {string} html - The HTML content
  * @param {Object} libs - The loaded libraries
  * @param {Function} log - Logging function
+ * @param {Object} theme - Theme color configuration
  * @returns {Promise<Array>} Array of docx elements for sections
  */
-async function htmlToDocxElements(html, libs, log) {
+async function htmlToDocxElements(html, libs, log, theme = null) {
   const { JSDOM, docx } = libs;
   const { Paragraph, TextRun, HeadingLevel, AlignmentType, ImageRun } = docx;
 
+  const colors = theme || DOCUMENT_STYLES.themes.neutral;
   const dom = new JSDOM(html);
   const body = dom.window.document.body;
   const elements = [];
@@ -434,7 +622,7 @@ async function htmlToDocxElements(html, libs, log) {
         const inlineChildren = await processInlineElements(
           child,
           docx,
-          { size, bold: true },
+          { size, bold: true, color: colors.heading },
           log
         );
         elements.push(
@@ -442,7 +630,14 @@ async function htmlToDocxElements(html, libs, log) {
             children:
               inlineChildren.length > 0
                 ? inlineChildren
-                : [new TextRun({ text: child.textContent, bold: true, size })],
+                : [
+                    new TextRun({
+                      text: child.textContent,
+                      bold: true,
+                      size,
+                      color: colors.heading,
+                    }),
+                  ],
             heading: level,
             spacing: { before: 240, after: 120 },
           })
@@ -467,7 +662,7 @@ async function htmlToDocxElements(html, libs, log) {
       } else if (tagName === "ol") {
         elements.push(...(await processList(child, docx, true, 0, log)));
       } else if (tagName === "table") {
-        elements.push(await processTable(child, docx, log));
+        elements.push(await processTable(child, docx, log, colors));
         elements.push(new Paragraph({ children: [] }));
       } else if (tagName === "blockquote") {
         const inlineChildren = await processInlineElements(
@@ -481,7 +676,7 @@ async function htmlToDocxElements(html, libs, log) {
             children: inlineChildren,
             indent: { left: 720 },
             border: {
-              left: { style: "single", size: 24, color: "CCCCCC" },
+              left: { style: "single", size: 24, color: colors.accent },
             },
             spacing: { before: 200, after: 200 },
           })
@@ -499,7 +694,7 @@ async function htmlToDocxElements(html, libs, log) {
               children: [
                 new TextRun({
                   text: line || " ",
-                  font: "Consolas",
+                  font: DOCUMENT_STYLES.fonts.mono,
                   size: 20,
                 }),
               ],
@@ -513,7 +708,9 @@ async function htmlToDocxElements(html, libs, log) {
         elements.push(
           new Paragraph({
             children: [],
-            border: { bottom: { style: "single", size: 6, color: "CCCCCC" } },
+            border: {
+              bottom: { style: "single", size: 6, color: colors.border },
+            },
             spacing: { before: 200, after: 200 },
           })
         );
@@ -562,35 +759,271 @@ async function htmlToDocxElements(html, libs, log) {
 }
 
 /**
- * Creates the branded footer with AnythingLLM logo.
+ * Creates a cover/title page section with colored background and centered title block.
  * @param {Object} docx - The docx library
- * @param {Buffer|null} logoBuffer - The logo buffer or null if not available
- * @returns {Object} Footer configuration
+ * @param {Object} options - Cover page options
+ * @param {string} options.title - Document title
+ * @param {string} options.subtitle - Optional subtitle
+ * @param {string} options.author - Optional author name
+ * @param {string} options.date - Optional date string
+ * @param {Object} options.theme - Theme color configuration
+ * @param {Object} options.margins - Margin configuration
+ * @param {Buffer|null} options.logoBuffer - Logo buffer for footer
+ * @returns {Object} Section configuration for cover page
  */
-function createBrandedFooter(docx, logoBuffer) {
+function createCoverPageSection(docx, options) {
+  const { Paragraph, TextRun, AlignmentType, Footer, ImageRun, SectionType } =
+    docx;
+
+  const { title, subtitle, author, date, theme, margins, logoBuffer } = options;
+
+  const coverChildren = [];
+
+  coverChildren.push(
+    new Paragraph({
+      children: [],
+      spacing: { before: 2400 },
+    })
+  );
+
+  coverChildren.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: title,
+          bold: true,
+          size: 72,
+          color: theme.heading,
+          font: DOCUMENT_STYLES.fonts.heading,
+        }),
+      ],
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 400 },
+    })
+  );
+
+  if (subtitle) {
+    coverChildren.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: subtitle,
+            size: 32,
+            color: theme.accent,
+            font: DOCUMENT_STYLES.fonts.body,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 800 },
+      })
+    );
+  }
+
+  coverChildren.push(
+    new Paragraph({
+      children: [],
+      spacing: { before: 4800 },
+    })
+  );
+
+  if (author) {
+    coverChildren.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: author,
+            size: 24,
+            color: "666666",
+            font: DOCUMENT_STYLES.fonts.body,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+      })
+    );
+  }
+
+  if (date) {
+    coverChildren.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: date,
+            size: 22,
+            color: "888888",
+            font: DOCUMENT_STYLES.fonts.body,
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+      })
+    );
+  }
+
+  const coverFooterChildren = [];
+  if (logoBuffer) {
+    coverFooterChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new ImageRun({
+            data: logoBuffer,
+            transformation: { width: 100, height: 16 },
+            type: "png",
+          }),
+        ],
+      })
+    );
+  }
+
+  return {
+    properties: {
+      page: {
+        margin: margins,
+      },
+      type: SectionType.NEXT_PAGE,
+    },
+    children: coverChildren,
+    footers: {
+      default: new Footer({ children: coverFooterChildren }),
+    },
+  };
+}
+
+/**
+ * Creates a running header for content pages (pages 2+).
+ * @param {Object} docx - The docx library
+ * @param {string} documentTitle - The document title to display
+ * @param {Object} theme - Theme color configuration
+ * @returns {Object} Header configuration
+ */
+function createRunningHeader(docx, documentTitle, theme) {
   const {
-    Footer,
+    Header,
     Paragraph,
     TextRun,
-    ImageRun,
     AlignmentType,
     Table,
     TableRow,
     TableCell,
     WidthType,
+    BorderStyle,
   } = docx;
 
-  const footerChildren = [];
+  const noBorders = DOCUMENT_STYLES.borders.none;
 
-  if (logoBuffer) {
-    footerChildren.push(
+  return new Header({
+    children: [
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
         borders: {
-          top: { style: "none" },
-          bottom: { style: "none" },
-          left: { style: "none" },
-          right: { style: "none" },
+          ...noBorders,
+          insideHorizontal: { style: "none" },
+          insideVertical: { style: "none" },
+          bottom: { style: BorderStyle.SINGLE, size: 6, color: theme.border },
+        },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 70, type: WidthType.PERCENTAGE },
+                borders: noBorders,
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: documentTitle,
+                        size: 18,
+                        color: theme.footerText,
+                        font: DOCUMENT_STYLES.fonts.body,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableCell({
+                width: { size: 30, type: WidthType.PERCENTAGE },
+                borders: noBorders,
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    children: [],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+      new Paragraph({ children: [], spacing: { after: 200 } }),
+    ],
+  });
+}
+
+/**
+ * Creates a running footer with Page X of Y and branding.
+ * @param {Object} docx - The docx library
+ * @param {Buffer|null} logoBuffer - Logo buffer or null
+ * @param {Object} theme - Theme color configuration
+ * @returns {Object} Footer configuration
+ */
+function createRunningFooter(docx, logoBuffer, theme) {
+  const {
+    Footer,
+    Paragraph,
+    TextRun,
+    AlignmentType,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+    ImageRun,
+    PageNumber,
+  } = docx;
+
+  const noBorders = DOCUMENT_STYLES.borders.none;
+
+  const pageNumberParagraph = new Paragraph({
+    alignment: AlignmentType.LEFT,
+    children: [
+      new TextRun({
+        children: ["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES],
+        size: 18,
+        color: theme.footerText,
+        font: DOCUMENT_STYLES.fonts.body,
+      }),
+    ],
+  });
+
+  const brandingCell = logoBuffer
+    ? new Paragraph({
+        alignment: AlignmentType.RIGHT,
+        children: [
+          new ImageRun({
+            data: logoBuffer,
+            transformation: { width: 80, height: 13 },
+            type: "png",
+          }),
+        ],
+      })
+    : new Paragraph({
+        alignment: AlignmentType.RIGHT,
+        children: [
+          new TextRun({
+            text: "Generated by AnythingLLM",
+            size: 16,
+            color: theme.footerText,
+            font: DOCUMENT_STYLES.fonts.body,
+          }),
+        ],
+      });
+
+  return new Footer({
+    children: [
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          ...noBorders,
           insideHorizontal: { style: "none" },
           insideVertical: { style: "none" },
         },
@@ -598,62 +1031,20 @@ function createBrandedFooter(docx, logoBuffer) {
           new TableRow({
             children: [
               new TableCell({
-                width: { size: 80, type: WidthType.PERCENTAGE },
-                borders: {
-                  top: { style: "none" },
-                  bottom: { style: "none" },
-                  left: { style: "none" },
-                  right: { style: "none" },
-                },
-                children: [],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                borders: noBorders,
+                children: [pageNumberParagraph],
               }),
               new TableCell({
-                width: { size: 20, type: WidthType.PERCENTAGE },
-                borders: {
-                  top: { style: "none" },
-                  bottom: { style: "none" },
-                  left: { style: "none" },
-                  right: { style: "none" },
-                },
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.RIGHT,
-                    children: [
-                      new ImageRun({
-                        data: logoBuffer,
-                        transformation: {
-                          width: 80,
-                          height: 13,
-                        },
-                        type: "png",
-                      }),
-                    ],
-                  }),
-                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                borders: noBorders,
+                children: [brandingCell],
               }),
             ],
           }),
         ],
-      })
-    );
-  } else {
-    footerChildren.push(
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
-        children: [
-          new TextRun({
-            text: "Generated by AnythingLLM",
-            size: 16,
-            color: "999999",
-            font: "Arial",
-          }),
-        ],
-      })
-    );
-  }
-
-  return new Footer({
-    children: footerChildren,
+      }),
+    ],
   });
 }
 
@@ -692,12 +1083,13 @@ const DEFAULT_NUMBERING_CONFIG = {
 };
 
 module.exports = {
+  DOCUMENT_STYLES,
+  getTheme,
+  getMargins,
   loadLibraries,
-  fetchImage,
-  processInlineElements,
-  processTable,
-  processList,
   htmlToDocxElements,
-  createBrandedFooter,
+  createCoverPageSection,
+  createRunningHeader,
+  createRunningFooter,
   DEFAULT_NUMBERING_CONFIG,
 };

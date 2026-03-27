@@ -3,9 +3,13 @@ const {
 } = require("../../../../../../endpoints/utils.js");
 const createFilesLib = require("../lib.js");
 const {
+  getTheme,
+  getMargins,
   loadLibraries,
   htmlToDocxElements,
-  createBrandedFooter,
+  createCoverPageSection,
+  createRunningHeader,
+  createRunningFooter,
   DEFAULT_NUMBERING_CONFIG,
 } = require("./utils.js");
 
@@ -19,7 +23,7 @@ module.exports.CreateDocxFile = {
           super: aibitat,
           name: this.name,
           description:
-            "Create a Microsoft Word document (.docx) from markdown or plain text content.",
+            "Create a Microsoft Word document (.docx) from markdown or plain text content. Supports professional styling with color themes, title pages, and running headers/footers.",
           examples: [
             {
               prompt: "Create a Word document with meeting notes",
@@ -30,19 +34,26 @@ module.exports.CreateDocxFile = {
               }),
             },
             {
-              prompt: "Create a project proposal document",
+              prompt:
+                "Create a professional project proposal with a title page",
               call: JSON.stringify({
                 filename: "project-proposal.docx",
                 title: "Project Alpha Proposal",
+                subtitle: "Strategic Initiative for Q2 2024",
+                author: "Product Team",
+                theme: "blue",
+                includeTitlePage: true,
                 content:
-                  "# Project Alpha Proposal\n\n## Executive Summary\nThis proposal outlines the development of **Project Alpha**, a next-generation platform.\n\n## Objectives\n- Increase efficiency by 40%\n- Reduce costs by $50,000 annually\n- Improve user satisfaction\n\n## Timeline\n| Phase | Duration | Deliverables |\n|-------|----------|-------------|\n| Phase 1 | 4 weeks | Requirements |\n| Phase 2 | 8 weeks | Development |\n| Phase 3 | 2 weeks | Testing |\n\n## Budget\nTotal estimated budget: **$150,000**",
+                  "## Executive Summary\nThis proposal outlines the development of **Project Alpha**, a next-generation platform.\n\n## Objectives\n- Increase efficiency by 40%\n- Reduce costs by $50,000 annually\n- Improve user satisfaction\n\n## Timeline\n| Phase | Duration | Deliverables |\n|-------|----------|-------------|\n| Phase 1 | 4 weeks | Requirements |\n| Phase 2 | 8 weeks | Development |\n| Phase 3 | 2 weeks | Testing |\n\n## Budget\nTotal estimated budget: **$150,000**",
               }),
             },
             {
-              prompt: "Create a technical documentation document",
+              prompt: "Create technical documentation with warm theme",
               call: JSON.stringify({
                 filename: "api-documentation.docx",
                 title: "API Documentation",
+                theme: "warm",
+                margins: "narrow",
                 content:
                   "# API Documentation\n\n## Authentication\nAll API requests require a Bearer token in the Authorization header.\n\n```javascript\nconst headers = {\n  'Authorization': 'Bearer YOUR_TOKEN',\n  'Content-Type': 'application/json'\n};\n```\n\n## Endpoints\n\n### GET /users\nReturns a list of all users.\n\n### POST /users\nCreates a new user.\n\n> **Note:** Rate limiting applies to all endpoints.",
               }),
@@ -60,12 +71,39 @@ module.exports.CreateDocxFile = {
               title: {
                 type: "string",
                 description:
-                  "Optional document title for metadata. If not provided, will be extracted from content or use filename.",
+                  "Document title for metadata and title page. If not provided, will be extracted from content or use filename.",
+              },
+              subtitle: {
+                type: "string",
+                description:
+                  "Optional subtitle displayed on the title page below the main title.",
+              },
+              author: {
+                type: "string",
+                description:
+                  "Optional author name displayed on the title page.",
               },
               content: {
                 type: "string",
                 description:
                   "The content to convert to a Word document. Fully supports markdown formatting.",
+              },
+              theme: {
+                type: "string",
+                enum: ["neutral", "blue", "warm"],
+                description:
+                  "Color theme for the document. 'neutral' (slate/grey), 'blue' (corporate blue), or 'warm' (earthy tones). Defaults to neutral.",
+              },
+              margins: {
+                type: "string",
+                enum: ["normal", "narrow", "wide"],
+                description:
+                  "Page margin preset. 'normal' (standard), 'narrow' (data-heavy docs), or 'wide' (letters/memos). Defaults to normal.",
+              },
+              includeTitlePage: {
+                type: "boolean",
+                description:
+                  "Include a professional title page with centered title, subtitle, author, and date. Content starts on page 2 with running headers/footers.",
               },
             },
             required: ["filename", "content"],
@@ -74,7 +112,12 @@ module.exports.CreateDocxFile = {
           handler: async function ({
             filename = "document.docx",
             title = null,
+            subtitle = null,
+            author = null,
             content = "",
+            theme = "neutral",
+            margins = "normal",
+            includeTitlePage = false,
           }) {
             try {
               this.super.handlerProps.log(`Using the create-docx-file tool.`);
@@ -103,7 +146,7 @@ module.exports.CreateDocxFile = {
               }
 
               this.super.introspect(
-                `${this.caller}: Creating Word document "${displayFilename}"`
+                `${this.caller}: Creating Word document "${displayFilename}"${includeTitlePage ? " with title page" : ""}`
               );
 
               const libs = await loadLibraries();
@@ -114,9 +157,12 @@ module.exports.CreateDocxFile = {
                 breaks: true,
               });
 
+              const themeColors = getTheme(theme);
+              const marginConfig = getMargins(margins);
+
               const html = marked.parse(content);
               this.super.handlerProps.log(
-                `create-docx-file: Parsed markdown to HTML (${html.length} chars)`
+                `create-docx-file: Parsed markdown to HTML (${html.length} chars), theme: ${theme}, margins: ${margins}`
               );
 
               const logoBuffer = createFilesLib.getLogo({
@@ -127,7 +173,8 @@ module.exports.CreateDocxFile = {
               const docElements = await htmlToDocxElements(
                 html,
                 libs,
-                this.super.handlerProps.log
+                this.super.handlerProps.log,
+                themeColors
               );
 
               if (docElements.length === 0) {
@@ -138,28 +185,72 @@ module.exports.CreateDocxFile = {
                 );
               }
 
-              const brandedFooter = createBrandedFooter(docx, logoBuffer);
+              const sections = [];
+
+              if (includeTitlePage) {
+                const currentDate = new Date().toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+
+                sections.push(
+                  createCoverPageSection(docx, {
+                    title: documentTitle,
+                    subtitle,
+                    author,
+                    date: currentDate,
+                    theme: themeColors,
+                    margins: marginConfig,
+                    logoBuffer,
+                  })
+                );
+
+                sections.push({
+                  properties: {
+                    page: {
+                      margin: marginConfig,
+                    },
+                  },
+                  children: docElements,
+                  headers: {
+                    default: createRunningHeader(
+                      docx,
+                      documentTitle,
+                      themeColors
+                    ),
+                  },
+                  footers: {
+                    default: createRunningFooter(docx, logoBuffer, themeColors),
+                  },
+                });
+              } else {
+                sections.push({
+                  properties: {
+                    page: {
+                      margin: marginConfig,
+                    },
+                  },
+                  children: docElements,
+                  footers: {
+                    default: createRunningFooter(docx, logoBuffer, themeColors),
+                  },
+                });
+              }
+
               const doc = new Document({
                 title: documentTitle,
                 creator: `AnythingLLM ${getDeploymentVersion()}`,
                 description: `Word Document generated by AnythingLLM ${getDeploymentVersion()}`,
                 numbering: DEFAULT_NUMBERING_CONFIG,
-                sections: [
-                  {
-                    properties: {},
-                    children: docElements,
-                    footers: {
-                      default: brandedFooter,
-                    },
-                  },
-                ],
+                sections,
               });
 
               const buffer = await Packer.toBuffer(doc);
               const bufferSizeKB = (buffer.length / 1024).toFixed(2);
 
               this.super.handlerProps.log(
-                `create-docx-file: Generated buffer - size: ${bufferSizeKB}KB, title: "${documentTitle}"`
+                `create-docx-file: Generated buffer - size: ${bufferSizeKB}KB, title: "${documentTitle}", theme: ${theme}`
               );
 
               const savedFile = await createFilesLib.saveGeneratedFile({
@@ -185,7 +276,16 @@ module.exports.CreateDocxFile = {
                 `${this.caller}: Successfully created Word document "${displayFilename}"`
               );
 
-              return `Successfully created Word document "${displayFilename}" (${bufferSizeKB}KB). The document includes formatted content with tables, images, and proper styling.`;
+              const styleInfo = [
+                theme !== "neutral" ? `${theme} theme` : null,
+                margins !== "normal" ? `${margins} margins` : null,
+                includeTitlePage ? "title page" : null,
+              ].filter(Boolean);
+
+              const styleDesc =
+                styleInfo.length > 0 ? ` with ${styleInfo.join(", ")}` : "";
+
+              return `Successfully created Word document "${displayFilename}" (${bufferSizeKB}KB)${styleDesc}. The document includes formatted content with tables, images, Page X of Y footer, and professional styling.`;
             } catch (e) {
               this.super.handlerProps.log(
                 `create-docx-file error: ${e.message}`
