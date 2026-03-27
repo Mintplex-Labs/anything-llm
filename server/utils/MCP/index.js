@@ -264,40 +264,54 @@ class MCPCompatibilityLayer extends MCPHypervisor {
 
     const isImage = (mime) =>
       typeof mime === "string" && mime.startsWith("image/");
+
     const images = [];
     const textParts = [];
 
-    for (const item of result.content) {
-      if (item.type === "image" && item.data && item.mimeType) {
-        images.push({
-          src: `data:${item.mimeType};base64,${item.data}`,
-          mimeType: item.mimeType,
-        });
-      } else if (
-        item.type === "resource_link" &&
-        item.uri &&
-        isImage(item.mimeType)
-      ) {
-        images.push({ src: item.uri, mimeType: item.mimeType });
-      } else if (
+    const getImage = (item) => {
+      const isInlineImage = item.type === "image" && item.data && item.mimeType;
+
+      const isResourceLink =
+        item.type === "resource_link" && item.uri && isImage(item.mimeType);
+
+      const isEmbeddedResource =
         item.type === "resource" &&
         item.resource &&
-        isImage(item.resource.mimeType)
-      ) {
-        if (item.resource.blob) {
-          images.push({
+        isImage(item.resource.mimeType);
+
+      if (isInlineImage)
+        return {
+          src: `data:${item.mimeType};base64,${item.data}`,
+          mimeType: item.mimeType,
+        };
+
+      if (isResourceLink)
+        return {
+          src: item.uri,
+          mimeType: item.mimeType,
+        };
+
+      if (isEmbeddedResource) {
+        if (item.resource.blob)
+          return {
             src: `data:${item.resource.mimeType};base64,${item.resource.blob}`,
             mimeType: item.resource.mimeType,
-          });
-        } else if (item.resource.uri) {
-          images.push({
+          };
+
+        if (item.resource.uri)
+          return {
             src: item.resource.uri,
             mimeType: item.resource.mimeType,
-          });
-        }
-      } else if (item.type === "text" && item.text) {
-        textParts.push(item.text);
+          };
       }
+
+      return null;
+    };
+
+    for (const item of result.content) {
+      const image = getImage(item);
+      if (image) images.push(image);
+      else if (item.type === "text" && item.text) textParts.push(item.text);
     }
 
     if (images.length === 0) return null;
