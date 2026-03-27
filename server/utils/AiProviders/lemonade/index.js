@@ -233,8 +233,6 @@ class LemonadeLLM {
       const endpoint = new URL(parseLemonadeServerEndpoint(basePath, "openai"));
       endpoint.pathname += "/load";
 
-      console.log(endpoint.toString());
-
       LemonadeLLM.slog(
         `Loading model ${model} with context size ${this.promptWindowLimit()}`
       );
