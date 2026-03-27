@@ -1,7 +1,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Welcome to",
       welcome: "Welcome",
       getStarted: "Get Started",
     },
@@ -323,11 +322,6 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
-      save: {
-        title: "Generate & save files",
-        description:
-          "Enable the default agent to generate and write to files that can be saved to your computer.",
-      },
       web: {
         title: "Web Search",
         description:
@@ -398,7 +392,6 @@ const TRANSLATIONS = {
         description:
           "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
         configuration: "Available Document Types",
-        info: "Create professional documents directly from your conversations. The agent can generate presentations, spreadsheets, and more.",
         skills: {
           "create-text-file": {
             title: "Text Files",
@@ -944,7 +937,6 @@ const TRANSLATIONS = {
       select_all: "Select All",
       deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
-      costs: "*One time cost for embeddings",
       save_embed: "Save and Embed",
     },
     upload: {
