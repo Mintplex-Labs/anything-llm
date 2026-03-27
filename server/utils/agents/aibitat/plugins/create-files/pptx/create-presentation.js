@@ -219,6 +219,7 @@ module.exports.CreatePptxPresentation = {
                   section,
                   presentationTitle: title,
                   conversationContext,
+                  sectionPrefix: `${i + 1}/${totalSections}`,
                 });
 
                 const slideCount = sectionResult.slides?.length || 0;
