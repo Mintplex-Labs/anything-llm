@@ -29,6 +29,13 @@ const getCreateFileSubSkills = (t) => {
       icon: FilePpt,
       category: "pptx",
     },
+    {
+      name: "create-pdf-file",
+      title: t("agent.skill.createFiles.skills.create-pdf.title"),
+      description: t("agent.skill.createFiles.skills.create-pdf.description"),
+      icon: FilePdf,
+      category: "pdf",
+    },
   ];
 };
 
@@ -88,6 +95,7 @@ export default function CreateFileSkillPanel({
   const textSkills = CREATE_FILE_SUB_SKILLS.filter(
     (s) => s.category === "text"
   );
+  const pdfSkills = CREATE_FILE_SUB_SKILLS.filter((s) => s.category === "pdf");
 
   return (
     <div className="p-2">
@@ -177,6 +185,23 @@ export default function CreateFileSkillPanel({
                       ))}
                     </div>
                   </div>
+
+                  <div className="flex flex-col gap-y-2">
+                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
+                      <FilePdf size={12} weight="fill" />
+                      {t("agent.skill.createFiles.pdfActions")}
+                    </p>
+                    <div className="flex flex-col gap-y-1">
+                      {pdfSkills.map((subSkill) => (
+                        <SubSkillRow
+                          key={subSkill.name}
+                          subSkill={subSkill}
+                          disabled={disabledSubSkills.includes(subSkill.name)}
+                          onToggle={() => toggleSubSkill(subSkill.name)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                   <ComingSoonSection />
                 </>
               )}
@@ -198,7 +223,6 @@ function ComingSoonSection() {
       <div className="flex flex-wrap gap-2">
         <ComingSoonBadge icon={FileXls} label="XLSX" />
         <ComingSoonBadge icon={FileDoc} label="DOCX" />
-        <ComingSoonBadge icon={FilePdf} label="PDF" />
       </div>
     </div>
   );

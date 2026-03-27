@@ -400,6 +400,7 @@ const TRANSLATIONS = {
         configuration: "Enabled Document Types",
         info: "Create professional documents directly from your conversations. The agent can generate presentations, spreadsheets, and more.",
         pptxActions: "PowerPoint (PPTX)",
+        pdfActions: "PDF Documents",
         textActions: "Text Files",
         comingSoon: "Coming Soon",
         skills: {
@@ -412,6 +413,11 @@ const TRANSLATIONS = {
             title: "Create Text File",
             description:
               "Create text files with any content and extension (.txt, .md, .json, .csv, etc.)",
+          },
+          "create-pdf": {
+            title: "Create PDF Document",
+            description:
+              "Create PDF documents from markdown or plain text with basic styling",
           },
         },
       },

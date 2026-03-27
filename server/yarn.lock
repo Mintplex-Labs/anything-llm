@@ -2125,6 +2125,48 @@
     "@langchain/core" "~0.1"
     js-tiktoken "^1.0.11"
 
+"@mdpdf/mdpdf-darwin-arm64@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-darwin-arm64/-/mdpdf-darwin-arm64-0.1.4.tgz#06e10d368512bcc19a77d702e1fbf32f00aba49d"
+  integrity sha512-WVfKlZgboAvudJHCr7PTdGgKNEUIUWwW/Md4MTzXamKfcfvJ6ORm8vQ6wx0jmfjBH1UwjqnINlxxYEUt1Jf7dw==
+
+"@mdpdf/mdpdf-darwin-x64@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-darwin-x64/-/mdpdf-darwin-x64-0.1.4.tgz#709e3cb191249f0b41785a01fb7aa2e9936badc7"
+  integrity sha512-tDaEuVhuFagWmSJuS44HeG4S2VzsMCV30JaF+1zMGKxnGYtuXEL+q+Lklvt1T6JkaHaZjHVEA5klz1XXTNDDHA==
+
+"@mdpdf/mdpdf-linux-arm64-gnu@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-arm64-gnu/-/mdpdf-linux-arm64-gnu-0.1.4.tgz#fa4b4a319e47263df336c2a4620688cda242bfa5"
+  integrity sha512-Rhy5DI3uwKNjeS+JW33CZdguFYZ0uRmc5iOLDdHl2bvmDPUzfAQSD1g6KJtqrqyDXbTe2N9jP+NOCVtkOSpw3Q==
+
+"@mdpdf/mdpdf-linux-x64-gnu@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-x64-gnu/-/mdpdf-linux-x64-gnu-0.1.4.tgz#bc4014b1da3bb6769665e002be162c993be99ddb"
+  integrity sha512-NWpMYDBr1z59H9GlQdBizI8H8ODygui7j9NHpn2qiMrcnMvPBtmkH84YaXSHSYmUQ41UafRA/bnY5h5tkQb+Bw==
+
+"@mdpdf/mdpdf-linux-x64-musl@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-linux-x64-musl/-/mdpdf-linux-x64-musl-0.1.4.tgz#f88fabab2ffd33a49b2213210d96c3d607cdd43f"
+  integrity sha512-dwwVfZpNONyYUFkFjrgRq5igEVqCMetkYR+cCmH0fD6b0mq2gsa7/mrSUPZGX5sz/dJ5hePmJb2hRBIL9Fu3yQ==
+
+"@mdpdf/mdpdf-win32-x64-msvc@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf-win32-x64-msvc/-/mdpdf-win32-x64-msvc-0.1.4.tgz#75caba7ccc20d59f87bc7fa26e7597f803f13b2b"
+  integrity sha512-NQBTbhbe+i1HjC4F4WXDiYiItBm0j3LFVpz3uaZgz88umF656j0n4YgOeJKRRx6S4k+l3nzvu19GFoR3ocHLdg==
+
+"@mdpdf/mdpdf@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mdpdf/mdpdf/-/mdpdf-0.1.4.tgz#5b244cccde9af845806deb949cd2530552e6cd1a"
+  integrity sha512-xGaqXEsuIylP0lQiA17BLb7ERMvcY3VRuyBOGbTRu6TjgrX4BZHPdoi6oUCUOi8sV/vZJYnjy7Xo/b/cX9lzsQ==
+  optionalDependencies:
+    "@mdpdf/mdpdf-darwin-arm64" "0.1.4"
+    "@mdpdf/mdpdf-darwin-x64" "0.1.4"
+    "@mdpdf/mdpdf-linux-arm64-gnu" "0.1.4"
+    "@mdpdf/mdpdf-linux-x64-gnu" "0.1.4"
+    "@mdpdf/mdpdf-linux-x64-musl" "0.1.4"
+    "@mdpdf/mdpdf-win32-x64-msvc" "0.1.4"
+
 "@mintplex-labs/bree@^9.2.5":
   version "9.2.5"
   resolved "https://registry.npmjs.org/@mintplex-labs/bree/-/bree-9.2.5.tgz"
@@ -2167,6 +2209,20 @@
     raw-body "^3.0.0"
     zod "^3.25 || ^4.0"
     zod-to-json-schema "^3.25.0"
+
+"@pdf-lib/standard-fonts@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@pdf-lib/standard-fonts/-/standard-fonts-1.0.0.tgz#8ba691c4421f71662ed07c9a0294b44528af2d7f"
+  integrity sha512-hU30BK9IUN/su0Mn9VdlVKsWBS6GyhVfqjwl1FjZN4TxP6cCw0jP2w7V3Hf5uX7M0AZJ16vey9yE0ny7Sa59ZA==
+  dependencies:
+    pako "^1.0.6"
+
+"@pdf-lib/upng@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pdf-lib/upng/-/upng-1.0.1.tgz#7dc9c636271aca007a9df4deaf2dd7e7960280cb"
+  integrity sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ==
+  dependencies:
+    pako "^1.0.10"
 
 "@petamoriken/float16@^3.8.6":
   version "3.8.6"
@@ -8004,7 +8060,7 @@ p-wait-for@3:
   dependencies:
     p-timeout "^3.0.0"
 
-pako@~1.0.2:
+pako@^1.0.10, pako@^1.0.11, pako@^1.0.6, pako@~1.0.2:
   version "1.0.11"
   resolved "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
@@ -8072,6 +8128,16 @@ path-to-regexp@~0.1.12:
   version "0.1.12"
   resolved "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.12.tgz"
   integrity sha512-RA1GjUVMnvYFxuqovrEqZoxxW5NUZqbwKtYz/Tt7nXerk0LbLblQmrsgdeOxV5SFHf0UDggjS/bSeOZwt1pmEQ==
+
+pdf-lib@^1.17.1:
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/pdf-lib/-/pdf-lib-1.17.1.tgz#9e7dd21261a0c1fb17992580885b39e7d08f451f"
+  integrity sha512-V/mpyJAoTsN4cnP31vc0wfNA1+p20evqqnap0KLoRUN0Yk/p3wN52DOEsL4oBFcLdb76hlpKPtzJIgo67j/XLw==
+  dependencies:
+    "@pdf-lib/standard-fonts" "^1.0.0"
+    "@pdf-lib/upng" "^1.0.1"
+    pako "^1.0.11"
+    tslib "^1.11.1"
 
 pend@~1.2.0:
   version "1.2.0"
@@ -9421,6 +9487,11 @@ truncate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/truncate/-/truncate-3.0.0.tgz"
   integrity sha512-C+0Xojw7wZPl6MDq5UjMTuxZvBPK04mtdFet7k+GSZPINcvLZFCXg+15kWIL4wAqDB7CksIsKiRLbQ1wa7rKdw==
+
+tslib@^1.11.1:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
+  integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
 tslib@^2.2.0, tslib@^2.6.2:
   version "2.6.2"
