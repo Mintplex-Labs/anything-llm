@@ -12,7 +12,7 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
-const { getMemoriesForPrompt } = require("../memories");
+const { promptWithMemories } = require("../memories");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
@@ -230,18 +230,16 @@ async function streamChatWithWorkspace(
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const systemPrompt = await chatPrompt(workspace, user);
-  const memoriesContext = await getMemoriesForPrompt(
-    user?.id ?? null,
-    workspace.id,
-    updatedMessage,
-    rawHistory
-  );
+  const systemPrompt = await promptWithMemories({
+    systemPrompt: await chatPrompt(workspace, user),
+    userId: user?.id ?? null,
+    workspaceId: workspace.id,
+    prompt: updatedMessage,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: memoriesContext
-        ? `${systemPrompt}\n\n${memoriesContext}`
-        : systemPrompt,
+      systemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,

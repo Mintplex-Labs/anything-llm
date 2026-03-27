@@ -102,4 +102,32 @@ function formatMemories(globalMemories, workspaceMemories) {
   return `## Things I Remember About You\n${lines.join("\n")}`;
 }
 
-module.exports = { getMemoriesForPrompt };
+/**
+ * Appends any relevant memories onto a base system prompt.
+ * @param {Object} opts
+ * @param {string} opts.systemPrompt - The base system prompt
+ * @param {number|null} opts.userId
+ * @param {number} opts.workspaceId
+ * @param {string} [opts.prompt] - Current user message (used for reranking)
+ * @param {object[]} [opts.rawHistory] - Recent chat history (used for reranking)
+ * @returns {Promise<string>} The system prompt with memories appended (if any)
+ */
+async function promptWithMemories({
+  systemPrompt,
+  userId,
+  workspaceId,
+  prompt = "",
+  rawHistory = [],
+}) {
+  const memoriesContext = await getMemoriesForPrompt(
+    userId,
+    workspaceId,
+    prompt,
+    rawHistory
+  );
+  return memoriesContext
+    ? `${systemPrompt}\n\n${memoriesContext}`
+    : systemPrompt;
+}
+
+module.exports = { promptWithMemories };

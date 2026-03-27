@@ -9,7 +9,7 @@ const {
   recentChatHistory,
   grepAllSlashCommands,
 } = require("./index");
-const { getMemoriesForPrompt } = require("../memories");
+const { promptWithMemories } = require("../memories");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -384,18 +384,16 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const systemPrompt = await chatPrompt(workspace, user);
-  const memoriesContext = await getMemoriesForPrompt(
-    user?.id ?? null,
-    workspace.id,
-    message,
-    rawHistory
-  );
+  const systemPrompt = await promptWithMemories({
+    systemPrompt: await chatPrompt(workspace, user),
+    userId: user?.id ?? null,
+    workspaceId: workspace.id,
+    prompt: message,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: memoriesContext
-        ? `${systemPrompt}\n\n${memoriesContext}`
-        : systemPrompt,
+      systemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -753,18 +751,16 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const streamSystemPrompt = await chatPrompt(workspace, user);
-  const streamMemoriesContext = await getMemoriesForPrompt(
-    user?.id ?? null,
-    workspace.id,
-    message,
-    rawHistory
-  );
+  const streamSystemPrompt = await promptWithMemories({
+    systemPrompt: await chatPrompt(workspace, user),
+    userId: user?.id ?? null,
+    workspaceId: workspace.id,
+    prompt: message,
+    rawHistory,
+  });
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: streamMemoriesContext
-        ? `${streamSystemPrompt}\n\n${streamMemoriesContext}`
-        : streamSystemPrompt,
+      systemPrompt: streamSystemPrompt,
       userPrompt: message,
       contextTexts,
       chatHistory,
