@@ -202,7 +202,7 @@ class LemonadeLLM {
           process.env.LEMONADE_LLM_BASE_PATH,
           "openai"
         ),
-        apiKey: null,
+        apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
@@ -238,7 +238,12 @@ class LemonadeLLM {
       );
       await fetch(endpoint.toString(), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...(process.env.LEMONADE_LLM_API_KEY
+            ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+            : {}),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model_name: String(model),
           ctx_size: Number(this.promptWindowLimit()),
