@@ -514,11 +514,24 @@ class FilesystemManager {
    * @returns {Promise<void>}
    */
   async writeFileContent(filePath, content) {
+    const contentSizeBytes = Buffer.byteLength(content, "utf-8");
+    const contentSizeKB = (contentSizeBytes / 1024).toFixed(2);
+
+    console.log(
+      `[FilesystemManager] writeFileContent starting - path: ${filePath}, size: ${contentSizeKB}KB`
+    );
+
     try {
       await fs.writeFile(filePath, content, { encoding: "utf-8", flag: "wx" });
+      console.log(
+        `[FilesystemManager] writeFileContent completed (new file) - saved to: ${filePath}`
+      );
     } catch (error) {
       if (error.code === "EEXIST") {
         await this.#atomicWrite(filePath, content);
+        console.log(
+          `[FilesystemManager] writeFileContent completed (overwrote existing) - saved to: ${filePath}`
+        );
       } else {
         throw error;
       }

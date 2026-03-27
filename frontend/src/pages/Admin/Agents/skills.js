@@ -3,6 +3,7 @@ import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkillPanel from "./GenericSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
 import FileSystemSkillPanel from "./FileSystemSkillPanel";
+import CreateFileSkillPanel from "./CreateFileSkillPanel";
 import {
   Brain,
   File,
@@ -10,6 +11,7 @@ import {
   ChartBar,
   FileMagnifyingGlass,
   FolderOpen,
+  FilePlus,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -17,6 +19,7 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
+import CreateFilesImage from "@/media/agents/generate-save-files.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -47,7 +50,7 @@ export const getDefaultSkills = (t) => ({
 
 export const getConfigurableSkills = (
   t,
-  { fileSystemAgentAvailable = true } = {}
+  { fileSystemAgentAvailable = true, createFilesAgentAvailable = true } = {}
 ) => ({
   ...(fileSystemAgentAvailable && {
     "filesystem-agent": {
@@ -57,6 +60,16 @@ export const getConfigurableSkills = (
       skill: "filesystem-agent",
       icon: FolderOpen,
       image: FileSystemImage,
+    },
+  }),
+  ...(createFilesAgentAvailable && {
+    "create-files-agent": {
+      title: t("agent.skill.createFiles.title"),
+      description: t("agent.skill.createFiles.description"),
+      component: CreateFileSkillPanel,
+      skill: "create-files-agent",
+      icon: FilePlus,
+      image: CreateFilesImage,
     },
   }),
   "save-file-to-browser": {
