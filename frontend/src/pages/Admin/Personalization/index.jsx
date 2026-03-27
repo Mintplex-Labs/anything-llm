@@ -4,21 +4,12 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import Workspace from "@/models/workspace";
 import Memory from "@/models/memory";
-import MemoryForm from "@/components/Memories/MemoryForm";
 import showToast from "@/utils/toast";
 import Toggle from "@/components/lib/Toggle";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import paths from "@/utils/paths";
-import {
-  Brain,
-  Trash,
-  PencilSimple,
-  ArrowSquareOut,
-  Plus,
-  GlobeSimple,
-} from "@phosphor-icons/react";
-import { Tooltip } from "react-tooltip";
+import GlobalMemoriesSection from "./GlobalMemoriesSection";
+import WorkspacesList from "./WorkspacesList";
 
 export default function Personalization() {
   const [enabled, setEnabled] = useState(false);
@@ -27,7 +18,6 @@ export default function Personalization() {
   const [clearing, setClearing] = useState(false);
   const [memories, setMemories] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   async function fetchData() {
     const { settings } = await Admin.systemPreferencesByFields([
@@ -137,7 +127,6 @@ export default function Personalization() {
       return;
     }
     showToast("Global memory added.", "success");
-    setShowAddForm(false);
     setMemories((prev) => [memory, ...prev]);
   }
 
@@ -207,8 +196,6 @@ export default function Personalization() {
                     memories={globalMemories}
                     onDelete={handleDeleteMemory}
                     onUpdate={handleUpdateMemory}
-                    showAddForm={showAddForm}
-                    setShowAddForm={setShowAddForm}
                     onAdd={handleAddGlobal}
                   />
 
@@ -219,191 +206,6 @@ export default function Personalization() {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function GlobalMemoriesSection({
-  memories,
-  onDelete,
-  onUpdate,
-  showAddForm,
-  setShowAddForm,
-  onAdd,
-}) {
-  return (
-    <div>
-      <div className="flex flex-col gap-y-1 mb-4">
-        <div className="flex items-center justify-between">
-          <label className="block input-label">
-            Global Memories ({memories.length}/5)
-          </label>
-          {memories.length < 5 && (
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-x-1 border-none text-theme-text-secondary font-medium text-sm px-[10px] py-[6px] rounded-md bg-theme-bg-secondary hover:bg-theme-bg-primary"
-            >
-              <Plus size={14} weight="bold" />
-              Add Global Memory
-            </button>
-          )}
-        </div>
-        <p className="text-white text-opacity-60 text-xs font-medium">
-          These memories are applied across all workspaces.
-        </p>
-      </div>
-
-      {showAddForm && (
-        <div className="mb-4">
-          <MemoryForm
-            placeholder="Enter a global memory (e.g. 'My name is Sean')"
-            submitLabel="Add"
-            onSubmit={onAdd}
-            onCancel={() => setShowAddForm(false)}
-          />
-        </div>
-      )}
-
-      {memories.length === 0 && !showAddForm ? (
-        <div className="flex items-center justify-center rounded-lg bg-theme-settings-input-bg py-8">
-          <div className="flex flex-col items-center gap-y-2">
-            <Brain className="h-8 w-8 text-theme-text-secondary" />
-            <p className="text-sm text-theme-text-secondary">
-              No global memories yet
-            </p>
-            <p className="text-xs text-theme-text-secondary">
-              Add them manually or promote workspace memories to global.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-y-1">
-          {memories.map((memory) => (
-            <MemoryItem
-              key={memory.id}
-              memory={memory}
-              onDelete={onDelete}
-              onUpdate={onUpdate}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function WorkspacesList({ workspaces, memories }) {
-  return (
-    <div>
-      <div className="flex flex-col gap-y-1 mb-4">
-        <label className="block input-label">Workspace Memories</label>
-        <p className="text-white text-opacity-60 text-xs font-medium">
-          Manage workspace-specific memories from each workspace's settings.
-        </p>
-      </div>
-      {workspaces.length === 0 ? (
-        <p className="text-xs text-theme-text-secondary">
-          No workspaces found.
-        </p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left rounded-lg min-w-[400px] border-spacing-0">
-            <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
-              <tr>
-                <th scope="col" className="px-6 py-3 rounded-tl-lg">
-                  Workspace
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Memories
-                </th>
-                <th scope="col" className="px-6 py-3 rounded-tr-lg">
-                  {" "}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {workspaces.map((ws) => {
-                const count = memories.filter(
-                  (m) => m.workspaceId === ws.id && m.scope === "workspace"
-                ).length;
-                return (
-                  <tr
-                    key={ws.id}
-                    className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
-                  >
-                    <th scope="row" className="px-6 whitespace-nowrap">
-                      {ws.name}
-                    </th>
-                    <td className="px-6">{count}</td>
-                    <td className="px-6">
-                      <a
-                        href={paths.workspace.settings.personalization(ws.slug)}
-                        className="text-white flex items-center gap-x-1 hover:underline hover:text-sky-400"
-                      >
-                        Manage <ArrowSquareOut size={14} />
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function MemoryItem({ memory, onDelete, onUpdate }) {
-  const [editing, setEditing] = useState(false);
-
-  if (editing) {
-    return (
-      <MemoryForm
-        initialContent={memory.content}
-        submitLabel="Save"
-        onSubmit={(content) => {
-          onUpdate(memory.id, content);
-          setEditing(false);
-        }}
-        onCancel={() => setEditing(false)}
-      />
-    );
-  }
-
-  return (
-    <div className="group flex items-center gap-x-2 rounded-lg bg-theme-settings-input-bg px-3 py-2">
-      <GlobeSimple size={14} className="text-theme-text-secondary shrink-0" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-white leading-relaxed">{memory.content}</p>
-        <p className="text-xs text-theme-text-secondary mt-0.5">
-          {new Date(memory.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-      <div className="flex items-center gap-x-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-        <button
-          onClick={() => setEditing(true)}
-          data-tooltip-id="memory-actions"
-          data-tooltip-content="Edit"
-          className="border-none p-1 text-theme-text-secondary hover:text-white"
-        >
-          <PencilSimple size={14} />
-        </button>
-        <button
-          onClick={() => onDelete(memory.id)}
-          data-tooltip-id="memory-actions"
-          data-tooltip-content="Delete"
-          className="border-none p-1 text-theme-text-secondary hover:text-red-400"
-        >
-          <Trash size={14} />
-        </button>
-      </div>
-      <Tooltip
-        id="memory-actions"
-        place="top"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
     </div>
   );
 }
