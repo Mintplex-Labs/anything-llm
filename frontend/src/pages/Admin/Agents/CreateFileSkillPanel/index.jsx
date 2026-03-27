@@ -43,6 +43,13 @@ const getCreateFileSubSkills = (t) => {
       icon: FileXls,
       category: "xlsx",
     },
+    {
+      name: "create-docx-file",
+      title: t("agent.skill.createFiles.skills.create-docx.title"),
+      description: t("agent.skill.createFiles.skills.create-docx.description"),
+      icon: FileDoc,
+      category: "docx",
+    },
   ];
 };
 
@@ -105,6 +112,9 @@ export default function CreateFileSkillPanel({
   const pdfSkills = CREATE_FILE_SUB_SKILLS.filter((s) => s.category === "pdf");
   const xlsxSkills = CREATE_FILE_SUB_SKILLS.filter(
     (s) => s.category === "xlsx"
+  );
+  const docxSkills = CREATE_FILE_SUB_SKILLS.filter(
+    (s) => s.category === "docx"
   );
 
   return (
@@ -229,36 +239,29 @@ export default function CreateFileSkillPanel({
                       ))}
                     </div>
                   </div>
-                  <ComingSoonSection />
+
+                  <div className="flex flex-col gap-y-2">
+                    <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide flex items-center gap-x-1">
+                      <FileDoc size={12} weight="fill" />
+                      {t("agent.skill.createFiles.docxActions")}
+                    </p>
+                    <div className="flex flex-col gap-y-1">
+                      {docxSkills.map((subSkill) => (
+                        <SubSkillRow
+                          key={subSkill.name}
+                          subSkill={subSkill}
+                          disabled={disabledSubSkills.includes(subSkill.name)}
+                          onToggle={() => toggleSubSkill(subSkill.name)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
             </div>
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-function ComingSoonSection() {
-  const { t } = useTranslation();
-  return (
-    <div className="flex flex-col gap-y-2 mt-2">
-      <p className="text-theme-text-secondary text-xs font-medium uppercase tracking-wide">
-        {t("agent.skill.createFiles.comingSoon")}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <ComingSoonBadge icon={FileDoc} label="DOCX" />
-      </div>
-    </div>
-  );
-}
-
-function ComingSoonBadge({ icon: Icon, label }) {
-  return (
-    <div className="flex items-center gap-x-1.5 px-2 py-1 rounded-md bg-theme-bg-secondary/50 border border-theme-sidebar-border/30 text-theme-text-secondary/60">
-      <Icon size={14} />
-      <span className="text-xs">{label}</span>
     </div>
   );
 }
