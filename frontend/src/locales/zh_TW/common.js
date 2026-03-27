@@ -106,6 +106,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "電訊",
     },
+    personalization: null,
   },
   login: {
     "multi-user": {
@@ -135,6 +136,7 @@ const TRANSLATIONS = {
     vector: "向量資料庫",
     members: "成員",
     agent: "智慧代理人設定",
+    personalization: null,
   },
   general: {
     vector: {
@@ -1078,6 +1080,80 @@ const TRANSLATIONS = {
       approve: "批准",
       deny: "拒絕",
       revoke: "撤銷",
+    },
+  },
+  personalization: {
+    title: null,
+    description: null,
+    toggle: {
+      label: null,
+      description: null,
+    },
+    actions: {
+      "run-extraction": null,
+      extracting: null,
+      "clear-all": null,
+      clearing: null,
+    },
+    global: {
+      title: null,
+      "add-button": null,
+      description: null,
+      "applied-description": null,
+      placeholder: null,
+      "empty-title": null,
+      "empty-description": null,
+    },
+    workspace: {
+      title: null,
+      "list-title": null,
+      "list-description": null,
+      "add-button": null,
+      description: null,
+      "no-workspaces": null,
+      "empty-title": null,
+      "empty-description": null,
+    },
+    form: {
+      placeholder: null,
+      save: null,
+      add: null,
+      cancel: null,
+    },
+    item: {
+      edit: null,
+      "promote-to-global": null,
+      delete: null,
+    },
+    scope: {
+      workspace: null,
+      global: null,
+    },
+    table: {
+      workspace: null,
+      memories: null,
+      manage: null,
+    },
+    loading: null,
+    toast: {
+      "setting-update-failed": null,
+      enabled: null,
+      disabled: null,
+      "extraction-failed": null,
+      "extraction-completed": null,
+      "clear-confirm": null,
+      "clear-failed": null,
+      "clear-success": null,
+      "delete-confirm": null,
+      "delete-failed": null,
+      "delete-success": null,
+      "update-failed": null,
+      "update-success": null,
+      "add-failed": null,
+      "add-global-success": null,
+      "add-success": null,
+      "promote-failed": null,
+      "promote-success": null,
     },
   },
 };
