@@ -340,6 +340,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          outputs={props.outputs}
         />
       );
     }

@@ -309,6 +309,42 @@ class CreateFilesManager {
   async readBinaryFile(filePath) {
     return await fs.readFile(filePath);
   }
+
+  /**
+   * Registers an output to be persisted in the chat history.
+   * This allows files and other outputs to be re-rendered when viewing historical messages.
+   * @param {object} aibitat - The aibitat instance to register the output on
+   * @param {string} type - The type of output (e.g., "PptxFileDownload")
+   * @param {object} payload - The output payload data
+   */
+  registerOutput(aibitat, type, payload) {
+    if (!aibitat) {
+      console.warn(
+        "[CreateFilesManager] Cannot register output - aibitat instance not provided"
+      );
+      return;
+    }
+
+    if (!aibitat._pendingOutputs) {
+      aibitat._pendingOutputs = [];
+    }
+
+    aibitat._pendingOutputs.push({ type, payload });
+    console.log(
+      `[CreateFilesManager] Registered output: type=${type}, total pending=${aibitat._pendingOutputs.length}`
+    );
+  }
+
+  /**
+   * Clears all pending outputs from the aibitat instance.
+   * Called after outputs are persisted to chat history.
+   * @param {object} aibitat - The aibitat instance
+   */
+  clearOutputs(aibitat) {
+    if (aibitat) {
+      aibitat._pendingOutputs = [];
+    }
+  }
 }
 
 module.exports = new CreateFilesManager();

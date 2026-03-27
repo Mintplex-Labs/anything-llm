@@ -53,6 +53,7 @@ const chatHistory = {
         const invocation = aibitat.handlerProps.invocation;
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
+        const outputs = aibitat._pendingOutputs ?? [];
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -62,11 +63,13 @@ const chatHistory = {
             type: "chat",
             attachments,
             metrics,
+            ...(outputs.length > 0 ? { outputs } : {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
         });
         aibitat.clearCitations?.();
+        aibitat._pendingOutputs = [];
       },
       _storeSpecial: async function (
         aibitat,
@@ -75,6 +78,7 @@ const chatHistory = {
         const invocation = aibitat.handlerProps.invocation;
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
+        const outputs = aibitat._pendingOutputs ?? [];
         const existingSources = options?.sources ?? [];
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
@@ -89,11 +93,13 @@ const chatHistory = {
             type: options?.saveAsType ?? "chat",
             attachments,
             metrics,
+            ...(outputs.length > 0 ? { outputs } : {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
         });
         aibitat.clearCitations?.();
+        aibitat._pendingOutputs = [];
         options?.postSave();
       },
     };

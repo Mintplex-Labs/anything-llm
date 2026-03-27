@@ -396,7 +396,7 @@ const TRANSLATIONS = {
       createFiles: {
         title: "Document Creation",
         description:
-          "Enable your agent to create and edit binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can downloaded directly from the chat window.",
+          "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
         configuration: "Enabled Document Types",
         info: "Create professional documents directly from your conversations. The agent can generate presentations, spreadsheets, and more.",
         pptxActions: "PowerPoint (PPTX)",
@@ -406,11 +406,6 @@ const TRANSLATIONS = {
             title: "Create Presentation",
             description:
               "Create new PowerPoint presentations with slides, titles, and bullet points",
-          },
-          "edit-pptx": {
-            title: "Edit Presentation",
-            description:
-              "Add, remove, or modify slides in existing PowerPoint presentations",
           },
         },
       },

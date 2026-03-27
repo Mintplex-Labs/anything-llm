@@ -6,7 +6,6 @@ import {
   FileXls,
   FileDoc,
   FilePdf,
-  PencilSimple,
   CircleNotch,
 } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
@@ -18,13 +17,6 @@ const getCreateFileSubSkills = (t) => {
       title: t("agent.skill.createFiles.skills.create-pptx.title"),
       description: t("agent.skill.createFiles.skills.create-pptx.description"),
       icon: FilePpt,
-      category: "pptx",
-    },
-    {
-      name: "edit-pptx-presentation",
-      title: t("agent.skill.createFiles.skills.edit-pptx.title"),
-      description: t("agent.skill.createFiles.skills.edit-pptx.description"),
-      icon: PencilSimple,
       category: "pptx",
     },
   ];

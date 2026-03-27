@@ -149,11 +149,6 @@ module.exports.CreatePptxPresentation = {
                   required: ["title"],
                 },
               },
-              saveToBrowser: {
-                type: "boolean",
-                description:
-                  "If true, sends the file to the browser for download instead of saving to filesystem. Default: false (saves to filesystem).",
-              },
             },
             required: ["filename", "title", "slides"],
             additionalProperties: false,
@@ -384,21 +379,30 @@ module.exports.CreatePptxPresentation = {
                 }
               }
 
-              const validPath = await createFilesLib.validatePath(filename);
-              await createFilesLib.writeBinaryFile(validPath, buffer);
-              this.super.introspect(
-                `${this.caller}: Successfully saved presentation to ${filename}`
-              );
-
               // Send file download card to the frontend for easy browser download
-              const outputFilename = validPath.split("/").pop();
+              const outputFilename = filename.split("/").pop();
+              const mimeType = createFilesLib.getMimeType(".pptx");
+              const b64Content = `data:${mimeType};base64,${buffer.toString("base64")}`;
+              const fileSize = buffer.length;
+
               createFilesLib.sendFileDownloadCard(
                 this.super.socket,
                 outputFilename,
                 buffer
               );
 
-              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme (${theme.layoutStyle} layout) and saved to ${filename}`;
+              // Register output for chat history persistence (stored as base64 in database)
+              createFilesLib.registerOutput(this.super, "PptxFileDownload", {
+                filename: outputFilename,
+                b64Content,
+                fileSize,
+              });
+
+              this.super.introspect(
+                `${this.caller}: Successfully created presentation "${title}"`
+              );
+
+              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme (${theme.layoutStyle} layout).`;
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`

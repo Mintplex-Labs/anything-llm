@@ -266,7 +266,7 @@ async function generateThemePreview(themeName, themeConfig) {
 
       if (slideData.table) {
         const tableData = [];
-        
+
         // Add header row
         if (slideData.table.headers && slideData.table.headers.length > 0) {
           tableData.push(
