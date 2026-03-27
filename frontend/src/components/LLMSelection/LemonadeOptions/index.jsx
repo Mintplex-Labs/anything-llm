@@ -40,8 +40,6 @@ export default function LemonadeOptions({ settings }) {
     settings?.LemonadeLLMModelTokenLimit || 4096
   );
 
-  const [apiKey, setApiKey] = useState(settings?.LemonadeLLMApiKey || "");
-
   return (
     <div className="w-full flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
@@ -193,9 +191,8 @@ export default function LemonadeOptions({ settings }) {
           <input
             type="password"
             name="LemonadeLLMApiKey"
-            value={apiKey}
+            defaultValue={settings?.LemonadeLLMApiKey ? "*".repeat(20) : ""}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            onChange={(e) => setApiKey(e.target.value)}
             autoComplete="off"
           />
         </div>

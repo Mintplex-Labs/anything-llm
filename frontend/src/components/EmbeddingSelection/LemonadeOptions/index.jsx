@@ -24,14 +24,8 @@ export default function LemonadeEmbeddingOptions({ settings }) {
     settings?.EmbeddingModelMaxChunkLength || 8192
   );
 
-  const [apiKey, setApiKey] = useState(settings?.LemonadeLLMApiKey || "");
-
   const handleMaxChunkLengthChange = (e) => {
     setMaxChunkLength(Number(e.target.value));
-  };
-
-  const handleApiKeyChange = (e) => {
-    setApiKey(e.target.value);
   };
 
   return (
@@ -88,9 +82,8 @@ export default function LemonadeEmbeddingOptions({ settings }) {
           <input
             type="password"
             name="LemonadeLLMApiKey"
+            defaultValue={settings?.LemonadeLLMApiKey ? "*".repeat(20) : ""}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            value={apiKey}
-            onChange={handleApiKeyChange}
             autoComplete="off"
           />
         </div>
