@@ -402,7 +402,7 @@ class Provider {
           configuration: {
             baseURL: process.env.LEMONADE_LLM_BASE_PATH,
           },
-          apiKey: null,
+          apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
           ...config,
         });
       default:

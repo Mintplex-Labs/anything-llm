@@ -22,7 +22,7 @@ class LemonadeLLM {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: process.env.LEMONADE_LLM_API_KEY,
+      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
     });
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;

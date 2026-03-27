@@ -13,7 +13,7 @@ class LemonadeEmbedder {
         process.env.EMBEDDING_BASE_PATH,
         "openai"
       ),
-      apiKey: process.env.LEMONADE_LLM_API_KEY,
+      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
