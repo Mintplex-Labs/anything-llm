@@ -65,7 +65,7 @@ export default function LemonadeEmbeddingOptions({ settings }) {
         <div className="flex flex-col w-60">
           <div
             data-tooltip-place="top"
-            data-tooltip-id="api-key-tooltip"
+            data-tooltip-id="lemonade-embedding-api-key"
             className="flex gap-x-1 items-center mb-3"
           >
             <label className="text-white text-sm font-semibold block">
@@ -75,7 +75,7 @@ export default function LemonadeEmbeddingOptions({ settings }) {
               size={16}
               className="text-theme-text-secondary cursor-pointer"
             />
-            <Tooltip id="api-key-tooltip">
+            <Tooltip id="lemonade-embedding-api-key">
               The API key for your Lemonade instance
             </Tooltip>
           </div>
