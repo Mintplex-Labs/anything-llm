@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MemoryForm from "@/components/Memories/MemoryForm";
-import MemoryItem from "../MemoryItem";
+import MemoryItem from "@/components/Memories/MemoryItem";
 import { Brain, Plus } from "@phosphor-icons/react";
 
 /**

@@ -1,4 +1,4 @@
-import MemoryItem from "../MemoryItem";
+import MemoryItem from "@/components/Memories/MemoryItem";
 
 /**
  * @param {Object} props
