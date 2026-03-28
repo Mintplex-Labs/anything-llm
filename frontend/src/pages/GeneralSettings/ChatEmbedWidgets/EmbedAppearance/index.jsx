@@ -210,7 +210,7 @@ export default function EmbedAppearance() {
           <div className="flex border-b border-white/10 px-5 pt-3">
             {[
               { id: "inhalt", label: "Inhalt" },
-              { id: "design", label: "Design" },
+              { id: "design", label: "Aussehen" },
             ].map((tab) => (
               <button
                 key={tab.id}
