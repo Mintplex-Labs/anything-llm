@@ -680,7 +680,7 @@ const TRANSLATIONS = {
     "retention-notice": "ℹ️ DSGVO-Datenlöschung aktiv — Aufbewahrung {{days}} Tage, Chats verfallen am {{expiryDate}}",
   },
   "embed-row": {
-    design: "Design",
+    design: "Aussehen",
     code: "Code",
     disable: "Deaktivieren",
     enable: "Aktivieren",
