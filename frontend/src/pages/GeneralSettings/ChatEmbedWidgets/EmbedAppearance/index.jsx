@@ -425,7 +425,6 @@ function WidgetPreview({ config, logoPreview }) {
   const placeholder = config.sendMessageText || "Wie kann ich Ihnen helfen?";
 
   const isLeft = config.position?.includes("left");
-  const alignClass = isLeft ? "items-start" : "items-end";
 
   const AssistantAvatar = () =>
     logoPreview ? (
@@ -440,7 +439,7 @@ function WidgetPreview({ config, logoPreview }) {
     );
 
   return (
-    <div className={`flex flex-col ${alignClass} gap-4 w-full max-w-[440px]`}>
+    <div className="flex flex-col items-center gap-4 w-full max-w-[440px]">
       {/* Chat Window */}
       <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
         {/* Header — matches real widget */}
@@ -533,7 +532,7 @@ function WidgetPreview({ config, logoPreview }) {
       </div>
 
       {/* Chat Button — separate, below the window */}
-      <div className={`flex ${isLeft ? "flex-row" : "flex-row-reverse"} items-center gap-3`}>
+      <div className={`flex ${isLeft ? "flex-row" : "flex-row-reverse"} items-center gap-3 ${isLeft ? "self-start" : "self-end"}`}>
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
           style={{ backgroundColor: accentColor }}
