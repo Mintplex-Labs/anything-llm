@@ -16,8 +16,8 @@ Create a new workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -25,6 +25,8 @@ Create a new workspace thread
 Optional userId associated with the thread, thread slug and thread name
 
 - **Required:** No
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -35,6 +37,18 @@ Optional userId associated with the thread, thread slug and thread name
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -50,9 +64,9 @@ Update thread name by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -60,6 +74,8 @@ Update thread name by its unique slug.
 JSON object containing new name to update the thread.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -70,6 +86,18 @@ JSON object containing new name to update the thread.
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -85,9 +113,9 @@ Delete a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -99,6 +127,18 @@ Delete a workspace thread
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -114,9 +154,9 @@ Get chats for a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -128,6 +168,18 @@ Get chats for a workspace thread
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -143,9 +195,9 @@ Chat with a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -153,6 +205,8 @@ Chat with a workspace thread
 Send a prompt to the workspace thread and the type of conversation (query or chat).
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -163,6 +217,18 @@ Send a prompt to the workspace thread and the type of conversation (query or cha
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -178,9 +244,9 @@ Stream chat with a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -188,6 +254,8 @@ Stream chat with a workspace thread
 Send a prompt to the workspace thread and the type of conversation (query or chat).
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -197,6 +265,18 @@ Send a prompt to the workspace thread and the type of conversation (query or cha
 | **200** | OK |
 | **400** | Bad Request |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
