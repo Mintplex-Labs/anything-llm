@@ -34,11 +34,13 @@ List all active embeds
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -74,11 +76,13 @@ Get all chats for a specific embed
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -115,11 +119,13 @@ Get chats for a specific embed and session
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -166,11 +172,13 @@ JSON object containing embed configuration details
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -217,11 +225,13 @@ JSON object containing embed configuration updates
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -257,11 +267,13 @@ Delete an existing embed configuration
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
