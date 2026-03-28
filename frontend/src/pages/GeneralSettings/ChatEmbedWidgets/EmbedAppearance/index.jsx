@@ -15,6 +15,7 @@ import {
   PaperPlaneRight,
   Microphone,
   SpeakerHigh,
+  Check,
 } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import Embed from "@/models/embed";
@@ -171,24 +172,29 @@ export default function EmbedAppearance() {
   return (
     <div className="w-screen h-screen flex flex-col bg-theme-bg-container overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+      <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/settings/embed-chat-widgets")}
-            className="text-theme-text-secondary hover:text-white p-1 rounded-lg hover:bg-theme-action-menu-item-hover"
+            className="text-theme-text-secondary hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-white text-lg font-semibold">
-            Erscheinungsbild: {embed?.workspace?.name || "Embed"}
-          </h1>
+          <div>
+            <h1 className="text-white text-base font-semibold leading-tight">
+              Erscheinungsbild
+            </h1>
+            <p className="text-theme-text-secondary text-xs">
+              {embed?.workspace?.name || "Embed"}
+            </p>
+          </div>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-button hover:bg-primary-button-hover text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-button hover:bg-primary-button-hover text-white rounded-lg text-sm font-medium transition-all disabled:opacity-50 active:scale-[0.97]"
         >
-          <FloppyDisk size={16} />
+          <FloppyDisk size={16} weight="bold" />
           {saving ? "Speichern..." : "Speichern"}
         </button>
       </div>
@@ -196,13 +202,13 @@ export default function EmbedAppearance() {
       {/* Content: Settings left, Preview right */}
       <div className="flex flex-1 overflow-hidden">
         {/* Settings Panel */}
-        <div className="w-1/2 overflow-y-auto p-6 space-y-6 border-r border-white/10">
+        <div className="w-[420px] min-w-[380px] overflow-y-auto p-5 space-y-7 border-r border-white/10">
           {/* ── Design ── */}
           <SectionGroup title="Design">
             <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
               <div className="flex items-center gap-4">
                 {logoPreview && (
-                  <div className="relative">
+                  <div className="relative group">
                     <img
                       src={logoPreview}
                       alt="Logo"
@@ -210,13 +216,13 @@ export default function EmbedAppearance() {
                     />
                     <button
                       onClick={handleLogoRemove}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
+                      className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <X size={12} />
+                      <X size={12} weight="bold" />
                     </button>
                   </div>
                 )}
-                <label className="cursor-pointer bg-theme-settings-input-bg text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:bg-theme-action-menu-item-hover transition-colors">
+                <label className="cursor-pointer bg-theme-settings-input-bg text-white/80 hover:text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:border-white/20 transition-all">
                   {logoPreview ? "Logo ändern" : "Logo hochladen"}
                   <input
                     type="file"
@@ -230,44 +236,49 @@ export default function EmbedAppearance() {
 
             <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird für Buttons, Benutzer-Nachrichten und Links verwendet.">
               <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={config.accentColor}
-                  onChange={(e) => updateField("accentColor", e.target.value)}
-                  className="w-10 h-10 rounded cursor-pointer border-0 bg-transparent"
-                />
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={config.accentColor}
+                    onChange={(e) => updateField("accentColor", e.target.value)}
+                    className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
+                  />
+                </div>
                 <input
                   type="text"
                   value={config.accentColor}
                   onChange={(e) => updateField("accentColor", e.target.value)}
-                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-32 border border-white/10"
+                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-28 border border-white/10 font-mono"
                   placeholder="#607D8B"
                 />
               </div>
             </SettingsSection>
 
             <SettingsSection title="Chat-Icon" hint="Das Icon auf dem Chat-Button.">
-              <div className="flex gap-3 flex-wrap">
-                {CHAT_ICONS.map(({ id, label, Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => updateField("chatIcon", id)}
-                    className={`flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all ${
-                      config.chatIcon === id
-                        ? "ring-2 ring-white/50 bg-white/5"
-                        : "hover:bg-white/5"
-                    }`}
-                    title={label}
-                  >
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105"
-                      style={{ backgroundColor: config.accentColor || "#607D8B" }}
+              <div className="flex gap-2.5 flex-wrap">
+                {CHAT_ICONS.map(({ id, label, Icon }) => {
+                  const isSelected = config.chatIcon === id;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => updateField("chatIcon", id)}
+                      className="flex flex-col items-center gap-1.5 p-1.5 rounded-lg transition-all"
+                      title={label}
                     >
-                      <Icon size={22} weight="fill" />
-                    </div>
-                    <span className="text-[10px] text-theme-text-secondary">{label}</span>
-                  </button>
-                ))}
+                      <div
+                        className={`relative w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all hover:scale-110 ${
+                          isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-theme-bg-container" : ""
+                        }`}
+                        style={{ backgroundColor: config.accentColor || "#607D8B" }}
+                      >
+                        <Icon size={22} weight="fill" />
+                      </div>
+                      <span className={`text-[10px] transition-colors ${isSelected ? "text-white" : "text-theme-text-secondary"}`}>
+                        {label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </SettingsSection>
 
@@ -277,7 +288,7 @@ export default function EmbedAppearance() {
                   <button
                     key={opt.value}
                     onClick={() => updateField("position", opt.value)}
-                    className={`px-5 py-2 text-sm font-medium transition-colors ${
+                    className={`px-5 py-2 text-sm font-medium transition-all ${
                       config.position === opt.value
                         ? "bg-primary-button text-white"
                         : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
@@ -298,7 +309,7 @@ export default function EmbedAppearance() {
                 value={config.name}
                 onChange={(e) => updateField("name", e.target.value)}
                 placeholder="Ihr Online-Berater"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
               />
             </SettingsSection>
 
@@ -308,7 +319,7 @@ export default function EmbedAppearance() {
                 onChange={(e) => updateField("greeting", e.target.value)}
                 placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
                 rows={3}
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 resize-none"
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none resize-none transition-colors"
               />
             </SettingsSection>
 
@@ -318,7 +329,7 @@ export default function EmbedAppearance() {
                 value={config.sendMessageText}
                 onChange={(e) => updateField("sendMessageText", e.target.value)}
                 placeholder="Wie kann ich Ihnen helfen?"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
               />
             </SettingsSection>
 
@@ -348,14 +359,23 @@ export default function EmbedAppearance() {
                 value={config.supportEmail}
                 onChange={(e) => updateField("supportEmail", e.target.value)}
                 placeholder="support@firma.de"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
               />
             </SettingsSection>
           </SectionGroup>
         </div>
 
         {/* Live Preview Panel — fixed, no scroll */}
-        <div className="w-1/2 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
+        <div className="flex-1 overflow-hidden flex items-center justify-center relative"
+          style={{
+            background: "linear-gradient(135deg, #f0f2f5 0%, #e4e8ec 50%, #dde1e6 100%)",
+            backgroundImage: `
+              linear-gradient(135deg, #f0f2f5 0%, #e4e8ec 50%, #dde1e6 100%),
+              radial-gradient(circle at 20% 80%, rgba(0,0,0,0.02) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(0,0,0,0.02) 0%, transparent 50%)
+            `,
+          }}
+        >
           <WidgetPreview config={config} logoPreview={logoPreview} />
         </div>
       </div>
@@ -365,11 +385,16 @@ export default function EmbedAppearance() {
 
 function SectionGroup({ title, children }) {
   return (
-    <div className="space-y-5">
-      <h3 className="text-sm font-bold uppercase tracking-wider text-white border-b border-white/15 pb-2">
-        {title}
-      </h3>
-      {children}
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/90">
+          {title}
+        </h3>
+        <div className="flex-1 h-px bg-white/10" />
+      </div>
+      <div className="space-y-5 pl-0.5">
+        {children}
+      </div>
     </div>
   );
 }
@@ -377,9 +402,9 @@ function SectionGroup({ title, children }) {
 function SettingsSection({ title, hint, children }) {
   return (
     <div>
-      <label className="block text-white text-sm font-medium mb-1">{title}</label>
+      <label className="block text-white text-[13px] font-medium mb-0.5">{title}</label>
       {hint && (
-        <p className="text-theme-text-secondary text-xs mb-2">{hint}</p>
+        <p className="text-theme-text-secondary text-[11px] mb-2.5 leading-relaxed">{hint}</p>
       )}
       {children}
     </div>
@@ -390,27 +415,27 @@ function MessageList({ items, onAdd, onUpdate, onRemove, placeholder }) {
   return (
     <div className="space-y-2">
       {items.map((item, index) => (
-        <div key={index} className="flex items-center gap-2">
+        <div key={index} className="flex items-center gap-2 group">
           <input
             type="text"
             value={item}
             onChange={(e) => onUpdate(index, e.target.value)}
             placeholder={placeholder}
-            className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 flex-1 border border-white/10"
+            className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 flex-1 border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
           />
           <button
             onClick={() => onRemove(index)}
-            className="text-red-400 hover:text-red-300 p-1"
+            className="text-theme-text-secondary hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-all"
           >
-            <Trash size={16} />
+            <Trash size={15} />
           </button>
         </div>
       ))}
       <button
         onClick={onAdd}
-        className="flex items-center gap-1 text-theme-text-secondary hover:text-white text-sm px-2 py-1"
+        className="flex items-center gap-1.5 text-theme-text-secondary hover:text-white text-xs px-1 py-1 transition-colors"
       >
-        <Plus size={14} />
+        <Plus size={13} weight="bold" />
         Hinzufügen
       </button>
     </div>
@@ -427,28 +452,22 @@ function WidgetPreview({ config, logoPreview }) {
 
   const isLeft = config.position?.includes("left");
 
-  const AssistantAvatar = () =>
-    logoPreview ? (
-      <img src={logoPreview} alt="" className="h-9 w-9 rounded-lg object-contain flex-shrink-0" />
-    ) : (
-      <div
-        className="h-9 w-9 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-        style={{ backgroundColor: accentColor }}
-      >
-        {name.charAt(0)}
-      </div>
-    );
-
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[370px]">
       {/* Chat Window */}
-      <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white" style={{ minHeight: "520px" }}>
-        {/* Header — matches real widget */}
+      <div
+        className="w-full rounded-2xl flex flex-col overflow-hidden bg-white"
+        style={{
+          minHeight: "520px",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+        }}
+      >
+        {/* Header */}
         <div
-          className="flex items-center relative px-4 h-[64px]"
+          className="flex items-center px-4 h-[64px] flex-shrink-0"
           style={{ borderBottom: "1px solid #E9E9E9" }}
         >
-          <div className="flex items-center flex-1 gap-3">
+          <div className="flex items-center flex-1 gap-3 min-w-0">
             {logoPreview ? (
               <img
                 src={logoPreview}
@@ -465,20 +484,20 @@ function WidgetPreview({ config, logoPreview }) {
             )}
             <span className="text-gray-800 font-semibold text-sm truncate">{name}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <DotsThreeOutlineVertical size={20} weight="fill" className="text-slate-800/60" />
-            <X size={20} weight="bold" className="text-slate-800/60" />
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <DotsThreeOutlineVertical size={18} weight="fill" className="text-slate-400" />
+            <X size={18} weight="bold" className="text-slate-400" />
           </div>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col justify-end p-4 bg-white">
-          {/* Greeting — centered gray text like real widget */}
-          <div className="text-center text-gray-400 text-sm px-6 mb-4 leading-relaxed">
-            {greeting || "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"}
+        <div className="flex-1 flex flex-col justify-end px-5 pb-4 bg-white">
+          {/* Greeting */}
+          <div className="text-center text-gray-400 text-[13px] px-4 mb-4 leading-relaxed">
+            {greeting}
           </div>
 
-          {/* Default Messages — accent color blocks like real widget */}
+          {/* Suggestion blocks */}
           {config.defaultMessages?.length > 0 && (
             <div className="flex flex-col items-center gap-2">
               {config.defaultMessages
@@ -486,8 +505,11 @@ function WidgetPreview({ config, logoPreview }) {
                 .map((msg, i) => (
                   <div
                     key={i}
-                    className="rounded-xl px-4 py-3 text-white text-sm text-center max-w-[90%] shadow-sm"
-                    style={{ backgroundColor: accentColor }}
+                    className="rounded-xl px-4 py-3 text-white text-[13px] text-center max-w-[88%] font-medium"
+                    style={{
+                      backgroundColor: accentColor,
+                      boxShadow: `0 2px 8px ${accentColor}33`,
+                    }}
                   >
                     {msg}
                   </div>
@@ -496,8 +518,8 @@ function WidgetPreview({ config, logoPreview }) {
           )}
         </div>
 
-        {/* Input — matches real widget */}
-        <div className="bg-white px-4 pb-3 pt-1">
+        {/* Input */}
+        <div className="bg-white px-4 pb-3 pt-1 flex-shrink-0">
           <div
             className="flex items-center w-full rounded-2xl"
             style={{ border: "1.5px solid #22262833" }}
@@ -506,19 +528,22 @@ function WidgetPreview({ config, logoPreview }) {
               type="text"
               placeholder={placeholder}
               disabled
-              className="flex-1 bg-transparent text-sm text-black placeholder:text-slate-800/60 outline-none py-3 px-3"
+              className="flex-1 bg-transparent text-[13px] text-black placeholder:text-slate-800/50 outline-none py-3 px-3.5"
             />
-            <Microphone size={22} weight="fill" className="text-[#222628]/40 mr-1 flex-shrink-0" />
-            <PaperPlaneRight size={22} weight="fill" className="text-[#222628]/40 mr-3 flex-shrink-0" />
+            <Microphone size={20} weight="fill" className="text-[#222628]/35 mr-1.5 flex-shrink-0" />
+            <PaperPlaneRight size={20} weight="fill" className="text-[#222628]/35 mr-3 flex-shrink-0" />
           </div>
         </div>
       </div>
 
-      {/* Chat Button — separate, below the window */}
+      {/* Chat Button */}
       <div className={`flex ${isLeft ? "flex-row" : "flex-row-reverse"} items-center gap-3 ${isLeft ? "self-start" : "self-end"}`}>
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
-          style={{ backgroundColor: accentColor }}
+          className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-transform hover:scale-105"
+          style={{
+            backgroundColor: accentColor,
+            boxShadow: `0 4px 14px ${accentColor}40`,
+          }}
         >
           {(() => {
             const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
@@ -527,7 +552,10 @@ function WidgetPreview({ config, logoPreview }) {
           })()}
         </div>
         {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 text-sm text-gray-700 shadow-md max-w-[240px]">
+          <div
+            className="bg-white rounded-2xl px-4 py-2.5 text-[13px] text-gray-700 max-w-[220px]"
+            style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}
+          >
             {config.chatbotBubblesMessages.find((m) => m.trim())}
           </div>
         )}
