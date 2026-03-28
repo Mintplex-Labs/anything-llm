@@ -349,11 +349,9 @@ export default function EmbedAppearance() {
           </SectionGroup>
         </div>
 
-        {/* Live Preview Panel */}
-        <div className="w-1/2 overflow-y-auto bg-gradient-to-br from-gray-100 to-gray-200">
-          <div className="min-h-full flex flex-col items-center justify-center p-8 gap-4">
-            <WidgetPreview config={config} logoPreview={logoPreview} />
-          </div>
+        {/* Live Preview Panel — fixed, no scroll */}
+        <div className="w-1/2 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
+          <WidgetPreview config={config} logoPreview={logoPreview} />
         </div>
       </div>
     </div>
@@ -426,7 +424,7 @@ function WidgetPreview({ config, logoPreview }) {
   const alignClass = isLeft ? "items-start" : "items-end";
 
   return (
-    <div className={`flex flex-col ${alignClass} gap-3 w-full max-w-[420px]`}>
+    <div className={`flex flex-col ${alignClass} gap-4 w-full max-w-[440px]`}>
       {/* Chat Window */}
       <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
         {/* Header */}
@@ -449,7 +447,7 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
 
         {/* Chat Area */}
-        <div className="p-4 space-y-3 min-h-[340px] bg-white">
+        <div className="p-4 space-y-3 min-h-[360px] bg-white">
           {/* Greeting */}
           <div className="flex items-start gap-2">
             <div className="flex-shrink-0 mt-0.5">
