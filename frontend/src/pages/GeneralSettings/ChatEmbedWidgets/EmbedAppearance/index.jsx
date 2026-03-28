@@ -57,6 +57,7 @@ export default function EmbedAppearance() {
   const [saving, setSaving] = useState(false);
   const [embed, setEmbed] = useState(null);
   const [config, setConfig] = useState({ ...DEFAULT_CONFIG });
+  const [activeTab, setActiveTab] = useState("design");
   const [logoPreview, setLogoPreview] = useState(null);
 
   useEffect(() => {
@@ -202,167 +203,193 @@ export default function EmbedAppearance() {
       {/* Content: Settings left, Preview right */}
       <div className="flex flex-1 overflow-hidden">
         {/* Settings Panel */}
-        <div className="w-1/2 max-w-[560px] overflow-y-auto p-5 space-y-7 border-r border-white/10">
-          {/* ── Design ── */}
-          <SectionGroup title="Design">
-            <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
-              <div className="flex items-center gap-4">
-                {logoPreview && (
-                  <div className="relative group">
-                    <img
-                      src={logoPreview}
-                      alt="Logo"
-                      className="h-12 w-12 rounded-lg object-contain bg-white/5 border border-white/10"
-                    />
-                    <button
-                      onClick={handleLogoRemove}
-                      className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 transition-colors"
-                    >
-                      <X size={12} weight="bold" />
-                    </button>
-                  </div>
+        <div className="w-1/2 max-w-[560px] flex flex-col border-r border-white/10">
+          {/* Tabs */}
+          <div className="flex border-b border-white/10 px-5 pt-3">
+            {[
+              { id: "design", label: "Design" },
+              { id: "inhalt", label: "Inhalt" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 text-sm font-semibold transition-all relative ${
+                  activeTab === tab.id
+                    ? "text-primary-button"
+                    : "text-theme-text-secondary hover:text-white"
+                }`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary-button rounded-full" />
                 )}
-                <label className="cursor-pointer bg-theme-settings-input-bg text-white/80 hover:text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:border-white/20 transition-all">
-                  {logoPreview ? "Logo ändern" : "Logo hochladen"}
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </SettingsSection>
+              </button>
+            ))}
+          </div>
 
-            <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird für Buttons, Benutzer-Nachrichten und Links verwendet.">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <input
-                    type="color"
-                    value={config.accentColor}
-                    onChange={(e) => updateField("accentColor", e.target.value)}
-                    className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={config.accentColor}
-                  onChange={(e) => updateField("accentColor", e.target.value)}
-                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-28 border border-white/10 font-mono"
-                  placeholder="#607D8B"
-                />
-              </div>
-            </SettingsSection>
-
-            <SettingsSection title="Chat-Icon" hint="Das Icon auf dem Chat-Button.">
-              <div className="flex gap-2.5 flex-wrap">
-                {CHAT_ICONS.map(({ id, label, Icon }) => {
-                  const isSelected = config.chatIcon === id;
-                  return (
-                    <button
-                      key={id}
-                      onClick={() => updateField("chatIcon", id)}
-                      className="flex flex-col items-center gap-1.5 p-1.5 rounded-lg transition-all"
-                      title={label}
-                    >
-                      <div
-                        className={`relative w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all hover:scale-110 ${
-                          isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-theme-bg-container" : ""
-                        }`}
-                        style={{ backgroundColor: config.accentColor || "#607D8B" }}
-                      >
-                        <Icon size={22} weight="fill" className="text-white" />
+          {/* Tab Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            {activeTab === "design" && (
+              <>
+                <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
+                  <div className="flex items-center gap-4">
+                    {logoPreview && (
+                      <div className="relative group">
+                        <img
+                          src={logoPreview}
+                          alt="Logo"
+                          className="h-12 w-12 rounded-lg object-contain bg-white/5 border border-white/10"
+                        />
+                        <button
+                          onClick={handleLogoRemove}
+                          className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 transition-colors"
+                        >
+                          <X size={12} weight="bold" />
+                        </button>
                       </div>
-                      <span className={`text-[10px] transition-colors ${isSelected ? "text-white" : "text-theme-text-secondary"}`}>
-                        {label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </SettingsSection>
+                    )}
+                    <label className="cursor-pointer bg-theme-settings-input-bg text-white/80 hover:text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:border-white/20 transition-all">
+                      {logoPreview ? "Logo ändern" : "Logo hochladen"}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </SettingsSection>
 
-            <SettingsSection title="Position" hint="Position des Chat-Widgets auf der Webseite.">
-              <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
-                {POSITION_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => updateField("position", opt.value)}
-                    className={`px-5 py-2 text-sm font-medium transition-all ${
-                      config.position === opt.value
-                        ? "bg-primary-button text-white"
-                        : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </SettingsSection>
-          </SectionGroup>
+                <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird für Buttons, Benutzer-Nachrichten und Links verwendet.">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={config.accentColor}
+                      onChange={(e) => updateField("accentColor", e.target.value)}
+                      className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={config.accentColor}
+                      onChange={(e) => updateField("accentColor", e.target.value)}
+                      className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-28 border border-white/10 font-mono"
+                      placeholder="#607D8B"
+                    />
+                  </div>
+                </SettingsSection>
 
-          {/* ── Inhalt ── */}
-          <SectionGroup title="Inhalt">
-            <SettingsSection title="Name" hint="Name des Chatbots (wird im Header und als Assistenten-Name angezeigt).">
-              <input
-                type="text"
-                value={config.name}
-                onChange={(e) => updateField("name", e.target.value)}
-                placeholder="Ihr Online-Berater"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
-              />
-            </SettingsSection>
+                <SettingsSection title="Chat-Icon" hint="Das Icon auf dem Chat-Button.">
+                  <div className="flex gap-2.5 flex-wrap">
+                    {CHAT_ICONS.map(({ id, label, Icon }) => {
+                      const isSelected = config.chatIcon === id;
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => updateField("chatIcon", id)}
+                          className="flex flex-col items-center gap-1.5 p-1.5 rounded-lg transition-all"
+                          title={label}
+                        >
+                          <div
+                            className={`relative w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all hover:scale-110 ${
+                              isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-theme-bg-container" : ""
+                            }`}
+                            style={{ backgroundColor: config.accentColor || "#607D8B" }}
+                          >
+                            <Icon size={22} weight="fill" className="text-white" />
+                          </div>
+                          <span className={`text-[10px] transition-colors ${isSelected ? "text-white" : "text-theme-text-secondary"}`}>
+                            {label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </SettingsSection>
 
-            <SettingsSection title="Begrüßung" hint="Zentrierter Text beim ersten Öffnen des Chats, bevor eine Unterhaltung beginnt.">
-              <textarea
-                value={config.greeting}
-                onChange={(e) => updateField("greeting", e.target.value)}
-                placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
-                rows={3}
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none resize-none transition-colors"
-              />
-            </SettingsSection>
+                <SettingsSection title="Position" hint="Position des Chat-Widgets auf der Webseite.">
+                  <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
+                    {POSITION_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => updateField("position", opt.value)}
+                        className={`px-5 py-2 text-sm font-medium transition-all ${
+                          config.position === opt.value
+                            ? "bg-primary-button text-white"
+                            : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </SettingsSection>
+              </>
+            )}
 
-            <SettingsSection title="Platzhalter" hint="Grauer Text im Eingabefeld, bevor der Nutzer tippt.">
-              <input
-                type="text"
-                value={config.sendMessageText}
-                onChange={(e) => updateField("sendMessageText", e.target.value)}
-                placeholder="Wie kann ich Ihnen helfen?"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
-              />
-            </SettingsSection>
+            {activeTab === "inhalt" && (
+              <>
+                <SettingsSection title="Name" hint="Name des Chatbots (wird im Header und als Assistenten-Name angezeigt).">
+                  <input
+                    type="text"
+                    value={config.name}
+                    onChange={(e) => updateField("name", e.target.value)}
+                    placeholder="Ihr Online-Berater"
+                    className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
+                  />
+                </SettingsSection>
 
-            <SettingsSection title="Startvorschläge" hint="Klickbare Nachrichtenblöcke in der Akzentfarbe, die vor dem ersten Chat angezeigt werden.">
-              <MessageList
-                items={config.defaultMessages || []}
-                onAdd={() => addListItem("defaultMessages")}
-                onUpdate={(i, v) => updateListItem("defaultMessages", i, v)}
-                onRemove={(i) => removeListItem("defaultMessages", i)}
-                placeholder="z.B. Was sind Ihre Öffnungszeiten?"
-              />
-            </SettingsSection>
+                <SettingsSection title="Begrüßung" hint="Zentrierter Text beim ersten Öffnen des Chats, bevor eine Unterhaltung beginnt.">
+                  <textarea
+                    value={config.greeting}
+                    onChange={(e) => updateField("greeting", e.target.value)}
+                    placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
+                    rows={3}
+                    className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none resize-none transition-colors"
+                  />
+                </SettingsSection>
 
-            <SettingsSection title="Willkommensblasen" hint="Sprechblasen neben dem Chat-Button, bevor der Chat geöffnet wird.">
-              <MessageList
-                items={config.chatbotBubblesMessages || []}
-                onAdd={() => addListItem("chatbotBubblesMessages")}
-                onUpdate={(i, v) => updateListItem("chatbotBubblesMessages", i, v)}
-                onRemove={(i) => removeListItem("chatbotBubblesMessages", i)}
-                placeholder="z.B. Hallo! Kann ich Ihnen helfen?"
-              />
-            </SettingsSection>
+                <SettingsSection title="Platzhalter" hint="Grauer Text im Eingabefeld, bevor der Nutzer tippt.">
+                  <input
+                    type="text"
+                    value={config.sendMessageText}
+                    onChange={(e) => updateField("sendMessageText", e.target.value)}
+                    placeholder="Wie kann ich Ihnen helfen?"
+                    className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
+                  />
+                </SettingsSection>
 
-            <SettingsSection title="Support-E-Mail" hint="E-Mail-Adresse für den Support-Link im Chat.">
-              <input
-                type="email"
-                value={config.supportEmail}
-                onChange={(e) => updateField("supportEmail", e.target.value)}
-                placeholder="support@firma.de"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
-              />
-            </SettingsSection>
-          </SectionGroup>
+                <SettingsSection title="Startvorschläge" hint="Klickbare Nachrichtenblöcke in der Akzentfarbe, die vor dem ersten Chat angezeigt werden.">
+                  <MessageList
+                    items={config.defaultMessages || []}
+                    onAdd={() => addListItem("defaultMessages")}
+                    onUpdate={(i, v) => updateListItem("defaultMessages", i, v)}
+                    onRemove={(i) => removeListItem("defaultMessages", i)}
+                    placeholder="z.B. Was sind Ihre Öffnungszeiten?"
+                  />
+                </SettingsSection>
+
+                <SettingsSection title="Willkommensblasen" hint="Sprechblasen neben dem Chat-Button, bevor der Chat geöffnet wird.">
+                  <MessageList
+                    items={config.chatbotBubblesMessages || []}
+                    onAdd={() => addListItem("chatbotBubblesMessages")}
+                    onUpdate={(i, v) => updateListItem("chatbotBubblesMessages", i, v)}
+                    onRemove={(i) => removeListItem("chatbotBubblesMessages", i)}
+                    placeholder="z.B. Hallo! Kann ich Ihnen helfen?"
+                  />
+                </SettingsSection>
+
+                <SettingsSection title="Support-E-Mail" hint="E-Mail-Adresse für den Support-Link im Chat.">
+                  <input
+                    type="email"
+                    value={config.supportEmail}
+                    onChange={(e) => updateField("supportEmail", e.target.value)}
+                    placeholder="support@firma.de"
+                    className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none transition-colors"
+                  />
+                </SettingsSection>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Live Preview Panel — fixed, no scroll */}
@@ -378,22 +405,6 @@ export default function EmbedAppearance() {
         >
           <WidgetPreview config={config} logoPreview={logoPreview} />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function SectionGroup({ title, children }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 mb-1">
-        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-primary-button">
-          {title}
-        </h3>
-        <div className="flex-1 h-px bg-white/10" />
-      </div>
-      <div className="space-y-5 pl-0.5">
-        {children}
       </div>
     </div>
   );
