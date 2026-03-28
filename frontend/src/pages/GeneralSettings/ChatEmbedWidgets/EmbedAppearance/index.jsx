@@ -478,7 +478,7 @@ function WidgetPreview({ config, logoPreview }) {
               className="rounded-t-[18px] rounded-bl-[18px] rounded-br-[4px] px-4 py-[11px] text-white text-sm max-w-[80%]"
               style={{ backgroundColor: accentColor }}
             >
-              Wie sind Ihre Oeffnungszeiten?
+              Wie sind Ihre Öffnungszeiten?
             </div>
           </div>
 
