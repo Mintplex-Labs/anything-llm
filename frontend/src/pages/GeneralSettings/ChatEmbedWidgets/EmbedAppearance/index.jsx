@@ -367,8 +367,10 @@ export default function EmbedAppearance() {
         </div>
 
         {/* Live Preview Panel */}
-        <div className="w-1/2 p-6 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-          <WidgetPreview config={config} logoPreview={logoPreview} />
+        <div className="w-1/2 overflow-y-auto bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="min-h-full flex flex-col items-center justify-center p-8 gap-4">
+            <WidgetPreview config={config} logoPreview={logoPreview} />
+          </div>
         </div>
       </div>
     </div>
@@ -426,142 +428,146 @@ function WidgetPreview({ config, logoPreview }) {
     "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?";
   const placeholder = config.sendMessageText || "Wie kann ich Ihnen helfen?";
 
+  const isLeft = config.position?.includes("left");
+  const alignClass = isLeft ? "items-start" : "items-end";
+
   return (
-    <div className="w-[360px] max-h-[600px] rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
-        {logoPreview ? (
-          <img
-            src={logoPreview}
-            alt="Logo"
-            className="h-8 w-8 rounded object-contain"
-          />
-        ) : (
-          <div
-            className="h-8 w-8 rounded flex items-center justify-center text-white text-sm font-bold"
-            style={{ backgroundColor: accentColor }}
-          >
-            {name.charAt(0)}
-          </div>
-        )}
-        <span className="text-gray-800 font-medium text-sm">{name}</span>
-      </div>
-
-      {/* Chat Area */}
-      <div className="flex-1 p-4 space-y-3 min-h-[300px] overflow-y-auto bg-white">
-        {/* Greeting */}
-        <div className="flex items-start gap-2">
-          <div className="flex-shrink-0 mt-0.5">
-            {logoPreview ? (
-              <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
-            ) : (
-              <div
-                className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
-                style={{ backgroundColor: accentColor }}
-              >
-                {name.charAt(0)}
-              </div>
-            )}
-          </div>
-          <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
-            {greeting}
-          </div>
-        </div>
-
-        {/* Default Messages */}
-        {config.defaultMessages?.length > 0 && (
-          <div className="flex flex-wrap gap-2 ml-8">
-            {config.defaultMessages
-              .filter((m) => m.trim())
-              .map((msg, i) => (
-                <button
-                  key={i}
-                  className="text-xs px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                  {msg}
-                </button>
-              ))}
-          </div>
-        )}
-
-        {/* Sample user message */}
-        <div className="flex justify-end">
-          <div
-            className="rounded-t-2xl rounded-bl-2xl rounded-br px-4 py-2 text-white text-sm max-w-[80%]"
-            style={{ backgroundColor: accentColor }}
-          >
-            Wie sind Ihre Oeffnungszeiten?
-          </div>
-        </div>
-
-        {/* Sample assistant response */}
-        <div className="flex items-start gap-2">
-          <div className="flex-shrink-0 mt-0.5">
-            {logoPreview ? (
-              <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
-            ) : (
-              <div
-                className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
-                style={{ backgroundColor: accentColor }}
-              >
-                {name.charAt(0)}
-              </div>
-            )}
-          </div>
-          <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
-            Wir sind{" "}
-            <span style={{ color: accentColor, fontWeight: 500 }}>
-              Mo-Fr von 8-17 Uhr
-            </span>{" "}
-            fuer Sie erreichbar.
-          </div>
-        </div>
-      </div>
-
-      {/* Input */}
-      <div className="px-4 py-3 border-t border-gray-200 bg-white">
-        <div className="flex items-center bg-gray-100 rounded-xl px-3 py-2">
-          <input
-            type="text"
-            placeholder={placeholder}
-            disabled
-            className="flex-1 bg-transparent text-sm text-gray-500 outline-none"
-          />
-          <div
-            className="ml-2 w-7 h-7 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: accentColor }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-3.5 w-3.5 text-white"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+    <div className={`flex flex-col ${alignClass} gap-3 w-full max-w-[420px]`}>
+      {/* Chat Window */}
+      <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
+          {logoPreview ? (
+            <img
+              src={logoPreview}
+              alt="Logo"
+              className="h-8 w-8 rounded object-contain"
+            />
+          ) : (
+            <div
+              className="h-8 w-8 rounded flex items-center justify-center text-white text-sm font-bold"
+              style={{ backgroundColor: accentColor }}
             >
-              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Chat Button Preview */}
-      <div className="px-4 py-2 border-t border-gray-200 bg-gray-50 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg"
-            style={{ backgroundColor: accentColor }}
-          >
-            {(() => {
-              const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
-              const BtnIcon = match ? match.Icon : ChatCircleDots;
-              return <BtnIcon size={20} weight="fill" />;
-            })()}
-          </div>
-          {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-700 shadow-sm max-w-[200px] truncate">
-              {config.chatbotBubblesMessages.find((m) => m.trim())}
+              {name.charAt(0)}
             </div>
           )}
+          <span className="text-gray-800 font-medium text-sm">{name}</span>
         </div>
+
+        {/* Chat Area */}
+        <div className="p-4 space-y-3 min-h-[340px] bg-white">
+          {/* Greeting */}
+          <div className="flex items-start gap-2">
+            <div className="flex-shrink-0 mt-0.5">
+              {logoPreview ? (
+                <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
+              ) : (
+                <div
+                  className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  {name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
+              {greeting}
+            </div>
+          </div>
+
+          {/* Default Messages */}
+          {config.defaultMessages?.length > 0 && (
+            <div className="flex flex-wrap gap-2 ml-8">
+              {config.defaultMessages
+                .filter((m) => m.trim())
+                .map((msg, i) => (
+                  <button
+                    key={i}
+                    className="text-xs px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+                  >
+                    {msg}
+                  </button>
+                ))}
+            </div>
+          )}
+
+          {/* Sample user message */}
+          <div className="flex justify-end">
+            <div
+              className="rounded-t-2xl rounded-bl-2xl rounded-br px-4 py-2 text-white text-sm max-w-[80%]"
+              style={{ backgroundColor: accentColor }}
+            >
+              Wie sind Ihre Oeffnungszeiten?
+            </div>
+          </div>
+
+          {/* Sample assistant response */}
+          <div className="flex items-start gap-2">
+            <div className="flex-shrink-0 mt-0.5">
+              {logoPreview ? (
+                <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
+              ) : (
+                <div
+                  className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  {name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
+              Wir sind{" "}
+              <span style={{ color: accentColor, fontWeight: 500 }}>
+                Mo-Fr von 8-17 Uhr
+              </span>{" "}
+              fuer Sie erreichbar.
+            </div>
+          </div>
+        </div>
+
+        {/* Input */}
+        <div className="px-4 py-3 border-t border-gray-200 bg-white">
+          <div className="flex items-center bg-gray-100 rounded-xl px-3 py-2">
+            <input
+              type="text"
+              placeholder={placeholder}
+              disabled
+              className="flex-1 bg-transparent text-sm text-gray-500 outline-none"
+            />
+            <div
+              className="ml-2 w-7 h-7 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: accentColor }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3.5 w-3.5 text-white"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Button — separate, below the window */}
+      <div className={`flex ${isLeft ? "flex-row" : "flex-row-reverse"} items-center gap-3`}>
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
+          style={{ backgroundColor: accentColor }}
+        >
+          {(() => {
+            const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
+            const BtnIcon = match ? match.Icon : ChatCircleDots;
+            return <BtnIcon size={24} weight="fill" />;
+          })()}
+        </div>
+        {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 text-sm text-gray-700 shadow-md max-w-[240px]">
+            {config.chatbotBubblesMessages.find((m) => m.trim())}
+          </div>
+        )}
       </div>
     </div>
   );
