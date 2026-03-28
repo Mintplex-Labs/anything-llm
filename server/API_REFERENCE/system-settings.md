@@ -28,11 +28,13 @@ Dump all settings to file storage
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -66,11 +68,13 @@ Get all current system settings that are defined.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -104,11 +108,13 @@ Number of all vectors in connected vector database
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -150,11 +156,13 @@ Key pair object that matches a valid setting and value. Get keys from GET /v1/sy
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -189,11 +197,13 @@ Export all of the chats from the system in a known format. Output depends on the
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -222,6 +232,7 @@ Array of document names to be removed permanently.
   | Name | Type | Required | Description |
   |------|------|----------|-------------|
   | `names` | array[string] | ❌ No | - |
+  
 
 
 
@@ -239,11 +250,13 @@ Array of document names to be removed permanently.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
