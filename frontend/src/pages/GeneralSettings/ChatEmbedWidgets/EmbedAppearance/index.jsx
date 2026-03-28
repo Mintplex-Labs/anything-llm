@@ -57,7 +57,7 @@ export default function EmbedAppearance() {
   const [saving, setSaving] = useState(false);
   const [embed, setEmbed] = useState(null);
   const [config, setConfig] = useState({ ...DEFAULT_CONFIG });
-  const [activeTab, setActiveTab] = useState("design");
+  const [activeTab, setActiveTab] = useState("inhalt");
   const [logoPreview, setLogoPreview] = useState(null);
 
   useEffect(() => {
@@ -207,8 +207,8 @@ export default function EmbedAppearance() {
           {/* Tabs */}
           <div className="flex border-b border-white/10 px-5 pt-3">
             {[
-              { id: "design", label: "Design" },
               { id: "inhalt", label: "Inhalt" },
+              { id: "design", label: "Design" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -248,7 +248,7 @@ export default function EmbedAppearance() {
                         </button>
                       </div>
                     )}
-                    <label className="cursor-pointer bg-theme-settings-input-bg text-white/80 hover:text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:border-white/20 transition-all">
+                    <label className="cursor-pointer bg-theme-settings-input-bg text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:bg-theme-action-menu-item-hover transition-all">
                       {logoPreview ? "Logo ändern" : "Logo hochladen"}
                       <input
                         type="file"
@@ -295,7 +295,7 @@ export default function EmbedAppearance() {
                             }`}
                             style={{ backgroundColor: config.accentColor || "#607D8B" }}
                           >
-                            <Icon size={22} weight="fill" className="text-white" />
+                            <Icon size={22} weight="fill" color="#ffffff" />
                           </div>
                           <span className={`text-[10px] transition-colors ${isSelected ? "text-white" : "text-theme-text-secondary"}`}>
                             {label}
