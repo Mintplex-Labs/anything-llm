@@ -11,6 +11,10 @@ import {
   Binoculars,
   MagnifyingGlass,
   MagicWand,
+  DotsThreeOutlineVertical,
+  PaperPlaneRight,
+  Microphone,
+  SpeakerHigh,
 } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import Embed from "@/models/embed";
@@ -423,53 +427,79 @@ function WidgetPreview({ config, logoPreview }) {
   const isLeft = config.position?.includes("left");
   const alignClass = isLeft ? "items-start" : "items-end";
 
+  const AssistantAvatar = () =>
+    logoPreview ? (
+      <img src={logoPreview} alt="" className="h-9 w-9 rounded-lg object-contain flex-shrink-0" />
+    ) : (
+      <div
+        className="h-9 w-9 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+        style={{ backgroundColor: accentColor }}
+      >
+        {name.charAt(0)}
+      </div>
+    );
+
   return (
     <div className={`flex flex-col ${alignClass} gap-4 w-full max-w-[440px]`}>
       {/* Chat Window */}
       <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
-        {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
-          {logoPreview ? (
-            <img
-              src={logoPreview}
-              alt="Logo"
-              className="h-8 w-8 rounded object-contain"
-            />
-          ) : (
-            <div
-              className="h-8 w-8 rounded flex items-center justify-center text-white text-sm font-bold"
-              style={{ backgroundColor: accentColor }}
-            >
-              {name.charAt(0)}
-            </div>
-          )}
-          <span className="text-gray-800 font-medium text-sm">{name}</span>
+        {/* Header — matches real widget */}
+        <div
+          className="flex items-center relative px-4 h-[64px]"
+          style={{ borderBottom: "1px solid #E9E9E9" }}
+        >
+          <div className="flex items-center flex-1 gap-3">
+            {logoPreview ? (
+              <img
+                src={logoPreview}
+                alt="Logo"
+                className="h-10 w-10 rounded-lg object-contain flex-shrink-0"
+              />
+            ) : (
+              <div
+                className="h-10 w-10 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                style={{ backgroundColor: accentColor }}
+              >
+                {name.charAt(0)}
+              </div>
+            )}
+            <span className="text-gray-800 font-semibold text-sm truncate">{name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <DotsThreeOutlineVertical size={20} weight="fill" className="text-slate-800/60" />
+            <X size={20} weight="bold" className="text-slate-800/60" />
+          </div>
         </div>
 
         {/* Chat Area */}
-        <div className="p-4 space-y-3 min-h-[360px] bg-white">
-          {/* Greeting */}
-          <div className="flex items-start gap-2">
-            <div className="flex-shrink-0 mt-0.5">
-              {logoPreview ? (
-                <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
-              ) : (
-                <div
-                  className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
-                  style={{ backgroundColor: accentColor }}
-                >
-                  {name.charAt(0)}
-                </div>
-              )}
+        <div className="p-4 space-y-4 min-h-[320px] bg-white">
+          {/* Sample user message */}
+          <div className="flex flex-col items-end">
+            <div
+              className="rounded-t-[18px] rounded-bl-[18px] rounded-br-[4px] px-4 py-[11px] text-white text-sm max-w-[80%]"
+              style={{ backgroundColor: accentColor }}
+            >
+              Wie sind Ihre Oeffnungszeiten?
             </div>
-            <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
-              {greeting}
+          </div>
+
+          {/* Assistant response */}
+          <div>
+            <div className="text-[10px] text-gray-400 ml-[48px] mb-1">{name}</div>
+            <div className="flex items-start gap-2">
+              <AssistantAvatar />
+              <div className="rounded-t-[18px] rounded-br-[18px] rounded-bl-[4px] px-4 py-[11px] text-gray-800 text-sm max-w-[80%] shadow-[0_4px_14px_rgba(0,0,0,0.08)]" style={{ backgroundColor: accentColor === "#607D8B" ? "#f3f4f6" : `${accentColor}18` }}>
+                {greeting || "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"}
+                <div className="flex justify-end mt-1">
+                  <SpeakerHigh size={14} weight="fill" className="text-slate-400" />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Default Messages */}
           {config.defaultMessages?.length > 0 && (
-            <div className="flex flex-wrap gap-2 ml-8">
+            <div className="flex flex-wrap gap-2 ml-[48px]">
               {config.defaultMessages
                 .filter((m) => m.trim())
                 .map((msg, i) => (
@@ -482,63 +512,22 @@ function WidgetPreview({ config, logoPreview }) {
                 ))}
             </div>
           )}
-
-          {/* Sample user message */}
-          <div className="flex justify-end">
-            <div
-              className="rounded-t-2xl rounded-bl-2xl rounded-br px-4 py-2 text-white text-sm max-w-[80%]"
-              style={{ backgroundColor: accentColor }}
-            >
-              Wie sind Ihre Oeffnungszeiten?
-            </div>
-          </div>
-
-          {/* Sample assistant response */}
-          <div className="flex items-start gap-2">
-            <div className="flex-shrink-0 mt-0.5">
-              {logoPreview ? (
-                <img src={logoPreview} alt="" className="h-6 w-6 rounded object-contain" />
-              ) : (
-                <div
-                  className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-bold"
-                  style={{ backgroundColor: accentColor }}
-                >
-                  {name.charAt(0)}
-                </div>
-              )}
-            </div>
-            <div className="bg-gray-100 rounded-t-2xl rounded-br-2xl rounded-bl px-4 py-2 text-gray-800 text-sm max-w-[80%]">
-              Wir sind{" "}
-              <span style={{ color: accentColor, fontWeight: 500 }}>
-                Mo-Fr von 8-17 Uhr
-              </span>{" "}
-              fuer Sie erreichbar.
-            </div>
-          </div>
         </div>
 
-        {/* Input */}
-        <div className="px-4 py-3 border-t border-gray-200 bg-white">
-          <div className="flex items-center bg-gray-100 rounded-xl px-3 py-2">
+        {/* Input — matches real widget */}
+        <div className="bg-white px-4 pb-3 pt-1">
+          <div
+            className="flex items-center w-full rounded-2xl"
+            style={{ border: "1.5px solid #22262833" }}
+          >
             <input
               type="text"
               placeholder={placeholder}
               disabled
-              className="flex-1 bg-transparent text-sm text-gray-500 outline-none"
+              className="flex-1 bg-transparent text-sm text-black placeholder:text-slate-800/60 outline-none py-3 px-3"
             />
-            <div
-              className="ml-2 w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: accentColor }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5 text-white"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-              </svg>
-            </div>
+            <Microphone size={22} weight="fill" className="text-[#222628]/40 mr-1 flex-shrink-0" />
+            <PaperPlaneRight size={22} weight="fill" className="text-[#222628]/40 mr-3 flex-shrink-0" />
           </div>
         </div>
       </div>
