@@ -343,7 +343,7 @@ export default function EmbedAppearance() {
                     value={config.greeting}
                     onChange={(e) => updateField("greeting", e.target.value)}
                     placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
-                    rows={3}
+                    rows={5}
                     className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 focus:border-white/25 focus:outline-none resize-none transition-colors"
                   />
                 </SettingsSection>
@@ -504,7 +504,7 @@ function WidgetPreview({ config, logoPreview }) {
         {/* Chat Area */}
         <div className="flex-1 flex flex-col justify-end px-5 pb-4 bg-white">
           {/* Greeting */}
-          <div className="text-center text-gray-400 text-[13px] px-4 mb-4 leading-relaxed">
+          <div className="text-left text-gray-400 text-[13px] px-2 mb-4 leading-relaxed">
             {greeting}
           </div>
 
