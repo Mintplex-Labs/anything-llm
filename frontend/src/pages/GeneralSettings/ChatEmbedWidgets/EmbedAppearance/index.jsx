@@ -202,7 +202,7 @@ export default function EmbedAppearance() {
       {/* Content: Settings left, Preview right */}
       <div className="flex flex-1 overflow-hidden">
         {/* Settings Panel */}
-        <div className="w-[420px] min-w-[380px] overflow-y-auto p-5 space-y-7 border-r border-white/10">
+        <div className="w-1/2 max-w-[560px] overflow-y-auto p-5 space-y-7 border-r border-white/10">
           {/* ── Design ── */}
           <SectionGroup title="Design">
             <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
@@ -386,8 +386,8 @@ export default function EmbedAppearance() {
 function SectionGroup({ title, children }) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/90">
+      <div className="flex items-center gap-3 mb-1">
+        <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary-button">
           {title}
         </h3>
         <div className="flex-1 h-px bg-white/10" />
