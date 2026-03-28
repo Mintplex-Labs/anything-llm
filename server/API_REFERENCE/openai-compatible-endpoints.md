@@ -8,7 +8,7 @@
 
 
 
-Get all available &quot;models&quot; which are workspaces you can use for chatting.
+Get all available "models" which are workspaces you can use for chatting.
 
 
 
@@ -16,7 +16,7 @@ Get all available &quot;models&quot; which are workspaces you can use for chatti
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -27,6 +27,18 @@ Get all available &quot;models&quot; which are workspaces you can use for chatti
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -42,7 +54,7 @@ Execute a chat with a workspace with OpenAI compatibility. Supports streaming as
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -50,6 +62,8 @@ Execute a chat with a workspace with OpenAI compatibility. Supports streaming as
 Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -61,6 +75,18 @@ Send a prompt to the workspace with full use of documents as if sending a chat i
 | **401** | Unauthorized |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -76,7 +102,7 @@ Get the embeddings of any arbitrary text string. This will use the embedder prov
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -84,6 +110,8 @@ Get the embeddings of any arbitrary text string. This will use the embedder prov
 The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -93,6 +121,18 @@ The input string(s) to be embedded. If the text is too long for the embedder mod
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -108,7 +148,7 @@ List all the vector database collections connected to AnythingLLM. These are ess
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -119,6 +159,18 @@ List all the vector database collections connected to AnythingLLM. These are ess
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
