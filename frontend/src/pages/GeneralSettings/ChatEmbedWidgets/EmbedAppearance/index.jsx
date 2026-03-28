@@ -169,7 +169,7 @@ export default function EmbedAppearance() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-theme-bg-container overflow-hidden">
+    <div className="w-screen h-screen flex flex-col bg-theme-bg-container overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <div className="flex items-center gap-3">
