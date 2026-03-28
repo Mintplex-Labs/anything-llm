@@ -41,6 +41,19 @@ docker push kufer/anythingllm-kufer:1.10
 docker push kufer/anythingllm-kufer:latest
 ```
 
+## Troubleshooting: Docker-Cache greift nicht
+
+Falls nach Code-Änderungen alles `CACHED` bleibt und die Änderungen nicht im Image landen:
+
+```bash
+# Nur Frontend-Stage neu bauen (schnell, Rest bleibt gecacht)
+docker build --no-cache-filter frontend-build -f docker/Dockerfile -t kufer/anythingllm-kufer:VERSION -t kufer/anythingllm-kufer:latest .
+
+# Falls das nicht reicht: BuildKit-Cache komplett leeren + alles neu bauen
+docker builder prune -f
+docker build --no-cache -f docker/Dockerfile -t kufer/anythingllm-kufer:VERSION -t kufer/anythingllm-kufer:latest .
+```
+
 ## Test Local Build
 ```bash
 # Start container
