@@ -21,7 +21,7 @@ Verify the attached Authentication header contains a valid API token.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -31,6 +31,18 @@ Verify the attached Authentication header contains a valid API token.
 |-------------|-------------|
 | **200** | Valid auth token was found. |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -51,7 +63,7 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -61,6 +73,18 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 |-------------|-------------|
 | **200** | OK |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -81,7 +105,7 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -93,6 +117,18 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -113,7 +149,7 @@ Create a new user with username and password. Methods are disabled until multi u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -135,6 +171,18 @@ Key pair object that will define the new user to add to the system.
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/admin/users/{id}`
@@ -154,8 +202,8 @@ Update existing user settings. Methods are disabled until multi user mode is ena
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the user in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the user in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -176,6 +224,18 @@ Key pair object that will update the found user. All fields are optional and wil
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ### DELETE /v1/admin/users/{id}
@@ -193,8 +253,8 @@ Delete existing user by id. Methods are disabled until multi user mode is enable
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the user in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the user in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -206,6 +266,18 @@ Delete existing user by id. Methods are disabled until multi user mode is enable
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -226,7 +298,7 @@ List all existing invitations to instance regardless of status. Methods are disa
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -238,6 +310,18 @@ List all existing invitations to instance regardless of status. Methods are disa
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -258,7 +342,7 @@ Create a new invite code for someone to use to register with instance. Methods a
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -279,6 +363,18 @@ Request body for creation parameters of the invitation
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/admin/invite/{id}`
@@ -298,8 +394,8 @@ Deactivates (soft-delete) invite by id. Methods are disabled until multi user mo
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the invite in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the invite in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -311,6 +407,18 @@ Deactivates (soft-delete) invite by id. Methods are disabled until multi user mo
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -331,8 +439,8 @@ Retrieve a list of users with permissions to access the specified workspace.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceId` | **path** |  (string) | ✅ Yes | id of the workspace. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceId` | **path** | string | ✅ Yes | id of the workspace. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -344,6 +452,18 @@ Retrieve a list of users with permissions to access the specified workspace.
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -364,8 +484,8 @@ Overwrite workspace permissions to only be accessible by the given user ids and 
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceId` | **path** |  (string) | ✅ Yes | id of the workspace in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceId` | **path** | string | ✅ Yes | id of the workspace in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -386,6 +506,18 @@ Entire array of user ids who can access the workspace. All fields are optional a
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/admin/workspaces/{workspaceSlug}/manage-users`
@@ -405,13 +537,13 @@ Set workspace permissions to be accessible by the given user ids and admins. Met
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceSlug` | **path** |  (string) | ✅ Yes | slug of the workspace in the database |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceSlug` | **path** | string | ✅ Yes | slug of the workspace in the database |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
 
-Array of user ids who will be given access to the target workspace. &lt;code&gt;reset&lt;/code&gt; will remove all existing users from the workspace and only add the new users - default &lt;code&gt;false&lt;/code&gt;.
+Array of user ids who will be given access to the target workspace. reset will remove all existing users from the workspace and only add the new users - default false.
 
 - **Required:** Yes
 
@@ -427,6 +559,18 @@ Array of user ids who will be given access to the target workspace. &lt;code&gt;
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -447,7 +591,7 @@ All chats in the system ordered by most recent. Methods are disabled until multi
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -466,6 +610,18 @@ Page offset to show of workspace chats. All fields are optional and will not upd
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -486,7 +642,7 @@ Update multi-user preferences for instance. Methods are disabled until multi use
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -507,6 +663,18 @@ Object with setting key and new value to set. All keys are optional and will not
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/document/upload`
@@ -526,7 +694,7 @@ Upload a new file to AnythingLLM to be parsed and prepared for embedding, with o
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -536,7 +704,11 @@ File to be uploaded.
 - **Required:** Yes
 
 - **Content-Type:** `multipart/form-data`
-  - **Schema:** `object`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `file` | string (binary) | ✅ Yes | The file to upload |
+  | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
+  | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
 
 
 #### Responses
@@ -547,6 +719,18 @@ File to be uploaded.
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -567,8 +751,8 @@ Upload a new file to a specific folder in AnythingLLM to be parsed and prepared 
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `folderName` | **path** |  (string) | ✅ Yes | Target folder path (defaults to &#x27;custom-documents&#x27; if not provided) |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `folderName` | **path** | string | ✅ Yes | Target folder path (defaults to 'custom-documents' if not provided) |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -578,7 +762,11 @@ File to be uploaded, with optional metadata.
 - **Required:** Yes
 
 - **Content-Type:** `multipart/form-data`
-  - **Schema:** `object`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `file` | string (binary) | ✅ Yes | The file to upload |
+  | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
+  | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
 
 
 #### Responses
@@ -589,6 +777,18 @@ File to be uploaded, with optional metadata.
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -609,7 +809,7 @@ Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optional
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -619,7 +819,7 @@ Link of web address to be scraped and optionally a comma-separated list of works
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  - **Type:** `object`
 
 
 #### Responses
@@ -630,6 +830,18 @@ Link of web address to be scraped and optionally a comma-separated list of works
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -650,7 +862,7 @@ Upload a file by specifying its raw text content and metadata values without hav
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -660,7 +872,7 @@ Text content and metadata of the file to be saved to the system. Use metadata-sc
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  - **Type:** `object`
 
 
 #### Responses
@@ -671,6 +883,18 @@ Text content and metadata of the file to be saved to the system. Use metadata-sc
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -691,7 +915,7 @@ List of all locally-stored documents in instance
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -702,6 +926,18 @@ List of all locally-stored documents in instance
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -722,8 +958,8 @@ Get all documents stored in a specific folder.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `folderName` | **path** |  (string) | ✅ Yes | Name of the folder to retrieve documents from |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `folderName` | **path** | string | ✅ Yes | Name of the folder to retrieve documents from |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -734,6 +970,18 @@ Get all documents stored in a specific folder.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -754,7 +1002,7 @@ Check available filetypes and MIMEs that can be uploaded.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -766,6 +1014,18 @@ Check available filetypes and MIMEs that can be uploaded.
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -786,7 +1046,7 @@ Get the known available metadata schema for when doing a raw-text upload and the
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -797,6 +1057,18 @@ Get the known available metadata schema for when doing a raw-text upload and the
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -817,8 +1089,8 @@ Get a single document by its unique AnythingLLM document name
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `docName` | **path** |  (string) | ✅ Yes | Unique document name to find (name in /documents) |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `docName` | **path** | string | ✅ Yes | Unique document name to find (name in /documents) |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -830,6 +1102,18 @@ Get a single document by its unique AnythingLLM document name
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -850,7 +1134,7 @@ Create a new folder inside the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -860,7 +1144,7 @@ Name of the folder to create.
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `string`
+  - **Type:** `string`
 
 
 #### Responses
@@ -870,6 +1154,18 @@ Name of the folder to create.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -890,7 +1186,7 @@ Remove a folder and all its contents from the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -900,7 +1196,9 @@ Name of the folder to remove.
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `name` | string | ❌ No | - |
 
 
 #### Responses
@@ -910,6 +1208,18 @@ Name of the folder to remove.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -930,7 +1240,7 @@ Move files within the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -940,7 +1250,7 @@ Array of objects containing source and destination paths of files to move.
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  - **Type:** `object`
 
 
 #### Responses
@@ -950,6 +1260,18 @@ Array of objects containing source and destination paths of files to move.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -970,7 +1292,7 @@ Create a new workspace
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -991,6 +1313,18 @@ JSON object containing workspace configuration.
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/workspaces`
@@ -1010,7 +1344,7 @@ List all current workspaces
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1021,6 +1355,18 @@ List all current workspaces
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1041,8 +1387,8 @@ Get a workspace by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to find |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to find |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1053,6 +1399,18 @@ Get a workspace by its unique slug.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1071,8 +1429,8 @@ Deletes a workspace by its slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to delete |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to delete |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1084,6 +1442,18 @@ Deletes a workspace by its slug.
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1104,8 +1474,8 @@ Update workspace settings by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to find |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to find |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1126,6 +1496,18 @@ JSON object containing new settings to update a workspace. All keys are optional
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/workspace/{slug}/chats`
@@ -1145,11 +1527,11 @@ Get a workspaces chats regardless of user by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to find |
-| `Authorization` | **header** |  (string) | ❌ No | - |
-| `apiSessionId` | **query** |  (string) | ❌ No | Optional apiSessionId to filter by |
-| `limit` | **query** |  (integer) | ❌ No | Optional number of chat messages to return (default: 100) |
-| `orderBy` | **query** |  (string) | ❌ No | Optional order of chat messages (asc or desc) |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to find |
+| `Authorization` | **header** | string | ❌ No | - |
+| `apiSessionId` | **query** | string | ❌ No | Optional apiSessionId to filter by |
+| `limit` | **query** | integer | ❌ No | Optional number of chat messages to return (default: 100) |
+| `orderBy` | **query** | string | ❌ No | Optional order of chat messages (asc or desc) |
 
 
 
@@ -1161,6 +1543,18 @@ Get a workspaces chats regardless of user by its unique slug.
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1181,8 +1575,8 @@ Add or remove documents from a workspace by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to find |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to find |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1203,6 +1597,18 @@ JSON object of additions and removals of documents to add to update a workspace.
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/workspace/{slug}/update-pin`
@@ -1222,8 +1628,8 @@ Add or remove pin from a document in a workspace by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to find |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to find |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1263,13 +1669,18 @@ Execute a chat with a workspace
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | - |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
 
-Send a prompt to the workspace and the type of conversation (automatic, query or chat).&lt;br/&gt;&lt;b&gt;Query:&lt;/b&gt; Will not use LLM unless there are relevant sources from vectorDB &amp; does not recall chat history.&lt;br/&gt;&lt;b&gt;Automatic:&lt;/b&gt; Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.&lt;br/&gt;&lt;b&gt;Chat:&lt;/b&gt; Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.&lt;br/&gt;&lt;b&gt;Attachments:&lt;/b&gt; Can include images and documents.&lt;br/&gt;&lt;b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Document attachments:&lt;/b&gt; must have the mime type &lt;code&gt;application/anythingllm-document&lt;/code&gt; - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.
+Send a prompt to the workspace and the type of conversation (automatic, query or chat).
+Query: Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.
+Automatic: Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.
+Chat: Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.
+Attachments: Can include images and documents.
+     Document attachments: must have the mime type application/anythingllm-document - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.
 
 - **Required:** Yes
 
@@ -1284,6 +1695,18 @@ Send a prompt to the workspace and the type of conversation (automatic, query or
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1304,13 +1727,18 @@ Execute a streamable chat with a workspace
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | - |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
 
-Send a prompt to the workspace and the type of conversation (automatic, query or chat).&lt;br/&gt;&lt;b&gt;Query:&lt;/b&gt; Will not use LLM unless there are relevant sources from vectorDB &amp; does not recall chat history.&lt;br/&gt;&lt;b&gt;Automatic:&lt;/b&gt; Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.&lt;br/&gt;&lt;b&gt;Chat:&lt;/b&gt; Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.&lt;br/&gt;&lt;b&gt;Attachments:&lt;/b&gt; Can include images and documents.&lt;br/&gt;&lt;b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Document attachments:&lt;/b&gt; must have the mime type &lt;code&gt;application/anythingllm-document&lt;/code&gt; - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.
+Send a prompt to the workspace and the type of conversation (automatic, query or chat).
+Query: Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.
+Automatic: Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.
+Chat: Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.
+Attachments: Can include images and documents.
+     Document attachments: must have the mime type application/anythingllm-document - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.
 
 - **Required:** Yes
 
@@ -1324,6 +1752,18 @@ Send a prompt to the workspace and the type of conversation (automatic, query or
 | **200** | OK |
 | **400** | Bad Request |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1344,8 +1784,8 @@ Perform a vector similarity search in a workspace
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace to search in |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace to search in |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1391,6 +1831,18 @@ Dump all settings to file storage
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/system`
@@ -1410,7 +1862,7 @@ Get all current system settings that are defined.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1421,6 +1873,18 @@ Get all current system settings that are defined.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1441,7 +1905,7 @@ Number of all vectors in connected vector database
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1452,6 +1916,18 @@ Number of all vectors in connected vector database
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1472,7 +1948,7 @@ Update a system setting or preference.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1491,6 +1967,18 @@ Key pair object that matches a valid setting and value. Get keys from GET /v1/sy
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1511,8 +1999,8 @@ Export all of the chats from the system in a known format. Output depends on the
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
-| `type` | **query** |  (string) | ❌ No | Export format jsonl, json, csv, jsonAlpaca |
+| `Authorization` | **header** | string | ❌ No | - |
+| `type` | **query** | string | ❌ No | Export format jsonl, json, csv, jsonAlpaca |
 
 
 
@@ -1523,6 +2011,18 @@ Export all of the chats from the system in a known format. Output depends on the
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1543,7 +2043,7 @@ Permanently remove documents from the system.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1553,7 +2053,9 @@ Array of document names to be removed permanently.
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `names` | array[string] | ❌ No | - |
 
 
 #### Responses
@@ -1563,6 +2065,18 @@ Array of document names to be removed permanently.
 | **200** | Documents removed successfully. |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1583,8 +2097,8 @@ Create a new workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1605,6 +2119,18 @@ Optional userId associated with the thread, thread slug and thread name
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/workspace/{slug}/thread/{threadSlug}/update`
@@ -1624,9 +2150,9 @@ Update thread name by its unique slug.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1647,6 +2173,18 @@ JSON object containing new name to update the thread.
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/workspace/{slug}/thread/{threadSlug}`
@@ -1666,9 +2204,9 @@ Delete a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1680,6 +2218,18 @@ Delete a workspace thread
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1700,9 +2250,9 @@ Get chats for a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1714,6 +2264,18 @@ Get chats for a workspace thread
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1734,9 +2296,9 @@ Chat with a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1756,6 +2318,18 @@ Send a prompt to the workspace thread and the type of conversation (query or cha
 | **400** | Bad Request |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1776,9 +2350,9 @@ Stream chat with a workspace thread
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `slug` | **path** |  (string) | ✅ Yes | Unique slug of workspace |
-| `threadSlug` | **path** |  (string) | ✅ Yes | Unique slug of thread |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `slug` | **path** | string | ✅ Yes | Unique slug of workspace |
+| `threadSlug` | **path** | string | ✅ Yes | Unique slug of thread |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1797,6 +2371,18 @@ Send a prompt to the workspace thread and the type of conversation (query or cha
 | **200** | OK |
 | **400** | Bad Request |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1817,7 +2403,7 @@ List all users
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1829,6 +2415,18 @@ List all users
 | **401** | Instance is not in Multi-User mode. Permission denied. |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1849,8 +2447,8 @@ Issue a temporary auth token for a user
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | The ID of the user to issue a temporary auth token for |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | The ID of the user to issue a temporary auth token for |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1864,6 +2462,18 @@ Issue a temporary auth token for a user
 | **404** | Not Found |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/openai/models`
@@ -1872,7 +2482,7 @@ Issue a temporary auth token for a user
 
 
 
-Get all available &quot;models&quot; which are workspaces you can use for chatting.
+Get all available "models" which are workspaces you can use for chatting.
 
 
 
@@ -1883,7 +2493,7 @@ Get all available &quot;models&quot; which are workspaces you can use for chatti
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -1894,6 +2504,18 @@ Get all available &quot;models&quot; which are workspaces you can use for chatti
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1914,7 +2536,7 @@ Execute a chat with a workspace with OpenAI compatibility. Supports streaming as
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1936,6 +2558,18 @@ Send a prompt to the workspace with full use of documents as if sending a chat i
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `/v1/openai/embeddings`
@@ -1955,7 +2589,7 @@ Get the embeddings of any arbitrary text string. This will use the embedder prov
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -1974,6 +2608,18 @@ The input string(s) to be embedded. If the text is too long for the embedder mod
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -1994,7 +2640,7 @@ List all the vector database collections connected to AnythingLLM. These are ess
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -2005,6 +2651,18 @@ List all the vector database collections connected to AnythingLLM. These are ess
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2025,7 +2683,7 @@ List all active embeds
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -2036,6 +2694,18 @@ List all active embeds
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2056,8 +2726,8 @@ Get all chats for a specific embed
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -2069,6 +2739,18 @@ Get all chats for a specific embed
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2089,9 +2771,9 @@ Get chats for a specific embed and session
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed |
-| `sessionUuid` | **path** |  (string) | ✅ Yes | UUID of the session |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed |
+| `sessionUuid` | **path** | string | ✅ Yes | UUID of the session |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -2103,6 +2785,18 @@ Get chats for a specific embed and session
 | **403** | Forbidden |
 | **404** | Embed or session not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2123,7 +2817,7 @@ Create a new embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -2133,7 +2827,7 @@ JSON object containing embed configuration details
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  - **Type:** `object`
 
 
 #### Responses
@@ -2145,6 +2839,18 @@ JSON object containing embed configuration details
 | **403** | Forbidden |
 | **404** | Workspace not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2165,8 +2871,8 @@ Update an existing embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed to update |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed to update |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 #### Request Body
@@ -2176,7 +2882,7 @@ JSON object containing embed configuration updates
 - **Required:** Yes
 
 - **Content-Type:** `application/json`
-  - **Schema:** `object`
+  - **Type:** `object`
 
 
 #### Responses
@@ -2187,6 +2893,18 @@ JSON object containing embed configuration updates
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -2205,8 +2923,8 @@ Delete an existing embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed to delete |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed to delete |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -2218,6 +2936,18 @@ Delete an existing embed configuration
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
