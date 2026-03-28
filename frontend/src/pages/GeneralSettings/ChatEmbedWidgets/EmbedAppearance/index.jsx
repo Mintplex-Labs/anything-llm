@@ -27,10 +27,8 @@ const CHAT_ICONS = [
 ];
 
 const POSITION_OPTIONS = [
-  { value: "bottom-right", label: "Unten rechts" },
-  { value: "bottom-left", label: "Unten links" },
-  { value: "top-right", label: "Oben rechts" },
-  { value: "top-left", label: "Oben links" },
+  { value: "bottom-left", label: "Links" },
+  { value: "bottom-right", label: "Rechts" },
 ];
 
 const DEFAULT_CONFIG = {
@@ -286,17 +284,21 @@ export default function EmbedAppearance() {
 
           {/* Position */}
           <SettingsSection title="Position" hint="Position des Chat-Widgets auf der Webseite.">
-            <select
-              value={config.position}
-              onChange={(e) => updateField("position", e.target.value)}
-              className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
-            >
+            <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
               {POSITION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <button
+                  key={opt.value}
+                  onClick={() => updateField("position", opt.value)}
+                  className={`px-5 py-2 text-sm font-medium transition-colors ${
+                    config.position === opt.value
+                      ? "bg-primary-button text-white"
+                      : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
+                  }`}
+                >
                   {opt.label}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </SettingsSection>
 
           {/* Name */}
