@@ -16,7 +16,7 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -26,6 +26,18 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 |-------------|-------------|
 | **200** | OK |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -41,7 +53,7 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -53,6 +65,18 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -68,7 +92,7 @@ Create a new user with username and password. Methods are disabled until multi u
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -76,6 +100,8 @@ Create a new user with username and password. Methods are disabled until multi u
 Key pair object that will define the new user to add to the system.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -87,6 +113,18 @@ Key pair object that will define the new user to add to the system.
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -102,8 +140,8 @@ Update existing user settings. Methods are disabled until multi user mode is ena
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the user in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the user in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -111,6 +149,8 @@ Update existing user settings. Methods are disabled until multi user mode is ena
 Key pair object that will update the found user. All fields are optional and will not update unless specified.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -121,6 +161,18 @@ Key pair object that will update the found user. All fields are optional and wil
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -136,8 +188,8 @@ Delete existing user by id. Methods are disabled until multi user mode is enable
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the user in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the user in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -149,6 +201,18 @@ Delete existing user by id. Methods are disabled until multi user mode is enable
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -164,7 +228,7 @@ List all existing invitations to instance regardless of status. Methods are disa
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -176,6 +240,18 @@ List all existing invitations to instance regardless of status. Methods are disa
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -191,7 +267,7 @@ Create a new invite code for someone to use to register with instance. Methods a
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -199,6 +275,8 @@ Create a new invite code for someone to use to register with instance. Methods a
 Request body for creation parameters of the invitation
 
 - **Required:** No
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -209,6 +287,18 @@ Request body for creation parameters of the invitation
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -224,8 +314,8 @@ Deactivates (soft-delete) invite by id. Methods are disabled until multi user mo
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | id of the invite in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | id of the invite in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -237,6 +327,18 @@ Deactivates (soft-delete) invite by id. Methods are disabled until multi user mo
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -252,8 +354,8 @@ Retrieve a list of users with permissions to access the specified workspace.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceId` | **path** |  (string) | ✅ Yes | id of the workspace. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceId` | **path** | string | ✅ Yes | id of the workspace. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -265,6 +367,18 @@ Retrieve a list of users with permissions to access the specified workspace.
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -280,8 +394,8 @@ Overwrite workspace permissions to only be accessible by the given user ids and 
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceId` | **path** |  (string) | ✅ Yes | id of the workspace in the database. |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceId` | **path** | string | ✅ Yes | id of the workspace in the database. |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -289,6 +403,8 @@ Overwrite workspace permissions to only be accessible by the given user ids and 
 Entire array of user ids who can access the workspace. All fields are optional and will not update unless specified.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -299,6 +415,18 @@ Entire array of user ids who can access the workspace. All fields are optional a
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -314,15 +442,17 @@ Set workspace permissions to be accessible by the given user ids and admins. Met
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `workspaceSlug` | **path** |  (string) | ✅ Yes | slug of the workspace in the database |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `workspaceSlug` | **path** | string | ✅ Yes | slug of the workspace in the database |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
 
-Array of user ids who will be given access to the target workspace. &lt;code&gt;reset&lt;/code&gt; will remove all existing users from the workspace and only add the new users - default &lt;code&gt;false&lt;/code&gt;.
+Array of user ids who will be given access to the target workspace. reset will remove all existing users from the workspace and only add the new users - default false.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -334,6 +464,18 @@ Array of user ids who will be given access to the target workspace. &lt;code&gt;
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -349,7 +491,7 @@ All chats in the system ordered by most recent. Methods are disabled until multi
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -357,6 +499,8 @@ All chats in the system ordered by most recent. Methods are disabled until multi
 Page offset to show of workspace chats. All fields are optional and will not update unless specified.
 
 - **Required:** No
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -366,6 +510,18 @@ Page offset to show of workspace chats. All fields are optional and will not upd
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -381,7 +537,7 @@ Update multi-user preferences for instance. Methods are disabled until multi use
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -389,6 +545,8 @@ Update multi-user preferences for instance. Methods are disabled until multi use
 Object with setting key and new value to set. All keys are optional and will not update unless specified.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -399,6 +557,18 @@ Object with setting key and new value to set. All keys are optional and will not
 | **401** | Instance is not in Multi-User mode. Method denied |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
