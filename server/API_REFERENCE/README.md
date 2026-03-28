@@ -4,7 +4,7 @@
 
 > API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.
 
-**Version:** `1.0.0` · **Generated:** 2026-03-28T03:34:25.645Z
+**Version:** `1.0.0` · **Generated:** 2026-03-28T03:52:06.520Z
 
 </div>
 
