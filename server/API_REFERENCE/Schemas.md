@@ -9,12 +9,11 @@
 
 **Type:** `object`
 
-
 ### Properties
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `message` | `string` | ❌ No | - |
+| `message` | string | ❌ No | - |
 
 
 
