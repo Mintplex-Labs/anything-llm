@@ -16,7 +16,7 @@ List all active embeds
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -27,6 +27,18 @@ List all active embeds
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -42,8 +54,8 @@ Get all chats for a specific embed
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -55,6 +67,18 @@ Get all chats for a specific embed
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -70,9 +94,9 @@ Get chats for a specific embed and session
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed |
-| `sessionUuid` | **path** |  (string) | ✅ Yes | UUID of the session |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed |
+| `sessionUuid` | **path** | string | ✅ Yes | UUID of the session |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -84,6 +108,18 @@ Get chats for a specific embed and session
 | **403** | Forbidden |
 | **404** | Embed or session not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -99,7 +135,7 @@ Create a new embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -107,6 +143,11 @@ Create a new embed configuration
 JSON object containing embed configuration details
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `object`
+
 
 
 ### Responses
@@ -118,6 +159,18 @@ JSON object containing embed configuration details
 | **403** | Forbidden |
 | **404** | Workspace not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -133,8 +186,8 @@ Update an existing embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed to update |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed to update |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -142,6 +195,11 @@ Update an existing embed configuration
 JSON object containing embed configuration updates
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `object`
+
 
 
 ### Responses
@@ -152,6 +210,18 @@ JSON object containing embed configuration updates
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -167,8 +237,8 @@ Delete an existing embed configuration
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `embedUuid` | **path** |  (string) | ✅ Yes | UUID of the embed to delete |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `embedUuid` | **path** | string | ✅ Yes | UUID of the embed to delete |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -180,6 +250,18 @@ Delete an existing embed configuration
 | **403** | Forbidden |
 | **404** | Embed not found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
