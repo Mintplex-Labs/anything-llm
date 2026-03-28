@@ -35,11 +35,13 @@ List all users
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -76,11 +78,13 @@ Issue a temporary auth token for a user
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
