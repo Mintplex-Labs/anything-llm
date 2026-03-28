@@ -31,6 +31,7 @@ File to be uploaded.
   | `file` | string (binary) | ✅ Yes | The file to upload |
   | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
   | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
+  
 
 
 
@@ -49,11 +50,13 @@ File to be uploaded.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -85,6 +88,7 @@ File to be uploaded, with optional metadata.
   | `file` | string (binary) | ✅ Yes | The file to upload |
   | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
   | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
+  
 
 
 
@@ -103,11 +107,13 @@ File to be uploaded, with optional metadata.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -153,11 +159,13 @@ Link of web address to be scraped and optionally a comma-separated list of works
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -203,11 +211,13 @@ Text content and metadata of the file to be saved to the system. Use metadata-sc
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -241,11 +251,13 @@ List of all locally-stored documents in instance
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -280,11 +292,13 @@ Get all documents stored in a specific folder.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -319,11 +333,13 @@ Check available filetypes and MIMEs that can be uploaded.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -357,11 +373,13 @@ Get the known available metadata schema for when doing a raw-text upload and the
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -397,11 +415,13 @@ Get a single document by its unique AnythingLLM document name
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -446,11 +466,13 @@ Name of the folder to create.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -479,6 +501,7 @@ Name of the folder to remove.
   | Name | Type | Required | Description |
   |------|------|----------|-------------|
   | `name` | string | ❌ No | - |
+  
 
 
 
@@ -496,11 +519,13 @@ Name of the folder to remove.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -545,11 +570,13 @@ Array of objects containing source and destination paths of files to move.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
