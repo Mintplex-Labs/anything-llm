@@ -266,7 +266,7 @@ export default function EmbedAppearance() {
                       type="color"
                       value={config.accentColor}
                       onChange={(e) => updateField("accentColor", e.target.value)}
-                      className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
+                      className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 hover:border-white/40 transition-colors"
                     />
                     <input
                       type="text"
@@ -467,12 +467,13 @@ function WidgetPreview({ config, logoPreview }) {
   const btnAlign = isLeft ? "self-start" : "self-end";
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full max-w-[400px] py-4">
-      {/* Chat Window — centered, appears above button */}
+    <div className="relative h-full w-full max-w-[400px]">
+      {/* Chat Window — centered above button */}
       {previewOpen && (
         <div
-          className="w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white mb-4"
+          className="absolute left-1/2 -translate-x-1/2 w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white"
           style={{
+            bottom: "76px",
             height: "540px",
             boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
           }}
@@ -550,7 +551,7 @@ function WidgetPreview({ config, logoPreview }) {
 
       {/* Willkommensblasen — only when closed */}
       {!previewOpen && bubbles.length > 0 && (
-        <div className={`flex flex-col gap-2 mb-3 w-[300px] ${btnAlign}`}>
+        <div className={`absolute w-[300px] flex flex-col gap-2 ${isLeft ? "left-0" : "right-0"}`} style={{ bottom: "76px" }}>
           {bubbles.map((msg, i) => (
             <div
               key={i}
@@ -563,9 +564,9 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
       )}
 
-      {/* Chat Button — only button moves with position */}
+      {/* Chat Button — fixed at bottom, never moves */}
       <div
-        className={`w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 flex-shrink-0 ${btnAlign}`}
+        className={`absolute bottom-4 w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 ${isLeft ? "left-0" : "right-0"}`}
         style={{
           backgroundColor: accentColor,
           boxShadow: `0 4px 14px ${accentColor}40`,
