@@ -439,9 +439,9 @@ function WidgetPreview({ config, logoPreview }) {
     );
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-[440px]">
+    <div className="flex flex-col items-center gap-4 w-full max-w-[370px]">
       {/* Chat Window */}
-      <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white">
+      <div className="w-full rounded-2xl shadow-2xl border border-gray-300 flex flex-col overflow-hidden bg-white" style={{ minHeight: "520px" }}>
         {/* Header — matches real widget */}
         <div
           className="flex items-center relative px-4 h-[64px]"
@@ -471,7 +471,7 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
 
         {/* Chat Area */}
-        <div className="p-4 space-y-4 min-h-[320px] bg-white">
+        <div className="p-4 space-y-4 flex-1 bg-white">
           {/* Sample user message */}
           <div className="flex flex-col items-end">
             <div
