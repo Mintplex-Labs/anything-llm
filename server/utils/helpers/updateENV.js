@@ -67,6 +67,10 @@ const KEY_MAPPING = {
           : "Invalid cache control. Must be one of: 5m, 1h.",
     ],
   },
+  AnthropicBaseURL: {
+    envKey: "ANTHROPIC_BASE_URL",
+    checks: [isValidURL],
+  },
 
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
@@ -881,6 +885,8 @@ function validOpenAIKey(input = "") {
 }
 
 function validAnthropicApiKey(input = "") {
+  // When a custom base URL is configured the endpoint may accept any API key format.
+  if (process.env.ANTHROPIC_BASE_URL) return null;
   return input.startsWith("sk-ant-")
     ? null
     : "Anthropic Key must start with sk-ant-";

@@ -84,6 +84,27 @@ export default function AnthropicAiOptions({ settings }) {
               </option>
             </select>
           </div>
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Custom Base URL{" "}
+              <span className="font-normal text-theme-text-secondary">
+                (optional)
+              </span>
+            </label>
+            <input
+              type="url"
+              name="AnthropicBaseURL"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="https://api.anthropic.com"
+              defaultValue={settings?.AnthropicBaseURL ?? ""}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <p className="text-xs text-theme-text-secondary mt-1">
+              Override the Anthropic API endpoint. Useful for self-hosted
+              Anthropic-compatible backends.
+            </p>
+          </div>
         </div>
       </div>
     </div>

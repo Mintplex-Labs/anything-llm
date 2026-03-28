@@ -21,6 +21,9 @@ class AnthropicLLM {
     const AnthropicAI = require("@anthropic-ai/sdk");
     const anthropic = new AnthropicAI({
       apiKey: process.env.ANTHROPIC_API_KEY,
+      ...(process.env.ANTHROPIC_BASE_URL
+        ? { baseURL: process.env.ANTHROPIC_BASE_URL }
+        : {}),
       defaultHeaders: {
         "User-Agent": getAnythingLLMUserAgent(),
       },
@@ -89,6 +92,9 @@ class AnthropicLLM {
       /** @type {import("@anthropic-ai/sdk").Anthropic} */
       const anthropic = new AnthropicAI({
         apiKey: process.env.ANTHROPIC_API_KEY,
+        ...(process.env.ANTHROPIC_BASE_URL
+          ? { baseURL: process.env.ANTHROPIC_BASE_URL }
+          : {}),
       });
       const model = await anthropic.models.retrieve(modelName);
       return Number(model.max_tokens ?? 4096);
