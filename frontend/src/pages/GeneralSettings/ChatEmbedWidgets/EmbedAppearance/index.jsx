@@ -232,21 +232,6 @@ export default function EmbedAppearance() {
                   />
                 </label>
               </div>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  value={config.logoUrl || ""}
-                  onChange={(e) => {
-                    updateField("logoUrl", e.target.value || null);
-                    if (e.target.value) {
-                      setLogoPreview(e.target.value);
-                      updateField("logoFilename", null);
-                    }
-                  }}
-                  placeholder="Oder Logo-URL eingeben..."
-                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
-                />
-              </div>
             </SettingsSection>
 
             <SettingsSection title="Begruessung" hint="Willkommensnachricht im Chat-Fenster.">
