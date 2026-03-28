@@ -193,18 +193,8 @@ export default function EmbedAppearance() {
       <div className="flex flex-1 overflow-hidden">
         {/* Settings Panel */}
         <div className="w-1/2 overflow-y-auto p-6 space-y-6 border-r border-white/10">
-          {/* ── Identitaet ── */}
-          <SectionGroup title="Identitaet">
-            <SettingsSection title="Name" hint="Name des Chatbots (wird im Header und als Assistenten-Name angezeigt).">
-              <input
-                type="text"
-                value={config.name}
-                onChange={(e) => updateField("name", e.target.value)}
-                placeholder="Ihr Online-Berater"
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
-              />
-            </SettingsSection>
-
+          {/* ── Design ── */}
+          <SectionGroup title="Design">
             <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
               <div className="flex items-center gap-4">
                 {logoPreview && (
@@ -234,19 +224,6 @@ export default function EmbedAppearance() {
               </div>
             </SettingsSection>
 
-            <SettingsSection title="Begruessung" hint="Willkommensnachricht im Chat-Fenster.">
-              <textarea
-                value={config.greeting}
-                onChange={(e) => updateField("greeting", e.target.value)}
-                placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
-                rows={3}
-                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 resize-none"
-              />
-            </SettingsSection>
-          </SectionGroup>
-
-          {/* ── Design ── */}
-          <SectionGroup title="Design">
             <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird fuer Buttons, Benutzer-Nachrichten und Links verwendet.">
               <div className="flex items-center gap-3">
                 <input
@@ -289,6 +266,47 @@ export default function EmbedAppearance() {
               </div>
             </SettingsSection>
 
+            <SettingsSection title="Position" hint="Position des Chat-Widgets auf der Webseite.">
+              <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
+                {POSITION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => updateField("position", opt.value)}
+                    className={`px-5 py-2 text-sm font-medium transition-colors ${
+                      config.position === opt.value
+                        ? "bg-primary-button text-white"
+                        : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </SettingsSection>
+          </SectionGroup>
+
+          {/* ── Inhalt ── */}
+          <SectionGroup title="Inhalt">
+            <SettingsSection title="Name" hint="Name des Chatbots (wird im Header und als Assistenten-Name angezeigt).">
+              <input
+                type="text"
+                value={config.name}
+                onChange={(e) => updateField("name", e.target.value)}
+                placeholder="Ihr Online-Berater"
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
+              />
+            </SettingsSection>
+
+            <SettingsSection title="Begruessung" hint="Willkommensnachricht im Chat-Fenster.">
+              <textarea
+                value={config.greeting}
+                onChange={(e) => updateField("greeting", e.target.value)}
+                placeholder="Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"
+                rows={3}
+                className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10 resize-none"
+              />
+            </SettingsSection>
+
             <SettingsSection title="Sende-Platzhalter" hint="Platzhaltertext im Eingabefeld.">
               <input
                 type="text"
@@ -298,10 +316,7 @@ export default function EmbedAppearance() {
                 className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-full border border-white/10"
               />
             </SettingsSection>
-          </SectionGroup>
 
-          {/* ── Nachrichten ── */}
-          <SectionGroup title="Nachrichten">
             <SettingsSection title="Schnellstart-Nachrichten" hint="Klickbare Vorschlaege unter dem Eingabefeld.">
               <MessageList
                 items={config.defaultMessages || []}
@@ -320,27 +335,6 @@ export default function EmbedAppearance() {
                 onRemove={(i) => removeListItem("chatbotBubblesMessages", i)}
                 placeholder="z.B. Hallo! Kann ich Ihnen helfen?"
               />
-            </SettingsSection>
-          </SectionGroup>
-
-          {/* ── Erweitert ── */}
-          <SectionGroup title="Erweitert">
-            <SettingsSection title="Position" hint="Position des Chat-Widgets auf der Webseite.">
-              <div className="flex rounded-lg overflow-hidden border border-white/10 w-fit">
-                {POSITION_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => updateField("position", opt.value)}
-                    className={`px-5 py-2 text-sm font-medium transition-colors ${
-                      config.position === opt.value
-                        ? "bg-primary-button text-white"
-                        : "bg-theme-settings-input-bg text-theme-text-secondary hover:text-white hover:bg-theme-action-menu-item-hover"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
             </SettingsSection>
 
             <SettingsSection title="Support-E-Mail" hint="E-Mail-Adresse fuer den Support-Link im Chat.">
