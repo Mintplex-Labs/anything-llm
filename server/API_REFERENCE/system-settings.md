@@ -22,6 +22,18 @@ Dump all settings to file storage
 | **403** | Forbidden |
 | **500** | Internal Server Error |
 
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
 
 ---
 ## `GET` /v1/system
@@ -36,7 +48,7 @@ Get all current system settings that are defined.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -47,6 +59,18 @@ Get all current system settings that are defined.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -62,7 +86,7 @@ Number of all vectors in connected vector database
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -73,6 +97,18 @@ Number of all vectors in connected vector database
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -88,7 +124,7 @@ Update a system setting or preference.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -96,6 +132,8 @@ Update a system setting or preference.
 Key pair object that matches a valid setting and value. Get keys from GET /v1/system or refer to codebase.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
 
 
 ### Responses
@@ -105,6 +143,18 @@ Key pair object that matches a valid setting and value. Get keys from GET /v1/sy
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -120,8 +170,8 @@ Export all of the chats from the system in a known format. Output depends on the
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
-| `type` | **query** |  (string) | ❌ No | Export format jsonl, json, csv, jsonAlpaca |
+| `Authorization` | **header** | string | ❌ No | - |
+| `type` | **query** | string | ❌ No | Export format jsonl, json, csv, jsonAlpaca |
 
 
 
@@ -132,6 +182,18 @@ Export all of the chats from the system in a known format. Output depends on the
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -147,7 +209,7 @@ Permanently remove documents from the system.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -155,6 +217,12 @@ Permanently remove documents from the system.
 Array of document names to be removed permanently.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `names` | array[string] | ❌ No | - |
+
 
 
 ### Responses
@@ -164,6 +232,18 @@ Array of document names to be removed permanently.
 | **200** | Documents removed successfully. |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
