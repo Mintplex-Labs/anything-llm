@@ -16,7 +16,7 @@ Verify the attached Authentication header contains a valid API token.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -26,6 +26,18 @@ Verify the attached Authentication header contains a valid API token.
 |-------------|-------------|
 | **200** | Valid auth token was found. |
 | **403** | Forbidden |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
