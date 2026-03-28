@@ -31,6 +31,8 @@ const CHAT_ICONS = [
   { id: "plus", label: "Plus", Icon: Plus },
 ];
 
+const DEFAULT_LOGO = "https://www.kufer.de/typo3conf/ext/kubuslayout/Resources/Public/Icons/augenbrauen-3.png";
+
 const POSITION_OPTIONS = [
   { value: "bottom-left", label: "Links" },
   { value: "bottom-right", label: "Rechts" },
@@ -216,7 +218,7 @@ export default function EmbedAppearance() {
                 className={`px-4 py-2.5 text-sm font-semibold transition-all relative ${
                   activeTab === tab.id
                     ? "text-primary-button"
-                    : "text-theme-text-secondary hover:text-white"
+                    : "text-theme-text-secondary hover:text-primary-button/70"
                 }`}
               >
                 {tab.label}
@@ -233,21 +235,21 @@ export default function EmbedAppearance() {
               <>
                 <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
                   <div className="flex items-center gap-4">
-                    {logoPreview && (
-                      <div className="relative group">
-                        <img
-                          src={logoPreview}
-                          alt="Logo"
-                          className="h-12 w-12 rounded-lg object-contain bg-white/5 border border-white/10"
-                        />
+                    <div className="relative group">
+                      <img
+                        src={logoPreview || DEFAULT_LOGO}
+                        alt="Logo"
+                        className="h-12 w-12 rounded-lg object-contain bg-white/5 border border-white/10"
+                      />
+                      {logoPreview && (
                         <button
                           onClick={handleLogoRemove}
                           className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 transition-colors"
                         >
                           <X size={12} weight="bold" />
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <label className="cursor-pointer bg-theme-settings-input-bg text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:bg-theme-action-menu-item-hover transition-all">
                       {logoPreview ? "Logo ändern" : "Logo hochladen"}
                       <input
@@ -457,6 +459,7 @@ function WidgetPreview({ config, logoPreview }) {
   const [previewOpen, setPreviewOpen] = useState(true);
   const accentColor = config.accentColor || "#607D8B";
   const name = config.name || "Ihr Online-Berater";
+  const logoSrc = logoPreview || DEFAULT_LOGO;
   const greeting =
     config.greeting ||
     "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?";
@@ -484,20 +487,11 @@ function WidgetPreview({ config, logoPreview }) {
             style={{ borderBottom: "1px solid #E9E9E9" }}
           >
             <div className="flex items-center flex-1 gap-3 min-w-0">
-              {logoPreview ? (
-                <img
-                  src={logoPreview}
-                  alt="Logo"
-                  className="h-10 w-10 rounded-lg object-contain flex-shrink-0"
-                />
-              ) : (
-                <div
-                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                  style={{ backgroundColor: accentColor }}
-                >
-                  {name.charAt(0)}
-                </div>
-              )}
+              <img
+                src={logoSrc}
+                alt="Logo"
+                className="h-10 w-10 rounded-lg object-contain flex-shrink-0"
+              />
               <span className="text-gray-800 font-semibold text-sm truncate">{name}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -578,6 +572,11 @@ function WidgetPreview({ config, logoPreview }) {
           const BtnIcon = match ? match.Icon : ChatCircleDots;
           return <BtnIcon size={24} weight="fill" color="#ffffff" />;
         })()}
+      </div>
+
+      {/* Hint */}
+      <div className={`absolute ${isLeft ? "left-0 ml-14" : "right-0 mr-14"} bottom-[22px] text-[10px] text-gray-400 select-none`}>
+        Klicken zum {previewOpen ? "Schließen" : "Öffnen"}
       </div>
     </div>
   );
