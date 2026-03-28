@@ -1,17 +1,29 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FloppyDisk, Trash, Plus, X } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  FloppyDisk,
+  Trash,
+  Plus,
+  X,
+  ChatCircleDots,
+  Headset,
+  Binoculars,
+  MagnifyingGlass,
+  MagicWand,
+} from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import Embed from "@/models/embed";
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 
 const CHAT_ICONS = [
-  { id: "chatBubble", label: "Chat-Blase", icon: "\uD83D\uDCAC" },
-  { id: "support", label: "Support", icon: "\uD83C\uDFA7" },
-  { id: "search2", label: "Suche", icon: "\uD83D\uDD0D" },
-  { id: "magic", label: "Magie", icon: "\u2728" },
-  { id: "plus", label: "Plus", icon: "\u2795" },
+  { id: "chatBubble", label: "Chat-Blase", Icon: ChatCircleDots },
+  { id: "support", label: "Support", Icon: Headset },
+  { id: "search", label: "Suche", Icon: MagnifyingGlass },
+  { id: "search2", label: "Fernglas", Icon: Binoculars },
+  { id: "magic", label: "Magie", Icon: MagicWand },
+  { id: "plus", label: "Plus", Icon: Plus },
 ];
 
 const POSITION_OPTIONS = [
@@ -249,19 +261,25 @@ export default function EmbedAppearance() {
 
           {/* Chat Icon */}
           <SettingsSection title="Chat-Icon" hint="Das Icon auf dem Chat-Button.">
-            <div className="flex gap-2 flex-wrap">
-              {CHAT_ICONS.map((icon) => (
+            <div className="flex gap-3 flex-wrap">
+              {CHAT_ICONS.map(({ id, label, Icon }) => (
                 <button
-                  key={icon.id}
-                  onClick={() => updateField("chatIcon", icon.id)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-lg text-xl transition-all ${
-                    config.chatIcon === icon.id
-                      ? "bg-primary-button ring-2 ring-white/50"
-                      : "bg-theme-settings-input-bg hover:bg-theme-action-menu-item-hover border border-white/10"
+                  key={id}
+                  onClick={() => updateField("chatIcon", id)}
+                  className={`flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all ${
+                    config.chatIcon === id
+                      ? "ring-2 ring-white/50 bg-white/5"
+                      : "hover:bg-white/5"
                   }`}
-                  title={icon.label}
+                  title={label}
                 >
-                  {icon.icon}
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105"
+                    style={{ backgroundColor: config.accentColor || "#607D8B" }}
+                  >
+                    <Icon size={22} weight="fill" />
+                  </div>
+                  <span className="text-[10px] text-theme-text-secondary">{label}</span>
                 </button>
               ))}
             </div>
@@ -533,7 +551,11 @@ function WidgetPreview({ config, logoPreview }) {
             className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg"
             style={{ backgroundColor: accentColor }}
           >
-            {CHAT_ICONS.find((i) => i.id === config.chatIcon)?.icon || "\uD83D\uDCAC"}
+            {(() => {
+              const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
+              const BtnIcon = match ? match.Icon : ChatCircleDots;
+              return <BtnIcon size={20} weight="fill" />;
+            })()}
           </div>
           {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-700 shadow-sm max-w-[200px] truncate">
