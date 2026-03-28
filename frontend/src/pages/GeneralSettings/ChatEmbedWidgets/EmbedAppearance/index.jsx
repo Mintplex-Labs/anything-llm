@@ -205,7 +205,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Logo" hint="Wird als Markenlogo und Assistenten-Icon angezeigt.">
+            <SettingsSection title="Logo" hint="PNG, JPG, GIF, SVG oder WebP — max. 5 MB, idealerweise quadratisch.">
               <div className="flex items-center gap-4">
                 {logoPreview && (
                   <div className="relative">
