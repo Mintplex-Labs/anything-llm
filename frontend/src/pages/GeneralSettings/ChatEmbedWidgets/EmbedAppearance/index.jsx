@@ -508,19 +508,16 @@ function WidgetPreview({ config, logoPreview }) {
             {greeting}
           </div>
 
-          {/* Suggestion blocks */}
+          {/* Suggestion blocks — full width like real widget */}
           {config.defaultMessages?.length > 0 && (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col gap-2 px-2">
               {config.defaultMessages
                 .filter((m) => m.trim())
                 .map((msg, i) => (
                   <div
                     key={i}
-                    className="rounded-xl px-4 py-3 text-white text-[13px] text-center max-w-[88%] font-medium"
-                    style={{
-                      backgroundColor: accentColor,
-                      boxShadow: `0 2px 8px ${accentColor}33`,
-                    }}
+                    className="rounded-2xl px-5 py-3 text-white text-[13px] text-center font-medium"
+                    style={{ backgroundColor: accentColor }}
                   >
                     {msg}
                   </div>
@@ -559,7 +556,7 @@ function WidgetPreview({ config, logoPreview }) {
           {(() => {
             const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
             const BtnIcon = match ? match.Icon : ChatCircleDots;
-            return <BtnIcon size={24} weight="fill" />;
+            return <BtnIcon size={24} weight="fill" color="#ffffff" />;
           })()}
         </div>
         {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
