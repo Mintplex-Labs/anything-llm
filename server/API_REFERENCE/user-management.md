@@ -16,7 +16,7 @@ List all users
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -28,6 +28,18 @@ List all users
 | **401** | Instance is not in Multi-User mode. Permission denied. |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -43,8 +55,8 @@ Issue a temporary auth token for a user
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `id` | **path** |  (string) | ✅ Yes | The ID of the user to issue a temporary auth token for |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `id` | **path** | string | ✅ Yes | The ID of the user to issue a temporary auth token for |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -57,6 +69,18 @@ Issue a temporary auth token for a user
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
