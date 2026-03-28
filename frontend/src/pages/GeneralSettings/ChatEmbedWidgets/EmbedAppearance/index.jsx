@@ -217,7 +217,7 @@ export default function EmbedAppearance() {
                   </div>
                 )}
                 <label className="cursor-pointer bg-theme-settings-input-bg text-white text-sm rounded-lg px-4 py-2 border border-white/10 hover:bg-theme-action-menu-item-hover transition-colors">
-                  {logoPreview ? "Logo aendern" : "Logo hochladen"}
+                  {logoPreview ? "Logo ändern" : "Logo hochladen"}
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp"
@@ -228,7 +228,7 @@ export default function EmbedAppearance() {
               </div>
             </SettingsSection>
 
-            <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird fuer Buttons, Benutzer-Nachrichten und Links verwendet.">
+            <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird für Buttons, Benutzer-Nachrichten und Links verwendet.">
               <div className="flex items-center gap-3">
                 <input
                   type="color"
@@ -301,7 +301,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Begruessung" hint="Willkommensnachricht im Chat-Fenster.">
+            <SettingsSection title="Begrüßung" hint="Willkommensnachricht im Chat-Fenster.">
               <textarea
                 value={config.greeting}
                 onChange={(e) => updateField("greeting", e.target.value)}
@@ -321,13 +321,13 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Schnellstart-Nachrichten" hint="Klickbare Vorschlaege unter dem Eingabefeld.">
+            <SettingsSection title="Schnellstart-Nachrichten" hint="Klickbare Vorschläge unter dem Eingabefeld.">
               <MessageList
                 items={config.defaultMessages || []}
                 onAdd={() => addListItem("defaultMessages")}
                 onUpdate={(i, v) => updateListItem("defaultMessages", i, v)}
                 onRemove={(i) => removeListItem("defaultMessages", i)}
-                placeholder="z.B. Was sind Ihre Oeffnungszeiten?"
+                placeholder="z.B. Was sind Ihre Öffnungszeiten?"
               />
             </SettingsSection>
 
@@ -341,7 +341,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Support-E-Mail" hint="E-Mail-Adresse fuer den Support-Link im Chat.">
+            <SettingsSection title="Support-E-Mail" hint="E-Mail-Adresse für den Support-Link im Chat.">
               <input
                 type="email"
                 value={config.supportEmail}
@@ -410,7 +410,7 @@ function MessageList({ items, onAdd, onUpdate, onRemove, placeholder }) {
         className="flex items-center gap-1 text-theme-text-secondary hover:text-white text-sm px-2 py-1"
       >
         <Plus size={14} />
-        Hinzufuegen
+        Hinzufügen
       </button>
     </div>
   );
