@@ -16,7 +16,7 @@ Upload a new file to AnythingLLM to be parsed and prepared for embedding, with o
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -24,6 +24,14 @@ Upload a new file to AnythingLLM to be parsed and prepared for embedding, with o
 File to be uploaded.
 
 - **Required:** Yes
+
+- **Content-Type:** `multipart/form-data`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `file` | string (binary) | ✅ Yes | The file to upload |
+  | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
+  | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
+
 
 
 ### Responses
@@ -34,6 +42,18 @@ File to be uploaded.
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -49,8 +69,8 @@ Upload a new file to a specific folder in AnythingLLM to be parsed and prepared 
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `folderName` | **path** |  (string) | ✅ Yes | Target folder path (defaults to &#x27;custom-documents&#x27; if not provided) |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `folderName` | **path** | string | ✅ Yes | Target folder path (defaults to 'custom-documents' if not provided) |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -58,6 +78,14 @@ Upload a new file to a specific folder in AnythingLLM to be parsed and prepared 
 File to be uploaded, with optional metadata.
 
 - **Required:** Yes
+
+- **Content-Type:** `multipart/form-data`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `file` | string (binary) | ✅ Yes | The file to upload |
+  | `addToWorkspaces` | string | ❌ No | comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2 |
+  | `metadata` | object | ❌ No | Key:Value pairs of metadata to attach to the document in JSON Object format. Only specific keys are allowed - see example. |
+
 
 
 ### Responses
@@ -68,6 +96,18 @@ File to be uploaded, with optional metadata.
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -83,7 +123,7 @@ Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optional
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -91,6 +131,11 @@ Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optional
 Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `object`
+
 
 
 ### Responses
@@ -101,6 +146,18 @@ Link of web address to be scraped and optionally a comma-separated list of works
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -116,7 +173,7 @@ Upload a file by specifying its raw text content and metadata values without hav
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -124,6 +181,11 @@ Upload a file by specifying its raw text content and metadata values without hav
 Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `object`
+
 
 
 ### Responses
@@ -134,6 +196,18 @@ Text content and metadata of the file to be saved to the system. Use metadata-sc
 | **403** | Forbidden |
 | **422** | Unprocessable Entity |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -149,7 +223,7 @@ List of all locally-stored documents in instance
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -160,6 +234,18 @@ List of all locally-stored documents in instance
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -175,8 +261,8 @@ Get all documents stored in a specific folder.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `folderName` | **path** |  (string) | ✅ Yes | Name of the folder to retrieve documents from |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `folderName` | **path** | string | ✅ Yes | Name of the folder to retrieve documents from |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -187,6 +273,18 @@ Get all documents stored in a specific folder.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -202,7 +300,7 @@ Check available filetypes and MIMEs that can be uploaded.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -214,6 +312,18 @@ Check available filetypes and MIMEs that can be uploaded.
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -229,7 +339,7 @@ Get the known available metadata schema for when doing a raw-text upload and the
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -240,6 +350,18 @@ Get the known available metadata schema for when doing a raw-text upload and the
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -255,8 +377,8 @@ Get a single document by its unique AnythingLLM document name
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `docName` | **path** |  (string) | ✅ Yes | Unique document name to find (name in /documents) |
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `docName` | **path** | string | ✅ Yes | Unique document name to find (name in /documents) |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 
@@ -268,6 +390,18 @@ Get a single document by its unique AnythingLLM document name
 | **403** | Forbidden |
 | **404** | Not Found |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -283,7 +417,7 @@ Create a new folder inside the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -291,6 +425,11 @@ Create a new folder inside the documents storage directory.
 Name of the folder to create.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `string`
+
 
 
 ### Responses
@@ -300,6 +439,18 @@ Name of the folder to create.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -315,7 +466,7 @@ Remove a folder and all its contents from the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -323,6 +474,12 @@ Remove a folder and all its contents from the documents storage directory.
 Name of the folder to remove.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `name` | string | ❌ No | - |
+
 
 
 ### Responses
@@ -332,6 +489,18 @@ Name of the folder to remove.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
@@ -347,7 +516,7 @@ Move files within the documents storage directory.
 
 | Name | Located In | Type | Required | Description |
 |------|-----------|------|----------|-------------|
-| `Authorization` | **header** |  (string) | ❌ No | - |
+| `Authorization` | **header** | string | ❌ No | - |
 
 
 ### Request Body
@@ -355,6 +524,11 @@ Move files within the documents storage directory.
 Array of objects containing source and destination paths of files to move.
 
 - **Required:** Yes
+
+- **Content-Type:** `application/json`
+
+  - **Type:** `object`
+
 
 
 ### Responses
@@ -364,6 +538,18 @@ Array of objects containing source and destination paths of files to move.
 | **200** | OK |
 | **403** | Forbidden |
 | **500** | Internal Server Error |
+
+**Response Body** (application/json):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
+
+**Response Body** (application/xml):
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | string | - |
 
 
 ---
