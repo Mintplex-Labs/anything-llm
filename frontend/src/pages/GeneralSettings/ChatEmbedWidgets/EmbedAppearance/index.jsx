@@ -454,6 +454,7 @@ function MessageList({ items, onAdd, onUpdate, onRemove, placeholder }) {
 }
 
 function WidgetPreview({ config, logoPreview }) {
+  const [previewOpen, setPreviewOpen] = useState(true);
   const accentColor = config.accentColor || "#607D8B";
   const name = config.name || "Ihr Online-Berater";
   const greeting =
@@ -462,7 +463,49 @@ function WidgetPreview({ config, logoPreview }) {
   const placeholder = config.sendMessageText || "Wie kann ich Ihnen helfen?";
 
   const isLeft = config.position?.includes("left");
+  const bubbles = config.chatbotBubblesMessages?.filter((m) => m.trim()) || [];
 
+  const ChatButton = () => (
+    <div
+      className="w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110"
+      style={{
+        backgroundColor: accentColor,
+        boxShadow: `0 4px 14px ${accentColor}40`,
+      }}
+      onClick={() => setPreviewOpen(!previewOpen)}
+    >
+      {(() => {
+        const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
+        const BtnIcon = match ? match.Icon : ChatCircleDots;
+        return <BtnIcon size={24} weight="fill" color="#ffffff" />;
+      })()}
+    </div>
+  );
+
+  // Closed state: Button + Willkommensblasen
+  if (!previewOpen) {
+    return (
+      <div className={`flex flex-col ${isLeft ? "items-start" : "items-end"} gap-3 w-full max-w-[370px]`}>
+        {/* Willkommensblasen */}
+        {bubbles.length > 0 && (
+          <div className={`flex flex-col gap-2 ${isLeft ? "items-start" : "items-end"}`}>
+            {bubbles.map((msg, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl px-4 py-2.5 text-[13px] text-gray-700 max-w-[280px]"
+                style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}
+              >
+                {msg}
+              </div>
+            ))}
+          </div>
+        )}
+        <ChatButton />
+      </div>
+    );
+  }
+
+  // Open state: Chat Window + Button
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[370px]">
       {/* Chat Window */}
@@ -497,26 +540,28 @@ function WidgetPreview({ config, logoPreview }) {
           </div>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <DotsThreeOutlineVertical size={18} weight="fill" className="text-slate-400" />
-            <X size={18} weight="bold" className="text-slate-400" />
+            <button onClick={() => setPreviewOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+              <X size={18} weight="bold" />
+            </button>
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col justify-end px-5 pb-4 bg-white">
+        {/* Chat Area — centered vertically */}
+        <div className="flex-1 flex flex-col justify-center px-3 bg-white">
           {/* Greeting */}
-          <div className="text-left text-gray-400 text-[13px] px-2 mb-4 leading-relaxed">
+          <div className="text-center text-gray-400 text-[13px] px-3 mb-3 leading-relaxed">
             {greeting}
           </div>
 
-          {/* Suggestion blocks — full width like real widget */}
+          {/* Suggestion blocks */}
           {config.defaultMessages?.length > 0 && (
-            <div className="flex flex-col gap-2 px-2">
+            <div className="flex flex-col gap-1.5">
               {config.defaultMessages
                 .filter((m) => m.trim())
                 .map((msg, i) => (
                   <div
                     key={i}
-                    className="rounded-2xl px-5 py-3 text-white text-[13px] text-center font-medium"
+                    className="rounded-2xl px-4 py-2.5 text-white text-[13px] text-center font-medium"
                     style={{ backgroundColor: accentColor }}
                   >
                     {msg}
@@ -545,28 +590,8 @@ function WidgetPreview({ config, logoPreview }) {
       </div>
 
       {/* Chat Button */}
-      <div className={`flex ${isLeft ? "flex-row" : "flex-row-reverse"} items-center gap-3 ${isLeft ? "self-start" : "self-end"}`}>
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-transform hover:scale-105"
-          style={{
-            backgroundColor: accentColor,
-            boxShadow: `0 4px 14px ${accentColor}40`,
-          }}
-        >
-          {(() => {
-            const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
-            const BtnIcon = match ? match.Icon : ChatCircleDots;
-            return <BtnIcon size={24} weight="fill" color="#ffffff" />;
-          })()}
-        </div>
-        {config.chatbotBubblesMessages?.filter((m) => m.trim()).length > 0 && (
-          <div
-            className="bg-white rounded-2xl px-4 py-2.5 text-[13px] text-gray-700 max-w-[220px]"
-            style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}
-          >
-            {config.chatbotBubblesMessages.find((m) => m.trim())}
-          </div>
-        )}
+      <div className={`${isLeft ? "self-start" : "self-end"}`}>
+        <ChatButton />
       </div>
     </div>
   );
