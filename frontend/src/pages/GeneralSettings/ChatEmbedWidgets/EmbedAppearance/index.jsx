@@ -365,7 +365,7 @@ export default function EmbedAppearance() {
 function SectionGroup({ title, children }) {
   return (
     <div className="space-y-5">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-text-secondary border-b border-white/5 pb-2">
+      <h3 className="text-sm font-bold uppercase tracking-wider text-white border-b border-white/15 pb-2">
         {title}
       </h3>
       {children}
