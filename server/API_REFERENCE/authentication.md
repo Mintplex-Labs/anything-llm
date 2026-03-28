@@ -33,11 +33,13 @@ Verify the attached Authentication header contains a valid API token.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
