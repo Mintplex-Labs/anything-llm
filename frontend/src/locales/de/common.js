@@ -93,8 +93,8 @@ const TRANSLATIONS = {
     "search-retrieval": "Suche & Retrieval",
     "voice-speech": "Sprache & Sprachausgabe",
     "vector-database": "Vektordatenbank",
-    embeds: "Chat-Einbettung",
-    "embed-chats": "Chat-Einbettungsverlauf",
+    embeds: "Chat-Widgets",
+    "embed-chats": "Chat-Widget-Verlauf",
     security: "Sicherheit",
     "event-logs": "Ereignisprotokolle",
     privacy: "Datenschutz & Datenverarbeitung",
@@ -769,7 +769,7 @@ const TRANSLATIONS = {
     copied: "Snippet in Zwischenablage kopiert!",
     "script-label": "HTML Script Tag Einbettungscode",
     "script-hint":
-      "Lassen Sie Ihre Workspace-Chat-Einbettung wie einen Helpdesk-Chat in der Ecke Ihrer Website funktionieren.",
+      "Betten Sie Ihr Chat-Widget als Helpdesk-Chat in der Ecke Ihrer Website ein.",
     "view-options": "Alle Stil- und Konfigurationsoptionen anzeigen →",
   },
   "chat-row": {

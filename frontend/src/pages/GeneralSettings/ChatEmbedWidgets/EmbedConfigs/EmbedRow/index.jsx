@@ -95,10 +95,10 @@ export default function EmbedRow({ embed, isReadOnly = false, userRole = null })
             <>
               <button
                 onClick={() => navigate(`/settings/embed-config/${embed.id}/appearance`)}
-                className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-action-menu-item-hover"
-                title={t("embed-row.design")}
+                className="group flex items-center gap-1 text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-action-menu-item-hover"
               >
                 <PaintBrush className="h-4 w-4 group-hover:text-white" />
+                <span className="group-hover:text-white">{t("embed-row.design")}</span>
               </button>
               <button
                 onClick={openSnippetModal}
