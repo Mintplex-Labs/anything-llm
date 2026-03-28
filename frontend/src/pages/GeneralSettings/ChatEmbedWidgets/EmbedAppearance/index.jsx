@@ -393,7 +393,7 @@ export default function EmbedAppearance() {
         </div>
 
         {/* Live Preview Panel — fixed, no scroll */}
-        <div className="flex-1 overflow-hidden flex justify-center relative"
+        <div className="flex-1 overflow-hidden flex items-center justify-center relative"
           style={{
             background: "linear-gradient(135deg, #f0f2f5 0%, #e4e8ec 50%, #dde1e6 100%)",
             backgroundImage: `
@@ -464,16 +464,16 @@ function WidgetPreview({ config, logoPreview }) {
 
   const isLeft = config.position?.includes("left");
   const bubbles = config.chatbotBubblesMessages?.filter((m) => m.trim()) || [];
-  const posAlign = isLeft ? "items-start" : "items-end";
+  const btnAlign = isLeft ? "self-start" : "self-end";
 
   return (
-    <div className={`flex flex-col ${posAlign} justify-end h-full w-full max-w-[400px] py-4`}>
-      {/* Chat Window — appears above button */}
+    <div className="flex flex-col items-center justify-center h-full w-full max-w-[400px] py-4">
+      {/* Chat Window — centered, appears above button */}
       {previewOpen && (
         <div
           className="w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white mb-4"
           style={{
-            height: "520px",
+            height: "540px",
             boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
           }}
         >
@@ -508,18 +508,18 @@ function WidgetPreview({ config, logoPreview }) {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col justify-center px-3 bg-white">
-            <div className="text-center text-gray-400 text-[13px] px-3 mb-3 leading-relaxed">
+          <div className="flex-1 flex flex-col justify-center px-4 bg-white">
+            <div className="text-center text-gray-400 text-[13px] px-2 mb-4 leading-relaxed">
               {greeting}
             </div>
             {config.defaultMessages?.length > 0 && (
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {config.defaultMessages
                   .filter((m) => m.trim())
                   .map((msg, i) => (
                     <div
                       key={i}
-                      className="rounded-2xl px-4 py-2.5 text-white text-[13px] text-center font-medium"
+                      className="rounded-xl px-5 py-3 text-white text-[13px] text-center font-medium"
                       style={{ backgroundColor: accentColor }}
                     >
                       {msg}
@@ -550,7 +550,7 @@ function WidgetPreview({ config, logoPreview }) {
 
       {/* Willkommensblasen — only when closed */}
       {!previewOpen && bubbles.length > 0 && (
-        <div className={`flex flex-col gap-2 mb-3 ${posAlign} w-[300px]`}>
+        <div className={`flex flex-col gap-2 mb-3 w-[300px] ${btnAlign}`}>
           {bubbles.map((msg, i) => (
             <div
               key={i}
@@ -563,9 +563,9 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
       )}
 
-      {/* Chat Button — always at bottom, same position */}
+      {/* Chat Button — only button moves with position */}
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 flex-shrink-0"
+        className={`w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 flex-shrink-0 ${btnAlign}`}
         style={{
           backgroundColor: accentColor,
           boxShadow: `0 4px 14px ${accentColor}40`,
