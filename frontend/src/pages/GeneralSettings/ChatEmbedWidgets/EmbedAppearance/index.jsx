@@ -260,7 +260,8 @@ export default function EmbedAppearance() {
                     title={label}
                   >
                     <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105 bg-primary-button"
+                      className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105"
+                      style={{ backgroundColor: config.accentColor || "#607D8B" }}
                     >
                       <Icon size={22} weight="fill" />
                     </div>
