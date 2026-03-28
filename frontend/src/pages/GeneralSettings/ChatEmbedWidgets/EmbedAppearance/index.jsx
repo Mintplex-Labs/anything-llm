@@ -302,7 +302,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Begrüßung" hint="Willkommensnachricht im Chat-Fenster.">
+            <SettingsSection title="Begrüßung" hint="Zentrierter Text beim ersten Öffnen des Chats, bevor eine Unterhaltung beginnt.">
               <textarea
                 value={config.greeting}
                 onChange={(e) => updateField("greeting", e.target.value)}
@@ -312,7 +312,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Sende-Platzhalter" hint="Platzhaltertext im Eingabefeld.">
+            <SettingsSection title="Eingabefeld-Text" hint="Platzhaltertext im Eingabefeld unten im Chat.">
               <input
                 type="text"
                 value={config.sendMessageText}
@@ -322,7 +322,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Schnellstart-Nachrichten" hint="Klickbare Vorschläge unter dem Eingabefeld.">
+            <SettingsSection title="Vorschläge" hint="Klickbare Nachrichtenblöcke in der Akzentfarbe, die vor dem ersten Chat angezeigt werden.">
               <MessageList
                 items={config.defaultMessages || []}
                 onAdd={() => addListItem("defaultMessages")}
@@ -332,7 +332,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Willkommens-Bubbles" hint="Automatische Willkommensnachrichten neben dem Chat-Button.">
+            <SettingsSection title="Willkommensblasen" hint="Sprechblasen neben dem Chat-Button, bevor der Chat geöffnet wird.">
               <MessageList
                 items={config.chatbotBubblesMessages || []}
                 onAdd={() => addListItem("chatbotBubblesMessages")}
@@ -472,43 +472,25 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
 
         {/* Chat Area */}
-        <div className="p-4 space-y-4 flex-1 bg-white">
-          {/* Sample user message */}
-          <div className="flex flex-col items-end">
-            <div
-              className="rounded-t-[18px] rounded-bl-[18px] rounded-br-[4px] px-4 py-[11px] text-white text-sm max-w-[80%]"
-              style={{ backgroundColor: accentColor }}
-            >
-              Wie sind Ihre Öffnungszeiten?
-            </div>
+        <div className="flex-1 flex flex-col justify-end p-4 bg-white">
+          {/* Greeting — centered gray text like real widget */}
+          <div className="text-center text-gray-400 text-sm px-6 mb-4 leading-relaxed">
+            {greeting || "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"}
           </div>
 
-          {/* Assistant response */}
-          <div>
-            <div className="text-[10px] text-gray-400 ml-[48px] mb-1">{name}</div>
-            <div className="flex items-start gap-2">
-              <AssistantAvatar />
-              <div className="rounded-t-[18px] rounded-br-[18px] rounded-bl-[4px] px-4 py-[11px] text-gray-800 text-sm max-w-[80%] shadow-[0_4px_14px_rgba(0,0,0,0.08)]" style={{ backgroundColor: accentColor === "#607D8B" ? "#f3f4f6" : `${accentColor}18` }}>
-                {greeting || "Hallo und herzlich willkommen! Wie kann ich Ihnen helfen?"}
-                <div className="flex justify-end mt-1">
-                  <SpeakerHigh size={14} weight="fill" className="text-slate-400" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Default Messages */}
+          {/* Default Messages — accent color blocks like real widget */}
           {config.defaultMessages?.length > 0 && (
-            <div className="flex flex-wrap gap-2 ml-[48px]">
+            <div className="flex flex-col items-center gap-2">
               {config.defaultMessages
                 .filter((m) => m.trim())
                 .map((msg, i) => (
-                  <button
+                  <div
                     key={i}
-                    className="text-xs px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+                    className="rounded-xl px-4 py-3 text-white text-sm text-center max-w-[90%] shadow-sm"
+                    style={{ backgroundColor: accentColor }}
                   >
                     {msg}
-                  </button>
+                  </div>
                 ))}
             </div>
           )}
