@@ -216,7 +216,7 @@ export default function EmbedAppearance() {
                     />
                     <button
                       onClick={handleLogoRemove}
-                      className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute -top-1.5 -right-1.5 bg-theme-bg-container text-theme-text-secondary hover:text-red-400 rounded-full p-0.5 border border-white/10 transition-colors"
                     >
                       <X size={12} weight="bold" />
                     </button>
@@ -271,7 +271,7 @@ export default function EmbedAppearance() {
                         }`}
                         style={{ backgroundColor: config.accentColor || "#607D8B" }}
                       >
-                        <Icon size={22} weight="fill" />
+                        <Icon size={22} weight="fill" className="text-white" />
                       </div>
                       <span className={`text-[10px] transition-colors ${isSelected ? "text-white" : "text-theme-text-secondary"}`}>
                         {label}
@@ -323,7 +323,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Eingabefeld-Text" hint="Platzhaltertext im Eingabefeld unten im Chat.">
+            <SettingsSection title="Platzhalter" hint="Grauer Text im Eingabefeld, bevor der Nutzer tippt.">
               <input
                 type="text"
                 value={config.sendMessageText}
@@ -333,7 +333,7 @@ export default function EmbedAppearance() {
               />
             </SettingsSection>
 
-            <SettingsSection title="Vorschläge" hint="Klickbare Nachrichtenblöcke in der Akzentfarbe, die vor dem ersten Chat angezeigt werden.">
+            <SettingsSection title="Startvorschläge" hint="Klickbare Nachrichtenblöcke in der Akzentfarbe, die vor dem ersten Chat angezeigt werden.">
               <MessageList
                 items={config.defaultMessages || []}
                 onAdd={() => addListItem("defaultMessages")}
@@ -387,7 +387,7 @@ function SectionGroup({ title, children }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 mb-1">
-        <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary-button">
+        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-primary-button">
           {title}
         </h3>
         <div className="flex-1 h-px bg-white/10" />
