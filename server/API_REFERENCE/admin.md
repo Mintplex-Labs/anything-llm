@@ -33,11 +33,13 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -72,11 +74,13 @@ Check to see if the instance is in multi-user-mode first. Methods are disabled u
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -120,11 +124,13 @@ Key pair object that will define the new user to add to the system.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -168,11 +174,13 @@ Key pair object that will update the found user. All fields are optional and wil
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -208,11 +216,13 @@ Delete existing user by id. Methods are disabled until multi user mode is enable
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -247,11 +257,13 @@ List all existing invitations to instance regardless of status. Methods are disa
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -294,11 +306,13 @@ Request body for creation parameters of the invitation
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -334,11 +348,13 @@ Deactivates (soft-delete) invite by id. Methods are disabled until multi user mo
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -374,11 +390,13 @@ Retrieve a list of users with permissions to access the specified workspace.
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -422,11 +440,13 @@ Entire array of user ids who can access the workspace. All fields are optional a
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -471,11 +491,13 @@ Array of user ids who will be given access to the target workspace. reset will r
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -517,11 +539,13 @@ Page offset to show of workspace chats. All fields are optional and will not upd
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
@@ -564,11 +588,13 @@ Object with setting key and new value to set. All keys are optional and will not
 |------|------|-------------|
 | `message` | string | - |
 
+
 **Response Body** (application/xml):
 
 | Name | Type | Description |
 |------|------|-------------|
 | `message` | string | - |
+
 
 
 ---
