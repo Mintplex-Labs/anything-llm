@@ -606,7 +606,10 @@ function WidgetPreview({ config, logoPreview }) {
             return <BtnIcon size={24} weight="fill" color="#ffffff" />;
           })()}
         </div>
-        <span className="text-xs text-gray-500 select-none whitespace-nowrap">
+        <span
+          className="text-xs text-gray-500 select-none whitespace-nowrap cursor-pointer hover:text-gray-700 transition-colors"
+          onClick={() => setPreviewOpen(!previewOpen)}
+        >
           Klicken zum {previewOpen ? "Schließen" : "Öffnen"}
         </span>
       </div>
