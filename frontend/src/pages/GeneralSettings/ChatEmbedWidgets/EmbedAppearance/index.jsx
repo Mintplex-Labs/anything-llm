@@ -503,13 +503,12 @@ function WidgetPreview({ config, logoPreview }) {
   return (
     <div className="relative h-full w-full flex items-center justify-center">
       <div className="w-[370px] flex flex-col items-stretch">
-      {/* Chat Window */}
-      {previewOpen && (
+      {/* Chat Window Area — fixed height container so button doesn't shift */}
+      <div className="flex flex-col justify-end" style={{ height: "540px", maxHeight: "calc(100vh - 200px)" }}>
+      {previewOpen ? (
         <div
-          className="w-full rounded-2xl flex flex-col overflow-hidden bg-white"
+          className="w-full h-full rounded-2xl flex flex-col overflow-hidden bg-white"
           style={{
-            height: "540px",
-            maxHeight: "calc(100vh - 200px)",
             boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
           }}
         >
@@ -573,22 +572,23 @@ function WidgetPreview({ config, logoPreview }) {
             </div>
           </div>
         </div>
+      ) : (
+        /* Willkommensblasen — only when closed, inside same fixed-height container */
+        bubbles.length > 0 ? (
+          <div className={`w-[300px] flex flex-col gap-2 mt-auto ${isLeft ? "self-start" : "self-end"}`}>
+            {bubbles.map((msg, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl px-4 py-2.5 text-[13px] text-gray-700 w-full"
+                style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}
+              >
+                {msg}
+              </div>
+            ))}
+          </div>
+        ) : null
       )}
-
-      {/* Willkommensblasen — only when closed */}
-      {!previewOpen && bubbles.length > 0 && (
-        <div className={`w-[300px] flex flex-col gap-2 mb-3 ${isLeft ? "self-start" : "self-end"}`}>
-          {bubbles.map((msg, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl px-4 py-2.5 text-[13px] text-gray-700 w-full"
-              style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}
-            >
-              {msg}
-            </div>
-          ))}
-        </div>
-      )}
+      </div>
 
       {/* Chat Button + Hint — directly below chat window, respects position */}
       <div className={`flex items-center gap-3 mt-4 ${isLeft ? "self-start" : "self-end flex-row-reverse"}`}>
