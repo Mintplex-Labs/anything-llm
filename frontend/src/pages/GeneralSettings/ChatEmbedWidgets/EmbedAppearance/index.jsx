@@ -480,9 +480,9 @@ function WidgetPreview({ config, logoPreview }) {
       {/* Chat Window — centered above button */}
       {previewOpen && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white"
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white"
           style={{
-            bottom: "76px",
+            top: "calc(50% - 20px)",
             height: "540px",
             boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
           }}
