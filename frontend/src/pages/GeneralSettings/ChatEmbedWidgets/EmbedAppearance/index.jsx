@@ -175,7 +175,7 @@ export default function EmbedAppearance() {
   return (
     <div className="w-screen h-screen flex flex-col bg-theme-bg-container overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
+      <div className="flex items-center justify-between px-6 pr-16 py-3 border-b border-white/10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/settings/embed-chat-widgets")}
