@@ -263,18 +263,24 @@ export default function EmbedAppearance() {
                 </SettingsSection>
 
                 <SettingsSection title="Kundenfarbe (Akzentfarbe)" hint="Wird für Buttons, Benutzer-Nachrichten und Links verwendet.">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={config.accentColor}
-                      onChange={(e) => updateField("accentColor", e.target.value)}
-                      className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 hover:border-white/40 transition-colors"
-                    />
+                  <div className="relative flex items-center bg-theme-settings-input-bg rounded-lg border border-white/10 hover:border-white/25 transition-colors w-44 cursor-pointer">
+                    <div className="relative flex-shrink-0 ml-1.5">
+                      <div
+                        className="w-8 h-8 rounded-md"
+                        style={{ backgroundColor: config.accentColor }}
+                      />
+                      <input
+                        type="color"
+                        value={config.accentColor}
+                        onChange={(e) => updateField("accentColor", e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </div>
                     <input
                       type="text"
                       value={config.accentColor}
                       onChange={(e) => updateField("accentColor", e.target.value)}
-                      className="bg-theme-settings-input-bg text-white text-sm rounded-lg px-3 py-2 w-28 border border-white/10 font-mono"
+                      className="bg-transparent text-white text-sm px-2.5 py-2.5 w-full font-mono outline-none"
                       placeholder="#607D8B"
                     />
                   </div>
