@@ -18,6 +18,7 @@ import {
   Check,
 } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import CTAButton from "@/components/lib/CTAButton";
 import Embed from "@/models/embed";
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
@@ -59,8 +60,12 @@ export default function EmbedAppearance() {
   const [saving, setSaving] = useState(false);
   const [embed, setEmbed] = useState(null);
   const [config, setConfig] = useState({ ...DEFAULT_CONFIG });
+  const [initialConfig, setInitialConfig] = useState({ ...DEFAULT_CONFIG });
   const [activeTab, setActiveTab] = useState("inhalt");
   const [logoPreview, setLogoPreview] = useState(null);
+
+  const hasChanges =
+    JSON.stringify(config) !== JSON.stringify(initialConfig);
 
   useEffect(() => {
     async function load() {
@@ -78,7 +83,9 @@ export default function EmbedAppearance() {
           visualConfig = JSON.parse(embedData.visual_config);
         } catch {}
       }
-      setConfig({ ...DEFAULT_CONFIG, ...visualConfig });
+      const loadedConfig = { ...DEFAULT_CONFIG, ...visualConfig };
+      setConfig(loadedConfig);
+      setInitialConfig(loadedConfig);
 
       if (visualConfig.logoFilename) {
         setLogoPreview(
@@ -102,6 +109,7 @@ export default function EmbedAppearance() {
     const { success, error } = await Embed.updateVisualConfig(embedId, config);
     setSaving(false);
     if (success) {
+      setInitialConfig({ ...config });
       showToast("Erscheinungsbild gespeichert.", "success");
     } else {
       showToast(error || "Fehler beim Speichern.", "error");
@@ -175,7 +183,7 @@ export default function EmbedAppearance() {
   return (
     <div className="w-screen h-screen flex flex-col bg-theme-bg-container overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pr-16 py-3 border-b border-white/10">
+      <div className="flex items-center px-6 pr-16 md:pr-24 pt-[2.25rem] pb-5 border-b border-white/10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/settings/embed-chat-widgets")}
@@ -184,28 +192,20 @@ export default function EmbedAppearance() {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-white text-base font-semibold leading-tight">
+            <h1 className="text-lg leading-6 font-bold text-white">
               Erscheinungsbild
             </h1>
-            <p className="text-theme-text-secondary text-xs">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               {embed?.workspace?.name || "Embed"}
             </p>
           </div>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-button hover:bg-primary-button-hover text-white rounded-lg text-sm font-medium transition-all disabled:opacity-50 active:scale-[0.97]"
-        >
-          <FloppyDisk size={16} weight="bold" />
-          {saving ? "Speichern..." : "Speichern"}
-        </button>
       </div>
 
       {/* Content: Settings left, Preview right */}
       <div className="flex flex-1 overflow-hidden">
         {/* Settings Panel */}
-        <div className="w-1/2 max-w-[560px] flex flex-col border-r border-white/10">
+        <div className="w-1/2 max-w-[600px] flex flex-col border-r border-white/10">
           {/* Tabs */}
           <div className="flex border-b border-white/10 px-5 pt-3">
             {[
@@ -398,6 +398,31 @@ export default function EmbedAppearance() {
               </>
             )}
           </div>
+          {/* Save Footer — nur bei Änderungen */}
+          {hasChanges && (
+            <div className="flex items-center justify-between px-5 py-4 border-t border-white/10 bg-theme-bg-container">
+              <p className="text-xs font-semibold text-theme-text-secondary">
+                Ungespeicherte Änderungen
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setConfig({ ...initialConfig });
+                  }}
+                  className="text-xs px-4 py-1 font-medium rounded-lg border border-white/10 text-theme-text-secondary hover:text-white hover:bg-white/5 h-[34px] whitespace-nowrap transition-all"
+                >
+                  Verwerfen
+                </button>
+                <CTAButton
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="!-mr-0"
+                >
+                  {saving ? "Speichern..." : "Speichern"}
+                </CTAButton>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Live Preview Panel — fixed, no scroll */}
@@ -421,9 +446,9 @@ export default function EmbedAppearance() {
 function SettingsSection({ title, hint, children }) {
   return (
     <div>
-      <label className="block text-white text-[13px] font-medium mb-0.5">{title}</label>
+      <label className="block text-white text-sm font-medium mb-0.5">{title}</label>
       {hint && (
-        <p className="text-theme-text-secondary text-[11px] mb-2.5 leading-relaxed">{hint}</p>
+        <p className="text-theme-text-secondary text-xs mb-2.5 leading-relaxed">{hint}</p>
       )}
       {children}
     </div>
@@ -476,14 +501,15 @@ function WidgetPreview({ config, logoPreview }) {
   const btnAlign = isLeft ? "self-start" : "self-end";
 
   return (
-    <div className="relative h-full w-full max-w-[400px]">
-      {/* Chat Window — centered above button */}
+    <div className="relative h-full w-full flex items-center justify-center">
+      <div className="w-[370px] flex flex-col items-stretch">
+      {/* Chat Window */}
       {previewOpen && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-[370px] rounded-2xl flex flex-col overflow-hidden bg-white"
+          className="w-full rounded-2xl flex flex-col overflow-hidden bg-white"
           style={{
-            top: "calc(50% - 20px)",
             height: "540px",
+            maxHeight: "calc(100vh - 200px)",
             boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
           }}
         >
@@ -551,7 +577,7 @@ function WidgetPreview({ config, logoPreview }) {
 
       {/* Willkommensblasen — only when closed */}
       {!previewOpen && bubbles.length > 0 && (
-        <div className={`absolute w-[300px] flex flex-col gap-2 ${isLeft ? "left-0" : "right-0"}`} style={{ bottom: "76px" }}>
+        <div className={`w-[300px] flex flex-col gap-2 mb-3 ${isLeft ? "self-start" : "self-end"}`}>
           {bubbles.map((msg, i) => (
             <div
               key={i}
@@ -564,25 +590,26 @@ function WidgetPreview({ config, logoPreview }) {
         </div>
       )}
 
-      {/* Chat Button — fixed at bottom, never moves */}
-      <div
-        className={`absolute bottom-4 w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 ${isLeft ? "left-0" : "right-0"}`}
-        style={{
-          backgroundColor: accentColor,
-          boxShadow: `0 4px 14px ${accentColor}40`,
-        }}
-        onClick={() => setPreviewOpen(!previewOpen)}
-      >
-        {(() => {
-          const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
-          const BtnIcon = match ? match.Icon : ChatCircleDots;
-          return <BtnIcon size={24} weight="fill" color="#ffffff" />;
-        })()}
+      {/* Chat Button + Hint — directly below chat window, respects position */}
+      <div className={`flex items-center gap-3 mt-4 ${isLeft ? "self-start" : "self-end flex-row-reverse"}`}>
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform hover:scale-110 flex-shrink-0"
+          style={{
+            backgroundColor: accentColor,
+            boxShadow: `0 4px 14px ${accentColor}40`,
+          }}
+          onClick={() => setPreviewOpen(!previewOpen)}
+        >
+          {(() => {
+            const match = CHAT_ICONS.find((i) => i.id === config.chatIcon);
+            const BtnIcon = match ? match.Icon : ChatCircleDots;
+            return <BtnIcon size={24} weight="fill" color="#ffffff" />;
+          })()}
+        </div>
+        <span className="text-xs text-gray-500 select-none whitespace-nowrap">
+          Klicken zum {previewOpen ? "Schließen" : "Öffnen"}
+        </span>
       </div>
-
-      {/* Hint */}
-      <div className={`absolute ${isLeft ? "left-14" : "right-14"} bottom-[20px] text-[11px] text-gray-500 select-none flex items-center h-12`}>
-        Klicken zum {previewOpen ? "Schließen" : "Öffnen"}
       </div>
     </div>
   );
