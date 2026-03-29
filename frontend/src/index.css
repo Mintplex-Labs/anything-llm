@@ -856,6 +856,8 @@ dialog::backdrop {
 
 .markdown {
   text-wrap: wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .markdown pre {
