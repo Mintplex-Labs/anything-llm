@@ -533,26 +533,28 @@ function WidgetPreview({ config, logoPreview }) {
             </div>
           </div>
 
-          {/* Chat Area */}
-          <div className="flex-1 flex flex-col justify-center px-4 bg-white">
-            <div className="text-center text-gray-400 text-[13px] px-2 mb-4 leading-relaxed">
-              {greeting}
-            </div>
-            {config.defaultMessages?.length > 0 && (
-              <div className="flex flex-col gap-2">
-                {config.defaultMessages
-                  .filter((m) => m.trim())
-                  .map((msg, i) => (
-                    <div
-                      key={i}
-                      className="rounded-xl px-5 py-3 text-white text-[13px] text-center font-medium"
-                      style={{ backgroundColor: accentColor }}
-                    >
-                      {msg}
-                    </div>
-                  ))}
+          {/* Chat Area — scrollable, hidden scrollbar (matches embed widget) */}
+          <div className="flex-1 flex flex-col px-2 bg-white overflow-y-auto no-scroll py-4">
+            <div className="flex flex-col items-center my-auto">
+              <div className="text-center text-gray-400 text-[13px] px-2 mb-4 leading-relaxed">
+                {greeting}
               </div>
-            )}
+              {config.defaultMessages?.length > 0 && (
+                <div className="flex flex-col gap-2 w-[75%]">
+                  {config.defaultMessages
+                    .filter((m) => m.trim())
+                    .map((msg, i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl px-5 py-3 text-white text-[13px] text-center font-medium"
+                        style={{ backgroundColor: accentColor }}
+                      >
+                        {msg}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Input */}
