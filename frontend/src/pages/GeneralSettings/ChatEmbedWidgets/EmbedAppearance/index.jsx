@@ -581,7 +581,7 @@ function WidgetPreview({ config, logoPreview }) {
       </div>
 
       {/* Hint */}
-      <div className={`absolute ${isLeft ? "left-0 ml-14" : "right-0 mr-14"} bottom-[22px] text-[10px] text-gray-400 select-none`}>
+      <div className={`absolute ${isLeft ? "left-14" : "right-14"} bottom-[20px] text-[11px] text-gray-500 select-none flex items-center h-12`}>
         Klicken zum {previewOpen ? "Schließen" : "Öffnen"}
       </div>
     </div>
