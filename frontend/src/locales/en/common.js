@@ -660,7 +660,7 @@ const TRANSLATIONS = {
       step2: {
         title: "Step 2: Connect your bot",
         description:
-          "Paste the API token you received from @BotFather and select a default workspace for your bot to chat with.",
+          "Paste the API token you received from @BotFather to connect your bot.",
         "bot-token": "Bot Token",
         "default-workspace": "Default Workspace",
         "no-workspace": "No available workspaces. A new one will be created.",

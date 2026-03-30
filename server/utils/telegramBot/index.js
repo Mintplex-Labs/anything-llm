@@ -324,6 +324,7 @@ class TelegramBotService {
   #setupHandlers() {
     const ctx = this.#createContext();
     const guard = async (msg, handler) => {
+      if (!this.#config) return;
       if (!isVerified(this.#config.approved_users, msg.chat.id)) {
         sendPairingRequest(this.#bot, msg, this.#pendingPairings);
         return;
