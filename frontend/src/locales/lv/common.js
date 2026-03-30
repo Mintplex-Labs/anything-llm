@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Laipni lūgti",
       getStarted: "Sākt darbu",
       welcome: "Laipni lūdzam",
     },
@@ -315,11 +314,6 @@ const TRANSLATIONS = {
         description:
           "Iespējot noklusējuma aģentam ģenerēt dažāda veida diagrammas no sarunā sniegtajiem vai dotajiem datiem.",
       },
-      save: {
-        title: "Ģenerēt un saglabāt failus pārlūkā",
-        description:
-          "Iespējot noklusējuma aģentam ģenerēt un rakstīt failus, kas saglabājas un var tikt lejupielādēti jūsu pārlūkā.",
-      },
       web: {
         title: "Tiešsaistes tīmekļa meklēšana un pārlūkošana",
         description:
@@ -365,10 +359,6 @@ const TRANSLATIONS = {
             title: "Iegūst faila informāciju",
             description: "Iesaļojiet detalizētus failu metadatus",
           },
-          "write-file": {
-            title: "Izveidot failu",
-            description: "Izveidot jaunas failus vai pārrakstīt esošus failus",
-          },
           "edit-file": {
             title: "Rediģēt failu",
             description:
@@ -385,6 +375,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Kopēt failu",
             description: "Kopēt failus un direktorus",
+          },
+          "write-text-file": {
+            title: "Izveidot teksta failu",
+            description:
+              "Izveidot jaunas teksta failus vai pārrakstīt esošos teksta failus.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumentu izveide",
+        description:
+          "Ļauj savam pārstāvim izveidot binārus dokumentu formātus, piemēram, PowerPoint prezentācijas, Excel tabulas, Word dokumentus un PDF failus. Failus var lejupielādēt tieši no čata.",
+        configuration: "Pieejamās dokumentu veidas",
+        skills: {
+          "create-text-file": {
+            title: "Teksta faili",
+            description:
+              "Izveidot teksta failus ar jebkuru saturu un izplejumu (.txt, .md, .json, .csv utt.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint prezentācijas",
+            description:
+              "Izveidot jaunas PowerPoint prezentācijas ar slaidiem, nosaukumiem un punktiem.",
+          },
+          "create-pdf": {
+            title: "PDF dokumenti",
+            description:
+              "Izveidot PDF dokumentus no Markdown vai vienkāršas teksta, izmantojot pamata formāciju.",
+          },
+          "create-xlsx": {
+            title: "Excel tabulas",
+            description:
+              "Izveidot Excel dokumentus ar tabulas datiem, kas ietver lapas un stila iespējas.",
+          },
+          "create-docx": {
+            title: "Vārdu dokumenti",
+            description:
+              "Izveidot Word dokumentus ar pamata stils un formātēšanu",
           },
         },
       },
@@ -805,7 +833,6 @@ const TRANSLATIONS = {
       select_all: "Atlasīt visu",
       deselect_all: "Atcelt visu atlasi",
       remove_selected: "Noņemt atlasītos",
-      costs: "*Vienreizējas izmaksas iegulšanai",
       save_embed: "Saglabāt un iegult",
       "total-documents_one": "{{count}} dokumenta",
       "total-documents_other": "{{count}} dokumenti",

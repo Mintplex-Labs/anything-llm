@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Bienvenido a",
       getStarted: "Comenzar",
       welcome: "Bienvenido",
     },
@@ -321,11 +320,6 @@ const TRANSLATIONS = {
         description:
           "Habilita al agente predeterminado para generar varios tipos de gráficos a partir de datos proporcionados o dados en el chat.",
       },
-      save: {
-        title: "Generar y guardar archivos en el navegador",
-        description:
-          "Habilita al agente predeterminado para generar y escribir en archivos que se guardan y se pueden descargar en tu navegador.",
-      },
       web: {
         title: "Búsqueda y navegación web en vivo",
         description:
@@ -372,11 +366,6 @@ const TRANSLATIONS = {
             description:
               "Obtenga información detallada sobre los metadatos de los archivos.",
           },
-          "write-file": {
-            title: "Crear archivo",
-            description:
-              "Crear nuevos archivos o sobrescribir archivos existentes.",
-          },
           "edit-file": {
             title: "Editar archivo",
             description:
@@ -393,6 +382,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Copiar archivo",
             description: "Copiar archivos y directorios",
+          },
+          "write-text-file": {
+            title: "Crear un archivo de texto",
+            description:
+              "Cree nuevos archivos de texto o sobrescriba archivos de texto existentes.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Creación de documentos",
+        description:
+          "Permita que su agente cree formatos de documentos binarios como presentaciones de PowerPoint, hojas de cálculo de Excel, documentos de Word y archivos PDF. Los archivos se pueden descargar directamente desde la ventana de chat.",
+        configuration: "Tipos de documentos disponibles",
+        skills: {
+          "create-text-file": {
+            title: "Archivos de texto",
+            description:
+              "Cree archivos de texto con cualquier contenido y extensión (por ejemplo, .txt, .md, .json, .csv, etc.).",
+          },
+          "create-pptx": {
+            title: "Presentaciones en PowerPoint",
+            description:
+              "Crea nuevas presentaciones de PowerPoint con diapositivas, títulos y viñetas.",
+          },
+          "create-pdf": {
+            title: "Documentos en formato PDF",
+            description:
+              "Cree documentos PDF a partir de archivos Markdown o texto plano, con un estilo básico.",
+          },
+          "create-xlsx": {
+            title: "Hojas de cálculo de Excel",
+            description:
+              "Cree documentos de Excel para datos tabulares, con hojas y opciones de formato.",
+          },
+          "create-docx": {
+            title: "Documentos de Microsoft Word",
+            description:
+              "Crea documentos de Word con un estilo y formato básicos.",
           },
         },
       },
@@ -822,7 +849,6 @@ const TRANSLATIONS = {
       select_all: "Seleccionar todo",
       deselect_all: "Deseleccionar todo",
       remove_selected: "Eliminar seleccionados",
-      costs: "*Costo único por incrustaciones",
       save_embed: "Guardar e incrustar",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",

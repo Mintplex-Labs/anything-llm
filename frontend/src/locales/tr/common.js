@@ -17,7 +17,6 @@ const TRANSLATIONS = {
         "AnythingLLM'yi ihtiyaçlarınıza göre oluşturmamıza yardımcı olun. İsteğe bağlı.",
     },
     home: {
-      title: "Hoş Geldiniz",
       getStarted: "Başla",
       welcome: "Hoş geldiniz",
     },
@@ -309,11 +308,6 @@ const TRANSLATIONS = {
         description:
           "Varsayılan ajanın, sağlanan veya sohbette yer alan verilere göre çeşitli grafik türleri oluşturmasına izin verin.",
       },
-      save: {
-        title: "Tarayıcıya dosya oluştur & kaydet",
-        description:
-          "Varsayılan ajanın, oluşturduğu dosyaları kaydetmesine ve tarayıcıda indirilebilir hale getirmesine izin verin.",
-      },
       web: {
         title: "Canlı web araması ve gezinme",
         description:
@@ -359,11 +353,6 @@ const TRANSLATIONS = {
             title: "Dosya Hakkında Bilgi Al",
             description: "Dosyalara ilişkin ayrıntılı meta verileri elde edin.",
           },
-          "write-file": {
-            title: "Dosya Oluştur",
-            description:
-              "Yeni dosyalar oluşturun veya mevcut dosyaları üzerine yazın.",
-          },
           "edit-file": {
             title: "Dosya Düzenle",
             description: "Metin dosyalarında satır bazlı değişiklikler yapın.",
@@ -380,6 +369,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Dosyayı Kopyala",
             description: "Dosyaları ve dizinleri kopyala",
+          },
+          "write-text-file": {
+            title: "Metin dosyası oluştur",
+            description:
+              "Yeni metin dosyaları oluşturun veya mevcut metin dosyalarını üzerine yazın.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Belge Oluşturma",
+        description:
+          "Temsilcinizin, PowerPoint sunumları, Excel tabloları, Word belgeleri ve PDF dosyaları gibi ikili belge formatları oluşturmasına olanak tanıyın. Dosyalar doğrudan sohbet penceresinden indirilebilir.",
+        configuration: "Mevcut Belgeler Türleri",
+        skills: {
+          "create-text-file": {
+            title: "Metin dosyaları",
+            description:
+              "Herhangi bir içerik ve uzantıyla (örneğin .txt, .md, .json, .csv vb.) metin dosyaları oluşturun.",
+          },
+          "create-pptx": {
+            title: "PowerPoint sunumları",
+            description:
+              "Yeni PowerPoint sunumları oluşturun, slaytlar, başlıklar ve madde işaretleri ekleyin.",
+          },
+          "create-pdf": {
+            title: "PDF belgeleri",
+            description:
+              "Temel stillerle markdown veya düz metinlerden PDF belgeleri oluşturun.",
+          },
+          "create-xlsx": {
+            title: "Excel elektronik tabloları",
+            description:
+              "Tablo formatındaki veriler için, sayfalar ve stil özellikleriyle Excel belgeleri oluşturun.",
+          },
+          "create-docx": {
+            title: "Kelime belgeleri",
+            description:
+              "Temel stil ve biçimlendirme ile Word belgeleri oluşturun.",
           },
         },
       },
@@ -700,7 +727,6 @@ const TRANSLATIONS = {
       select_all: "Tümünü Seç",
       deselect_all: "Tümünün Seçimini Kaldır",
       remove_selected: "Seçilenleri Kaldır",
-      costs: "*Gömmeler için tek seferlik maliyet",
       save_embed: "Kaydet ve Göm",
       "total-documents_one": "{{count}} belgesi",
       "total-documents_other": "{{count}} belgeleri",

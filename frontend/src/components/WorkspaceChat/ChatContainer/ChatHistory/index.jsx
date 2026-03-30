@@ -10,6 +10,7 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -307,6 +308,8 @@ function buildMessages({
 
     if (props.type === "rechartVisualize" && !!props.content) {
       acc.push(<Chartable key={props.uuid} props={props} />);
+    } else if (props.type === "fileDownloadCard" && !!props.content) {
+      acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -337,6 +340,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          outputs={props.outputs}
         />
       );
     }

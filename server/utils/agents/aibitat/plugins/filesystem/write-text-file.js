@@ -1,18 +1,19 @@
 const filesystem = require("./lib.js");
 
-module.exports.FilesystemWriteFile = {
-  name: "filesystem-write-file",
+module.exports.FilesystemWriteTextFile = {
+  name: "filesystem-write-text-file",
   plugin: function () {
     return {
-      name: "filesystem-write-file",
+      name: "filesystem-write-text-file",
       setup(aibitat) {
         aibitat.function({
           super: aibitat,
           name: this.name,
           description:
-            "Create a new file or completely overwrite an existing file with new content. " +
+            "Create a new text file or completely overwrite an existing text file with new content. " +
             "Use with caution as it will overwrite existing files without warning. " +
-            "Handles text content with proper encoding. Only works within allowed directories.",
+            "Only handles text/plaintext content with proper encoding. Only works within allowed directories. " +
+            "For binary formats (PDF, DOCX, XLSX, PPTX), use the appropriate document creation tools instead.",
           examples: [
             {
               prompt: "Create a new config file with these settings",
@@ -49,7 +50,7 @@ module.exports.FilesystemWriteFile = {
           handler: async function ({ path: filePath = "", content = "" }) {
             try {
               this.super.handlerProps.log(
-                `Using the filesystem-write-file tool.`
+                `Using the filesystem-write-text-file tool.`
               );
 
               const validPath = await filesystem.validatePath(filePath);
@@ -76,7 +77,7 @@ module.exports.FilesystemWriteFile = {
               return `Successfully wrote to ${filePath}`;
             } catch (e) {
               this.super.handlerProps.log(
-                `filesystem-write-file error: ${e.message}`
+                `filesystem-write-text-file error: ${e.message}`
               );
               this.super.introspect(`Error: ${e.message}`);
               return `Error writing file: ${e.message}`;

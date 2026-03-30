@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Sveiki atvykę į",
       getStarted: "Pradėti",
       welcome: "Sveiki",
     },
@@ -323,11 +322,6 @@ const TRANSLATIONS = {
         description:
           "Leidžia numatytajam agentui generuoti įvairių tipų diagramas pagal pateiktus arba pokalbio metu gautus duomenis.",
       },
-      save: {
-        title: "Generuoti ir išsaugoti failus",
-        description:
-          "Leidžia numatytajam agentui generuoti ir rašyti failus, kuriuos galima išsaugoti jūsų kompiuteryje.",
-      },
       web: {
         title: "Paieška internete",
         description:
@@ -372,10 +366,6 @@ const TRANSLATIONS = {
             title: "Gaukite failo informaciją",
             description: "Gaukite išsamią informaciją apie failus.",
           },
-          "write-file": {
-            title: "Sukurti failą",
-            description: "Sukurti naujus failus arba pakeisti esamus",
-          },
           "edit-file": {
             title: "Redaguoti failą",
             description: "Atlikite teksto failų redakciją, remdamiesi eilėmis.",
@@ -391,6 +381,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Kopijuoti failą",
             description: "Kopijuoti failus ir katalogus",
+          },
+          "write-text-file": {
+            title: "Sukurti teksto failą",
+            description:
+              "Sukurkite naujus tekstinius failus arba pakeiskite esamus tekstinius failus.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumento sukūrimas",
+        description:
+          "Įgalinkite savo agentą kurti dvigubos formos dokumentų formatus, tokius kaip „PowerPoint“ prezentacijos, „Excel“ lentelės, „Word“ dokumentai ir PDF failus. Failus galima atsisiųsti tiesiai iš pokalbio lango.",
+        configuration: "Galimi dokumentų tipai",
+        skills: {
+          "create-text-file": {
+            title: "Tekstiniai failai",
+            description:
+              "Sukurkite teksto failus su bet kokiu turiniu ir failų sąlypa (.txt, .md, .json, .csv ir kt.)",
+          },
+          "create-pptx": {
+            title: "„PowerPoint“ pristatymai",
+            description:
+              "Sukurkite naujas PowerPoint prezentacijas, naudodami slaidus, pavadinimus ir punktų sąrašus.",
+          },
+          "create-pdf": {
+            title: "PDF dokumentai",
+            description:
+              "Sukurkite PDF dokumentus iš Markdown ar paprastos teksto formato, naudodami pagrindinius stiliaus elementus.",
+          },
+          "create-xlsx": {
+            title: "„Excel“ lentelės",
+            description:
+              "Sukurkite Excel dokumentus, skirtus lentelių duomenims, su lapais ir stiliaus parametrais.",
+          },
+          "create-docx": {
+            title: "Skelbimo dokumentai",
+            description:
+              "Sukurkite Word dokumentus su pagrindine stiliavimo ir formavimo funkcija.",
           },
         },
       },
@@ -834,7 +862,6 @@ const TRANSLATIONS = {
       select_all: "Žymėti viską",
       deselect_all: "Atžymėti viską",
       remove_selected: "Šalinti pažymėtus",
-      costs: "*Vienkartinis mokestis už vektorių kūrimą",
       save_embed: "Išsaugoti ir kurti vektorius",
     },
     upload: {

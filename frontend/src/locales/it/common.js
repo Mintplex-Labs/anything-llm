@@ -17,7 +17,6 @@ const TRANSLATIONS = {
         "Aiutaci a sviluppare AnythingLLM in base alle tue esigenze. Facoltativo.",
     },
     home: {
-      title: "Benvenuti a",
       getStarted: "Inizia",
       welcome: "Benvenuti",
     },
@@ -314,11 +313,6 @@ const TRANSLATIONS = {
         description:
           "Consenti all'agente predefinito di generare vari tipi di grafici dai dati forniti o forniti nella chat.",
       },
-      save: {
-        title: "Genera e salva file nel browser",
-        description:
-          "Abilita l'agente predefinito per generare e scrivere su file che possono essere salvati e scaricati nel tuo browser.",
-      },
       web: {
         title: "Ricerca e navigazione web in tempo reale",
         description:
@@ -364,10 +358,6 @@ const TRANSLATIONS = {
             title: "Ottieni informazioni sul file",
             description: "Ottenere metadati dettagliati sui file.",
           },
-          "write-file": {
-            title: "Creare file",
-            description: "Creare nuovi file o sovrascrivere i file esistenti.",
-          },
           "edit-file": {
             title: "Modifica file",
             description: "Applica modifiche basate su righe ai file di testo.",
@@ -383,6 +373,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Copia file",
             description: "Copia file e directory",
+          },
+          "write-text-file": {
+            title: "Crea un file di testo",
+            description:
+              "Creare nuovi file di testo o sovrascrivere file di testo esistenti.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Creazione di documenti",
+        description:
+          "Permetti al tuo agente di creare file in formati binari come presentazioni PowerPoint, fogli di calcolo Excel, documenti Word e file PDF. I file possono essere scaricati direttamente dalla finestra di chat.",
+        configuration: "Tipi di documenti disponibili",
+        skills: {
+          "create-text-file": {
+            title: "File di testo",
+            description:
+              "Creare file di testo con qualsiasi contenuto ed estensione (ad esempio, .txt, .md, .json, .csv, ecc.)",
+          },
+          "create-pptx": {
+            title: "Presentazioni PowerPoint",
+            description:
+              "Crea nuove presentazioni PowerPoint con diapositive, titoli e punti elenco.",
+          },
+          "create-pdf": {
+            title: "Documenti in formato PDF",
+            description:
+              "Creare documenti PDF da file Markdown o testo semplice, con un'applicazione di formattazione di base.",
+          },
+          "create-xlsx": {
+            title: "Fogli di calcolo Excel",
+            description:
+              "Crea documenti Excel per dati tabulari, con fogli e stili.",
+          },
+          "create-docx": {
+            title: "Documenti in formato Word",
+            description:
+              "Creare documenti Word con un'impaginazione e formattazione di base.",
           },
         },
       },
@@ -705,7 +733,6 @@ const TRANSLATIONS = {
       select_all: "Seleziona tutto",
       deselect_all: "Deselect All",
       remove_selected: "Elimina gli elementi selezionati",
-      costs: "*Costo una tantum per le embedding",
       save_embed: "Salva e incorpora",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documenti",
