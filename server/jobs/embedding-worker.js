@@ -48,6 +48,7 @@ process.on("message", async (msg) => {
         (progress) => {
           process.send({
             type: "progress",
+            message: `Embedding progress: chunk ${progress.chunksProcessed}/${progress.totalChunks}`,
             jobId: msg.jobId,
             chunksProcessed: progress.chunksProcessed,
             totalChunks: progress.totalChunks,
@@ -57,12 +58,14 @@ process.on("message", async (msg) => {
 
       process.send({
         type: "result",
+        message: "Embedding job complete",
         jobId: msg.jobId,
         result: { vectors: result },
       });
     } catch (err) {
       process.send({
         type: "error",
+        message: `Embedding job failed: ${err.message || String(err)}`,
         jobId: msg.jobId,
         error: err.message || String(err),
       });
@@ -75,4 +78,4 @@ process.on("message", async (msg) => {
 });
 
 // Signal that the worker is ready
-process.send({ type: "ready" });
+process.send({ type: "ready", message: "Embedding worker ready" });
