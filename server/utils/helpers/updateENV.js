@@ -829,6 +829,10 @@ const KEY_MAPPING = {
     envKey: "LEMONADE_LLM_BASE_PATH",
     checks: [isValidURL],
   },
+  LemonadeLLMApiKey: {
+    envKey: "LEMONADE_LLM_API_KEY",
+    checks: [],
+  },
   LemonadeLLMModelPref: {
     envKey: "LEMONADE_LLM_MODEL_PREF",
     checks: [isNotEmpty],

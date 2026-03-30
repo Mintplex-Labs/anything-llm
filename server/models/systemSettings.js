@@ -714,6 +714,7 @@ const SystemSettings = {
 
       // Lemonade Keys
       LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMApiKey: !!process.env.LEMONADE_LLM_API_KEY,
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
