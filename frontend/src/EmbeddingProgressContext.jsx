@@ -13,12 +13,7 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 const EmbeddingProgressContext = createContext();
 
 export function useEmbeddingProgress() {
-  const ctx = useContext(EmbeddingProgressContext);
-  if (!ctx)
-    throw new Error(
-      "useEmbeddingProgress must be used within EmbeddingProgressProvider"
-    );
-  return ctx;
+  return useContext(EmbeddingProgressContext);
 }
 
 export function EmbeddingProgressProvider({ children }) {
