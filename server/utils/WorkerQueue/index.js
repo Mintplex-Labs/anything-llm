@@ -41,8 +41,6 @@ const embeddingQueue = new WorkerQueue({
  * @returns {Promise<Array<number[]>>} The embedding vectors
  */
 async function queueEmbedding(payload, context = null) {
-  embeddingQueue.ttl =
-    envTTLSec("NATIVE_EMBEDDING_WORKER_TTL", DEFAULT_EMBEDDING_TTL_SEC) * 1000;
   const { result } = await embeddingQueue.enqueue({ payload, context });
   return result.vectors;
 }
