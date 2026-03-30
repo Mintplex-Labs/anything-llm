@@ -236,6 +236,15 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
+      AzureAdConfigured:
+        require("../utils/azureAdEnv").azureAdEnvironmentConfigured(),
+      AzureAdTenantId: process.env.AZURE_AD_TENANT_ID || null,
+      AzureAdClientId: process.env.AZURE_AD_CLIENT_ID || null,
+      AzureAdRedirectUri: process.env.AZURE_AD_REDIRECT_URI || null,
+      AzureAdButtonText: process.env.AZURE_AD_BUTTON_TEXT || null,
+      AzureAdHidePasswordLogin: ["1", "true", "yes"].includes(
+        String(process.env.AZURE_AD_HIDE_PASSWORD_LOGIN || "").toLowerCase()
+      ),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -431,7 +440,9 @@ const SystemSettings = {
   isMultiUserMode: async function () {
     try {
       const setting = await this.get({ label: "multi_user_mode" });
-      return setting?.value === "true";
+      if (setting?.value === "true") return true;
+      const { azureAdEnvironmentConfigured } = require("../utils/azureAdEnv");
+      return azureAdEnvironmentConfigured();
     } catch (error) {
       console.error(error.message);
       return false;

@@ -5,6 +5,7 @@ const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 const markOnboarded = require("./markOnboarded");
+const { runMultiUserBootstraps } = require("./multiUserBootstrap");
 const { PushNotifications } = require("../PushNotifications");
 const { TelegramBotService } = require("../telegramBot");
 
@@ -17,7 +18,7 @@ const { TelegramBotService } = require("../telegramBot");
 // Update .env keys with the correct values and boot. These are temporary and not real SSL certs - only use for local.
 // Test with https://localhost:3001/api/ping
 // build and copy frontend to server/public with correct API_BASE and start server in prod model and all should be ok
-function bootSSL(app, port = 3001) {
+async function bootSSL(app, port = 3001) {
   try {
     console.log(
       `\x1b[33m[SSL BOOT ENABLED]\x1b[0m Loading the certificate and key for HTTPS mode...`
@@ -28,6 +29,8 @@ function bootSSL(app, port = 3001) {
     const certificate = fs.readFileSync(process.env.HTTPS_CERT_PATH);
     const credentials = { key: privateKey, cert: certificate };
     const server = https.createServer(credentials, app);
+
+    await runMultiUserBootstraps();
 
     server
       .listen(port, async () => {
@@ -55,12 +58,14 @@ function bootSSL(app, port = 3001) {
         stacktrace: e.stack,
       }
     );
-    return bootHTTP(app, port);
+    return await bootHTTP(app, port);
   }
 }
 
-function bootHTTP(app, port = 3001) {
+async function bootHTTP(app, port = 3001) {
   if (!app) throw new Error('No "app" defined - crashing!');
+
+  await runMultiUserBootstraps();
 
   app
     .listen(port, async () => {

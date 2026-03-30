@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.27.0",
     "@lobehub/icons": "^4.0.3",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mintplex-labs/piper-tts-web": "^1.0.4",
@@ -48,6 +49,7 @@
     "react-tooltip": "^5.25.2",
     "recharts": "^2.12.5",
     "recharts-to-png": "^2.3.1",
+    "regenerator-runtime": "^0.14.1",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"

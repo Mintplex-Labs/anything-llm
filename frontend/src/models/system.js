@@ -110,6 +110,25 @@ const System = {
       });
   },
   /**
+   * Exchanges an Azure AD ID token for an AnythingLLM session JWT.
+   * @param {string} idToken
+   * @returns {Promise<{valid: boolean, user: object|null, token: string|null, message: string|null}>}
+   */
+  azureLogin: async function (idToken) {
+    return await fetch(`${API_BASE}/request-token/azure`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        return data;
+      })
+      .catch((e) => {
+        return { valid: false, user: null, token: null, message: e.message };
+      });
+  },
+  /**
    * Refreshes the user object from the session.
    * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
    */
