@@ -125,6 +125,7 @@ const TRANSLATIONS = {
       validating: "Validating...",
       "forgot-pass": "Forgot password",
       reset: "Reset",
+      "azure-login": "Sign in with Entra ID",
     },
     "sign-in":
       "Enter your username and password to access your {{appName}} instance.",

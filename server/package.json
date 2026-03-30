@@ -67,6 +67,7 @@
     "js-tiktoken": "^1.0.8",
     "jsonrepair": "^3.7.0",
     "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.1.0",
     "langchain": "0.1.36",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
@@ -94,6 +95,7 @@
     "winston": "^3.13.0"
   },
   "resolutions": {
+    "zod": "4.0.0",
     "**/graphql-request/form-data": "3.0.4",
     "form-data": "4.0.4"
   },
