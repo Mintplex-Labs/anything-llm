@@ -17,7 +17,6 @@ const TRANSLATIONS = {
         "Giúp chúng tôi xây dựng AnythingLLM phù hợp với nhu cầu của bạn. Tùy chọn.",
     },
     home: {
-      title: "Chào mừng đến",
       getStarted: "Bắt đầu",
       welcome: "Chào mừng",
     },
@@ -308,11 +307,6 @@ const TRANSLATIONS = {
         description:
           "Cho phép agent mặc định tạo các loại biểu đồ khác nhau từ dữ liệu được cung cấp hoặc đưa ra trong trò chuyện.",
       },
-      save: {
-        title: "Tạo & lưu tệp",
-        description:
-          "Cho phép agent mặc định tạo và ghi vào các tệp có thể lưu vào máy tính của bạn.",
-      },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
         description:
@@ -357,10 +351,6 @@ const TRANSLATIONS = {
             title: "Lấy thông tin tệp",
             description: "Lấy thông tin chi tiết về các tệp tin.",
           },
-          "write-file": {
-            title: "Tạo tệp",
-            description: "Tạo các tệp mới hoặc ghi đè các tệp hiện có",
-          },
           "edit-file": {
             title: "Chỉnh sửa tệp",
             description:
@@ -377,6 +367,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Sao chép tệp",
             description: "Sao chép các tệp tin và thư mục",
+          },
+          "write-text-file": {
+            title: "Tạo tệp văn bản",
+            description:
+              "Tạo các tệp văn bản mới hoặc ghi đè các tệp văn bản hiện có.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Tạo tài liệu",
+        description:
+          "Cho phép đại lý của bạn tạo các định dạng tài liệu nhị phân như bài thuyết trình PowerPoint, bảng tính Excel, tài liệu Word và PDF. Các tệp có thể tải xuống trực tiếp từ cửa sổ trò chuyện.",
+        configuration: "Các loại tài liệu có sẵn",
+        skills: {
+          "create-text-file": {
+            title: "Tệp văn bản",
+            description:
+              "Tạo các tệp văn bản với bất kỳ nội dung và định dạng nào (ví dụ: .txt, .md, .json, .csv, v.v.)",
+          },
+          "create-pptx": {
+            title: "Bài trình bày bằng PowerPoint",
+            description:
+              "Tạo các bài trình chiếu PowerPoint mới với các slide, tiêu đề và dấu đầu dòng.",
+          },
+          "create-pdf": {
+            title: "Tài liệu PDF",
+            description:
+              "Tạo tài liệu PDF từ Markdown hoặc văn bản thuần túy với các định dạng cơ bản.",
+          },
+          "create-xlsx": {
+            title: "Bảng tính Excel",
+            description:
+              "Tạo các tài liệu Excel cho dữ liệu dạng bảng, bao gồm các sheet và định dạng.",
+          },
+          "create-docx": {
+            title: "Tệp Word",
+            description:
+              "Tạo các tài liệu Word với định dạng và kiểu dáng cơ bản.",
           },
         },
       },
@@ -695,7 +723,6 @@ const TRANSLATIONS = {
       select_all: "Chọn Tất cả",
       deselect_all: "Bỏ chọn Tất cả",
       remove_selected: "Xóa Đã chọn",
-      costs: "*Chi phí một lần cho việc nhúng",
       save_embed: "Lưu và Nhúng",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}}",

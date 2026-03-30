@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Bem-vindo ao",
       getStarted: "Começar",
       welcome: "Bem-vindo",
     },
@@ -315,10 +314,6 @@ const TRANSLATIONS = {
         description:
           "Permite ao agente padrão gerar diversos tipos de gráficos a partir de dados armazenados ou informados no chat.",
       },
-      save: {
-        title: "Gerar & salvar arquivos",
-        description: "Permite ao agente gerar e salvar arquivos no navegador.",
-      },
       web: {
         title: "Busca na web",
         description:
@@ -363,11 +358,6 @@ const TRANSLATIONS = {
             title: "Obter informações do arquivo",
             description: "Obtenha metadados detalhados sobre os arquivos.",
           },
-          "write-file": {
-            title: "Criar arquivo",
-            description:
-              "Criar novos arquivos ou substituir arquivos existentes.",
-          },
           "edit-file": {
             title: "Editar arquivo",
             description:
@@ -384,6 +374,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Copiar arquivo",
             description: "Copie arquivos e diretórios",
+          },
+          "write-text-file": {
+            title: "Criar um arquivo de texto",
+            description:
+              "Crie novos arquivos de texto ou sobrescreva arquivos de texto existentes.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Criação de documentos",
+        description:
+          "Permita que seu agente crie formatos de documentos binários, como apresentações do PowerPoint, planilhas do Excel, documentos do Word e arquivos PDF. Os arquivos podem ser baixados diretamente da janela de chat.",
+        configuration: "Tipos de documentos disponíveis",
+        skills: {
+          "create-text-file": {
+            title: "Arquivos de texto",
+            description:
+              "Crie arquivos de texto com qualquer conteúdo e extensão (por exemplo, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Apresentações em PowerPoint",
+            description:
+              "Crie novas apresentações do PowerPoint com slides, títulos e marcadores.",
+          },
+          "create-pdf": {
+            title: "Documentos em formato PDF",
+            description:
+              "Crie documentos em PDF a partir de arquivos Markdown ou texto simples, com formatação básica.",
+          },
+          "create-xlsx": {
+            title: "Planilhas do Excel",
+            description:
+              "Crie documentos do Excel para dados tabulares, incluindo planilhas e estilos.",
+          },
+          "create-docx": {
+            title: "Documentos do tipo Word",
+            description:
+              "Crie documentos do Word com formatação e estilo básicos.",
           },
         },
       },
@@ -791,7 +819,6 @@ const TRANSLATIONS = {
       select_all: "Selecionar Tudo",
       deselect_all: "Desmarcar Tudo",
       remove_selected: "Remover Selecionados",
-      costs: "*Custo único para vínculos",
       save_embed: "Salvar e Inserir",
       "total-documents_one": "{{count}} documento",
       "total-documents_other": "{{count}} documentos",

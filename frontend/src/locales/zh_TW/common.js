@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "歡迎使用",
       getStarted: "開始使用",
       welcome: "歡迎",
     },
@@ -291,10 +290,6 @@ const TRANSLATIONS = {
         description:
           "讓預設智慧代理人能夠根據提供的資料或對話中給定的資料來產生各種圖表。",
       },
-      save: {
-        title: "產生並儲存檔案",
-        description: "讓預設智慧代理人產生並寫入檔案，之後可儲存到電腦。",
-      },
       web: {
         title: "網頁搜尋",
         description:
@@ -337,10 +332,6 @@ const TRANSLATIONS = {
             title: "取得檔案資訊",
             description: "獲取關於檔案的詳細元數據",
           },
-          "write-file": {
-            title: "儲存檔案",
-            description: "建立新的檔案或覆蓋現有檔案",
-          },
           "edit-file": {
             title: "編輯檔案",
             description: "能夠對文字檔案進行行別編輯。",
@@ -356,6 +347,40 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "複製檔案",
             description: "複製檔案和目錄",
+          },
+          "write-text-file": {
+            title: "撰寫文字檔案",
+            description: "建立新的文字檔，或覆蓋現有的文字檔。",
+          },
+        },
+      },
+      createFiles: {
+        title: "文件建立",
+        description:
+          "允許您的代理創建二元文件格式，例如PowerPoint簡報、Excel電子表格、Word文件和PDF文件。 文件可以直接從聊天窗口下載。",
+        configuration: "可用的文件類型",
+        skills: {
+          "create-text-file": {
+            title: "文字檔",
+            description:
+              "能夠創建包含任何內容和檔案擴展名（例如：.txt、.md、.json、.csv 等）的文字檔案。",
+          },
+          "create-pptx": {
+            title: "PowerPoint 簡報",
+            description: "創建新的 PowerPoint 簡報，包含幻燈片、標題和要點",
+          },
+          "create-pdf": {
+            title: "PDF 文件",
+            description:
+              "能夠從 Markdown 或純文字檔案中，使用基本的格式設定，創建 PDF 文件。",
+          },
+          "create-xlsx": {
+            title: "Excel 試算表",
+            description: "建立包含表格資料、工作表和樣式的 Excel 文件",
+          },
+          "create-docx": {
+            title: "Word 格式的文件",
+            description: "建立包含基本樣式和格式的 Word 文件",
           },
         },
       },
@@ -654,7 +679,6 @@ const TRANSLATIONS = {
       select_all: "全選",
       deselect_all: "取消全選",
       remove_selected: "移除選擇的項目",
-      costs: "*嵌入僅會計費一次",
       save_embed: "儲存並嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 文件",

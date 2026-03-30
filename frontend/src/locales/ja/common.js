@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ようこそ",
       getStarted: "はじめる",
       welcome: "ようこそ",
     },
@@ -306,11 +305,6 @@ const TRANSLATIONS = {
         description:
           "デフォルトエージェントがチャットやデータからさまざまなチャートを作成できるようにします。",
       },
-      save: {
-        title: "ファイルの生成と保存",
-        description:
-          "デフォルトエージェントがファイルを生成し、ブラウザからダウンロードできるようにします。",
-      },
       web: {
         title: "ウェブ検索と閲覧",
         description:
@@ -355,11 +349,6 @@ const TRANSLATIONS = {
             title: "ファイルの情報を取得する",
             description: "ファイルに関する詳細なメタデータを取得する",
           },
-          "write-file": {
-            title: "ファイルを作成",
-            description:
-              "新しいファイルを作成するか、既存のファイルを上書きする",
-          },
           "edit-file": {
             title: "ファイル編集",
             description: "テキストファイルの行単位での編集を行う",
@@ -375,6 +364,43 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "ファイルのコピー",
             description: "ファイルとディレクトリをコピーする",
+          },
+          "write-text-file": {
+            title: "テキストファイルを作成する",
+            description:
+              "新しいテキストファイルを作成するか、既存のテキストファイルを上書きする。",
+          },
+        },
+      },
+      createFiles: {
+        title: "ドキュメント作成",
+        description:
+          "エージェントが、パワーポイント、Excel、Word、PDFなどのバイナリ形式のドキュメントを作成できるようにします。ファイルはチャットウィンドウから直接ダウンロードできます。",
+        configuration: "利用可能なドキュメントの種類",
+        skills: {
+          "create-text-file": {
+            title: "テキストファイル",
+            description:
+              ".txt、.md、.json、.csvなどの拡張子を持つ、任意のコンテンツのテキストファイルを作成する。",
+          },
+          "create-pptx": {
+            title: "パワーポイント形式のプレゼンテーション",
+            description:
+              "スライド、タイトル、箇条書きを含む、新しいPowerPointプレゼンテーションを作成する。",
+          },
+          "create-pdf": {
+            title: "PDFドキュメント",
+            description:
+              "マークダウンまたはプレーンテキストから、基本的な書式設定を使用してPDFドキュメントを作成する。",
+          },
+          "create-xlsx": {
+            title: "エクセル スプレッドシート",
+            description:
+              "表形式のデータをスプレッドシート形式で作成し、シートとスタイルを設定する。",
+          },
+          "create-docx": {
+            title: "Wordドキュメント",
+            description: "基本的なスタイルと書式でWordドキュメントを作成する",
           },
         },
       },
@@ -690,7 +716,6 @@ const TRANSLATIONS = {
       select_all: "すべて選択",
       deselect_all: "すべて選択解除",
       remove_selected: "選択したものを削除",
-      costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
       "total-documents_one": "{{count}} のドキュメント",
       "total-documents_other": "{{count}} に関する書類",

@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Witamy w",
       getStarted: "Rozpocznij",
       welcome: "Witaj",
     },
@@ -316,11 +315,6 @@ const TRANSLATIONS = {
         description:
           "Pozwól domyślnemu agentowi generować różne typy wykresów na podstawie danych dostarczonych lub podanych na czacie.",
       },
-      save: {
-        title: "Generowanie i zapisywanie plików w przeglądarce",
-        description:
-          "Pozwól domyślnemu agentowi generować i zapisywać pliki, które można zapisać i pobrać w przeglądarce.",
-      },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
         description:
@@ -366,10 +360,6 @@ const TRANSLATIONS = {
             title: "Pobierz informacje o pliku",
             description: "Uzyskaj szczegółowe metadane dotyczące plików.",
           },
-          "write-file": {
-            title: "Utwórz plik",
-            description: "Utwórz nowe pliki lub nadpisz istniejące",
-          },
           "edit-file": {
             title: "Edytuj plik",
             description:
@@ -386,6 +376,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Skopiuj plik",
             description: "Kopiuj pliki i katalogi",
+          },
+          "write-text-file": {
+            title: "Utwórz plik tekstowy",
+            description:
+              "Utwórz nowe pliki tekstowe lub nadpisz istniejące pliki tekstowe.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Tworzenie dokumentów",
+        description:
+          "Pozwól swojemu agentowi tworzyć pliki w formatach binarnych, takich jak prezentacje PowerPoint, arkusze kalkulacyjne Excel, dokumenty Word i pliki PDF. Pliki można pobrać bezpośrednio z okna czatu.",
+        configuration: "Dostępne typy dokumentów",
+        skills: {
+          "create-text-file": {
+            title: "Pliki tekstowe",
+            description:
+              "Utwórz pliki tekstowe z dowolnym zawartością i rozszerzeniem (np. .txt, .md, .json, .csv).",
+          },
+          "create-pptx": {
+            title: "Prezentacje w formacie PowerPoint",
+            description:
+              "Stwórz nowe prezentacje w formacie PowerPoint, zawierające slajdy, nagłówki i punkty.",
+          },
+          "create-pdf": {
+            title: "Dokumenty w formacie PDF",
+            description:
+              "Tworzenie dokumentów PDF z plików w formacie Markdown lub zwykłego tekstu, z podstawowymi możliwościami stylizacji.",
+          },
+          "create-xlsx": {
+            title: "Arkusze kalkulacyjne w programie Excel",
+            description:
+              "Stwórz arkusze kalkulacyjne w programie Excel, zawierające dane w formie tabel, z różnymi arkuszami i stylami.",
+          },
+          "create-docx": {
+            title: "Dokumenty w formacie Word",
+            description:
+              "Stwórz dokumenty Word z podstawowymi stylami i formatowaniem.",
           },
         },
       },
@@ -806,7 +834,6 @@ const TRANSLATIONS = {
       select_all: "Wybierz wszystko",
       deselect_all: "Odznacz wszystko",
       remove_selected: "Usuń wybrane",
-      costs: "*Jednorazowy koszt dodania danych",
       save_embed: "Zapisz",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenty",

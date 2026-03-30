@@ -81,6 +81,15 @@ async function agentSkillsFromSystemSettings() {
     []
   );
 
+  // Load disabled create-files sub-skills
+  const _disabledCreateFilesSkills = safeJsonParse(
+    await SystemSettings.getValueOrFallback(
+      { label: "disabled_create_files_skills" },
+      "[]"
+    ),
+    []
+  );
+
   // Load non-imported built-in skills that are configurable.
   const _setting = safeJsonParse(
     await SystemSettings.getValueOrFallback(
@@ -104,6 +113,16 @@ async function agentSkillsFromSystemSettings() {
           const filesystemTool = require("./aibitat/plugins/filesystem/lib");
           if (!filesystemTool.isToolAvailable()) continue;
           if (_disabledFilesystemSkills.includes(subPlugin.name)) continue;
+        }
+
+        /**
+         * If the create-files tool is not available, or the sub-skill is explicitly disabled, skip it
+         * This is a docker specific skill so it cannot be used in other environments.
+         */
+        if (skillName === "create-files-agent") {
+          const createFilesTool = require("./aibitat/plugins/create-files/lib");
+          if (!createFilesTool.isToolAvailable()) continue;
+          if (_disabledCreateFilesSkills.includes(subPlugin.name)) continue;
         }
 
         systemFunctions.push(

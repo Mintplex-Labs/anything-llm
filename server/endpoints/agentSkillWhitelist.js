@@ -27,6 +27,24 @@ function agentSkillWhitelistEndpoints(app) {
     }
   );
 
+  app.get(
+    "/agent-skills/create-files-agent/is-available",
+    [validatedRequest],
+    async (_request, response) => {
+      try {
+        const createFilesTool = require("../utils/agents/aibitat/plugins/create-files/lib");
+        return response
+          .status(200)
+          .json({ available: createFilesTool.isToolAvailable() });
+      } catch (e) {
+        console.error(e);
+        return response
+          .status(500)
+          .json({ available: false, error: e.message });
+      }
+    }
+  );
+
   app.post(
     "/agent-skills/whitelist/add",
     [validatedRequest, flexUserRoleValid(ROLES.all)],
