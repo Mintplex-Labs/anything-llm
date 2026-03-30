@@ -89,8 +89,6 @@ class WorkerQueue {
     this.#cleanupBreeJob(breeJobId);
   }
 
-  // -- internal ---------------------------------------------------------------
-
   async #processNext() {
     if (this.#queue.length === 0) {
       this.#activeJob = null;
