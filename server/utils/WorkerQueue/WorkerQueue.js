@@ -128,23 +128,9 @@ class WorkerQueue {
     const { BackgroundService } = require("../BackgroundWorkers");
     const bg = new BackgroundService();
 
-    if (!bg.bree) {
-      throw new Error("BackgroundService has not been booted yet");
-    }
-
-    this.#breeJobId = `${path.basename(this.workerScript, ".js")}-${Date.now()}`;
-
-    await bg.bree.add({
-      name: this.#breeJobId,
-      path: this.workerScript,
-    });
-
-    await bg.bree.run(this.#breeJobId);
-    this.#worker = bg.bree.workers.get(this.#breeJobId);
-
-    if (!this.#worker) {
-      throw new Error("Failed to get worker reference from Bree");
-    }
+    const { worker, jobId } = await bg.spawnWorker(this.workerScript);
+    this.#worker = worker;
+    this.#breeJobId = jobId;
 
     const label = path.basename(this.workerScript);
     this.#worker.stdout?.on("data", (data) =>
@@ -183,14 +169,9 @@ class WorkerQueue {
    * @param {string|null} jobId
    */
   async #cleanupBreeJob(jobId) {
-    if (!jobId) return;
-    try {
-      const { BackgroundService } = require("../BackgroundWorkers");
-      const bg = new BackgroundService();
-      if (bg.bree) await bg.bree.remove(jobId);
-    } catch {
-      /* Job may already be removed */
-    }
+    const { BackgroundService } = require("../BackgroundWorkers");
+    const bg = new BackgroundService();
+    await bg.removeJob(jobId);
   }
 
   #onMessage(msg) {

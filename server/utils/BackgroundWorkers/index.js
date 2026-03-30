@@ -93,6 +93,43 @@ class BackgroundService {
   }
 
   /**
+   * Spawn a one-off Bree worker process for the given script.
+   * @param {string} scriptPath - Absolute path to the worker JS file
+   * @returns {Promise<{ worker: ChildProcess, jobId: string }>}
+   */
+  async spawnWorker(scriptPath) {
+    if (!this.bree)
+      throw new Error("BackgroundService has not been booted yet");
+
+    const jobId = `${path.basename(scriptPath, ".js")}-${Date.now()}`;
+
+    await this.bree.add({
+      name: jobId,
+      path: scriptPath,
+    });
+
+    await this.bree.run(jobId);
+    const worker = this.bree.workers.get(jobId);
+
+    if (!worker) throw new Error("Failed to get worker reference from Bree");
+
+    return { worker, jobId };
+  }
+
+  /**
+   * Remove a one-off Bree job registration so stale entries don't accumulate.
+   * @param {string} jobId
+   */
+  async removeJob(jobId) {
+    if (!jobId) return;
+    try {
+      if (this.bree) await this.bree.remove(jobId);
+    } catch {
+      /* Job may already be removed */
+    }
+  }
+
+  /**
    * Run a one-off job via Bree with a data payload sent over IPC.
    * The job file receives the payload via process.on('message').
    * @param {string} name - Job filename (without .js) in the jobs directory
@@ -102,35 +139,25 @@ class BackgroundService {
    * @returns {Promise<void>} Resolves when the job exits with code 0
    */
   async runJob(name, payload = {}, { onMessage } = {}) {
-    const jobId = `${name}-${Date.now()}`;
+    const scriptPath = path.resolve(this.#root, `${name}.js`);
+    const { worker, jobId } = await this.spawnWorker(scriptPath);
 
-    await this.bree.add({
-      name: jobId,
-      path: path.resolve(this.#root, `${name}.js`),
-    });
-
-    await this.bree.run(jobId);
-    const worker = this.bree.workers.get(jobId);
-    if (worker && typeof worker.send === "function") {
+    if (typeof worker.send === "function") {
       worker.send(payload);
     }
-    if (worker && onMessage) {
+    if (onMessage) {
       worker.on("message", onMessage);
     }
 
     return new Promise((resolve, reject) => {
       worker.on("exit", async (code) => {
-        try {
-          await this.bree.remove(jobId);
-        } catch {}
+        await this.removeJob(jobId);
         if (code === 0) resolve();
         else reject(new Error(`Job ${jobId} exited with code ${code}`));
       });
 
       worker.on("error", async (err) => {
-        try {
-          await this.bree.remove(jobId);
-        } catch {}
+        await this.removeJob(jobId);
         reject(err);
       });
     });
