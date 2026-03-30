@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Tere tulemast",
       getStarted: "Alusta",
       welcome: "Tere tulemast",
     },
@@ -307,11 +306,6 @@ const TRANSLATIONS = {
         title: "Loo diagramme",
         description: "Lubab agendil luua erinevaid diagramme antud andmetest.",
       },
-      save: {
-        title: "Loo ja salvesta faile brauserisse",
-        description:
-          "Lubab agendil luua faile, mis salvestatakse ja allalaaditakse brauseris.",
-      },
       web: {
         title: "Reaalajas veebihaku tugi",
         description:
@@ -356,10 +350,6 @@ const TRANSLATIONS = {
             title: "Hankige faili teave",
             description: "Hankige üksikasjalik teavet failide kohta",
           },
-          "write-file": {
-            title: "Faili loomine",
-            description: "Loo uusi faili või asenda olemasoleva faili",
-          },
           "edit-file": {
             title: "Faili redigeerimine",
             description: "Muuda teksti failide sisu rida- järgselt.",
@@ -375,6 +365,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Kopeeri fail",
             description: "Kopeeri failid ja kaardi",
+          },
+          "write-text-file": {
+            title: "Loo teksti fail",
+            description:
+              "Loo uusi teksti faili või asenda olemasolevaid teksti faile",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumendi koostamine",
+        description:
+          "Laske oma esindajal luua binaarsed dokumendiformaadid, näiteks PowerPointi esitlused, Exceli lehed, Wordi dokumendid ja PDF-failid. Failid saab alla laadida otse vestlusaknast.",
+        configuration: "Saadaval olevad dokumendi tüübid",
+        skills: {
+          "create-text-file": {
+            title: "Tekstifailid",
+            description:
+              "Loo teksti failid, milles on mis tahes sisu ja laiendus (esimärkid .txt, .md, .json, .csv jne).",
+          },
+          "create-pptx": {
+            title: "PowerPointi esitlused",
+            description:
+              "Loo uusi PowerPointi esitlusi, mis sisaldavad slaidide, pealkirjade ja punktide.",
+          },
+          "create-pdf": {
+            title: "PDF-failid",
+            description:
+              "Loo PDF-failid Markdown- või tavaline tekstist, kasutades lihtsaid stiilid",
+          },
+          "create-xlsx": {
+            title: "Excel-i lehed",
+            description:
+              "Loo Excel-failid, mis sisaldavad tabeli andmeid, lehtede ja stiilidega.",
+          },
+          "create-docx": {
+            title: "Microsoft Word-failid",
+            description:
+              "Loo Microsoft Wordi dokumende, kasutades põhise stiili ja vormistuse",
           },
         },
       },
@@ -778,7 +806,6 @@ const TRANSLATIONS = {
       select_all: "Vali kõik",
       deselect_all: "Tühista valik",
       remove_selected: "Eemalda valitud",
-      costs: "*Ühekordne embeddingu kulu",
       save_embed: "Salvesta ja põimi",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumendid",

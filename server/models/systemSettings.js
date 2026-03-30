@@ -34,6 +34,7 @@ const SystemSettings = {
     "default_agent_skills",
     "disabled_agent_skills",
     "disabled_filesystem_skills",
+    "disabled_create_files_skills",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -52,6 +53,7 @@ const SystemSettings = {
     "default_agent_skills",
     "disabled_agent_skills",
     "disabled_filesystem_skills",
+    "disabled_create_files_skills",
     "agent_sql_connections",
     "custom_app_name",
     "default_system_prompt",
@@ -160,6 +162,15 @@ const SystemSettings = {
         return JSON.stringify(skills);
       } catch {
         console.error(`Could not validate disabled filesystem skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_create_files_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled create files skills.`);
         return JSON.stringify([]);
       }
     },
@@ -714,6 +725,7 @@ const SystemSettings = {
 
       // Lemonade Keys
       LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMApiKey: !!process.env.LEMONADE_LLM_API_KEY,
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,

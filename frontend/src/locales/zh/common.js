@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "欢迎使用",
       getStarted: "开始",
       welcome: "欢迎",
     },
@@ -300,11 +299,6 @@ const TRANSLATIONS = {
         title: "生成图表",
         description: "使默认代理能够从提供的数据或聊天中生成各种类型的图表。",
       },
-      save: {
-        title: "生成并保存文件到浏览器",
-        description:
-          "使默认代理能够生成并写入文件，这些文件可以保存并在你的浏览器中下载。",
-      },
       web: {
         title: "实时网络搜索和浏览",
         description:
@@ -348,10 +342,6 @@ const TRANSLATIONS = {
             title: "获取文件信息",
             description: "获取有关文件的详细元数据",
           },
-          "write-file": {
-            title: "创建文件",
-            description: "创建新的文件或覆盖现有文件",
-          },
           "edit-file": {
             title: "编辑文件",
             description: "对文本文件进行基于行的编辑。",
@@ -367,6 +357,40 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "复制文件",
             description: "复制文件和目录",
+          },
+          "write-text-file": {
+            title: "创建文本文件",
+            description: "创建新的文本文件，或覆盖现有的文本文件。",
+          },
+        },
+      },
+      createFiles: {
+        title: "文档创建",
+        description:
+          "允许您的代理创建二进制文档格式，例如PowerPoint演示文稿、Excel电子表格、Word文档和PDF文件。文件可以直接从聊天窗口下载。",
+        configuration: "可用的文件类型",
+        skills: {
+          "create-text-file": {
+            title: "文本文件",
+            description:
+              "创建包含任何内容和扩展名的文本文件（如 .txt、.md、.json、.csv 等）。",
+          },
+          "create-pptx": {
+            title: "PowerPoint 演示文稿",
+            description: "创建新的幻灯片演示文稿，包括幻灯片、标题和项目符号。",
+          },
+          "create-pdf": {
+            title: "PDF 文档",
+            description:
+              "使用 Markdown 或纯文本，并进行基本的排版，创建 PDF 文档。",
+          },
+          "create-xlsx": {
+            title: "Excel电子表格",
+            description: "创建包含表格数据、工作表和样式的 Excel 文档。",
+          },
+          "create-docx": {
+            title: "Word 文档",
+            description: "创建包含基本样式和格式的 Word 文档",
           },
         },
       },
@@ -744,7 +768,6 @@ const TRANSLATIONS = {
       select_all: "全选",
       deselect_all: "取消全选",
       remove_selected: "移除所选",
-      costs: "*嵌入时一次性费用",
       save_embed: "保存并嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 类型的文件",

@@ -16,7 +16,6 @@ const TRANSLATIONS = {
         "Aidez-nous à améliorer AnythingLLM en répondant à quelques questions.",
     },
     home: {
-      title: "Bienvenue",
       getStarted: "Commencer",
       welcome: "Bienvenue",
     },
@@ -311,11 +310,6 @@ const TRANSLATIONS = {
         description:
           "Activez l'agent par défaut pour générer différents types de graphiques à partir des données fournies ou données dans le chat.",
       },
-      save: {
-        title: "Générer et sauvegarder des fichiers dans le navigateur",
-        description:
-          "Activez l'agent par défaut pour générer et écrire des fichiers qui peuvent être sauvegardés et téléchargés dans votre navigateur.",
-      },
       web: {
         title: "Recherche web en direct et navigation",
         description:
@@ -361,11 +355,6 @@ const TRANSLATIONS = {
             title: "Obtenir des informations sur le fichier",
             description: "Obtenez des métadonnées détaillées sur les fichiers.",
           },
-          "write-file": {
-            title: "Créer un fichier",
-            description:
-              "Créer de nouveaux fichiers ou remplacer des fichiers existants.",
-          },
           "edit-file": {
             title: "Modifier le fichier",
             description:
@@ -383,6 +372,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Copier le fichier",
             description: "Copier des fichiers et des répertoires",
+          },
+          "write-text-file": {
+            title: "Créer un fichier texte",
+            description:
+              "Créer de nouveaux fichiers texte ou remplacer des fichiers texte existants.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Création de documents",
+        description:
+          "Permettez à votre agent de créer des documents au format binaire, tels que des présentations PowerPoint, des feuilles de calcul Excel, des documents Word et des fichiers PDF. Les fichiers peuvent être téléchargés directement depuis la fenêtre de chat.",
+        configuration: "Types de documents disponibles",
+        skills: {
+          "create-text-file": {
+            title: "Fichiers de texte",
+            description:
+              "Créez des fichiers texte avec n'importe quel contenu et extension (par exemple, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Présentations PowerPoint",
+            description:
+              "Créez de nouvelles présentations PowerPoint avec des diapositives, des titres et des puces.",
+          },
+          "create-pdf": {
+            title: "Documents au format PDF",
+            description:
+              "Créez des documents PDF à partir de fichiers Markdown ou de texte brut, avec un style de base.",
+          },
+          "create-xlsx": {
+            title: "Feuilles de calcul Excel",
+            description:
+              "Créez des documents Excel pour les données tabulaires, avec des feuilles et un style.",
+          },
+          "create-docx": {
+            title: "Documents au format Word",
+            description:
+              "Créez des documents Word avec un style et une mise en page de base.",
           },
         },
       },
@@ -703,7 +730,6 @@ const TRANSLATIONS = {
       select_all: "Tout sélectionner",
       deselect_all: "Tout désélectionner",
       remove_selected: "Supprimer la sélection",
-      costs: "Coûts",
       save_embed: "Sauvegarder et intégrer",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documents",

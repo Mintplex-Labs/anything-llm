@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Willkommen bei",
       getStarted: "Jetzt starten",
       welcome: "Herzlich willkommen",
     },
@@ -315,11 +314,6 @@ const TRANSLATIONS = {
         description:
           "Aktivieren Sie den Standard-Agenten, um verschiedene Arten von Diagrammen aus bereitgestellten oder im Chat gegebenen Daten zu generieren.",
       },
-      save: {
-        title: "Dateien generieren & im Browser speichern",
-        description:
-          "Aktivieren Sie den Standard-Agenten, um Dateien zu generieren und zu schreiben, die gespeichert und in Ihrem Browser heruntergeladen werden können.",
-      },
       web: {
         title: "Live-Websuche und -Browsing",
         description:
@@ -365,11 +359,6 @@ const TRANSLATIONS = {
             title: "Dateieninformationen abrufen",
             description: "Erhalten Sie detaillierte Metadaten über Dateien.",
           },
-          "write-file": {
-            title: "Datei erstellen",
-            description:
-              "Neue Dateien erstellen oder vorhandene Dateien überschreiben.",
-          },
           "edit-file": {
             title: "Datei bearbeiten",
             description:
@@ -387,6 +376,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Datei kopieren",
             description: "Dateien und Verzeichnisse kopieren",
+          },
+          "write-text-file": {
+            title: "Textdatei erstellen",
+            description:
+              "Erstellen Sie neue Textdateien oder überschreiben Sie vorhandene Textdateien.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumentenerstellung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, binäre Dokumentformate wie PowerPoint-Präsentationen, Excel-Tabellen, Word-Dokumente und PDFs zu erstellen. Die Dateien können direkt aus dem Chat-Fenster heruntergeladen werden.",
+        configuration: "Verfügbare Dokumenttypen",
+        skills: {
+          "create-text-file": {
+            title: "Textdateien",
+            description:
+              "Erstellen Sie Textdateien mit beliebigen Inhalten und Dateiendungen (.txt, .md, .json, .csv usw.)",
+          },
+          "create-pptx": {
+            title: "Präsentationen mit PowerPoint",
+            description:
+              "Erstellen Sie neue PowerPoint-Präsentationen mit Folien, Überschriften und Stichpunkten.",
+          },
+          "create-pdf": {
+            title: "PDF-Dokumente",
+            description:
+              "Erstellen Sie PDF-Dokumente aus Markdown- oder reinen Textdateien mit grundlegender Formatierung.",
+          },
+          "create-xlsx": {
+            title: "Excel-Tabellen",
+            description:
+              "Erstellen Sie Excel-Dokumente für tabellarische Daten mit Tabellen und Formatierungen.",
+          },
+          "create-docx": {
+            title: "Word-Dokumente",
+            description:
+              "Erstellen Sie Word-Dokumente mit grundlegender Formatierung und Gestaltung.",
           },
         },
       },
@@ -813,7 +840,6 @@ const TRANSLATIONS = {
       deselect_all: "Auswahl abbrechen",
       no_docs: "Keine Dokumente vorhanden.",
       remove_selected: "Ausgewähltes entfernen",
-      costs: "*Einmalige Kosten für das Einbetten",
       save_embed: "Speichern und Einbetten",
       "total-documents_one": "{{count}} Dokument",
       "total-documents_other": "{{count}} Dokumente",

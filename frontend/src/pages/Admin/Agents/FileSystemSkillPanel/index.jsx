@@ -62,9 +62,11 @@ const getFileSystemSubSkills = (t) => {
       category: "read",
     },
     {
-      name: "filesystem-write-file",
-      title: t("agent.skill.filesystem.skills.write-file.title"),
-      description: t("agent.skill.filesystem.skills.write-file.description"),
+      name: "filesystem-write-text-file",
+      title: t("agent.skill.filesystem.skills.write-text-file.title"),
+      description: t(
+        "agent.skill.filesystem.skills.write-text-file.description"
+      ),
       icon: FloppyDisk,
       category: "write",
     },

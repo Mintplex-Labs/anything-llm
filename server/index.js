@@ -26,6 +26,7 @@ const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const {
   agentSkillWhitelistEndpoints,
 } = require("./endpoints/agentSkillWhitelist");
+const { agentFileServerEndpoints } = require("./endpoints/agentFileServer");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
@@ -79,6 +80,7 @@ utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
 agentSkillWhitelistEndpoints(apiRouter);
+agentFileServerEndpoints(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
