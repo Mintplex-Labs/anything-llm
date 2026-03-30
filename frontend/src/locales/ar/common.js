@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "مرحبا في",
       getStarted: "بسم الله",
+      welcome: "أهلاً وسهلاً",
     },
     llm: {
       title: "إعدادات نموذج التعلم العميق المفضّلة",
@@ -47,17 +48,9 @@ const TRANSLATIONS = {
       skip: "تخطي الاستطلاع",
       thankYou: "شكرا على تقييماتك!",
     },
-    workspace: {
-      title: "قم بإنشاء مساحة العمل الأولى الخاصة بك",
-      description:
-        "قم بإنشاء مساحة العمل الأولى الخاصة بك وابدأ مع إيني ثينك إلْلْمْ.",
-    },
   },
   common: {
     "workspaces-name": "اسم مساحة العمل",
-    error: "خطأ",
-    success: "موفّق",
-    user: "مستعمِل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
     save: "حفظ التغييرات",
@@ -69,10 +62,14 @@ const TRANSLATIONS = {
     search: "بحث",
     username_requirements:
       "يجب أن يتكون اسم المستخدم من 2 إلى 32 حرفًا، ويبدأ بحرف صغير، ويحتوي فقط على حروف وأرقام وعلامات التسطير والنقاط.",
+    on: "على",
+    none: "لا",
+    stopped: "توقف",
+    loading: "تحميل",
+    refresh: "استعيد/جدد",
   },
   settings: {
     title: "إعدادات المثيل",
-    system: "الإعدادات العامة",
     invites: "دعوات",
     users: "مستعملون",
     workspaces: "مساحات العمل",
@@ -86,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "الصوت والخطاب",
     "vector-database": "قاعدة بيانات المتجهات",
     embeds: "تضمين المحادثة",
-    "embed-chats": "سجل تضمين المحادثة",
     security: "حماية",
     "event-logs": "سجلات الأحداث",
     privacy: "الخصوصية والبيانات",
@@ -102,6 +98,16 @@ const TRANSLATIONS = {
     branding: "التسويق بالعلامة التجارية ووضع العلامات التجارية",
     chat: "دردشة",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "مركز المجتمع",
+      trending: "استكشف الاتجاهات الرائجة",
+      "your-account": "حسابك",
+      "import-item": "استيراد العنصر",
+    },
+    channels: "القنوات",
+    "available-channels": {
+      telegram: "تليجرام",
+    },
   },
   login: {
     "multi-user": {
@@ -119,7 +125,6 @@ const TRANSLATIONS = {
       description:
         "قم بإدخال المعلومات اللازمة أدناه لإعادة تعيين كلمة المرور الخاصة بك.",
       "recovery-codes": "رموز الاسترداد",
-      "recovery-code": " {{index}} رمز الاسترداد",
       "back-to-login": "العودة إلى تسجيل الدخول",
     },
   },
@@ -152,12 +157,6 @@ const TRANSLATIONS = {
       heading: "اشرح لي",
       body: "فوائد برنامج إيني ثينك إلْلْمْ",
     },
-    pfp: {
-      title: "صورة الملف الشخصي للمساعد",
-      description: "تخصيص صورة الملف الشخصي للمساعد لمساحة العمل هذه.",
-      image: "صورة مساحة العمل",
-      remove: "إزالة صورة مساحة العمل",
-    },
     delete: {
       title: "حذف مساحة العمل",
       description:
@@ -180,21 +179,23 @@ const TRANSLATIONS = {
       title: "نموذج محادثة مساحة العمل",
       description:
         "نموذج المحادثة المحدد الذي سيتم استخدامه لمساحة العمل هذه. إذا كان غير محدد، فسيتم استخدام نموذج التعلم العميق الافتراضي للنظام.",
-      wait: "-- في انتظار النماذج --",
     },
     mode: {
       title: "وضع المحادثة",
       chat: {
         title: "المحادثة",
-        "desc-start": "سيقدم إجابات حسب المعرفة العامة لنموذج التعلم العميق",
-        and: "and",
-        "desc-end": "المستند الذي تم العثور عليه حسب السياق.",
+        description:
+          'سيوفر إجابات بناءً على المعرفة العامة للنموذج اللغوي الكبير، بالإضافة إلى سياق المستند المتاح. ستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
       query: {
         title: "استعلام",
-        "desc-start": "سوف تقدم الإجابات",
-        only: "فقط",
-        "desc-end": "إذا وجد المستند في السياق",
+        description:
+          'سيوفر الإجابات <b>فقط</b> إذا تم العثور على سياق الوثيقة. <br />ستحتاج إلى استخدام الأمر "@agent" لاستخدام الأدوات.',
+      },
+      automatic: {
+        title: "سيارة",
+        description:
+          'سيتم استخدام الأدوات تلقائيًا إذا كان النموذج والمزود يدعمان استدعاء الأدوات الأصلية. إذا لم يتم دعم الأدوات الأصلية، فسيتعين عليك استخدام الأمر "@agent" لاستخدام الأدوات.',
       },
     },
     history: {
@@ -288,9 +289,6 @@ const TRANSLATIONS = {
       wait: "-- في انتظار النماذج --",
     },
     skill: {
-      title: "مهارات الوكيل الافتراضية",
-      description:
-        "قم بتحسين القدرات الطبيعية للوكيل الافتراضي باستخدام هذه المهارات المعدة مسبقًا. ينطبق هذا الإعداد على جميع مساحات العمل.",
       rag: {
         title: "التوليد المعزز بالاسترجاع والذاكرة طويلة المدى",
         description:
@@ -317,10 +315,109 @@ const TRANSLATIONS = {
       },
       web: {
         title: "البحث والتصفح المباشر على الويب",
-        "desc-start":
-          "قم بتمكين الوكيل الخاص بك من البحث في الويب للإجابة على أسئلتك من خلال الاتصال بموفر البحث على الويب.",
-        "desc-end":
-          "لن يعمل البحث على الويب أثناء حصص المحادثة بواسطة الوكيل حتى يتم إعداد ذلك.",
+        description:
+          "اسمح لمسؤولك بالبحث على الإنترنت للإجابة على أسئلتك من خلال الاتصال بمزود خدمة البحث على الإنترنت (SERP).",
+      },
+      sql: {
+        title: "موصل SQL",
+        description:
+          "اسمح لمسؤولك بالاستفادة من SQL للإجابة على أسئلتك من خلال الاتصال بمقدمي قواعد البيانات المختلفة.",
+      },
+      default_skill:
+        "افتراضيًا، يتم تفعيل هذه الميزة، ولكن يمكنك تعطيلها إذا لم ترغب في أن تكون متاحة للممثل.",
+      filesystem: {
+        title: "الوصول إلى نظام الملفات",
+        description:
+          "السماح لمسؤولك بقراءة وكتابة الملفات والبحث عنها وإدارتها داخل مجلد محدد. يدعم تعديل الملفات وتصفح المجلدات والبحث عن المحتوى.",
+        learnMore: "تعرف على المزيد حول كيفية استخدام هذه المهارة.",
+        configuration: "التكوين",
+        readActions: "اقرأ الإجراءات",
+        writeActions: "الإجراءات",
+        warning:
+          "الوصول إلى نظام الملفات يمكن أن يكون خطيرًا، لأنه يمكنه تعديل أو حذف الملفات. يرجى الرجوع إلى الوثائق <link> قبل تمكينه.",
+        skills: {
+          "read-text-file": {
+            title: "اقرأ الملف",
+            description:
+              "قراءة محتويات الملفات (النصوص، الشيفرة، ملفات PDF، الصور، إلخ).",
+          },
+          "read-multiple-files": {
+            title: "قراءة ملفات متعددة",
+            description: "اقرأ ملفات متعددة في وقت واحد.",
+          },
+          "list-directory": {
+            title: "قائمة الاتجاهات",
+            description: "اعرض قائمة الملفات والمجلدات الموجودة في مجلد معين.",
+          },
+          "search-files": {
+            title: "البحث عن الملفات",
+            description: "ابحث عن الملفات حسب الاسم أو محتواها.",
+          },
+          "get-file-info": {
+            title: "الحصول على معلومات الملف",
+            description: "احصل على بيانات وصف تفصيلية حول الملفات.",
+          },
+          "write-file": {
+            title: "إنشاء ملف",
+            description: "إنشاء ملفات جديدة أو استبدال الملفات الموجودة.",
+          },
+          "edit-file": {
+            title: "تحرير الملف",
+            description:
+              "قم بإجراء التعديلات على ملفات النصوص بناءً على الأسطر.",
+          },
+          "create-directory": {
+            title: "إنشاء مجلد",
+            description: "إنشاء مجلدات جديدة",
+          },
+          "move-file": {
+            title: "تحريك/إعادة تسمية الملف",
+            description: "انقل أو غير أسماء الملفات والمجلدات.",
+          },
+          "copy-file": {
+            title: "نسخ الملف",
+            description: "نسخ الملفات والمجلدات",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "خوادم نظام MCP",
+      "loading-from-config": "تحميل خوادم MCP من ملف التكوين",
+      "learn-more": "اعرف المزيد عن خوادم MCP.",
+      "no-servers-found": "لم يتم العثور على أي خوادم MCP.",
+      "tool-warning":
+        "لتحقيق أفضل أداء، ضع في اعتبارك تعطيل الأدوات غير الضرورية للحفاظ على السياق.",
+      "stop-server": "أوقف خادم MCP",
+      "start-server": "ابدأ خادم MCP",
+      "delete-server": "حذف خادم MCP",
+      "tool-count-warning":
+        "يحتوي هذا خادم MCP على <b> أدوات مُفعّلة</b> والتي ستستهلك السياق في كل محادثة. <br /> ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
+      "startup-command": "أمر البدء",
+      command: "الأمر",
+      arguments: "حجج",
+      "not-running-warning":
+        "هذا الخادم الخاص بـ MCP غير قيد التشغيل - قد يكون متوقفًا أو يواجه مشكلة عند التشغيل.",
+      "tool-call-arguments": "وسائط استدعاء الدالة",
+      "tools-enabled": "الأدوات مفعّلة",
+    },
+    settings: {
+      title: "إعدادات مهارات الوكيل",
+      "max-tool-calls": {
+        title: "الحد الأقصى لعدد طلبات الأدوات في الاستجابة.",
+        description:
+          "أقصى عدد من الأدوات التي يمكن للممثل (الوكيل) ربطها لإنشاء استجابة واحدة. وهذا يمنع استدعاءات الأدوات غير المنضبطة والحلقات اللانهائية.",
+      },
+      "intelligent-skill-selection": {
+        title: "اختيار المهارات الذكية",
+        "beta-badge": "بيتا",
+        description:
+          "تمكين استخدام أدوات غير محدودة وتقليل استخدام رموز القطع بنسبة تصل إلى 80٪ لكل استعلام - يقوم AnythingLLM تلقائيًا باختيار المهارات المناسبة لكل طلب.",
+        "max-tools": {
+          title: "أدوات ماكس",
+          description:
+            "الحد الأقصى لعدد الأدوات التي يمكن اختيارها لكل استعلام. ونوصي بتعيين هذه القيمة على قيم أعلى بالنسبة للنماذج ذات السياق الأكبر.",
+        },
       },
     },
   },
@@ -457,9 +554,6 @@ const TRANSLATIONS = {
     title: "الخصوصية ومعالجة البيانات",
     description:
       "هذا هو التكوين الخاص بك لكيفية تعامل موفري الطرف الثالث المتصلين و إني ثينك إلْلْمْ مع بياناتك.",
-    llm: "اختيار نموذج التعلم العميق",
-    embedding: "تفضيلات التضمين",
-    vector: "قاعدة بيانات المتجهة",
     anonymous: "تم تمكين القياس المستتر عن بعد ",
   },
   connectors: {
@@ -500,7 +594,6 @@ const TRANSLATIONS = {
       URL_explained: "عنوان مستودع GitLab الذي ترغب في جمعه.",
       token: "رمز الوصول إلى GitLab",
       optional: "اختياري",
-      token_explained: "رمز الوصول لمنع تحديد السرعة.",
       token_description:
         "حدد الكيانات الإضافية التي تريد استردادها من واجهة برمجة التطبيقات الخاصة بـ GitLab.",
       token_explained_start: "بدون مساعدة.",
@@ -532,9 +625,6 @@ const TRANSLATIONS = {
       URL_explained_end: "متاح.",
       task_explained:
         "بمجرد الانتهاء، سيكون النص متاحًا لإدراجه في مساحات العمل في أداة اختيار المستندات.",
-      language: "لغة التسجيل",
-      language_explained: "حدد لغة النص الذي ترغب في جمعه.",
-      loading_languages: "-- تحميل اللغات المتاحة --",
     },
     "website-depth": {
       name: "أداة لجمع الروابط بكميات كبيرة",
@@ -595,20 +685,19 @@ const TRANSLATIONS = {
       "search-document": "البحث عن المستند",
       "no-documents": "لا توجد مستندات.",
       "move-workspace": "انتقل إلى مساحة العمل",
-      name: "الاسم",
       "delete-confirmation":
         "هل أنت متأكد من أنك تريد حذف هذه الملفات والمجلدات؟\nسيؤدي ذلك إلى إزالة الملفات من النظام وإزالتها تلقائيًا من أي مساحات عمل موجودة.\nهذا الإجراء غير قابل للتراجع.",
       "removing-message":
         "حذف {{count}} مستندًا و {{folderCount}} مجلدًا. يرجى الانتظار.",
       "move-success": "تم نقل {{count}} مستندات بنجاح.",
-      date: "التاريخ",
-      type: "نوع",
       no_docs: "لا توجد مستندات.",
       select_all: "حدد الكل",
       deselect_all: "إلغاء التحديد الكل",
       remove_selected: "حذف المحدد",
       costs: "*تكلفة ثابتة لإنشاء التمثيلات",
       save_embed: "حفظ و تضمين",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} المستندات",
     },
     upload: {
       "processor-offline": "غير متاح",
@@ -647,8 +736,6 @@ const TRANSLATIONS = {
       accept: "حسناً، فهمت.",
     },
     obsidian: {
-      name: "أوبشيان",
-      description: "استورد مجلد Obsidian بنقرة واحدة.",
       vault_location: "موقع الخزانة",
       vault_description:
         'حدد مجلد "Obsidian" الخاص بك لاستيراد جميع الملاحظات وعلاقاتها.',
@@ -661,16 +748,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "مرحبًا بكم في مساحة عملكم الجديدة.",
-    get_started: "للبدء، يمكنك:",
-    get_started_default: "للبدء",
-    upload: "تحميل مستند",
-    or: "أو",
-    send_chat: "أرسل رسالة.",
     send_message: "أرسل رسالة",
     attach_file: "أرفق ملفًا بهذا الدردشة",
-    slash: "عرض جميع الأوامر المتاحة للتواصل.",
-    agents: "عرض جميع الوكلاء المتاحين الذين يمكنك استخدامهم للمحادثة.",
     text_size: "تغيير حجم النص.",
     microphone: "اذكر طلبك.",
     send: "أرسل رسالة فورية إلى مساحة العمل",
@@ -681,19 +760,11 @@ const TRANSLATIONS = {
     regenerate_response: "أعد الرد",
     good_response: "رد جيد",
     more_actions: "إجراءات إضافية",
-    hide_citations: "إخفاء المراجع",
-    show_citations: "عرض المراجع",
-    pause_tts_speech_message: "إيقاف قراءة النص بصوت التحدث الآلي",
     fork: "شوكة",
     delete: "حذف",
-    save_submit: "حفظ وإرسال",
     cancel: "إلغاء",
     edit_prompt: "اقتراح التحرير",
     edit_response: "عدّل الرد",
-    at_agent: "@agent",
-    default_agent_description: "- الوكيل الافتراضي لهذا المساحة.",
-    custom_agents_coming_soon: "سيصل وكلاء مخصصون قريباً!",
-    slash_reset: "/reset",
     preset_reset_description: "امسح سجل الدردشة الخاص بك وابدأ محادثة جديدة",
     add_new_preset: "إضافة إعداد مسبق",
     command: "أمر",
@@ -714,6 +785,41 @@ const TRANSLATIONS = {
       saving: "تعيين النموذج كإعداد افتراضي للمساحة العملية...",
       missing_credentials: "هذا المزود لا يمتلك المؤهلات اللازمة!",
       missing_credentials_description: "انقر لإعداد بيانات الاعتماد",
+    },
+    submit: "إرسال",
+    edit_info_user:
+      '"إرسال" يعيد إنشاء استجابة الذكاء الاصطناعي. "حفظ" يقوم بتحديث رسالتك فقط.',
+    edit_info_assistant: "سيتم حفظ التغييرات مباشرة في هذا الرد.",
+    see_less: "اقرأ المزيد",
+    see_more: "عرض المزيد",
+    tools: "الأدوات",
+    text_size_label: "حجم النص",
+    select_model: "اختر الطراز",
+    sources: "مصادر",
+    document: "وثيقة",
+    similarity_match: "مباراة",
+    source_count_one: "{{count}}، المرجع",
+    source_count_other: "{{count}} المرجع",
+    preset_exit_description: "إيقاف الجلسة الحالية للمتصفح",
+    add_new: "أضف جديدًا",
+    edit: "تحرير",
+    publish: "نشر",
+    stop_generating: "توقف عن إنشاء رد",
+    slash_commands: "أوامر مختصرة",
+    agent_skills: "مهارات الوكيل",
+    manage_agent_skills: "إدارة مهارات الوكلاء",
+    agent_skills_disabled_in_session:
+      'لا يمكن تعديل المهارات أثناء جلسة مع عامل. يجب عليك أولاً استخدام الأمر "/exit" لإنهاء الجلسة.',
+    start_agent_session: "ابدأ جلسة الممثل",
+    use_agent_session_to_use_tools:
+      "يمكنك استخدام الأدوات المتاحة في الدردشة عن طريق بدء جلسة مع ممثل خدمة العملاء باستخدام الرمز '@agent' في بداية رسالتك.",
+    agent_invocation: {
+      model_wants_to_call: "النموذج يرغب في الاتصال.",
+      approve: "الموافقة",
+      reject: "رفض",
+      always_allow: "تأكد دائمًا من {{skillName}}",
+      tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
+      tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
     },
   },
   profile_settings: {
@@ -780,10 +886,6 @@ const TRANSLATIONS = {
         title: "اسم",
         description: "حدد اسمًا يظهر في صفحة تسجيل الدخول لجميع المستخدمين.",
       },
-      "chat-message-alignment": {
-        title: "مواءمة رسائل الدردشة",
-        description: "حدد وضع محاذاة الرسائل عند استخدام واجهة الدردشة.",
-      },
       "display-language": {
         title: "اللغة المعروضة",
         description:
@@ -796,18 +898,6 @@ const TRANSLATIONS = {
         recommended: "الحجم الموصى به: 800 × 200",
         remove: "احذف",
         replace: "استبدل",
-      },
-      "welcome-messages": {
-        title: "أهلاً وسهلاً",
-        description:
-          "خصص الرسائل الترحيبية المعروضة لمستخدميك. سيتمكن المستخدمون غير المسؤولين فقط من رؤية هذه الرسائل.",
-        new: "جديد",
-        system: "نظام",
-        user: "المعلومات التي قدمتها، بالإضافة إلى المعلومات التي تم جمعها من مصادر أخرى، ستساعد في تحديد موقع هذا الشخص.",
-        message: "رسالة",
-        assistant: "مساعد الدردشة من AnythingLLM",
-        "double-click": "انقر نقرًا مزدوجًا لتحرير...",
-        save: "حفظ الرسائل",
       },
       "browser-appearance": {
         title: "مظهر المتصفح",
@@ -836,87 +926,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: "يرجى إنشاء مساحة عمل قبل البدء في الدردشة.",
-    checklist: {
-      title: "البدء",
-      tasksLeft: "المهام المتبقية",
-      completed: "أنت على طريق أن تصبح خبيرًا في مجال نماذج لغة AnythingLLM!",
-      dismiss: "أغلق",
-      tasks: {
-        create_workspace: {
-          title: "إنشاء مساحة عمل",
-          description: "إنشاء مساحة عمل أولية للبدء",
-          action: "إنشاء",
-        },
-        send_chat: {
-          title: "أرسل رسالة",
-          description: "ابدأ محادثة مع مساعدك الذكي",
-          action: "دردشة",
-        },
-        embed_document: {
-          title: "إدراج مستند",
-          description: "أضف المستند الأول الخاص بك إلى مساحة العمل الخاصة بك",
-          action: "دمج",
-        },
-        setup_system_prompt: {
-          title: "قم بإنشاء نظام موجه.",
-          description: "قم بتكوين سلوك مساعدك الذكي.",
-          action: "إعداد",
-        },
-        define_slash_command: {
-          title: "حدد أمر القطع",
-          description: "إنشاء أوامر مخصصة لمساعدك",
-          action: "عرف",
-        },
-        visit_community: {
-          title: "زيارة مركز المجتمع",
-          description: "استكشف موارد المجتمع وقوالبها",
-          action: "تصفح",
-        },
-      },
-    },
-    quickLinks: {
-      title: "روابط سريعة",
-      sendChat: "أرسل الدردشة",
-      embedDocument: "إدراج مستند",
-      createWorkspace: "إنشاء مساحة عمل",
-    },
-    exploreMore: {
-      title: "استكشف المزيد من الميزات",
-      features: {
-        customAgents: {
-          title: "وكلاء الذكاء الاصطناعي المخصصين",
-          description:
-            "قم ببناء وكلاء ذكاء اصطناعي قويين وأتمتيات بدون الحاجة إلى كتابة التعليمات البرمجية.",
-          primaryAction: "استخدم الدردشة مع @agent",
-          secondaryAction: "صمم مسارًا لعميل",
-        },
-        slashCommands: {
-          title: "أوامر السطر الأوامر",
-          description: "وفر الوقت وأدخل الأوامر باستخدام أوامر مخصصة.",
-          primaryAction: "إنشاء أمر سطر أوامر",
-          secondaryAction: "استكشف على Hub",
-        },
-        systemPrompts: {
-          title: "مطالبات النظام",
-          description:
-            "عدّل مطالبة النظام لتخصيص ردود الذكاء الاصطناعي في مساحة العمل.",
-          primaryAction: "عدّل مطالبة النظام",
-          secondaryAction: "إدارة المتغيرات المحددة",
-        },
-      },
-    },
-    announcements: {
-      title: "التحديثات والإعلانات",
-    },
-    resources: {
-      title: "الموارد",
-      links: {
-        docs: "وثائق",
-        star: "نجمة على GitHub",
-      },
-      keyboardShortcuts: "اختصارات لوحة المفاتيح",
-    },
     quickActions: {
       createAgent: "إنشاء وكيل",
       editWorkspace: "تعديل مساحة العمل",
@@ -961,7 +970,6 @@ const TRANSLATIONS = {
         private_description: "رسائل التذكير الخاصة مرئية فقط لك.",
         publish_button: "نشر في مركز المجتمع",
         submitting: "نشر...",
-        submit: "نشر في مركز المجتمع",
         prompt_label:
           "الرجاء تقديم معلومات حول كيفية الحصول على شهادة في مجال تكنولوجيا المعلومات.",
         prompt_description:
@@ -969,8 +977,6 @@ const TRANSLATIONS = {
         prompt_placeholder: "أدخل تعليمات النظام هنا...",
       },
       agent_flow: {
-        public_description: "يمكن رؤية تدفقات الوكلاء العامة للجميع.",
-        private_description: "تدفقات الوكلاء الخاصة مرئية فقط لك.",
         success_title: "نجاح!",
         success_description: 'تم نشر "Agent Flow" الخاص بك في مركز المجتمع!',
         success_thank_you: "شكراً لمشاركتكم في المجتمع!",
@@ -987,7 +993,6 @@ const TRANSLATIONS = {
           "تُستخدم العلامات لتصنيف مسارات عملك لتسهيل البحث. يمكنك إضافة عدة علامات. الحد الأقصى لعدد العلامات هو 5. الحد الأقصى لعدد الأحرف في كل علامة هو 20 حرفًا.",
         tags_placeholder: "أدخل النص واضغط على مفتاح الإدخال لإضافة العلامات",
         visibility_label: "رؤية",
-        publish_button: "نشر في مركز المجتمع",
         submitting: "نشر...",
         submit: "نشر في مركز المجتمع",
         privacy_note:
@@ -1013,10 +1018,6 @@ const TRANSLATIONS = {
         description_label: "وصف",
         description_description:
           "هذا هو وصف أمر السلايش الخاص بك. استخدم هذا لوصف الغرض من أمر السلايش الخاص بك.",
-        command_label: "أمر",
-        command_description:
-          "هذا هو الأمر الذي سيدخله المستخدمون لتفعيل هذا الإعداد المسبق.",
-        command_placeholder: "أمرى",
         tags_label: "الوسوم",
         tags_description:
           "تُستخدم العلامات لتسمية أوامر سلاش الخاصة بك لتسهيل البحث عنها. يمكنك إضافة عدة علامات. الحد الأقصى لعدد العلامات هو 5. الحد الأقصى لعدد الأحرف في كل علامة هو 20 حرفًا.",
@@ -1061,6 +1062,82 @@ const TRANSLATIONS = {
     notAssigned:
       "لا تم التخصيص لأي مساحة عمل.\nيرجى الاتصال بمدير المثيل لطلب الوصول إلى مساحة عمل.",
     goToWorkspace: 'الذهاب إلى "{{workspace}}"',
+  },
+  telegram: {
+    title: "روبوت تيليجرام",
+    description:
+      "قم بتوصيل مثيل AnyLLM الخاص بك بـ Telegram، حتى تتمكن من الدردشة مع مساحات العمل الخاصة بك من أي جهاز.",
+    setup: {
+      step1: {
+        title: "الخطوة الأولى: إنشاء روبوت Telegram الخاص بك.",
+        description:
+          "افتح حساب @BotFather على تطبيق تيليجرام، وأرسل الرسالة `/newbot` إلى حساب @BotFather، واتبع التعليمات، وانسخ رمز API.",
+        "open-botfather": "ابدأ محادثة مع BotFather",
+        "instruction-1": "1. افتح الرابط أو قم بمسح رمز QR.",
+        "instruction-2":
+          "2. أرسل <code>/newbot</code> إلى <code>@BotFather</code>",
+        "instruction-3": "3. اختر اسمًا واسم مستخدم لروبوتك.",
+        "instruction-4": "4. انسخ رمز واجهة برمجة التطبيقات الذي تتلقاه.",
+      },
+      step2: {
+        title: "الخطوة الثانية: قم بتوصيل روبوتك.",
+        description:
+          "الصق رمز API الذي تلقيته من @BotFather، ثم اختر مساحة عمل افتراضية لجهازك التابع للروبوت للدردشة فيها.",
+        "bot-token": "رمز الرمز (Token)",
+        "default-workspace": "مساحة العمل الافتراضية",
+        "no-workspace": "لا توجد مساحات عمل متاحة. سيتم إنشاء مساحة عمل جديدة.",
+        connecting: "التحميل...",
+        "connect-bot": "روبوت الاتصال",
+      },
+      security: {
+        title: "إعدادات الأمان الموصى بها",
+        description:
+          'لزيادة الأمان، قم بتكوين هذه الإعدادات في حساب "@BotFather".',
+        "disable-groups": "– منع إضافة الروبوتات إلى المجموعات",
+        "disable-inline": "– منع استخدام الروبوت في عمليات البحث المباشرة.",
+        "obscure-username":
+          "استخدم اسم مستخدم روبوت غير تقليدي لتقليل فرص اكتشافه.",
+      },
+      "toast-enter-token": "الرجاء إدخال رمز البوت.",
+      "toast-connect-failed": "فشل الاتصال بالروبوت.",
+    },
+    connected: {
+      status: "متصل",
+      "status-disconnected":
+        "غير متصل — قد يكون الرمز منتهي الصلاحية أو غير صالح",
+      "placeholder-token": "ألصق رمز البوت الجديد...",
+      reconnect: "إعادة الاتصال",
+      workspace: "مساحة العمل",
+      "bot-link": "رابط الروبوت",
+      "voice-response": "رد صوتي",
+      disconnecting: "قطع الاتصال...",
+      disconnect: "افصل",
+      "voice-text-only": "النص فقط",
+      "voice-mirror": "مرآة (يرد الصوت عند إرسال المستخدم له)",
+      "voice-always": "يرجى تضمين تسجيل صوتي (إرسال تسجيل صوتي مع كل رد).",
+      "toast-disconnect-failed": "فشل فصل الوحدة الآلية.",
+      "toast-reconnect-failed": "فشل إعادة الاتصال بالروبوت.",
+      "toast-voice-failed": "فشلت عملية تحديث وضع الصوت.",
+      "toast-approve-failed": "فشل في الموافقة على المستخدم.",
+      "toast-deny-failed": "فشل في رفض طلب المستخدم.",
+      "toast-revoke-failed": "فشل إلغاء صلاحية المستخدم.",
+    },
+    users: {
+      "pending-title": "معلق على الموافقة",
+      "pending-description":
+        "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
+      "approved-title": "المستخدمون المعتمدون",
+      "approved-description":
+        "المستخدمون الذين تم منحهم الإذن للتواصل مع روبوتك.",
+      user: "المستخدم",
+      "pairing-code": "رمز التوفيق",
+      "no-pending": "لا توجد طلبات معلقة.",
+      "no-approved": "لا يوجد مستخدمون معتمدون.",
+      unknown: "غير معروف",
+      approve: "الموافقة",
+      deny: "رفض",
+      revoke: "إلغاء",
+    },
   },
 };
 

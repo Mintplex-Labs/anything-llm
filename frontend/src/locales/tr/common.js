@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Hoş Geldiniz",
       getStarted: "Başla",
+      welcome: "Hoş geldiniz",
     },
     llm: {
       title: "LLM Tercihi",
@@ -49,17 +50,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Bu ayarlar istediğiniz zaman ayarlardan yeniden yapılandırılabilir.",
     },
-    workspace: {
-      title: "İlk çalışma alanınızı oluşturun",
-      description:
-        "İlk çalışma alanınızı oluşturun ve AnythingLLM ile başlayın.",
-    },
   },
   common: {
     "workspaces-name": "Çalışma Alanları Adı",
-    error: "hata",
-    success: "başarı",
-    user: "Kullanıcı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
     save: "Değişiklikleri Kaydet",
@@ -71,10 +64,14 @@ const TRANSLATIONS = {
     search: "Ara",
     username_requirements:
       "Kullanıcı adı 2-32 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+    on: "On",
+    none: "Yok",
+    stopped: "Durdu",
+    loading: "Yükleniyor",
+    refresh: "Tazelemek",
   },
   settings: {
     title: "Instance Ayarları",
-    system: "Genel Ayarlar",
     invites: "Davetler",
     users: "Kullanıcılar",
     workspaces: "Çalışma Alanları",
@@ -88,7 +85,6 @@ const TRANSLATIONS = {
     "voice-speech": "Ses & Konuşma",
     "vector-database": "Vektör Veritabanı",
     embeds: "Sohbet Gömme",
-    "embed-chats": "Gömme Sohbet Geçmişi",
     security: "Güvenlik",
     "event-logs": "Olay Kayıtları",
     privacy: "Gizlilik & Veri",
@@ -104,6 +100,16 @@ const TRANSLATIONS = {
     branding: "Marka & Beyaz Etiketleme",
     chat: "Sohbet",
     "mobile-app": "AnythingLLM Mobil",
+    "community-hub": {
+      title: "Topluluk Merkezi",
+      trending: "Popüler olanları keşfedin",
+      "your-account": "Hesabınız",
+      "import-item": "İthal Edilen Ürün",
+    },
+    channels: "Kanalalar",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -120,7 +126,6 @@ const TRANSLATIONS = {
       title: "Şifre Sıfırlama",
       description: "Şifrenizi sıfırlamak için gerekli bilgileri aşağıya girin.",
       "recovery-codes": "Kurtarma Kodları",
-      "recovery-code": "Kurtarma Kodu {{index}}",
       "back-to-login": "Girişe Geri Dön",
     },
   },
@@ -153,13 +158,6 @@ const TRANSLATIONS = {
       heading: "Bana açıkla",
       body: "AnythingLLM'nin faydalarını",
     },
-    pfp: {
-      title: "Asistan Profil Görseli",
-      description:
-        "Bu çalışma alanı için asistanın profil resmini özelleştirin.",
-      image: "Çalışma Alanı Görseli",
-      remove: "Çalışma Alanı Görselini Kaldır",
-    },
     delete: {
       title: "Çalışma Alanını Sil",
       description:
@@ -182,21 +180,23 @@ const TRANSLATIONS = {
       title: "Çalışma Alanı Sohbet Modeli",
       description:
         "Bu çalışma alanı için kullanılacak belirli sohbet modeli. Boş bırakılırsa, sistem LLM tercihi kullanılacaktır.",
-      wait: "-- modeller bekleniyor --",
     },
     mode: {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        "desc-start": "LLM'nin genel bilgisiyle yanıtlar sunar",
-        and: "ve",
-        "desc-end": "bulunan belge bağlamını ekler.",
+        description:
+          'LLM\'nin genel bilgisi ve bulunan doküman bağlamıyla cevaplar sağlayacaktır. Araçları kullanmak için "@agent" komutunu kullanmanız gerekecektir.',
       },
       query: {
         title: "Sorgu",
-        "desc-start": "yanıtları",
-        only: "sadece",
-        "desc-end": "belge bağlamı bulunduğunda sunar.",
+        description:
+          "yalnızca ilgili belgenin bağlamında yanıtlar sağlayacaktır.<b>Kullanılabilir araçları kullanmak için @agent komutunu kullanmanız gerekecektir.</b>",
+      },
+      automatic: {
+        title: "Oto",
+        description:
+          "Model ve sağlayıcı tarafından desteklenen araçları otomatik olarak kullanacaktır. Eğer yerel araç çağırma desteklenmiyorsa, araçları kullanmak için @agent komutunu kullanmanız gerekecektir.",
       },
     },
     history: {
@@ -289,9 +289,6 @@ const TRANSLATIONS = {
       wait: "-- modeller bekleniyor --",
     },
     skill: {
-      title: "Varsayılan ajan becerileri",
-      description:
-        "Varsayılan ajanın doğal yeteneklerini, hazır oluşturulmuş bu becerilerle geliştirin. Bu yapılandırma tüm çalışma alanları için geçerlidir.",
       rag: {
         title: "RAG ve uzun vadeli hafıza",
         description:
@@ -319,10 +316,111 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Canlı web araması ve gezinme",
-        "desc-start":
-          "Ajanınızın, bir web arama (SERP) sağlayıcısına bağlanarak sorularınızı yanıtlamak için web üzerinde arama yapmasına izin verin.",
-        "desc-end":
-          "Ajan oturumlarında web araması, bu ayar etkinleştirilene kadar çalışmayacaktır.",
+        description:
+          "Ajantınızın, web arama (SERP) sağlayıcısıyla bağlantı kurarak, sorularınızı yanıtlamak için web'i aramasını sağlayın.",
+      },
+      sql: {
+        title: "SQL Bağlayıcı",
+        description:
+          "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
+      },
+      default_skill:
+        "Varsayılan olarak bu özellik etkinleştirilmiştir, ancak ajanın kullanmasına izin vermek istemiyorsanız, bu özelliği devre dışı bırakabilirsiniz.",
+      filesystem: {
+        title: "Dosya Sistemi Erişimi",
+        description:
+          "Temsilcinizin, belirli bir klasör içindeki dosyaları okuma, yazma, arama ve yönetme yeteneğini etkinleştirin. Dosya düzenleme, klasör gezinme ve içerik arama özelliklerini destekler.",
+        learnMore:
+          "Bu beceriye nasıl başlanacağını ve nasıl kullanılacağını daha detaylı bir şekilde öğrenin.",
+        configuration: "Yapılandırma",
+        readActions: "Okunmuş Eylemler",
+        writeActions: "Yapılacak İşler",
+        warning:
+          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <link>belgelendirme</link>'i inceleyin.",
+        skills: {
+          "read-text-file": {
+            title: "Dosyayı aç",
+            description:
+              "Dosyalardaki içeriği okuyun (metin, kod, PDF, resimler vb.)",
+          },
+          "read-multiple-files": {
+            title: "Birden fazla dosyayı okuyun",
+            description: "Birden fazla dosyayı aynı anda okuyun",
+          },
+          "list-directory": {
+            title: "Yönerge Listesi",
+            description: "Bir klasördeki dosyaları ve dizinleri listeleyin.",
+          },
+          "search-files": {
+            title: "Dosyaları Arayın",
+            description: "Dosyaları adlarına veya içeriğine göre arayın",
+          },
+          "get-file-info": {
+            title: "Dosya Hakkında Bilgi Al",
+            description: "Dosyalara ilişkin ayrıntılı meta verileri elde edin.",
+          },
+          "write-file": {
+            title: "Dosya Oluştur",
+            description:
+              "Yeni dosyalar oluşturun veya mevcut dosyaları üzerine yazın.",
+          },
+          "edit-file": {
+            title: "Dosya Düzenle",
+            description: "Metin dosyalarında satır bazlı değişiklikler yapın.",
+          },
+          "create-directory": {
+            title: "Klasör Oluştur",
+            description: "Yeni klasörler oluşturun",
+          },
+          "move-file": {
+            title: "Dosya taşı/yeniden adlandır",
+            description:
+              "Dosyaları ve dizinleri taşıyın veya yeniden adlandırın.",
+          },
+          "copy-file": {
+            title: "Dosyayı Kopyala",
+            description: "Dosyaları ve dizinleri kopyala",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP Sunucuları",
+      "loading-from-config": "MCP sunarlarını yapılandırma dosyasından yükleme",
+      "learn-more": "MCP sunucuları hakkında daha fazla bilgi edinin.",
+      "no-servers-found": "Hiçbir MCP sunucusu bulunamadı.",
+      "tool-warning":
+        "En iyi performansı elde etmek için, gereksiz araçları devre dışı bırakarak bağlamı korumayı düşünebilirsiniz.",
+      "stop-server": "MCP sunucusunu durdurun",
+      "start-server": "MCP sunucusunu başlatın",
+      "delete-server": "MCP sunucusunu sil",
+      "tool-count-warning":
+        "Bu MCP sunucusu, <b> özelliklerini etkinleştirmiş durumda ve bu özellikler her etkileşimde bağlamı tüketebilir. </b> Bağlamı korumak için istenmeyen özellikleri devre dışı bırakmayı düşünebilirsiniz.",
+      "startup-command": "Başlangıç Komutu",
+      command: "Emir",
+      arguments: "Tartışmalar",
+      "not-running-warning":
+        "Bu MCP sunucusu çalışmıyor – olabilir ki durdurulmuş veya başlatma sırasında bir hata yaşıyor olabilir.",
+      "tool-call-arguments": "Araç çağrı argümanları",
+      "tools-enabled": "gerektiren araçlar etkinleştirildi",
+    },
+    settings: {
+      title: "Ajant Yetenek Ayarları",
+      "max-tool-calls": {
+        title: "Her yanıt için maksimum araç çağrı sayısı",
+        description:
+          "Bir ajantın, tek bir yanıt oluşturmak için zincirlemesini kullanabileceği maksimum araç sayısı. Bu, araçların kontrolsüz bir şekilde çağrılmasını ve sonsuz döngülerin oluşmasını engeller.",
+      },
+      "intelligent-skill-selection": {
+        title: "Akıllı Becerilerin Seçimi",
+        "beta-badge": "Beta",
+        description:
+          'Her sorgu için sınırsız araç kullanımı ve "cut token" kullanımını %80\'e kadar azaltma imkanı sunar — AnythingLLM, her talep için doğru becerileri otomatik olarak seçer.',
+        "max-tools": {
+          title: "Max Araçları",
+          description:
+            "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
+        },
       },
     },
   },
@@ -460,9 +558,6 @@ const TRANSLATIONS = {
     title: "Gizlilik & Veri İşleme",
     description:
       "Bağlantılı üçüncü taraf sağlayıcılarla ve AnythingLLM ile verilerinizin nasıl ele alındığını burada yapılandırabilirsiniz.",
-    llm: "LLM Seçimi",
-    embedding: "Gömme Tercihi",
-    vector: "Vektör Veritabanı",
     anonymous: "Anonim Telemetri Etkin",
   },
   connectors: {
@@ -504,7 +599,6 @@ const TRANSLATIONS = {
       URL_explained: "Toplamak istediğiniz GitLab deposunun URL'si.",
       token: "GitLab Erişim Tokeni",
       optional: "isteğe bağlı",
-      token_explained: "Hız sınırlamasını önlemek için erişim tokeni.",
       token_description: "GitLab API'sinden alınacak ek varlıkları seçin.",
       token_explained_start: "Bir ",
       token_explained_link1: "Kişisel Erişim Tokeni",
@@ -537,9 +631,6 @@ const TRANSLATIONS = {
       URL_explained_end: " mevcut olmalıdır.",
       task_explained:
         "Tamamlandığında, transkript belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
-      language: "Transkript Dili",
-      language_explained: "Toplamak istediğiniz transkriptin dilini seçin.",
-      loading_languages: "-- mevcut diller yükleniyor --",
     },
     "website-depth": {
       name: "Toplu Bağlantı Kazıyıcı",
@@ -600,20 +691,19 @@ const TRANSLATIONS = {
       "search-document": "Belge ara",
       "no-documents": "Belge Yok",
       "move-workspace": "Çalışma Alanına Taşı",
-      name: "Ad",
       "delete-confirmation":
         "Bu dosyaları ve klasörleri silmek istediğinizden emin misiniz?\nBu, dosyaları sistemden kaldıracak ve mevcut çalışma alanlarından otomatik olarak silecektir.\nBu işlem geri alınamaz.",
       "removing-message":
         "{{count}} belge ve {{folderCount}} klasör kaldırılıyor. Lütfen bekleyin.",
       "move-success": "{{count}} belge başarıyla taşındı.",
-      date: "Tarih",
-      type: "Tür",
       no_docs: "Belge Yok",
       select_all: "Tümünü Seç",
       deselect_all: "Tümünün Seçimini Kaldır",
       remove_selected: "Seçilenleri Kaldır",
       costs: "*Gömmeler için tek seferlik maliyet",
       save_embed: "Kaydet ve Göm",
+      "total-documents_one": "{{count}} belgesi",
+      "total-documents_other": "{{count}} belgeleri",
     },
     upload: {
       "processor-offline": "Belge İşleyici Kullanılamıyor",
@@ -651,8 +741,6 @@ const TRANSLATIONS = {
       accept: "Tamam, anladım",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Obsidian kasasını tek tıklamayla içe aktarın.",
       vault_location: "Kasa Konumu",
       vault_description:
         "Tüm notları ve bağlantılarını içe aktarmak için Obsidian kasa klasörünüzü seçin.",
@@ -666,16 +754,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Yeni çalışma alanınıza hoş geldiniz.",
-    get_started: "Başlamak için",
-    get_started_default: "Başlamak için",
-    upload: "bir belge yükleyin",
-    or: "veya",
-    send_chat: "bir sohbet gönderin.",
     send_message: "Mesaj gönderin",
     attach_file: "Bu sohbete bir dosya ekleyin",
-    slash: "Sohbet için mevcut tüm eğik çizgi komutlarını görüntüleyin.",
-    agents: "Sohbet için kullanabileceğiniz tüm ajanları görüntüleyin.",
     text_size: "Metin boyutunu değiştirin.",
     microphone: "Promptunuzu söyleyin.",
     send: "Çalışma alanına prompt mesajı gönderin",
@@ -686,19 +766,11 @@ const TRANSLATIONS = {
     regenerate_response: "Yanıtı yeniden oluştur",
     good_response: "İyi yanıt",
     more_actions: "Daha fazla eylem",
-    hide_citations: "Alıntıları gizle",
-    show_citations: "Alıntıları göster",
-    pause_tts_speech_message: "TTS mesaj konuşmasını duraklat",
     fork: "Çatalla",
     delete: "Sil",
-    save_submit: "Kaydet & Gönder",
     cancel: "İptal",
     edit_prompt: "Promptu düzenle",
     edit_response: "Yanıtı düzenle",
-    at_agent: "@agent",
-    default_agent_description: " - bu çalışma alanının varsayılan ajanı.",
-    custom_agents_coming_soon: "özel ajanlar yakında!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
     add_new_preset: " Yeni Ön Ayar Ekle",
@@ -722,6 +794,42 @@ const TRANSLATIONS = {
       missing_credentials: "Bu sağlayıcının kimlik bilgileri eksik!",
       missing_credentials_description:
         "Kimlik bilgilerini ayarlamak için tıklayın",
+    },
+    submit: "Gönder",
+    edit_info_user:
+      '"Gönder" seçeneği, yapay zeka yanıtını yeniden oluşturur. "Kaydet" seçeneği, yalnızca sizin mesajınızı günceller.',
+    edit_info_assistant:
+      "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
+    see_less: "Daha az",
+    see_more: "Daha Fazla",
+    tools: "Araçlar",
+    text_size_label: "Metin Boyutu",
+    select_model: "Model Seçimi",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "maç",
+    source_count_one: "{{count}} ile ilgili bilgi",
+    source_count_other: "{{count}} referansları",
+    preset_exit_description: "Mevcut ajan oturumunu durdurun",
+    add_new: "Yeni ekle",
+    edit: "Düzenle",
+    publish: "Yayınla",
+    stop_generating: "Yanıt üretmeyi durdurun",
+    slash_commands: "Komut Satırı Komutları",
+    agent_skills: "Ajansın Yetenekleri",
+    manage_agent_skills: "Temsilcinin becerilerini yönetin",
+    agent_skills_disabled_in_session:
+      "Aktif bir ajan oturumunda becerileri değiştirilemez. İlk olarak /exit komutunu kullanarak oturumu sonlandırın.",
+    start_agent_session: "Temsilci Oturumu Başlat",
+    use_agent_session_to_use_tools:
+      'Çatınızdaki araçları kullanmak için, isteminizin başında "@agent" ile bir ajan oturumu başlatabilirsiniz.',
+    agent_invocation: {
+      model_wants_to_call: "Model, arama yapmak istiyor",
+      approve: "Onayla",
+      reject: "Reddet",
+      always_allow: "Her zaman {{skillName}}'ı sağlayın.",
+      tool_call_was_approved: "Araç talebi onaylandı.",
+      tool_call_was_rejected: "Ara çağrısı reddedildi.",
     },
   },
   profile_settings: {
@@ -792,11 +900,6 @@ const TRANSLATIONS = {
         description:
           "Giriş sayfasında tüm kullanıcılara gösterilen bir ad ayarlayın.",
       },
-      "chat-message-alignment": {
-        title: "Sohbet Mesajı Hizalaması",
-        description:
-          "Sohbet arayüzünü kullanırken mesaj hizalama modunu seçin.",
-      },
       "display-language": {
         title: "Görüntüleme Dili",
         description:
@@ -809,18 +912,6 @@ const TRANSLATIONS = {
         recommended: "Önerilen boyut: 800 x 200",
         remove: "Kaldır",
         replace: "Değiştir",
-      },
-      "welcome-messages": {
-        title: "Karşılama Mesajları",
-        description:
-          "Kullanıcılarınıza gösterilen karşılama mesajlarını özelleştirin. Yalnızca yönetici olmayan kullanıcılar bu mesajları görecektir.",
-        new: "Yeni",
-        system: "sistem",
-        user: "kullanıcı",
-        message: "mesaj",
-        assistant: "AnythingLLM Sohbet Asistanı",
-        "double-click": "Düzenlemek için çift tıklayın...",
-        save: "Mesajları Kaydet",
       },
       "browser-appearance": {
         title: "Tarayıcı Görünümü",
@@ -851,89 +942,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Sohbete başlamadan önce lütfen bir çalışma alanı oluşturun.",
-    checklist: {
-      title: "Başlarken",
-      tasksLeft: "kalan görev",
-      completed: "AnythingLLM uzmanı olma yolundasınız!",
-      dismiss: "kapat",
-      tasks: {
-        create_workspace: {
-          title: "Bir çalışma alanı oluşturun",
-          description: "Başlamak için ilk çalışma alanınızı oluşturun",
-          action: "Oluştur",
-        },
-        send_chat: {
-          title: "Bir sohbet gönderin",
-          description: "AI asistanınızla bir konuşma başlatın",
-          action: "Sohbet",
-        },
-        embed_document: {
-          title: "Bir belge gömün",
-          description: "Çalışma alanınıza ilk belgenizi ekleyin",
-          action: "Göm",
-        },
-        setup_system_prompt: {
-          title: "Bir sistem promptu ayarlayın",
-          description: "AI asistanınızın davranışını yapılandırın",
-          action: "Ayarla",
-        },
-        define_slash_command: {
-          title: "Bir eğik çizgi komutu tanımlayın",
-          description: "Asistanınız için özel komutlar oluşturun",
-          action: "Tanımla",
-        },
-        visit_community: {
-          title: "Topluluk Hub'ını Ziyaret Edin",
-          description: "Topluluk kaynaklarını ve şablonları keşfedin",
-          action: "Göz At",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Hızlı Bağlantılar",
-      sendChat: "Sohbet Gönder",
-      embedDocument: "Belge Göm",
-      createWorkspace: "Çalışma Alanı Oluştur",
-    },
-    exploreMore: {
-      title: "Daha fazla özellik keşfedin",
-      features: {
-        customAgents: {
-          title: "Özel AI Ajanları",
-          description:
-            "Kod yazmadan güçlü AI Ajanları ve otomasyonlar oluşturun.",
-          primaryAction: "@agent kullanarak sohbet et",
-          secondaryAction: "Bir ajan akışı oluştur",
-        },
-        slashCommands: {
-          title: "Eğik Çizgi Komutları",
-          description:
-            "Özel eğik çizgi komutları kullanarak zaman kazanın ve promptlar enjekte edin.",
-          primaryAction: "Eğik Çizgi Komutu Oluştur",
-          secondaryAction: "Hub'da Keşfet",
-        },
-        systemPrompts: {
-          title: "Sistem Promptları",
-          description:
-            "Bir çalışma alanının AI yanıtlarını özelleştirmek için sistem promptunu değiştirin.",
-          primaryAction: "Sistem Promptunu Değiştir",
-          secondaryAction: "Prompt değişkenlerini yönet",
-        },
-      },
-    },
-    announcements: {
-      title: "Güncellemeler & Duyurular",
-    },
-    resources: {
-      title: "Kaynaklar",
-      links: {
-        docs: "Dokümantasyon",
-        star: "Github'da Yıldızla",
-      },
-      keyboardShortcuts: "Klavye Kısayolları",
-    },
     quickActions: {
       createAgent: "Bir temsilci oluşturun",
       editWorkspace: "Çalışma Alanını Düzenle",
@@ -978,15 +986,12 @@ const TRANSLATIONS = {
         private_description: "Özel sistem promptları yalnızca size görünür.",
         publish_button: "Topluluk Hub'ına Yayınla",
         submitting: "Yayınlanıyor...",
-        submit: "Topluluk Hub'ına Yayınla",
         prompt_label: "Prompt",
         prompt_description:
           "Bu, LLM'yi yönlendirmek için kullanılacak gerçek sistem promptudur.",
         prompt_placeholder: "Sistem promptunuzu buraya girin...",
       },
       agent_flow: {
-        public_description: "Herkese açık ajan akışları herkese görünür.",
-        private_description: "Özel ajan akışları yalnızca size görünür.",
         success_title: "Başarılı!",
         success_description: "Ajan Akışınız Topluluk Hub'ına yayınlandı!",
         success_thank_you: "Topluluğa paylaştığınız için teşekkür ederiz!",
@@ -1003,7 +1008,6 @@ const TRANSLATIONS = {
           "Etiketler, ajan akışınızı daha kolay aramak için etiketlemek amacıyla kullanılır. Birden fazla etiket ekleyebilirsiniz. Maksimum 5 etiket. Etiket başına maksimum 20 karakter.",
         tags_placeholder: "Yazın ve etiket eklemek için Enter'a basın",
         visibility_label: "Görünürlük",
-        publish_button: "Topluluk Hub'ına Yayınla",
         submitting: "Yayınlanıyor...",
         submit: "Topluluk Hub'ına Yayınla",
         privacy_note:
@@ -1022,10 +1026,6 @@ const TRANSLATIONS = {
         description_label: "Açıklama",
         description_description:
           "Bu, eğik çizgi komutunuzun açıklamasıdır. Eğik çizgi komutunuzun amacını açıklamak için bunu kullanın.",
-        command_label: "Komut",
-        command_description:
-          "Bu, kullanıcıların bu ön ayarı tetiklemek için yazacağı eğik çizgi komutudur.",
-        command_placeholder: "komutum",
         tags_label: "Etiketler",
         tags_description:
           "Etiketler, eğik çizgi komutunuzu daha kolay aramak için etiketlemek amacıyla kullanılır. Birden fazla etiket ekleyebilirsiniz. Maksimum 5 etiket. Etiket başına maksimum 20 karakter.",
@@ -1079,6 +1079,85 @@ const TRANSLATIONS = {
     notAssigned:
       "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
     goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram Bot'u",
+    description:
+      "AnythingLLM örneğinizi Telegram ile bağlantılandırarak, herhangi bir cihazdan çalışma alanlarınızla sohbet edebilmelisiniz.",
+    setup: {
+      step1: {
+        title: "1. Adım: Telegram botunuzu oluşturun",
+        description:
+          "Telegram uygulamasında @BotFather'ı açın, \"<code>/newbot</code>\" komutunu <code>@BotFather</code>'e gönderin, talimatları izleyin ve API anahtarını kopyalayın.",
+        "open-botfather": "BotFather'ı aç",
+        "instruction-1": "1. Bağlantıyı açın veya QR kodunu tarayın",
+        "instruction-2":
+          "2. <code>/newbot</code> adresine <code>@BotFather</code>'e gönderin.",
+        "instruction-3": "3. Botunuz için bir isim ve kullanıcı adı seçin",
+        "instruction-4": "4. Alınan API token'ı kopyalayın",
+      },
+      step2: {
+        title: "Adım 2: Botunuzu bağlayın",
+        description:
+          "Aldığınız API token'ı (@BotFather) kopyalayın ve botunuzun iletişim kuracağı varsayılan çalışma alanını seçin.",
+        "bot-token": "Bot Token",
+        "default-workspace": "Varsayılan Çalışma Alanı",
+        "no-workspace":
+          "Mevcut çalışma alanları bulunmamaktadır. Yeni bir çalışma alanı oluşturulacaktır.",
+        connecting: "Bağlantı kuruluyor...",
+        "connect-bot": "Bağlantı Botu",
+      },
+      security: {
+        title: "Önerilen Güvenlik Ayarları",
+        description:
+          "Ek güvenlik için, bu ayarları @BotFather üzerinden yapılandırın.",
+        "disable-groups": "— Gruplara bot eklenmesini engelleme",
+        "disable-inline":
+          "— Bot'un, arama çubuklarında kullanılmasını engellemek",
+        "obscure-username":
+          "Daha az bilinen bir bot kullanıcı adı kullanarak görünürlüğünü azaltın.",
+      },
+      "toast-enter-token": "Lütfen bir bot belirteci girin.",
+      "toast-connect-failed": "Bot ile bağlantı kurulamadı.",
+    },
+    connected: {
+      status: "Bağlı",
+      "status-disconnected":
+        "Bağlantı kesildi — belirteç geçersiz veya süresi dolmuş olabilir",
+      "placeholder-token": "Yeni bot token'ı yapıştırın...",
+      reconnect: "Yeniden bağlantı kur",
+      workspace: "Çalışma alanı",
+      "bot-link": "Bot bağlantısı",
+      "voice-response": "Sesle etkileşim",
+      disconnecting: "Bağlantıyı kesiyorum...",
+      disconnect: "Bağlantıyı kes",
+      "voice-text-only": "Sadece metin",
+      "voice-mirror":
+        "Sesli yanıt (kullanıcı ses gönderdiğinde, sesli yanıtla cevaplayın)",
+      "voice-always": "Her yanıtla birlikte sesli (sesli yanıt gönderme)",
+      "toast-disconnect-failed": "Bot'u ayırmada başarısız.",
+      "toast-reconnect-failed": "Bot yeniden bağlantı kuramadı.",
+      "toast-voice-failed": "Ses modunu güncelleme başarısız oldu.",
+      "toast-approve-failed": "Kullanıcıın onaylanması başarısız oldu.",
+      "toast-deny-failed": "Kullanıcıyı reddetmeyi başaramadı.",
+      "toast-revoke-failed": "Kullanıcıyı silme işlemi başarısız oldu.",
+    },
+    users: {
+      "pending-title": "Onay Bekliyor",
+      "pending-description":
+        "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
+      "approved-title": "Onaylanmış Kullanıcılar",
+      "approved-description":
+        "Botunuzla sohbet etmeye yetkili olan kullanıcılar.",
+      user: "Kullanıcı",
+      "pairing-code": "Eşleştirme Kodu",
+      "no-pending": "Henüz tamamlanmamış herhangi bir istek bulunmamaktadır.",
+      "no-approved": "Onaylanmış kullanıcı bulunmamaktadır",
+      unknown: "Bilinmiyor",
+      approve: "Onayla",
+      deny: "İnkar",
+      revoke: "İptal et",
+    },
   },
 };
 

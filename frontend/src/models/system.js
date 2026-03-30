@@ -504,39 +504,6 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getWelcomeMessages: async function () {
-    return await fetch(`${API_BASE}/system/welcome-messages`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch welcome messages.");
-        return res.json();
-      })
-      .then((res) => res.welcomeMessages)
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  },
-  setWelcomeMessages: async function (messages) {
-    return fetch(`${API_BASE}/system/set-welcome-messages`, {
-      method: "POST",
-      headers: baseHeaders(),
-      body: JSON.stringify({ messages }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText || "Error setting welcome messages.");
-        }
-        return { success: true, ...res.json() };
-      })
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
   getApiKeys: async function () {
     return fetch(`${API_BASE}/system/api-keys`, {
       method: "GET",
@@ -864,6 +831,21 @@ const System = {
         console.error("Failed to validate SQL connection:", e);
         return { success: false, error: e.message };
       });
+  },
+
+  /**
+   * Checks if the filesystem-agent skill is available.
+   * The filesystem-agent skill is only available when running in a Docker container.
+   * @returns {Promise<boolean>}
+   */
+  isFileSystemAgentAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/filesystem-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
   },
 
   experimentalFeatures: {

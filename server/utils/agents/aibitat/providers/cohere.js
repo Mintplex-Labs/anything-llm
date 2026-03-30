@@ -1,10 +1,14 @@
-const { CohereClient } = require("cohere-ai");
+const { CohereClientV2 } = require("cohere-ai");
 const Provider = require("./ai-provider");
 const InheritMultiple = require("./helpers/classes");
 const UnTooled = require("./helpers/untooled");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 
+/**
+ * The agent provider for the Cohere AI provider.
+ * Uses the v2 API which supports OpenAI-compatible message format and vision.
+ */
 class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
@@ -12,7 +16,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     const { model = process.env.COHERE_MODEL_PREF || "command-r-08-2024" } =
       config;
     super();
-    const client = new CohereClient({
+    const client = new CohereClientV2({
       token: process.env.COHERE_API_KEY,
     });
     this._client = client;
@@ -37,35 +41,45 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     return false;
   }
 
-  #convertChatHistoryCohere(chatHistory = []) {
-    let cohereHistory = [];
-    chatHistory.forEach((message) => {
-      switch (message.role) {
-        case "SYSTEM":
-        case "system":
-          cohereHistory.push({ role: "SYSTEM", message: message.content });
-          break;
-        case "USER":
-        case "user":
-          cohereHistory.push({ role: "USER", message: message.content });
-          break;
-        case "CHATBOT":
-        case "assistant":
-          cohereHistory.push({ role: "CHATBOT", message: message.content });
-          break;
-      }
-    });
+  /**
+   * Format a message with attachments for Cohere's v2 API.
+   * Cohere SDK uses camelCase (imageUrl) instead of snake_case (image_url).
+   * @param {Object} message - Message with potential attachments
+   * @returns {Object} Formatted message for Cohere SDK
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
 
-    return cohereHistory;
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push({
+        type: "image_url",
+        imageUrl: {
+          url: attachment.contentString,
+        },
+      });
+    }
+
+    const { attachments: _, ...rest } = message;
+    return {
+      ...rest,
+      content,
+    };
   }
 
+  /**
+   * Stream a chat completion using the Cohere v2 API.
+   * The v2 API accepts OpenAI-compatible message format directly,
+   * including multimodal content arrays for vision support.
+   * @param {Object} options - Options containing messages array
+   * @returns {AsyncIterable} Stream of events from Cohere
+   */
   async #handleFunctionCallStream({ messages = [] }) {
-    const userPrompt = messages[messages.length - 1]?.content || "";
-    const history = messages.slice(0, -1);
     return await this.client.chatStream({
       model: this.model,
-      chatHistory: this.#convertChatHistoryCohere(history),
-      message: userPrompt,
+      messages: messages,
     });
   }
 
@@ -92,12 +106,14 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     });
 
     for await (const event of stream) {
-      if (event.eventType !== "text-generation") continue;
-      textResponse += event.text;
+      if (event.type !== "content-delta") continue;
+      const text = event.delta?.message?.content?.text || "";
+      if (!text) continue;
+      textResponse += text;
       eventHandler?.("reportStreamEvent", {
         type: "statusResponse",
         uuid: msgUUID,
-        content: event.text,
+        content: text,
       });
     }
 
@@ -153,6 +169,7 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerLog(
       "CohereProvider.stream - will process this chat completion."
     );
+    // eslint-disable-next-line
     try {
       let completion = { content: "" };
       if (functions.length > 0) {
@@ -222,12 +239,14 @@ class CohereProvider extends InheritMultiple([Provider, UnTooled]) {
         });
 
         for await (const chunk of stream) {
-          if (chunk.eventType !== "text-generation") continue;
-          completion.content += chunk.text;
+          if (chunk.type !== "content-delta") continue;
+          const text = chunk.delta?.message?.content?.text || "";
+          if (!text) continue;
+          completion.content += text;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
             uuid: msgUUID,
-            content: chunk.text,
+            content: text,
           });
         }
       }

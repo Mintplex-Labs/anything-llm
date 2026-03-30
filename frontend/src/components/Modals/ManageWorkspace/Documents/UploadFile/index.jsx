@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
@@ -34,7 +34,7 @@ export default function UploadFile({
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
-      fetchKeys(true);
+      await fetchKeys(true, { autoSelectNew: true });
       showToast("Link uploaded successfully", "success");
       formEl.reset();
     }
@@ -42,11 +42,12 @@ export default function UploadFile({
     setFetchingUrl(false);
   };
 
-  // Queue all fetchKeys calls through the same debouncer to prevent spamming the server.
-  // either a success or error will trigger a fetchKeys call so the UI is not stuck loading.
-  const debouncedFetchKeys = debounce(() => fetchKeys(true), 1000);
-  const handleUploadSuccess = () => debouncedFetchKeys();
-  const handleUploadError = () => debouncedFetchKeys();
+  const debouncedFetchKeysRef = useRef(
+    debounce((fn, opts) => fn(true, opts), 1000)
+  );
+  const handleUploadSuccess = () =>
+    debouncedFetchKeysRef.current(fetchKeys, { autoSelectNew: true });
+  const handleUploadError = () => debouncedFetchKeysRef.current(fetchKeys, {});
 
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {

@@ -1,0 +1,75 @@
+name: Lint
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "server/**/*.js"
+      - "server/eslint.config.mjs"
+      - "collector/**/*.js"
+      - "collector/eslint.config.mjs"
+      - "frontend/src/**/*.js"
+      - "frontend/src/**/*.jsx"
+      - "frontend/eslint.config.js"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Cache server dependencies
+        uses: actions/cache@v4
+        with:
+          path: server/node_modules
+          key: ${{ runner.os }}-yarn-server-${{ hashFiles('server/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-server-
+
+      - name: Cache frontend dependencies
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-frontend-
+
+      - name: Cache collector dependencies
+        uses: actions/cache@v4
+        with:
+          path: collector/node_modules
+          key: ${{ runner.os }}-yarn-collector-${{ hashFiles('collector/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-collector-
+
+      - name: Install server dependencies
+        run: cd server && yarn install --frozen-lockfile
+
+      - name: Install frontend dependencies
+        run: cd frontend && yarn install --frozen-lockfile
+
+      - name: Install collector dependencies
+        run: cd collector && yarn install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
+          SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
+
+      - name: Lint server
+        run: cd server && yarn lint:check
+
+      - name: Lint frontend
+        run: cd frontend && yarn lint:check
+
+      - name: Lint collector
+        run: cd collector && yarn lint:check

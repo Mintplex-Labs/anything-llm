@@ -12,6 +12,7 @@ const handledEvents = [
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
+  "toolApprovalRequest",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -41,12 +42,18 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: {},
         },
       ];
     });
   }
 
-  if (!handledEvents.includes(data.type) || !data.content) return;
+  // toolApprovalRequest doesn't have content field, so check separately
+  if (data.type === "toolApprovalRequest") {
+    if (!data.requestId || !data.skillName) return;
+  } else if (!handledEvents.includes(data.type) || !data.content) {
+    return;
+  }
 
   if (data.type === "reportStreamEvent") {
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
@@ -74,6 +81,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -95,6 +103,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -111,6 +120,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             error: null,
             animate: false,
             pending: false,
+            metrics: {},
           },
         ];
       } else {
@@ -125,6 +135,25 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             ...prev.filter((msg) => msg.uuid !== uuid),
             { ...knownMessage, content },
           ]; // If the message is known, replace it with the new content
+        }
+
+        if (type === "usageMetrics") {
+          if (!data.content.metrics) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid ? { ...msg, metrics: data.content.metrics } : msg
+          );
+        }
+
+        if (type === "citations") {
+          if (!data.content.citations) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid
+              ? {
+                  ...msg,
+                  sources: [...(msg.sources || []), ...data.content.citations],
+                }
+              : msg
+          );
         }
 
         if (type === "textResponseChunk") {
@@ -172,6 +201,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: data.metrics || {},
         },
       ];
     });
@@ -190,6 +220,32 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: data.content,
           animate: false,
           pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "toolApprovalRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "toolApprovalRequest",
+          requestId: data.requestId,
+          skillName: data.skillName,
+          payload: data.payload,
+          description: data.description,
+          timeoutMs: data.timeoutMs,
+          content: `Approval requested for ${data.skillName}`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
         },
       ];
     });
@@ -208,13 +264,24 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         error: null,
         animate: data?.animate || false,
         pending: false,
+        metrics: data.metrics || {},
       },
     ];
   });
 }
 
+let _agentSessionActive = false;
+export function setAgentSessionActive(value) {
+  _agentSessionActive = value;
+}
+export function getAgentSessionActive() {
+  return _agentSessionActive;
+}
+
 export function useIsAgentSessionActive() {
-  const [activeSession, setActiveSession] = useState(false);
+  const [activeSession, setActiveSession] = useState(
+    () => !!getAgentSessionActive()
+  );
   useEffect(() => {
     function listenForAgentSession() {
       if (!window) return;

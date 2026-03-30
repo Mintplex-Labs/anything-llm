@@ -32,7 +32,7 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   AzureOpenAiModelPref: {
-    envKey: "OPEN_MODEL_PREF",
+    envKey: "AZURE_OPENAI_MODEL_PREF",
     checks: [isNotEmpty],
   },
   AzureOpenAiEmbeddingModelPref: {
@@ -562,14 +562,6 @@ const KEY_MAPPING = {
   },
 
   // Agent Integration ENVs
-  AgentGoogleSearchEngineId: {
-    envKey: "AGENT_GSE_CTX",
-    checks: [],
-  },
-  AgentGoogleSearchEngineKey: {
-    envKey: "AGENT_GSE_KEY",
-    checks: [],
-  },
   AgentSerpApiKey: {
     envKey: "AGENT_SERPAPI_API_KEY",
     checks: [],
@@ -608,6 +600,10 @@ const KEY_MAPPING = {
   },
   AgentExaApiKey: {
     envKey: "AGENT_EXA_API_KEY",
+    checks: [],
+  },
+  AgentPerplexityApiKey: {
+    envKey: "AGENT_PERPLEXITY_API_KEY",
     checks: [],
   },
 
@@ -833,12 +829,30 @@ const KEY_MAPPING = {
     envKey: "LEMONADE_LLM_BASE_PATH",
     checks: [isValidURL],
   },
+  LemonadeLLMApiKey: {
+    envKey: "LEMONADE_LLM_API_KEY",
+    checks: [],
+  },
   LemonadeLLMModelPref: {
     envKey: "LEMONADE_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
   LemonadeLLMModelTokenLimit: {
     envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Agent Skill Settings
+  AgentSkillMaxToolCalls: {
+    envKey: "AGENT_MAX_TOOL_CALLS",
+    checks: [nonZero],
+  },
+  AgentSkillRerankerEnabled: {
+    envKey: "AGENT_SKILL_RERANKER_ENABLED",
+    checks: [],
+  },
+  AgentSkillRerankerTopN: {
+    envKey: "AGENT_SKILL_RERANKER_TOP_N",
     checks: [nonZero],
   },
 };
@@ -861,7 +875,7 @@ function isValidURL(input = "") {
   try {
     new URL(input);
     return null;
-  } catch (e) {
+  } catch {
     return "URL is not a valid URL.";
   }
 }

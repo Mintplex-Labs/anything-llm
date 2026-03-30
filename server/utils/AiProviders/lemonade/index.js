@@ -22,7 +22,7 @@ class LemonadeLLM {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
     });
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;
@@ -202,7 +202,7 @@ class LemonadeLLM {
           process.env.LEMONADE_LLM_BASE_PATH,
           "openai"
         ),
-        apiKey: null,
+        apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
@@ -233,14 +233,17 @@ class LemonadeLLM {
       const endpoint = new URL(parseLemonadeServerEndpoint(basePath, "openai"));
       endpoint.pathname += "/load";
 
-      console.log(endpoint.toString());
-
       LemonadeLLM.slog(
         `Loading model ${model} with context size ${this.promptWindowLimit()}`
       );
       await fetch(endpoint.toString(), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...(process.env.LEMONADE_LLM_API_KEY
+            ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+            : {}),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model_name: String(model),
           ctx_size: Number(this.promptWindowLimit()),
@@ -309,7 +312,7 @@ function parseLemonadeServerEndpoint(basePath = null, to = "openai") {
     else if (to === "ollama") url.pathname = "api";
     else if (to === "base") url.pathname = ""; // only used for /live
     return url.toString();
-  } catch (e) {
+  } catch {
     return basePath;
   }
 }
@@ -343,7 +346,14 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
     );
     lemonadeUrl.pathname += "/models";
     lemonadeUrl.searchParams.append("show_all", "true");
-    await fetch(lemonadeUrl.toString())
+
+    await fetch(lemonadeUrl.toString(), {
+      headers: {
+        ...(!!process.env.LEMONADE_LLM_API_KEY
+          ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+          : {}),
+      },
+    })
       .then((res) => res.json())
       .then(({ data }) => {
         data?.forEach((model) => {
@@ -369,6 +379,7 @@ async function getAllLemonadeModels(basePath = null, task = "chat") {
   } catch (e) {
     LemonadeLLM.slog(`Error getting Lemonade models`, e);
   } finally {
+    // eslint-disable-next-line
     return Object.values(availableModels).flatMap((m) => m.tags);
   }
 }

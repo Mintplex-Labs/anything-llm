@@ -1,4 +1,3 @@
-const { toChunks } = require("../../helpers");
 const { parseLemonadeServerEndpoint } = require("../../AiProviders/lemonade");
 
 class LemonadeEmbedder {
@@ -14,7 +13,7 @@ class LemonadeEmbedder {
         process.env.EMBEDDING_BASE_PATH,
         "openai"
       ),
-      apiKey: null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 

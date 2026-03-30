@@ -256,14 +256,19 @@ class CollectorApi {
    * Parse a document without processing it
    * - Will append the options to the request body
    * @param {string} filename - The filename of the document to parse
+   * @param {Object} parseOptions - Additional options for parsing
+   * @param {string} parseOptions.absolutePath - If provided, use this absolute path instead of looking in the hotdir
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async parseDocument(filename = "") {
+  async parseDocument(filename = "", parseOptions = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        absolutePath: parseOptions.absolutePath || null,
+      },
     });
 
     return await fetch(`${this.endpoint}/parse`, {

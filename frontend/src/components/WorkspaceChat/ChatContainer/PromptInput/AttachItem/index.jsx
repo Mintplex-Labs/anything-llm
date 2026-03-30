@@ -1,4 +1,4 @@
-import { PaperclipHorizontal } from "@phosphor-icons/react";
+import { Plus } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
 import { useRef, useState, useEffect } from "react";
@@ -88,20 +88,26 @@ export default function AttachItem({
     <>
       <button
         id="attach-item-btn"
-        data-tooltip-id="tooltip-attach-item-btn"
+        data-tooltip-id={
+          showTooltip ? "tooltip-attach-item-btn" : "attach-item-btn"
+        }
+        data-tooltip-content={
+          !showTooltip ? t("chat_window.attach_file") : undefined
+        }
         aria-label={t("chat_window.attach_file")}
         type="button"
         onClick={handleClick}
         onPointerEnter={fetchFiles}
-        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
+        className="group border-none relative flex justify-center items-center cursor-pointer w-6 h-6 rounded-full hover:bg-zinc-700 light:hover:bg-slate-200"
       >
         <div className="relative">
-          <PaperclipHorizontal
-            color="var(--theme-sidebar-footer-icon-fill)"
-            className="w-[20px] h-[20px] pointer-events-none text-white rotate-90 -scale-y-100"
+          <Plus
+            size={18}
+            className="pointer-events-none text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-600 shrink-0"
+            weight="bold"
           />
           {files.length > 0 && (
-            <div className="absolute -top-2 right-[1%] bg-white text-black light:invert text-[8px] rounded-full px-1 flex items-center justify-center">
+            <div className="absolute -top-2.5 -right-2 bg-white text-black light:invert text-[8px] rounded-full px-1 flex items-center justify-center">
               {files.length}
             </div>
           )}

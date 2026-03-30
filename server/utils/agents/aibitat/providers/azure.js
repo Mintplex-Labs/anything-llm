@@ -17,11 +17,23 @@ class AzureOpenAiProvider extends Provider {
       baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
-    this.model = config.model ?? process.env.OPEN_MODEL_PREF;
+    this.model =
+      config.model ||
+      process.env.AZURE_OPENAI_MODEL_PREF ||
+      process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
 
   get supportsAgentStreaming() {
+    return true;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Azure OpenAI always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
     return true;
   }
 
@@ -31,7 +43,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {any[]} messages
    * @param {any[]} functions
    * @param {function} eventHandler
-   * @returns {Promise<{ functionCall: any, textResponse: string }>}
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("Provider.stream - will process this chat completion.");
@@ -42,7 +54,8 @@ class AzureOpenAiProvider extends Provider {
         this.model,
         messages,
         functions,
-        eventHandler
+        eventHandler,
+        { provider: this }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -72,7 +85,8 @@ class AzureOpenAiProvider extends Provider {
         this.model,
         messages,
         functions,
-        this.getCost.bind(this)
+        this.getCost.bind(this),
+        { provider: this }
       );
 
       if (result.retryWithError) {

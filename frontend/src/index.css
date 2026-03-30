@@ -326,25 +326,6 @@ a {
   }
 }
 
-.doc__source {
-  opacity: 0;
-  animation-delay: 50ms;
-  animation: citationAnimation 0.15s ease-out 0s forwards;
-}
-
-@keyframes citationAnimation {
-  0% {
-    opacity: 0;
-  }
-
-  80% {
-    opacity: 0.5;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
 
 @media (prefers-color-scheme: light) {
   .sidebar-items:after {
@@ -677,7 +658,7 @@ dialog::backdrop {
 }
 
 .tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+  @apply !bg-black !text-white !py-2 !px-3 !rounded-md !z-10;
 }
 
 .Toastify__toast-body {
@@ -1059,13 +1040,14 @@ does not extend the close button beyond the viewport. */
   }
 }
 
-/* Math/Katex formatting to prevent duplication of content on screen */
-.katex-html[aria-hidden="true"] {
-  display: none;
+/* KaTeX overrides - base CSS imported via markdown-katex.js plugin */
+.katex-display {
+  margin: 0 !important;
+  text-align: left !important;
 }
 
-.katex-mathml {
-  font-size: 20px;
+.katex-display > .katex {
+  text-align: left !important;
 }
 
 .rti--container {

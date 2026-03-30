@@ -45,7 +45,7 @@ class DellProAiStudioLLM {
       const baseURL = new URL(providedBasePath);
       const basePath = `${baseURL.origin}/v1/openai`;
       return basePath;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
