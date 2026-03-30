@@ -47,13 +47,6 @@ async function queueEmbedding(payload, context = null) {
   return result.vectors;
 }
 
-// Graceful shutdown: kill forked workers so they don't become orphaned.
-for (const signal of ["SIGTERM", "SIGINT"]) {
-  process.on(signal, () => {
-    embeddingQueue.killWorker();
-  });
-}
-
 module.exports = {
   queueEmbedding,
   embeddingProgressBus,
