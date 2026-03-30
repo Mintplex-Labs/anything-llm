@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "欢迎使用",
       getStarted: "开始",
+      welcome: "欢迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -185,12 +186,18 @@ const TRANSLATIONS = {
       title: "聊天模式",
       chat: {
         title: "聊天",
+        description:
+          "将提供答案，利用LLM的通用知识和提供的文档内容<b>和</b>。您需要使用@agent命令来使用工具。",
       },
       query: {
         title: "查询",
+        description:
+          "将在找到文档上下文时，仅提供答案 <b>。您需要使用 @agent 命令来使用工具。",
       },
       automatic: {
         title: "自动",
+        description:
+          "如果模型和提供者都支持原生工具调用，则会自动使用这些工具。<br />如果不支持原生工具调用，您需要使用 `@agent` 命令来使用工具。",
       },
     },
     history: {
@@ -310,6 +317,59 @@ const TRANSLATIONS = {
       },
       default_skill:
         "默认情况下，这项技能已启用。但是，如果您不想让该技能被代理使用，您可以将其禁用。",
+      filesystem: {
+        title: "文件系统访问",
+        description:
+          "允许您的代理能够读取、写入、搜索和管理指定目录中的文件。 支持文件编辑、目录导航和内容搜索功能。",
+        learnMore: "了解更多关于如何使用这项技能的信息。",
+        configuration: "配置",
+        readActions: "阅读操作",
+        writeActions: "编写操作",
+        warning:
+          "访问文件系统可能存在风险，因为它可能修改或删除文件。在启用之前，请务必查阅<link>文档</link>。",
+        skills: {
+          "read-text-file": {
+            title: "读取文件",
+            description: "读取文件内容（包括文本、代码、PDF、图像等）",
+          },
+          "read-multiple-files": {
+            title: "读取多个文件",
+            description: "同时读取多个文件",
+          },
+          "list-directory": {
+            title: "目录",
+            description: "列出文件夹中的文件和目录",
+          },
+          "search-files": {
+            title: "搜索文件",
+            description: "按文件名或内容搜索文件",
+          },
+          "get-file-info": {
+            title: "获取文件信息",
+            description: "获取有关文件的详细元数据",
+          },
+          "write-file": {
+            title: "创建文件",
+            description: "创建新的文件或覆盖现有文件",
+          },
+          "edit-file": {
+            title: "编辑文件",
+            description: "对文本文件进行基于行的编辑。",
+          },
+          "create-directory": {
+            title: "创建目录",
+            description: "创建新的目录",
+          },
+          "move-file": {
+            title: "移动/重命名文件",
+            description: "移动或重命名文件和目录",
+          },
+          "copy-file": {
+            title: "复制文件",
+            description: "复制文件和目录",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 服务器",
@@ -799,6 +859,14 @@ const TRANSLATIONS = {
     start_agent_session: "开始代理会",
     use_agent_session_to_use_tools:
       "您可以通过在提示词的开头使用'@agent'来启动与代理的聊天，从而使用聊天工具。",
+    agent_invocation: {
+      model_wants_to_call: "该型号希望进行通话。",
+      approve: "批准",
+      reject: "拒绝",
+      always_allow: "请务必留出 {{skillName}}",
+      tool_call_was_approved: "工具使用申请已获得批准。",
+      tool_call_was_rejected: "请求获取工具已被拒绝。",
+    },
   },
   profile_settings: {
     edit_account: "编辑帐户",

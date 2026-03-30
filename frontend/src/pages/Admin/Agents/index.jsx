@@ -58,8 +58,13 @@ export default function AdminAgents() {
   const [mcpServers, setMcpServers] = useState([]);
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
 
+  const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
+    useState(false);
+
   const defaultSkills = getDefaultSkills(t);
-  const configurableSkills = getConfigurableSkills(t);
+  const configurableSkills = getConfigurableSkills(t, {
+    fileSystemAgentAvailable,
+  });
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -77,15 +82,20 @@ export default function AdminAgents() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const _settings = await System.keys();
-      const _preferences = await Admin.systemPreferencesByFields([
-        "disabled_agent_skills",
-        "default_agent_skills",
-        "imported_agent_skills",
-        "active_agent_flows",
-      ]);
-      const { flows = [] } = await AgentFlows.listFlows();
+      const [_settings, _preferences, flowsRes, fsAgentAvailable] =
+        await Promise.all([
+          System.keys(),
+          Admin.systemPreferencesByFields([
+            "disabled_agent_skills",
+            "default_agent_skills",
+            "imported_agent_skills",
+            "active_agent_flows",
+          ]),
+          AgentFlows.listFlows(),
+          System.isFileSystemAgentAvailable(),
+        ]);
 
+      const { flows = [] } = flowsRes;
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
@@ -94,6 +104,7 @@ export default function AdminAgents() {
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
       setAgentFlows(flows);
+      setFileSystemAgentAvailable(fsAgentAvailable);
       setLoading(false);
     }
     fetchSettings();

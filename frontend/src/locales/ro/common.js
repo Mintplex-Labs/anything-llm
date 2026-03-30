@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bine ai venit la",
       getStarted: "Începe",
+      welcome: "Bine ați venit",
     },
     llm: {
       title: "Preferința LLM",
@@ -193,12 +194,18 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
+        description:
+          'va oferi răspunsuri folosind cunoștințele generale ale LLM și contextul documentului, așa cum este disponibil.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
+        description:
+          "vor oferi răspunsuri doar dacă contextul documentului este identificat.<b>Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
       },
       automatic: {
         title: "Mașină",
+        description:
+          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {
@@ -563,6 +570,15 @@ const TRANSLATIONS = {
     start_agent_session: "Începe sesiunea de agent",
     use_agent_session_to_use_tools:
       'Puteți utiliza instrumentele disponibile în chat, inițiind o sesiune cu un agent, începând mesajul cu "@agent".',
+    agent_invocation: {
+      model_wants_to_call: "Persoana respectivă dorește să facă o telefonare.",
+      approve: "Aprobă",
+      reject: "Refuz",
+      always_allow: "Asigurați-vă întotdeauna că {{skillName}}",
+      tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
+      tool_call_was_rejected:
+        "Cererea de utilizare a instrumentului a fost respinsă.",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -768,6 +784,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
+      filesystem: {
+        title: "Acces la sistemul de fișiere",
+        description:
+          "Permite reprezentantului dumneavoastră să citească, să scrie, să caute și să gestioneze fișiere într-un director specific. Suportă editarea fișierelor, navigarea în director și căutarea conținutului.",
+        learnMore:
+          "Aflați mai multe despre cum să utilizați această abilitate.",
+        configuration: "Configurare",
+        readActions: "Cite",
+        writeActions: "Acțiuni",
+        warning:
+          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
+        skills: {
+          "read-text-file": {
+            title: "Citește fișierul",
+            description:
+              "Citează conținutul fișierelor (text, cod, PDF, imagini, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Citește mai multe fișiere",
+            description: "Citiți mai multe fișiere simultan",
+          },
+          "list-directory": {
+            title: "Lista de contacte",
+            description: "Enumeră fișierele și directoarele dintr-un folder",
+          },
+          "search-files": {
+            title: "Caută fișiere",
+            description: "Căutați fișiere după nume sau conținut",
+          },
+          "get-file-info": {
+            title: "Obține informații despre fișier",
+            description: "Obțineți metadate detaliate despre fișiere.",
+          },
+          "write-file": {
+            title: "Creați fișier",
+            description:
+              "Creați fișiere noi sau suprascrieți fișierele existente.",
+          },
+          "edit-file": {
+            title: "Modifică fișierul",
+            description: "Realizați modificări pe linii în fișierele de text.",
+          },
+          "create-directory": {
+            title: "Creați o directoare",
+            description: "Creați noi directoare",
+          },
+          "move-file": {
+            title: "Mută/Redenumirea fișierului",
+            description: "Mută sau redenumește fișierele și directoarele.",
+          },
+          "copy-file": {
+            title: "Copiază fișier",
+            description: "Copiați fișiere și directoare",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servere MCP",

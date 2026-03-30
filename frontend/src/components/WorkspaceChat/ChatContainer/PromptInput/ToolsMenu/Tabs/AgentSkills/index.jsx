@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import Admin from "@/models/admin";
+import System from "@/models/system";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
 import {
@@ -23,7 +24,11 @@ export default function AgentSkillsTab({
   const { showAgentCommand = true } = workspace ?? {};
   const agentSessionActive = useIsAgentSessionActive();
   const defaultSkills = getDefaultSkills(t);
-  const configurableSkills = getConfigurableSkills(t);
+  const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
+    useState(false);
+  const configurableSkills = getConfigurableSkills(t, {
+    fileSystemAgentAvailable,
+  });
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
@@ -37,13 +42,14 @@ export default function AgentSkillsTab({
 
   async function fetchSkillSettings() {
     try {
-      const [prefs, flowsRes] = await Promise.all([
+      const [prefs, flowsRes, fsAgentAvailable] = await Promise.all([
         Admin.systemPreferencesByFields([
           "disabled_agent_skills",
           "default_agent_skills",
           "imported_agent_skills",
         ]),
         AgentFlows.listFlows(),
+        System.isFileSystemAgentAvailable(),
       ]);
 
       if (prefs?.settings) {
@@ -52,6 +58,7 @@ export default function AgentSkillsTab({
         setImportedSkills(prefs.settings.imported_agent_skills ?? []);
       }
       if (flowsRes?.flows) setFlows(flowsRes.flows);
+      setFileSystemAgentAvailable(fsAgentAvailable);
     } catch (e) {
       console.error(e);
     } finally {

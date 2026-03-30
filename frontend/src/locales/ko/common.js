@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "방문을 환영합니다",
       getStarted: "시작하기",
+      welcome: "환영합니다",
     },
     llm: {
       title: "LLM 기본 설정",
@@ -188,12 +189,18 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
+        description:
+          "LLM의 일반적인 지식과 문서 컨텍스트를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
+        description:
+          "문서의 맥락이 발견되면 답변만 제공합니다.<b>필요한 경우, @agent 명령어를 사용하여 도구를 사용해야 합니다.</b>",
       },
       automatic: {
         title: "자동",
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br />네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
     },
     history: {
@@ -320,6 +327,60 @@ const TRANSLATIONS = {
       },
       default_skill:
         "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      filesystem: {
+        title: "파일 시스템 접근",
+        description:
+          "제 에이전트가 지정된 디렉토리 내에서 파일을 읽고, 쓰고, 검색하고, 관리할 수 있도록 합니다. 파일 편집, 디렉토리 탐색, 콘텐츠 검색을 지원합니다.",
+        learnMore: "이 기술을 사용하는 방법에 대해 자세히 알아보세요.",
+        configuration: "구성",
+        readActions: "실행 내용 보기",
+        writeActions: "실행 내용",
+        warning:
+          "파일 시스템 접근은 위험할 수 있습니다. 왜냐하면 파일 내용을 변경하거나 삭제할 수 있기 때문입니다. 사용하기 전에 반드시 <link>문서</link>를 참조하십시오.",
+        skills: {
+          "read-text-file": {
+            title: "파일 읽기",
+            description:
+              "파일(텍스트, 코드, PDF, 이미지 등)의 내용을 읽습니다.",
+          },
+          "read-multiple-files": {
+            title: "여러 파일을 읽기",
+            description: "여러 파일을 한 번에 읽기",
+          },
+          "list-directory": {
+            title: "디렉토리 목록",
+            description: "폴더 내의 파일 및 디렉터리 목록 보기",
+          },
+          "search-files": {
+            title: "파일 검색",
+            description: "이름 또는 내용으로 파일을 검색",
+          },
+          "get-file-info": {
+            title: "파일 정보 확인",
+            description: "파일에 대한 자세한 메타데이터를 얻으세요.",
+          },
+          "write-file": {
+            title: "파일 작성",
+            description: "새로운 파일을 생성하거나 기존 파일을 덮어쓰기",
+          },
+          "edit-file": {
+            title: "파일 편집",
+            description: "텍스트 파일에 줄 단위로 편집",
+          },
+          "create-directory": {
+            title: "디렉토리 생성",
+            description: "새로운 디렉토리를 생성합니다.",
+          },
+          "move-file": {
+            title: "파일 이동/이름 변경",
+            description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
@@ -838,6 +899,14 @@ const TRANSLATIONS = {
     start_agent_session: "에이전트 세션 시작",
     use_agent_session_to_use_tools:
       "채팅에서 도구를 사용하려면, 프롬프트의 시작 부분에 '@agent'을 사용하여 에이전트 세션을 시작할 수 있습니다.",
+    agent_invocation: {
+      model_wants_to_call: "모델이 통화하고 싶어",
+      approve: "승인",
+      reject: "거부",
+      always_allow: "항상 {{skillName}}을 허용",
+      tool_call_was_approved: "도구 사용 승인",
+      tool_call_was_rejected: "도구 호출이 거부되었습니다.",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

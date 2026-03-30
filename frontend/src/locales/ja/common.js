@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "ようこそ",
       getStarted: "はじめる",
+      welcome: "ようこそ",
     },
     llm: {
       title: "LLMの設定",
@@ -183,12 +184,18 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
+        description:
+          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
+        description:
+          "必要な情報が見つかった場合にのみ、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       automatic: {
         title: "自動車",
+        description:
+          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -316,6 +323,61 @@ const TRANSLATIONS = {
       },
       default_skill:
         "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
+      filesystem: {
+        title: "ファイルシステムのアクセス",
+        description:
+          "エージェントが、指定されたディレクトリ内のファイルを読む、書き、検索、および管理できるようにします。ファイル編集、ディレクトリのナビゲーション、およびコンテンツ検索をサポートします。",
+        learnMore: "このスキルの使い方について、さらに詳しく知る",
+        configuration: "設定",
+        readActions: "行動",
+        writeActions: "行動",
+        warning:
+          "ファイルシステムへのアクセスは危険であり、ファイルの内容を変更または削除する可能性があります。設定する前に、必ず<link>のドキュメント</link>を参照してください。",
+        skills: {
+          "read-text-file": {
+            title: "ファイルを開く",
+            description:
+              "ファイル（テキスト、コード、PDF、画像など）の内容を読み込む。",
+          },
+          "read-multiple-files": {
+            title: "複数のファイルを読み込む",
+            description: "複数のファイルを同時に読み込む",
+          },
+          "list-directory": {
+            title: "ディレクトリ一覧",
+            description: "フォルダ内のファイルとディレクトリの一覧を表示する",
+          },
+          "search-files": {
+            title: "ファイル検索",
+            description: "ファイル名または内容で検索する",
+          },
+          "get-file-info": {
+            title: "ファイルの情報を取得する",
+            description: "ファイルに関する詳細なメタデータを取得する",
+          },
+          "write-file": {
+            title: "ファイルを作成",
+            description:
+              "新しいファイルを作成するか、既存のファイルを上書きする",
+          },
+          "edit-file": {
+            title: "ファイル編集",
+            description: "テキストファイルの行単位での編集を行う",
+          },
+          "create-directory": {
+            title: "ディレクトリを作成する",
+            description: "新しいディレクトリを作成する",
+          },
+          "move-file": {
+            title: "ファイル/ファイル名の変更",
+            description: "ファイルやディレクトリを移動または名前を変更する",
+          },
+          "copy-file": {
+            title: "ファイルのコピー",
+            description: "ファイルとディレクトリをコピーする",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -753,6 +815,14 @@ const TRANSLATIONS = {
     start_agent_session: "エージェントセッションを開始",
     use_agent_session_to_use_tools:
       "チャットでツールを使用するには、プロンプトの冒頭に'@agent'を使用してエージェントセッションを開始してください。",
+    agent_invocation: {
+      model_wants_to_call: "モデルは電話をかけたい。",
+      approve: "承認",
+      reject: "拒否",
+      always_allow: "常に、{{skillName}}を確保してください。",
+      tool_call_was_approved: "ツールの使用許可が承認されました",
+      tool_call_was_rejected: "ツール呼び出しは拒否されました",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

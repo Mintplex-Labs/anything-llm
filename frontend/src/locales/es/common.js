@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenido a",
       getStarted: "Comenzar",
+      welcome: "Bienvenido",
     },
     llm: {
       title: "Preferencia de LLM",
@@ -193,12 +194,18 @@ const TRANSLATIONS = {
       title: "Modo de chat",
       chat: {
         title: "Chat",
+        description:
+          'proporcionará respuestas utilizando el conocimiento general del LLM y el contexto del documento encontrado.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
       query: {
         title: "Consulta",
+        description:
+          'proporcionará respuestas <b>solo</b> si se encuentra el contexto del documento.<br />Deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
       automatic: {
         title: "Coche",
+        description:
+          'utilizará automáticamente las herramientas si el modelo y el proveedor admiten la llamada a herramientas nativas. Si no se admite la llamada a herramientas nativas, deberá utilizar el comando "@agent" para utilizar las herramientas.',
       },
     },
     history: {
@@ -331,6 +338,64 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Por defecto, esta función está activada, pero puede desactivarla si no desea que esté disponible para el agente.",
+      filesystem: {
+        title: "Acceso al sistema de archivos",
+        description:
+          "Permita que su agente pueda leer, escribir, buscar y administrar archivos dentro de un directorio específico. Soporta la edición de archivos, la navegación por directorios y la búsqueda de contenido.",
+        learnMore: "Aprenda más sobre cómo utilizar esta habilidad.",
+        configuration: "Configuración",
+        readActions: "Leer acciones",
+        writeActions: "Acciones a realizar",
+        warning:
+          "El acceso al sistema de archivos puede ser peligroso, ya que puede modificar o eliminar archivos. Consulte la <link>documentación</link> antes de habilitarlo.",
+        skills: {
+          "read-text-file": {
+            title: "Abrir archivo",
+            description:
+              "Leer el contenido de archivos (texto, código, archivos PDF, imágenes, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Leer varios archivos",
+            description: "Leer varios archivos a la vez.",
+          },
+          "list-directory": {
+            title: "Directorio",
+            description:
+              "Enumera los archivos y directorios dentro de una carpeta.",
+          },
+          "search-files": {
+            title: "Buscar archivos",
+            description: "Busque archivos por nombre o contenido.",
+          },
+          "get-file-info": {
+            title: "Obtener información del archivo",
+            description:
+              "Obtenga información detallada sobre los metadatos de los archivos.",
+          },
+          "write-file": {
+            title: "Crear archivo",
+            description:
+              "Crear nuevos archivos o sobrescribir archivos existentes.",
+          },
+          "edit-file": {
+            title: "Editar archivo",
+            description:
+              "Realiza modificaciones basadas en líneas en archivos de texto.",
+          },
+          "create-directory": {
+            title: "Crear directorio",
+            description: "Crear nuevas carpetas",
+          },
+          "move-file": {
+            title: "Mover/Cambiar el nombre del archivo",
+            description: "Mover o renombrar archivos y directorios.",
+          },
+          "copy-file": {
+            title: "Copiar archivo",
+            description: "Copiar archivos y directorios",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -873,6 +938,14 @@ const TRANSLATIONS = {
     start_agent_session: "Iniciar sesión como agente",
     use_agent_session_to_use_tools:
       "Puede utilizar las herramientas disponibles en el chat iniciando una sesión con un agente utilizando el prefijo '@agent' al principio de su mensaje.",
+    agent_invocation: {
+      model_wants_to_call: "El modelo quiere llamar",
+      approve: "Aprobar",
+      reject: "Rechazar",
+      always_allow: "Siempre asegúrese de que haya {{skillName}}",
+      tool_call_was_approved: "La solicitud de herramientas ha sido aprobada.",
+      tool_call_was_rejected: "La solicitud de herramienta fue rechazada.",
+    },
   },
   profile_settings: {
     edit_account: "Editar cuenta",

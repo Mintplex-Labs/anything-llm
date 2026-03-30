@@ -10,6 +10,7 @@ const { handleModelSelect } = require("./handleModelSelect");
 const { handleSourceSelect } = require("./handleSourceSelect");
 const { handleSourcePagination } = require("./handleSourcePagination");
 const { handleBackSources } = require("./handleBackSources");
+const { handleToolApproval } = require("./handleToolApproval");
 
 const ExactCallbackHandlers = {
   "ws-create": handleWorkspaceCreate,
@@ -20,6 +21,7 @@ const ExactCallbackHandlers = {
 };
 
 const PrefixCallbackHandlers = [
+  { prefix: "tool:", handler: handleToolApproval },
   { prefix: "wspg:", handler: handleWorkspacePagination },
   { prefix: "ws:", handler: handleWorkspaceSelect },
   { prefix: "thpg:", handler: handleThreadPagination },

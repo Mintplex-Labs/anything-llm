@@ -8,6 +8,9 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const { streamResponse } = require("../utils/telegramBot/chat/stream");
 
 process.on("message", async (payload) => {
+  // Ignore tool approval responses - these are handled by http-socket plugin
+  if (payload?.type === "toolApprovalResponse") return;
+
   const {
     botToken,
     chatId,

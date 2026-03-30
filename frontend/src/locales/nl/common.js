@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     home: {
       title: "Welkom bij",
       getStarted: "Aan de slag",
+      welcome: "Welkom",
     },
     llm: {
       title: "LLM-voorkeuren",
@@ -184,12 +185,18 @@ const TRANSLATIONS = {
       title: "Chatmodus",
       chat: {
         title: "Chat",
+        description:
+          "zal antwoorden genereren met behulp van de algemene kennis van het LLM en de context uit het document <b>en</b>. <br />Om tools te gebruiken, moet u het commando `@agent` gebruiken.",
       },
       query: {
         title: "Query",
+        description:
+          "zal alleen antwoorden <b>als de context van het document wordt gevonden.</b>U moet het commando @agent gebruiken om de tools te gebruiken.",
       },
       automatic: {
         title: "Auto",
+        description:
+          "zal automatisch tools gebruiken als het model en de provider native tool-aanroepen ondersteunen. <br />Als native tooling niet wordt ondersteund, moet u de `@agent`-commando gebruiken om tools te gebruiken.",
       },
     },
     history: {
@@ -320,6 +327,63 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
+      filesystem: {
+        title: "Toegang tot het bestandssysteem",
+        description:
+          "Geef uw agent de mogelijkheid om bestanden te lezen, te schrijven, te zoeken en te beheren binnen een aangewezen map. Ondersteunt het bewerken van bestanden, het navigeren door mappen en het zoeken naar inhoud.",
+        learnMore:
+          "Meer informatie over hoe u deze vaardigheid kunt toepassen.",
+        configuration: "Configuratie",
+        readActions: "Lees acties",
+        writeActions: "Schrijf acties",
+        warning:
+          "Toegang tot het bestandssysteem kan gevaarlijk zijn, omdat het bestanden kan wijzigen of verwijderen. Raadpleeg de <link>documentatie</link> voordat u dit activeert.",
+        skills: {
+          "read-text-file": {
+            title: "Bestand openen",
+            description:
+              "Lees de inhoud van bestanden (tekst, code, PDF, afbeeldingen, enz.)",
+          },
+          "read-multiple-files": {
+            title: "Lees meerdere bestanden",
+            description: "Lees meerdere bestanden tegelijkertijd.",
+          },
+          "list-directory": {
+            title: "Lijst met contactgegevens",
+            description:
+              "Maak een lijst van bestanden en mappen binnen een map.",
+          },
+          "search-files": {
+            title: "Bestanden zoeken",
+            description: "Zoek naar bestanden op naam of inhoud",
+          },
+          "get-file-info": {
+            title: "Fijlsinformatie bekijken",
+            description: "Verkrijg gedetailleerde metadata over bestanden.",
+          },
+          "write-file": {
+            title: "Schrijf bestand",
+            description:
+              "Maak nieuwe bestanden aan of vervang bestaande bestanden.",
+          },
+          "edit-file": {
+            title: "Bestand bewerken",
+            description: "Voer wijzigingen uit op tekstbestanden, per regel.",
+          },
+          "create-directory": {
+            title: "Maak een directory",
+            description: "Maak nieuwe mappen aan",
+          },
+          "move-file": {
+            title: "Verplaats/Hernoem bestand",
+            description: "Verplaats of wijzig de naam van bestanden en mappen.",
+          },
+          "copy-file": {
+            title: "Kopieer bestand",
+            description: "Kopieer bestanden en mappen",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -761,6 +825,16 @@ const TRANSLATIONS = {
     start_agent_session: "Start Agent Sessie",
     use_agent_session_to_use_tools:
       'U kunt tools in de chat gebruiken door een sessie met een agent te starten, beginnend met "@agent" aan het begin van uw bericht.',
+    agent_invocation: {
+      model_wants_to_call: "De klant wil een gesprek plannen.",
+      approve: "Goedkeuren",
+      reject: "Afgewijzen",
+      always_allow: "Zorg er altijd voor dat {{skillName}} aanwezig is.",
+      tool_call_was_approved:
+        "De aanvraag voor het gereedschap is goedgekeurd.",
+      tool_call_was_rejected:
+        "De aanvraag om het gereedschap te gebruiken is afgewezen.",
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

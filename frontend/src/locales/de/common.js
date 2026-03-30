@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Willkommen bei",
       getStarted: "Jetzt starten",
+      welcome: "Herzlich willkommen",
     },
     llm: {
       title: "LLM-Einstellung",
@@ -192,12 +193,18 @@ const TRANSLATIONS = {
       title: "Chat-Modus",
       chat: {
         title: "Chat",
+        description:
+          "wird Antworten basierend auf dem allgemeinen Wissen des LLM und dem gegebenen Dokumentkontext liefern.<br />Um die Tools zu nutzen, müssen Sie den Befehl `@agent` verwenden.",
       },
       query: {
         title: "Abfrage",
+        description:
+          'werden Antworten nur bei <b> und </b> bereitstellen, falls der Dokumentkontext gefunden wurde. Um die Tools zu nutzen, müssen Sie den Befehl "@agent" verwenden.',
       },
       automatic: {
         title: "Auto",
+        description:
+          "wird automatisch Werkzeuge verwenden, wenn das Modell und der Anbieter native Werkzeugaufrufe unterstützen. <br />Wenn native Werkzeugaufrufe nicht unterstützt werden, müssen Sie den Befehl `@agent` verwenden, um Werkzeuge zu nutzen.",
       },
     },
     history: {
@@ -325,6 +332,64 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Standardmäßig ist diese Funktion aktiviert, aber Sie können sie deaktivieren, wenn Sie nicht möchten, dass sie für den Agenten verfügbar ist.",
+      filesystem: {
+        title: "Zugriff auf das Dateisystem",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, Dateien innerhalb eines bestimmten Verzeichnisses zu lesen, zu schreiben, zu suchen und zu verwalten. Unterstützt die Bearbeitung von Dateien, die Navigation durch Verzeichnisse und die Suche nach Inhalten.",
+        learnMore:
+          "Erfahren Sie mehr darüber, wie Sie diese Fähigkeit effektiv einsetzen können.",
+        configuration: "Konfiguration",
+        readActions: "Lesen von Aktionen",
+        writeActions: "Aktionen",
+        warning:
+          "Der Zugriff auf das Dateisystem kann gefährlich sein, da er Dateien ändern oder löschen kann. Bitte konsultieren Sie vor der Aktivierung die <link>Dokumentation</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Datei öffnen/lesen",
+            description:
+              "Inhalte von Dateien (Text, Code, PDF, Bilder usw.) lesen",
+          },
+          "read-multiple-files": {
+            title: "Mehrere Dateien lesen",
+            description: "Mehrere Dateien gleichzeitig lesen",
+          },
+          "list-directory": {
+            title: "Verzeichnis",
+            description: "Dateien und Verzeichnisse in einem Ordner auflisten",
+          },
+          "search-files": {
+            title: "Dateien suchen",
+            description: "Dateien nach Name oder Inhalt suchen",
+          },
+          "get-file-info": {
+            title: "Dateieninformationen abrufen",
+            description: "Erhalten Sie detaillierte Metadaten über Dateien.",
+          },
+          "write-file": {
+            title: "Datei erstellen",
+            description:
+              "Neue Dateien erstellen oder vorhandene Dateien überschreiben.",
+          },
+          "edit-file": {
+            title: "Datei bearbeiten",
+            description:
+              "Führen Sie Änderungen in Textdateien zeilenweise durch.",
+          },
+          "create-directory": {
+            title: "Ordner erstellen",
+            description: "Neue Verzeichnisse erstellen",
+          },
+          "move-file": {
+            title: "Datei verschieben/umbenennen",
+            description:
+              "Dateien und Verzeichnisse verschieben oder umbenennen.",
+          },
+          "copy-file": {
+            title: "Datei kopieren",
+            description: "Dateien und Verzeichnisse kopieren",
+          },
+        },
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -859,6 +924,15 @@ const TRANSLATIONS = {
     start_agent_session: "Starte eine Agent-Sitzung",
     use_agent_session_to_use_tools:
       'Sie können Tools im Chat nutzen, indem Sie eine Agentensitzung mit "@agent" am Anfang Ihrer Anfrage starten.',
+    agent_invocation: {
+      model_wants_to_call: "Das Modell möchte anrufen.",
+      approve: "Genehmigen",
+      reject: "Ablehnen",
+      always_allow: "Bitte stellen Sie immer {{skillName}} sicher.",
+      tool_call_was_approved:
+        "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
+      tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

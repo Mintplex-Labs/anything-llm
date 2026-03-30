@@ -2,18 +2,21 @@ import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkillPanel from "./GenericSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
+import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import {
   Brain,
   File,
   Browser,
   ChartBar,
   FileMagnifyingGlass,
+  FolderOpen,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
 import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
+import FileSystemImage from "@/media/agents/file-system.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -42,7 +45,20 @@ export const getDefaultSkills = (t) => ({
   },
 });
 
-export const getConfigurableSkills = (t) => ({
+export const getConfigurableSkills = (
+  t,
+  { fileSystemAgentAvailable = true } = {}
+) => ({
+  ...(fileSystemAgentAvailable && {
+    "filesystem-agent": {
+      title: t("agent.skill.filesystem.title"),
+      description: t("agent.skill.filesystem.description"),
+      component: FileSystemSkillPanel,
+      skill: "filesystem-agent",
+      icon: FolderOpen,
+      image: FileSystemImage,
+    },
+  }),
   "save-file-to-browser": {
     title: t("agent.skill.save.title"),
     description: t("agent.skill.save.description"),

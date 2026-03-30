@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Witamy w",
       getStarted: "Rozpocznij",
+      welcome: "Witaj",
     },
     llm: {
       title: "Preferencje modeli językowych",
@@ -191,12 +192,18 @@ const TRANSLATIONS = {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
+        description:
+          "zapewni odpowiedzi oparte na ogólnym zasobie wiedzy LLM i kontekście dokumentu, który zostanie znaleziony. <br />Będziesz musiał użyć polecenia `@agent`, aby korzystać z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
+        description:
+          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy @agent, aby korzystać z narzędzi.",
       },
       automatic: {
         title: "Samochód",
+        description:
+          "automatycznie będzie korzystać z narzędzi, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. <br />Jeśli natywne wywoływanie narzędzi nie jest obsługiwane, konieczne będzie użycie komendy `@agent` w celu korzystania z narzędzi.",
       },
     },
     history: {
@@ -326,6 +333,62 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
+      filesystem: {
+        title: "Dostęp do systemu plików",
+        description:
+          "Pozwól swoim agentom na odczytywanie, zapisywanie, wyszukiwanie i zarządzanie plikami w określonym katalogu. Obsługuje edycję plików, nawigację po katalogach oraz wyszukiwanie zawartości.",
+        learnMore:
+          "Dowiedz się więcej na temat tego, jak wykorzystać tę umiejętność.",
+        configuration: "Konfiguracja",
+        readActions: "Czytać akcje",
+        writeActions: "Działania",
+        warning:
+          "Dostęp do systemu plików może być niebezpieczny, ponieważ może modyfikować lub usuwać pliki. Prosimy o zapoznanie się z dokumentacją <link> przed włączeniem tej funkcji.",
+        skills: {
+          "read-text-file": {
+            title: "Otwórz plik",
+            description:
+              "Otwórz i przeczytaj zawartość plików (tekst, kod, pliki PDF, obrazy itp.)",
+          },
+          "read-multiple-files": {
+            title: "Odczytaj wiele plików",
+            description: "Otwórz i przetwórz wiele plików jednocześnie.",
+          },
+          "list-directory": {
+            title: "Lista kontaktów",
+            description: "Wyświetl pliki i katalogi w określonym folderze.",
+          },
+          "search-files": {
+            title: "Wyszukaj pliki",
+            description: "Wyszukaj pliki według nazwy lub zawartości",
+          },
+          "get-file-info": {
+            title: "Pobierz informacje o pliku",
+            description: "Uzyskaj szczegółowe metadane dotyczące plików.",
+          },
+          "write-file": {
+            title: "Utwórz plik",
+            description: "Utwórz nowe pliki lub nadpisz istniejące",
+          },
+          "edit-file": {
+            title: "Edytuj plik",
+            description:
+              "Wprowadzaj zmiany w plikach tekstowych, działając w oparciu o linie.",
+          },
+          "create-directory": {
+            title: "Utwórz katalog",
+            description: "Utwórz nowe katalogi",
+          },
+          "move-file": {
+            title: "Przenieś/Przekształć nazwę pliku",
+            description: "Przenieś lub zmień nazwę plików i katalogów",
+          },
+          "copy-file": {
+            title: "Skopiuj plik",
+            description: "Kopiuj pliki i katalogi",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -854,6 +917,15 @@ const TRANSLATIONS = {
     start_agent_session: "Rozpocznij sesję dla agenta",
     use_agent_session_to_use_tools:
       "Możesz korzystać z narzędzi w czacie, inicjując sesję z agentem, wpisując '@agent' na początku swojego zapytania.",
+    agent_invocation: {
+      model_wants_to_call: "Model chce zadzwonić",
+      approve: "Zaakceptować",
+      reject: "Odrzucić",
+      always_allow: "Zawsze należy uwzględnić {{skillName}}",
+      tool_call_was_approved:
+        "Zgłoszenie dotyczące narzędzia zostało zatwierdzone.",
+      tool_call_was_rejected: "Żądanie użycia narzędzia zostało odrzucone.",
+    },
   },
   profile_settings: {
     edit_account: "Edytuj konto",

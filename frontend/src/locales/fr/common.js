@@ -18,6 +18,7 @@ const TRANSLATIONS = {
     home: {
       title: "Bienvenue",
       getStarted: "Commencer",
+      welcome: "Bienvenue",
     },
     llm: {
       title: "Préférence LLM",
@@ -185,12 +186,18 @@ const TRANSLATIONS = {
       title: "Mode de chat",
       chat: {
         title: "Chat",
+        description:
+          'fournira des réponses en utilisant les connaissances générales de l\'LLM et le contexte du document, <b>et</b>. Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       query: {
         title: "Requête",
+        description:
+          'fournira des réponses <b>uniquement</b> si le contexte du document est trouvé.<br />Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       automatic: {
         title: "Voiture",
+        description:
+          "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives. <br />Si l'utilisation de fonctions natives n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
       },
     },
     history: {
@@ -321,6 +328,64 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+      filesystem: {
+        title: "Accès au système de fichiers",
+        description:
+          "Permettez à votre agent de lire, écrire, rechercher et gérer des fichiers dans un répertoire spécifié. Prend en charge la modification de fichiers, la navigation dans les répertoires et la recherche de contenu.",
+        learnMore: "En savoir plus sur la manière d'utiliser cette compétence.",
+        configuration: "Configuration",
+        readActions: "Lire les actions",
+        writeActions: "Actions à effectuer",
+        warning:
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+        skills: {
+          "read-text-file": {
+            title: "Ouvrir le fichier",
+            description:
+              "Lire le contenu des fichiers (texte, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Lire plusieurs fichiers",
+            description: "Lire plusieurs fichiers simultanément.",
+          },
+          "list-directory": {
+            title: "Annuaire",
+            description:
+              "Énumérer les fichiers et les répertoires d'un dossier.",
+          },
+          "search-files": {
+            title: "Rechercher des fichiers",
+            description: "Rechercher des fichiers par nom ou par contenu",
+          },
+          "get-file-info": {
+            title: "Obtenir des informations sur le fichier",
+            description: "Obtenez des métadonnées détaillées sur les fichiers.",
+          },
+          "write-file": {
+            title: "Créer un fichier",
+            description:
+              "Créer de nouveaux fichiers ou remplacer des fichiers existants.",
+          },
+          "edit-file": {
+            title: "Modifier le fichier",
+            description:
+              "Effectuez des modifications basées sur des lignes dans les fichiers de texte.",
+          },
+          "create-directory": {
+            title: "Créer un répertoire",
+            description: "Créer de nouveaux répertoires",
+          },
+          "move-file": {
+            title: "Déplacer/Renommer le fichier",
+            description:
+              "Déplacez ou renommez des fichiers et des répertoires.",
+          },
+          "copy-file": {
+            title: "Copier le fichier",
+            description: "Copier des fichiers et des répertoires",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serveurs MCP",
@@ -764,6 +829,15 @@ const TRANSLATIONS = {
     start_agent_session: "Démarrer la session de l'agent",
     use_agent_session_to_use_tools:
       'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
+    agent_invocation: {
+      model_wants_to_call: "Le modèle souhaite passer un appel.",
+      approve: "Approuver",
+      reject: "Refuser",
+      always_allow: "Il est toujours important de {{skillName}}",
+      tool_call_was_approved: "La demande d'outils a été approuvée.",
+      tool_call_was_rejected:
+        "La demande d'utilisation de l'outil a été rejetée.",
+    },
   },
   profile_settings: {
     edit_account: "Modifier le compte",

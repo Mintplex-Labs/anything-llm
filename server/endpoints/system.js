@@ -60,6 +60,7 @@ const {
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -619,7 +620,7 @@ function systemEndpoints(app) {
           multi_user_mode: true,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
-
+        await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {
             JWTSecret: process.env.JWT_SECRET || v4(),

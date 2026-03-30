@@ -4,6 +4,7 @@ const TRANSLATIONS = {
     home: {
       title: "Tere tulemast",
       getStarted: "Alusta",
+      welcome: "Tere tulemast",
     },
     llm: {
       title: "LLM-i eelistus",
@@ -189,12 +190,18 @@ const TRANSLATIONS = {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
+        description:
+          "teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumenti konteksti, mis on leitav.<br /> Selleks peate kasutama @agent käsku, et kasutada erinevaid tööriime.",
       },
       query: {
         title: "Päring",
+        description:
+          'teenib vastuseid <b> ainult__, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
       },
       automatic: {
         title: "Automaailm",
+        description:
+          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native töörieste kasutamist. <br />Kui native töörieste kasutamine ei toeta, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -317,6 +324,60 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+      filesystem: {
+        title: "Failisüsteemi juurdepääs",
+        description:
+          "Lisage oma agentile võimalus lugeda, kirjutada, otsida ja hallata faili, mis asub kindlalt määratud kaustas. Toetab failide redakteerimist, kaustade navigeerimist ja sisu otsimist.",
+        learnMore: "Lisateabe saamiseks, kuidas seda oskust kasutada",
+        configuration: "Konfiguratsioon",
+        readActions: "Leia toimingud",
+        writeActions: "Toimingud",
+        warning:
+          "Failisüsteemi juurimine võib olla ohtlik, kuna see võib muuta või kustutada faile. Enne selle aktiveerimist, palun vaadake <link>dokumentatsiooni</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Ava fail",
+            description:
+              "Leia failide sisu (tekst, kood, PDF-failid, pildid jne)",
+          },
+          "read-multiple-files": {
+            title: "Lugege mitut faili",
+            description: "Lugege mitut faili üheaegselt",
+          },
+          "list-directory": {
+            title: "Loend",
+            description: "Looge failide ja kaustade loend ühes kaustas",
+          },
+          "search-files": {
+            title: "Failide otsimine",
+            description: "Leidke failid nime või sisu järgi",
+          },
+          "get-file-info": {
+            title: "Hankige faili teave",
+            description: "Hankige üksikasjalik teavet failide kohta",
+          },
+          "write-file": {
+            title: "Faili loomine",
+            description: "Loo uusi faili või asenda olemasoleva faili",
+          },
+          "edit-file": {
+            title: "Faili redigeerimine",
+            description: "Muuda teksti failide sisu rida- järgselt.",
+          },
+          "create-directory": {
+            title: "Loo kaust",
+            description: "Loo uusi kahteid",
+          },
+          "move-file": {
+            title: "Faili liiguta/nime muuda",
+            description: "Liigu või nime muuta failid ja kaardid",
+          },
+          "copy-file": {
+            title: "Kopeeri fail",
+            description: "Kopeeri failid ja kaardi",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -824,6 +885,14 @@ const TRANSLATIONS = {
     start_agent_session: "Alusta agenti sessiooni",
     use_agent_session_to_use_tools:
       "Saate kasutada vahendeid vestluses, alustades agenti sessiooni, lisades käskile '@agent' sõna.",
+    agent_invocation: {
+      model_wants_to_call: "Mudel soovib helistada",
+      approve: "Heakskiid",
+      reject: "Hüvasti, keelan",
+      always_allow: "Aeg-ajalt lubage {{skillName}}",
+      tool_call_was_approved: "Vahendite tellimuse kinnitati.",
+      tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",

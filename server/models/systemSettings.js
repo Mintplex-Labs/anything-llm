@@ -33,6 +33,7 @@ const SystemSettings = {
     "agent_sql_connections",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -50,6 +51,7 @@ const SystemSettings = {
     "agent_search_provider",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
     "agent_sql_connections",
     "custom_app_name",
     "default_system_prompt",
@@ -149,6 +151,15 @@ const SystemSettings = {
         return JSON.stringify(skills);
       } catch {
         console.error(`Could not validate disabled agent skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_filesystem_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled filesystem skills.`);
         return JSON.stringify([]);
       }
     },

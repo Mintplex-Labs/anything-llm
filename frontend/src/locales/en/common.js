@@ -2,6 +2,7 @@ const TRANSLATIONS = {
   onboarding: {
     home: {
       title: "Welcome to",
+      welcome: "Welcome",
       getStarted: "Get Started",
     },
     llm: {
@@ -198,12 +199,18 @@ const TRANSLATIONS = {
       title: "Chat mode",
       automatic: {
         title: "Auto",
+        description:
+          "will automatically use tools if the model and provider support native tool calling.<br />If native tooling is not supported, you will need to use the @agent command to use tools.",
       },
       chat: {
         title: "Chat",
+        description:
+          "will provide answers with the LLM's general knowledge <b>and</b> document context that is found.<br />You will need to use the @agent command to use tools.",
       },
       query: {
         title: "Query",
+        description:
+          "will provide answers <b>only</b> if document context is found.<br />You will need to use the @agent command to use tools.",
       },
     },
     history: {
@@ -330,6 +337,60 @@ const TRANSLATIONS = {
         title: "SQL Connector",
         description:
           "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+      },
+      filesystem: {
+        title: "File System Access",
+        description:
+          "Enable your agent to read, write, search, and manage files within a designated directory. Supports file editing, directory navigation, and content search.",
+        learnMore: "Learn more about this how to use this skill",
+        configuration: "Configuration",
+        readActions: "Read Actions",
+        writeActions: "Write Actions",
+        warning:
+          "Filesystem access can be dangerous as it can modify or delete files. Please consult the <link>documentation</link> before enabling.",
+        skills: {
+          "read-text-file": {
+            title: "Read File",
+            description:
+              "Read contents of files (text, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Read Multiple Files",
+            description: "Read multiple files at once",
+          },
+          "list-directory": {
+            title: "List Directory",
+            description: "List files and directories in a folder",
+          },
+          "search-files": {
+            title: "Search Files",
+            description: "Search for files by name or content",
+          },
+          "get-file-info": {
+            title: "Get File Info",
+            description: "Get detailed metadata about files",
+          },
+          "write-file": {
+            title: "Write File",
+            description: "Create new files or overwrite existing files",
+          },
+          "edit-file": {
+            title: "Edit File",
+            description: "Make line-based edits to text files",
+          },
+          "create-directory": {
+            title: "Create Directory",
+            description: "Create new directories",
+          },
+          "copy-file": {
+            title: "Copy File",
+            description: "Copy files and directories",
+          },
+          "move-file": {
+            title: "Move/Rename File",
+            description: "Move or rename files and directories",
+          },
+        },
       },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
@@ -955,6 +1016,14 @@ const TRANSLATIONS = {
       saving: "Setting model as workspace default...",
       missing_credentials: "This provider is missing credentials!",
       missing_credentials_description: "Set up now",
+    },
+    agent_invocation: {
+      model_wants_to_call: "Model wants to call",
+      approve: "Approve",
+      reject: "Reject",
+      always_allow: "Always allow {{skillName}}",
+      tool_call_was_approved: "Tool call was approved",
+      tool_call_was_rejected: "Tool call was rejected",
     },
   },
   profile_settings: {
