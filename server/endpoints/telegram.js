@@ -36,16 +36,12 @@ function telegramEndpoints(app) {
           null;
         const threadSlug = activeUser?.active_thread || null;
 
-        let workspace = workspaceSlug
-          ? await Workspace.get({ slug: workspaceSlug })
-          : null;
+        let workspace = await Workspace.get({ slug: workspaceSlug });
         if (!workspace) {
           const available = await Workspace.where({}, 1);
           if (available.length) workspace = available[0];
         }
-        const thread = threadSlug
-          ? await WorkspaceThread.get({ slug: threadSlug })
-          : null;
+        const thread = await WorkspaceThread.get({ slug: threadSlug });
 
         return response.status(200).json({
           config: {
