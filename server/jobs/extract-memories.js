@@ -79,25 +79,28 @@ function parseMemoriesResponse(text) {
       }
     }
 
-    const unprocessedPairs = await WorkspaceChats.unprocessedMemoryGroups();
-    if (unprocessedPairs.length === 0) {
+    const allUnprocessed = await WorkspaceChats.where(
+      { memoryProcessed: false },
+      null,
+      { createdAt: "asc" }
+    );
+    if (allUnprocessed.length === 0) {
       log("No unprocessed chats found. Exiting.");
       return;
     }
 
-    log(
-      `Found ${unprocessedPairs.length} user/workspace pair(s) with unprocessed chats.`
-    );
+    const groups = new Map();
+    for (const chat of allUnprocessed) {
+      const key = `${chat.user_id}:${chat.workspaceId}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(chat);
+    }
 
-    for (const { user_id: userId, workspaceId } of unprocessedPairs) {
+    log(`Found ${groups.size} user/workspace pair(s) with unprocessed chats.`);
+
+    for (const [, chats] of groups) {
+      const { user_id: userId, workspaceId } = chats[0];
       try {
-        const unprocessedChats = await WorkspaceChats.where(
-          { user_id: userId, workspaceId, memoryProcessed: false },
-          null,
-          { createdAt: "asc" }
-        );
-        if (unprocessedChats.length === 0) continue;
-
         const workspace = await Workspace.get({ id: workspaceId });
         if (!workspace) {
           log(`Workspace ${workspaceId} not found. Skipping.`);
@@ -109,10 +112,7 @@ function parseMemoriesResponse(text) {
           workspaceId
         );
 
-        const userMessage = buildExtractionUserMessage(
-          currentMemories,
-          unprocessedChats
-        );
+        const userMessage = buildExtractionUserMessage(currentMemories, chats);
 
         const LLMConnector = getLLMProvider({
           provider: workspace.chatProvider,
@@ -137,7 +137,7 @@ function parseMemoriesResponse(text) {
 
         await Memory.replaceWorkspaceMemories(userId, workspaceId, memories);
 
-        const chatIds = unprocessedChats.map((c) => c.id);
+        const chatIds = chats.map((c) => c.id);
         await WorkspaceChats.markMemoryProcessed(chatIds);
 
         log(
