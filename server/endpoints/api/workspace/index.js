@@ -650,7 +650,7 @@ function apiWorkspaceEndpoints(app) {
         const { slug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           sessionId = null,
           attachments = [],
           reset = false,
@@ -669,7 +669,11 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -678,7 +682,7 @@ function apiWorkspaceEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
           return;
         }
@@ -686,7 +690,7 @@ function apiWorkspaceEndpoints(app) {
         const result = await ApiChatHandler.chatSync({
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
@@ -801,7 +805,7 @@ function apiWorkspaceEndpoints(app) {
         const { slug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           sessionId = null,
           attachments = [],
           reset = false,
@@ -820,7 +824,11 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -829,7 +837,7 @@ function apiWorkspaceEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
           return;
         }
@@ -844,7 +852,7 @@ function apiWorkspaceEndpoints(app) {
           response,
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
