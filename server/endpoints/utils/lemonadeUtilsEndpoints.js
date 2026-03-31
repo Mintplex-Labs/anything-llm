@@ -34,6 +34,9 @@ function lemonadeUtilsEndpoints(app) {
         const lemonadeResponse = await fetch(lemonadeUrl.toString(), {
           method: "POST",
           headers: {
+            ...(!!process.env.LEMONADE_LLM_API_KEY
+              ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+              : {}),
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -129,6 +132,9 @@ function lemonadeUtilsEndpoints(app) {
         const lemonadeResponse = await fetch(lemonadeUrl.toString(), {
           method: "POST",
           headers: {
+            ...(!!process.env.LEMONADE_LLM_API_KEY
+              ? { Authorization: `Bearer ${process.env.LEMONADE_LLM_API_KEY}` }
+              : {}),
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

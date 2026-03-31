@@ -42,7 +42,7 @@ async function handleAgentResponse(
   const sources = [];
   const thoughts = [];
   const charts = [];
-  const files = [];
+  const _files = [];
   let thoughtMsgId = null;
   let lastThoughtText = "";
 
@@ -130,8 +130,8 @@ async function handleAgentResponse(
         case "rechartVisualize":
           if (parsed.content) charts.push(parsed.content);
           return;
-        case "fileDownload":
-          if (parsed.content) files.push(parsed.content);
+        case "fileDownloadCard":
+          if (parsed.content) _files.push(parsed.content);
           return;
         case "reportStreamEvent":
           const inner = parsed.content;
@@ -170,8 +170,16 @@ async function handleAgentResponse(
       ? "✓ <b>Agent completed:</b>"
       : "🤔 <b>Agent is thinking:</b>";
     const icon = done ? "✓" : "⏳";
+    const maxThoughtLen = 100;
     const content = thoughtList
-      .map((t) => `${icon} ${escapeHTML(t)}`)
+      .map((t) => {
+        const escaped = escapeHTML(t);
+        const truncated =
+          escaped.length > maxThoughtLen
+            ? escaped.slice(0, maxThoughtLen) + "..."
+            : escaped;
+        return `${icon} ${truncated}`;
+      })
       .join("\n");
     const fullContent = `${header}\n${content}`;
     const tag =
@@ -223,8 +231,9 @@ async function handleAgentResponse(
     ctx.bot.sendChatAction(chatId, "typing").catch(() => {});
   }, 4000);
 
+  let agentHandler = null;
   try {
-    const agentHandler = await new EphemeralAgentHandler({
+    agentHandler = await new EphemeralAgentHandler({
       uuid: uuidv4(),
       workspace,
       prompt: message,
@@ -239,101 +248,140 @@ async function handleAgentResponse(
     agentHandler.aibitat.maxRounds = 2;
 
     await agentHandler.startAgentCluster();
+
+    // Extract pending outputs from aibitat for persistence
+    const outputs = agentHandler?.aibitat?._pendingOutputs ?? [];
+
+    // Final thought update, mark as completed
+    if (thoughtMsgId && thoughts.length > 0) {
+      const doneText = formatThoughtsAsBlockquote(thoughts, true);
+      await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log, {
+        html: true,
+        disableLinkPreview: true,
+      });
+    }
+
+    // Send charts as locally rendered images
+    for (const chart of charts) {
+      try {
+        const buffer = await renderChartToBuffer(chart);
+        await ctx.bot.sendPhoto(
+          chatId,
+          buffer,
+          { caption: chart.title },
+          {
+            filename: "chart.png",
+            contentType: "image/png",
+            knownLength: buffer.length,
+          }
+        );
+      } catch {
+        await ctx.bot.sendMessage(
+          chatId,
+          `${chart.title}: failed to render chart.`
+        );
+      }
+    }
+
+    // Ensure the initial sendMessage has resolved before deciding how to deliver
+    if (responsePending) await responsePending;
+
+    // Fall back to the accumulated streamed text when no explicit
+    // fullTextResponse event was received (e.g. audio/voice messages).
+    const responseText = finalResponse || streamingText;
+
+    if (responseText) {
+      await WorkspaceChats.new({
+        workspaceId: workspace.id,
+        prompt: message,
+        response: {
+          text: responseText,
+          sources,
+          type: "chat",
+          metrics,
+          attachments,
+          ...(outputs.length > 0 ? { outputs } : {}),
+        },
+        threadId: thread?.id || null,
+      });
+
+      // Always deliver text response first
+      if (responseMsgId) {
+        await editMessage(
+          ctx.bot,
+          chatId,
+          responseMsgId,
+          finalResponse || currentResponseText(),
+          ctx.log,
+          {
+            format: true,
+          }
+        ).catch(() => {});
+      } else {
+        await sendFormattedMessage(ctx.bot, chatId, responseText);
+      }
+
+      // Send voice as an additional attachment if requested
+      if (voiceResponse) {
+        ctx.log?.info?.(`Generating voice response for ${chatId}`);
+        await sendVoiceResponse(ctx.bot, chatId, responseText);
+      }
+    }
+
+    // Send files as Telegram documents (after response is delivered)
+    if (_files.length > 0) {
+      ctx.log?.info?.(`Sending ${_files.length} file(s) to Telegram`);
+      await sendFilesAsTelegramDocuments(ctx, chatId, _files);
+    }
   } finally {
     clearInterval(typingInterval);
     clearTimeout(thoughtFlushTimeout);
     clearTimeout(editTimer);
   }
+}
 
-  // Final thought update, mark as completed
-  if (thoughtMsgId && thoughts.length > 0) {
-    const doneText = formatThoughtsAsBlockquote(thoughts, true);
-    await editMessage(ctx.bot, chatId, thoughtMsgId, doneText, ctx.log, {
-      html: true,
-      disableLinkPreview: true,
-    });
-  }
-
-  // Send charts as locally rendered images
-  for (const chart of charts) {
-    try {
-      const buffer = await renderChartToBuffer(chart);
-      await ctx.bot.sendPhoto(
-        chatId,
-        buffer,
-        { caption: chart.title },
-        {
-          filename: "chart.png",
-          contentType: "image/png",
-          knownLength: buffer.length,
-        }
-      );
-    } catch {
-      await ctx.bot.sendMessage(
-        chatId,
-        `${chart.title}: failed to render chart.`
-      );
-    }
-  }
-
-  // Send files as Telegram documents
+/**
+ * Send generated files as Telegram documents without blocking the main response.
+ * @param {import("../commands").BotContext} ctx
+ * @param {number} chatId
+ * @param {Array<{filename: string, storageFilename: string, fileSize: number}>} files
+ */
+async function sendFilesAsTelegramDocuments(ctx, chatId, files) {
+  const createFilesLib = require("../../agents/aibitat/plugins/create-files/lib");
   for (const file of files) {
     try {
-      const base64Data = file.b64Content.split(",")[1];
-      const buffer = Buffer.from(base64Data, "base64");
+      ctx.log?.info?.(`Retrieving file: ${file.storageFilename}`);
+      const result = await createFilesLib.getGeneratedFile(
+        file.storageFilename
+      );
+      if (!result?.buffer) {
+        ctx.log?.warn?.(
+          `Could not retrieve generated file: ${file.storageFilename}`
+        );
+        continue;
+      }
+
+      const extension = file.storageFilename.split(".").pop() || "";
+      const mimeType = createFilesLib.getMimeType(extension);
+
+      ctx.log?.info?.(
+        `Sending document: ${file.filename} (${result.buffer.length} bytes, ${mimeType})`
+      );
       await ctx.bot.sendDocument(
         chatId,
-        buffer,
-        {},
+        result.buffer,
+        { caption: file.filename },
         {
           filename: file.filename,
-          contentType: "application/octet-stream",
+          contentType: mimeType,
         }
       );
-    } catch {}
-  }
-
-  // Ensure the initial sendMessage has resolved before deciding how to deliver
-  if (responsePending) await responsePending;
-
-  // Fall back to the accumulated streamed text when no explicit
-  // fullTextResponse event was received (e.g. audio/voice messages).
-  const responseText = finalResponse || streamingText;
-
-  if (responseText) {
-    await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message,
-      response: {
-        text: responseText,
-        sources,
-        type: "chat",
-        metrics,
-        attachments,
-      },
-      threadId: thread?.id || null,
-    });
-
-    // Always deliver text response first
-    if (responseMsgId) {
-      await editMessage(
-        ctx.bot,
-        chatId,
-        responseMsgId,
-        finalResponse || currentResponseText(),
-        ctx.log,
-        {
-          format: true,
-        }
-      ).catch(() => {});
-    } else {
-      await sendFormattedMessage(ctx.bot, chatId, responseText);
-    }
-
-    // Send voice as an additional attachment if requested
-    if (voiceResponse) {
-      ctx.log?.info?.(`Generating voice response for ${chatId}`);
-      await sendVoiceResponse(ctx.bot, chatId, responseText);
+      ctx.log?.info?.(`Successfully sent document: ${file.filename}`);
+    } catch (err) {
+      ctx.log?.error?.(
+        `Failed to send document ${file.filename}:`,
+        err.message
+      );
     }
   }
 }

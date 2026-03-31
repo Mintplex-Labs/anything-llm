@@ -27,11 +27,8 @@ async function memoryEnabled(_req, response, next) {
 function memoryEndpoints(app) {
   if (!app) return;
 
-  // Static routes must be registered before parameterized routes
-  // so Express doesn't match "clear" or "run-extraction" as :memoryId/:workspaceId.
-
   app.delete(
-    "/memories/clear/all",
+    "/memories",
     [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
@@ -64,7 +61,7 @@ function memoryEndpoints(app) {
   );
 
   app.get(
-    "/memories/all",
+    "/memories",
     [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
@@ -79,7 +76,7 @@ function memoryEndpoints(app) {
   );
 
   app.get(
-    "/memories/:workspaceId",
+    "/workspaces/:workspaceId/memories",
     [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {
@@ -101,7 +98,7 @@ function memoryEndpoints(app) {
   );
 
   app.post(
-    "/memories/:workspaceId",
+    "/workspaces/:workspaceId/memories",
     [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
     async (request, response) => {
       try {

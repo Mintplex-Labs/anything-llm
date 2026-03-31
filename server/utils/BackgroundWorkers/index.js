@@ -16,9 +16,14 @@ class BackgroundService {
       interval: "12hr",
     },
     {
-      name: "extract-memories",
-      interval: "15m",
+      name: "cleanup-generated-files",
       timeout: "5m",
+      interval: "8hr",
+    },
+    {
+      name: "extract-memories",
+      timeout: "1m",
+      interval: process.env.MEMORY_EXTRACTION_INTERVAL || "15m",
     },
   ];
 

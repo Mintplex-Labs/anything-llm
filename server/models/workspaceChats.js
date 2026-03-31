@@ -298,20 +298,6 @@ const WorkspaceChats = {
       return false;
     }
   },
-  unprocessedMemoryGroups: async function () {
-    try {
-      const pairs = await prisma.workspace_chats.findMany({
-        where: { memoryProcessed: false },
-        distinct: ["user_id", "workspaceId"],
-        select: { user_id: true, workspaceId: true },
-      });
-      return pairs;
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   markMemoryProcessed: async function (ids = []) {
     if (!ids.length) return;
     try {
