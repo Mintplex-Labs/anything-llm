@@ -1,6 +1,6 @@
 const { FilesystemReadTextFile } = require("./read-text-file.js");
 const { FilesystemReadMultipleFiles } = require("./read-multiple-files.js");
-const { FilesystemWriteFile } = require("./write-file.js");
+const { FilesystemWriteTextFile } = require("./write-text-file.js");
 const { FilesystemEditFile } = require("./edit-file.js");
 const { FilesystemCreateDirectory } = require("./create-directory.js");
 const { FilesystemListDirectory } = require("./list-directory.js");
@@ -17,7 +17,7 @@ const filesystemAgent = {
   plugin: [
     FilesystemReadTextFile,
     FilesystemReadMultipleFiles,
-    FilesystemWriteFile,
+    FilesystemWriteTextFile,
     FilesystemEditFile,
     FilesystemCreateDirectory,
     FilesystemListDirectory,

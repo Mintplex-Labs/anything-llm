@@ -17,7 +17,6 @@ const TRANSLATIONS = {
         "Help ons AnythingLLM af te stemmen op jouw behoeften. (Optioneel)",
     },
     home: {
-      title: "Welkom bij",
       getStarted: "Aan de slag",
       welcome: "Welkom",
     },
@@ -310,11 +309,6 @@ const TRANSLATIONS = {
         description:
           "Sta de standaardagent toe om verschillende soorten grafieken te genereren uit verstrekte of in de chat gegeven gegevens.",
       },
-      save: {
-        title: "Genereren & opslaan van bestanden naar browser",
-        description:
-          "Sta de standaardagent toe om te genereren en te schrijven naar bestanden die worden opgeslagen en kunnen worden gedownload in je browser.",
-      },
       web: {
         title: "Live web zoeken en browsen",
         description:
@@ -361,11 +355,6 @@ const TRANSLATIONS = {
             title: "Fijlsinformatie bekijken",
             description: "Verkrijg gedetailleerde metadata over bestanden.",
           },
-          "write-file": {
-            title: "Schrijf bestand",
-            description:
-              "Maak nieuwe bestanden aan of vervang bestaande bestanden.",
-          },
           "edit-file": {
             title: "Bestand bewerken",
             description: "Voer wijzigingen uit op tekstbestanden, per regel.",
@@ -381,6 +370,43 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Kopieer bestand",
             description: "Kopieer bestanden en mappen",
+          },
+          "write-text-file": {
+            title: "Maak een tekstbestand",
+            description:
+              "Maak nieuwe tekstbestanden aan of vervang bestaande tekstbestanden.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Documentcreatie",
+        description:
+          "Laat uw agent documenten in binair formaat aanmaken, zoals PowerPoint-presentaties, Excel-tabellen, Word-documenten en PDF-bestanden. Bestanden kunnen direct worden gedownload vanuit het chatvenster.",
+        configuration: "Beschikbare documenttypen",
+        skills: {
+          "create-text-file": {
+            title: "Tekstbestanden",
+            description:
+              "Maak tekstbestanden met elk gewenst inhoud en bestandsextensie (bijvoorbeeld .txt, .md, .json, .csv, enz.).",
+          },
+          "create-pptx": {
+            title: "Presentaties met PowerPoint",
+            description:
+              "Maak nieuwe PowerPoint-presentaties met dia's, titels en opsommingstekens.",
+          },
+          "create-pdf": {
+            title: "PDF-documenten",
+            description:
+              "Maak PDF-documenten aan vanuit Markdown of gewone tekst, met basisstijling.",
+          },
+          "create-xlsx": {
+            title: "Excel-tabellen",
+            description:
+              "Maak Excel-documenten voor tabelgegevens, met tabbladen en opmaak.",
+          },
+          "create-docx": {
+            title: "Word-documenten",
+            description: "Maak Word-documenten met basisstijlen en -opmaak.",
           },
         },
       },
@@ -702,7 +728,6 @@ const TRANSLATIONS = {
       select_all: "Alles selecteren",
       deselect_all: "Alles deselecteren",
       remove_selected: "Verwijderen Geselecteerd",
-      costs: "*Eenmalige kosten voor embedden",
       save_embed: "Opslaan en embedden",
       "total-documents_one": "{{count}} document",
       "total-documents_other": "{{count}} documenten",

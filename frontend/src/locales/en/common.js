@@ -1,7 +1,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Welcome to",
       welcome: "Welcome",
       getStarted: "Get Started",
     },
@@ -323,11 +322,6 @@ const TRANSLATIONS = {
         description:
           "Enable the default agent to generate various types of charts from data provided or given in chat.",
       },
-      save: {
-        title: "Generate & save files",
-        description:
-          "Enable the default agent to generate and write to files that can be saved to your computer.",
-      },
       web: {
         title: "Web Search",
         description:
@@ -370,9 +364,10 @@ const TRANSLATIONS = {
             title: "Get File Info",
             description: "Get detailed metadata about files",
           },
-          "write-file": {
-            title: "Write File",
-            description: "Create new files or overwrite existing files",
+          "write-text-file": {
+            title: "Write Text File",
+            description:
+              "Create new text files or overwrite existing text files",
           },
           "edit-file": {
             title: "Edit File",
@@ -389,6 +384,39 @@ const TRANSLATIONS = {
           "move-file": {
             title: "Move/Rename File",
             description: "Move or rename files and directories",
+          },
+        },
+      },
+      createFiles: {
+        title: "Document Creation",
+        description:
+          "Enable your agent to create binary document formats like PowerPoint presentations, Excel spreadsheets, Word documents, and PDFs. Files can be downloaded directly from the chat window.",
+        configuration: "Available Document Types",
+        skills: {
+          "create-text-file": {
+            title: "Text Files",
+            description:
+              "Create text files with any content and extension (.txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint Presentations",
+            description:
+              "Create new PowerPoint presentations with slides, titles, and bullet points",
+          },
+          "create-pdf": {
+            title: "PDF Documents",
+            description:
+              "Create PDF documents from markdown or plain text with basic styling",
+          },
+          "create-xlsx": {
+            title: "Excel Spreadsheets",
+            description:
+              "Create Excel documents for tabular data with sheets and styling",
+          },
+          "create-docx": {
+            title: "Word Documents",
+            description:
+              "Create Word documents with basic styling and formatting",
           },
         },
       },
@@ -909,7 +937,6 @@ const TRANSLATIONS = {
       select_all: "Select All",
       deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
-      costs: "*One time cost for embeddings",
       save_embed: "Save and Embed",
     },
     upload: {
