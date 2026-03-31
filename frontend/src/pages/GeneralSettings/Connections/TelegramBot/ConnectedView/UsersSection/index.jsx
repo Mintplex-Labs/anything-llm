@@ -96,25 +96,27 @@ function UserRow({ user, isPending = false, onApprove, onDeny, onRevoke }) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-x-3">
+      <div className="flex items-center">
+        <div className="flex items-center gap-x-3 flex-1 min-w-0">
           <div className="bg-zinc-800 light:bg-slate-300 size-8 rounded-full flex items-center justify-center shrink-0">
             <span className="text-sm font-semibold text-white light:text-slate-900">
               {initial}
             </span>
           </div>
-          <span className="text-sm font-medium text-white light:text-slate-900">
+          <span className="text-sm font-medium text-white light:text-slate-900 truncate">
             {displayName}
           </span>
         </div>
-        {isPending && code && (
-          <div className="bg-zinc-950 light:bg-slate-200 h-[26px] w-[60px] flex items-center justify-center rounded">
-            <span className="text-sm text-white/80 light:text-slate-900 text-center">
-              {code}
-            </span>
-          </div>
-        )}
-        <div className="flex items-center gap-x-3">
+        <div className="w-[60px] flex items-center justify-center shrink-0 mr-36">
+          {isPending && code && (
+            <div className="bg-zinc-950 light:bg-slate-200 h-[26px] w-[60px] flex items-center justify-center rounded">
+              <span className="text-sm text-white/80 light:text-slate-900 text-center">
+                {code}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-x-3 w-[80px] shrink-0">
           {isPending ? (
             <>
               <button
