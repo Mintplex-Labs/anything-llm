@@ -139,9 +139,9 @@ export default function Personalization() {
 
   const globalMemories = memories.filter((m) => m.scope === "global");
 
-  function renderContent() {
-    if (loading) {
-      return (
+  if (loading)
+    return (
+      <PersonalizationLayout>
         <Skeleton.default
           height="60vh"
           width="100%"
@@ -151,11 +151,12 @@ export default function Personalization() {
           className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
           containerClassName="flex w-full"
         />
-      );
-    }
+      </PersonalizationLayout>
+    );
 
-    if (!enabled) {
-      return (
+  if (!enabled)
+    return (
+      <PersonalizationLayout>
         <div className="mt-6">
           <Toggle
             size="lg"
@@ -165,10 +166,11 @@ export default function Personalization() {
             description={t("personalization.toggle.description")}
           />
         </div>
-      );
-    }
+      </PersonalizationLayout>
+    );
 
-    return (
+  return (
+    <PersonalizationLayout>
       <div className="mt-6 flex flex-col gap-y-6">
         <Toggle
           size="lg"
@@ -208,9 +210,12 @@ export default function Personalization() {
 
         <WorkspacesList workspaces={workspaces} memories={memories} />
       </div>
-    );
-  }
+    </PersonalizationLayout>
+  );
+}
 
+function PersonalizationLayout({ children }) {
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <SettingsSidebar />
@@ -229,7 +234,7 @@ export default function Personalization() {
               {t("personalization.description")}
             </p>
           </div>
-          {renderContent()}
+          {children}
         </div>
       </div>
     </div>
