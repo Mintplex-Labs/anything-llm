@@ -16,7 +16,7 @@ async function chatSync({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
+  const chatMode = workspace?.chatMode ?? "automatic";
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
@@ -219,7 +219,7 @@ async function streamChat({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
+  const chatMode = workspace?.chatMode ?? "automatic";
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,

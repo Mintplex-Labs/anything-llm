@@ -112,7 +112,7 @@ async function processDocumentAttachments(attachments = []) {
 async function chatSync({
   workspace,
   message = null,
-  mode = "chat",
+  mode = null,
   user = null,
   thread = null,
   sessionId = null,
@@ -120,7 +120,7 @@ async function chatSync({
   reset = false,
 }) {
   const uuid = uuidv4();
-  const chatMode = mode ?? "chat";
+  const chatMode = mode ?? workspace?.chatMode ?? "automatic";
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -459,7 +459,7 @@ async function streamChat({
   response,
   workspace,
   message = null,
-  mode = "chat",
+  mode = null,
   user = null,
   thread = null,
   sessionId = null,
@@ -467,7 +467,7 @@ async function streamChat({
   reset = false,
 }) {
   const uuid = uuidv4();
-  const chatMode = mode ?? "chat";
+  const chatMode = mode ?? workspace?.chatMode ?? "automatic";
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
