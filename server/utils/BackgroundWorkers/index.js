@@ -17,8 +17,8 @@ class BackgroundService {
     },
     {
       name: "extract-memories",
-      interval: "15m",
-      timeout: "5m",
+      timeout: "1m",
+      interval: process.env.MEMORY_EXTRACTION_INTERVAL || "15m",
     },
   ];
 

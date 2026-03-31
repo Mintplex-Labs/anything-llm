@@ -6,7 +6,8 @@ const { Workspace } = require("../models/workspace.js");
 const { getLLMProvider } = require("../utils/helpers/index.js");
 const { safeJsonParse } = require("../utils/http/index.js");
 
-const IDLE_THRESHOLD_MS = 20 * 60 * 1000; // 20 minutes
+const IDLE_THRESHOLD_MS =
+  Number(process.env.MEMORY_IDLE_THRESHOLD_MS) || 20 * 60 * 1000; // 20 minutes
 
 const EXTRACTION_SYSTEM_PROMPT = `You are a memory extraction system for a personalized AI assistant. You manage a list of memories about the user that will be injected into future conversations to provide personalized responses.
 
