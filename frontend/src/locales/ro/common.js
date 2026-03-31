@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Bine ai venit la",
       getStarted: "Începe",
       welcome: "Bine ați venit",
     },
@@ -457,7 +456,6 @@ const TRANSLATIONS = {
       select_all: "Selectează tot",
       deselect_all: "Deselectează tot",
       remove_selected: "Elimină selectate",
-      costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
       "total-documents_one": "{{count}}",
       "total-documents_other": "{{count}} documente",
@@ -767,11 +765,6 @@ const TRANSLATIONS = {
         description:
           "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
       },
-      save: {
-        title: "Generează & salvează fișiere în browser",
-        description:
-          "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
-      },
       web: {
         title: "Căutare și navigare web live",
         description:
@@ -817,11 +810,6 @@ const TRANSLATIONS = {
             title: "Obține informații despre fișier",
             description: "Obțineți metadate detaliate despre fișiere.",
           },
-          "write-file": {
-            title: "Creați fișier",
-            description:
-              "Creați fișiere noi sau suprascrieți fișierele existente.",
-          },
           "edit-file": {
             title: "Modifică fișierul",
             description: "Realizați modificări pe linii în fișierele de text.",
@@ -837,6 +825,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Copiază fișier",
             description: "Copiați fișiere și directoare",
+          },
+          "write-text-file": {
+            title: "Creați un fișier de text",
+            description:
+              "Creați fișiere de text noi sau suprascrieți fișierele de text existente.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Crearea de documente",
+        description:
+          "Permite-ți agentului să creeze formate de documente binare, cum ar fi prezentări PowerPoint, fișe Excel, documente Word și fișiere PDF. Fișierele pot fi descărcate direct din fereastra de chat.",
+        configuration: "Tipuri de documente disponibile",
+        skills: {
+          "create-text-file": {
+            title: "Fișiere text",
+            description:
+              "Creați fișiere text cu orice conținut și extensie (de exemplu, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Prezentări PowerPoint",
+            description:
+              "Creați prezentări noi în PowerPoint, cu diapozitive, titluri și puncte.",
+          },
+          "create-pdf": {
+            title: "Documente în format PDF",
+            description:
+              "Creați documente PDF din fișiere Markdown sau text simplu, cu un stil de formatare de bază.",
+          },
+          "create-xlsx": {
+            title: "Fișe Excel",
+            description:
+              "Creați fișiere Excel pentru date tabulare, cu foi și stilizare.",
+          },
+          "create-docx": {
+            title: "Fișiere în format Word",
+            description:
+              "Creați documente Word cu un stil și formatare de bază.",
           },
         },
       },

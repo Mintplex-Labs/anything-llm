@@ -210,4 +210,5 @@ module.exports = {
   getGitVersion,
   getModelTag,
   getAnythingLLMUserAgent,
+  getDeploymentVersion,
 };

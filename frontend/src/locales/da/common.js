@@ -2,7 +2,6 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Velkommen til",
       getStarted: "Kom godt i gang",
       welcome: "Velkommen",
     },
@@ -312,11 +311,6 @@ const TRANSLATIONS = {
         description:
           "Gør det muligt for standardagenten at generere forskellige typer diagrammer fra data, der leveres eller gives i chat.",
       },
-      save: {
-        title: "Generer og gem filer i browseren",
-        description:
-          "Gør det muligt for standardagenten at generere og skrive til filer, der gemmes og kan downloades i din browser.",
-      },
       web: {
         title: "Live web-søgning og browsing",
         description:
@@ -361,10 +355,6 @@ const TRANSLATIONS = {
             title: "Få filinformation",
             description: "Få detaljerede metadata om filer",
           },
-          "write-file": {
-            title: "Opret fil",
-            description: "Opret nye filer eller skriv over eksisterende filer.",
-          },
           "edit-file": {
             title: "Rediger fil",
             description: "Rediger tekstfiler baseret på linjer",
@@ -380,6 +370,44 @@ const TRANSLATIONS = {
           "copy-file": {
             title: "Kopier fil",
             description: "Kopier filer og mapper",
+          },
+          "write-text-file": {
+            title: "Opret tekstfil",
+            description:
+              "Opret nye tekstfiler eller overskriv eksisterende tekstfiler.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumentoprettelse",
+        description:
+          "Giv din agent mulighed for at oprette binære dokumentformater som PowerPoint-præsentationer, Excel-regneark, Word-dokumenter og PDF-filer. Filerne kan downloades direkte fra chatvinduet.",
+        configuration: "Tilgængelige dokumenttyper",
+        skills: {
+          "create-text-file": {
+            title: "Tekstfiler",
+            description:
+              "Opret tekstfiler med enhver indhold og filtype (.txt, .md, .json, .csv osv.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint-præsentationer",
+            description:
+              "Opret nye PowerPoint-præsentationer med slides, overskrifter og punktlister.",
+          },
+          "create-pdf": {
+            title: "PDF-dokumenter",
+            description:
+              "Opret PDF-dokumenter fra Markdown eller almindelig tekst med grundlæggende formatering.",
+          },
+          "create-xlsx": {
+            title: "Excel-regneark",
+            description:
+              "Opret Excel-dokumenter med tabellerede data, inklusive ark og formatering.",
+          },
+          "create-docx": {
+            title: "Ord-dokumenter",
+            description:
+              "Opret Word-dokumenter med grundlæggende formatering og stil.",
           },
         },
       },
@@ -700,7 +728,6 @@ const TRANSLATIONS = {
       select_all: "Vælg alle",
       deselect_all: "Fravælg alle",
       remove_selected: "Fjern valgte",
-      costs: "*Engangsomkostning for indlejringer",
       save_embed: "Gem og indlejr",
       "total-documents_one": "{{count}} dokument",
       "total-documents_other": "{{count}} dokumenter",
