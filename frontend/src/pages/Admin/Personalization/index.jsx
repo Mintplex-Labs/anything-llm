@@ -139,6 +139,78 @@ export default function Personalization() {
 
   const globalMemories = memories.filter((m) => m.scope === "global");
 
+  function renderContent() {
+    if (loading) {
+      return (
+        <Skeleton.default
+          height="60vh"
+          width="100%"
+          highlightColor="var(--theme-bg-primary)"
+          baseColor="var(--theme-bg-secondary)"
+          count={1}
+          className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+          containerClassName="flex w-full"
+        />
+      );
+    }
+
+    if (!enabled) {
+      return (
+        <div className="mt-6">
+          <Toggle
+            size="lg"
+            enabled={enabled}
+            onChange={handleToggle}
+            label={t("personalization.toggle.label")}
+            description={t("personalization.toggle.description")}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="mt-6 flex flex-col gap-y-6">
+        <Toggle
+          size="lg"
+          enabled={enabled}
+          onChange={handleToggle}
+          label={t("personalization.toggle.label")}
+          description={t("personalization.toggle.description")}
+        />
+
+        <div className="flex gap-x-3">
+          <button
+            onClick={handleRunExtraction}
+            disabled={extracting}
+            className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+          >
+            {extracting
+              ? t("personalization.actions.extracting")
+              : t("personalization.actions.run-extraction")}
+          </button>
+          <button
+            onClick={handleClearAll}
+            disabled={clearing || memories.length === 0}
+            className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
+          >
+            {clearing
+              ? t("personalization.actions.clearing")
+              : t("personalization.actions.clear-all")}
+          </button>
+        </div>
+
+        <GlobalMemoriesSection
+          memories={globalMemories}
+          onDelete={handleDeleteMemory}
+          onUpdate={handleUpdateMemory}
+          onAdd={handleAddGlobal}
+        />
+
+        <WorkspacesList workspaces={workspaces} memories={memories} />
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <SettingsSidebar />
@@ -157,112 +229,9 @@ export default function Personalization() {
               {t("personalization.description")}
             </p>
           </div>
-
-          <PersonalizationContent
-            loading={loading}
-            enabled={enabled}
-            onToggle={handleToggle}
-            extracting={extracting}
-            onRunExtraction={handleRunExtraction}
-            clearing={clearing}
-            onClearAll={handleClearAll}
-            globalMemories={globalMemories}
-            memories={memories}
-            workspaces={workspaces}
-            onDeleteMemory={handleDeleteMemory}
-            onUpdateMemory={handleUpdateMemory}
-            onAddGlobal={handleAddGlobal}
-          />
+          {renderContent()}
         </div>
       </div>
-    </div>
-  );
-}
-
-function PersonalizationContent({
-  loading,
-  enabled,
-  onToggle,
-  extracting,
-  onRunExtraction,
-  clearing,
-  onClearAll,
-  globalMemories,
-  memories,
-  workspaces,
-  onDeleteMemory,
-  onUpdateMemory,
-  onAddGlobal,
-}) {
-  const { t } = useTranslation();
-
-  if (loading) {
-    return (
-      <Skeleton.default
-        height="60vh"
-        width="100%"
-        highlightColor="var(--theme-bg-primary)"
-        baseColor="var(--theme-bg-secondary)"
-        count={1}
-        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex w-full"
-      />
-    );
-  }
-
-  if (!enabled) {
-    return (
-      <div className="mt-6">
-        <Toggle
-          size="lg"
-          enabled={enabled}
-          onChange={onToggle}
-          label={t("personalization.toggle.label")}
-          description={t("personalization.toggle.description")}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-6 flex flex-col gap-y-6">
-      <Toggle
-        size="lg"
-        enabled={enabled}
-        onChange={onToggle}
-        label={t("personalization.toggle.label")}
-        description={t("personalization.toggle.description")}
-      />
-
-      <div className="flex gap-x-3">
-        <button
-          onClick={onRunExtraction}
-          disabled={extracting}
-          className="enabled:hover:bg-secondary enabled:hover:text-white rounded-lg bg-primary-button w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-        >
-          {extracting
-            ? t("personalization.actions.extracting")
-            : t("personalization.actions.run-extraction")}
-        </button>
-        <button
-          onClick={onClearAll}
-          disabled={clearing || memories.length === 0}
-          className="rounded-lg border border-red-500/50 text-red-300 hover:bg-red-500/20 w-fit py-2 px-4 font-semibold text-xs disabled:opacity-20 disabled:cursor-not-allowed"
-        >
-          {clearing
-            ? t("personalization.actions.clearing")
-            : t("personalization.actions.clear-all")}
-        </button>
-      </div>
-
-      <GlobalMemoriesSection
-        memories={globalMemories}
-        onDelete={onDeleteMemory}
-        onUpdate={onUpdateMemory}
-        onAdd={onAddGlobal}
-      />
-
-      <WorkspacesList workspaces={workspaces} memories={memories} />
     </div>
   );
 }
