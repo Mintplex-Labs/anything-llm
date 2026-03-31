@@ -1196,7 +1196,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   const runAfterAll = [];
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !String(newENVs[key]).includes("******") // strip out answers where the value is all asterisks
   );
   const newValues = {};
 
