@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { CircleNotch } from "@phosphor-icons/react";
@@ -10,6 +11,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 
 export default function TelegramBotSettings() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState(null);
 
@@ -20,7 +22,7 @@ export default function TelegramBotSettings() {
         Telegram.getConfig(),
       ]);
 
-      if (isMultiUserMode) window.location = paths.home();
+      if (isMultiUserMode) navigate(paths.home());
       setConfig(configRes?.config || null);
       setLoading(false);
     }
