@@ -8,6 +8,7 @@ const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
 const { EventLogs } = require("../models/eventLogs");
 const { Workspace } = require("../models/workspace");
+const { WorkspaceThread } = require("../models/workspaceThread");
 const { encryptToken } = require("../utils/telegramBot/utils");
 
 function telegramEndpoints(app) {
@@ -24,12 +25,32 @@ function telegramEndpoints(app) {
         }
 
         const service = new TelegramBotService();
+
+        // Resolve workspace, thread, and model from the first approved user's
+        // active state, falling back to the default workspace config.
+        const approvedUsers = connector.config.approved_users || [];
+        const activeUser = approvedUsers[0];
+        const workspaceSlug =
+          activeUser?.active_workspace ||
+          connector.config.default_workspace ||
+          null;
+        const threadSlug = activeUser?.active_thread || null;
+
+        let workspace = await Workspace.get({ slug: workspaceSlug });
+        if (!workspace) {
+          const available = await Workspace.where({}, 1);
+          if (available.length) workspace = available[0];
+        }
+        const thread = await WorkspaceThread.get({ slug: threadSlug });
+
         return response.status(200).json({
           config: {
             active: connector.active,
             connected: service.isRunning,
             bot_username: connector.config.bot_username || null,
-            default_workspace: connector.config.default_workspace || null,
+            default_workspace: workspace?.name || workspaceSlug || "—",
+            active_thread_name: thread?.name || "Default",
+            chat_model: workspace?.chatModel || "System default",
             voice_response_mode:
               connector.config.voice_response_mode || "text_only",
           },
