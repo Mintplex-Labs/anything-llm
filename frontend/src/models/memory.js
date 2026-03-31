@@ -3,7 +3,7 @@ import { baseHeaders } from "@/utils/request";
 
 const Memory = {
   all: async function () {
-    return await fetch(`${API_BASE}/memories/all`, {
+    return await fetch(`${API_BASE}/memories`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -16,7 +16,7 @@ const Memory = {
   },
 
   forWorkspace: async function (workspaceId) {
-    return await fetch(`${API_BASE}/memories/${workspaceId}`, {
+    return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -29,7 +29,7 @@ const Memory = {
   },
 
   create: async function (workspaceId, { content, scope = "workspace" }) {
-    return await fetch(`${API_BASE}/memories/${workspaceId}`, {
+    return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ content, scope }),
@@ -79,7 +79,7 @@ const Memory = {
   },
 
   clearAll: async function () {
-    return await fetch(`${API_BASE}/memories/clear/all`, {
+    return await fetch(`${API_BASE}/memories`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
