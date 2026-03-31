@@ -1243,6 +1243,7 @@ const TRANSLATIONS = {
       save: "Opslaan",
       add: "Voeg toe",
       cancel: "Annuleren",
+      hint: "Elk geheugenpunt moet één, beknopte feit of voorkeur zijn, uitgedrukt in één zin.",
     },
     item: {
       edit: "Bewerk",

@@ -1146,6 +1146,7 @@ const TRANSLATIONS = {
       save: "儲存",
       add: "新增",
       cancel: "取消",
+      hint: "每個記憶點都應該是一個簡潔明瞭的、用一句话表达的事實或偏好。",
     },
     item: {
       edit: "編輯",

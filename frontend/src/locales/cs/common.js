@@ -1230,6 +1230,7 @@ const TRANSLATIONS = {
       save: "Uložit",
       add: "Přidat",
       cancel: "Zrušit",
+      hint: "Každá paměť by měla být jediným, stručným faktem nebo preferencí, vyjádřeným v jedné větě.",
     },
     item: {
       edit: "Upravit",

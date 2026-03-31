@@ -1208,6 +1208,7 @@ const TRANSLATIONS = {
       save: "저장",
       add: "추가",
       cancel: "취소",
+      hint: "각 기억은 단일하고 간결한 사실이나 선호도를 하나의 문장으로 표현해야 합니다.",
     },
     item: {
       edit: "편집",

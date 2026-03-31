@@ -1232,6 +1232,7 @@ const TRANSLATIONS = {
       save: "Įrašyti",
       add: "Pridėti",
       cancel: "Atšaukti",
+      hint: "Kiekviena atsiminimas turėtų būti vienas, glaustas faktas arba pasirinkimas, išreikotas vienoje frazėje.",
     },
     item: {
       edit: "Redaguo; Redagavimas",

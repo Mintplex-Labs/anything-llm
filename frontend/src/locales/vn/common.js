@@ -1230,6 +1230,7 @@ const TRANSLATIONS = {
       save: "Lưu",
       add: "Thêm",
       cancel: "Hủy",
+      hint: "Mỗi thông tin nên là một sự thật hoặc sở thích ngắn gọn, được diễn đạt trong một câu.",
     },
     item: {
       edit: "Chỉnh sửa",

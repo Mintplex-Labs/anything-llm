@@ -1262,6 +1262,7 @@ const TRANSLATIONS = {
       save: "Guardar",
       add: "Añadir",
       cancel: "Cancelar",
+      hint: "Cada recuerdo debe ser un hecho o preferencia único y conciso, expresado en una sola frase.",
     },
     item: {
       edit: "Editar",

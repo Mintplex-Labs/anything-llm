@@ -1214,6 +1214,7 @@ const TRANSLATIONS = {
       save: "Salvar",
       add: "Adicionar",
       cancel: "Cancelar",
+      hint: "Cada memória deve ser um fato ou preferência conciso, expresso em uma única frase.",
     },
     item: {
       edit: "Editar",

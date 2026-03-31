@@ -1237,6 +1237,7 @@ const TRANSLATIONS = {
       save: "Zapisz",
       add: "Dodaj",
       cancel: "Anuluj",
+      hint: "Każda informacja powinna być pojedynczym, zwięzłym stwierdzeniem lub preferencją, wyrażonym w jednej zdaniu.",
     },
     item: {
       edit: "Edytuj",

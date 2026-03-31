@@ -1263,6 +1263,7 @@ const TRANSLATIONS = {
       save: "Salva",
       add: "Aggiungi",
       cancel: "Annulla",
+      hint: "Ogni ricordo dovrebbe essere una singola e concisa affermazione o preferenza, espressa in una sola frase.",
     },
     item: {
       edit: "Modifica",

@@ -1231,6 +1231,7 @@ const TRANSLATIONS = {
       save: "Kaydet",
       add: "Ekle",
       cancel: "İptal et",
+      hint: "Her bir anı, tek, öz bir bilgi veya tercihten oluşan, tek bir cümlede ifade edilmelidir.",
     },
     item: {
       edit: "Düzenle",

@@ -1237,6 +1237,7 @@ const TRANSLATIONS = {
       save: "Gem",
       add: "Tilføj",
       cancel: "Annullér",
+      hint: "Hvert minde skal være en enkelt, præcis fakta eller præference, udtrykt i en enkelt sætning.",
     },
     item: {
       edit: "Rediger",

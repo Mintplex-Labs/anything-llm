@@ -1239,6 +1239,7 @@ const TRANSLATIONS = {
       save: "Enregistrer",
       add: "Ajouter",
       cancel: "Annuler",
+      hint: "Chaque souvenir doit être une seule et unique information ou préférence, exprimée en une seule phrase.",
     },
     item: {
       edit: "Modifier",

@@ -1191,6 +1191,7 @@ const TRANSLATIONS = {
       save: "Salvesta",
       add: "Lisada",
       cancel: "Katkuda\nTühista",
+      hint: "Iga üksik mälestus peab olema ühes lauses, selge ja kokkuvõtteva fakt või eelistus.",
     },
     item: {
       edit: "Muuda",

@@ -1239,6 +1239,7 @@ const TRANSLATIONS = {
       save: "Saglabāt",
       add: "Pievienot",
       cancel: "Atcelt",
+      hint: "Katrs atgādinājums jāizteic kā vienkārša, skaidra fakts vai vēlme vienā teikumā.",
     },
     item: {
       edit: "Rediģēt",

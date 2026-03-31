@@ -1155,6 +1155,7 @@ const TRANSLATIONS = {
       save: "保存",
       add: "添加",
       cancel: "取消",
+      hint: "每个记忆都应该是一个简洁明了的陈述或偏好，用一句话表达。",
     },
     item: {
       edit: "编辑",

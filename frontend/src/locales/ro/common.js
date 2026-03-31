@@ -1242,6 +1242,7 @@ const TRANSLATIONS = {
       save: "Salvați",
       add: "Adaugă",
       cancel: "Anula",
+      hint: "Fiecare amintire trebuie să fie un fapt sau o preferință clară, exprimată într-o singură propoziție.",
     },
     item: {
       edit: "Editează",

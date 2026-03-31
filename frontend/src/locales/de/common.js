@@ -1255,6 +1255,7 @@ const TRANSLATIONS = {
       save: "Speichern",
       add: "Hinzufügen",
       cancel: "Abbrechen",
+      hint: "Jede Erinnerung sollte eine einzelne, prägnante Tatsache oder Präferenz in einem Satz enthalten.",
     },
     item: {
       edit: "Bearbeiten",
