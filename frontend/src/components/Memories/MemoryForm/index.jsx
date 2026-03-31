@@ -39,6 +39,9 @@ export default function MemoryForm({
         rows={2}
         className="w-full border-none bg-theme-bg-secondary placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 resize-none"
       />
+      <p className="text-xs text-theme-text-secondary">
+        {t("personalization.form.hint")}
+      </p>
       <div className="flex justify-end gap-x-2">
         <button
           type="button"

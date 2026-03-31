@@ -1102,6 +1102,7 @@ const TRANSLATIONS = {
     },
     form: {
       placeholder: "Enter a memory (e.g. 'I prefer concise responses')",
+      hint: "Each memory should be a single, concise fact or preference in one sentence.",
       save: "Save",
       add: "Add",
       cancel: "Cancel",
