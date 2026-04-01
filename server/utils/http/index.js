@@ -4,7 +4,7 @@ process.env.NODE_ENV === "development"
 const JWT = require("jsonwebtoken");
 const { User } = require("../../models/user");
 const { jsonrepair } = require("jsonrepair");
-const extract = require("extract-json-from-string");
+const { extractJson } = require("llm-regex-extractor");
 
 function reqBody(request) {
   return typeof request.body === "string"
@@ -90,7 +90,8 @@ function safeJsonParse(jsonString, fallback = null) {
   }
 
   try {
-    return extract(jsonString)?.[0] || fallback;
+    const extracted = extractJson(jsonString);
+    if (extracted !== null) return extracted;
   } catch {}
 
   return fallback;

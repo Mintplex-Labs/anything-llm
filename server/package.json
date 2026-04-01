@@ -61,7 +61,7 @@
     "elevenlabs": "^0.5.0",
     "exceljs": "4.4.0",
     "express": "^4.21.2",
-    "extract-json-from-string": "^1.0.1",
+    "llm-regex-extractor": "^1.0.0",
     "fast-levenshtein": "^3.0.0",
     "fix-path": "^4.0.0",
     "graphql": "^16.7.1",
