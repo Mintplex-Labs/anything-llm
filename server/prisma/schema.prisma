@@ -137,6 +137,8 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  router_id                    Int?
+  model_router                 model_routers?                 @relation(fields: [router_id], references: [id], onDelete: SetNull)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -393,4 +395,41 @@ model external_communication_connectors {
   active        Boolean  @default(false)
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
+}
+
+model model_routers {
+  id                Int                  @id @default(autoincrement())
+  name              String               @unique
+  description       String?
+  fallback_provider String
+  fallback_model    String
+  created_by        Int?
+  createdAt         DateTime             @default(now())
+  lastUpdatedAt     DateTime             @default(now())
+  rules             model_router_rules[]
+  workspaces        workspaces[]
+}
+
+model model_router_rules {
+  id             Int           @id @default(autoincrement())
+  router_id      Int
+  enabled        Boolean       @default(true)
+  priority       Int
+  type           String        @default("calculated")
+  title          String
+  description    String?
+  property       String?
+  comparator     String?
+  value          String?
+  route_provider String
+  route_model    String
+  created_by     Int?
+  createdAt      DateTime      @default(now())
+  lastUpdatedAt  DateTime      @default(now())
+  router         model_routers @relation(fields: [router_id], references: [id], onDelete: Cascade)
+
+  @@unique([router_id, title])
+  @@unique([router_id, priority])
+  @@index([router_id])
+  @@index([router_id, enabled, priority])
 }

@@ -51,10 +51,28 @@ async function streamChatWithWorkspace(
   });
   if (isAgentChat) return;
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  let LLMConnector;
+  let routingMetadata = null;
+
+  if (workspace?.chatProvider === "anythingllm-router") {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const { TokenManager } = require("../helpers/tiktoken");
+    const router = new AnythingLLMModelRouter(workspace);
+    const tokenManager = new TokenManager();
+    const conversationTokenCount = tokenManager.countFromString(message);
+    await router.resolve(
+      { prompt: message, conversationTokenCount },
+      { user, thread }
+    );
+    LLMConnector = router.delegateProvider;
+    routingMetadata = router.routingMetadata;
+  } else {
+    LLMConnector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20;
@@ -285,6 +303,7 @@ async function streamChatWithWorkspace(
         type: chatMode,
         attachments,
         metrics,
+        ...(routingMetadata || {}),
       },
       threadId: thread?.id || null,
       user,
@@ -297,6 +316,7 @@ async function streamChatWithWorkspace(
       error: false,
       chatId: chat.id,
       metrics,
+      ...(routingMetadata || {}),
     });
     return;
   }
