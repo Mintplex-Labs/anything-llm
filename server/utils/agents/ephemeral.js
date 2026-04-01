@@ -437,6 +437,7 @@ class EphemeralAgentHandler extends AgentHandler {
     args = {
       handler: null,
       telegramChatId: null,
+      toolOverrides: null,
     }
   ) {
     this.aibitat = new AIbitat({
@@ -470,6 +471,13 @@ class EphemeralAgentHandler extends AgentHandler {
 
     // Load required agents (Default + custom)
     await this.#loadAgents();
+
+    // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
+    if (args.toolOverrides) {
+      this.#funcsToLoad = args.toolOverrides;
+      const agentDef = this.aibitat.agents.get("@agent");
+      if (agentDef) agentDef.functions = args.toolOverrides;
+    }
 
     // Attach all required plugins for functions to operate.
     await this.#attachPlugins(args);

@@ -381,6 +381,33 @@ const router = createBrowserRouter([
           return { element: <AdminRoute Component={TelegramBotSettings} /> };
         },
       },
+      {
+        path: "/settings/scheduled-jobs",
+        lazy: async () => {
+          const { default: ScheduledJobs } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs"
+          );
+          return { element: <AdminRoute Component={ScheduledJobs} /> };
+        },
+      },
+      {
+        path: "/settings/scheduled-jobs/:id/runs",
+        lazy: async () => {
+          const { default: ScheduledJobRuns } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs/RunHistoryPage"
+          );
+          return { element: <AdminRoute Component={ScheduledJobRuns} /> };
+        },
+      },
+      {
+        path: "/settings/scheduled-jobs/:id/runs/:runId",
+        lazy: async () => {
+          const { default: ScheduledJobRunDetail } = await import(
+            "@/pages/GeneralSettings/ScheduledJobs/RunDetailPage"
+          );
+          return { element: <AdminRoute Component={ScheduledJobRunDetail} /> };
+        },
+      },
       // Catch-all route for 404s
       {
         path: "*",

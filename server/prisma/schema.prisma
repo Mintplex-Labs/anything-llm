@@ -394,3 +394,31 @@ model external_communication_connectors {
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
 }
+
+model scheduled_jobs {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  prompt    String
+  tools     String? // JSON array of tool identifiers (null = use all enabled agent skills)
+  schedule  String // Cron expression
+  enabled   Boolean              @default(true)
+  lastRunAt DateTime?
+  nextRunAt DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @default(now())
+  runs      scheduled_job_runs[]
+}
+
+model scheduled_job_runs {
+  id          Int             @id @default(autoincrement())
+  jobId       Int
+  status      String          @default("running") // running | completed | failed | timed_out
+  result      String? // JSON execution trace
+  error       String?
+  startedAt   DateTime        @default(now())
+  completedAt DateTime?
+  readAt      DateTime? // null = unread
+  job         scheduled_jobs  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+}
