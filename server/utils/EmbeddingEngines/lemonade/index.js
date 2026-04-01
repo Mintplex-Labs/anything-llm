@@ -34,8 +34,8 @@ class LemonadeEmbedder {
       });
       return response?.data[0]?.embedding || [];
     } catch (error) {
-      console.error("Failed to get embedding from Lemonade.", error.message);
-      return [];
+      this.log("Failed to get embedding from Lemonade.", error.message);
+      throw new Error(`Lemonade Failed to embed: ${error.message}`);
     }
   }
 
@@ -48,8 +48,8 @@ class LemonadeEmbedder {
       });
       return response?.data?.map((emb) => emb.embedding) || [];
     } catch (error) {
-      console.error("Failed to get embeddings from Lemonade.", error.message);
-      return new Array(textChunks.length).fill([]);
+      this.log("Failed to get embeddings from Lemonade.", error.message);
+      throw new Error(`Lemonade Failed to embed: ${error.message}`);
     }
   }
 }
