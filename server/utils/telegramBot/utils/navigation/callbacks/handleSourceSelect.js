@@ -72,14 +72,14 @@ async function handleSourceSelect({
       return;
     }
 
-    const text = `🌐 <b>${escapeHTML(title)}</b>\n\nOpen this website:`;
+    const text = `🌐 <b>${escapeHTML(title)}</b>\n\n${url}`;
     await ctx.bot.editMessageText(text, {
       chat_id: chatId,
       message_id: messageId,
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "🔗 Open Website", url }],
+          [{ text: "🔗 Open in Browser", url }],
           [{ text: "← Back to Sources", callback_data: "src:back" }],
         ],
       },

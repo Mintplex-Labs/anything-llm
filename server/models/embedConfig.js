@@ -1,6 +1,12 @@
 const { v4 } = require("uuid");
 const prisma = require("../utils/prisma");
-const { VALID_CHAT_MODE } = require("../utils/chats/stream");
+/**
+ * Valid chat modes for embeds.
+ * - chat: Chat mode will use the workspace's chat mode.
+ * - query: Query mode will use the workspace's query mode.
+ * - automatic: Automatic mode is NOT supported for embeds.
+ */
+const VALID_CHAT_MODE = ["chat", "query"];
 
 const EmbedConfig = {
   writable: [
