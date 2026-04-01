@@ -1,5 +1,4 @@
 import PreLoader from "@/components/Preloader";
-import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -23,11 +22,14 @@ function WorkspaceDirectory({
   fetchKeys,
   hasChanges,
   saveChanges,
-  embeddingCosts,
   movedItems,
 }) {
   const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
+  const embeddedDocCount = (files?.items ?? []).reduce(
+    (sum, folder) => sum + (folder.items?.length ?? 0),
+    0
+  );
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -101,7 +103,6 @@ function WorkspaceDirectory({
               <div className="shrink-0 w-3 h-3" />
               <p className="ml-[7px] text-theme-text-primary">Name</p>
             </div>
-            <p className="col-span-2" />
           </div>
           <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
@@ -157,7 +158,13 @@ function WorkspaceDirectory({
                 )}
                 <p className="ml-[7px] text-theme-text-primary">Name</p>
               </div>
-              <p className="col-span-2" />
+              {embeddedDocCount > 0 && (
+                <p className="col-span-2 text-right text-theme-text-secondary pr-2">
+                  {t(`connectors.directory.total-documents`, {
+                    count: embeddedDocCount,
+                  })}
+                </p>
+              )}
             </div>
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
@@ -223,22 +230,7 @@ function WorkspaceDirectory({
           </div>
         </div>
         {hasChanges && (
-          <div className="flex items-center justify-between py-6">
-            <div className="text-white/80">
-              <p className="text-sm font-semibold">
-                {embeddingCosts === 0
-                  ? ""
-                  : `Estimated Cost: ${
-                      embeddingCosts < 0.01
-                        ? `< $0.01`
-                        : dollarFormat(embeddingCosts)
-                    }`}
-              </p>
-              <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("connectors.directory.costs")}
-              </p>
-            </div>
-
+          <div className="flex items-center justify-end py-6">
             <button
               onClick={(e) => handleSaveChanges(e)}
               className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"

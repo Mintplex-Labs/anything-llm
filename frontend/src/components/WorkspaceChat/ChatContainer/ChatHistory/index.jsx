@@ -9,6 +9,8 @@ import {
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
+import ToolApprovalRequest from "./ToolApprovalRequest";
+import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -29,6 +31,7 @@ export default forwardRef(function (
     sendCommand,
     updateHistory,
     regenerateAssistantMessage,
+    websocket = null,
   },
   ref
 ) {
@@ -179,6 +182,7 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
+        websocket,
       }),
     [
       workspace,
@@ -186,6 +190,7 @@ export default forwardRef(function (
       regenerateAssistantMessage,
       saveEditedMessage,
       forkThread,
+      websocket,
     ]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
@@ -262,6 +267,7 @@ const getLastMessageInfo = (history) => {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
+ * @param {WebSocket} param0.websocket - The active websocket connection for agent communication.
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -270,6 +276,7 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
+  websocket,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -284,8 +291,25 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "toolApprovalRequest") {
+      acc.push(
+        <ToolApprovalRequest
+          key={`tool-approval-${props.requestId}`}
+          requestId={props.requestId}
+          skillName={props.skillName}
+          payload={props.payload}
+          description={props.description}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "rechartVisualize" && !!props.content) {
       acc.push(<Chartable key={props.uuid} props={props} />);
+    } else if (props.type === "fileDownloadCard" && !!props.content) {
+      acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -316,6 +340,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          outputs={props.outputs}
         />
       );
     }

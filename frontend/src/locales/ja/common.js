@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ようこそ",
       getStarted: "はじめる",
+      welcome: "ようこそ",
     },
     llm: {
       title: "LLMの設定",
@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "ワークスペース名",
-    user: "ユーザー",
     selection: "モデル選択",
     saving: "保存中...",
     save: "変更を保存",
@@ -63,6 +62,11 @@ const TRANSLATIONS = {
     search: "検索",
     username_requirements:
       "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
+    on: "～について",
+    none: "なし",
+    stopped: "停止",
+    loading: "読み込み中",
+    refresh: "リフレッシュ",
   },
   settings: {
     title: "インスタンス設定",
@@ -99,6 +103,10 @@ const TRANSLATIONS = {
       trending: "人気のあるものを探す",
       "your-account": "あなたのアカウント",
       "import-item": "輸入品",
+    },
+    channels: "チャンネル",
+    "available-channels": {
+      telegram: "テレグラム",
     },
   },
   login: {
@@ -175,15 +183,18 @@ const TRANSLATIONS = {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        "desc-start": "LLMの一般知識で回答します",
-        and: "および",
-        "desc-end": "見つかったドキュメントコンテキストを使用します。",
+        description:
+          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        "desc-start": "回答を提供します",
-        only: "のみ",
-        "desc-end": "ドキュメントコンテキストが見つかった場合のみ。",
+        description:
+          "必要な情報が見つかった場合にのみ、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
+      },
+      automatic: {
+        title: "自動車",
+        description:
+          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -294,11 +305,6 @@ const TRANSLATIONS = {
         description:
           "デフォルトエージェントがチャットやデータからさまざまなチャートを作成できるようにします。",
       },
-      save: {
-        title: "ファイルの生成と保存",
-        description:
-          "デフォルトエージェントがファイルを生成し、ブラウザからダウンロードできるようにします。",
-      },
       web: {
         title: "ウェブ検索と閲覧",
         description:
@@ -311,6 +317,132 @@ const TRANSLATIONS = {
       },
       default_skill:
         "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
+      filesystem: {
+        title: "ファイルシステムのアクセス",
+        description:
+          "エージェントが、指定されたディレクトリ内のファイルを読む、書き、検索、および管理できるようにします。ファイル編集、ディレクトリのナビゲーション、およびコンテンツ検索をサポートします。",
+        learnMore: "このスキルの使い方について、さらに詳しく知る",
+        configuration: "設定",
+        readActions: "行動",
+        writeActions: "行動",
+        warning:
+          "ファイルシステムへのアクセスは危険であり、ファイルの内容を変更または削除する可能性があります。設定する前に、必ず<link>のドキュメント</link>を参照してください。",
+        skills: {
+          "read-text-file": {
+            title: "ファイルを開く",
+            description:
+              "ファイル（テキスト、コード、PDF、画像など）の内容を読み込む。",
+          },
+          "read-multiple-files": {
+            title: "複数のファイルを読み込む",
+            description: "複数のファイルを同時に読み込む",
+          },
+          "list-directory": {
+            title: "ディレクトリ一覧",
+            description: "フォルダ内のファイルとディレクトリの一覧を表示する",
+          },
+          "search-files": {
+            title: "ファイル検索",
+            description: "ファイル名または内容で検索する",
+          },
+          "get-file-info": {
+            title: "ファイルの情報を取得する",
+            description: "ファイルに関する詳細なメタデータを取得する",
+          },
+          "edit-file": {
+            title: "ファイル編集",
+            description: "テキストファイルの行単位での編集を行う",
+          },
+          "create-directory": {
+            title: "ディレクトリを作成する",
+            description: "新しいディレクトリを作成する",
+          },
+          "move-file": {
+            title: "ファイル/ファイル名の変更",
+            description: "ファイルやディレクトリを移動または名前を変更する",
+          },
+          "copy-file": {
+            title: "ファイルのコピー",
+            description: "ファイルとディレクトリをコピーする",
+          },
+          "write-text-file": {
+            title: "テキストファイルを作成する",
+            description:
+              "新しいテキストファイルを作成するか、既存のテキストファイルを上書きする。",
+          },
+        },
+      },
+      createFiles: {
+        title: "ドキュメント作成",
+        description:
+          "エージェントが、パワーポイント、Excel、Word、PDFなどのバイナリ形式のドキュメントを作成できるようにします。ファイルはチャットウィンドウから直接ダウンロードできます。",
+        configuration: "利用可能なドキュメントの種類",
+        skills: {
+          "create-text-file": {
+            title: "テキストファイル",
+            description:
+              ".txt、.md、.json、.csvなどの拡張子を持つ、任意のコンテンツのテキストファイルを作成する。",
+          },
+          "create-pptx": {
+            title: "パワーポイント形式のプレゼンテーション",
+            description:
+              "スライド、タイトル、箇条書きを含む、新しいPowerPointプレゼンテーションを作成する。",
+          },
+          "create-pdf": {
+            title: "PDFドキュメント",
+            description:
+              "マークダウンまたはプレーンテキストから、基本的な書式設定を使用してPDFドキュメントを作成する。",
+          },
+          "create-xlsx": {
+            title: "エクセル スプレッドシート",
+            description:
+              "表形式のデータをスプレッドシート形式で作成し、シートとスタイルを設定する。",
+          },
+          "create-docx": {
+            title: "Wordドキュメント",
+            description: "基本的なスタイルと書式でWordドキュメントを作成する",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP サーバー",
+      "loading-from-config": "構成ファイルからMCPサーバーを読み込む",
+      "learn-more": "MCP サーバーに関する詳細情報を入手してください。",
+      "no-servers-found": "MCP サーバーは見つかりませんでした",
+      "tool-warning":
+        "最高のパフォーマンスを得るためには、不要なツールを無効にして、コンテキストを維持することを検討してください。",
+      "stop-server": "MCP サーバーの停止",
+      "start-server": "MCP サーバーを開始する",
+      "delete-server": "MCP サーバーを削除",
+      "tool-count-warning":
+        "このMCPサーバーには、<b>のツールが有効になっており、これらはチャットのコンテキストを消費します</b>。コンテキストを節約するために、不要なツールを無効にすることを検討してください。",
+      "startup-command": "起動コマンド",
+      command: "指示",
+      arguments: "議論",
+      "not-running-warning":
+        "このMCPサーバーは稼働していません。停止しているか、起動時にエラーが発生している可能性があります。",
+      "tool-call-arguments": "ツール呼び出しの引数",
+      "tools-enabled": "ツールが有効化されました",
+    },
+    settings: {
+      title: "エージェントのスキル設定",
+      "max-tool-calls": {
+        title: "1回の応答で実行できる最大ツール数",
+        description:
+          "エージェントが単一の応答を生成するために使用できるツールの一意な最大数。これにより、ツール呼び出しの過剰や無限ループを防ぐことができます。",
+      },
+      "intelligent-skill-selection": {
+        title: "知的なスキル選択",
+        "beta-badge": "ベータ版",
+        description:
+          "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
+        "max-tools": {
+          title: "マックスツールズ",
+          description:
+            "各クエリで選択できるツール数の上限。大規模なコンテキストモデルを使用する場合は、この値をより高い値に設定することをお勧めします。",
+        },
+      },
     },
   },
   recorded: {
@@ -584,8 +716,9 @@ const TRANSLATIONS = {
       select_all: "すべて選択",
       deselect_all: "すべて選択解除",
       remove_selected: "選択したものを削除",
-      costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
+      "total-documents_one": "{{count}} のドキュメント",
+      "total-documents_other": "{{count}} に関する書類",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -687,7 +820,6 @@ const TRANSLATIONS = {
     see_less: "詳細を見る",
     see_more: "詳細を見る",
     tools: "道具",
-    browse: "閲覧",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
     sources: "出典",
@@ -700,7 +832,6 @@ const TRANSLATIONS = {
     edit: "編集",
     publish: "出版",
     stop_generating: "応答の生成を停止する",
-    pause_tts_speech_message: "メッセージのテキスト読み上げ機能を一時停止する",
     slash_commands: "スラッシュコマンド",
     agent_skills: "エージェントのスキル",
     manage_agent_skills: "エージェントのスキル管理",
@@ -709,6 +840,14 @@ const TRANSLATIONS = {
     start_agent_session: "エージェントセッションを開始",
     use_agent_session_to_use_tools:
       "チャットでツールを使用するには、プロンプトの冒頭に'@agent'を使用してエージェントセッションを開始してください。",
+    agent_invocation: {
+      model_wants_to_call: "モデルは電話をかけたい。",
+      approve: "承認",
+      reject: "拒否",
+      always_allow: "常に、{{skillName}}を確保してください。",
+      tool_call_was_approved: "ツールの使用許可が承認されました",
+      tool_call_was_rejected: "ツール呼び出しは拒否されました",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -967,6 +1106,83 @@ const TRANSLATIONS = {
     notAssigned:
       "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
     goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
+  },
+  telegram: {
+    title: "テレグラムボット",
+    description:
+      "AnyLLM のインスタンスを Telegram に接続することで、あらゆるデバイスからワークスペースとのチャットが可能になります。",
+    setup: {
+      step1: {
+        title: "ステップ1：Telegramボットを作成する",
+        description:
+          "Telegramの@BotFatherを開き、「/newbot」と入力して<code>@BotFather</code>に送信します。指示に従い、APIトークンをコピーしてください。",
+        "open-botfather": "BotFather を起動する",
+        "instruction-1": "1. リンクを開くか、QRコードをスキャンする",
+        "instruction-2":
+          "2. 「<code>」/「newbot」を「</code>」で、「<code>」@「BotFather」に送信してください。",
+        "instruction-3": "3. 独自の名前とユーザー名をボットに設定してください",
+        "instruction-4": "4. 受け取ったAPIトークンをコピーしてください",
+      },
+      step2: {
+        title: "ステップ2：ボットとの接続",
+        description:
+          "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
+        "bot-token": "ボット トークン",
+        "default-workspace": "デフォルトのワークスペース",
+        "no-workspace":
+          "利用可能な作業スペースがありません。新しい作業スペースが作成されます。",
+        connecting: "接続中...",
+        "connect-bot": "コネクトボット",
+      },
+      security: {
+        title: "推奨されるセキュリティ設定",
+        description:
+          "追加のセキュリティのため、@BotFatherでこれらの設定を設定してください。",
+        "disable-groups": "— グループへのボットの追加を防止",
+        "disable-inline": "— インライン検索でのボットの使用を防止",
+        "obscure-username":
+          "目立たないユーザー名をbotに使用することで、発見されにくくする。",
+      },
+      "toast-enter-token": "ボットのトークンを入力してください。",
+      "toast-connect-failed": "ボットとの接続に失敗しました。",
+    },
+    connected: {
+      status: "接続されている",
+      "status-disconnected":
+        "通信エラー - トークンが無効または期限切れになっている可能性があります",
+      "placeholder-token": "新しいボットのトークンを貼り付け...",
+      reconnect: "再接続",
+      workspace: "作業スペース",
+      "bot-link": "ボットへのリンク",
+      "voice-response": "音声応答",
+      disconnecting: "接続を解除...",
+      disconnect: "接続を解除する",
+      "voice-text-only": "テキストのみ",
+      "voice-mirror": "（ユーザーが音声で送信した場合、音声で返信）",
+      "voice-always": "常に音声メッセージ（返信ごとに音声データを送信）",
+      "toast-disconnect-failed": "ボットとの接続を解除できませんでした。",
+      "toast-reconnect-failed": "ボットとの再接続に失敗しました。",
+      "toast-voice-failed": "音声モードの更新に失敗しました。",
+      "toast-approve-failed": "ユーザーの承認に失敗しました。",
+      "toast-deny-failed": "ユーザーからの拒否を拒否できませんでした。",
+      "toast-revoke-failed": "ユーザーの権限停止に失敗。",
+    },
+    users: {
+      "pending-title": "承認待ち",
+      "pending-description":
+        "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
+      "approved-title": "承認されたユーザー",
+      "approved-description":
+        "あなたのボットとのチャットを許可されたユーザー。",
+      user: "利用者",
+      "pairing-code": "組み合わせコード",
+      "no-pending": "処理中のリクエストはありません",
+      "no-approved": "承認されたユーザーはいません",
+      unknown: "不明",
+      approve: "承認",
+      deny: "否定",
+      revoke: "無効化する",
+    },
   },
 };
 

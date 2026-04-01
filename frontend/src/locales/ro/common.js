@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Bine ai venit la",
       getStarted: "Începe",
+      welcome: "Bine ați venit",
     },
     llm: {
       title: "Preferința LLM",
@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Numele spațiilor de lucru",
-    user: "Utilizator",
     selection: "Selecția modelului",
     saving: "Se salvează...",
     save: "Salvează modificările",
@@ -64,6 +63,11 @@ const TRANSLATIONS = {
     search: "Caută",
     username_requirements:
       "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
+    on: "În",
+    none: "Niciunul",
+    stopped: "Oprit",
+    loading: "Încărcare",
+    refresh: "Reîmprospătează",
   },
   settings: {
     title: "Setările instanței",
@@ -100,6 +104,10 @@ const TRANSLATIONS = {
       trending: "Descoperă tendințele",
       "your-account": "Contul dumneavoastră",
       "import-item": "Importați articolul",
+    },
+    channels: "Canale",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -185,16 +193,18 @@ const TRANSLATIONS = {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "oferă răspunsuri bazate pe cunoștințele generale ale LLM-ului",
-        and: "și",
-        "desc-end": "context document care este găsit.",
+        description:
+          'va oferi răspunsuri folosind cunoștințele generale ale LLM și contextul documentului, așa cum este disponibil.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
-        "desc-start": "oferă răspunsuri",
-        only: "doar",
-        "desc-end": "dacă contextul documentului este găsit.",
+        description:
+          "vor oferi răspunsuri doar dacă contextul documentului este identificat.<b>Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
+      },
+      automatic: {
+        title: "Mașină",
+        description:
+          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {
@@ -446,8 +456,9 @@ const TRANSLATIONS = {
       select_all: "Selectează tot",
       deselect_all: "Deselectează tot",
       remove_selected: "Elimină selectate",
-      costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documente",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
@@ -537,7 +548,6 @@ const TRANSLATIONS = {
     see_less: "Vezi mai puțin",
     see_more: "Vezi mai multe",
     tools: "Unelte",
-    browse: "Navigați",
     text_size_label: "Dimensiunea textului",
     select_model: "Selectați modelul",
     sources: "Surse",
@@ -550,8 +560,6 @@ const TRANSLATIONS = {
     edit: "Editează",
     publish: "Publica",
     stop_generating: "Opriți generarea răspunsului",
-    pause_tts_speech_message:
-      "Pauză în redarea vocii prin Text-to-Speech (TTS) a mesajului.",
     slash_commands: "Comenzi scurte",
     agent_skills: "Abilități ale agentului",
     manage_agent_skills: "Gestionarea competențelor agenților",
@@ -560,6 +568,15 @@ const TRANSLATIONS = {
     start_agent_session: "Începe sesiunea de agent",
     use_agent_session_to_use_tools:
       'Puteți utiliza instrumentele disponibile în chat, inițiind o sesiune cu un agent, începând mesajul cu "@agent".',
+    agent_invocation: {
+      model_wants_to_call: "Persoana respectivă dorește să facă o telefonare.",
+      approve: "Aprobă",
+      reject: "Refuz",
+      always_allow: "Asigurați-vă întotdeauna că {{skillName}}",
+      tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
+      tool_call_was_rejected:
+        "Cererea de utilizare a instrumentului a fost respinsă.",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
@@ -748,11 +765,6 @@ const TRANSLATIONS = {
         description:
           "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
       },
-      save: {
-        title: "Generează & salvează fișiere în browser",
-        description:
-          "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
-      },
       web: {
         title: "Căutare și navigare web live",
         description:
@@ -765,6 +777,136 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
+      filesystem: {
+        title: "Acces la sistemul de fișiere",
+        description:
+          "Permite reprezentantului dumneavoastră să citească, să scrie, să caute și să gestioneze fișiere într-un director specific. Suportă editarea fișierelor, navigarea în director și căutarea conținutului.",
+        learnMore:
+          "Aflați mai multe despre cum să utilizați această abilitate.",
+        configuration: "Configurare",
+        readActions: "Cite",
+        writeActions: "Acțiuni",
+        warning:
+          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
+        skills: {
+          "read-text-file": {
+            title: "Citește fișierul",
+            description:
+              "Citează conținutul fișierelor (text, cod, PDF, imagini, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Citește mai multe fișiere",
+            description: "Citiți mai multe fișiere simultan",
+          },
+          "list-directory": {
+            title: "Lista de contacte",
+            description: "Enumeră fișierele și directoarele dintr-un folder",
+          },
+          "search-files": {
+            title: "Caută fișiere",
+            description: "Căutați fișiere după nume sau conținut",
+          },
+          "get-file-info": {
+            title: "Obține informații despre fișier",
+            description: "Obțineți metadate detaliate despre fișiere.",
+          },
+          "edit-file": {
+            title: "Modifică fișierul",
+            description: "Realizați modificări pe linii în fișierele de text.",
+          },
+          "create-directory": {
+            title: "Creați o directoare",
+            description: "Creați noi directoare",
+          },
+          "move-file": {
+            title: "Mută/Redenumirea fișierului",
+            description: "Mută sau redenumește fișierele și directoarele.",
+          },
+          "copy-file": {
+            title: "Copiază fișier",
+            description: "Copiați fișiere și directoare",
+          },
+          "write-text-file": {
+            title: "Creați un fișier de text",
+            description:
+              "Creați fișiere de text noi sau suprascrieți fișierele de text existente.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Crearea de documente",
+        description:
+          "Permite-ți agentului să creeze formate de documente binare, cum ar fi prezentări PowerPoint, fișe Excel, documente Word și fișiere PDF. Fișierele pot fi descărcate direct din fereastra de chat.",
+        configuration: "Tipuri de documente disponibile",
+        skills: {
+          "create-text-file": {
+            title: "Fișiere text",
+            description:
+              "Creați fișiere text cu orice conținut și extensie (de exemplu, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Prezentări PowerPoint",
+            description:
+              "Creați prezentări noi în PowerPoint, cu diapozitive, titluri și puncte.",
+          },
+          "create-pdf": {
+            title: "Documente în format PDF",
+            description:
+              "Creați documente PDF din fișiere Markdown sau text simplu, cu un stil de formatare de bază.",
+          },
+          "create-xlsx": {
+            title: "Fișe Excel",
+            description:
+              "Creați fișiere Excel pentru date tabulare, cu foi și stilizare.",
+          },
+          "create-docx": {
+            title: "Fișiere în format Word",
+            description:
+              "Creați documente Word cu un stil și formatare de bază.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Servere MCP",
+      "loading-from-config":
+        "Încărcarea serverelor MCP din fișierul de configurare",
+      "learn-more": "Aflați mai multe despre serverele MCP.",
+      "no-servers-found": "Nu au fost găsite servere MCP.",
+      "tool-warning":
+        "Pentru cele mai bune rezultate, luați în considerare dezactivarea instrumentelor nedorite, pentru a economisi resurse.",
+      "stop-server": "Închideți serverul MCP",
+      "start-server": "Pornește serverul MCP",
+      "delete-server": "Șterge serverul MCP",
+      "tool-count-warning":
+        "Acest server MCP are activate<b> instrumentele menționate</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
+      "startup-command": "Comanda de pornire",
+      command: "Ordine",
+      arguments: "Argumente",
+      "not-running-warning":
+        "Acest server MCP nu este în funcționare – ar putea fi oprit sau ar putea întâmpina o eroare la pornire.",
+      "tool-call-arguments": "Argumente pentru apelarea unei funcții",
+      "tools-enabled": "instrumentele sunt activate",
+    },
+    settings: {
+      title: "Setări pentru abilitățile agenților",
+      "max-tool-calls": {
+        title:
+          "Numărul maxim de solicitări de instrument (Max Tool Calls Per Response)",
+        description:
+          "Numărul maxim de instrumente pe care un agent le poate utiliza în mod consecutiv pentru a genera un singur răspuns. Această funcție previne apelurile inutile ale instrumentelor și buclele infinite.",
+      },
+      "intelligent-skill-selection": {
+        title: "Selecție inteligentă a abilităților",
+        "beta-badge": "Beta",
+        description:
+          "Permite utilizarea nelimitată a instrumentelor și reduce utilizarea token-urilor cu până la 80% pentru fiecare interogare – AnythingLLM selectează automat abilitățile potrivite pentru fiecare solicitare.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
+        },
+      },
     },
   },
   recorded: {
@@ -970,6 +1112,88 @@ const TRANSLATIONS = {
     notAssigned:
       "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
     goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot pentru Telegram",
+    description:
+      "Conectați instanța dumneavoastră AnythingLLM cu Telegram, astfel încât să puteți interacționa cu spațiile de lucru de pe orice dispozitiv.",
+    setup: {
+      step1: {
+        title: "Pasul 1: Creați botul dumneavoastră Telegram",
+        description:
+          "Deschide chatul cu @BotFather pe Telegram, trimite mesajul `/newbot` către <code>@BotFather</code>, urmează instrucțiunile și copiază token-ul API.",
+        "open-botfather": "Deschide aplicația BotFather",
+        "instruction-1": "1. Deschideți link-ul sau scanați codul QR",
+        "instruction-2":
+          "2. Trimite <code>/newbot</code> către <code>@BotFather</code>",
+        "instruction-3":
+          "3. Alege un nume și un nume de utilizator pentru botul tău.",
+        "instruction-4": "4. Copiați token-ul API pe care îl primiți.",
+      },
+      step2: {
+        title: "Pasul 2: Conectați-vă bot-ul",
+        description:
+          "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Spațiu de lucru implicit",
+        "no-workspace":
+          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
+        connecting: "Conectare...",
+        "connect-bot": "Conectare automată",
+      },
+      security: {
+        title: "Recomandări privind setările de securitate",
+        description:
+          "Pentru o securitate suplimentară, configurați aceste setări în contul @BotFather.",
+        "disable-groups": "— Preveniți adăugarea de bot-uri în grupuri",
+        "disable-inline":
+          "— Previne utilizarea bot-urilor în căutările directe",
+        "obscure-username":
+          "Utilizați un nume de utilizator pentru bot, care nu este evident, pentru a reduce vizibilitatea acestuia.",
+      },
+      "toast-enter-token": "Vă rugăm să introduceți un token pentru bot.",
+      "toast-connect-failed": "Nu a reușit să se conecteze bot-ul.",
+    },
+    connected: {
+      status: "Conectat",
+      "status-disconnected":
+        "Deconectat – token-ul poate fi expirat sau invalid",
+      "placeholder-token": "Creați un nou token pentru bot...",
+      reconnect: "Restabilește conexiunea",
+      workspace: "Spațiu de lucru",
+      "bot-link": "Link către bot",
+      "voice-response": "Răspuns vocal",
+      disconnecting: "Deconectare...",
+      disconnect: "Dezactivează",
+      "voice-text-only": "Doar text",
+      "voice-mirror":
+        "Reflectare (răspunde cu voce atunci când utilizatorul trimite înregistrare audio)",
+      "voice-always":
+        "Asigurați-vă întotdeauna că includeți un mesaj audio (trimiteți înregistrarea audio împreună cu fiecare răspuns).",
+      "toast-disconnect-failed": "Nu s-a reușit deconectarea bot-ului.",
+      "toast-reconnect-failed": "Nu a reușit să se reconecteze.",
+      "toast-voice-failed": "Nu a reușit să actualizeze modul de voce.",
+      "toast-approve-failed": "Nu a fost posibilă aprobarea utilizatorului.",
+      "toast-deny-failed": "Nu a reușit să respingă cererea utilizatorului.",
+      "toast-revoke-failed":
+        "Nu a fost posibil să se anuleze contul utilizatorului.",
+    },
+    users: {
+      "pending-title": "Așteptare aprobare",
+      "pending-description":
+        "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
+      "approved-title": "Utilizatori autorizați",
+      "approved-description":
+        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
+      user: "Utilizator",
+      "pairing-code": "Cod de asociere",
+      "no-pending": "Nu există cereri în așteptare.",
+      "no-approved": "Nu există utilizatori autorizați.",
+      unknown: "Necunoscut",
+      approve: "Aprobă",
+      deny: "Negarea",
+      revoke: "Anula",
+    },
   },
 };
 

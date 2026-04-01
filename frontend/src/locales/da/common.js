@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Velkommen til",
       getStarted: "Kom godt i gang",
+      welcome: "Velkommen",
     },
     llm: {
       title: "LLM-præference",
@@ -52,7 +52,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Navn på arbejdsområder",
-    user: "Bruger",
     selection: "Modelvalg",
     saving: "Gemmer...",
     save: "Gem ændringer",
@@ -64,6 +63,11 @@ const TRANSLATIONS = {
     search: "Søg",
     username_requirements:
       "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+    on: "Om",
+    none: "Ingen",
+    stopped: "Stoppet",
+    loading: "Indlæsning",
+    refresh: "Opfrisk",
   },
   settings: {
     title: "Instansindstillinger",
@@ -101,6 +105,10 @@ const TRANSLATIONS = {
       trending: "Udforsk populære emner",
       "your-account": "Dit konti",
       "import-item": "Importeret vare",
+    },
+    channels: "Kanaler",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -177,15 +185,18 @@ const TRANSLATIONS = {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        "desc-start": "vil give svar baseret på LLM'ens generelle viden",
-        and: "og",
-        "desc-end": "dokumentkontekst der findes.",
+        description:
+          'vil levere svar baseret på LLM\'s generelle viden og den relevante dokumentkontekst.<br />Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
-        "desc-start": "vil give svar",
-        only: "kun",
-        "desc-end": "hvis dokumentkontekst findes.",
+        description:
+          "vil kun give svar <b>hvis konteksten i dokumentet er fundet.</b>Du skal bruge kommandoen @agent for at bruge værktøjerne.",
+      },
+      automatic: {
+        title: "Bil",
+        description:
+          'vil automatisk bruge værktøjer, hvis modellen og udbyderen understøtter native værktøjsanrop. <br />Hvis native værktøjsanrop ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {
@@ -300,11 +311,6 @@ const TRANSLATIONS = {
         description:
           "Gør det muligt for standardagenten at generere forskellige typer diagrammer fra data, der leveres eller gives i chat.",
       },
-      save: {
-        title: "Generer og gem filer i browseren",
-        description:
-          "Gør det muligt for standardagenten at generere og skrive til filer, der gemmes og kan downloades i din browser.",
-      },
       web: {
         title: "Live web-søgning og browsing",
         description:
@@ -317,6 +323,133 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
+      filesystem: {
+        title: "Adgang til filsystem",
+        description:
+          "Giv din agent mulighed for at læse, skrive, søge og administrere filer inden for en bestemt mappe. Understøtter filredigering, mappe navigation og indholds søgning.",
+        learnMore: "Lær mere om, hvordan du kan bruge denne færdighed",
+        configuration: "Konfiguration",
+        readActions: "Læs handlinger",
+        writeActions: "Skriv handlinger",
+        warning:
+          "Adgang til filsystemet kan være farligt, da det kan ændre eller slette filer. Se venligst <link>dokumentationen</link> før du aktiverer denne funktion.",
+        skills: {
+          "read-text-file": {
+            title: "Åbn fil",
+            description:
+              "Læs indholdet af filer (tekst, kode, PDF-filer, billeder osv.)",
+          },
+          "read-multiple-files": {
+            title: "Læs flere filer",
+            description: "Læs flere filer samtidigt",
+          },
+          "list-directory": {
+            title: "Telefonkatalog",
+            description: "Vis filer og mapper i en mappe",
+          },
+          "search-files": {
+            title: "Søg efter filer",
+            description: "Søg efter filer efter navn eller indhold",
+          },
+          "get-file-info": {
+            title: "Få filinformation",
+            description: "Få detaljerede metadata om filer",
+          },
+          "edit-file": {
+            title: "Rediger fil",
+            description: "Rediger tekstfiler baseret på linjer",
+          },
+          "create-directory": {
+            title: "Opret mappe",
+            description: "Opret nye mapper",
+          },
+          "move-file": {
+            title: "Flyt/Omdøb fil",
+            description: "Flyt eller omdøb filer og mapper",
+          },
+          "copy-file": {
+            title: "Kopier fil",
+            description: "Kopier filer og mapper",
+          },
+          "write-text-file": {
+            title: "Opret tekstfil",
+            description:
+              "Opret nye tekstfiler eller overskriv eksisterende tekstfiler.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumentoprettelse",
+        description:
+          "Giv din agent mulighed for at oprette binære dokumentformater som PowerPoint-præsentationer, Excel-regneark, Word-dokumenter og PDF-filer. Filerne kan downloades direkte fra chatvinduet.",
+        configuration: "Tilgængelige dokumenttyper",
+        skills: {
+          "create-text-file": {
+            title: "Tekstfiler",
+            description:
+              "Opret tekstfiler med enhver indhold og filtype (.txt, .md, .json, .csv osv.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint-præsentationer",
+            description:
+              "Opret nye PowerPoint-præsentationer med slides, overskrifter og punktlister.",
+          },
+          "create-pdf": {
+            title: "PDF-dokumenter",
+            description:
+              "Opret PDF-dokumenter fra Markdown eller almindelig tekst med grundlæggende formatering.",
+          },
+          "create-xlsx": {
+            title: "Excel-regneark",
+            description:
+              "Opret Excel-dokumenter med tabellerede data, inklusive ark og formatering.",
+          },
+          "create-docx": {
+            title: "Ord-dokumenter",
+            description:
+              "Opret Word-dokumenter med grundlæggende formatering og stil.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP-servere",
+      "loading-from-config": "Indlæsning af MCP-servere fra konfigurationsfil",
+      "learn-more": "Lær mere om MCP-servere.",
+      "no-servers-found": "Ingen MCP-servere fundet",
+      "tool-warning":
+        "For den bedste ydeevne, overvej at deaktivere unødvendige værktøjer for at bevare konteksten.",
+      "stop-server": "Afbryd MCP-serveren",
+      "start-server": "Start MCP-serveren",
+      "delete-server": "Slet MCP-serveren",
+      "tool-count-warning":
+        "Denne MCP-server har <b>aktiverede</b>værktøjer, som vil forbruge kontekst i hvert chat-session.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
+      "startup-command": "Startkommando",
+      command: "Instruktion",
+      arguments: "Argumenter",
+      "not-running-warning":
+        "Denne MCP-server kører ikke – den kan være stoppet, eller den kan opleve fejl ved opstart.",
+      "tool-call-arguments": "Argumenter til værktøjsopkald",
+      "tools-enabled": "værktøjer er aktiveret",
+    },
+    settings: {
+      title: "Indstillinger for agenters færdigheder",
+      "max-tool-calls": {
+        title: "Maksimalt antal anmodninger pr. svar",
+        description:
+          "Det maksimale antal værktøjer, en agent kan kæde sammen for at generere et enkelt svar. Dette forhindrer, at værktøjer kaldes unødvendigt, og undgår uendelige løkker.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent valg af færdigheder",
+        "beta-badge": "Beta",
+        description:
+          "Aktiver ubegrænsede værktøjer og reducer brugen af cut-tokens med op til 80 % pr. forespørgsel – AnythingLLM vælger automatisk de relevante færdigheder til hver forespørgsel.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
+        },
+      },
     },
   },
   recorded: {
@@ -595,8 +728,9 @@ const TRANSLATIONS = {
       select_all: "Vælg alle",
       deselect_all: "Fravælg alle",
       remove_selected: "Fjern valgte",
-      costs: "*Engangsomkostning for indlejringer",
       save_embed: "Gem og indlejr",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenter",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -699,7 +833,6 @@ const TRANSLATIONS = {
     see_less: "Se mindre",
     see_more: "Se flere",
     tools: "Værktøj",
-    browse: "Gennemse",
     text_size_label: "Tekststørrelse",
     select_model: "Vælg model",
     sources: "Kilder",
@@ -712,7 +845,6 @@ const TRANSLATIONS = {
     edit: "Rediger",
     publish: "Udgive",
     stop_generating: "Stop med at generere svar",
-    pause_tts_speech_message: "Pause TTS-læsningen af beskeden",
     slash_commands: "Kommandoer",
     agent_skills: "Agenters kompetencer",
     manage_agent_skills: "Administrer agenters kompetencer",
@@ -721,6 +853,15 @@ const TRANSLATIONS = {
     start_agent_session: "Start Agent-session",
     use_agent_session_to_use_tools:
       "Du kan bruge værktøjer i chat ved at starte en agent-session med '@agent' i starten af din forespørgsel.",
+    agent_invocation: {
+      model_wants_to_call: "Modellen ønsker at ringe",
+      approve: "Godkend",
+      reject: "Afvise",
+      always_allow: "Sørg altid for, at {{skillName}} er tilgængeligt.",
+      tool_call_was_approved:
+        "Anmodningen om at bruge værktøjet blev godkendt.",
+      tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -970,6 +1111,86 @@ const TRANSLATIONS = {
     notAssigned:
       "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
     goToWorkspace: 'Gå til "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram-bot",
+    description:
+      "Forbind dit AnythingLLM-instans med Telegram, så du kan kommunikere med dine arbejdsområder fra enhver enhed.",
+    setup: {
+      step1: {
+        title: "Trin 1: Opret din Telegram-bot",
+        description:
+          "Åbn @BotFather i Telegram, send `/newbot` til <code>@BotFather</code>, følg instruktionerne, og kopier API-tokenet.",
+        "open-botfather": "Åbn BotFather",
+        "instruction-1": "1. Åbn linket eller scann QR-koden",
+        "instruction-2":
+          "2. Send <code>/newbot</code> til <code>@BotFather</code>",
+        "instruction-3": "3. Vælg et navn og et brugernavn til din bot",
+        "instruction-4": "4. Kopier API-tokenet, du modtager.",
+      },
+      step2: {
+        title: "Trin 2: Forbind din bot",
+        description:
+          "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
+        "bot-token": "Bot-token",
+        "default-workspace": "Standardarbejdsområde",
+        "no-workspace":
+          "Ingen ledige arbejdsområder. Et nyt vil blive oprettet.",
+        connecting: "Forbindes...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Anbefalede sikkerhedsindstillinger",
+        description:
+          "For yderligere sikkerhed, kan du konfigurere disse indstillinger via @BotFather.",
+        "disable-groups": "— Forhindre tilføjelse af bots til grupper",
+        "disable-inline":
+          "— Forhindr brugen af bot i søgninger direkte i søgefeltet",
+        "obscure-username":
+          "Brug et brugernavn til en bot, der ikke er åbenlyst, for at reducere synligheden.",
+      },
+      "toast-enter-token": "Vær venligst opført et bot-token.",
+      "toast-connect-failed": "Kunne ikke etablere forbindelse med botten.",
+    },
+    connected: {
+      status: "Forbundet",
+      "status-disconnected":
+        "Afbrudt – tokenet kan være udløbet eller ugyldigt",
+      "placeholder-token": "Indsæt nyt bot-token...",
+      reconnect: "Genopslå",
+      workspace: "Arbejdsområde",
+      "bot-link": "Bot-link",
+      "voice-response": "Stemmebesvarelse",
+      disconnecting: "Afbryde...",
+      disconnect: "Afbryde",
+      "voice-text-only": "Kun tekst",
+      "voice-mirror": "Spejl (svar med stemme, når brugeren sender en stemme)",
+      "voice-always":
+        "Sørg altid for at inkludere en lydbesked (send lyd sammen med hvert svar).",
+      "toast-disconnect-failed": "Kunne ikke afbryde robotten.",
+      "toast-reconnect-failed":
+        "Kunne ikke genoprette forbindelsen med botten.",
+      "toast-voice-failed": "Kunne ikke opdatere stemmemodus.",
+      "toast-approve-failed": "Mislykkedes med at godkende bruger.",
+      "toast-deny-failed": "Kunne ikke afvise brugeren.",
+      "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
+    },
+    users: {
+      "pending-title": "Afventer godkendelse",
+      "pending-description":
+        "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
+      "approved-title": "Godkendte brugere",
+      "approved-description":
+        "Brugere, der er blevet godkendt til at kommunikere med din bot.",
+      user: "Bruger",
+      "pairing-code": "Kombinationskode",
+      "no-pending": "Ingen igangværende anmodninger",
+      "no-approved": "Ingen godkendte brugere",
+      unknown: "Ukendt",
+      approve: "Godkend",
+      deny: "Afvise",
+      revoke: "Annullere",
+    },
   },
 };
 

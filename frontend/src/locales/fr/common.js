@@ -16,8 +16,8 @@ const TRANSLATIONS = {
         "Aidez-nous à améliorer AnythingLLM en répondant à quelques questions.",
     },
     home: {
-      title: "Bienvenue",
       getStarted: "Commencer",
+      welcome: "Bienvenue",
     },
     llm: {
       title: "Préférence LLM",
@@ -51,7 +51,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "Nom des espaces de travail",
-    user: "Utilisateur",
     selection: "Sélection du modèle",
     saving: "Enregistrement...",
     save: "Enregistrer les modifications",
@@ -63,6 +62,11 @@ const TRANSLATIONS = {
     search: "Rechercher",
     username_requirements:
       "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+    on: "Sur",
+    none: "Aucun",
+    stopped: "Arrêté",
+    loading: "Chargement",
+    refresh: "Rafraîchir",
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -99,6 +103,10 @@ const TRANSLATIONS = {
       trending: "Découvrez les tendances",
       "your-account": "Votre compte",
       "import-item": "Importer",
+    },
+    channels: "Canaux",
+    "available-channels": {
+      telegram: "Telegram",
     },
   },
   login: {
@@ -177,16 +185,18 @@ const TRANSLATIONS = {
       title: "Mode de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "fournira des réponses avec les connaissances générales du LLM",
-        and: "et",
-        "desc-end": "le contexte du document trouvé.",
+        description:
+          'fournira des réponses en utilisant les connaissances générales de l\'LLM et le contexte du document, <b>et</b>. Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       query: {
         title: "Requête",
-        "desc-start": "fournira des réponses",
-        only: "uniquement",
-        "desc-end": "si un contexte de document est trouvé.",
+        description:
+          'fournira des réponses <b>uniquement</b> si le contexte du document est trouvé.<br />Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
+      },
+      automatic: {
+        title: "Voiture",
+        description:
+          "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives. <br />Si l'utilisation de fonctions natives n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
       },
     },
     history: {
@@ -300,11 +310,6 @@ const TRANSLATIONS = {
         description:
           "Activez l'agent par défaut pour générer différents types de graphiques à partir des données fournies ou données dans le chat.",
       },
-      save: {
-        title: "Générer et sauvegarder des fichiers dans le navigateur",
-        description:
-          "Activez l'agent par défaut pour générer et écrire des fichiers qui peuvent être sauvegardés et téléchargés dans votre navigateur.",
-      },
       web: {
         title: "Recherche web en direct et navigation",
         description:
@@ -317,6 +322,137 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+      filesystem: {
+        title: "Accès au système de fichiers",
+        description:
+          "Permettez à votre agent de lire, écrire, rechercher et gérer des fichiers dans un répertoire spécifié. Prend en charge la modification de fichiers, la navigation dans les répertoires et la recherche de contenu.",
+        learnMore: "En savoir plus sur la manière d'utiliser cette compétence.",
+        configuration: "Configuration",
+        readActions: "Lire les actions",
+        writeActions: "Actions à effectuer",
+        warning:
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+        skills: {
+          "read-text-file": {
+            title: "Ouvrir le fichier",
+            description:
+              "Lire le contenu des fichiers (texte, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Lire plusieurs fichiers",
+            description: "Lire plusieurs fichiers simultanément.",
+          },
+          "list-directory": {
+            title: "Annuaire",
+            description:
+              "Énumérer les fichiers et les répertoires d'un dossier.",
+          },
+          "search-files": {
+            title: "Rechercher des fichiers",
+            description: "Rechercher des fichiers par nom ou par contenu",
+          },
+          "get-file-info": {
+            title: "Obtenir des informations sur le fichier",
+            description: "Obtenez des métadonnées détaillées sur les fichiers.",
+          },
+          "edit-file": {
+            title: "Modifier le fichier",
+            description:
+              "Effectuez des modifications basées sur des lignes dans les fichiers de texte.",
+          },
+          "create-directory": {
+            title: "Créer un répertoire",
+            description: "Créer de nouveaux répertoires",
+          },
+          "move-file": {
+            title: "Déplacer/Renommer le fichier",
+            description:
+              "Déplacez ou renommez des fichiers et des répertoires.",
+          },
+          "copy-file": {
+            title: "Copier le fichier",
+            description: "Copier des fichiers et des répertoires",
+          },
+          "write-text-file": {
+            title: "Créer un fichier texte",
+            description:
+              "Créer de nouveaux fichiers texte ou remplacer des fichiers texte existants.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Création de documents",
+        description:
+          "Permettez à votre agent de créer des documents au format binaire, tels que des présentations PowerPoint, des feuilles de calcul Excel, des documents Word et des fichiers PDF. Les fichiers peuvent être téléchargés directement depuis la fenêtre de chat.",
+        configuration: "Types de documents disponibles",
+        skills: {
+          "create-text-file": {
+            title: "Fichiers de texte",
+            description:
+              "Créez des fichiers texte avec n'importe quel contenu et extension (par exemple, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Présentations PowerPoint",
+            description:
+              "Créez de nouvelles présentations PowerPoint avec des diapositives, des titres et des puces.",
+          },
+          "create-pdf": {
+            title: "Documents au format PDF",
+            description:
+              "Créez des documents PDF à partir de fichiers Markdown ou de texte brut, avec un style de base.",
+          },
+          "create-xlsx": {
+            title: "Feuilles de calcul Excel",
+            description:
+              "Créez des documents Excel pour les données tabulaires, avec des feuilles et un style.",
+          },
+          "create-docx": {
+            title: "Documents au format Word",
+            description:
+              "Créez des documents Word avec un style et une mise en page de base.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Serveurs MCP",
+      "loading-from-config":
+        "Chargement des serveurs MCP à partir du fichier de configuration",
+      "learn-more": "En savoir plus sur les serveurs MCP.",
+      "no-servers-found": "Aucun serveur MCP n'a été trouvé.",
+      "tool-warning":
+        "Pour obtenir les meilleures performances, envisagez de désactiver les outils inutiles afin de préserver le contexte.",
+      "stop-server": "Arrêter le serveur MCP",
+      "start-server": "Démarrer le serveur MCP",
+      "delete-server": "Supprimer le serveur MCP",
+      "tool-count-warning":
+        "Ce serveur MCP a <b> des outils {{count}} activés</b> qui consommeront du contexte dans chaque conversation.<br /> Envisagez de désactiver les outils inutiles pour préserver le contexte.",
+      "startup-command": "Commande de démarrage",
+      command: "Ordre",
+      arguments: "Arguments",
+      "not-running-warning":
+        "Ce serveur MCP n'est pas en cours de fonctionnement ; il peut être arrêté ou rencontrer une erreur lors du démarrage.",
+      "tool-call-arguments": "Arguments des appels de fonctions/outils",
+      "tools-enabled": "outils activés",
+    },
+    settings: {
+      title: "Paramètres des compétences des agents",
+      "max-tool-calls": {
+        title: "Nombre maximal de requêtes Max Tool par réponse",
+        description:
+          "Le nombre maximal d'outils qu'un agent peut utiliser en chaîne pour générer une seule réponse. Cela empêche les appels excessifs aux outils et les boucles infinies.",
+      },
+      "intelligent-skill-selection": {
+        title: "Sélection de compétences basée sur l'intelligence",
+        "beta-badge": "Bêta",
+        description:
+          "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
+        },
+      },
     },
   },
   recorded: {
@@ -594,8 +730,9 @@ const TRANSLATIONS = {
       select_all: "Tout sélectionner",
       deselect_all: "Tout désélectionner",
       remove_selected: "Supprimer la sélection",
-      costs: "Coûts",
       save_embed: "Sauvegarder et intégrer",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documents",
     },
     upload: {
       "processor-offline": "Processeur de documents hors ligne",
@@ -698,7 +835,6 @@ const TRANSLATIONS = {
     see_less: "Voir moins",
     see_more: "Voir plus",
     tools: "Outils",
-    browse: "Parcourir",
     text_size_label: "Taille du texte",
     select_model: "Sélectionner le modèle",
     sources: "Sources",
@@ -711,8 +847,6 @@ const TRANSLATIONS = {
     edit: "Modifier",
     publish: "Publier",
     stop_generating: "Arrêtez de générer des réponses",
-    pause_tts_speech_message:
-      "Mettre en pause la lecture de la voix synthétique du message",
     slash_commands: "Commandes abrégées",
     agent_skills: "Compétences des agents",
     manage_agent_skills: "Gérer les compétences des agents",
@@ -721,6 +855,15 @@ const TRANSLATIONS = {
     start_agent_session: "Démarrer la session de l'agent",
     use_agent_session_to_use_tools:
       'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
+    agent_invocation: {
+      model_wants_to_call: "Le modèle souhaite passer un appel.",
+      approve: "Approuver",
+      reject: "Refuser",
+      always_allow: "Il est toujours important de {{skillName}}",
+      tool_call_was_approved: "La demande d'outils a été approuvée.",
+      tool_call_was_rejected:
+        "La demande d'utilisation de l'outil a été rejetée.",
+    },
   },
   profile_settings: {
     edit_account: "Modifier le compte",
@@ -966,6 +1109,87 @@ const TRANSLATIONS = {
     notAssigned:
       "Vous n'êtes actuellement pas affecté à aucun espace de travail.\nPour accéder à un espace de travail, veuillez contacter votre administrateur.",
     goToWorkspace: 'Aller à "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Connectez votre instance de AnythingLLM à Telegram afin de pouvoir communiquer avec vos espaces de travail depuis n'importe quel appareil.",
+    setup: {
+      step1: {
+        title: "Étape 1 : Créez votre bot Telegram",
+        description:
+          "Ouvrez @BotFather sur Telegram, envoyez `/newbot` à <code>@BotFather</code>, suivez les instructions, et copiez le jeton API.",
+        "open-botfather": "Ouvrir BotFather",
+        "instruction-1": "1. Ouvrez le lien ou numérisez le code QR.",
+        "instruction-2":
+          "2. Envoyer <code>/newbot</code> à <code>@BotFather</code>",
+        "instruction-3":
+          "3. Choisissez un nom et un nom d'utilisateur pour votre bot.",
+        "instruction-4": "4. Copiez le jeton API que vous recevez.",
+      },
+      step2: {
+        title: "Étape 2 : Connectez votre bot",
+        description:
+          "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
+        "bot-token": "Token Bot",
+        "default-workspace": "Espace de travail par défaut",
+        "no-workspace":
+          "Il n'y a pas d'espaces de travail disponibles. Un nouvel espace sera créé.",
+        connecting: "Connexion...",
+        "connect-bot": "Bot de connexion",
+      },
+      security: {
+        title: "Paramètres de sécurité recommandés",
+        description:
+          "Pour une sécurité supplémentaire, configurez ces paramètres via @BotFather.",
+        "disable-groups": "— Empêcher l'ajout de bots aux groupes",
+        "disable-inline":
+          "— Empêcher l'utilisation de bots dans les recherches en ligne.",
+        "obscure-username":
+          "Utilisez un nom d'utilisateur de bot non évident pour réduire sa visibilité.",
+      },
+      "toast-enter-token": "Veuillez saisir un jeton de bot.",
+      "toast-connect-failed": "Échec de la connexion du bot.",
+    },
+    connected: {
+      status: "Connecté",
+      "status-disconnected":
+        "Non connecté – le jeton pourrait être expiré ou invalide.",
+      "placeholder-token": "Coller le nouveau jeton de bot...",
+      reconnect: "Reconnexion",
+      workspace: "Espace de travail",
+      "bot-link": "Lien vers le bot",
+      "voice-response": "Réponse vocale",
+      disconnecting: "Déconnexion...",
+      disconnect: "Déconnecter",
+      "voice-text-only": "Texte uniquement",
+      "voice-mirror":
+        "Écho (répondre par la voix lorsque l'utilisateur envoie une voix)",
+      "voice-always":
+        "Toujours inclure une voix (envoyer un enregistrement audio avec chaque réponse)",
+      "toast-disconnect-failed": "Échec de la déconnexion du robot.",
+      "toast-reconnect-failed": "Échec de la reconnexion du bot.",
+      "toast-voice-failed": "Impossible de mettre à jour le mode vocal.",
+      "toast-approve-failed": "Échec de la validation de l'utilisateur.",
+      "toast-deny-failed": "Impossible de refuser l'accès à l'utilisateur.",
+      "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
+    },
+    users: {
+      "pending-title": "En attente d'approbation",
+      "pending-description":
+        "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
+      "approved-title": "Utilisateurs autorisés",
+      "approved-description":
+        "Utilisateurs qui ont été autorisés à communiquer avec votre bot.",
+      user: "Utilisateur",
+      "pairing-code": "Code de correspondance",
+      "no-pending": "Aucune demande en cours",
+      "no-approved": "Aucun utilisateur autorisé",
+      unknown: "Inconnu",
+      approve: "Approuver",
+      deny: "Rejeter",
+      revoke: "Annuler",
+    },
   },
 };
 

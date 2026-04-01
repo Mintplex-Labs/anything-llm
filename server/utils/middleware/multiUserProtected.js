@@ -9,6 +9,18 @@ const ROLES = {
 const DEFAULT_ROLES = [ROLES.admin, ROLES.admin];
 
 /**
+ * Explicitly check that single user mode is enabled as well as that the
+ * requesting user has the appropriate role to modify or call the URL.
+ * @returns {function}
+ */
+async function isSingleUserMode(_request, response, next) {
+  const multiUserMode = await SystemSettings.isMultiUserMode();
+  if (multiUserMode) return response.sendStatus(401).end();
+  next();
+  return;
+}
+
+/**
  * Explicitly check that multi user mode is enabled as well as that the
  * requesting user has the appropriate role to modify or call the URL.
  * @param {string[]} allowedRoles - The roles that are allowed to access the route
@@ -88,6 +100,7 @@ async function isMultiUserSetup(_request, response, next) {
 
 module.exports = {
   ROLES,
+  isSingleUserMode,
   strictMultiUserRoleValid,
   flexUserRoleValid,
   isMultiUserSetup,
