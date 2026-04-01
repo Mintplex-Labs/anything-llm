@@ -112,7 +112,7 @@ const TRANSLATIONS = {
   },
   login: {
     "multi-user": {
-      welcome: "Willkommen bei",
+      welcome: "Willkommen",
       "placeholder-username": "Benutzername",
       "placeholder-password": "Passwort",
       login: "Anmelden",
