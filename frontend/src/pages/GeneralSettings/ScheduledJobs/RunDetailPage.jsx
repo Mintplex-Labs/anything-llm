@@ -16,6 +16,7 @@ import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import renderMarkdown from "@/utils/chat/markdown";
 import { safeJsonParse } from "@/utils/request";
+import { useTheme } from "@/hooks/useTheme";
 
 function CollapsibleSection({
   title,
@@ -45,10 +46,8 @@ function CollapsibleSection({
   );
 }
 
-function getHljsTheme() {
-  return window.localStorage.getItem("theme") === "light"
-    ? "github"
-    : "github-dark";
+function getHljsTheme(isLight) {
+  return isLight ? "github" : "github-dark";
 }
 
 function truncateText(text) {
@@ -72,6 +71,7 @@ function formatAndHighlight(value) {
 
 function ToolCallCard({ toolCall }) {
   const [showResult, setShowResult] = useState(false);
+  const { isLight } = useTheme();
 
   const resultText =
     typeof toolCall.result === "string"
@@ -103,7 +103,7 @@ function ToolCallCard({ toolCall }) {
           <span className="text-xs text-theme-text-secondary">Arguments:</span>
           {highlightedArgs ? (
             <pre
-              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme()}`}
+              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme(isLight)}`}
               dangerouslySetInnerHTML={highlightedArgs}
             />
           ) : (
@@ -127,7 +127,7 @@ function ToolCallCard({ toolCall }) {
           {showResult &&
             (highlightedResult ? (
               <pre
-                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme()}`}
+                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme(isLight)}`}
                 dangerouslySetInnerHTML={highlightedResult}
               />
             ) : (
