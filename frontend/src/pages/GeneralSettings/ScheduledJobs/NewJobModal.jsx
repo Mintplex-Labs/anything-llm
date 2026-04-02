@@ -3,16 +3,7 @@ import { X } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
-
-const CRON_PRESETS = [
-  { label: "Every minute", value: "* * * * *" },
-  { label: "Every hour", value: "0 * * * *" },
-  { label: "Daily at midnight", value: "0 0 * * *" },
-  { label: "Daily at 9:00 AM", value: "0 9 * * *" },
-  { label: "Weekly on Monday at 9:00 AM", value: "0 9 * * 1" },
-  { label: "Monthly on the 1st", value: "0 0 1 * *" },
-  { label: "Custom", value: "custom" },
-];
+import { CRON_PRESETS } from "./utils/cron";
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
   const isEditing = !!job;

@@ -17,18 +17,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
 import showToast from "@/utils/toast";
-
-function cronToHuman(cron) {
-  const presets = {
-    "* * * * *": "Every minute",
-    "0 * * * *": "Every hour",
-    "0 0 * * *": "Daily at midnight",
-    "0 9 * * *": "Daily at 9:00 AM",
-    "0 9 * * 1": "Weekly on Monday at 9:00 AM",
-    "0 0 1 * *": "Monthly on the 1st",
-  };
-  return presets[cron] || cron;
-}
+import { cronToHuman } from "./utils/cron";
 
 function StatusBadge({ status }) {
   const colors = {
