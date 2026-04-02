@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ברוכים הבאים ל",
       getStarted: "להתחלה",
+      welcome: "ברוכים הבאים",
     },
     llm: {
       title: "העדפות מודל שפה (LLM)",
@@ -49,7 +49,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "שם סביבת העבודה",
-    user: "משתמש",
     selection: "בחירת מודל",
     saving: "שומר...",
     save: "שמור שינויים",
@@ -61,6 +60,11 @@ const TRANSLATIONS = {
     search: "חיפוש",
     username_requirements:
       "שם המשתמש חייב להיות באורך 2-32 תווים, להתחיל באות קטנה ולהכיל רק אותיות קטנות, מספרים, קווים תחתונים, מקפים ונקודות.",
+    on: "על",
+    none: "אין",
+    stopped: "עצר",
+    loading: "טעינה",
+    refresh: "רענן",
   },
   settings: {
     title: "הגדרות מופע",
@@ -97,6 +101,10 @@ const TRANSLATIONS = {
       trending: "גלו את הנושאים החמים",
       "your-account": "החשבון שלך",
       "import-item": "ייבוא פריט",
+    },
+    channels: "ערוצים",
+    "available-channels": {
+      telegram: "טלגרם",
     },
   },
   login: {
@@ -179,15 +187,18 @@ const TRANSLATIONS = {
       title: "מצב צ'אט",
       chat: {
         title: "צ'אט",
-        "desc-start": "יספק תשובות עם הידע הכללי של מודל השפה",
-        and: "וכן",
-        "desc-end": "מהקשר המסמכים שנמצא.",
+        description:
+          "יוכל לספק תשובות בהתבסס על הידע הכללי של ה-LLM ועל ההקשר הרלוונטי מהמסמכים. <b> ו-</b>\nתצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
       },
       query: {
         title: "שאילתה",
-        "desc-start": "יספק תשובות",
-        only: "רק",
-        "desc-end": "אם נמצא הקשר במסמכים.",
+        description:
+          "יוענו עם תשובות <b>רק</b>במידה ויימצא הקשר של המסמך.<br />תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלי.",
+      },
+      automatic: {
+        title: "רכב",
+        description:
+          "התוכנה תשתמש באופן אוטומטי בכלים אם המודל והספק תומכים בהם. <br />אם אין תמיכה בכלים מקומיים, תצטרכו להשתמש בפקודה @agent כדי להשתמש בכלים.",
       },
     },
     history: {
@@ -297,15 +308,141 @@ const TRANSLATIONS = {
         description:
           "אפשר לסוכן ברירת המחדל ליצור סוגים שונים של תרשימים מנתונים שסופקו או ניתנו בצ'אט.",
       },
-      save: {
-        title: "יצירה ושמירה של קבצים לדפדפן",
-        description:
-          "אפשר לסוכן ברירת המחדל ליצור ולכתוב לקבצים שנשמרים וניתנים להורדה בדפדפן שלך.",
-      },
       web: {
         title: "חיפוש וגלישה באינטרנט בזמן אמת",
         description:
           "אפשרו לסוכן שלכם לחפש באינטרנט כדי לענות על שאלותיכם, על ידי חיבור לספק שירותי חיפוש (SERP).",
+      },
+      sql: {
+        title: "חיבור SQL",
+        description:
+          "אפשרו לסוכן שלכם לנצל את SQL כדי לענות על שאלותיכם, על ידי חיבור למספר ספקי מסדי נתונים של SQL.",
+      },
+      default_skill:
+        "כברירת מחדל, הכישורים הזה מופעל, אך ניתן להשבית אותו אם אינכם רוצים שהוא יהיה זמין עבור הסוכן.",
+      filesystem: {
+        title: "גישה למערכת הקבצים",
+        description:
+          "אפשרו למתווך שלכם לקרוא, לכתוב, לחפש ולנהל קבצים בספריית מסוימת. תומך בעריכת קבצים, ניווט בספריות וחיפוש תוכן.",
+        learnMore: "למידע נוסף על השימוש בכישרון זה",
+        configuration: "הגדרות",
+        readActions: "קריאת פעולות",
+        writeActions: "פעולות",
+        warning:
+          "גישה למערכת הקבצים עלולה להיות מסוכנת, שכן היא עלולה לשנות או למחוק קבצים. אנא התייעצו עם ה<link>תיעוד</link> לפני הפעלתה.",
+        skills: {
+          "read-text-file": {
+            title: "קרא קובץ",
+            description: "קריאת תוכן קבצים (טקסט, קוד, PDF, תמונות וכו')",
+          },
+          "read-multiple-files": {
+            title: "קריאת מספר קבצים",
+            description: "קרא מספר קבצים בו זמנית.",
+          },
+          "list-directory": {
+            title: "רשימת אנשי קשר",
+            description: "רשימת קבצים וספריות בתיקייה",
+          },
+          "search-files": {
+            title: "חיפוש קבצים",
+            description: "חיפוש קבצים לפי שם או תוכן",
+          },
+          "get-file-info": {
+            title: "קבל מידע על הקובץ",
+            description: "קבל מידע מפורט על קבצים",
+          },
+          "edit-file": {
+            title: "ערוך קובץ",
+            description: "בצעו עריכה של קבצי טקסט על בסיס שורות.",
+          },
+          "create-directory": {
+            title: "יצירת תיקייה",
+            description: "ליצור תיקיות חדשות",
+          },
+          "move-file": {
+            title: "העתקה/שינוי שם של קובץ",
+            description: "הזיזו או שנו את שמות הקבצים והתיקיות.",
+          },
+          "copy-file": {
+            title: "העתק קובץ",
+            description: "העתקת קבצים וספריות",
+          },
+          "write-text-file": {
+            title: "יצירת קובץ טקסט",
+            description: "יצירת קבצי טקסט חדשים או החלפת קבצי טקסט קיימים",
+          },
+        },
+      },
+      createFiles: {
+        title: "יצירת מסמכים",
+        description:
+          "אפשרו למתווך שלכם ליצור פורמטים של מסמכים בינאריים, כמו מצגות של פאוורPoint, גיליונות אלקטרוניים של Excel, מסמכי Word ו-PDF. ניתן להוריד את הקבצים ישירות מהחלון של השיחה.",
+        configuration: "סוגי המסמכים הזמינים",
+        skills: {
+          "create-text-file": {
+            title: "קבצי טקסט",
+            description:
+              "צרו קבצי טקסט עם כל תוכן ותוספת (כגון .txt, .md, .json, .csv וכו').",
+          },
+          "create-pptx": {
+            title: "מצגות של פאוור פוינט",
+            description:
+              "צרו מצגות חדשות בפורמט PowerPoint, הכוללות שקופיות, כותרות ונקודות עיקריות.",
+          },
+          "create-pdf": {
+            title: "מסמכים בפורמט PDF",
+            description:
+              "יצירת מסמכים בפורמט PDF ממחרוזות markdown או טקסט פשוט, עם עיצוב בסיסי.",
+          },
+          "create-xlsx": {
+            title: "גיליונות אקסל",
+            description:
+              "צור מסמכי Excel עבור נתונים טבלאיים, הכוללים גיליונות ועריכת עיצוב.",
+          },
+          "create-docx": {
+            title: "מסמכים בפורמט Word",
+            description: "צור מסמכים בפורמט Word עם עיצוב ועיצוב בסיסיים.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "שרתי MCP",
+      "loading-from-config": "טעינת שרתי MCP מהקובץ בתצורה",
+      "learn-more": "למידע נוסף על שרתי MCP.",
+      "no-servers-found": "לא נמצאו שרתי MCP.",
+      "tool-warning":
+        "על מנת להשיג את הביצועים הטובים ביותר, שקלו לבטל כלים לא רצויים כדי לחסוך במשאבים.",
+      "stop-server": "עצור את שרת ה-MCP",
+      "start-server": "הפעל שרת MCP",
+      "delete-server": "מחיקת שרת ה-MCP",
+      "tool-count-warning":
+        "שרת ה-MCP הזה כולל <b>כלי{{count}} שפעילים, אשר יצרוך מידע הקשר בכל צ'אט. </b> מומלץ לבטל את הכליות הלא רצויות כדי לחסוך במידע ההקשר.",
+      "startup-command": "פקודת התחלה",
+      command: "פקודה",
+      arguments: "טיעונים",
+      "not-running-warning":
+        "שרת ה-MCP הזה אינו פועל – ייתכן שהוא מושבת או שהוא חווה תקלה בעת ההפעלה.",
+      "tool-call-arguments": "ארגומנטים לפונקציות",
+      "tools-enabled": "הכלים פעלו/היו זמינים",
+    },
+    settings: {
+      title: "הגדרות מיומנויות של סוכן",
+      "max-tool-calls": {
+        title: 'מספר קריאות "Max Tool" לכל תגובה',
+        description:
+          "מספר הכלים המקסימלי שאгент יכול לקשור כדי ליצור תגובה אחת. זה מונע קריאות מרובות של כלים ומחזורים אינסופיים.",
+      },
+      "intelligent-skill-selection": {
+        title: "בחירת מיומנויות בהתאם ליכולות",
+        "beta-badge": "בטא",
+        description:
+          "אפשרו שימוש בלתי מוגבל בכלים וצמצום השימוש בטוקנים עד 80% לכל שאילתה – ה-AnythingLLM בוחר באופן אוטומטי את הכישורים המתאימים ביותר לכל בקשה.",
+        "max-tools": {
+          title: "כלים של מקס",
+          description:
+            "מספר המינימום של כלי העבודה שניתן לבחור עבור כל שאילתה. אנו ממליצים להגדיר ערך גבוה יותר עבור מודלים עם הקשר רחב יותר.",
+        },
       },
       sql: {
         title: "חיבור SQL",
@@ -677,7 +814,6 @@ const TRANSLATIONS = {
       select_all: "בחר הכל",
       deselect_all: "בטל בחירת הכל",
       remove_selected: "הסר נבחרים",
-      costs: "*עלות חד פעמית להטמעות",
       save_embed: "שמור והטמע",
       "total-documents_one": "{{count}} מסמך",
       "total-documents_other": "מסמכים {{count}}",
@@ -764,7 +900,6 @@ const TRANSLATIONS = {
     see_less: "ראה פחות",
     see_more: "לראות עוד",
     tools: "כלים",
-    browse: "גלו",
     text_size_label: "גודל הטקסט",
     select_model: "בחר מודל",
     sources: "מקורות",
@@ -777,8 +912,6 @@ const TRANSLATIONS = {
     edit: "עריכה",
     publish: "להוציא לאור",
     stop_generating: "הפסיקו ליצור תגובה",
-    pause_tts_speech_message:
-      "השהייה של קריאת טקסט באמצעות תוכנת TTS (Text-to-Speech)",
     slash_commands: "פקודות קיצור",
     agent_skills: "כישורים של סוכן",
     manage_agent_skills: "ניהול מיומנויות של סוכנים",
@@ -787,6 +920,14 @@ const TRANSLATIONS = {
     start_agent_session: "התחלת סשן עם סוכן",
     use_agent_session_to_use_tools:
       "ניתן להשתמש בכלי הדיון באמצעות פתיחת סשן עם נציג על ידי שימוש בסימן '@agent' בתחילת ההודעה.",
+    agent_invocation: {
+      model_wants_to_call: "המודל רוצה להתקשר",
+      approve: "אישור",
+      reject: "דחייה",
+      always_allow: "יש תמיד להקצות {{skillName}}",
+      tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
+      tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -934,6 +1075,80 @@ const TRANSLATIONS = {
     notAssigned:
       "אינך מוקצה לכל סביבת עבודה.\nיש ליצור קשר עם המנהל שלך כדי לבקש גישה לסביבת עבודה.",
     goToWorkspace: 'עבור לסביבת עבודה "{{workspace}}"',
+  },
+  telegram: {
+    title: "בוט של טלגרם",
+    description:
+      "חברו את ההתקנה של AnythingLLM ל-Telegram, כך שתוכלו לתקשר עם סביבות העבודה שלכם ממכשיר כלשהו.",
+    setup: {
+      step1: {
+        title: "שלב 1: צרו את הבוט שלכם ב-Telegram",
+        description:
+          "פתח את <code> ב-Telegram, שלח </code> לכתובת <code>@BotFather, עקוב אחר ההוראות, והעתק את מזהה ה-API.",
+        "open-botfather": "פתוח את BotFather",
+        "instruction-1": "1. פתחו את הקישור או סרקו את קוד ה-QR",
+        "instruction-2":
+          "2. שלחו את <code>/newbot</code> לכתובת <code>@BotFather</code>",
+        "instruction-3": "3. בחרו שם וכינוי משתמש עבור הבוט שלכם",
+        "instruction-4": "4. העתק את מזהה ה-API שקיבלת.",
+      },
+      step2: {
+        title: "שלב 2: חברו את הבוט שלכם",
+        description:
+          "הדבק את טוקן ה-API שקיבלת מחשבון @BotFather ובחר את חלל העבודה הראשי עבור הבוט שלך, כדי שיוכל לתקשר.",
+        "bot-token": "טוקן בוט",
+        "default-workspace": "סביבת עבודה ברירת מחדל",
+        "no-workspace": "אין מקומות עבודה זמינים. ייקבע מקום עבודה חדש.",
+        connecting: "חיבור...",
+        "connect-bot": "צ'אטבוט",
+      },
+      security: {
+        title: "הגדרות אבטחה מומלצות",
+        description:
+          "לנוחיות נוספת, יש לבצע את ההגדרות הללו דרך חשבון ה-@BotFather.",
+        "disable-groups": "— למנוע הוספת רובוטים לקבוצות",
+        "disable-inline": "– למנוע שימוש בבוט בחיפוש ישיר",
+        "obscure-username":
+          "השתמש בשם משתמש של בוט שאינו בולט, כדי להקטין את הסיכוי שהוא יימצא.",
+      },
+      "toast-enter-token": "אנא הזן את טוקן הבוט.",
+      "toast-connect-failed": "לא הצליח להתחבר עם הבוט.",
+    },
+    connected: {
+      status: "מחובר",
+      "status-disconnected": "נתקע – הטוקן עשוי להיות פג או לא תקין",
+      "placeholder-token": "הדבק את מפתח הבוט החדש...",
+      reconnect: "שוב קשר",
+      workspace: "חלל עבודה",
+      "bot-link": "קישור לבוט",
+      "voice-response": "תגובה קולית",
+      disconnecting: "ניתוק...",
+      disconnect: "ניתוק",
+      "voice-text-only": "טקסט בלבד",
+      "voice-mirror": "משקף (להגיב בקול כאשר המשתמש שולח קול)",
+      "voice-always": "יש לציין תמיד (לשלוח קבצי אודיו עם כל תגובה)",
+      "toast-disconnect-failed": "לא הצלחתי לבטל את פעולת הבוט.",
+      "toast-reconnect-failed": "לא הצליח לשחזר את הבוט.",
+      "toast-voice-failed": "לא הצליח לעדכן את מצב השמע.",
+      "toast-approve-failed": "לא ניתן לאשר את המשתמש.",
+      "toast-deny-failed": "לא הצליח לסרב לבקשה של המשתמש.",
+      "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
+    },
+    users: {
+      "pending-title": "נמצא בהמתנה לאישור",
+      "pending-description":
+        "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
+      "approved-title": "משתמשים מורשים",
+      "approved-description": "משתמשים שאושרו לנהל שיחה עם הבוט שלכם.",
+      user: "משתמש",
+      "pairing-code": "קוד התאמה",
+      "no-pending": "אין בקשות בתהליך",
+      "no-approved": "אין משתמשים מורשים",
+      unknown: "לא ידוע",
+      approve: "אישור",
+      deny: "לדחות",
+      revoke: "בטל",
+    },
   },
 };
 

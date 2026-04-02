@@ -8,9 +8,21 @@ const availableThemes = {
 };
 
 /**
+ * @typedef {'system' | 'light' | 'dark'} ThemeOption
+ */
+
+/**
+ * @typedef {Object} UseThemeResult
+ * @property {ThemeOption} theme - The current theme preference stored in localStorage.
+ * @property {(newTheme: ThemeOption) => void} setTheme - Sets the theme preference.
+ * @property {{system: string, light: string, dark: string}} availableThemes - Map of theme keys to display names.
+ * @property {boolean} isLight - Whether the resolved theme is light (explicitly or via system preference).
+ */
+
+/**
  * Determines the current theme of the application.
  * "system" follows the OS preference, "light" and "dark" force that mode.
- * @returns {{theme: ('system' | 'light' | 'dark'), setTheme: function, availableThemes: object}}
+ * @returns {UseThemeResult}
  */
 export function useTheme() {
   const [theme, _setTheme] = useState(() => {
@@ -59,11 +71,16 @@ export function useTheme() {
   /**
    * Sets the theme of the application and runs any
    * other necessary side effects
-   * @param {string} newTheme The new theme to set
+   * @param {ThemeOption} newTheme The new theme to set
    */
   function setTheme(newTheme) {
     _setTheme(newTheme);
   }
 
-  return { theme, setTheme, availableThemes };
+  return {
+    theme,
+    setTheme,
+    availableThemes,
+    isLight: resolvedTheme === "light",
+  };
 }

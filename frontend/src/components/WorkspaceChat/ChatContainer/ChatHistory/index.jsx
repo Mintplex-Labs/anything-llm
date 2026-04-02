@@ -9,6 +9,8 @@ import {
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
+import ToolApprovalRequest from "./ToolApprovalRequest";
+import FileDownloadCard from "./FileDownloadCard";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -21,6 +23,7 @@ import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useChatHistoryScrollHandle from "@/hooks/useChatHistoryScrollHandle";
 import { ThoughtExpansionProvider } from "./ThoughtContainer";
+import { MessageActionsProvider } from "./MessageActionsContext";
 
 export default forwardRef(function (
   {
@@ -29,6 +32,7 @@ export default forwardRef(function (
     sendCommand,
     updateHistory,
     regenerateAssistantMessage,
+    websocket = null,
   },
   ref
 ) {
@@ -179,6 +183,7 @@ export default forwardRef(function (
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
+        websocket,
       }),
     [
       workspace,
@@ -186,6 +191,7 @@ export default forwardRef(function (
       regenerateAssistantMessage,
       saveEditedMessage,
       forkThread,
+      websocket,
     ]
   );
   const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
@@ -204,41 +210,43 @@ export default forwardRef(function (
   );
 
   return (
-    <ThoughtExpansionProvider>
-      <div
-        className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
-        id="chat-history"
-        ref={chatHistoryRef}
-        onScroll={handleScroll}
-      >
-        <div className="w-full max-w-[750px]">
-          {compiledHistory.map((item, index) =>
-            Array.isArray(item) ? renderStatusResponse(item, index) : item
+    <MessageActionsProvider>
+      <ThoughtExpansionProvider>
+        <div
+          className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+          id="chat-history"
+          ref={chatHistoryRef}
+          onScroll={handleScroll}
+        >
+          <div className="w-full max-w-[750px]">
+            {compiledHistory.map((item, index) =>
+              Array.isArray(item) ? renderStatusResponse(item, index) : item
+            )}
+          </div>
+          {showing && (
+            <ManageWorkspace
+              hideModal={hideModal}
+              providedSlug={workspace.slug}
+            />
           )}
         </div>
-        {showing && (
-          <ManageWorkspace
-            hideModal={hideModal}
-            providedSlug={workspace.slug}
-          />
-        )}
-      </div>
-      {!isAtBottom && (
-        <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
-          <div className="flex flex-col items-center">
-            <div
-              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
-              onClick={() => {
-                scrollToBottom(isStreaming ? false : true);
-                setIsUserScrolling(false);
-              }}
-            >
-              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
+        {!isAtBottom && (
+          <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
+            <div className="flex flex-col items-center">
+              <div
+                className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+                onClick={() => {
+                  scrollToBottom(isStreaming ? false : true);
+                  setIsUserScrolling(false);
+                }}
+              >
+                <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </ThoughtExpansionProvider>
+        )}
+      </ThoughtExpansionProvider>
+    </MessageActionsProvider>
   );
 });
 
@@ -262,6 +270,7 @@ const getLastMessageInfo = (history) => {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
+ * @param {WebSocket} param0.websocket - The active websocket connection for agent communication.
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -270,6 +279,7 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
+  websocket,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -284,8 +294,25 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "toolApprovalRequest") {
+      acc.push(
+        <ToolApprovalRequest
+          key={`tool-approval-${props.requestId}`}
+          requestId={props.requestId}
+          skillName={props.skillName}
+          payload={props.payload}
+          description={props.description}
+          timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "rechartVisualize" && !!props.content) {
       acc.push(<Chartable key={props.uuid} props={props} />);
+    } else if (props.type === "fileDownloadCard" && !!props.content) {
+      acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (isLastBotReply && props.animate) {
       acc.push(
         <PromptReply
@@ -316,6 +343,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          outputs={props.outputs}
         />
       );
     }

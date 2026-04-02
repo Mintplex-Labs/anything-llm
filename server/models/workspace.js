@@ -33,6 +33,7 @@ function isNullOrNaN(value) {
  */
 
 const Workspace = {
+  VALID_CHAT_MODES: ["chat", "query", "automatic"],
   defaultPrompt: SystemSettings.saneDefaultSystemPrompt,
 
   // Used for generic updates so we can validate keys in request body
@@ -93,7 +94,8 @@ const Workspace = {
       return n;
     },
     chatMode: (value) => {
-      if (!value || !["chat", "query"].includes(value)) return "chat";
+      if (!value || !Workspace.VALID_CHAT_MODES.includes(value))
+        return "automatic";
       return value;
     },
     chatProvider: (value) => {
@@ -205,6 +207,7 @@ const Workspace = {
       const workspace = await prisma.workspaces.create({
         data: {
           name: this.validations.name(name),
+          chatMode: "automatic",
           ...this.validateFields(additionalFields),
           slug,
         },
@@ -608,6 +611,46 @@ const Workspace = {
       console.error(error.message);
       return false;
     }
+  },
+
+  /**
+   * Checks if the workspace's chat provider/model waterfall supports native tool calling.
+   * @param {Workspace} workspace - The workspace object to check
+   * @returns {Promise<boolean>}
+   */
+  supportsNativeToolCalling: async function (workspace = {}) {
+    if (!workspace) return false;
+    const { getBaseLLMProviderModel } = require("../utils/helpers");
+    const AIbitat = require("../utils/agents/aibitat");
+    const provider =
+      workspace?.agentProvider ??
+      workspace?.chatProvider ??
+      process.env.LLM_PROVIDER;
+    const model =
+      workspace?.agentModel ??
+      workspace?.chatModel ??
+      getBaseLLMProviderModel({ provider });
+    const agentConfig = { provider, model };
+    const agentProvider = new AIbitat(agentConfig).getProviderForConfig(
+      agentConfig
+    );
+    const nativeToolCalling = await agentProvider.supportsNativeToolCalling?.();
+    return nativeToolCalling;
+  },
+
+  /**
+   * Checks if the agent command is available for a workspace
+   * by checking if the workspace's agent provider supports native tool calling.
+   * - If the workspaces chat provider/model supports native tool calling, then the agent command is NOT available
+   * as it will be assumed the model is capable of handling tool calls.
+   * Otherwise, the agent command is available and the user must opt-in to "@agent" to use tool calls.
+   * @param {Workspace} workspace - The workspace object to check
+   * @returns {Promise<boolean>}
+   */
+  isAgentCommandAvailable: async function (workspace) {
+    if (workspace.chatMode !== "automatic") return true;
+    const nativeToolCalling = await this.supportsNativeToolCalling(workspace);
+    return nativeToolCalling === false;
   },
 };
 

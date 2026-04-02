@@ -13,13 +13,13 @@ const {
   sourceIdentifier,
 } = require("./index");
 
-const VALID_CHAT_MODE = ["chat", "query"];
+const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
 async function streamChatWithWorkspace(
   response,
   workspace,
   message,
-  chatMode = "chat",
+  chatMode = "automatic",
   user = null,
   thread = null,
   attachments = []
@@ -47,6 +47,7 @@ async function streamChatWithWorkspace(
     user,
     workspace,
     thread,
+    attachments,
   });
   if (isAgentChat) return;
 

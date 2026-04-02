@@ -1,8 +1,10 @@
 const Anthropic = require("@anthropic-ai/sdk");
+const { AnthropicLLM } = require("../../../AiProviders/anthropic");
 const { RetryError } = require("../error.js");
 const Provider = require("./ai-provider.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 
 /**
  * The agent provider for the Anthropic API.
@@ -10,12 +12,16 @@ const { safeJsonParse } = require("../../../http");
  */
 class AnthropicProvider extends Provider {
   model;
+  maxTokens = null;
 
   constructor(config = {}) {
     const {
       options = {
         apiKey: process.env.ANTHROPIC_API_KEY,
         maxRetries: 3,
+        defaultHeaders: {
+          "User-Agent": getAnythingLLMUserAgent(),
+        },
       },
       model = "claude-3-5-sonnet-20240620",
     } = config;
@@ -24,6 +30,26 @@ class AnthropicProvider extends Provider {
 
     super(client);
     this.model = model;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Anthropic always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
+   * Fetches the maximum number of tokens the model should generate in its response.
+   * This varies per model but will fallback to 4096 if the model is not found.
+   * @returns {Promise<number>} The maximum output tokens limit for API calls.
+   */
+  async assertModelMaxTokens() {
+    if (this.maxTokens) return this.maxTokens;
+    this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
+    return this.maxTokens;
   }
 
   /**
@@ -70,6 +96,18 @@ class AnthropicProvider extends Provider {
         cache_control: this.cacheControl,
       },
     ];
+  }
+
+  /**
+   * Parse a data URL into media type and base64 data
+   * @param {string} dataUrl - Data URL like "data:image/jpeg;base64,/9j/..."
+   * @returns {{mediaType: string, data: string}|null}
+   */
+  #parseDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) return null;
+    return { mediaType: matches[1], data: matches[2] };
   }
 
   #prepareMessages(messages = []) {
@@ -120,6 +158,23 @@ class AnthropicProvider extends Provider {
             item.type !== "text" || (item.text && item.text.trim().length > 0)
         );
 
+        // Add image attachments if present (for vision/multimodal support)
+        if (message.attachments && message.attachments.length > 0) {
+          for (const attachment of message.attachments) {
+            const parsed = this.#parseDataUrl(attachment.contentString);
+            if (parsed) {
+              content.push({
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: parsed.mediaType,
+                  data: parsed.data,
+                },
+              });
+            }
+          }
+        }
+
         if (content.length === 0) return processedMessages;
 
         // Add a text block to assistant messages with tool use if one doesn't exist.
@@ -139,7 +194,9 @@ class AnthropicProvider extends Provider {
           // Merge consecutive messages from the same role.
           lastMessage.content.push(...content);
         } else {
-          processedMessages.push({ ...message, content });
+          // Don't pass attachments to the final message object
+          const { attachments: _, ...restOfMessage } = message;
+          processedMessages.push({ ...restOfMessage, content });
         }
 
         return processedMessages;
@@ -183,6 +240,7 @@ class AnthropicProvider extends Provider {
    * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    await this.assertModelMaxTokens();
     this.resetUsage();
 
     try {
@@ -191,7 +249,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: true,
@@ -330,6 +388,7 @@ class AnthropicProvider extends Provider {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    await this.assertModelMaxTokens();
     this.resetUsage();
 
     try {
@@ -337,7 +396,7 @@ class AnthropicProvider extends Provider {
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: false,

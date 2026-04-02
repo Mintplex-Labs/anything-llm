@@ -20,19 +20,21 @@ const webBrowsing = {
               .toString()
               .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
           description:
-            "Searches for a given query using a search engine to get better results for the user query.",
+            "Search the internet for real-time information. Look online for current news, recent updates, latest changes, or any information not available locally. Browse the web to find answers about current events, prices, weather, or live data.",
           examples: [
             {
-              prompt: "Who won the world series today?",
-              call: JSON.stringify({ query: "Winner of today's world series" }),
+              prompt: "Look online for recent changes to AnythingLLM",
+              call: JSON.stringify({
+                query: "AnythingLLM recent changes updates",
+              }),
             },
             {
-              prompt: "What is AnythingLLM?",
-              call: JSON.stringify({ query: "AnythingLLM" }),
+              prompt: "Search the internet for the latest news",
+              call: JSON.stringify({ query: "latest news today" }),
             },
             {
-              prompt: "Current AAPL stock price",
-              call: JSON.stringify({ query: "AAPL stock price today" }),
+              prompt: "What's the current weather in NYC?",
+              call: JSON.stringify({ query: "current weather New York City" }),
             },
           ],
           parameters: {

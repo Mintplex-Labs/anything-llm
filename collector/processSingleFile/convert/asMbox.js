@@ -26,7 +26,7 @@ async function asMbox({
 
   if (!mails.length) {
     console.error(`Resulting mail items was empty for ${filename}.`);
-    trashFile(fullFilePath);
+    if (!options.absolutePath) trashFile(fullFilePath);
     return {
       success: false,
       reason: `No mail items found in ${filename}.`,
@@ -73,7 +73,7 @@ async function asMbox({
     documents.push(document);
   }
 
-  trashFile(fullFilePath);
+  if (!options.absolutePath) trashFile(fullFilePath);
   console.log(
     `[SUCCESS]: ${filename} messages converted & ready for embedding.\n`
   );

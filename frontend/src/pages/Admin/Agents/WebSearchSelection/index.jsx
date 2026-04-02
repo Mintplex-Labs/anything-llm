@@ -109,7 +109,15 @@ const SEARCH_PROVIDERS = [
     value: "exa-search",
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
-    description: "AI-powered search engine optimized for LLM use cases.",
+    description:
+      "One of the best web search APIs for AI agents with real-time results and full page contents.",
+  },
+  {
+    name: "Perplexity Search",
+    value: "perplexity-search",
+    logo: PerplexitySearchIcon,
+    options: (settings) => <PerplexitySearchOptions settings={settings} />,
+    description: "AI-powered web search using the Perplexity Search API.",
   },
   {
     name: "Perplexity Search",
