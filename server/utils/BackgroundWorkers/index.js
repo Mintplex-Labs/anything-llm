@@ -188,6 +188,7 @@ class BackgroundService {
     const enabledJobs = await ScheduledJob.allEnabled();
 
     for (const job of enabledJobs) {
+      // recomputes nextRunAt so stale values from before shutdown are corrected.
       await ScheduledJob.recomputeNextRunAt(job.id);
       await this.addScheduledJob(job);
     }
