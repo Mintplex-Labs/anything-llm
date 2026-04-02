@@ -127,21 +127,6 @@ const ScheduledJobRun = {
     }
   },
 
-  forJob: async function (jobId, { limit = 20, offset = 0 } = {}) {
-    try {
-      const results = await prisma.scheduled_job_runs.findMany({
-        where: { jobId: Number(jobId) },
-        orderBy: { startedAt: "desc" },
-        take: limit,
-        skip: offset,
-      });
-      return results;
-    } catch (error) {
-      console.error("Failed to get runs for job:", error.message);
-      return [];
-    }
-  },
-
   delete: async function (clause = {}) {
     try {
       await prisma.scheduled_job_runs.deleteMany({ where: clause });

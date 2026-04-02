@@ -414,12 +414,11 @@ function scheduledJobEndpoints(app) {
     [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
-        const limit = Number(request.query.limit) || 20;
-        const offset = Number(request.query.offset) || 0;
-        const runs = await ScheduledJobRun.forJob(Number(request.params.id), {
-          limit,
-          offset,
-        });
+        const runs = await ScheduledJobRun.where(
+          { jobId: Number(request.params.id) },
+          50,
+          { startedAt: "desc" }
+        );
         return response.status(200).json({ runs });
       } catch (e) {
         console.error(e.message, e);

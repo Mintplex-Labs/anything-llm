@@ -86,11 +86,10 @@ const ScheduledJobs = {
       });
   },
 
-  runs: async function (id, { limit = 20, offset = 0 } = {}) {
-    return await fetch(
-      `${API_BASE}/scheduled-jobs/${id}/runs?limit=${limit}&offset=${offset}`,
-      { headers: baseHeaders() }
-    )
+  runs: async function (id) {
+    return await fetch(`${API_BASE}/scheduled-jobs/${id}/runs`, {
+      headers: baseHeaders(),
+    })
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);
@@ -130,17 +129,6 @@ const ScheduledJobs = {
       .catch((e) => {
         console.error(e);
         return { workspaceSlug: null, threadSlug: null, error: e.message };
-      });
-  },
-
-  unreadCount: async function () {
-    return await fetch(`${API_BASE}/scheduled-jobs/unread-count`, {
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { count: 0 };
       });
   },
 
