@@ -1,33 +1,16 @@
 import { Info, Pencil } from "@phosphor-icons/react";
-import { useState, useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
-
-const EDIT_EVENT = "toggle-message-edit";
+import {
+  useMessageActionsContext,
+  EDIT_EVENT,
+} from "@/components/WorkspaceChat/ChatContainer/ChatHistory/MessageActionsContext";
 
 export function useEditMessage({ chatId, role }) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  function onEditEvent(e) {
-    if (e.detail.chatId !== chatId || e.detail.role !== role) {
-      setIsEditing(false);
-      return false;
-    }
-    setIsEditing((prev) => !prev);
-  }
-
-  useEffect(() => {
-    function listenForEdits() {
-      if (!chatId || !role) return;
-      window.addEventListener(EDIT_EVENT, onEditEvent);
-    }
-    listenForEdits();
-    return () => {
-      window.removeEventListener(EDIT_EVENT, onEditEvent);
-    };
-  }, [chatId, role]);
-
-  return { isEditing, setIsEditing };
+  const context = useMessageActionsContext();
+  const isEditing = context?.isEditing(chatId, role) ?? false;
+  return { isEditing };
 }
 
 export function EditMessageAction({ chatId = null, role, isEditing }) {
@@ -53,7 +36,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
             ? t("chat_window.edit_prompt")
             : t("chat_window.edit_response")
         } `}
-        className="border-none text-zinc-300 light:text-slate-500"
+        className="border-none text-zinc-300 light:text-slate-500 px-0"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
         <Pencil size={21} className="mb-1" />
