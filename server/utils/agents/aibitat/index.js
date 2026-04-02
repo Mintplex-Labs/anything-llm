@@ -355,18 +355,6 @@ class AIbitat {
    * @param listener
    * @returns
    */
-  /**
-   * Triggered when a tool call completes and returns a result.
-   * Used by scheduled jobs to capture tool results for the execution trace.
-   *
-   * @param listener
-   * @returns
-   */
-  onToolCallResult(listener = () => null) {
-    this.emitter.on("toolCallResult", listener);
-    return this;
-  }
-
   onError(
     listener = (
       /**
@@ -388,6 +376,18 @@ class AIbitat {
     ) => null
   ) {
     this.emitter.on("replyError", listener);
+    return this;
+  }
+
+  /**
+   * Triggered when a tool call completes and returns a result.
+   * Used by scheduled jobs to capture tool results for the execution trace.
+   *
+   * @param listener
+   * @returns
+   */
+  onToolCallResult(listener = () => null) {
+    this.emitter.on("toolCallResult", listener);
     return this;
   }
 
