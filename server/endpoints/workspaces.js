@@ -1059,6 +1059,23 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.get(
+    "/workspace/:slug/is-agent-command-available",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          showAgentCommand: await Workspace.isAgentCommandAvailable(
+            response.locals.workspace
+          ),
+        });
+      } catch (error) {
+        console.error("Error checking if agent command is available:", error);
+        response.status(500).json({ showAgentCommand: true });
+      }
+    }
+  );
+
   // Parsed Files in separate endpoint just to keep the workspace endpoints clean
   workspaceParsedFilesEndpoints(app);
 }
