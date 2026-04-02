@@ -49,6 +49,9 @@ function getHljsTheme() {
     : "github-dark";
 }
 
+function truncateText(text) {
+  return text.length > 5000 ? text.slice(0, 5000) + "..." : text;
+}
 function formatAndHighlight(value) {
   // Try to parse as JSON for syntax highlighting
   const parsed =
@@ -57,8 +60,7 @@ function formatAndHighlight(value) {
   if (typeof parsed === "object" && parsed !== null) {
     const formatted = JSON.stringify(parsed, null, 2);
 
-    const truncatedFormatted =
-      formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
+    const truncatedFormatted = truncateText(formatted);
 
     const highlighted = hljs.highlight(truncatedFormatted, {
       language: "json",
@@ -71,12 +73,14 @@ function formatAndHighlight(value) {
 
 function ToolCallCard({ toolCall }) {
   const [showResult, setShowResult] = useState(false);
+
   const resultText =
     typeof toolCall.result === "string"
       ? toolCall.result
       : JSON.stringify(toolCall.result, null, 2);
-  const truncatedResult =
-    resultText?.length > 5000 ? resultText.slice(0, 5000) + "..." : resultText;
+
+  const truncatedResult = truncateText(resultText);
+
   const highlightedResult = formatAndHighlight(toolCall.result);
   const highlightedArgs = formatAndHighlight(toolCall.arguments);
 
