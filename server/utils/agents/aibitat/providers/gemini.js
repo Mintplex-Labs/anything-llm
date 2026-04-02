@@ -30,14 +30,13 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
-  get supportsToolCalling() {
-    if (!this.model.startsWith("gemini")) return false;
-    return true;
-  }
-
+  /**
+   * Whether this provider supports agent streaming.
+   * - Tool call streaming results in a 400/503 error for all non-gemini models
+   * using the compatible v1beta/openai/ endpoint
+   * @returns {boolean}
+   */
   get supportsAgentStreaming() {
-    // Tool call streaming results in a 400/503 error for all non-gemini models
-    // using the compatible v1beta/openai/ endpoint
     if (!this.model.startsWith("gemini")) {
       this.providerLog(
         `Gemini: ${this.model} does not support tool call streaming.`
@@ -45,6 +44,20 @@ class GeminiProvider extends Provider {
       return false;
     }
     return true;
+  }
+
+  get supportsToolCalling() {
+    if (!this.model.startsWith("gemini")) return false;
+    return true;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Gemini only supports tool calling for Gemini models.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return this.supportsToolCalling;
   }
 
   /**
@@ -138,6 +151,24 @@ class GeminiProvider extends Provider {
             content: message.content,
           }
         );
+        return;
+      }
+
+      // Handle messages with attachments (images) for multimodal support
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
         return;
       }
 

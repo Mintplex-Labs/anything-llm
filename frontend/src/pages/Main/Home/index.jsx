@@ -64,11 +64,15 @@ export default function Home() {
     async function init() {
       const ws = await getTargetWorkspace();
       if (ws) {
-        const [suggestedMessages, pfpUrl] = await Promise.all([
+        const [suggestedMessages, { showAgentCommand }] = await Promise.all([
           Workspace.getSuggestedMessages(ws.slug),
-          Workspace.fetchPfp(ws.slug),
+          Workspace.agentCommandAvailable(ws.slug),
         ]);
-        setWorkspace({ ...ws, suggestedMessages, pfpUrl });
+        setWorkspace({
+          ...ws,
+          suggestedMessages,
+          showAgentCommand,
+        });
       }
       setWorkspaceLoading(false);
     }
@@ -289,6 +293,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
               {t("main-page.greeting")}
             </h1>
             <PromptInput
+              workspace={workspace}
               submit={handleSubmit}
               isStreaming={loading}
               sendCommand={sendCommand}

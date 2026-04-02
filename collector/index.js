@@ -86,6 +86,7 @@ app.post(
       } = await processSingleFile(targetFilename, {
         ...options,
         parseOnly: true,
+        absolutePath: options.absolutePath || null,
       });
       response
         .status(200)
