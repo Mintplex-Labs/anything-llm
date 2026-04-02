@@ -60,7 +60,7 @@ process.on("message", async (payload) => {
 
     const handler = {
       send(jsonStr) {
-        const data = safeJsonParse(jsonStr);
+        const data = safeJsonParse(jsonStr, null);
         if (!data) return;
 
         if (data.type === "statusResponse" && data.content) {
