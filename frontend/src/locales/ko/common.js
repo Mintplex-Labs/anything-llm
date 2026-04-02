@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "방문을 환영합니다",
       getStarted: "시작하기",
+      welcome: "환영합니다",
     },
     llm: {
       title: "LLM 기본 설정",
@@ -50,7 +50,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "워크스페이스 이름",
-    user: "사용자",
     selection: "모델 선택",
     saving: "저장 중...",
     save: "저장",
@@ -62,6 +61,11 @@ const TRANSLATIONS = {
     search: "검색",
     username_requirements:
       "사용자 이름은 2-32자여야 하고, 소문자로 시작해야 하며, 소문자, 숫자, 밑줄, 하이픈, 마침표만 포함할 수 있습니다.",
+    on: "~에 대해",
+    none: "없음",
+    stopped: "멈춤",
+    loading: "로딩 중",
+    refresh: "새롭게",
   },
   settings: {
     title: "인스턴스 설정",
@@ -98,6 +102,10 @@ const TRANSLATIONS = {
       trending: "인기 트렌드 탐색",
       "your-account": "당신의 계정",
       "import-item": "수입 품목",
+    },
+    channels: "채널",
+    "available-channels": {
+      telegram: "텔레그램",
     },
   },
   login: {
@@ -180,15 +188,18 @@ const TRANSLATIONS = {
       title: "채팅 모드",
       chat: {
         title: "채팅",
-        "desc-start": "문서 내용을 찾습니다.",
-        and: "그리고",
-        "desc-end": "LLM의 일반 지식을 같이 사용하여 답변을 제공합니다",
+        description:
+          "LLM의 일반적인 지식과 문서 컨텍스트를 활용하여 답변을 제공합니다. 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
       query: {
         title: "쿼리",
-        "desc-start": "문서 컨텍스트를 찾을 ",
-        only: "때만",
-        "desc-end": "답변을 제공합니다.",
+        description:
+          "문서의 맥락이 발견되면 답변만 제공합니다.<b>필요한 경우, @agent 명령어를 사용하여 도구를 사용해야 합니다.</b>",
+      },
+      automatic: {
+        title: "자동",
+        description:
+          "모델과 제공업체가 네이티브 도구 호출을 지원하는 경우, 자동으로 도구를 사용합니다. <br />네이티브 도구 호출이 지원되지 않는 경우, 도구를 사용하려면 @agent 명령을 사용해야 합니다.",
       },
     },
     history: {
@@ -298,15 +309,144 @@ const TRANSLATIONS = {
         description:
           "기본 에이전트가 채팅에서 제공된 데이터를 이용하여 다양한 유형의 차트를 생성할 수 있도록 합니다.",
       },
-      save: {
-        title: "브라우저에서 파일 생성과 저장",
-        description:
-          "기본 에이전트가 브라우저에서 파일을 생성하고 다운로드할 수 있도록 합니다.",
-      },
       web: {
         title: "실시간 웹 검색 및 탐색",
         description:
           "웹 검색 (SERP) 제공업체와 연결하여 에이전트가 웹을 검색하고 질문에 답변하도록 설정합니다.",
+      },
+      sql: {
+        title: "SQL 연결기",
+        description:
+          "여러 SQL 데이터베이스 제공업체에 연결하여 에이전트가 SQL을 활용하여 질문에 답변할 수 있도록 지원합니다.",
+      },
+      default_skill:
+        "기본적으로 이 기능은 활성화되어 있지만, 에이전트에게 이 기능을 사용하지 않도록 설정할 수도 있습니다.",
+      filesystem: {
+        title: "파일 시스템 접근",
+        description:
+          "제 에이전트가 지정된 디렉토리 내에서 파일을 읽고, 쓰고, 검색하고, 관리할 수 있도록 합니다. 파일 편집, 디렉토리 탐색, 콘텐츠 검색을 지원합니다.",
+        learnMore: "이 기술을 사용하는 방법에 대해 자세히 알아보세요.",
+        configuration: "구성",
+        readActions: "실행 내용 보기",
+        writeActions: "실행 내용",
+        warning:
+          "파일 시스템 접근은 위험할 수 있습니다. 왜냐하면 파일 내용을 변경하거나 삭제할 수 있기 때문입니다. 사용하기 전에 반드시 <link>문서</link>를 참조하십시오.",
+        skills: {
+          "read-text-file": {
+            title: "파일 읽기",
+            description:
+              "파일(텍스트, 코드, PDF, 이미지 등)의 내용을 읽습니다.",
+          },
+          "read-multiple-files": {
+            title: "여러 파일을 읽기",
+            description: "여러 파일을 한 번에 읽기",
+          },
+          "list-directory": {
+            title: "디렉토리 목록",
+            description: "폴더 내의 파일 및 디렉터리 목록 보기",
+          },
+          "search-files": {
+            title: "파일 검색",
+            description: "이름 또는 내용으로 파일을 검색",
+          },
+          "get-file-info": {
+            title: "파일 정보 확인",
+            description: "파일에 대한 자세한 메타데이터를 얻으세요.",
+          },
+          "edit-file": {
+            title: "파일 편집",
+            description: "텍스트 파일에 줄 단위로 편집",
+          },
+          "create-directory": {
+            title: "디렉토리 생성",
+            description: "새로운 디렉토리를 생성합니다.",
+          },
+          "move-file": {
+            title: "파일 이동/이름 변경",
+            description: "파일 및 폴더를 이동하거나 이름을 변경합니다.",
+          },
+          "copy-file": {
+            title: "파일 복사",
+            description: "파일 및 디렉터리를 복사",
+          },
+          "write-text-file": {
+            title: "텍스트 파일 작성",
+            description:
+              "새로운 텍스트 파일을 생성하거나 기존 텍스트 파일을 덮어쓰기",
+          },
+        },
+      },
+      createFiles: {
+        title: "문서 생성",
+        description:
+          "에이전트가 파워포인트 프레젠테이션, 엑셀 스프레드시트, 워드 문서, PDF 등 이진 파일 형식의 문서를 생성할 수 있도록 지원합니다. 파일은 채팅 창에서 직접 다운로드할 수 있습니다.",
+        configuration: "사용 가능한 문서 유형",
+        skills: {
+          "create-text-file": {
+            title: "텍스트 파일",
+            description:
+              "원하는 내용과 확장자(.txt, .md, .json, .csv 등)를 사용하여 텍스트 파일을 생성합니다.",
+          },
+          "create-pptx": {
+            title: "파워포인트 프레젠테이션",
+            description:
+              "슬라이드, 제목, 마크다운 등을 포함하여 새로운 파워포인트 프레젠테이션을 만드세요.",
+          },
+          "create-pdf": {
+            title: "PDF 문서",
+            description:
+              "기본 스타일을 적용하여 마크다운 또는 일반 텍스트에서 PDF 문서를 생성합니다.",
+          },
+          "create-xlsx": {
+            title: "엑셀 스프레드시트",
+            description:
+              "표와 스타일을 포함한 표 형태의 데이터를 위한 엑셀 문서를 만드세요.",
+          },
+          "create-docx": {
+            title: "워드 문서",
+            description:
+              "기본적인 스타일과 서식을 사용하여 워드 문서를 만드세요.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP 서버",
+      "loading-from-config": "구성 파일에서 MCP 서버 로드",
+      "learn-more": "MCP 서버에 대해 더 자세히 알아보세요.",
+      "no-servers-found": "MCP 서버를 찾을 수 없습니다.",
+      "tool-warning":
+        "최상의 성능을 위해, 불필요한 도구를 비활성화하여 컨텍스트를 보존하는 것을 고려해 보세요.",
+      "stop-server": "MCP 서버 중단",
+      "start-server": "MCP 서버 시작",
+      "delete-server": "MCP 서버 삭제",
+      "tool-count-warning":
+        "이 MCP 서버에는 <b>에 설정된 {{count}} 도구가 있으며, 이는 모든 채팅에서 컨텍스트를 소비합니다. </b> 불필요한 도구를 비활성화하여 컨텍스트를 절약하는 것을 고려해 보세요.",
+      "startup-command": "시작 명령어",
+      command: "명령",
+      arguments: "논쟁",
+      "not-running-warning":
+        "이 MCP 서버는 현재 실행 상태가 아닙니다. 중단되었거나, 시작 시 오류가 발생했을 수 있습니다.",
+      "tool-call-arguments": "툴 호출 인자",
+      "tools-enabled": "도구 사용 기능 활성화",
+    },
+    settings: {
+      title: "에이전트 스킬 설정",
+      "max-tool-calls": {
+        title: "응답당 최대 툴 호출 횟수",
+        description:
+          "에이전트가 단일 응답을 생성하기 위해 사용할 수 있는 최대 툴의 개수입니다. 이를 통해 불필요한 툴 호출과 무한 루프를 방지합니다.",
+      },
+      "intelligent-skill-selection": {
+        title: "지능형 기술 선택",
+        "beta-badge": "베타",
+        description:
+          "쿼리당 무제한의 도구 사용 및 컷 토큰 사용량을 최대 80%까지 줄일 수 있습니다 – AnythingLLM은 모든 프롬프트에 적합한 기술을 자동으로 선택합니다.",
+        "max-tools": {
+          title: "맥스 툴스",
+          description:
+            "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
+        },
       },
       sql: {
         title: "SQL 연결기",
@@ -685,7 +825,6 @@ const TRANSLATIONS = {
       select_all: "전체 선택",
       deselect_all: "전체 선택 해제",
       remove_selected: "선택 항목 삭제",
-      costs: "*임베딩 1회 비용",
       save_embed: "저장 및 임베딩",
       "total-documents_one": "{{count}} 문서",
       "total-documents_other": "{{count}} 관련 문서",
@@ -774,7 +913,6 @@ const TRANSLATIONS = {
     see_less: "더 보기",
     see_more: "더 보기",
     tools: "도구",
-    browse: "검색",
     text_size_label: "글자 크기",
     select_model: "모델 선택",
     sources: "출처",
@@ -787,7 +925,6 @@ const TRANSLATIONS = {
     edit: "수정",
     publish: "출판",
     stop_generating: "응답 생성 중단",
-    pause_tts_speech_message: "메시지의 텍스트 음성 변환(TTS) 기능을 일시 중지",
     slash_commands: "슬래시 명령어",
     agent_skills: "에이전트의 역량",
     manage_agent_skills: "에이전트 역량 관리",
@@ -796,6 +933,14 @@ const TRANSLATIONS = {
     start_agent_session: "에이전트 세션 시작",
     use_agent_session_to_use_tools:
       "채팅에서 도구를 사용하려면, 프롬프트의 시작 부분에 '@agent'을 사용하여 에이전트 세션을 시작할 수 있습니다.",
+    agent_invocation: {
+      model_wants_to_call: "모델이 통화하고 싶어",
+      approve: "승인",
+      reject: "거부",
+      always_allow: "항상 {{skillName}}을 허용",
+      tool_call_was_approved: "도구 사용 승인",
+      tool_call_was_rejected: "도구 호출이 거부되었습니다.",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -947,6 +1092,82 @@ const TRANSLATIONS = {
     notAssigned:
       "현재 워크스페이스에 할당되지 않았습니다.\n워크스페이스에 대한 접근을 요청하려면 관리자에게 문의하세요.",
     goToWorkspace: '워크스페이스로 이동 "{{workspace}}"',
+  },
+  telegram: {
+    title: "텔레그램 봇",
+    description:
+      "AnyLLM 인스턴스를 Telegram과 연결하여, 어떤 기기에서든 워크스페이스와 채팅할 수 있도록 합니다.",
+    setup: {
+      step1: {
+        title: "1단계: 텔레그램 봇을 만드세요",
+        description:
+          "텔레그램에서 @BotFather를 열고, <code>/newbot</code>를 <code>@BotFather</code>에게 보내고, 안내에 따라 진행하여 API 토큰을 복사합니다.",
+        "open-botfather": "BotFather 시작",
+        "instruction-1": "1. 링크를 열거나 QR 코드를 스캔",
+        "instruction-2":
+          "2. <code>/newbot</code>를 <code>@BotFather</code>에게 전송",
+        "instruction-3": "3. 봇의 이름과 사용자 이름을 선택하세요.",
+        "instruction-4": "4. 받은 API 토큰을 복사합니다.",
+      },
+      step2: {
+        title: "2단계: 봇을 연결합니다.",
+        description:
+          "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
+        "bot-token": "봇 토큰",
+        "default-workspace": "기본 워크스페이스",
+        "no-workspace":
+          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
+        connecting: "연결 중...",
+        "connect-bot": "연결 봇",
+      },
+      security: {
+        title: "권장 보안 설정",
+        description:
+          "추가적인 보안을 위해, @BotFather에서 다음 설정을 구성해 주세요.",
+        "disable-groups": "— 그룹에 봇 추가 방지",
+        "disable-inline": "— 인라인 검색에서 봇 사용을 방지",
+        "obscure-username":
+          "자명한 봇 사용자 이름을 피하고, 발견 가능성을 줄이기 위해",
+      },
+      "toast-enter-token": "봇 토큰을 입력해 주세요.",
+      "toast-connect-failed": "봇 연결에 실패했습니다.",
+    },
+    connected: {
+      status: "연결된",
+      "status-disconnected":
+        "연결되지 않음 – 토큰이 만료되었거나 유효하지 않을 수 있습니다",
+      "placeholder-token": "새로운 봇 토큰을 붙여넣으세요...",
+      reconnect: "재 연결",
+      workspace: "업무 공간",
+      "bot-link": "봇 링크",
+      "voice-response": "음성 응답",
+      disconnecting: "연결 해제 중...",
+      disconnect: "연결 해제",
+      "voice-text-only": "텍스트만",
+      "voice-mirror": "(사용자가 음성으로 응답하면, 음성으로 답변)",
+      "voice-always": "항상 음성 메시지 (답변과 함께 오디오 전송)",
+      "toast-disconnect-failed": "봇과의 연결을 해제하는 데 실패했습니다.",
+      "toast-reconnect-failed": "봇과의 연결에 실패했습니다.",
+      "toast-voice-failed": "음성 모드 업데이트에 실패했습니다.",
+      "toast-approve-failed": "사용자 승인에 실패했습니다.",
+      "toast-deny-failed": "사용자에게 거부 권한을 부여하지 못함.",
+      "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
+    },
+    users: {
+      "pending-title": "승인 대기 중",
+      "pending-description":
+        "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
+      "approved-title": "승인된 사용자",
+      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
+      user: "사용자",
+      "pairing-code": "코드 매칭",
+      "no-pending": "처리 중인 요청이 없습니다.",
+      "no-approved": "승인된 사용자가 없습니다",
+      unknown: "알 수 없음",
+      approve: "승인",
+      deny: "부인",
+      revoke: "취소",
+    },
   },
 };
 

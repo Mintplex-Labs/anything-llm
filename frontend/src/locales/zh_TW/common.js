@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "歡迎使用",
       getStarted: "開始使用",
+      welcome: "歡迎",
     },
     llm: {
       title: "LLM 偏好",
@@ -48,7 +48,6 @@ const TRANSLATIONS = {
   },
   common: {
     "workspaces-name": "工作區名稱",
-    user: "使用者",
     selection: "模型選擇",
     saving: "儲存中...",
     save: "儲存變更",
@@ -60,6 +59,11 @@ const TRANSLATIONS = {
     search: "搜尋",
     username_requirements:
       "使用者名稱必須為 2-32 個字元，以小寫字母開頭，且只能包含小寫字母、數字、底線、連字號和句點。",
+    on: "關於",
+    none: "沒有",
+    stopped: "停止",
+    loading: "載入",
+    refresh: "重新整理",
   },
   settings: {
     title: "系統設定",
@@ -96,6 +100,10 @@ const TRANSLATIONS = {
       trending: "探索熱門",
       "your-account": "您的帳戶",
       "import-item": "匯入項目",
+    },
+    channels: "頻道",
+    "available-channels": {
+      telegram: "電訊",
     },
   },
   login: {
@@ -169,15 +177,18 @@ const TRANSLATIONS = {
       title: "對話模式",
       chat: {
         title: "對話",
-        "desc-start": "會結合 LLM 的一般知識",
-        and: "以及",
-        "desc-end": "已找到的文件內容來回答。",
+        description:
+          "將提供答案，並利用 LLM 的通用知識和相關文件內容。您需要使用 @agent 命令來使用工具。",
       },
       query: {
         title: "查詢",
-        "desc-start": "會",
-        only: "只",
-        "desc-end": "在找到文件內容時回答。",
+        description:
+          "將提供答案，但僅在確認文件內容時.<b>您需要使用 `@agent` 命令來使用工具。",
+      },
+      automatic: {
+        title: "自動",
+        description:
+          "如果模型和供應商支援原生工具調用，則系統會自動使用這些工具。<br />如果原生工具調用不受支援，您需要使用 `@agent` 命令來使用工具。",
       },
     },
     history: {
@@ -279,14 +290,137 @@ const TRANSLATIONS = {
         description:
           "讓預設智慧代理人能夠根據提供的資料或對話中給定的資料來產生各種圖表。",
       },
-      save: {
-        title: "產生並儲存檔案",
-        description: "讓預設智慧代理人產生並寫入檔案，之後可儲存到電腦。",
-      },
       web: {
         title: "網頁搜尋",
         description:
           "透過連接網頁搜尋 (SERP) 提供者，讓智慧代理人能搜尋網路並回答問題。",
+      },
+      sql: {
+        title: "SQL 連接器",
+        description:
+          "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
+      },
+      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
+      filesystem: {
+        title: "檔案系統存取",
+        description:
+          "允許您的代理程式在指定目錄中讀取、寫入、搜尋和管理檔案。支援檔案編輯、目錄導航和內容搜尋功能。",
+        learnMore: "了解更多關於如何運用這項技能的資訊",
+        configuration: "設定",
+        readActions: "閱讀行動",
+        writeActions: "撰寫動作",
+        warning:
+          "訪問檔案系統可能存在風險，因為它可能會修改或刪除檔案。在啟用之前，請務必查閱相關<link>文件</link>。",
+        skills: {
+          "read-text-file": {
+            title: "開啟檔案",
+            description: "閱讀檔案內容（包括文字、程式碼、PDF 文件、圖片等）",
+          },
+          "read-multiple-files": {
+            title: "閱讀多個檔案",
+            description: "同時讀取多個檔案",
+          },
+          "list-directory": {
+            title: "名錄索引",
+            description: "列出指定資料夾中的檔案和目錄",
+          },
+          "search-files": {
+            title: "搜尋檔案",
+            description: "按檔案名稱或內容來搜尋",
+          },
+          "get-file-info": {
+            title: "取得檔案資訊",
+            description: "獲取關於檔案的詳細元數據",
+          },
+          "edit-file": {
+            title: "編輯檔案",
+            description: "能夠對文字檔案進行行別編輯。",
+          },
+          "create-directory": {
+            title: "建立資料夾",
+            description: "建立新的資料夾",
+          },
+          "move-file": {
+            title: "移動/更名檔案",
+            description: "移動或更名檔案和資料夾",
+          },
+          "copy-file": {
+            title: "複製檔案",
+            description: "複製檔案和目錄",
+          },
+          "write-text-file": {
+            title: "撰寫文字檔案",
+            description: "建立新的文字檔，或覆蓋現有的文字檔。",
+          },
+        },
+      },
+      createFiles: {
+        title: "文件建立",
+        description:
+          "允許您的代理創建二元文件格式，例如PowerPoint簡報、Excel電子表格、Word文件和PDF文件。 文件可以直接從聊天窗口下載。",
+        configuration: "可用的文件類型",
+        skills: {
+          "create-text-file": {
+            title: "文字檔",
+            description:
+              "能夠創建包含任何內容和檔案擴展名（例如：.txt、.md、.json、.csv 等）的文字檔案。",
+          },
+          "create-pptx": {
+            title: "PowerPoint 簡報",
+            description: "創建新的 PowerPoint 簡報，包含幻燈片、標題和要點",
+          },
+          "create-pdf": {
+            title: "PDF 文件",
+            description:
+              "能夠從 Markdown 或純文字檔案中，使用基本的格式設定，創建 PDF 文件。",
+          },
+          "create-xlsx": {
+            title: "Excel 試算表",
+            description: "建立包含表格資料、工作表和樣式的 Excel 文件",
+          },
+          "create-docx": {
+            title: "Word 格式的文件",
+            description: "建立包含基本樣式和格式的 Word 文件",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP 伺服器",
+      "loading-from-config": "從設定檔中載入 MCP 伺服器",
+      "learn-more": "了解更多關於 MCP 伺服器的資訊。",
+      "no-servers-found": "未找到任何 MCP 伺服器",
+      "tool-warning": "為了獲得最佳效能，建議關閉不必要的工具，以節省資源。",
+      "stop-server": "停止 MCP 伺服器",
+      "start-server": "啟動 MCP 伺服器",
+      "delete-server": "刪除 MCP 伺服器",
+      "tool-count-warning":
+        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
+      "startup-command": "啟動指令",
+      command: "指令",
+      arguments: "辯論",
+      "not-running-warning":
+        "這個 MCP 伺服器目前處於停止狀態，可能是因為已停止運作，或是啟動時出現錯誤。",
+      "tool-call-arguments": "工具呼叫的參數",
+      "tools-enabled": "已啟用工具",
+    },
+    settings: {
+      title: "代理人技能設定",
+      "max-tool-calls": {
+        title: "每次回應的最大工具呼叫次數",
+        description:
+          "這設定了代理可以串聯使用的最大工具數量，以確保每次回應只會呼叫有限的工具，並避免無限循環。",
+      },
+      "intelligent-skill-selection": {
+        title: "智能技能選擇",
+        "beta-badge": "β 版本",
+        description:
+          "啟用無限多個工具，並將每個查詢的 token 使用量最多降低 80% — AnythingLLM 能夠自動選擇最適合的技能，以處理每一個提示。",
+        "max-tools": {
+          title: "馬克斯工具",
+          description:
+            "可選取的工具的最大數量，適用於每個查詢。我們建議將此值設定為較高的值，以適用於較大的模型。",
+        },
       },
       sql: {
         title: "SQL 連接器",
@@ -551,7 +685,6 @@ const TRANSLATIONS = {
       select_all: "全選",
       deselect_all: "取消全選",
       remove_selected: "移除選擇的項目",
-      costs: "*嵌入僅會計費一次",
       save_embed: "儲存並嵌入",
       "total-documents_one": "{{count}} 文件",
       "total-documents_other": "{{count}} 文件",
@@ -646,7 +779,6 @@ const TRANSLATIONS = {
     see_less: "顯示較少",
     see_more: "查看更多",
     tools: "工具",
-    browse: "瀏覽",
     text_size_label: "文字大小",
     select_model: "選擇模型",
     sources: "來源",
@@ -659,7 +791,6 @@ const TRANSLATIONS = {
     edit: "編輯",
     publish: "發佈",
     stop_generating: "停止產生回應",
-    pause_tts_speech_message: "暫停語音合成的訊息",
     slash_commands: "斜線指令",
     agent_skills: "智慧代理人技能",
     manage_agent_skills: "管理智慧代理人技能",
@@ -668,6 +799,16 @@ const TRANSLATIONS = {
     start_agent_session: "開始智慧代理人工作階段",
     use_agent_session_to_use_tools:
       "若要在對話中使用工具，請在提示詞開頭加上 '@agent'，即可開始智慧代理人工作階段。",
+    agent_invocation: {
+      model_wants_to_call: "模型想要撥打電話",
+      approve: "批准",
+      reject: "拒絕",
+      always_allow: "請務必確保 {{skillName}}",
+      tool_call_was_approved: "工具請求已獲得批准。",
+      tool_call_was_rejected: "請求已遭拒絕",
+    },
+    browse: "瀏覽",
+    pause_tts_speech_message: "暫停語音合成的訊息",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
@@ -897,6 +1038,79 @@ const TRANSLATIONS = {
     notAssigned:
       "您目前尚未被分配到任何工作區。\n請聯絡您的管理員以申請工作區的存取權限。",
     goToWorkspace: '前往 "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram 機器人",
+    description:
+      "將您的 AnythingLLM 實例連接到 Telegram，以便您可以在任何裝置上與您的工作空間進行對話。",
+    setup: {
+      step1: {
+        title: "第一步：建立您的 Telegram 機器人",
+        description:
+          '在 Telegram 中開啟 @BotFather，將 "<code>/newbot" 訊息發送至 <code>@BotFather</code>，按照指示操作，並複製 API 令牌。',
+        "open-botfather": "開啟 BotFather",
+        "instruction-1": "1. 點擊連結或掃描 QR 碼",
+        "instruction-2":
+          "2. 將 <code>/newbot</code> 傳送至 <code>@BotFather</code>",
+        "instruction-3": "3. 為您的機器人選擇一個名稱和使用者名稱。",
+        "instruction-4": "4. 複製您收到的 API 令牌",
+      },
+      step2: {
+        title: "步驟 2：連接您的機器人",
+        description:
+          "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
+        "bot-token": "機器人代幣",
+        "default-workspace": "預設工作空間",
+        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
+        connecting: "正在連接...",
+        "connect-bot": "連線機器人",
+      },
+      security: {
+        title: "建議的安全設定",
+        description: "為了額外保障，請在 @BotFather 中設定這些選項。",
+        "disable-groups": "— 阻止自動程式加入群組",
+        "disable-inline": "— 阻止機器人被用於內嵌式搜尋",
+        "obscure-username":
+          "使用一個不顯眼的機器人帳號名稱，以降低被發現的機會。",
+      },
+      "toast-enter-token": "請輸入機器人憑證。",
+      "toast-connect-failed": "無法連接機器人。",
+    },
+    connected: {
+      status: "連接",
+      "status-disconnected": "無法連接 — 可能是 token 已經過期或無效",
+      "placeholder-token": "黏貼新的機器人代碼...",
+      reconnect: "重新建立聯繫",
+      workspace: "工作空間",
+      "bot-link": "機器人連結",
+      "voice-response": "語音回應",
+      disconnecting: "斷線...",
+      disconnect: "斷開連接",
+      "voice-text-only": "僅提供文字",
+      "voice-mirror": "語音回覆 (使用者發送語音時，系統會回覆語音)",
+      "voice-always": "請務必在回覆中加入語音 (發送音訊)。",
+      "toast-disconnect-failed": "未能成功斷開機器人。",
+      "toast-reconnect-failed": "無法重新連線機器人。",
+      "toast-voice-failed": "無法更新語音模式。",
+      "toast-approve-failed": "無法驗證使用者。",
+      "toast-deny-failed": "未能阻止使用者。",
+      "toast-revoke-failed": "未能取消使用者權限。",
+    },
+    users: {
+      "pending-title": "待審核",
+      "pending-description":
+        "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
+      "approved-title": "已授權的使用者",
+      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
+      user: "使用者",
+      "pairing-code": "編碼組合",
+      "no-pending": "目前沒有待處理的請求",
+      "no-approved": "目前沒有已授權的使用者",
+      unknown: "未知的",
+      approve: "批准",
+      deny: "拒絕",
+      revoke: "撤銷",
+    },
   },
 };
 

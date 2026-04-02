@@ -829,12 +829,30 @@ const KEY_MAPPING = {
     envKey: "LEMONADE_LLM_BASE_PATH",
     checks: [isValidURL],
   },
+  LemonadeLLMApiKey: {
+    envKey: "LEMONADE_LLM_API_KEY",
+    checks: [],
+  },
   LemonadeLLMModelPref: {
     envKey: "LEMONADE_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
   LemonadeLLMModelTokenLimit: {
     envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Agent Skill Settings
+  AgentSkillMaxToolCalls: {
+    envKey: "AGENT_MAX_TOOL_CALLS",
+    checks: [nonZero],
+  },
+  AgentSkillRerankerEnabled: {
+    envKey: "AGENT_SKILL_RERANKER_ENABLED",
+    checks: [],
+  },
+  AgentSkillRerankerTopN: {
+    envKey: "AGENT_SKILL_RERANKER_TOP_N",
     checks: [nonZero],
   },
 };

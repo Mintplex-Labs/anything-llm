@@ -1,6 +1,9 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
+const { v4: uuidv4 } = require("uuid");
+const { safeJsonParse } = require("../../../http");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
+const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -11,6 +14,7 @@ const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 //   askForFeedback?: any
 //   awaitResponse?: any
 //   handleFeedback?: (message: string) => void;
+//   handleToolApproval?: (message: string) => void;
 // }
 
 const WEBSOCKET_BAIL_COMMANDS = [
@@ -43,6 +47,7 @@ const websocket = {
     socket, // @type AIbitatWebSocket
     muteUserReply = true, // Do not post messages to "USER" back to frontend.
     introspection = false, // when enabled will attach socket to Aibitat object with .introspect method which reports status updates to frontend.
+    userId = null, // User ID for multi-user mode whitelist lookups
   }) {
     return {
       name: this.name,
@@ -79,6 +84,102 @@ const websocket = {
           },
         };
 
+        /**
+         * Request user approval before executing a tool/skill.
+         * This sends a request to the frontend and blocks until the user responds.
+         * If the skill is whitelisted, approval is granted automatically.
+         *
+         * @param {Object} options - The approval request options
+         * @param {string} options.skillName - The name of the skill/tool requesting approval
+         * @param {Object} [options.payload={}] - Optional payload data to display to the user
+         * @param {string} [options.description] - Optional description of what the skill will do
+         * @returns {Promise<{approved: boolean, message: string}>} - The approval result
+         */
+        aibitat.requestToolApproval = async function ({
+          skillName,
+          payload = {},
+          description = null,
+        }) {
+          const {
+            AgentSkillWhitelist,
+          } = require("../../../../models/agentSkillWhitelist");
+          const isWhitelisted = await AgentSkillWhitelist.isWhitelisted(
+            skillName,
+            userId
+          );
+          if (isWhitelisted) {
+            console.log(
+              chalk.green(
+                userId
+                  ? `User ${userId} - `
+                  : "" + `Skill ${skillName} is whitelisted - auto-approved.`
+              )
+            );
+            return {
+              approved: true,
+              message: "Skill is whitelisted - auto-approved.",
+            };
+          }
+
+          const requestId = uuidv4();
+          return new Promise((resolve) => {
+            let timeoutId = null;
+
+            socket.handleToolApproval = (message) => {
+              try {
+                const data = safeJsonParse(message, {});
+                if (
+                  data?.type !== "toolApprovalResponse" ||
+                  data?.requestId !== requestId
+                )
+                  return;
+
+                delete socket.handleToolApproval;
+                clearTimeout(timeoutId);
+
+                if (data.approved) {
+                  return resolve({
+                    approved: true,
+                    message: "User approved the tool execution.",
+                  });
+                }
+
+                return resolve({
+                  approved: false,
+                  message: "Tool call was rejected by the user.",
+                });
+              } catch (e) {
+                console.error("Error handling tool approval response:", e);
+              }
+            };
+
+            socket.send(
+              JSON.stringify({
+                type: "toolApprovalRequest",
+                requestId,
+                skillName,
+                payload,
+                description,
+                timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
+              })
+            );
+
+            timeoutId = setTimeout(() => {
+              delete socket.handleToolApproval;
+              console.log(
+                chalk.yellow(
+                  `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
+                )
+              );
+              resolve({
+                approved: false,
+                message:
+                  "Tool approval request timed out. User did not respond in time.",
+              });
+            }, TOOL_APPROVAL_TIMEOUT_MS);
+          });
+        };
+
         // aibitat.onStart(() => {
         //   console.log("🚀 starting chat ...");
         // });
@@ -96,13 +197,16 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const feedback = await socket.askForFeedback(socket, node);
+          const { feedback, attachments } = await socket.askForFeedback(
+            socket,
+            node
+          );
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
             socket.close();
             return;
           }
 
-          await aibitat.continue(feedback);
+          await aibitat.continue(feedback, attachments);
         });
 
         /**
@@ -110,7 +214,7 @@ const websocket = {
          *
          * @param socket The content to summarize. // AIbitatWebSocket & { receive: any, echo: any }
          * @param node The chat node // { from: string; to: string }
-         * @returns The summarized content.
+         * @returns {{ feedback: string, attachments: Array }} The feedback and any attachments.
          */
         socket.askForFeedback = (socket, node) => {
           socket.awaitResponse = (question = "waiting...") => {
@@ -123,7 +227,10 @@ const websocket = {
                 if (data.type !== "awaitingFeedback") return;
                 delete socket.handleFeedback;
                 clearTimeout(socketTimeout);
-                resolve(data.feedback);
+                resolve({
+                  feedback: data.feedback,
+                  attachments: data.attachments || [],
+                });
                 return;
               };
 
@@ -133,7 +240,7 @@ const websocket = {
                     `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                   )
                 );
-                resolve("exit");
+                resolve({ feedback: "exit", attachments: [] });
                 return;
               }, SOCKET_TIMEOUT_MS);
             });

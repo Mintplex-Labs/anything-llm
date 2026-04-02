@@ -17,24 +17,24 @@ const docSummarizer = {
           name: this.name,
           controller: new AbortController(),
           description:
-            "Can get the list of files available to search with descriptions and can select a single file to open and summarize.",
+            "List all documents in the workspace or summarize a specific document. See what files are available, get a summary of a document's contents, or read and condense a file into key points.",
           examples: [
             {
-              prompt: "Summarize example.txt",
-              call: JSON.stringify({
-                action: "summarize",
-                document_filename: "example.txt",
-              }),
-            },
-            {
-              prompt: "What files can you see?",
+              prompt: "List my files",
               call: JSON.stringify({ action: "list", document_filename: null }),
             },
             {
-              prompt: "Tell me about readme.md",
+              prompt: "Summarize the readme file",
               call: JSON.stringify({
                 action: "summarize",
                 document_filename: "readme.md",
+              }),
+            },
+            {
+              prompt: "Give me a summary of example.txt",
+              call: JSON.stringify({
+                action: "summarize",
+                document_filename: "example.txt",
               }),
             },
           ],
