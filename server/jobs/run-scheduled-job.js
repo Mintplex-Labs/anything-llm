@@ -1,5 +1,6 @@
 const { log, conclude } = require("./helpers/index.js");
 const { v4: uuidv4 } = require("uuid");
+const { safeJsonParse } = require("../utils/http");
 
 process.on("message", async (payload) => {
   const { jobId } = payload;
@@ -59,34 +60,31 @@ process.on("message", async (payload) => {
 
     const handler = {
       send(jsonStr) {
-        try {
-          const data = JSON.parse(jsonStr);
+        const data = safeJsonParse(jsonStr);
+        if (!data) return;
 
-          if (data.type === "statusResponse" && data.content) {
-            thoughts.push(data.content);
-            return;
-          }
+        if (data.type === "statusResponse" && data.content) {
+          thoughts.push(data.content);
+          return;
+        }
 
-          if (data.type === "reportStreamEvent" && data.content) {
-            const inner = data.content;
-            if (inner.type === "textResponseChunk" && inner.content) {
-              textResponse += inner.content;
-            }
-            if (inner.type === "fullTextResponse" && inner.content) {
-              textResponse = inner.content;
-            }
-            if (inner.type === "usageMetrics" && inner.metrics) {
-              metrics = inner.metrics;
-            }
-            return;
+        if (data.type === "reportStreamEvent" && data.content) {
+          const inner = data.content;
+          if (inner.type === "textResponseChunk" && inner.content) {
+            textResponse += inner.content;
           }
+          if (inner.type === "fullTextResponse" && inner.content) {
+            textResponse = inner.content;
+          }
+          if (inner.type === "usageMetrics" && inner.metrics) {
+            metrics = inner.metrics;
+          }
+          return;
+        }
 
-          // Final message from agent (onMessage event)
-          if (data.content && data.from && data.from !== "USER") {
-            if (!textResponse) textResponse = data.content;
-          }
-        } catch {
-          // Ignore parse errors
+        // Final message from agent (onMessage event)
+        if (data.content && data.from && data.from !== "USER") {
+          if (!textResponse) textResponse = data.content;
         }
       },
       close() {
@@ -107,7 +105,7 @@ process.on("message", async (payload) => {
 
     // If the job has a specific tool list, only those tools are loaded.
     // If null, the agent gets all enabled agent skills (the default behavior).
-    const toolOverrides = job.tools ? JSON.parse(job.tools) : null;
+    const toolOverrides = safeJsonParse(job.tools, null);
 
     await agentHandler.createAIbitat({
       handler,

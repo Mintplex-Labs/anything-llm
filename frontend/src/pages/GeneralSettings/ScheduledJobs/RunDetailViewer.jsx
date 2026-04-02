@@ -13,6 +13,7 @@ import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import renderMarkdown from "@/utils/chat/markdown";
+import { safeJsonParse } from "@/utils/request";
 
 function CollapsibleSection({
   title,
@@ -51,7 +52,8 @@ function getHljsTheme() {
 function formatAndHighlight(value) {
   // Try to parse as JSON for syntax highlighting
   try {
-    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    const parsed =
+      typeof value === "string" ? safeJsonParse(value, value) : value;
     if (typeof parsed === "object" && parsed !== null) {
       const formatted = JSON.stringify(parsed, null, 2);
       const truncatedFormatted =

@@ -5,7 +5,7 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
-const { reqBody } = require("../utils/http");
+const { reqBody, safeJsonParse } = require("../utils/http");
 const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
 const ImportedPlugin = require("../utils/agents/imported");
 const { AgentFlows } = require("../utils/agentFlows");
@@ -105,7 +105,7 @@ function scheduledJobEndpoints(app) {
         return response.status(200).json({
           run: {
             ...run,
-            result: run.result ? JSON.parse(run.result) : null,
+            result: safeJsonParse(run.result, null),
           },
           job,
         });
@@ -149,8 +149,8 @@ function scheduledJobEndpoints(app) {
           return response.status(404).json({ error: "Job not found" });
         }
 
-        const result = run.result ? JSON.parse(run.result) : {};
-        const responseText = result.text || "No response was generated.";
+        const result = safeJsonParse(run.result, {});
+        const responseText = result?.text || "No response was generated.";
 
         // Get or create the "Scheduled Jobs" workspace
         let workspace = await Workspace.get({ slug: "scheduled-jobs" });
