@@ -399,7 +399,7 @@ const SidebarOptions = ({ user = null, t }) => (
               btnText: "Scheduled Jobs",
               href: paths.settings.scheduledJobs(),
               flex: true,
-              roles: ["admin"],
+              hidden: !!user,
             },
             {
               btnText: t("settings.api-keys"),

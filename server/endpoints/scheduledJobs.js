@@ -4,6 +4,7 @@ const { Workspace } = require("../models/workspace");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody } = require("../utils/http");
 const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
 const ImportedPlugin = require("../utils/agents/imported");
@@ -21,7 +22,7 @@ function scheduledJobEndpoints(app) {
   // Get unread run count
   app.get(
     "/scheduled-jobs/unread-count",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         const count = await ScheduledJobRun.unreadCount();
@@ -36,7 +37,7 @@ function scheduledJobEndpoints(app) {
   // List available tools for job configuration
   app.get(
     "/scheduled-jobs/available-tools",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (_request, response) => {
       try {
         // Built-in skills — already human-readable identifiers
@@ -88,7 +89,7 @@ function scheduledJobEndpoints(app) {
   // Get a single run detail
   app.get(
     "/scheduled-jobs/runs/:runId",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const run = await ScheduledJobRun.get({
@@ -118,7 +119,7 @@ function scheduledJobEndpoints(app) {
   // Mark a run as read
   app.post(
     "/scheduled-jobs/runs/:runId/read",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         await ScheduledJobRun.markRead(Number(request.params.runId));
@@ -133,7 +134,7 @@ function scheduledJobEndpoints(app) {
   // Continue a run in a workspace thread
   app.post(
     "/scheduled-jobs/runs/:runId/continue",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const run = await ScheduledJobRun.get({
@@ -204,35 +205,39 @@ function scheduledJobEndpoints(app) {
   // ---------------------------------------------------------------
 
   // List all scheduled jobs
-  app.get("/scheduled-jobs", [validatedRequest], async (_request, response) => {
-    try {
-      const jobs = await ScheduledJob.where();
+  app.get(
+    "/scheduled-jobs",
+    [validatedRequest, isSingleUserMode],
+    async (_request, response) => {
+      try {
+        const jobs = await ScheduledJob.where();
 
-      const jobsWithStatus = await Promise.all(
-        jobs.map(async (job) => {
-          const [latestRun] = await ScheduledJobRun.where(
-            { jobId: job.id },
-            1,
-            { startedAt: "desc" }
-          );
-          return {
-            ...job,
-            latestRun: latestRun || null,
-          };
-        })
-      );
+        const jobsWithStatus = await Promise.all(
+          jobs.map(async (job) => {
+            const [latestRun] = await ScheduledJobRun.where(
+              { jobId: job.id },
+              1,
+              { startedAt: "desc" }
+            );
+            return {
+              ...job,
+              latestRun: latestRun || null,
+            };
+          })
+        );
 
-      return response.status(200).json({ jobs: jobsWithStatus });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500);
+        return response.status(200).json({ jobs: jobsWithStatus });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500);
+      }
     }
-  });
+  );
 
   // Create a new scheduled job
   app.post(
     "/scheduled-jobs/new",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { name, prompt, tools, schedule } = reqBody(request);
@@ -293,7 +298,7 @@ function scheduledJobEndpoints(app) {
   // Get a single scheduled job
   app.get(
     "/scheduled-jobs/:id",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const job = await ScheduledJob.get({
@@ -315,7 +320,7 @@ function scheduledJobEndpoints(app) {
   // Update a scheduled job
   app.put(
     "/scheduled-jobs/:id",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { name, prompt, tools, schedule, enabled } = reqBody(request);
@@ -358,7 +363,7 @@ function scheduledJobEndpoints(app) {
   // Delete a scheduled job
   app.delete(
     "/scheduled-jobs/:id",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const { BackgroundService } = require("../utils/BackgroundWorkers");
@@ -378,7 +383,7 @@ function scheduledJobEndpoints(app) {
   // Toggle enable/disable
   app.post(
     "/scheduled-jobs/:id/toggle",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const job = await ScheduledJob.get({
@@ -407,7 +412,7 @@ function scheduledJobEndpoints(app) {
   // Manual trigger — runs the job immediately
   app.post(
     "/scheduled-jobs/:id/trigger",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const job = await ScheduledJob.get({
@@ -434,7 +439,7 @@ function scheduledJobEndpoints(app) {
   // List runs for a job
   app.get(
     "/scheduled-jobs/:id/runs",
-    [validatedRequest],
+    [validatedRequest, isSingleUserMode],
     async (request, response) => {
       try {
         const limit = Number(request.query.limit) || 20;

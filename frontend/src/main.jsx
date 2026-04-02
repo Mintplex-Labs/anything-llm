@@ -5,6 +5,7 @@ import App from "@/App.jsx";
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
+  SingleUserRoute,
 } from "@/components/PrivateRoute";
 import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
@@ -387,7 +388,7 @@ const router = createBrowserRouter([
           const { default: ScheduledJobs } = await import(
             "@/pages/GeneralSettings/ScheduledJobs"
           );
-          return { element: <AdminRoute Component={ScheduledJobs} /> };
+          return { element: <SingleUserRoute Component={ScheduledJobs} /> };
         },
       },
       {
@@ -396,7 +397,7 @@ const router = createBrowserRouter([
           const { default: ScheduledJobRuns } = await import(
             "@/pages/GeneralSettings/ScheduledJobs/RunHistoryPage"
           );
-          return { element: <AdminRoute Component={ScheduledJobRuns} /> };
+          return { element: <SingleUserRoute Component={ScheduledJobRuns} /> };
         },
       },
       {
@@ -405,7 +406,9 @@ const router = createBrowserRouter([
           const { default: ScheduledJobRunDetail } = await import(
             "@/pages/GeneralSettings/ScheduledJobs/RunDetailPage"
           );
-          return { element: <AdminRoute Component={ScheduledJobRunDetail} /> };
+          return {
+            element: <SingleUserRoute Component={ScheduledJobRunDetail} />,
+          };
         },
       },
       // Catch-all route for 404s
