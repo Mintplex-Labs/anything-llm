@@ -54,8 +54,11 @@ function formatAndHighlight(value) {
     const parsed = typeof value === "string" ? JSON.parse(value) : value;
     if (typeof parsed === "object" && parsed !== null) {
       const formatted = JSON.stringify(parsed, null, 2);
-      const truncatedFormatted = formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
-      const highlighted = hljs.highlight(truncatedFormatted, { language: "json" }).value;
+      const truncatedFormatted =
+        formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
+      const highlighted = hljs.highlight(truncatedFormatted, {
+        language: "json",
+      }).value;
       return { __html: highlighted };
     }
   } catch {
@@ -117,8 +120,8 @@ function ToolCallCard({ toolCall }) {
           >
             {showResult ? "Hide result" : "Show result"}
           </button>
-          {showResult && (
-            highlightedResult ? (
+          {showResult &&
+            (highlightedResult ? (
               <pre
                 className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme()}`}
                 dangerouslySetInnerHTML={highlightedResult}
@@ -127,8 +130,7 @@ function ToolCallCard({ toolCall }) {
               <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar">
                 {truncatedResult}
               </pre>
-            )
-          )}
+            ))}
         </div>
       )}
     </div>
