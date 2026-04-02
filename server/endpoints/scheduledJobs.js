@@ -14,21 +14,6 @@ const MCPCompatibilityLayer = require("../utils/MCP");
 function scheduledJobEndpoints(app) {
   if (!app) return;
 
-  // Get unread run count
-  app.get(
-    "/scheduled-jobs/unread-count",
-    [validatedRequest, isSingleUserMode],
-    async (_request, response) => {
-      try {
-        const count = await ScheduledJobRun.unreadCount();
-        return response.status(200).json({ count });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500);
-      }
-    }
-  );
-
   // List available tools for job configuration
   app.get(
     "/scheduled-jobs/available-tools",

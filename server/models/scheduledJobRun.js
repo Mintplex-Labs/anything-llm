@@ -127,38 +127,6 @@ const ScheduledJobRun = {
     }
   },
 
-  markAllReadForJob: async function (jobId) {
-    try {
-      await prisma.scheduled_job_runs.updateMany({
-        where: {
-          jobId: Number(jobId),
-          readAt: null,
-          status: { not: this.statuses.running },
-        },
-        data: { readAt: new Date() },
-      });
-      return true;
-    } catch (error) {
-      console.error("Failed to mark all runs as read:", error.message);
-      return false;
-    }
-  },
-
-  unreadCount: async function () {
-    try {
-      const count = await prisma.scheduled_job_runs.count({
-        where: {
-          readAt: null,
-          status: { not: this.statuses.running },
-        },
-      });
-      return count;
-    } catch (error) {
-      console.error("Failed to count unread runs:", error.message);
-      return 0;
-    }
-  },
-
   forJob: async function (jobId, { limit = 20, offset = 0 } = {}) {
     try {
       const results = await prisma.scheduled_job_runs.findMany({
