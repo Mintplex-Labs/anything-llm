@@ -85,11 +85,11 @@ export default function RunHistory({ job, onBack, onViewRun }) {
                   className="border-b border-white/5 hover:bg-theme-bg-primary/30"
                 >
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 relative">
                       {!run.readAt && run.status !== "running" && (
                         <Circle
                           weight="fill"
-                          className="h-2 w-2 text-blue-400"
+                          className="h-2 w-2 text-blue-400 absolute -left-4"
                         />
                       )}
                       <StatusBadge status={run.status} />
