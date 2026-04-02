@@ -14,11 +14,6 @@ const MCPCompatibilityLayer = require("../utils/MCP");
 function scheduledJobEndpoints(app) {
   if (!app) return;
 
-  // ---------------------------------------------------------------
-  // Static routes MUST come before :id param routes to avoid
-  // Express matching "unread-count" or "available-tools" as an :id.
-  // ---------------------------------------------------------------
-
   // Get unread run count
   app.get(
     "/scheduled-jobs/unread-count",
@@ -200,10 +195,6 @@ function scheduledJobEndpoints(app) {
     }
   );
 
-  // ---------------------------------------------------------------
-  // Collection routes (no :id param)
-  // ---------------------------------------------------------------
-
   // List all scheduled jobs
   app.get(
     "/scheduled-jobs",
@@ -290,10 +281,6 @@ function scheduledJobEndpoints(app) {
       }
     }
   );
-
-  // ---------------------------------------------------------------
-  // :id param routes (must come after static routes)
-  // ---------------------------------------------------------------
 
   // Get a single scheduled job
   app.get(
