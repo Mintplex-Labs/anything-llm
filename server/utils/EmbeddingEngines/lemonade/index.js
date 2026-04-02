@@ -34,7 +34,7 @@ class LemonadeEmbedder {
       });
       return response?.data[0]?.embedding || [];
     } catch (error) {
-      console.error("Failed to get embedding from Lemonade.", error.message);
+      this.log("Failed to get embedding from Lemonade.", error.message);
       throw error;
     }
   }
@@ -48,7 +48,7 @@ class LemonadeEmbedder {
       });
       return response?.data?.map((emb) => emb.embedding) || [];
     } catch (error) {
-      console.error("Failed to get embeddings from Lemonade.", error.message);
+      this.log("Failed to get embeddings from Lemonade.", error.message);
       throw error;
     }
   }
