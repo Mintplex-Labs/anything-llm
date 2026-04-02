@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
+import { safeJsonParse } from "@/utils/request";
 
 const CRON_PRESETS = [
   { label: "Every minute", value: "* * * * *" },
@@ -15,13 +16,13 @@ const CRON_PRESETS = [
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
   const isEditing = !!job;
-  const [name, setName] = useState(job?.name || "");
-  const [prompt, setPrompt] = useState(job?.prompt || "");
-  const [schedule, setSchedule] = useState(job?.schedule || "0 9 * * *");
-  const [cronPreset, setCronPreset] = useState("custom");
-  const [selectedTools, setSelectedTools] = useState(
-    job?.tools ? JSON.parse(job.tools) : []
-  );
+  const [form, setForm] = useState({
+    name: job?.name || "",
+    prompt: job?.prompt || "",
+    schedule: job?.schedule || "0 9 * * *",
+    cronPreset: "custom",
+    selectedTools: job?.tools ? safeJsonParse(job.tools, []) : [],
+  });
   const [availableTools, setAvailableTools] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -33,38 +34,48 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     // Set preset if schedule matches
     if (job?.schedule) {
       const match = CRON_PRESETS.find((p) => p.value === job.schedule);
-      setCronPreset(match ? match.value : "custom");
+      setForm((prev) => ({
+        ...prev,
+        cronPreset: match ? match.value : "custom",
+      }));
     }
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handlePresetChange = (value) => {
-    setCronPreset(value);
-    if (value !== "custom") {
-      setSchedule(value);
-    }
+    setForm((prev) => ({
+      ...prev,
+      cronPreset: value,
+      ...(value !== "custom" ? { schedule: value } : {}),
+    }));
   };
 
   const toggleTool = (toolName) => {
-    setSelectedTools((prev) =>
-      prev.includes(toolName)
-        ? prev.filter((t) => t !== toolName)
-        : [...prev, toolName]
-    );
+    setForm((prev) => ({
+      ...prev,
+      selectedTools: prev.selectedTools.includes(toolName)
+        ? prev.selectedTools.filter((t) => t !== toolName)
+        : [...prev.selectedTools, toolName],
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim() || !prompt.trim() || !schedule.trim()) {
+    if (!form.name.trim() || !form.prompt.trim() || !form.schedule.trim()) {
       showToast("Please fill in all required fields", "error");
       return;
     }
 
     setSaving(true);
     const data = {
-      name: name.trim(),
-      prompt: prompt.trim(),
-      schedule: schedule.trim(),
-      tools: selectedTools.length > 0 ? selectedTools : null,
+      name: form.name.trim(),
+      prompt: form.prompt.trim(),
+      schedule: form.schedule.trim(),
+      tools: form.selectedTools.length > 0 ? form.selectedTools : null,
     };
 
     const result = isEditing
@@ -105,8 +116,9 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             </label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              value={form.name}
+              onChange={handleChange}
               placeholder="e.g. Daily News Digest"
               className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               required
@@ -118,8 +130,9 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
               Prompt <span className="text-red-400">*</span>
             </label>
             <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              name="prompt"
+              value={form.prompt}
+              onChange={handleChange}
               placeholder="The instruction to run on each execution..."
               rows={4}
               className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y"
@@ -133,7 +146,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             </label>
             <div className="flex gap-2">
               <select
-                value={cronPreset}
+                value={form.cronPreset}
                 onChange={(e) => handlePresetChange(e.target.value)}
                 className="border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button outline-none p-2.5"
               >
@@ -143,11 +156,12 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                   </option>
                 ))}
               </select>
-              {cronPreset === "custom" && (
+              {form.cronPreset === "custom" && (
                 <input
                   type="text"
-                  value={schedule}
-                  onChange={(e) => setSchedule(e.target.value)}
+                  name="schedule"
+                  value={form.schedule}
+                  onChange={handleChange}
                   placeholder="Cron expression (e.g. 0 9 * * *)"
                   className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block flex-1 p-2.5"
                 />
@@ -155,7 +169,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             </div>
             <p className="text-xs text-theme-text-secondary mt-1">
               Current schedule:{" "}
-              <code className="text-theme-text-primary">{schedule}</code>
+              <code className="text-theme-text-primary">{form.schedule}</code>
             </p>
           </div>
 
@@ -175,7 +189,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                     type="button"
                     onClick={() => toggleTool(tool.id)}
                     className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                      selectedTools.includes(tool.id)
+                      form.selectedTools.includes(tool.id)
                         ? "bg-primary-button text-white border-primary-button"
                         : "bg-transparent text-theme-text-secondary border-white/10 hover:border-white/30"
                     }`}
