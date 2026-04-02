@@ -184,19 +184,11 @@ class BackgroundService {
    */
   async #bootScheduledJobs() {
     const { ScheduledJob } = require("../../models/scheduledJob");
-    const prisma = require("../prisma");
 
     const enabledJobs = await ScheduledJob.allEnabled();
 
-    // Recompute nextRunAt from NOW for all jobs (cold-startup skip)
     for (const job of enabledJobs) {
-      const nextRunAt = ScheduledJob.computeNextRunAt(job.schedule);
-      if (nextRunAt) {
-        await prisma.scheduled_jobs.update({
-          where: { id: job.id },
-          data: { nextRunAt, updatedAt: new Date() },
-        });
-      }
+      await ScheduledJob.recomputeNextRunAt(job.id);
       await this.addScheduledJob(job);
     }
 

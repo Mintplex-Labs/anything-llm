@@ -137,6 +137,28 @@ const ScheduledJob = {
   },
 
   /**
+   * Recompute nextRunAt from the current time.
+   * Used on cold startup to correct stale nextRunAt values.
+   * @param {number} id
+   */
+  recomputeNextRunAt: async function (id) {
+    try {
+      const job = await this.get({ id: Number(id) });
+      if (!job) return;
+
+      const nextRunAt = this.computeNextRunAt(job.schedule);
+      if (!nextRunAt) return;
+
+      await prisma.scheduled_jobs.update({
+        where: { id: Number(id) },
+        data: { nextRunAt, updatedAt: new Date() },
+      });
+    } catch (error) {
+      console.error("Failed to recompute nextRunAt:", error.message);
+    }
+  },
+
+  /**
    * Update lastRunAt and nextRunAt after a job run.
    * @param {number} id
    */
