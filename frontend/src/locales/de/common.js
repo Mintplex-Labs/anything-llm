@@ -100,10 +100,10 @@ const TRANSLATIONS = {
     "system-prompt-variables": "Systempromptvariablen",
     "mobile-app": "AnythingLLM Mobile",
     "community-hub": {
-      title: "Gemeindezentrum",
-      trending: "Entdecken Sie die aktuell beliebtesten Themen",
-      "your-account": "Ihr Konto",
-      "import-item": "Artikel importieren",
+      title: "Community Hub",
+      trending: "Neuigkeiten",
+      "your-account": "Community Hub Account",
+      "import-item": "Community Import",
     },
     channels: "Kanäle",
     "available-channels": {
@@ -112,7 +112,7 @@ const TRANSLATIONS = {
   },
   login: {
     "multi-user": {
-      welcome: "Willkommen bei",
+      welcome: "Willkommen",
       "placeholder-username": "Benutzername",
       "placeholder-password": "Passwort",
       login: "Anmelden",
