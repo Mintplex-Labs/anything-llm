@@ -51,20 +51,20 @@ function getHljsTheme() {
 
 function formatAndHighlight(value) {
   // Try to parse as JSON for syntax highlighting
-  try {
-    const parsed =
-      typeof value === "string" ? safeJsonParse(value, value) : value;
-    if (typeof parsed === "object" && parsed !== null) {
-      const formatted = JSON.stringify(parsed, null, 2);
-      const truncatedFormatted =
-        formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
-      const highlighted = hljs.highlight(truncatedFormatted, {
-        language: "json",
-      }).value;
-      return { __html: highlighted };
-    }
-  } catch {
-    // Not JSON — fall through to plain text
+  const parsed =
+    typeof value === "string" ? safeJsonParse(value, value) : value;
+
+  if (typeof parsed === "object" && parsed !== null) {
+    const formatted = JSON.stringify(parsed, null, 2);
+
+    const truncatedFormatted =
+      formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
+
+    const highlighted = hljs.highlight(truncatedFormatted, {
+      language: "json",
+    }).value;
+
+    return { __html: highlighted };
   }
   return null;
 }
