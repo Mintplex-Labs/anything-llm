@@ -8,6 +8,7 @@ import {
   CaretDown,
   CaretRight,
 } from "@phosphor-icons/react";
+import hljs from "highlight.js";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
@@ -41,6 +42,28 @@ function CollapsibleSection({
   );
 }
 
+function getHljsTheme() {
+  return window.localStorage.getItem("theme") === "light"
+    ? "github"
+    : "github-dark";
+}
+
+function formatAndHighlight(value) {
+  // Try to parse as JSON for syntax highlighting
+  try {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    if (typeof parsed === "object" && parsed !== null) {
+      const formatted = JSON.stringify(parsed, null, 2);
+      const truncatedFormatted = formatted.length > 5000 ? formatted.slice(0, 5000) + "..." : formatted;
+      const highlighted = hljs.highlight(truncatedFormatted, { language: "json" }).value;
+      return { __html: highlighted };
+    }
+  } catch {
+    // Not JSON — fall through to plain text
+  }
+  return null;
+}
+
 function ToolCallCard({ toolCall }) {
   const [showResult, setShowResult] = useState(false);
   const resultText =
@@ -48,7 +71,9 @@ function ToolCallCard({ toolCall }) {
       ? toolCall.result
       : JSON.stringify(toolCall.result, null, 2);
   const truncatedResult =
-    resultText?.length > 500 ? resultText.slice(0, 500) + "..." : resultText;
+    resultText?.length > 5000 ? resultText.slice(0, 5000) + "..." : resultText;
+  const highlightedResult = formatAndHighlight(toolCall.result);
+  const highlightedArgs = formatAndHighlight(toolCall.arguments);
 
   return (
     <div className="border border-white/5 rounded-lg p-3 bg-theme-bg-primary/30">
@@ -69,11 +94,18 @@ function ToolCallCard({ toolCall }) {
       {toolCall.arguments && (
         <div className="mb-2">
           <span className="text-xs text-theme-text-secondary">Arguments:</span>
-          <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto">
-            {typeof toolCall.arguments === "string"
-              ? toolCall.arguments
-              : JSON.stringify(toolCall.arguments, null, 2)}
-          </pre>
+          {highlightedArgs ? (
+            <pre
+              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme()}`}
+              dangerouslySetInnerHTML={highlightedArgs}
+            />
+          ) : (
+            <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto white-scrollbar">
+              {typeof toolCall.arguments === "string"
+                ? toolCall.arguments
+                : JSON.stringify(toolCall.arguments, null, 2)}
+            </pre>
+          )}
         </div>
       )}
 
@@ -86,9 +118,16 @@ function ToolCallCard({ toolCall }) {
             {showResult ? "Hide result" : "Show result"}
           </button>
           {showResult && (
-            <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap">
-              {truncatedResult}
-            </pre>
+            highlightedResult ? (
+              <pre
+                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme()}`}
+                dangerouslySetInnerHTML={highlightedResult}
+              />
+            ) : (
+              <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar">
+                {truncatedResult}
+              </pre>
+            )
           )}
         </div>
       )}
