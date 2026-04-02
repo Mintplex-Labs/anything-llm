@@ -461,6 +461,13 @@ const TRANSLATIONS = {
             "Maksimalus įrankių skaičius, kurį galima parinkti kiekvienai užklausai. Rekomenduojame nustatyti didesnes reikšmes didelio konteksto modeliams.",
         },
       },
+      sql: {
+        title: "SQL jungtys",
+        description:
+          "Įgalinkite savo agentą naudoti SQL, kad atsakytų į jūsų klausimus, prisijungdami prie įvairių SQL duomenų bazų paslaugų.",
+      },
+      default_skill:
+        "Numatybiniame režime, šis įgūdys yra įjungtas, tačiau galite jį išjungti, jei nenorite, kad agentas jį naudotų.",
     },
   },
   recorded: {

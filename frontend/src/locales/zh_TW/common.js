@@ -807,8 +807,6 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具請求已獲得批准。",
       tool_call_was_rejected: "請求已遭拒絕",
     },
-    browse: "瀏覽",
-    pause_tts_speech_message: "暫停語音合成的訊息",
   },
   profile_settings: {
     edit_account: "編輯帳戶",
