@@ -54,18 +54,45 @@ async function streamChatWithWorkspace(
   let LLMConnector;
   let routingMetadata = null;
 
-  if (workspace?.chatProvider === "anythingllm-router") {
-    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
-    const { TokenManager } = require("../helpers/tiktoken");
-    const router = new AnythingLLMModelRouter(workspace);
-    const tokenManager = new TokenManager();
-    const conversationTokenCount = tokenManager.countFromString(message);
-    await router.resolve(
-      { prompt: message, conversationTokenCount },
-      { user, thread }
-    );
-    LLMConnector = router.delegateProvider;
-    routingMetadata = router.routingMetadata;
+  // Determine if we should use the model router. This applies when:
+  // 1. Workspace explicitly sets chatProvider to "anythingllm-router", OR
+  // 2. Workspace uses system default and system LLM is "anythingllm-router"
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  const isRouterProvider = effectiveProvider === "anythingllm-router";
+
+  if (isRouterProvider) {
+    try {
+      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+      const { TokenManager } = require("../helpers/tiktoken");
+      // If workspace has its own router_id use it, otherwise use system-level router ID
+      const routerWorkspace = workspace?.router_id
+        ? workspace
+        : {
+            ...workspace,
+            router_id: process.env.MODEL_ROUTER_ID
+              ? Number(process.env.MODEL_ROUTER_ID)
+              : null,
+          };
+      const router = new AnythingLLMModelRouter(routerWorkspace);
+      const tokenManager = new TokenManager();
+      const conversationTokenCount = tokenManager.countFromString(message);
+      await router.resolve(
+        { prompt: message, conversationTokenCount },
+        { user, thread }
+      );
+      LLMConnector = router.delegateProvider;
+      routingMetadata = router.routingMetadata;
+    } catch (routerError) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: `Model router error: ${routerError.message}`,
+      });
+      return;
+    }
   } else {
     LLMConnector = getLLMProvider({
       provider: workspace?.chatProvider,

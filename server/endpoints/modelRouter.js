@@ -132,6 +132,28 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
+    "/admin/model-routers/:id/rules/reorder",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { ruleUpdates } = reqBody(request);
+        if (!Array.isArray(ruleUpdates)) {
+          response
+            .status(200)
+            .json({ success: false, error: "ruleUpdates must be an array." });
+          return;
+        }
+        const { success, message } =
+          await ModelRouterRule.reorderRules(ruleUpdates);
+        response.status(200).json({ success, error: message });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/admin/model-routers/:id/rules/:ruleId",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
@@ -160,28 +182,6 @@ function modelRouterEndpoints(app) {
         response
           .status(200)
           .json({ success, error: success ? null : "Failed to delete rule." });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/admin/model-routers/:id/rules/reorder",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (request, response) => {
-      try {
-        const { ruleUpdates } = reqBody(request);
-        if (!Array.isArray(ruleUpdates)) {
-          response
-            .status(200)
-            .json({ success: false, error: "ruleUpdates must be an array." });
-          return;
-        }
-        const { success, message } =
-          await ModelRouterRule.reorderRules(ruleUpdates);
-        response.status(200).json({ success, error: message });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

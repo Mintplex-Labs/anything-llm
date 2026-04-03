@@ -132,6 +132,18 @@ const Workspace = {
         return "default";
       return value;
     },
+    router_id: (value) => {
+      if (
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        value === "none"
+      )
+        return null;
+      const id = Number(value);
+      if (isNaN(id)) return null;
+      return id;
+    },
   },
 
   /**
@@ -244,6 +256,17 @@ const Workspace = {
     if (validatedUpdates?.chatProvider === "default") {
       validatedUpdates.chatProvider = null;
       validatedUpdates.chatModel = null;
+    }
+
+    // When switching to anythingllm-router, chatModel is not used.
+    // When switching away from anythingllm-router, clear router_id.
+    if (validatedUpdates?.chatProvider === "anythingllm-router") {
+      validatedUpdates.chatModel = null;
+    } else if (
+      validatedUpdates?.chatProvider &&
+      validatedUpdates.chatProvider !== "anythingllm-router"
+    ) {
+      validatedUpdates.router_id = null;
     }
 
     return this._update(id, validatedUpdates);
@@ -627,6 +650,9 @@ const Workspace = {
       workspace?.agentProvider ??
       workspace?.chatProvider ??
       process.env.LLM_PROVIDER;
+    // Model router delegates to a resolved provider at chat time,
+    // so we cannot determine tool calling support ahead of time.
+    if (provider === "anythingllm-router") return false;
     const model =
       workspace?.agentModel ??
       workspace?.chatModel ??

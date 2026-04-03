@@ -4,6 +4,7 @@ import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "./ChatModelSelection";
+import RouterSelection from "./RouterSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -15,7 +16,7 @@ const FREE_FORM_LLM_SELECTION = ["bedrock", "azure", "generic-openai"];
 
 // Some providers do not support model selection via /models
 // and only have a fixed single-model they can use.
-const NO_MODEL_SELECTION = ["default", "huggingface"];
+const NO_MODEL_SELECTION = ["default", "huggingface", "anythingllm-router"];
 
 // Some providers we just fully disable for ease of use.
 const DISABLED_PROVIDERS = [];
@@ -29,7 +30,16 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
-const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
+const LLM_ROUTER = {
+  name: "Model Router",
+  value: "anythingllm-router",
+  logo: AnythingLLMIcon,
+  options: () => <React.Fragment />,
+  description: "Route messages to different models based on rules.",
+  requiredConfig: [],
+};
+
+const LLMS = [LLM_DEFAULT, LLM_ROUTER, ...AVAILABLE_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 
@@ -169,6 +179,12 @@ export default function WorkspaceLLMSelection({
 
 // TODO: Add this to agent selector as well as make generic component.
 function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
+  if (selectedLLM === "anythingllm-router") {
+    return (
+      <RouterSelection workspace={workspace} setHasChanges={setHasChanges} />
+    );
+  }
+
   if (NO_MODEL_SELECTION.includes(selectedLLM)) {
     if (selectedLLM !== "default") {
       return (

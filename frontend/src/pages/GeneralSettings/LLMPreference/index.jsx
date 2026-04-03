@@ -43,6 +43,7 @@ import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 
 import PreLoader from "@/components/Preloader";
+import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -414,6 +415,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
+  },
+  {
+    name: "Model Router",
+    value: "anythingllm-router",
+    logo: AnythingLLMIcon,
+    options: (settings) => <ModelRouterOptions settings={settings} />,
+    description:
+      "Route messages to different LLM providers based on rules you define.",
+    requiredConfig: [],
   },
 ];
 

@@ -12,6 +12,9 @@ export function castToType(key, value) {
     topN: {
       cast: (value) => Number(value),
     },
+    router_id: {
+      cast: (value) => (value ? Number(value) : null),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;

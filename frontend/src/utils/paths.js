@@ -148,6 +148,12 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    modelRouters: () => {
+      return "/settings/model-routers";
+    },
+    modelRouterEdit: (id) => {
+      return `/settings/model-routers/${id}`;
+    },
     systemPromptVariables: () => "/settings/system-prompt-variables",
     logs: () => {
       return "/settings/event-logs";

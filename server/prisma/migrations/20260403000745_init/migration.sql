@@ -73,6 +73,3 @@ CREATE INDEX "model_router_rules_router_id_enabled_priority_idx" ON "model_route
 
 -- CreateIndex
 CREATE UNIQUE INDEX "model_router_rules_router_id_title_key" ON "model_router_rules"("router_id", "title");
-
--- CreateIndex
-CREATE UNIQUE INDEX "model_router_rules_router_id_priority_key" ON "model_router_rules"("router_id", "priority");

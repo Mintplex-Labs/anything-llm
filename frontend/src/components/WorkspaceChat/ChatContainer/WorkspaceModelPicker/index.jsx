@@ -11,16 +11,35 @@ import {
 } from "../PromptInput/LLMSelector/action";
 import Workspace from "@/models/workspace";
 import System from "@/models/system";
+import ModelRouterAPI from "@/models/modelRouter";
 import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
 
-function fetchModelName(slug, setModelName) {
+async function fetchModelName(slug, setModelName) {
   if (!slug) return;
-  Promise.all([Workspace.bySlug(slug), System.keys()]).then(
-    ([workspace, systemSettings]) => {
-      const model = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
-      setModelName(model);
+  const [workspace, systemSettings] = await Promise.all([
+    Workspace.bySlug(slug),
+    System.keys(),
+  ]);
+
+  const effectiveProvider =
+    workspace.chatProvider ?? systemSettings?.LLMProvider;
+
+  // If using the model router, show the router name instead of a model name
+  if (effectiveProvider === "anythingllm-router") {
+    const routerId = workspace.router_id || systemSettings?.ModelRouterId;
+    if (routerId) {
+      const { router } = await ModelRouterAPI.get(routerId);
+      if (router?.name) {
+        setModelName(router.name);
+        return;
+      }
     }
-  );
+    setModelName("Model Router");
+    return;
+  }
+
+  const model = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
+  setModelName(model);
 }
 
 export default function WorkspaceModelPicker({ workspaceSlug = null }) {
@@ -48,7 +67,9 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   }, []);
 
   // Fetch current model name for display
-  useEffect(() => fetchModelName(slug, setModelName), [slug]);
+  useEffect(() => {
+    fetchModelName(slug, setModelName);
+  }, [slug]);
 
   // Close selector and refresh model name when model is saved
   useEffect(() => {

@@ -429,7 +429,6 @@ model model_router_rules {
   router         model_routers @relation(fields: [router_id], references: [id], onDelete: Cascade)
 
   @@unique([router_id, title])
-  @@unique([router_id, priority])
   @@index([router_id])
   @@index([router_id, enabled, priority])
 }
