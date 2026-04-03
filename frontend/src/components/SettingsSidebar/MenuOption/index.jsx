@@ -28,9 +28,11 @@ export default function MenuOption({
 
   const isActive = hasChildren
     ? (!isExpanded &&
-        childOptions.some((child) => child.href === location.pathname)) ||
+        childOptions.some((child) =>
+          isPathMatch(child.href, location.pathname)
+        )) ||
       location.pathname === href
-    : location.pathname === href;
+    : isPathMatch(href, location.pathname);
 
   const { ref } = useScrollActiveItemIntoView({
     isActive,
@@ -141,15 +143,15 @@ function useIsExpanded({
       if (storedValue !== null) {
         return safeJsonParse(storedValue, false);
       }
-      return childOptions.some((child) => child.href === location);
+      return childOptions.some((child) => isPathMatch(child.href, location));
     }
     return false;
   });
 
   useEffect(() => {
     if (hasVisibleChildren) {
-      const shouldExpand = childOptions.some(
-        (child) => child.href === location
+      const shouldExpand = childOptions.some((child) =>
+        isPathMatch(child.href, location)
       );
       if (shouldExpand && !isExpanded) {
         setIsExpanded(true);
@@ -193,4 +195,12 @@ function hasVisibleOptions(user = null, childOptions = []) {
 function generateStorageKey({ key = "" }) {
   const _key = key.replace(/\s+/g, "_").toLowerCase();
   return `anything_llm_menu_${_key}_expanded`;
+}
+
+/**
+ * Check if a menu item href matches the current pathname.
+ * Matches exactly or as a parent path (e.g. /settings/model-routers matches /settings/model-routers/1).
+ */
+function isPathMatch(href, pathname) {
+  return pathname === href || pathname.startsWith(href + "/");
 }

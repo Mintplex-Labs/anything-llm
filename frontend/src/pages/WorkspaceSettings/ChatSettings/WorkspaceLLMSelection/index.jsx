@@ -30,16 +30,7 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
-const LLM_ROUTER = {
-  name: "Model Router",
-  value: "anythingllm-router",
-  logo: AnythingLLMIcon,
-  options: () => <React.Fragment />,
-  description: "Route messages to different models based on rules.",
-  requiredConfig: [],
-};
-
-const LLMS = [LLM_DEFAULT, LLM_ROUTER, ...AVAILABLE_LLM_PROVIDERS].filter(
+const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
   (llm) => !DISABLED_PROVIDERS.includes(llm.value)
 );
 

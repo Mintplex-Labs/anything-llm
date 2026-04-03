@@ -18,6 +18,7 @@ const Actions = ({
   isEditing,
   role,
   metrics = {},
+  routedTo = null,
 }) => {
   const { t } = useTranslation();
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
@@ -68,7 +69,7 @@ const Actions = ({
           />
         </div>
       </div>
-      <RenderMetrics metrics={metrics} />
+      <RenderMetrics metrics={metrics} routedTo={routedTo} />
     </div>
   );
 };

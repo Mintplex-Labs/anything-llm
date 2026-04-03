@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 import ModelRouter from "@/models/modelRouter";
 
 export default function RouterSelection({ workspace, setHasChanges }) {
@@ -26,7 +28,14 @@ export default function RouterSelection({ workspace, setHasChanges }) {
     return (
       <div className="mt-4">
         <p className="text-sm text-white text-opacity-60">
-          No model routers configured. Create one in Settings first.
+          No model routers configured.{" "}
+          <Link
+            to={paths.settings.modelRouters()}
+            className="underline text-white"
+          >
+            Create one in Model Router settings
+          </Link>
+          .
         </p>
       </div>
     );

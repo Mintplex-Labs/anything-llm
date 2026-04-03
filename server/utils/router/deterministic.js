@@ -12,10 +12,10 @@ function evaluateRule(rule, context) {
 
 /**
  * Evaluate a single condition against the context.
- * @param {string} property - "promptContent" | "conversationTokenCount"
+ * @param {string} property - "promptContent" | "conversationTokenCount" | "conversationMessageCount" | "currentHour"
  * @param {string} comparator - "contains" | "gt" | "gte" | "lt" | "lte" | "eq" | "neq"
  * @param {string} value - The comparison value (stored as string in DB)
- * @param {Object} context - { prompt, conversationHistory, conversationTokenCount }
+ * @param {Object} context - { prompt, conversationHistory, conversationTokenCount, conversationMessageCount }
  * @returns {boolean}
  */
 function evaluateCondition(property, comparator, value, context) {
@@ -24,10 +24,8 @@ function evaluateCondition(property, comparator, value, context) {
 
   if (property === "promptContent")
     return evaluateStringCondition(contextValue, comparator, value);
-  if (property === "conversationTokenCount")
-    return evaluateNumericCondition(contextValue, comparator, value);
 
-  return false;
+  return evaluateNumericCondition(contextValue, comparator, value);
 }
 
 function getContextValue(property, context) {
@@ -36,6 +34,10 @@ function getContextValue(property, context) {
       return context.prompt || "";
     case "conversationTokenCount":
       return context.conversationTokenCount ?? 0;
+    case "conversationMessageCount":
+      return context.conversationMessageCount ?? 0;
+    case "currentHour":
+      return new Date().getHours();
     default:
       return undefined;
   }
@@ -74,6 +76,11 @@ function evaluateNumericCondition(contextValue, comparator, value) {
       return numContext === numValue;
     case "neq":
       return numContext !== numValue;
+    case "between": {
+      const parts = String(value).split(",").map(Number);
+      if (parts.length !== 2 || parts.some(isNaN)) return false;
+      return numContext >= parts[0] && numContext <= parts[1];
+    }
     default:
       return false;
   }

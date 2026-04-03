@@ -76,8 +76,14 @@ async function streamChatWithWorkspace(
       const router = new AnythingLLMModelRouter(routerWorkspace);
       const tokenManager = new TokenManager();
       const conversationTokenCount = tokenManager.countFromString(message);
+      const conversationMessageCount = await WorkspaceChats.count({
+        workspaceId: workspace.id,
+        user_id: user?.id || null,
+        thread_id: thread?.id || null,
+        include: true,
+      });
       await router.resolve(
-        { prompt: message, conversationTokenCount },
+        { prompt: message, conversationTokenCount, conversationMessageCount },
         { user, thread }
       );
       LLMConnector = router.delegateProvider;

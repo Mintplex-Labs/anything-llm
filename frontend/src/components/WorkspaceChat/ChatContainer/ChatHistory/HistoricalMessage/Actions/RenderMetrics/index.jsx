@@ -2,6 +2,7 @@ import { formatDateTimeAsMoment } from "@/utils/directories";
 import { numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
+import RoutingDetailsModal from "./RoutingDetailsModal";
 const MetricsContext = React.createContext();
 const SHOW_METRICS_KEY = "anythingllm_show_chat_metrics";
 const SHOW_METRICS_EVENT = "anythingllm_show_metrics_change";
@@ -45,15 +46,16 @@ function getAutoShowMetrics() {
 
 /**
  * Build the metrics string for a given metrics object
- * - Model name
+ * - Model name (optional, omitted when routing info is shown separately)
  * - Duration and output TPS
  * - Timestamp
- * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
+ * @param {Object} metrics - { duration, outputTps, model, timestamp }
+ * @param {boolean} [includeModel=true] - Whether to include the model name
  * @returns {string}
  */
-function buildMetricsString(metrics = {}) {
+function buildMetricsString(metrics = {}, includeModel = true) {
   return [
-    metrics?.model ? metrics.model : "",
+    includeModel && metrics?.model ? metrics.model : "",
     `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
     metrics?.timestamp
       ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")
@@ -110,30 +112,66 @@ export function MetricsProvider({ children }) {
 
 /**
  * Render the metrics for a given chat, if available
- * @param {metrics: {duration:number, outputTps: number, model: string, timestamp: number}} props
- * @returns
+ * @param {Object} props
+ * @param {Object} props.metrics - { duration, outputTps, model, timestamp }
+ * @param {Object|null} [props.routedTo] - { provider, model, ruleTitle, ruleType, isFallback, routerName }
  */
-export default function RenderMetrics({ metrics = {} }) {
+export default function RenderMetrics({ metrics = {}, routedTo = null }) {
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
+  const [showRoutingModal, setShowRoutingModal] = useState(false);
   if (!metrics?.duration || !metrics?.outputTps || isMobile) return null;
 
+  const hasRouting = !!routedTo;
+  const metricsString = buildMetricsString(metrics, !hasRouting);
+
   return (
-    <button
-      type="button"
-      onClick={() => setShowMetricsAutomatically(toggleAutoShowMetrics())}
-      data-tooltip-id="metrics-visibility"
-      data-tooltip-content={
-        showMetricsAutomatically
-          ? "Click to only show metrics when hovering"
-          : "Click to show metrics as soon as they are available"
-      }
-      className={`border-none flex md:justify-end items-center gap-x-[8px] -ml-7 ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
-    >
-      <p className="cursor-pointer text-xs font-mono text-zinc-400 light:text-slate-500">
-        {buildMetricsString(metrics)}
-      </p>
-    </button>
+    <>
+      <div
+        className={`border-none flex md:justify-end items-center gap-x-[8px] -ml-7 ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
+      >
+        <p className="cursor-pointer text-xs font-mono text-zinc-400 light:text-slate-500">
+          {hasRouting && (
+            <span
+              role="button"
+              tabIndex={0}
+              data-tooltip-id="routing-details"
+              data-tooltip-content="View routing details"
+              onClick={() => setShowRoutingModal(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") setShowRoutingModal(true);
+              }}
+              className="hover:underline"
+            >
+              {routedTo.routerName || "Model Router"}
+              {" → "}
+              {metrics?.model || routedTo.model}
+            </span>
+          )}
+          {hasRouting && " · "}
+          <span
+            role="button"
+            tabIndex={0}
+            data-tooltip-id="metrics-visibility"
+            data-tooltip-content={
+              showMetricsAutomatically
+                ? "Click to only show metrics when hovering"
+                : "Click to show metrics as soon as they are available"
+            }
+            onClick={() => setShowMetricsAutomatically(toggleAutoShowMetrics())}
+          >
+            {metricsString}
+          </span>
+        </p>
+      </div>
+      {showRoutingModal && (
+        <RoutingDetailsModal
+          routedTo={routedTo}
+          metrics={metrics}
+          onClose={() => setShowRoutingModal(false)}
+        />
+      )}
+    </>
   );
 }

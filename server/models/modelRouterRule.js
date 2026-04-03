@@ -1,8 +1,22 @@
 const prisma = require("../utils/prisma");
 
 const VALID_TYPES = ["calculated"];
-const VALID_PROPERTIES = ["promptContent", "conversationTokenCount"];
-const VALID_COMPARATORS = ["contains", "gt", "gte", "lt", "lte", "eq", "neq"];
+const VALID_PROPERTIES = [
+  "promptContent",
+  "conversationTokenCount",
+  "conversationMessageCount",
+  "currentHour",
+];
+const VALID_COMPARATORS = [
+  "contains",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "eq",
+  "neq",
+  "between",
+];
 const TITLE_REGEX = /^[a-z0-9_]+$/;
 
 const ModelRouterRule = {

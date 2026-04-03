@@ -36,7 +36,8 @@ class AnythingLLMModelRouter {
       throw new Error("No model router found for this workspace.");
 
     const key = cacheKey(user?.id, this.workspace.slug, thread?.slug);
-    const cached = getCachedRoute(key);
+    const prompt = context.prompt || "";
+    const cached = getCachedRoute(key, prompt);
 
     if (cached) {
       this.resolvedRoute = cached;
@@ -49,7 +50,7 @@ class AnythingLLMModelRouter {
         this.router.rules || [],
         context
       );
-      setCachedRoute(key, this.resolvedRoute);
+      setCachedRoute(key, this.resolvedRoute, prompt);
       this.log(
         `Routed to ${this.resolvedRoute.provider}/${this.resolvedRoute.model} ` +
           `(rule: ${this.resolvedRoute.ruleTitle || "fallback"})`

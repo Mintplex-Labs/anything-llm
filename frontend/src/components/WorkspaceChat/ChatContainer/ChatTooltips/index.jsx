@@ -64,6 +64,12 @@ export function ChatTooltips() {
         className="tooltip !text-xs"
       />
       <Tooltip
+        id="routing-details"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+      <Tooltip
         id="expand-cot"
         place="bottom"
         delayShow={300}

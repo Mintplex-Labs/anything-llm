@@ -22,6 +22,7 @@ export default function handleChat(
     chatId = null,
     action = null,
     metrics = {},
+    routedTo = null,
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
@@ -39,6 +40,7 @@ export default function handleChat(
         animate,
         pending: false,
         metrics,
+        routedTo,
       },
     ]);
     _chatHistory.push({
@@ -52,6 +54,7 @@ export default function handleChat(
       animate,
       pending: false,
       metrics,
+      routedTo,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
@@ -68,6 +71,7 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
+        routedTo,
       },
     ]);
     _chatHistory.push({
@@ -81,6 +85,7 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
+      routedTo,
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (
@@ -102,6 +107,7 @@ export default function handleChat(
           pending: false,
           chatId,
           metrics,
+          routedTo,
         };
 
         _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID

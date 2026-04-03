@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 import ModelRouter from "@/models/modelRouter";
 
 export default function ModelRouterOptions({ settings }) {
@@ -26,8 +28,14 @@ export default function ModelRouterOptions({ settings }) {
     return (
       <div className="w-full flex flex-col gap-y-4">
         <p className="text-sm text-white text-opacity-60">
-          No model routers configured yet. Create one in AI Providers &gt; Model
-          Router first.
+          No model routers configured yet.{" "}
+          <Link
+            to={paths.settings.modelRouters()}
+            className="underline text-white"
+          >
+            Create one in Model Router settings
+          </Link>
+          .
         </p>
       </div>
     );

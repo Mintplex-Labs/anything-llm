@@ -7,6 +7,8 @@ import LLMProviderModelPicker from "../LLMProviderModelPicker";
 const PROPERTIES = [
   { value: "promptContent", label: "Prompt Content" },
   { value: "conversationTokenCount", label: "Conversation Token Count" },
+  { value: "conversationMessageCount", label: "Conversation Message Count" },
+  { value: "currentHour", label: "Current Hour (0-23)" },
 ];
 
 const STRING_COMPARATORS = [
@@ -22,9 +24,14 @@ const NUMERIC_COMPARATORS = [
   { value: "lte", label: "less than or equal" },
   { value: "eq", label: "equals" },
   { value: "neq", label: "not equals" },
+  { value: "between", label: "between (inclusive)" },
 ];
 
-const NUMERIC_PROPERTIES = ["conversationTokenCount"];
+const NUMERIC_PROPERTIES = [
+  "conversationTokenCount",
+  "conversationMessageCount",
+  "currentHour",
+];
 
 function slugify(text) {
   return text
@@ -44,6 +51,7 @@ export default function RuleForm({
   const isEditing = !!existingRule;
   const [loading, setLoading] = useState(false);
   const [property, setProperty] = useState(existingRule?.property || "");
+  const [comparator, setComparator] = useState(existingRule?.comparator || "");
 
   const comparators = NUMERIC_PROPERTIES.includes(property)
     ? NUMERIC_COMPARATORS
@@ -140,6 +148,7 @@ export default function RuleForm({
           <select
             name="comparator"
             defaultValue={existingRule?.comparator || ""}
+            onChange={(e) => setComparator(e.target.value)}
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
             required
           >
@@ -161,7 +170,17 @@ export default function RuleForm({
             name="value"
             defaultValue={existingRule?.value || ""}
             placeholder={
-              NUMERIC_PROPERTIES.includes(property) ? "e.g. 4000" : "e.g. code"
+              comparator === "between"
+                ? property === "currentHour"
+                  ? "e.g. 9,17 (9am to 5pm)"
+                  : "e.g. 10,50"
+                : property === "currentHour"
+                  ? "e.g. 18 (0-23)"
+                  : property === "conversationMessageCount"
+                    ? "e.g. 10"
+                    : NUMERIC_PROPERTIES.includes(property)
+                      ? "e.g. 4000"
+                      : "e.g. code"
             }
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
             required

@@ -1,4 +1,4 @@
-const DEFAULT_COOLDOWN_MS = 60_000;
+const DEFAULT_COOLDOWN_MS = 30_000;
 
 const routeCache = new Map();
 
@@ -14,18 +14,21 @@ function cacheKey(userId, workspaceSlug, threadSlug) {
 }
 
 /**
- * Get a cached route if still within the cooldown window.
+ * Get a cached route if still within the cooldown window and the prompt hasn't changed.
  * @param {string} key
+ * @param {string} prompt - The current user prompt to compare against the cached prompt
  * @param {number} cooldownMs
  * @returns {{ provider: string, model: string, ruleTitle: string|null, ruleType: string|null, isFallback: boolean }|null}
  */
-function getCachedRoute(key, cooldownMs = DEFAULT_COOLDOWN_MS) {
+function getCachedRoute(key, prompt = "", cooldownMs = DEFAULT_COOLDOWN_MS) {
   const entry = routeCache.get(key);
   if (!entry) return null;
   if (Date.now() - entry.routedAt > cooldownMs) {
     routeCache.delete(key);
     return null;
   }
+  // Re-evaluate if the prompt changed since last routing decision
+  if (entry.prompt !== prompt) return null;
   return entry.route;
 }
 
@@ -33,9 +36,10 @@ function getCachedRoute(key, cooldownMs = DEFAULT_COOLDOWN_MS) {
  * Store a route decision in the cache.
  * @param {string} key
  * @param {{ provider: string, model: string, ruleTitle: string|null, ruleType: string|null, isFallback: boolean }} route
+ * @param {string} prompt - The prompt that was used for this routing decision
  */
-function setCachedRoute(key, route) {
-  routeCache.set(key, { route, routedAt: Date.now() });
+function setCachedRoute(key, route, prompt = "") {
+  routeCache.set(key, { route, prompt, routedAt: Date.now() });
 }
 
 /**

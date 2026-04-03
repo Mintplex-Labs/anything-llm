@@ -87,6 +87,15 @@ import CTAButton from "@/components/lib/CTAButton";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
+    name: "Model Router",
+    value: "anythingllm-router",
+    logo: AnythingLLMIcon,
+    options: (settings) => <ModelRouterOptions settings={settings} />,
+    description:
+      "Route messages to different LLM providers based on rules you define.",
+    requiredConfig: [],
+  },
+  {
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
@@ -415,15 +424,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
     ],
-  },
-  {
-    name: "Model Router",
-    value: "anythingllm-router",
-    logo: AnythingLLMIcon,
-    options: (settings) => <ModelRouterOptions settings={settings} />,
-    description:
-      "Route messages to different LLM providers based on rules you define.",
-    requiredConfig: [],
   },
 ];
 
