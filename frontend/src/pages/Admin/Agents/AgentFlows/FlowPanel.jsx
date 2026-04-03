@@ -50,20 +50,20 @@ function ManageFlowMenu({ flow, onDelete }) {
         <Gear className="h-5 w-5" weight="bold" />
       </button>
       {open && (
-        <div className="absolute top-full right-0 mt-1 min-w-[100px] border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div className="absolute min-w-[140px] top-full right-0 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
           <button
             type="button"
             onClick={() => navigate(paths.agents.editAgent(flow.uuid))}
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
-            <span className="text-sm">Edit Flow</span>
+            <span className="text-sm whitespace-nowrap">Edit Flow</span>
           </button>
           <button
             type="button"
             onClick={deleteFlow}
             className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
-            <span className="text-sm">Delete Flow</span>
+            <span className="text-sm whitespace-nowrap">Delete Flow</span>
           </button>
         </div>
       )}
