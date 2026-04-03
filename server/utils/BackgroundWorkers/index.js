@@ -2,6 +2,7 @@ const path = require("path");
 const Graceful = require("@ladjs/graceful");
 const Bree = require("@mintplex-labs/bree");
 const later = require("@breejs/later");
+const PQueue = require("p-queue").default;
 const setLogger = require("../logger");
 
 class BackgroundService {
@@ -10,9 +11,10 @@ class BackgroundService {
   documentSyncEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
   #scheduledJobTimers = new Map();
-  #scheduledJobQueue = [];
-  #activeScheduledJobCount = 0;
-  #maxConcurrentJobs = Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 3;
+  #scheduledJobQueue = new PQueue({
+    concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 3,
+  });
+  #pendingJobIds = new Set();
 
   #alwaysRunJobs = [
     {
@@ -93,6 +95,8 @@ class BackgroundService {
       timer.clear();
       this.#scheduledJobTimers.delete(id);
     }
+    this.#scheduledJobQueue.clear();
+    this.#pendingJobIds.clear();
     if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
     this.bree = null;
     this.graceful = null;
@@ -186,7 +190,7 @@ class BackgroundService {
 
     if (enabledJobs.length > 0) {
       this.#log(
-        `Registered ${enabledJobs.length} scheduled job(s) (max concurrent: ${this.#maxConcurrentJobs})`,
+        `Registered ${enabledJobs.length} scheduled job(s) (max concurrent: ${this.#scheduledJobQueue.concurrency})`,
         enabledJobs.map((j) => `${j.name} (${j.schedule})`)
       );
     }
@@ -214,9 +218,7 @@ class BackgroundService {
     const timer = this.#scheduledJobTimers.get(jobId);
     if (timer) timer.clear();
     this.#scheduledJobTimers.delete(jobId);
-    this.#scheduledJobQueue = this.#scheduledJobQueue.filter(
-      (id) => id !== jobId
-    );
+    this.#pendingJobIds.delete(jobId);
   }
 
   /**
@@ -240,36 +242,20 @@ class BackgroundService {
    * @param {boolean} [opts.priority=false] - If true, skip dedup and add to front of queue
    */
   enqueueScheduledJob(jobId, { priority = false } = {}) {
-    if (!priority && this.#scheduledJobQueue.includes(jobId)) return;
-    if (priority) {
-      this.#scheduledJobQueue.unshift(jobId);
-    } else {
-      this.#scheduledJobQueue.push(jobId);
-    }
-    this.#drainScheduledJobQueue();
-  }
+    if (!priority && this.#pendingJobIds.has(jobId)) return;
+    this.#pendingJobIds.add(jobId);
 
-  /**
-   * Dispatch queued jobs up to the concurrency limit.
-   */
-  #drainScheduledJobQueue() {
-    while (
-      this.#activeScheduledJobCount < this.#maxConcurrentJobs &&
-      this.#scheduledJobQueue.length > 0
-    ) {
-      const jobId = this.#scheduledJobQueue.shift();
-
-      this.#activeScheduledJobCount++;
-
-      this.runJob("run-scheduled-job", { jobId })
-        .catch((err) =>
-          this.#log(`Scheduled job ${jobId} failed: ${err.message}`)
-        )
-        .finally(() => {
-          this.#activeScheduledJobCount--;
-          this.#drainScheduledJobQueue();
-        });
-    }
+    this.#scheduledJobQueue
+      .add(
+        () =>
+          this.runJob("run-scheduled-job", { jobId }).catch((err) =>
+            this.#log(`Scheduled job ${jobId} failed: ${err.message}`)
+          ),
+        { priority: priority ? 1 : 0 }
+      )
+      .finally(() => {
+        this.#pendingJobIds.delete(jobId);
+      });
   }
 }
 
