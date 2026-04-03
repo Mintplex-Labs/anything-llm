@@ -170,19 +170,21 @@ function RouterRow({ router, removeRouter }) {
           {router.workspaceCount || 0}
         </span>
       </td>
-      <td className="px-6 py-3 flex items-center gap-x-4">
-        <button
-          onClick={() => navigate(paths.settings.modelRouterEdit(router.id))}
-          className="text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
-        >
-          <PencilSimple className="h-5 w-5" />
-        </button>
-        <button
-          onClick={handleDelete}
-          className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
-        >
-          <Trash className="h-5 w-5" />
-        </button>
+      <td className="px-6 py-3">
+        <div className="flex items-center gap-x-4">
+          <button
+            onClick={() => navigate(paths.settings.modelRouterEdit(router.id))}
+            className="text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
+          >
+            <PencilSimple className="h-5 w-5" />
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+          >
+            <Trash className="h-5 w-5" />
+          </button>
+        </div>
       </td>
     </tr>
   );
