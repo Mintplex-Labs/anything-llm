@@ -12,7 +12,7 @@ class BackgroundService {
   #root = path.resolve(__dirname, "../../jobs");
   #scheduledJobTimers = new Map();
   #scheduledJobQueue = new PQueue({
-    concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 3,
+    concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 1,
   });
   #pendingJobIds = new Set();
 
