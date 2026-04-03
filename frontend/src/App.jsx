@@ -14,9 +14,11 @@ import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
+import { useUiZoom } from "@/hooks/useUiZoom";
 
 export default function App() {
   const location = useLocation();
+  useUiZoom();
   return (
     <ErrorBoundary
       FallbackComponent={ErrorBoundaryFallback}
