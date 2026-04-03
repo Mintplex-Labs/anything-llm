@@ -169,12 +169,15 @@ class BackgroundService {
   }
 
   // ---------------------------------------------------------------
-  // Scheduled Jobs — in-process cron timers + FIFO queue
+  // Scheduled Jobs — in-process cron timers + p-queue
   //
-  // Each enabled job gets a later.setInterval that fires a callback
-  // in the main process when its cron expression matches. The
-  // callback enqueues the jobId. A drain loop dispatches workers
-  // via runJob() up to SCHEDULED_JOB_MAX_CONCURRENT (default 1).
+  // Bree tightly couples scheduling with worker spawning — when a
+  // Bree cron fires, it directly calls run() which immediately
+  // spawns a child process with no way to intercept it. We manage
+  // our own cron timers (via later.setInterval) to decouple
+  // scheduling from execution so we can route jobs through p-queue
+  // for concurrency control, dedup, and priority ordering before
+  // spawning workers via runJob().
   // ---------------------------------------------------------------
 
   /**
