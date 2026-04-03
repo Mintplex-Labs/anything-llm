@@ -111,7 +111,7 @@ export default function AdminAgents() {
         _preferences.settings?.disabled_agent_skills ?? []
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
-      setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
+      setActiveFlowIds(flows.filter((f) => f.active).map((f) => f.uuid));
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
@@ -385,6 +385,7 @@ export default function AdminAgents() {
               flows={agentFlows}
               selectedFlow={selectedFlow}
               handleClick={handleFlowClick}
+              activeFlowIds={activeFlowIds}
             />
             <input
               type="hidden"
@@ -601,6 +602,7 @@ export default function AdminAgents() {
                 flows={agentFlows}
                 selectedFlow={selectedFlow}
                 handleClick={handleFlowClick}
+                activeFlowIds={activeFlowIds}
               />
 
               <MCPServerHeader

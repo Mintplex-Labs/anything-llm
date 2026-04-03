@@ -12,6 +12,7 @@ function ManageFlowMenu({ flow, onDelete }) {
   const navigate = useNavigate();
 
   async function deleteFlow() {
+    setOpen(false);
     if (
       !window.confirm(
         "Are you sure you want to delete this flow? This action cannot be undone."
@@ -28,6 +29,8 @@ function ManageFlowMenu({ flow, onDelete }) {
   }
 
   useEffect(() => {
+    if (!open) return;
+
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false);
@@ -38,7 +41,7 @@ function ManageFlowMenu({ flow, onDelete }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open]);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -71,23 +74,15 @@ function ManageFlowMenu({ flow, onDelete }) {
   );
 }
 
-export default function FlowPanel({ flow, toggleFlow, onDelete }) {
-  const [isActive, setIsActive] = useState(flow.active);
-
-  useEffect(() => {
-    setIsActive(flow.active);
-  }, [flow.uuid, flow.active]);
-
+export default function FlowPanel({ flow, toggleFlow, enabled, onDelete }) {
   const handleToggle = async () => {
     try {
       const { success, error } = await AgentFlows.toggleFlow(
         flow.uuid,
-        !isActive
+        !enabled
       );
       if (!success) throw new Error(error);
-      setIsActive(!isActive);
       toggleFlow(flow.uuid);
-      showToast("Flow status updated successfully", "success", { clear: true });
     } catch (error) {
       console.error("Failed to toggle flow:", error);
       showToast("Failed to toggle flow", "error", { clear: true });
@@ -106,7 +101,7 @@ export default function FlowPanel({ flow, toggleFlow, onDelete }) {
               </label>
             </div>
             <div className="flex items-center gap-x-2">
-              <Toggle size="lg" enabled={isActive} onChange={handleToggle} />
+              <Toggle size="lg" enabled={enabled} onChange={handleToggle} />
               <ManageFlowMenu flow={flow} onDelete={onDelete} />
             </div>
           </div>
