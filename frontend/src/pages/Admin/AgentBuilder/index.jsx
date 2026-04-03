@@ -191,7 +191,7 @@ export default function AgentBuilder() {
           clear: true,
         }
       );
-      return;
+      return false;
     }
 
     const flowConfig = {
@@ -221,12 +221,26 @@ export default function AgentBuilder() {
       setCurrentFlowUuid(flow.uuid);
       showToast("Agent flow saved successfully!", "success", { clear: true });
       await loadAvailableFlows();
+      return true;
     } catch (error) {
       console.error("Save error details:", error);
       showToast(`Failed to save agent flow. ${error.message}`, "error", {
         clear: true,
       });
+      return false;
     }
+  };
+
+  const saveFlowBeforeSwitch = async (nextFlowUuid) => {
+    if (!currentFlowUuid || currentFlowUuid === nextFlowUuid) {
+      navigate(paths.agents.editAgent(nextFlowUuid));
+      return;
+    }
+
+    const saved = await saveFlow();
+    if (!saved) return;
+
+    navigate(paths.agents.editAgent(nextFlowUuid));
   };
 
   const toggleBlockExpansion = (blockId) => {
@@ -349,6 +363,7 @@ export default function AgentBuilder() {
         onNewFlow={clearFlow}
         onSaveFlow={saveFlow}
         onPublishFlow={handlePublishFlow}
+        onSelectFlow={saveFlowBeforeSwitch}
       />
       <div className="flex-1 min-h-0 p-6 overflow-y-auto">
         <div

@@ -11,6 +11,7 @@ export default function HeaderMenu({
   onNewFlow,
   onSaveFlow,
   onPublishFlow,
+  onSelectFlow,
 }) {
   const { flowId = null } = useParams();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -96,9 +97,9 @@ export default function HeaderMenu({
                     .map((flow, index) => (
                       <button
                         key={flow?.uuid || `flow-${index}`}
-                        onClick={() => {
-                          navigate(paths.agents.editAgent(flow.uuid));
+                        onClick={async () => {
                           setShowDropdown(false);
+                          await onSelectFlow?.(flow.uuid);
                         }}
                         className="border-none w-full text-left px-2 py-1 text-sm text-theme-text-primary hover:bg-theme-action-menu-bg transition-colors duration-300"
                       >
