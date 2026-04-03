@@ -188,6 +188,7 @@ class BackgroundService {
     const enabledJobs = await ScheduledJob.allEnabled();
 
     for (const job of enabledJobs) {
+      await ScheduledJob.recomputeNextRunAt(job.id);
       this.addScheduledJob(job);
     }
 
