@@ -1,6 +1,7 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
 const Bree = require("@mintplex-labs/bree");
+const later = require("@breejs/later");
 const setLogger = require("../logger");
 
 class BackgroundService {
@@ -8,6 +9,10 @@ class BackgroundService {
   static _instance = null;
   documentSyncEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
+  #scheduledJobTimers = new Map();
+  #scheduledJobQueue = [];
+  #activeScheduledJobCount = 0;
+  #maxConcurrentJobs = Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 3;
 
   #alwaysRunJobs = [
     {
@@ -73,31 +78,21 @@ class BackgroundService {
     this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
     this.graceful.listen();
 
-    // When Bree spawns a scheduled job worker, send it the jobId over IPC.
-    // The job name is "scheduled-job-{id}" so we parse the id from it.
-    this.bree.on("worker created", (name) => {
-      if (!name.startsWith("scheduled-job-")) return;
-      const jobId = Number(name.replace("scheduled-job-", ""));
-      if (!Number.isFinite(jobId)) return;
-
-      const worker = this.bree.workers.get(name);
-      if (worker && typeof worker.send === "function") {
-        worker.send({ jobId });
-      }
-    });
-
     this.bree.start();
     this.#log(
       `Service started with ${jobsToRun.length} jobs`,
       jobsToRun.map((j) => j.name)
     );
 
-    // Register user-defined scheduled jobs with Bree using their cron expressions
     await this.#bootScheduledJobs();
   }
 
   async stop() {
     this.#log("Stopping...");
+    for (const [id, timer] of this.#scheduledJobTimers) {
+      timer.clear();
+      this.#scheduledJobTimers.delete(id);
+    }
     if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
     this.bree = null;
     this.graceful = null;
@@ -170,83 +165,110 @@ class BackgroundService {
   }
 
   // ---------------------------------------------------------------
-  // Scheduled Jobs — cron-based user-defined jobs
+  // Scheduled Jobs — in-process cron timers + FIFO queue
   //
-  // Each enabled scheduled_job gets a Bree entry with its cron
-  // expression pointing to run-scheduled-job.js. The worker is
-  // self-contained (queries DB for due jobs, no IPC needed) —
-  // same pattern as sync-watched-documents.js.
+  // Each enabled job gets a later.setInterval that fires a callback
+  // in the main process when its cron expression matches. The
+  // callback enqueues the jobId. A drain loop dispatches workers
+  // via runJob() up to SCHEDULED_JOB_MAX_CONCURRENT (default 1).
   // ---------------------------------------------------------------
 
   /**
-   * Load all enabled scheduled jobs from DB and register them with Bree.
-   * Called once during boot after bree.start().
+   * Register cron timers for all enabled scheduled jobs on startup.
    */
   async #bootScheduledJobs() {
     const { ScheduledJob } = require("../../models/scheduledJob");
-
     const enabledJobs = await ScheduledJob.allEnabled();
 
     for (const job of enabledJobs) {
-      // recomputes nextRunAt so stale values from before shutdown are corrected.
-      await ScheduledJob.recomputeNextRunAt(job.id);
-      await this.addScheduledJob(job);
+      this.addScheduledJob(job);
     }
 
     if (enabledJobs.length > 0) {
       this.#log(
-        `Registered ${enabledJobs.length} scheduled job(s)`,
+        `Registered ${enabledJobs.length} scheduled job(s) (max concurrent: ${this.#maxConcurrentJobs})`,
         enabledJobs.map((j) => `${j.name} (${j.schedule})`)
       );
     }
   }
 
   /**
-   * Add a single scheduled job to Bree with its cron expression.
-   * Must call bree.start(name) since bree.start() was already called.
+   * Register an in-process cron timer for a scheduled job.
+   * When the cron fires, the jobId is enqueued for execution.
    * @param {object} job - scheduled_jobs DB record
    */
-  async addScheduledJob(job) {
-    if (!this.bree) return;
-    const name = `scheduled-job-${job.id}`;
-    try {
-      await this.bree.add({
-        name,
-        path: path.resolve(this.#root, "run-scheduled-job.js"),
-        cron: job.schedule,
-      });
-      await this.bree.start(name);
-    } catch (error) {
-      this.#log(`Failed to add scheduled job "${job.name}": ${error.message}`);
-    }
+  addScheduledJob(job) {
+    this.removeScheduledJob(job.id);
+    const sched = later.parse.cron(job.schedule);
+    const timer = later.setInterval(() => {
+      this.enqueueScheduledJob(job.id);
+    }, sched);
+    this.#scheduledJobTimers.set(job.id, timer);
   }
 
   /**
-   * Remove a scheduled job from Bree.
+   * Remove an in-process cron timer and dequeue a scheduled job.
    * @param {number} jobId - scheduled_jobs.id
    */
-  async removeScheduledJob(jobId) {
-    if (!this.bree) return;
-    const name = `scheduled-job-${jobId}`;
-    try {
-      await this.bree.stop(name);
-      await this.bree.remove(name);
-    } catch {
-      // Job may not be registered (e.g., was already disabled)
-    }
+  removeScheduledJob(jobId) {
+    const timer = this.#scheduledJobTimers.get(jobId);
+    if (timer) timer.clear();
+    this.#scheduledJobTimers.delete(jobId);
+    this.#scheduledJobQueue = this.#scheduledJobQueue.filter(
+      (id) => id !== jobId
+    );
   }
 
   /**
-   * Re-sync a scheduled job with Bree after an update.
-   * Removes the old entry and re-adds if still enabled.
+   * Re-sync a scheduled job's cron timer after an update.
+   * Removes the old timer and re-adds if still enabled.
    * @param {number} jobId - scheduled_jobs.id
    */
   async syncScheduledJob(jobId) {
     const { ScheduledJob } = require("../../models/scheduledJob");
-    await this.removeScheduledJob(jobId);
+    this.removeScheduledJob(jobId);
     const job = await ScheduledJob.get({ id: Number(jobId) });
     if (job && job.enabled) {
-      await this.addScheduledJob(job);
+      this.addScheduledJob(job);
+    }
+  }
+
+  /**
+   * Add a scheduled job to the execution queue.
+   * @param {number} jobId - scheduled_jobs.id
+   * @param {object} [opts]
+   * @param {boolean} [opts.priority=false] - If true, skip dedup and add to front of queue
+   */
+  enqueueScheduledJob(jobId, { priority = false } = {}) {
+    if (!priority && this.#scheduledJobQueue.includes(jobId)) return;
+    if (priority) {
+      this.#scheduledJobQueue.unshift(jobId);
+    } else {
+      this.#scheduledJobQueue.push(jobId);
+    }
+    this.#drainScheduledJobQueue();
+  }
+
+  /**
+   * Dispatch queued jobs up to the concurrency limit.
+   */
+  #drainScheduledJobQueue() {
+    while (
+      this.#activeScheduledJobCount < this.#maxConcurrentJobs &&
+      this.#scheduledJobQueue.length > 0
+    ) {
+      const jobId = this.#scheduledJobQueue.shift();
+
+      this.#activeScheduledJobCount++;
+
+      this.runJob("run-scheduled-job", { jobId })
+        .catch((err) =>
+          this.#log(`Scheduled job ${jobId} failed: ${err.message}`)
+        )
+        .finally(() => {
+          this.#activeScheduledJobCount--;
+          this.#drainScheduledJobQueue();
+        });
     }
   }
 }

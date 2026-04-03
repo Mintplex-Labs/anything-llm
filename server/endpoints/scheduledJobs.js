@@ -255,9 +255,8 @@ function scheduledJobEndpoints(app) {
           return response.status(400).json({ job: null, error });
         }
 
-        // Register the new job's cron with Bree
         const { BackgroundService } = require("../utils/BackgroundWorkers");
-        await new BackgroundService().addScheduledJob(job);
+        new BackgroundService().addScheduledJob(job);
 
         return response.status(201).json({ job, error: null });
       } catch (e) {
@@ -320,7 +319,6 @@ function scheduledJobEndpoints(app) {
           return response.status(400).json({ job: null, error });
         }
 
-        // Re-sync the cron schedule with Bree
         const { BackgroundService } = require("../utils/BackgroundWorkers");
         await new BackgroundService().syncScheduledJob(job.id);
 
@@ -339,9 +337,7 @@ function scheduledJobEndpoints(app) {
     async (request, response) => {
       try {
         const { BackgroundService } = require("../utils/BackgroundWorkers");
-        await new BackgroundService().removeScheduledJob(
-          Number(request.params.id)
-        );
+        new BackgroundService().removeScheduledJob(Number(request.params.id));
 
         const success = await ScheduledJob.delete(Number(request.params.id));
         return response.status(200).json({ success });
@@ -369,7 +365,6 @@ function scheduledJobEndpoints(app) {
           enabled: !job.enabled,
         });
 
-        // Re-sync with Bree (adds if now enabled, removes if now disabled)
         const { BackgroundService } = require("../utils/BackgroundWorkers");
         await new BackgroundService().syncScheduledJob(job.id);
 
@@ -394,11 +389,10 @@ function scheduledJobEndpoints(app) {
           return response.status(404).json({ error: "Job not found" });
         }
 
-        // Run immediately via Bree with jobId payload over IPC
         const { BackgroundService } = require("../utils/BackgroundWorkers");
-        new BackgroundService()
-          .runJob("run-scheduled-job", { jobId: job.id })
-          .catch(() => {});
+        new BackgroundService().enqueueScheduledJob(job.id, {
+          priority: true,
+        });
 
         return response.status(200).json({ success: true, error: null });
       } catch (e) {
