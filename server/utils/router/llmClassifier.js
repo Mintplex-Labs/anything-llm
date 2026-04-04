@@ -27,7 +27,10 @@ async function classifyWithLLM(rules, prompt, router) {
     .map((rule) => `- ${rule.title}: ${rule.description}`)
     .join("\n");
 
-  const systemPrompt = CLASSIFICATION_PROMPT.replace("{categories}", categories);
+  const systemPrompt = CLASSIFICATION_PROMPT.replace(
+    "{categories}",
+    categories
+  );
 
   try {
     const provider = getLLMProvider({
@@ -47,9 +50,7 @@ async function classifyWithLLM(rules, prompt, router) {
     const text = fullText?.trim().toLowerCase() || null;
     if (!text || text === "none") return null;
 
-    return (
-      validRules.find((rule) => rule.title.toLowerCase() === text) || null
-    );
+    return validRules.find((rule) => rule.title.toLowerCase() === text) || null;
   } catch (error) {
     console.error("[LLMClassifier] Classification failed:", error.message);
     return null;
