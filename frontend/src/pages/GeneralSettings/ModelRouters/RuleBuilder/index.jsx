@@ -209,21 +209,39 @@ function RuleRow({
           <span className="text-sm font-semibold text-white light:text-slate-900 truncate">
             {rule.title}
           </span>
+          {rule.type === "llm" && (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 light:bg-purple-100 light:text-purple-700">
+              LLM
+            </span>
+          )}
         </div>
-        <p className="text-xs text-zinc-300 light:text-slate-700">
-          IF{" "}
-          <span className="font-mono text-blue-400 light:text-blue-500">
-            {rule.property}
-          </span>{" "}
-          <span className="font-medium">{comparatorLabel}</span>{" "}
-          <span className="font-mono text-blue-400 light:text-blue-500">
-            &quot;{rule.value}&quot;
-          </span>{" "}
-          THEN{" "}
-          <span className="font-medium text-white light:text-slate-900">
-            {rule.route_provider} / {rule.route_model}
-          </span>
-        </p>
+        {rule.type === "llm" ? (
+          <p className="text-xs text-zinc-300 light:text-slate-700 truncate">
+            MATCH{" "}
+            <span className="font-mono text-purple-400 light:text-purple-500">
+              &quot;{rule.description}&quot;
+            </span>{" "}
+            THEN{" "}
+            <span className="font-medium text-white light:text-slate-900">
+              {rule.route_provider} / {rule.route_model}
+            </span>
+          </p>
+        ) : (
+          <p className="text-xs text-zinc-300 light:text-slate-700">
+            IF{" "}
+            <span className="font-mono text-blue-400 light:text-blue-500">
+              {rule.property}
+            </span>{" "}
+            <span className="font-medium">{comparatorLabel}</span>{" "}
+            <span className="font-mono text-blue-400 light:text-blue-500">
+              &quot;{rule.value}&quot;
+            </span>{" "}
+            THEN{" "}
+            <span className="font-medium text-white light:text-slate-900">
+              {rule.route_provider} / {rule.route_model}
+            </span>
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-x-3 ml-4 shrink-0">
         <SimpleToggleSwitch

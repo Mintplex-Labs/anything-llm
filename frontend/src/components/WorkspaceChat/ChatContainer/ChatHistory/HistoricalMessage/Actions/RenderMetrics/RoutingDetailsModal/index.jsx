@@ -55,7 +55,7 @@ export default function RoutingDetailsModal({ routedTo, metrics, onClose }) {
             value={
               routedTo.isFallback
                 ? "None (fallback)"
-                : routedTo.ruleTitle || "Unknown"
+                : `${routedTo.ruleTitle || "Unknown"}${routedTo.ruleType === "llm" ? " (LLM classified)" : ""}`
             }
           />
           {metrics?.duration && (

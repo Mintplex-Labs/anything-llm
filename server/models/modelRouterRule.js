@@ -1,6 +1,6 @@
 const prisma = require("../utils/prisma");
 
-const VALID_TYPES = ["calculated"];
+const VALID_TYPES = ["calculated", "llm"];
 const VALID_PROPERTIES = [
   "promptContent",
   "conversationTokenCount",
@@ -57,6 +57,15 @@ const ModelRouterRule = {
         return {
           rule: null,
           message: "Value is required for calculated rules.",
+        };
+    }
+
+    if (type === "llm") {
+      if (!data.description || !data.description.trim())
+        return {
+          rule: null,
+          message:
+            "Description is required for LLM rules. Describe when this rule should match.",
         };
     }
 

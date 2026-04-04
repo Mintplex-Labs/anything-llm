@@ -45,7 +45,7 @@ class AnythingLLMModelRouter {
         `Using cached route: ${cached.provider}/${cached.model} (rule: ${cached.ruleTitle || "fallback"})`
       );
     } else {
-      this.resolvedRoute = evaluateRouting(
+      this.resolvedRoute = await evaluateRouting(
         this.router,
         this.router.rules || [],
         context

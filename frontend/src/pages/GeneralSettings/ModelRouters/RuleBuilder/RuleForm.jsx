@@ -4,6 +4,21 @@ import ModelRouterAPI from "@/models/modelRouter";
 import showToast from "@/utils/toast";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
 
+const RULE_TYPES = [
+  {
+    value: "calculated",
+    label: "Calculated",
+    description:
+      "Match based on message properties like content, token count, or time of day",
+  },
+  {
+    value: "llm",
+    label: "LLM Classified",
+    description:
+      "Use the fallback model to decide if the message matches a description you provide",
+  },
+];
+
 const PROPERTIES = [
   { value: "promptContent", label: "Prompt Content" },
   { value: "conversationTokenCount", label: "Conversation Token Count" },
@@ -50,6 +65,7 @@ export default function RuleForm({
 }) {
   const isEditing = !!existingRule;
   const [loading, setLoading] = useState(false);
+  const [ruleType, setRuleType] = useState(existingRule?.type || "calculated");
   const [property, setProperty] = useState(existingRule?.property || "");
   const [comparator, setComparator] = useState(existingRule?.comparator || "");
 
@@ -62,21 +78,32 @@ export default function RuleForm({
     setLoading(true);
 
     const formData = new FormData(e.target);
+    const title = slugify(formData.get("title") || "");
+
+    if (!title) {
+      showToast("Title is required", "error");
+      setLoading(false);
+      return;
+    }
+
     const data = {
-      title: slugify(formData.get("title") || ""),
-      type: "calculated",
-      property: formData.get("property"),
-      comparator: formData.get("comparator"),
-      value: formData.get("value"),
+      title,
+      type: ruleType,
       route_provider: formData.get("route_provider"),
       route_model: formData.get("route_model"),
       priority: isEditing ? existingRule.priority : Number(nextPriority),
     };
 
-    if (!data.title) {
-      showToast("Title is required", "error");
-      setLoading(false);
-      return;
+    if (ruleType === "calculated") {
+      data.property = formData.get("property");
+      data.comparator = formData.get("comparator");
+      data.value = formData.get("value");
+      data.description = null;
+    } else if (ruleType === "llm") {
+      data.description = formData.get("description");
+      data.property = null;
+      data.comparator = null;
+      data.value = null;
     }
 
     let result;
@@ -103,90 +130,56 @@ export default function RuleForm({
         {isEditing ? "Edit Rule" : "New Rule"}
       </p>
 
-      <div className="flex flex-col gap-y-1.5">
-        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-          Title
-        </label>
-        <input
-          type="text"
-          name="title"
-          defaultValue={existingRule?.title || ""}
-          placeholder="e.g. route_code_to_claude"
-          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 font-mono"
-          required
-        />
-        <p className="text-[10px] text-zinc-400 light:text-slate-500">
-          Lowercase with underscores only. Auto-formatted on save.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div className="flex flex-col gap-y-1.5">
+      <div className="flex gap-x-4">
+        <div className="flex-1 flex flex-col gap-y-1.5">
           <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-            Property
-          </label>
-          <select
-            name="property"
-            defaultValue={existingRule?.property || ""}
-            onChange={(e) => setProperty(e.target.value)}
-            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
-            required
-          >
-            <option value="">Select</option>
-            {PROPERTIES.map((p) => (
-              <option key={p.value} value={p.value}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-y-1.5">
-          <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-            Comparator
-          </label>
-          <select
-            name="comparator"
-            defaultValue={existingRule?.comparator || ""}
-            onChange={(e) => setComparator(e.target.value)}
-            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
-            required
-          >
-            <option value="">Select</option>
-            {comparators.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-y-1.5">
-          <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-            Value
+            Title
           </label>
           <input
             type="text"
-            name="value"
-            defaultValue={existingRule?.value || ""}
-            placeholder={
-              comparator === "between"
-                ? property === "currentHour"
-                  ? "e.g. 9,17 (9am to 5pm)"
-                  : "e.g. 10,50"
-                : property === "currentHour"
-                  ? "e.g. 18 (0-23)"
-                  : property === "conversationMessageCount"
-                    ? "e.g. 10"
-                    : NUMERIC_PROPERTIES.includes(property)
-                      ? "e.g. 4000"
-                      : "e.g. code"
-            }
-            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+            name="title"
+            defaultValue={existingRule?.title || ""}
+            placeholder="e.g. route_code_to_claude"
+            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 font-mono"
             required
           />
+          <p className="text-[10px] text-zinc-400 light:text-slate-500">
+            Lowercase with underscores only. Auto-formatted on save.
+          </p>
+        </div>
+        <div className="w-[200px] flex flex-col gap-y-1.5">
+          <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+            Rule Type
+          </label>
+          <select
+            value={ruleType}
+            onChange={(e) => setRuleType(e.target.value)}
+            className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+          >
+            {RULE_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-[10px] text-zinc-400 light:text-slate-500">
+            {RULE_TYPES.find((t) => t.value === ruleType)?.description}
+          </p>
         </div>
       </div>
+
+      {ruleType === "calculated" ? (
+        <CalculatedFields
+          property={property}
+          setProperty={setProperty}
+          comparator={comparator}
+          setComparator={setComparator}
+          comparators={comparators}
+          existingRule={existingRule}
+        />
+      ) : (
+        <LLMDescriptionField existingRule={existingRule} />
+      )}
 
       <LLMProviderModelPicker
         providerFieldName="route_provider"
@@ -223,5 +216,106 @@ export default function RuleForm({
         </button>
       </div>
     </form>
+  );
+}
+
+function CalculatedFields({
+  property,
+  setProperty,
+  comparator,
+  setComparator,
+  comparators,
+  existingRule,
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      <div className="flex flex-col gap-y-1.5">
+        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+          Property
+        </label>
+        <select
+          name="property"
+          defaultValue={existingRule?.property || ""}
+          onChange={(e) => setProperty(e.target.value)}
+          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+          required
+        >
+          <option value="">Select</option>
+          {PROPERTIES.map((p) => (
+            <option key={p.value} value={p.value}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-y-1.5">
+        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+          Comparator
+        </label>
+        <select
+          name="comparator"
+          defaultValue={existingRule?.comparator || ""}
+          onChange={(e) => setComparator(e.target.value)}
+          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+          required
+        >
+          <option value="">Select</option>
+          {comparators.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-y-1.5">
+        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+          Value
+        </label>
+        <input
+          type="text"
+          name="value"
+          defaultValue={existingRule?.value || ""}
+          placeholder={
+            comparator === "between"
+              ? property === "currentHour"
+                ? "e.g. 9,17 (9am to 5pm)"
+                : "e.g. 10,50"
+              : property === "currentHour"
+                ? "e.g. 18 (0-23)"
+                : property === "conversationMessageCount"
+                  ? "e.g. 10"
+                  : NUMERIC_PROPERTIES.includes(property)
+                    ? "e.g. 4000"
+                    : "e.g. code"
+          }
+          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+          required
+        />
+      </div>
+    </div>
+  );
+}
+
+function LLMDescriptionField({ existingRule }) {
+  return (
+    <div className="flex flex-col gap-y-1.5">
+      <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+        Match Description
+      </label>
+      <textarea
+        name="description"
+        defaultValue={existingRule?.description || ""}
+        placeholder="e.g. The user is asking about legal topics, contracts, or compliance"
+        rows={2}
+        className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 resize-none"
+        required
+      />
+      <p className="text-[10px] text-zinc-400 light:text-slate-500">
+        Describe when this rule should match. The router's fallback model will
+        read the user's message and decide if it fits this description.
+      </p>
+    </div>
   );
 }
