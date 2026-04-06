@@ -1084,7 +1084,11 @@ function workspaceEndpoints(app) {
   // SSE endpoint for embedding progress
   app.get(
     "/workspace/:slug/embed-progress",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const workspace = response.locals.workspace;
@@ -1098,9 +1102,7 @@ function workspaceEndpoints(app) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
-
         addSSEConnection(workspace.slug, response);
-
         request.on("close", () => {
           removeSSEConnection(workspace.slug, response);
         });

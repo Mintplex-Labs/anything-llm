@@ -1,4 +1,5 @@
 const path = require("path");
+const { EventLogs } = require("../models/eventLogs");
 
 /** @type {Map<string, { worker: ChildProcess, jobId: string }>} */
 const runningWorkers = new Map();
@@ -32,6 +33,20 @@ function emitProgress(slug, event) {
       connections.delete(res);
     }
   }
+}
+
+function logEmbeddingEvent(msg) {
+  EventLogs.logEvent(
+    "workspace_documents_added",
+    {
+      workspaceName: msg.workspaceSlug,
+      embeddedFiles: msg.embeddedFiles ?? [],
+      failedFiles: msg.failedFiles ?? [],
+      embedded: msg.embedded ?? 0,
+      failed: msg.failed ?? 0,
+    },
+    msg.userId ?? null
+  ).catch(() => {});
 }
 
 function addSSEConnection(slug, res) {
@@ -97,7 +112,10 @@ async function embedFiles(slug, files, workspaceId, userId) {
   let workerCompleted = false;
   worker.on("message", (msg) => {
     if (!msg || !msg.type) return;
-    if (msg.type === "all_complete") workerCompleted = true;
+    if (msg.type === "all_complete") {
+      workerCompleted = true;
+      logEmbeddingEvent(msg);
+    }
     emitProgress(slug, msg);
   });
 

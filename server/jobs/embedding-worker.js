@@ -154,6 +154,8 @@ async function processQueue() {
     totalDocs: batch.length,
     embedded: embedded.length,
     failed: failedToEmbed.length,
+    embeddedFiles: embedded,
+    failedFiles: failedToEmbed,
   });
   process.exit(0);
 }
