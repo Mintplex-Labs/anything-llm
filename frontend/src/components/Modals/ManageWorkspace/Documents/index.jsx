@@ -1,5 +1,5 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
@@ -24,9 +24,10 @@ export default function DocumentSettings({ workspace }) {
 
   const fetchKeysRef = useRef(null);
   const didMountRef = useRef(false);
-  const { startEmbedding } = useWorkspaceEmbeddingProgress(workspace.slug, {
-    onProgressCleared: () => fetchKeysRef.current?.(true),
-  });
+  const { embeddingProgress, startEmbedding } =
+    useWorkspaceEmbeddingProgress(workspace.slug, {
+      onProgressCleared: () => fetchKeysRef.current?.(true),
+    });
 
   async function fetchKeys(refetchWorkspace = false, options = {}) {
     const { autoSelectNew = false } = options;
@@ -136,20 +137,14 @@ export default function DocumentSettings({ workspace }) {
     );
     startEmbedding(workspace.slug, filenames);
 
-    embedPromise
-      .then(async () => {
-        // Refresh file lists after API responds.
-        // Progress UI is driven by SSE via embeddingProgress context.
-        await fetchKeys(true);
-      })
-      .catch((error) => {
-        showToast(`Workspace update failed: ${error}`, "error", {
-          clear: true,
-        });
-        setLoading(false);
-        setLoadingMessage("");
+    embedPromise.catch((error) => {
+      showToast(`Workspace update failed: ${error}`, "error", {
+        clear: true,
       });
+    });
 
+    setLoading(false);
+    setLoadingMessage("");
     setMovedItems([]);
   };
 
@@ -206,10 +201,32 @@ export default function DocumentSettings({ workspace }) {
     setSelectedItems({});
   };
 
+  const visibleAvailableDocs = useMemo(() => {
+    const embeddingFilenames = new Set(
+      Object.keys(embeddingProgress ?? {})
+    );
+    if (embeddingFilenames.size === 0) return availableDocs;
+    return {
+      ...availableDocs,
+      items: (availableDocs.items ?? []).map((folder) => {
+        if (folder.items && folder.type === "folder") {
+          return {
+            ...folder,
+            items: folder.items.filter(
+              (file) =>
+                !embeddingFilenames.has(`${folder.name}/${file.name}`)
+            ),
+          };
+        }
+        return folder;
+      }),
+    };
+  }, [availableDocs, embeddingProgress]);
+
   return (
     <div className="flex upload-modal -mt-6 z-10 relative">
       <Directory
-        files={availableDocs}
+        files={visibleAvailableDocs}
         setFiles={setAvailableDocs}
         loading={loading}
         loadingMessage={loadingMessage}

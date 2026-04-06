@@ -9,7 +9,7 @@ import {
   XCircle,
   CircleNotch,
   Clock,
-  WarningCircle,
+  X,
 } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
@@ -35,7 +35,7 @@ function WorkspaceDirectory({
   movedItems,
 }) {
   const { t } = useTranslation();
-  const { embeddingProgressMap } = useEmbeddingProgress();
+  const { embeddingProgressMap, removeQueuedFile } = useEmbeddingProgress();
   const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
   const [selectedItems, setSelectedItems] = useState({});
   const embeddedDocCount = (files?.items ?? []).reduce(
@@ -145,10 +145,28 @@ function WorkspaceDirectory({
                 key={filename}
                 filename={filename}
                 status={fileStatus}
+                onRemove={
+                  fileStatus.status === "pending"
+                    ? () => removeQueuedFile(workspace.slug, filename)
+                    : null
+                }
               />
             ))}
           </div>
         </div>
+        {hasChanges && movedItems.length > 0 && (
+          <div className="flex items-center justify-between w-[560px] mt-3">
+            <p className="text-theme-text-secondary text-sm">
+              {movedItems.length} additional file(s) ready to embed
+            </p>
+            <button
+              onClick={handleSaveChanges}
+              className="border border-slate-200 px-5 py-1.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            >
+              Add to queue
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -500,11 +518,13 @@ function WorkspaceDocumentTooltips() {
 /**
  * @param {string} filename
  */
-const getDisplayName = (filename) =>
-  filename
-    .split("/")
-    .pop()
-    ?.replace(/\.json$/, "") || filename;
+const getDisplayName = (filename) => {
+  const base = filename.split("/").pop() || filename;
+  return base.replace(
+    /-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.json$/,
+    ""
+  );
+};
 
 const getStatusStyles = () => ({
   pending: {
@@ -544,7 +564,7 @@ const getStatusStyles = () => ({
     label: "Failed",
   },
 });
-function EmbeddingFileRow({ filename, status: fileStatus }) {
+function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
   const { status, chunksProcessed = 0, totalChunks = 0 } = fileStatus;
   const displayName = getDisplayName(filename);
   const statusStyles = getStatusStyles();
@@ -556,7 +576,7 @@ function EmbeddingFileRow({ filename, status: fileStatus }) {
 
   return (
     <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
-      <div className="col-span-8 flex items-center gap-x-2 overflow-hidden">
+      <div className="col-span-7 flex items-center gap-x-2 overflow-hidden">
         {statusStyles[status]?.icon || statusStyles.pending.icon}
         <p
           className={`whitespace-nowrap overflow-hidden text-ellipsis ${
@@ -564,10 +584,10 @@ function EmbeddingFileRow({ filename, status: fileStatus }) {
           }`}
           title={displayName}
         >
-          {middleTruncate(displayName, 45)}
+          {middleTruncate(displayName, 40)}
         </p>
       </div>
-      <div className="col-span-4 flex justify-end items-center gap-x-2">
+      <div className="col-span-5 flex justify-end items-center gap-x-2">
         {isEmbedding ? (
           <div className="flex items-center gap-x-2 w-full justify-end">
             <div className="w-20 h-[1.5px] bg-white/10 rounded-full overflow-hidden">
@@ -579,18 +599,22 @@ function EmbeddingFileRow({ filename, status: fileStatus }) {
             <p className="text-xs whitespace-nowrap w-8 text-right">{pct}%</p>
           </div>
         ) : (
-          <p
-            className={`text-xs italic whitespace-nowrap flex gap-2 justify-center items-center ${statusStyles[status]?.textColor}`}
-          >
-            {statusStyles[status]?.label || "Queued"}
-            {status === "failed" && (
-              <WarningCircle
-                className="text-red-400"
-                strokeWidth={1.5}
-                size={12}
-              />
+          <div className="flex items-center gap-x-2">
+            <p
+              className={`text-xs italic whitespace-nowrap flex gap-2 justify-center items-center ${statusStyles[status]?.textColor}`}
+            >
+              {statusStyles[status]?.label || "Queued"}
+            </p>
+            {onRemove && (
+              <button
+                onClick={onRemove}
+                className="hover:bg-white/10 rounded p-0.5 transition-colors"
+                title="Remove from queue"
+              >
+                <X size={14} className="text-zinc-400 hover:text-white" />
+              </button>
             )}
-          </p>
+          </div>
         )}
       </div>
     </div>

@@ -170,6 +170,7 @@ async function getDocumentsByFolder(folderName = "") {
  * @returns {Promise<{exists: boolean, chunks: any[]}>} - a promise that resolves to an object containing the existence of the file and its cached chunks
  */
 async function cachedVectorInformation(filename = null, checkOnly = false) {
+  return false;
   if (!filename) return checkOnly ? false : { exists: false, chunks: [] };
 
   const digest = uuidv5(filename, uuidv5.URL);

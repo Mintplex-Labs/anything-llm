@@ -45,6 +45,45 @@ class BackgroundService {
     console.log(`\x1b[36m[${this.name}]\x1b[0m ${text}`, ...args);
   }
 
+  /**
+   * Returns the root path where job files are located.
+   * Handles the difference between development and production (bundled) environments.
+   * @returns {string}
+   */
+  get jobsRoot() {
+    return this.#root;
+  }
+
+  /**
+   * Wraps the logger so that calls originating from Bree's internal
+   * child-process message handler are suppressed when the payload
+   * carries `silent: true`.  Bree unconditionally calls
+   * `logger.info(message)` for every IPC message from forked processes
+   * (bypassing `workerMessageHandler`), so this is the only interception
+   * point.
+   */
+  #makeBreeLogger() {
+    const base = this.logger;
+    const isSilent = (args) =>
+      args.length === 1 &&
+      typeof args[0] === "object" &&
+      args[0] !== null &&
+      args[0].silent === true;
+
+    return new Proxy(base, {
+      get(target, prop, receiver) {
+        if (prop === "info" || prop === "log") {
+          return (...args) => {
+            if (isSilent(args)) return;
+            return target[prop](...args);
+          };
+        }
+        const val = Reflect.get(target, prop, receiver);
+        return typeof val === "function" ? val.bind(target) : val;
+      },
+    });
+  }
+
   async boot() {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
     this.documentSyncEnabled = await DocumentSyncQueue.enabled();
@@ -52,7 +91,7 @@ class BackgroundService {
 
     this.#log("Starting...");
     this.bree = new Bree({
-      logger: this.logger,
+      logger: this.#makeBreeLogger(),
       root: this.#root,
       jobs: jobsToRun,
       errorHandler: this.onError,
@@ -91,6 +130,7 @@ class BackgroundService {
   }
 
   onWorkerMessageHandler(message, _workerMetadata) {
+    if (message?.silent || message?.message?.silent) return;
     this.logger.info(`${message.message}`, {
       service: "bg-worker",
       origin: message.name,

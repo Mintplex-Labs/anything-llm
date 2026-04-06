@@ -1111,6 +1111,34 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/embed-queue",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const { filename } = reqBody(request);
+        if (!filename) {
+          response
+            .status(400)
+            .json({ success: false, error: "Missing filename" });
+          return;
+        }
+
+        const { removeQueuedFile } = require("../utils/EmbeddingWorkerManager");
+        const sent = removeQueuedFile(workspace.slug, filename);
+        response.status(200).json({ success: sent });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
   app.get(
     "/workspace/:slug/is-agent-command-available",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],

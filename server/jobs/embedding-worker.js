@@ -29,6 +29,7 @@ const { EventLogs } = require("../models/eventLogs");
 const { getModelTag } = require("../endpoints/utils");
 
 const queue = [];
+const cancelled = new Set();
 let processing = false;
 let workspaceSlug = null;
 let workspaceId = null;
@@ -36,7 +37,7 @@ let userId = null;
 
 function emit(event) {
   try {
-    process.send(event);
+    process.send({ ...event, silent: true });
   } catch {
     // Parent may have disconnected
   }
@@ -63,6 +64,11 @@ async function processQueue() {
   const errors = new Set();
 
   for (const [index, filePath] of batch.entries()) {
+    if (cancelled.has(filePath)) {
+      cancelled.delete(filePath);
+      continue;
+    }
+
     const docProgress = {
       workspaceSlug,
       userId,
@@ -73,7 +79,11 @@ async function processQueue() {
 
     const data = await fileData(filePath);
     if (!data) {
-      emit({ type: "doc_failed", ...docProgress, error: "Failed to load file data" });
+      emit({
+        type: "doc_failed",
+        ...docProgress,
+        error: "Failed to load file data",
+      });
       failedToEmbed.push(filePath);
       continue;
     }
@@ -88,7 +98,14 @@ async function processQueue() {
       metadata: JSON.stringify(metadata),
     };
 
-    emit({ type: "doc_starting", ...docProgress });
+    emit({
+      type: "doc_starting",
+      ...docProgress,
+    });
+
+    // Set context so NativeEmbedder can send chunk_progress IPC messages
+    // enriched with workspace/file info (read via process.send in embedChunks).
+    global.__embeddingProgress = { workspaceSlug, filename: filePath, userId };
 
     const { vectorized, error } = await VectorDb.addDocumentToNamespace(
       workspaceSlug,
@@ -100,17 +117,28 @@ async function processQueue() {
       console.error("Failed to vectorize", metadata?.title || newDoc.filename);
       failedToEmbed.push(metadata?.title || newDoc.filename);
       errors.add(error);
-      emit({ type: "doc_failed", ...docProgress, error: error || "Unknown error" });
+      emit({
+        type: "doc_failed",
+        ...docProgress,
+        error: error || "Unknown error",
+      });
       continue;
     }
 
     try {
       await prisma.workspace_documents.create({ data: newDoc });
       embedded.push(filePath);
-      emit({ type: "doc_complete", ...docProgress });
+      emit({
+        type: "doc_complete",
+        ...docProgress,
+      });
     } catch (err) {
       console.error(err.message);
-      emit({ type: "doc_failed", ...docProgress, error: "Failed to save document record" });
+      emit({
+        type: "doc_failed",
+        ...docProgress,
+        error: "Failed to save document record",
+      });
     }
   }
 
@@ -176,5 +204,16 @@ process.on("message", async (msg) => {
         process.exit(1);
       });
     }
+  }
+
+  if (msg.type === "remove_file") {
+    const idx = queue.indexOf(msg.filename);
+    if (idx !== -1) queue.splice(idx, 1);
+    else cancelled.add(msg.filename);
+    emit({
+      type: "file_removed",
+      workspaceSlug,
+      filename: msg.filename,
+    });
   }
 });

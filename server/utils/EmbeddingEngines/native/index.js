@@ -244,6 +244,7 @@ class NativeEmbedder {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;
+    const totalChunks = textChunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
@@ -266,6 +267,23 @@ class NativeEmbedder {
       this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
+
+      if (typeof process.send === "function" && global.__embeddingProgress) {
+        const ctx = global.__embeddingProgress;
+        process.send({
+          type: "chunk_progress",
+          workspaceSlug: ctx.workspaceSlug,
+          filename: ctx.filename,
+          userId: ctx.userId,
+          chunksProcessed: Math.min(
+            (idx + 1) * this.maxConcurrentChunks,
+            totalChunks
+          ),
+          totalChunks,
+          silent: true,
+        });
+      }
+
       pipeline = null;
       output = null;
       data = null;

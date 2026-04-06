@@ -84,9 +84,7 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
-    const {
-      emitProgress,
-    } = require("../utils/EmbeddingWorkerManager");
+    const { emitProgress } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
@@ -154,7 +152,10 @@ const Document = {
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
-        emitProgress(workspace.slug, { type: "doc_complete", ...docProgress });
+        emitProgress(workspace.slug, {
+          type: "doc_complete",
+          ...docProgress,
+        });
       } catch (error) {
         console.error(error.message);
         emitProgress(workspace.slug, {

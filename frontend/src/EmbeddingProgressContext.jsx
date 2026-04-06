@@ -9,6 +9,7 @@ import {
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
+import Workspace from "@/models/workspace";
 
 const EmbeddingProgressContext = createContext();
 
@@ -27,7 +28,7 @@ export function useWorkspaceEmbeddingProgress(
   slug,
   { onProgressCleared } = {}
 ) {
-  const { embeddingProgressMap, startEmbedding, connectSSE } =
+  const { embeddingProgressMap, startEmbedding, connectSSE, removeQueuedFile } =
     useEmbeddingProgress();
   const embeddingProgress = embeddingProgressMap[slug] || null;
 
@@ -51,11 +52,15 @@ export function useWorkspaceEmbeddingProgress(
     prevProgressRef.current = embeddingProgress;
   }, [embeddingProgress]);
 
-  return { embeddingProgress, startEmbedding };
+  const removeQueued = useCallback(
+    (filename) => removeQueuedFile(slug, filename),
+    [slug, removeQueuedFile]
+  );
+
+  return { embeddingProgress, startEmbedding, removeQueuedFile: removeQueued };
 }
 
-const CLEANUP_DELAY_MS = 5000;
-
+const CLEANUP_DELAY_MS = 1_500;
 export function EmbeddingProgressProvider({ children }) {
   const [embeddingProgressMap, setEmbeddingProgressMap] = useState({});
   const abortControllersRef = useRef({});
@@ -121,6 +126,18 @@ export function EmbeddingProgressProvider({ children }) {
           });
           break;
 
+        case "file_removed":
+          setEmbeddingProgressMap((prev) => {
+            const slugMap = { ...prev[slug] };
+            delete slugMap[data.filename];
+            if (Object.keys(slugMap).length === 0) {
+              const { [slug]: _, ...rest } = prev;
+              return rest;
+            }
+            return { ...prev, [slug]: slugMap };
+          });
+          break;
+
         case "all_complete":
           ctrl.abort();
           delete abortControllersRef.current[slug];
@@ -174,15 +191,33 @@ export function EmbeddingProgressProvider({ children }) {
         delete cleanupTimeoutsRef.current[slug];
       }
 
-      const initialProgress = Object.fromEntries(
+      const newEntries = Object.fromEntries(
         filenames.map((name) => [name, { status: "pending" }])
       );
-      setEmbeddingProgressMap((prev) => ({ ...prev, [slug]: initialProgress }));
+      setEmbeddingProgressMap((prev) => ({
+        ...prev,
+        [slug]: { ...prev[slug], ...newEntries },
+      }));
 
       connectSSE(slug);
     },
     [connectSSE]
   );
+
+  const removeQueuedFile = useCallback(async (slug, filename) => {
+    const { success } = await Workspace.removeQueuedEmbedding(slug, filename);
+    if (!success) return false;
+    setEmbeddingProgressMap((prev) => {
+      const slugMap = { ...prev[slug] };
+      delete slugMap[filename];
+      if (Object.keys(slugMap).length === 0) {
+        const { [slug]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [slug]: slugMap };
+    });
+    return true;
+  }, []);
 
   return (
     <EmbeddingProgressContext.Provider
@@ -190,6 +225,7 @@ export function EmbeddingProgressProvider({ children }) {
         embeddingProgressMap,
         startEmbedding,
         connectSSE,
+        removeQueuedFile,
       }}
     >
       {children}
