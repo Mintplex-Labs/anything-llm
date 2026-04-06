@@ -139,6 +139,22 @@ export function EmbeddingProgressProvider({ children }) {
           break;
 
         case "all_complete":
+          // If there was an error, mark all pending or embedding files as failed
+          // because something went wrong and we don't know the status of the files
+          if (data.error) {
+            setEmbeddingProgressMap((prev) => {
+              const slugMap = { ...prev[slug] };
+              for (const [filename, info] of Object.entries(slugMap)) {
+                if (info.status === "pending" || info.status === "embedding") {
+                  slugMap[filename] = {
+                    status: "failed",
+                    error: data.error,
+                  };
+                }
+              }
+              return { ...prev, [slug]: slugMap };
+            });
+          }
           ctrl.abort();
           delete abortControllersRef.current[slug];
           cleanupTimeoutsRef.current[slug] = setTimeout(() => {
@@ -196,7 +212,7 @@ export function EmbeddingProgressProvider({ children }) {
       );
       setEmbeddingProgressMap((prev) => ({
         ...prev,
-        [slug]: { ...prev[slug], ...newEntries },
+        [slug]: newEntries,
       }));
 
       connectSSE(slug);
@@ -206,17 +222,7 @@ export function EmbeddingProgressProvider({ children }) {
 
   const removeQueuedFile = useCallback(async (slug, filename) => {
     const { success } = await Workspace.removeQueuedEmbedding(slug, filename);
-    if (!success) return false;
-    setEmbeddingProgressMap((prev) => {
-      const slugMap = { ...prev[slug] };
-      delete slugMap[filename];
-      if (Object.keys(slugMap).length === 0) {
-        const { [slug]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [slug]: slugMap };
-    });
-    return true;
+    return success;
   }, []);
 
   return (

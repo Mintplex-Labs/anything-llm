@@ -104,10 +104,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
           {selectedTab === "documents" ? (
             <EmbeddingProgressProvider>
-              <DocumentSettings
-                workspace={workspace}
-                systemSettings={settings}
-              />
+              <DocumentSettings workspace={workspace} />
             </EmbeddingProgressProvider>
           ) : (
             <DataConnectors workspace={workspace} systemSettings={settings} />

@@ -55,33 +55,23 @@ class BackgroundService {
   }
 
   /**
-   * Wraps the logger so that calls originating from Bree's internal
-   * child-process message handler are suppressed when the payload
-   * carries `silent: true`.  Bree unconditionally calls
-   * `logger.info(message)` for every IPC message from forked processes
-   * (bypassing `workerMessageHandler`), so this is the only interception
-   * point.
+   * Wraps the logger so that IPC messages carrying `silent: true` are
+   * suppressed. Bree unconditionally calls `logger.info(message)` for
+   * every IPC message from forked processes, so this is the only
+   * interception point.
    */
   #makeBreeLogger() {
     const base = this.logger;
-    const isSilent = (args) =>
-      args.length === 1 &&
-      typeof args[0] === "object" &&
-      args[0] !== null &&
-      args[0].silent === true;
+    const isSilent = (args) => args.length === 1 && args[0]?.silent === true;
 
-    return new Proxy(base, {
-      get(target, prop, receiver) {
-        if (prop === "info" || prop === "log") {
-          return (...args) => {
-            if (isSilent(args)) return;
-            return target[prop](...args);
-          };
-        }
-        const val = Reflect.get(target, prop, receiver);
-        return typeof val === "function" ? val.bind(target) : val;
-      },
-    });
+    const wrapped = Object.create(base);
+    wrapped.info = (...args) => {
+      if (!isSilent(args)) base.info(...args);
+    };
+    wrapped.log = (...args) => {
+      if (!isSilent(args)) base.log(...args);
+    };
+    return wrapped;
   }
 
   async boot() {

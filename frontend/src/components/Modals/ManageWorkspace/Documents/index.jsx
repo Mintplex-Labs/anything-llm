@@ -23,7 +23,6 @@ export default function DocumentSettings({ workspace }) {
   }, [availableDocs]);
 
   const fetchKeysRef = useRef(null);
-  const didMountRef = useRef(false);
   const { embeddingProgress, startEmbedding } = useWorkspaceEmbeddingProgress(
     workspace.slug,
     {
@@ -110,11 +109,11 @@ export default function DocumentSettings({ workspace }) {
 
   useEffect(() => {
     fetchKeysRef.current = fetchKeys;
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      fetchKeys(true);
-    }
   });
+
+  useEffect(() => {
+    fetchKeys(true);
+  }, []);
 
   const updateWorkspace = async (e) => {
     e.preventDefault();

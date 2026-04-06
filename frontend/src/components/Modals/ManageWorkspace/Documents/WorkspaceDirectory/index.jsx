@@ -526,7 +526,7 @@ const getDisplayName = (filename) => {
   );
 };
 
-const getStatusStyles = () => ({
+const STATUS_STYLES = {
   pending: {
     icon: (
       <Clock size={16} className="text-white/40 shrink-0" weight="regular" />
@@ -534,7 +534,6 @@ const getStatusStyles = () => ({
     textColor: "text-zinc-400",
     label: "Queued",
   },
-
   embedding: {
     icon: (
       <CircleNotch
@@ -546,7 +545,6 @@ const getStatusStyles = () => ({
     textColor: "text-white",
     label: "Embedding",
   },
-
   complete: {
     icon: (
       <CheckCircle
@@ -563,11 +561,11 @@ const getStatusStyles = () => ({
     textColor: "text-red-400",
     label: "Failed",
   },
-});
+};
+
 function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
   const { status, chunksProcessed = 0, totalChunks = 0 } = fileStatus;
   const displayName = getDisplayName(filename);
-  const statusStyles = getStatusStyles();
   const isEmbedding = status === "embedding";
   const pct =
     isEmbedding && totalChunks > 0
@@ -577,7 +575,7 @@ function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
   return (
     <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
       <div className="col-span-7 flex items-center gap-x-2 overflow-hidden">
-        {statusStyles[status]?.icon || statusStyles.pending.icon}
+        {STATUS_STYLES[status]?.icon || STATUS_STYLES.pending.icon}
         <p
           className={`whitespace-nowrap overflow-hidden text-ellipsis ${
             status === "failed" ? "text-red-400" : ""
@@ -601,9 +599,9 @@ function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
         ) : (
           <div className="flex items-center gap-x-2">
             <p
-              className={`text-xs italic whitespace-nowrap flex gap-2 justify-center items-center ${statusStyles[status]?.textColor}`}
+              className={`text-xs italic whitespace-nowrap flex gap-2 justify-center items-center ${STATUS_STYLES[status]?.textColor}`}
             >
-              {statusStyles[status]?.label || "Queued"}
+              {STATUS_STYLES[status]?.label || "Queued"}
             </p>
             {onRemove && (
               <button

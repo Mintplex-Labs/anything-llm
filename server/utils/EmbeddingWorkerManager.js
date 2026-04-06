@@ -38,6 +38,12 @@ function addSSEConnection(slug, res) {
   if (!sseConnections.has(slug)) sseConnections.set(slug, new Set());
   sseConnections.get(slug).add(res);
 
+  // Only replay buffered events when a worker is actively running.
+  // If the worker has already exited the history is stale (e.g. contains
+  // all_complete from a previous run) and replaying it would poison a
+  // new SSE connection opened for a subsequent embedding job.
+  if (!runningWorkers.has(slug)) return;
+
   const history = eventHistory.get(slug);
   if (history) {
     for (const event of history) {
@@ -78,21 +84,38 @@ async function embedFiles(slug, files, workspaceId, userId) {
     }
   }
 
+  // Clear stale event history from any previous run so new SSE
+  // connections don't replay old events (including all_complete).
+  eventHistory.delete(slug);
+
   const { BackgroundService } = require("./BackgroundWorkers");
   const bg = new BackgroundService();
   const scriptPath = path.resolve(bg.jobsRoot, "embedding-worker.js");
   const { worker, jobId } = await bg.spawnWorker(scriptPath);
 
   runningWorkers.set(slug, { worker, jobId });
+  let workerCompleted = false;
   worker.on("message", (msg) => {
     if (!msg || !msg.type) return;
+    if (msg.type === "all_complete") workerCompleted = true;
     emitProgress(slug, msg);
   });
 
-  worker.on("exit", () => {
-    runningWorkers.delete(slug);
-    const { BackgroundService: BG } = require("./BackgroundWorkers");
-    new BG().removeJob(jobId).catch(() => {});
+  worker.on("exit", (code) => {
+    if (runningWorkers.get(slug)?.worker === worker) {
+      runningWorkers.delete(slug);
+    }
+    bg.removeJob(jobId).catch(() => {});
+
+    if (!workerCompleted) {
+      emitProgress(slug, {
+        type: "all_complete",
+        workspaceSlug: slug,
+        error: `Worker exited unexpectedly (code ${code ?? "unknown"})`,
+        embedded: 0,
+        failed: 0,
+      });
+    }
   });
 
   worker.on("error", (err) => {
@@ -100,7 +123,9 @@ async function embedFiles(slug, files, workspaceId, userId) {
       `[EmbeddingWorkerManager] Worker error for ${slug}:`,
       err.message
     );
-    runningWorkers.delete(slug);
+    if (runningWorkers.get(slug)?.worker === worker) {
+      runningWorkers.delete(slug);
+    }
   });
 
   worker.send({
@@ -131,11 +156,8 @@ function removeQueuedFile(slug, filename) {
   const history = eventHistory.get(slug);
   if (history) {
     const cleaned = history.filter(
-      (e) =>
-        !(e.filename === filename && e.type !== "file_removed") &&
-        !(e.type === "batch_starting" && e.filenames?.includes(filename))
+      (e) => !(e.filename === filename && e.type !== "file_removed")
     );
-    // Rewrite batch_starting events to exclude the removed file
     for (const e of cleaned) {
       if (e.type === "batch_starting" && e.filenames) {
         e.filenames = e.filenames.filter((f) => f !== filename);

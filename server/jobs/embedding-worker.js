@@ -25,8 +25,6 @@ const prisma = require("../utils/prisma");
 const { getVectorDbClass } = require("../utils/helpers");
 const { fileData } = require("../utils/files");
 const { Telemetry } = require("../models/telemetry");
-const { EventLogs } = require("../models/eventLogs");
-const { getModelTag } = require("../endpoints/utils");
 
 const queue = [];
 const cancelled = new Set();
@@ -59,9 +57,9 @@ async function processQueue() {
     totalDocs: batch.length,
   });
 
+  Telemetry.sendTelemetry("documents_embedded_in_workspace").catch(() => {});
   const embedded = [];
   const failedToEmbed = [];
-  const errors = new Set();
 
   for (const [index, filePath] of batch.entries()) {
     if (cancelled.has(filePath)) {
@@ -116,7 +114,6 @@ async function processQueue() {
     if (!vectorized) {
       console.error("Failed to vectorize", metadata?.title || newDoc.filename);
       failedToEmbed.push(metadata?.title || newDoc.filename);
-      errors.add(error);
       emit({
         type: "doc_failed",
         ...docProgress,
@@ -150,7 +147,6 @@ async function processQueue() {
     return;
   }
 
-  // All done — send completion and telemetry, then exit.
   emit({
     type: "all_complete",
     workspaceSlug,
@@ -159,24 +155,6 @@ async function processQueue() {
     embedded: embedded.length,
     failed: failedToEmbed.length,
   });
-
-  await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
-    LLMSelection: process.env.LLM_PROVIDER || "openai",
-    Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-    VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-    TTSSelection: process.env.TTS_PROVIDER || "native",
-    LLMModel: getModelTag(),
-  }).catch(() => {});
-
-  await EventLogs.logEvent(
-    "workspace_documents_added",
-    {
-      workspaceName: workspaceSlug,
-      numberOfDocumentsAdded: embedded.length,
-    },
-    userId
-  ).catch(() => {});
-
   process.exit(0);
 }
 
