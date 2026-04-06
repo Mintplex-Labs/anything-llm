@@ -541,8 +541,7 @@ class PGVector extends VectorDatabase {
     namespace,
     documentData = {},
     fullFilePath = null,
-    skipCache = false,
-    embeddingContext = null
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     const {
@@ -610,10 +609,7 @@ class PGVector extends VectorDatabase {
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await EmbedderEngine.embedChunks(
-        textChunks,
-        embeddingContext
-      );
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
       let vectorDimensions;
 
       if (!!vectorValues && vectorValues.length > 0) {

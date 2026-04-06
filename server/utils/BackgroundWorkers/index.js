@@ -133,40 +133,6 @@ class BackgroundService {
       /* Job may already be removed */
     }
   }
-
-  /**
-   * Run a one-off job via Bree with a data payload sent over IPC.
-   * The job file receives the payload via process.on('message').
-   * @param {string} name - Job filename (without .js) in the jobs directory
-   * @param {object} payload - Data to send to the job via IPC
-   * @param {object} [opts]
-   * @param {function} [opts.onMessage] - Callback for IPC messages from the child process
-   * @returns {Promise<void>} Resolves when the job exits with code 0
-   */
-  async runJob(name, payload = {}, { onMessage } = {}) {
-    const scriptPath = path.resolve(this.#root, `${name}.js`);
-    const { worker, jobId } = await this.spawnWorker(scriptPath);
-
-    if (typeof worker.send === "function") {
-      worker.send(payload);
-    }
-    if (onMessage) {
-      worker.on("message", onMessage);
-    }
-
-    return new Promise((resolve, reject) => {
-      worker.on("exit", async (code) => {
-        await this.removeJob(jobId);
-        if (code === 0) resolve();
-        else reject(new Error(`Job ${jobId} exited with code ${code}`));
-      });
-
-      worker.on("error", async (err) => {
-        await this.removeJob(jobId);
-        reject(err);
-      });
-    });
-  }
 }
 
 module.exports.BackgroundService = BackgroundService;

@@ -223,65 +223,27 @@ class NativeEmbedder {
    */
   async embedTextInput(textInput) {
     textInput = this.#applyQueryPrefix(textInput);
-    const result = await this.embedChunksInProcess(
+    const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );
     return result?.[0] || [];
   }
 
-  /**
-   * Routes embedding through an isolated worker process to protect the main
-   * server from OOM crashes during large document batches.
-   * This is the public API that vector DB providers and AI provider wrappers call.
-   * @param {string[]} textChunks
-   * @param {{ workspaceSlug: string, filename: string, userId: number|null }|null} context - Document context for progress reporting
-   * @returns {Promise<Array<number[]>>}
-   */
-  async embedChunks(textChunks = [], context = null) {
-    const { queueEmbedding } = require("../../WorkerQueue");
-    return await queueEmbedding({ textChunks }, context);
-  }
-
-  /**
-   *
-   * If you are thinking you want to edit this function - you probably don't.
-   * This process was benchmarked heavily on a t3.small (2GB RAM 1vCPU)
-   * and without careful memory management for the V8 garbage collector
-   * this function will likely result in an OOM on any resource-constrained deployment.
-   * To help manage very large documents we run a concurrent write-log each iteration
-   * to keep the embedding result out of memory. The `maxConcurrentChunk` is set to 25,
-   * as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
-   * during a very large document (>100K words) but can spike up to 70% before gc.
-   * This seems repeatable for all document sizes.
-   * While this does take a while, it is zero set up and is 100% free and on-instance.
-   * It still may crash depending on other elements at play - so no promises it works under all conditions.
-   *
-   * Runs the embedding pipeline directly in the current process. Only the
-   * embedding worker should call this — all other callers should use
-   * {@link embedChunks} which routes work to the isolated worker process.
-   *
-   * Chunk-level progress reporting:
-   * This method runs inside a forked child process (jobs/embedding-worker.js),
-   * so it cannot emit events on the main process's EmbeddingProgressBus directly.
-   * Instead, the worker passes an onProgress callback that sends IPC messages
-   * back to the parent. The full flow is:
-   *
-   *   embedChunksInProcess (onProgress callback)
-   *     → embedding-worker.js (converts callback to process.send IPC message)
-   *       → WorkerQueue (receives IPC, calls its own onProgress callback)
-   *         → WorkerQueue/index.js (emits "chunk_progress" on EmbeddingProgressBus)
-   *           → SSE endpoint streams it to the frontend
-   *
-   * @param {string[]} textChunks
-   * @param {function|null} onProgress - Called after each chunk group with { chunksProcessed: number, totalChunks: number }.
-   *   The embedding worker sets this to a function that sends IPC messages to the parent process.
-   * @returns {Promise<Array<number[]>|null>}
-   */
-  async embedChunksInProcess(textChunks = [], onProgress = null) {
+  // If you are thinking you want to edit this function - you probably don't.
+  // This process was benchmarked heavily on a t3.small (2GB RAM 1vCPU)
+  // and without careful memory management for the V8 garbage collector
+  // this function will likely result in an OOM on any resource-constrained deployment.
+  // To help manage very large documents we run a concurrent write-log each iteration
+  // to keep the embedding result out of memory. The `maxConcurrentChunk` is set to 25,
+  // as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
+  // during a very large document (>100K words) but can spike up to 70% before gc.
+  // This seems repeatable for all document sizes.
+  // While this does take a while, it is zero set up and is 100% free and on-instance.
+  // It still may crash depending on other elements at play - so no promises it works under all conditions.
+  async embedChunks(textChunks = []) {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;
-    const totalChunks = textChunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
@@ -304,15 +266,6 @@ class NativeEmbedder {
       this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
-
-      if (onProgress) {
-        const chunksProcessed = Math.min(
-          (idx + 1) * this.maxConcurrentChunks,
-          totalChunks
-        );
-        onProgress({ chunksProcessed, totalChunks });
-      }
-
       pipeline = null;
       output = null;
       data = null;

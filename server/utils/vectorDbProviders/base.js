@@ -92,15 +92,13 @@ class VectorDatabase {
    * @param {Object} documentData - Document data
    * @param {string} fullFilePath - Full file path
    * @param {boolean} skipCache - Skip cache
-   * @param {object|null} embeddingContext - Optional context for embedding progress reporting
    * @returns {Promise<{vectorized: boolean, error: string|null}>}
    */
   async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
-    skipCache = false,
-    embeddingContext = null
+    skipCache = false
   ) {
     throw new Error("Must be implemented by provider");
   }

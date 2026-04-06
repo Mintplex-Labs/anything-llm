@@ -1,81 +1,180 @@
 /**
- * Embedding Worker Job
+ * Embedding Worker
  *
- * Runs NativeEmbedder in an isolated child process so that OOM from large
- * document batches only kills this worker, not the main server.
+ * Runs the full document-embedding loop in an isolated child process so that
+ * OOM from the native embedding model only kills this worker, not the main server.
  *
- * Spawned on-demand by WorkerQueue via BackgroundService/Bree.
- * Stays alive between jobs (TTL-based lifecycle) to keep the ML model loaded.
+ * Spawned on-demand by EmbeddingWorkerManager via BackgroundService/Bree.
+ * Processes files sequentially and accepts additional files mid-run.
  *
- * IPC protocol:
- * - Receives: { type: "job", jobId, payload: { textChunks } }
- * - Sends:    { type: "ready" }
- * - Sends:    { type: "progress", jobId, chunksProcessed, totalChunks }
- * - Sends:    { type: "result", jobId, result: { vectors } }
- * - Sends:    { type: "error", jobId, error: string }
- * - Receives: { type: "shutdown" }
+ * IPC protocol (receives from parent):
+ *   { type: "embed", files, workspaceSlug, workspaceId, userId }
+ *   { type: "add_files", files }
+ *
+ * IPC protocol (sends to parent):
+ *   { type: "batch_starting", workspaceSlug, filenames, totalDocs }
+ *   { type: "doc_starting", workspaceSlug, filename, docIndex, totalDocs }
+ *   { type: "chunk_progress", workspaceSlug, filename, chunksProcessed, totalChunks }
+ *   { type: "doc_complete", workspaceSlug, filename, docIndex, totalDocs }
+ *   { type: "doc_failed", workspaceSlug, filename, error }
+ *   { type: "all_complete", workspaceSlug, embedded, failed }
  */
 
-process.env.NODE_ENV === "development"
-  ? require("dotenv").config({
-      path: require("path").resolve(
-        __dirname,
-        `../.env.${process.env.NODE_ENV}`
-      ),
-    })
-  : require("dotenv").config({
-      path: require("path").resolve(__dirname, "../.env"),
-    });
+const { v4: uuidv4 } = require("uuid");
+const prisma = require("../utils/prisma");
+const { getVectorDbClass } = require("../utils/helpers");
+const { fileData } = require("../utils/files");
+const { Telemetry } = require("../models/telemetry");
+const { EventLogs } = require("../models/eventLogs");
+const { getModelTag } = require("../endpoints/utils");
 
-const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
+const queue = [];
+let processing = false;
+let workspaceSlug = null;
+let workspaceId = null;
+let userId = null;
 
-let embedder = null;
+function emit(event) {
+  try {
+    process.send(event);
+  } catch {
+    // Parent may have disconnected
+  }
+}
+
+async function processQueue() {
+  if (processing || queue.length === 0) return;
+  processing = true;
+
+  const VectorDb = getVectorDbClass();
+  const batch = [...queue];
+  queue.length = 0;
+
+  emit({
+    type: "batch_starting",
+    workspaceSlug,
+    userId,
+    filenames: batch,
+    totalDocs: batch.length,
+  });
+
+  const embedded = [];
+  const failedToEmbed = [];
+  const errors = new Set();
+
+  for (const [index, filePath] of batch.entries()) {
+    const docProgress = {
+      workspaceSlug,
+      userId,
+      filename: filePath,
+      docIndex: index,
+      totalDocs: batch.length,
+    };
+
+    const data = await fileData(filePath);
+    if (!data) {
+      emit({ type: "doc_failed", ...docProgress, error: "Failed to load file data" });
+      failedToEmbed.push(filePath);
+      continue;
+    }
+
+    const docId = uuidv4();
+    const { pageContent: _pageContent, ...metadata } = data;
+    const newDoc = {
+      docId,
+      filename: filePath.split("/")[1],
+      docpath: filePath,
+      workspaceId,
+      metadata: JSON.stringify(metadata),
+    };
+
+    emit({ type: "doc_starting", ...docProgress });
+
+    const { vectorized, error } = await VectorDb.addDocumentToNamespace(
+      workspaceSlug,
+      { ...data, docId },
+      filePath
+    );
+
+    if (!vectorized) {
+      console.error("Failed to vectorize", metadata?.title || newDoc.filename);
+      failedToEmbed.push(metadata?.title || newDoc.filename);
+      errors.add(error);
+      emit({ type: "doc_failed", ...docProgress, error: error || "Unknown error" });
+      continue;
+    }
+
+    try {
+      await prisma.workspace_documents.create({ data: newDoc });
+      embedded.push(filePath);
+      emit({ type: "doc_complete", ...docProgress });
+    } catch (err) {
+      console.error(err.message);
+      emit({ type: "doc_failed", ...docProgress, error: "Failed to save document record" });
+    }
+  }
+
+  processing = false;
+
+  // If new files were added while we were processing, recurse.
+  if (queue.length > 0) {
+    await processQueue();
+    return;
+  }
+
+  // All done — send completion and telemetry, then exit.
+  emit({
+    type: "all_complete",
+    workspaceSlug,
+    userId,
+    totalDocs: batch.length,
+    embedded: embedded.length,
+    failed: failedToEmbed.length,
+  });
+
+  await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
+    LLMSelection: process.env.LLM_PROVIDER || "openai",
+    Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+    VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+    TTSSelection: process.env.TTS_PROVIDER || "native",
+    LLMModel: getModelTag(),
+  }).catch(() => {});
+
+  await EventLogs.logEvent(
+    "workspace_documents_added",
+    {
+      workspaceName: workspaceSlug,
+      numberOfDocumentsAdded: embedded.length,
+    },
+    userId
+  ).catch(() => {});
+
+  process.exit(0);
+}
 
 process.on("message", async (msg) => {
   if (!msg || !msg.type) return;
 
-  if (msg.type === "job") {
-    try {
-      if (!embedder) embedder = new NativeEmbedder();
+  if (msg.type === "embed") {
+    workspaceSlug = msg.workspaceSlug;
+    workspaceId = msg.workspaceId;
+    userId = msg.userId;
+    queue.push(...msg.files);
+    processQueue().catch((err) => {
+      console.error("[embedding-worker] Fatal error:", err);
+      process.exit(1);
+    });
+  }
 
-      const { textChunks } = msg.payload;
-
-      // Bridge chunk progress from embedChunksInProcess to the parent process.
-      // This callback converts in-process progress into IPC messages that the
-      // parent's WorkerQueue receives and forwards to the EmbeddingProgressBus.
-      const result = await embedder.embedChunksInProcess(
-        textChunks,
-        (progress) => {
-          process.send({
-            type: "progress",
-            message: `Embedding progress: chunk ${progress.chunksProcessed}/${progress.totalChunks}`,
-            jobId: msg.jobId,
-            chunksProcessed: progress.chunksProcessed,
-            totalChunks: progress.totalChunks,
-          });
-        }
-      );
-
-      process.send({
-        type: "result",
-        message: "Embedding job complete",
-        jobId: msg.jobId,
-        result: { vectors: result },
-      });
-    } catch (err) {
-      process.send({
-        type: "error",
-        message: `Embedding job failed: ${err.message || String(err)}`,
-        jobId: msg.jobId,
-        error: err.message || String(err),
+  if (msg.type === "add_files") {
+    queue.push(...msg.files);
+    // If we're not currently processing (worker is idle between batches),
+    // kick off processing immediately.
+    if (!processing) {
+      processQueue().catch((err) => {
+        console.error("[embedding-worker] Fatal error:", err);
+        process.exit(1);
       });
     }
   }
-
-  if (msg.type === "shutdown") {
-    process.exit(0);
-  }
 });
-
-// Signal that the worker is ready
-process.send({ type: "ready", message: "Embedding worker ready" });

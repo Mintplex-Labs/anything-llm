@@ -204,8 +204,7 @@ class Chroma extends VectorDatabase {
     namespace,
     documentData = {},
     fullFilePath = null,
-    skipCache = false,
-    embeddingContext = null
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -277,10 +276,7 @@ class Chroma extends VectorDatabase {
       this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await EmbedderEngine.embedChunks(
-        textChunks,
-        embeddingContext
-      );
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
       const submission = {
         ids: [],
         embeddings: [],

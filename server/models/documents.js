@@ -84,29 +84,34 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
-    const { embeddingProgressBus } = require("../utils/WorkerQueue");
+    const {
+      emitProgress,
+    } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
-    const totalDocs = additions.length;
 
-    const emitProgress = (type, extra = {}) =>
-      embeddingProgressBus.emit("progress", {
-        type,
-        workspaceSlug: workspace.slug,
-        userId,
-        ...extra,
-      });
-
-    // Signal the full batch so SSE clients (including late-joining ones
-    // via history replay) can seed the complete file list as "pending".
-    emitProgress("batch_starting", { filenames: additions, totalDocs });
+    emitProgress(workspace.slug, {
+      type: "batch_starting",
+      workspaceSlug: workspace.slug,
+      userId,
+      filenames: additions,
+      totalDocs: additions.length,
+    });
 
     for (const [index, path] of additions.entries()) {
-      const docProgress = { filename: path, docIndex: index, totalDocs };
+      const docProgress = {
+        workspaceSlug: workspace.slug,
+        userId,
+        filename: path,
+        docIndex: index,
+        totalDocs: additions.length,
+      };
+
       const data = await fileData(path);
       if (!data) {
-        emitProgress("doc_failed", {
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
           ...docProgress,
           error: "Failed to load file data",
         });
@@ -123,19 +128,12 @@ const Document = {
         metadata: JSON.stringify(metadata),
       };
 
-      emitProgress("doc_starting", docProgress);
+      emitProgress(workspace.slug, { type: "doc_starting", ...docProgress });
 
-      const embeddingContext = {
-        workspaceSlug: workspace.slug,
-        filename: path,
-        userId,
-      };
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
         { ...data, docId },
-        path,
-        false,
-        embeddingContext
+        path
       );
 
       if (!vectorized) {
@@ -145,7 +143,8 @@ const Document = {
         );
         failedToEmbed.push(metadata?.title || newDoc.filename);
         errors.add(error);
-        emitProgress("doc_failed", {
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
           ...docProgress,
           error: error || "Unknown error",
         });
@@ -155,19 +154,22 @@ const Document = {
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
-        emitProgress("doc_complete", docProgress);
+        emitProgress(workspace.slug, { type: "doc_complete", ...docProgress });
       } catch (error) {
         console.error(error.message);
-        emitProgress("doc_failed", {
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
           ...docProgress,
           error: "Failed to save document record",
         });
       }
     }
 
-    // Signal that all documents have been processed
-    emitProgress("all_complete", {
-      totalDocs,
+    emitProgress(workspace.slug, {
+      type: "all_complete",
+      workspaceSlug: workspace.slug,
+      userId,
+      totalDocs: additions.length,
       embedded: embedded.length,
       failed: failedToEmbed.length,
     });

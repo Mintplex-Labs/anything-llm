@@ -24,10 +24,7 @@ const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
-const {
-  convertToChatHistory,
-  writeResponseChunk,
-} = require("../utils/helpers/chat/responses");
+const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
   determineWorkspacePfpFilepath,
@@ -227,6 +224,28 @@ function workspaceEndpoints(app) {
           deletes,
           response.locals?.user?.id
         );
+
+        const {
+          isNativeEmbedder,
+          embedFiles,
+        } = require("../utils/EmbeddingWorkerManager");
+
+        if (isNativeEmbedder() && adds.length > 0) {
+          await embedFiles(
+            currWorkspace.slug,
+            adds,
+            currWorkspace.id,
+            response.locals?.user?.id ?? null
+          );
+          const updatedWorkspace = await Workspace.get({
+            id: currWorkspace.id,
+          });
+          response
+            .status(200)
+            .json({ workspace: updatedWorkspace, message: null });
+          return;
+        }
+
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds,
@@ -1069,8 +1088,10 @@ function workspaceEndpoints(app) {
     async (request, response) => {
       try {
         const workspace = response.locals.workspace;
-        const user = await userFromSession(request, response);
-        const userId = user?.id ?? null;
+        const {
+          addSSEConnection,
+          removeSSEConnection,
+        } = require("../utils/EmbeddingWorkerManager");
 
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Type", "text/event-stream");
@@ -1078,20 +1099,10 @@ function workspaceEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        const { embeddingProgressBus } = require("../utils/WorkerQueue");
-        const { unsubscribe } = embeddingProgressBus.subscribe(
-          { workspaceSlug: workspace.slug, userId },
-          (event) => {
-            writeResponseChunk(response, event);
-          }
-        );
+        addSSEConnection(workspace.slug, response);
 
-        // If there's no history, no embedding is in progress right now.
-        // We intentionally send nothing and keep the connection open —
-        // events will flow if embedding starts, and the connection is
-        // cleaned up when the client disconnects (modal close / unmount).
         request.on("close", () => {
-          unsubscribe();
+          removeSSEConnection(workspace.slug, response);
         });
       } catch (e) {
         console.error(e.message, e);
