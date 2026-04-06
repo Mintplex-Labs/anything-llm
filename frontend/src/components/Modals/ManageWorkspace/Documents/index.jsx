@@ -24,10 +24,12 @@ export default function DocumentSettings({ workspace }) {
 
   const fetchKeysRef = useRef(null);
   const didMountRef = useRef(false);
-  const { embeddingProgress, startEmbedding } =
-    useWorkspaceEmbeddingProgress(workspace.slug, {
+  const { embeddingProgress, startEmbedding } = useWorkspaceEmbeddingProgress(
+    workspace.slug,
+    {
       onProgressCleared: () => fetchKeysRef.current?.(true),
-    });
+    }
+  );
 
   async function fetchKeys(refetchWorkspace = false, options = {}) {
     const { autoSelectNew = false } = options;
@@ -202,9 +204,7 @@ export default function DocumentSettings({ workspace }) {
   };
 
   const visibleAvailableDocs = useMemo(() => {
-    const embeddingFilenames = new Set(
-      Object.keys(embeddingProgress ?? {})
-    );
+    const embeddingFilenames = new Set(Object.keys(embeddingProgress ?? {}));
     if (embeddingFilenames.size === 0) return availableDocs;
     return {
       ...availableDocs,
@@ -213,8 +213,7 @@ export default function DocumentSettings({ workspace }) {
           return {
             ...folder,
             items: folder.items.filter(
-              (file) =>
-                !embeddingFilenames.has(`${folder.name}/${file.name}`)
+              (file) => !embeddingFilenames.has(`${folder.name}/${file.name}`)
             ),
           };
         }
