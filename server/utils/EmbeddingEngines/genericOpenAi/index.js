@@ -1,4 +1,8 @@
-const { toChunks, maximumChunkLength } = require("../../helpers");
+const {
+  toChunks,
+  maximumChunkLength,
+  reportEmbeddingProgress,
+} = require("../../helpers");
 
 class GenericOpenAiEmbedder {
   constructor() {
@@ -108,6 +112,7 @@ class GenericOpenAiEmbedder {
       if (error)
         throw new Error(`GenericOpenAI Failed to embed: ${error.message}`);
       allResults.push(...(data || []));
+      reportEmbeddingProgress(allResults.length, textChunks.length);
       if (this.apiRequestDelay) await this.runDelay();
     }
 

@@ -128,6 +128,12 @@ const Document = {
 
       emitProgress(workspace.slug, { type: "doc_starting", ...docProgress });
 
+      global.__embeddingProgress = {
+        workspaceSlug: workspace.slug,
+        filename: path,
+        userId,
+      };
+
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
         { ...data, docId },
@@ -165,6 +171,8 @@ const Document = {
         });
       }
     }
+
+    global.__embeddingProgress = null;
 
     emitProgress(workspace.slug, {
       type: "all_complete",

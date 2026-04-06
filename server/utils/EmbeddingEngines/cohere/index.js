@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 class CohereEmbedder {
   constructor() {
@@ -28,6 +28,7 @@ class CohereEmbedder {
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
     this.inputType = "search_document";
+    let chunksProcessed = 0;
 
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
@@ -39,9 +40,13 @@ class CohereEmbedder {
               inputType: this.inputType,
             })
             .then((res) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: res.embeddings, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||
