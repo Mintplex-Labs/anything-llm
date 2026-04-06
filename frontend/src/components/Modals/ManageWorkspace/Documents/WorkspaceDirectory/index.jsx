@@ -529,36 +529,46 @@ const getDisplayName = (filename) => {
 const STATUS_STYLES = {
   pending: {
     icon: (
-      <Clock size={16} className="text-white/40 shrink-0" weight="regular" />
+      <Clock
+        size={16}
+        className="text-slate-100 light:text-slate-900/40 shrink-0"
+        weight="regular"
+      />
     ),
-    textColor: "text-zinc-400",
+    textColor: "text-slate-100 light:text-slate-900/70",
     label: "Queued",
   },
   embedding: {
     icon: (
       <CircleNotch
         size={16}
-        className="text-white animate-spin shrink-0"
+        className="text-slate-100 light:text-slate-900/40 animate-spin shrink-0"
         weight="bold"
       />
     ),
-    textColor: "text-white",
+    textColor: "text-slate-100 light:text-slate-900/70",
     label: "Embedding",
   },
   complete: {
     icon: (
       <CheckCircle
         size={16}
-        className="text-green-400 shrink-0"
+        className="text-green-400 light:text-green-600 shrink-0"
         weight="fill"
       />
     ),
-    textColor: "text-green-400",
+    textColor: "text-green-400 light:text-green-600",
     label: "Complete",
   },
   failed: {
-    icon: <XCircle size={16} className="text-red-400 shrink-0" weight="fill" />,
-    textColor: "text-red-400",
+    icon: (
+      <XCircle
+        size={16}
+        className="text-red-400 light:text-red-600 shrink-0"
+        weight="fill"
+      />
+    ),
+    textColor: "text-red-400 light:text-red-600",
     label: "Failed",
   },
 };
@@ -573,7 +583,7 @@ function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
       : 0;
 
   return (
-    <div className="text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
+    <div className="text-slate-100 light:text-slate-900 text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
       <div className="col-span-7 flex items-center gap-x-2 overflow-hidden">
         {STATUS_STYLES[status]?.icon || STATUS_STYLES.pending.icon}
         <p
@@ -588,9 +598,9 @@ function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
       <div className="col-span-5 flex justify-end items-center gap-x-2">
         {isEmbedding ? (
           <div className="flex items-center gap-x-2 w-full justify-end">
-            <div className="w-20 h-[1.5px] bg-white/10 rounded-full overflow-hidden">
+            <div className="w-20 h-[1.5px] bg-white/10 light:bg-sky-900/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-white rounded-full transition-all duration-300"
+                className="h-full bg-white light:bg-sky-400 rounded-full transition-all duration-300"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -606,10 +616,13 @@ function EmbeddingFileRow({ filename, status: fileStatus, onRemove }) {
             {onRemove && (
               <button
                 onClick={onRemove}
-                className="hover:bg-white/10 rounded p-0.5 transition-colors"
+                className="border-none hover:bg-white/10 light:hover:bg-sky-900/10 rounded p-0.5 transition-colors"
                 title="Remove from queue"
               >
-                <X size={14} className="text-zinc-400 hover:text-white" />
+                <X
+                  size={14}
+                  className="text-slate-100 light:text-slate-900/40 hover:text-slate-100 light:hover:text-slate-900"
+                />
               </button>
             )}
           </div>
