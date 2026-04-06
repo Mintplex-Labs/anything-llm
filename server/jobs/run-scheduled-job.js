@@ -50,6 +50,7 @@ process.on("message", async (payload) => {
     // Build trace-capturing handler
     const thoughts = [];
     const toolCalls = [];
+    const generatedFiles = [];
     let textResponse = "";
     let metrics = {};
     let handlerResolve = null;
@@ -62,6 +63,11 @@ process.on("message", async (payload) => {
       send(jsonStr) {
         const data = safeJsonParse(jsonStr, null);
         if (!data) return;
+
+        if (data.type === "fileDownloadCard" && data.content) {
+          generatedFiles.push(data.content);
+          return;
+        }
 
         if (data.type === "statusResponse" && data.content) {
           thoughts.push(data.content);
@@ -152,7 +158,14 @@ process.on("message", async (payload) => {
 
     // Save completed result
     await ScheduledJobRun.complete(run.id, {
-      result: { text: textResponse, thoughts, toolCalls, metrics, duration },
+      result: {
+        text: textResponse,
+        thoughts,
+        toolCalls,
+        generatedFiles,
+        metrics,
+        duration,
+      },
     });
 
     log(

@@ -10,6 +10,7 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
+const { ScheduledJobRun } = require("../models/scheduledJobRun");
 const createFilesLib = require("../utils/agents/aibitat/plugins/create-files/lib");
 
 /**
@@ -42,12 +43,13 @@ function agentFileServerEndpoints(app) {
             .json({ error: "Invalid filename format" });
         }
 
-        // Find a chat record that references this file and that the user can access
-        const validChat = await findValidChatForFile(
-          filename,
-          user,
-          multiUserMode(response)
-        );
+        // Find a chat or scheduled job run that references this file
+        const validChat =
+          (await findValidChatForFile(
+            filename,
+            user,
+            multiUserMode(response)
+          )) || (await findValidScheduledJobRunForFile(filename));
 
         if (!validChat) {
           return response.status(404).json({
@@ -135,6 +137,42 @@ async function findValidChatForFile(storageFilename, user, isMultiUser) {
     return null;
   } catch (error) {
     console.error("[findValidChatForFile] Error:", error.message);
+    return null;
+  }
+}
+
+/**
+ * Finds a scheduled job run that references the given storage filename.
+ * Scheduled jobs are single-user only, so no per-user access check is needed.
+ * @param {string} storageFilename
+ * @returns {Promise<{workspaceId: number, displayFilename: string}|null>}
+ */
+async function findValidScheduledJobRunForFile(storageFilename) {
+  try {
+    const runs = await ScheduledJobRun.where({
+      status: "completed",
+      result: { contains: storageFilename },
+    });
+
+    for (const run of runs) {
+      try {
+        const result = safeJsonParse(run.result, { generatedFiles: [] });
+        const file = result.generatedFiles?.find(
+          (f) => f?.storageFilename === storageFilename
+        );
+        if (!file) continue;
+        return {
+          workspaceId: null,
+          displayFilename: file.filename || storageFilename,
+        };
+      } catch {
+        continue;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error("[findValidScheduledJobRunForFile] Error:", error.message);
     return null;
   }
 }
