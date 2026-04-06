@@ -5,7 +5,7 @@ import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
-import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
+import { useWorkspaceEmbeddingProgress } from "@/EmbeddingProgressContext";
 
 export default function DocumentSettings({ workspace }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
@@ -22,27 +22,11 @@ export default function DocumentSettings({ workspace }) {
     availableDocsRef.current = availableDocs;
   }, [availableDocs]);
 
-  const { embeddingProgressMap, startEmbedding, connectSSE } =
-    useEmbeddingProgress();
-
-  const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
-
-  // On mount, connect SSE so we catch up on any active embedding job
-  // via the server's buffered history replay.
-  useEffect(() => {
-    connectSSE(workspace.slug);
-  }, [workspace.slug, connectSSE]);
-
-  // When progress is cleared by the context (all_complete + 5s auto-clear),
-  // refresh the file lists so the normal view reflects newly embedded docs.
-  const prevProgressRef = useRef(embeddingProgress);
-  useEffect(() => {
-    // Went from non-null → null = progress was just cleared
-    if (prevProgressRef.current && !embeddingProgress) {
-      fetchKeys(true);
-    }
-    prevProgressRef.current = embeddingProgress;
-  }, [embeddingProgress]);
+  const fetchKeysRef = useRef(null);
+  const didMountRef = useRef(false);
+  const { startEmbedding } = useWorkspaceEmbeddingProgress(workspace.slug, {
+    onProgressCleared: () => fetchKeysRef.current?.(true),
+  });
 
   async function fetchKeys(refetchWorkspace = false, options = {}) {
     const { autoSelectNew = false } = options;
@@ -122,8 +106,12 @@ export default function DocumentSettings({ workspace }) {
   }
 
   useEffect(() => {
-    fetchKeys(true);
-  }, []);
+    fetchKeysRef.current = fetchKeys;
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      fetchKeys(true);
+    }
+  });
 
   const updateWorkspace = async (e) => {
     e.preventDefault();
@@ -251,7 +239,6 @@ export default function DocumentSettings({ workspace }) {
         hasChanges={hasChanges}
         saveChanges={updateWorkspace}
         movedItems={movedItems}
-        embeddingProgress={embeddingProgress}
       />
     </div>
   );

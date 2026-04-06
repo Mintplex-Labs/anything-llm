@@ -81,40 +81,40 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   }
 
   return (
-    <EmbeddingProgressProvider>
-      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
-        <div className="backdrop h-full w-full absolute top-0 z-10" />
-        <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
-          <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border">
-            <div className="flex items-start justify-between p-2 rounded-t border-theme-modal-border relative">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-              >
-                <X size={20} weight="bold" className="text-white" />
-              </button>
-            </div>
+    <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
+      <div className="backdrop h-full w-full absolute top-0 z-10" />
+      <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
+        <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border">
+          <div className="flex items-start justify-between p-2 rounded-t border-theme-modal-border relative">
+            <button
+              onClick={hideModal}
+              type="button"
+              className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            >
+              <X size={20} weight="bold" className="text-white" />
+            </button>
+          </div>
 
-            {user?.role !== "default" && (
-              <ModalTabSwitcher
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-              />
-            )}
+          {user?.role !== "default" && (
+            <ModalTabSwitcher
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+            />
+          )}
 
-            {selectedTab === "documents" ? (
+          {selectedTab === "documents" ? (
+            <EmbeddingProgressProvider>
               <DocumentSettings
                 workspace={workspace}
                 systemSettings={settings}
               />
-            ) : (
-              <DataConnectors workspace={workspace} systemSettings={settings} />
-            )}
-          </div>
+            </EmbeddingProgressProvider>
+          ) : (
+            <DataConnectors workspace={workspace} systemSettings={settings} />
+          )}
         </div>
       </div>
-    </EmbeddingProgressProvider>
+    </div>
   );
 };
 
