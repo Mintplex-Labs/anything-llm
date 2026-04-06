@@ -268,22 +268,10 @@ class NativeEmbedder {
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
 
-      if (typeof process.send === "function" && global.__embeddingProgress) {
-        const ctx = global.__embeddingProgress;
-        process.send({
-          type: "chunk_progress",
-          workspaceSlug: ctx.workspaceSlug,
-          filename: ctx.filename,
-          userId: ctx.userId,
-          chunksProcessed: Math.min(
-            (idx + 1) * this.maxConcurrentChunks,
-            totalChunks
-          ),
-          totalChunks,
-          silent: true,
-        });
-      }
-
+      this.#reportGlobalProgress({
+        idx,
+        totalChunks,
+      });
       pipeline = null;
       output = null;
       data = null;
@@ -294,6 +282,33 @@ class NativeEmbedder {
     );
     fs.rmSync(tmpFilePath, { force: true });
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+  }
+
+  /**
+   * Report global progress to the embedding worker via IPC
+   * using the global __embeddingProgress context.
+   * @param {Object} params
+   * @param {number} params.idx - The index of the chunk.
+   * @param {number} params.totalChunks - The total number of chunks.
+   */
+  #reportGlobalProgress({ idx, totalChunks }) {
+    if (typeof process.send !== "function") return;
+    if (!global.__embeddingProgress) return;
+
+    const ctx = global.__embeddingProgress;
+    process.send({
+      type: "chunk_progress",
+      workspaceSlug: ctx.workspaceSlug,
+      filename: ctx.filename,
+      userId: ctx.userId,
+      chunksProcessed: Math.min(
+        (idx + 1) * this.maxConcurrentChunks,
+        totalChunks
+      ),
+      totalChunks,
+      silent: true,
+    });
+    return;
   }
 }
 
