@@ -22,6 +22,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
   };
 
   useEffect(() => {
+    if (!open) return;
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false);
@@ -32,7 +33,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open]);
 
   if (!chatId || isEditing || role === "user") return null;
 

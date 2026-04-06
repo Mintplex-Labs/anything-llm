@@ -173,12 +173,17 @@ function SkillRow({ skill, disabled, onToggle }) {
       }`}
     >
       <div className="flex items-center gap-x-2">
-        <Icon size={22} className="text-slate-100 shrink-0" />
+        <Icon
+          size={22}
+          className="text-slate-100 light:text-slate-900 shrink-0"
+        />
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-slate-100">
+          <span className="text-sm font-medium text-slate-100 light:text-slate-900">
             {skill.title}
           </span>
-          <span className="text-xs text-slate-100/50">{skill.description}</span>
+          <span className="text-xs text-slate-100/50 light:text-slate-900/50">
+            {skill.description}
+          </span>
         </div>
       </div>
       <SimpleToggleSwitch enabled={!disabled} onChange={onToggle} size="md" />

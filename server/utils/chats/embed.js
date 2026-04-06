@@ -18,7 +18,10 @@ async function streamChatWithForEmbed(
   sessionId,
   { promptOverride, modelOverride, temperatureOverride, username }
 ) {
-  const chatMode = embed.chat_mode;
+  // Automatic mode is NOT valid for embeds, so we default to chat mode.
+  let chatMode = embed.chat_mode ?? "chat";
+  if (chatMode === "automatic") chatMode = "chat";
+
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
