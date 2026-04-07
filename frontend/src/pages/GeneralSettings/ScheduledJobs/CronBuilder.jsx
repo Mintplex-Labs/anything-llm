@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   parseCronToBuilderState,
   buildCronFromBuilderState,
@@ -29,22 +29,30 @@ const labelClass = "text-sm text-theme-text-secondary";
 // `value` on mount, and emits a fresh 5-field cron string via `onChange`
 // whenever the user changes any sub-field.
 export default function CronBuilder({ value, onChange }) {
-  const [state, setState] = useState(() => parseCronToBuilderState(value));
-  const isFirstRender = useRef(true);
+  const [state, setState] = useState(
+    () => parseCronToBuilderState(value).state
+  );
+  const [wasFallback, setWasFallback] = useState(
+    () => parseCronToBuilderState(value).wasFallback
+  );
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const cron = buildCronFromBuilderState(state);
+  const update = (patch) => {
+    const next = { ...state, ...patch };
+    setState(next);
+    if (wasFallback) setWasFallback(false);
+    const cron = buildCronFromBuilderState(next);
     if (cron !== value) onChange(cron);
-  }, [state]);
-
-  const update = (patch) => setState((prev) => ({ ...prev, ...patch }));
+  };
 
   return (
     <div className="flex flex-col gap-3 p-3 bg-theme-settings-input-bg/40 rounded-lg">
+      {wasFallback && (
+        <p className="text-xs text-yellow-400">
+          This expression can&apos;t be edited visually. Switch to Custom to
+          keep it, or change anything below to overwrite it.
+        </p>
+      )}
+
       <div className="flex items-center gap-2 flex-wrap">
         <span className={labelClass}>Run</span>
         <select
@@ -91,7 +99,7 @@ export default function CronBuilder({ value, onChange }) {
           >
             {MINUTES.map((n) => (
               <option key={n} value={n}>
-                {n.toString().padStart(2, "0")}
+                {pad2(n)}
               </option>
             ))}
           </select>

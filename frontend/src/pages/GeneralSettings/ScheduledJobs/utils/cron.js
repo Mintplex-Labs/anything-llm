@@ -25,46 +25,66 @@ export const DEFAULT_BUILDER_STATE = {
 
 // Parse a 5-field cron expression into the visual builder's state shape.
 // Only recognizes the patterns the builder itself can produce; anything else
-// (ranges, step values in non-minute fields, multiple months, etc.) returns
-// the default state so the builder still renders sensibly.
+// (ranges, step values in non-minute fields, multiple months, etc.) is
+// reported with `wasFallback: true` so the UI can warn the user that the
+// stored expression cannot be edited visually.
+//
+// Returns: { state, wasFallback }
 export function parseCronToBuilderState(cron) {
-  if (!cron || typeof cron !== "string") return { ...DEFAULT_BUILDER_STATE };
+  const fallback = { state: { ...DEFAULT_BUILDER_STATE }, wasFallback: true };
+  if (!cron || typeof cron !== "string") return fallback;
   const parts = cron.trim().split(/\s+/);
-  if (parts.length !== 5) return { ...DEFAULT_BUILDER_STATE };
+  if (parts.length !== 5) return fallback;
   const [m, h, dom, mon, dow] = parts;
-  if (mon !== "*") return { ...DEFAULT_BUILDER_STATE };
+  if (mon !== "*") return fallback;
 
   // Every minute
   if (m === "*" && h === "*" && dom === "*" && dow === "*") {
-    return { ...DEFAULT_BUILDER_STATE, frequency: "minute", minuteInterval: 1 };
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "minute",
+        minuteInterval: 1,
+      },
+      wasFallback: false,
+    };
   }
 
   // Every N minutes
   const stepMatch = m.match(/^\*\/(\d+)$/);
   if (stepMatch && h === "*" && dom === "*" && dow === "*") {
     return {
-      ...DEFAULT_BUILDER_STATE,
-      frequency: "minute",
-      minuteInterval: parseInt(stepMatch[1], 10),
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "minute",
+        minuteInterval: parseInt(stepMatch[1], 10),
+      },
+      wasFallback: false,
     };
   }
 
   // Hourly at minute X
   if (/^\d+$/.test(m) && h === "*" && dom === "*" && dow === "*") {
     return {
-      ...DEFAULT_BUILDER_STATE,
-      frequency: "hour",
-      hourMinuteOffset: parseInt(m, 10),
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "hour",
+        hourMinuteOffset: parseInt(m, 10),
+      },
+      wasFallback: false,
     };
   }
 
   // Daily at H:M
   if (/^\d+$/.test(m) && /^\d+$/.test(h) && dom === "*" && dow === "*") {
     return {
-      ...DEFAULT_BUILDER_STATE,
-      frequency: "day",
-      hour: parseInt(h, 10),
-      minute: parseInt(m, 10),
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "day",
+        hour: parseInt(h, 10),
+        minute: parseInt(m, 10),
+      },
+      wasFallback: false,
     };
   }
 
@@ -84,26 +104,32 @@ export function parseCronToBuilderState(cron) {
       ),
     ];
     return {
-      ...DEFAULT_BUILDER_STATE,
-      frequency: "week",
-      hour: parseInt(h, 10),
-      minute: parseInt(m, 10),
-      weekdays: days.length ? days : [1],
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "week",
+        hour: parseInt(h, 10),
+        minute: parseInt(m, 10),
+        weekdays: days.length ? days : [1],
+      },
+      wasFallback: false,
     };
   }
 
   // Monthly on day D at H:M
   if (/^\d+$/.test(m) && /^\d+$/.test(h) && /^\d+$/.test(dom) && dow === "*") {
     return {
-      ...DEFAULT_BUILDER_STATE,
-      frequency: "month",
-      hour: parseInt(h, 10),
-      minute: parseInt(m, 10),
-      dayOfMonth: parseInt(dom, 10),
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "month",
+        hour: parseInt(h, 10),
+        minute: parseInt(m, 10),
+        dayOfMonth: parseInt(dom, 10),
+      },
+      wasFallback: false,
     };
   }
 
-  return { ...DEFAULT_BUILDER_STATE };
+  return fallback;
 }
 
 // Build a 5-field cron expression from the visual builder's state.
