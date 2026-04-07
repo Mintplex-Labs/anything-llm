@@ -109,8 +109,10 @@ process.on("message", async (payload) => {
       threadId: null,
     }).init();
 
-    // If the job has a specific tool list, only those tools are loaded.
-    // If null, the agent gets all enabled agent skills (the default behavior).
+    // Tool overrides control which tools the agent can use:
+    // - Array with items: only those specific tools are loaded
+    // - Empty array: no tools are loaded
+    // - null: all enabled agent skills are loaded (default behavior)
     const toolOverrides = safeJsonParse(job.tools, null);
 
     await agentHandler.createAIbitat({

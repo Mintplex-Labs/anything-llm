@@ -66,7 +66,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
       name: form.name.trim(),
       prompt: form.prompt.trim(),
       schedule: form.schedule.trim(),
-      tools: form.selectedTools.length > 0 ? form.selectedTools : null,
+      tools: form.selectedTools,
     };
 
     const result = isEditing
@@ -166,12 +166,31 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
 
           {availableTools.length > 0 && (
             <div>
-              <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-                Tools (optional)
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-theme-text-primary">
+                  Tools (optional)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allSelected =
+                      form.selectedTools.length === availableTools.length;
+                    setForm((prev) => ({
+                      ...prev,
+                      selectedTools: allSelected
+                        ? []
+                        : availableTools.map((t) => t.id),
+                    }));
+                  }}
+                  className="px-2 py-0.5 text-xs rounded-md border border-white/10 text-theme-text-secondary hover:text-theme-text-primary hover:border-white/30 transition-colors"
+                >
+                  {form.selectedTools.length === availableTools.length
+                    ? "Deselect all"
+                    : "Select all"}
+                </button>
+              </div>
               <p className="text-xs text-theme-text-secondary mb-2">
-                Select which agent tools this job can use. Leave empty to use
-                all enabled tools.
+                Select which agent tools this job can use.
               </p>
               <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 bg-theme-settings-input-bg rounded-lg">
                 {availableTools.map((tool) => (
