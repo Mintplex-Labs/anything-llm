@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CircleNotch } from "@phosphor-icons/react";
 import ModelRouterAPI from "@/models/modelRouter";
 import showToast from "@/utils/toast";
@@ -66,6 +67,7 @@ export default function RuleForm({
   onSaved,
   onCancel,
 }) {
+  const { t } = useTranslation();
   const isEditing = !!existingRule;
   const [loading, setLoading] = useState(false);
   const [ruleType, setRuleType] = useState(existingRule?.type || "calculated");
@@ -84,7 +86,7 @@ export default function RuleForm({
     const title = slugify(formData.get("title") || "");
 
     if (!title) {
-      showToast("Title is required", "error");
+      showToast(t("model-router.rule-form.title-required"), "error");
       setLoading(false);
       return;
     }
@@ -118,25 +120,36 @@ export default function RuleForm({
 
     setLoading(false);
     if (result.rule) {
-      showToast(isEditing ? "Rule updated" : "Rule created", "success", {
-        clear: true,
-      });
+      showToast(
+        isEditing
+          ? t("model-router.rule-form.toast-updated")
+          : t("model-router.rule-form.toast-created"),
+        "success",
+        {
+          clear: true,
+        }
+      );
       onSaved();
     } else {
-      showToast(result.error || "Failed to save rule", "error");
+      showToast(
+        result.error || t("model-router.rule-form.toast-save-failed"),
+        "error"
+      );
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
       <p className="text-sm font-semibold text-white light:text-slate-900">
-        {isEditing ? "Edit Rule" : "New Rule"}
+        {isEditing
+          ? t("model-router.rule-form.edit-title")
+          : t("model-router.rule-form.new-title")}
       </p>
 
       <div className="flex gap-x-4">
         <div className="flex-1 flex flex-col gap-y-1.5">
           <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-            Title
+            {t("model-router.rule-form.title-label")}
           </label>
           <input
             type="text"
@@ -147,26 +160,26 @@ export default function RuleForm({
             required
           />
           <p className="text-[10px] text-zinc-400 light:text-slate-500">
-            Lowercase with underscores only. Auto-formatted on save.
+            {t("model-router.rule-form.title-help")}
           </p>
         </div>
         <div className="w-[200px] flex flex-col gap-y-1.5">
           <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-            Rule Type
+            {t("model-router.rule-form.rule-type")}
           </label>
           <select
             value={ruleType}
             onChange={(e) => setRuleType(e.target.value)}
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
           >
-            {RULE_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
+            {RULE_TYPES.map((rt) => (
+              <option key={rt.value} value={rt.value}>
+                {rt.label}
               </option>
             ))}
           </select>
           <p className="text-[10px] text-zinc-400 light:text-slate-500">
-            {RULE_TYPES.find((t) => t.value === ruleType)?.description}
+            {RULE_TYPES.find((rt) => rt.value === ruleType)?.description}
           </p>
         </div>
       </div>
@@ -187,8 +200,8 @@ export default function RuleForm({
       <LLMProviderModelPicker
         providerFieldName="route_provider"
         modelFieldName="route_model"
-        label="Route to Provider & Model"
-        description="When this rule matches, use this provider/model"
+        label={t("model-router.rule-form.route-to-label")}
+        description={t("model-router.rule-form.route-to-description")}
         defaultProvider={existingRule?.route_provider || ""}
         defaultModel={existingRule?.route_model || ""}
       />
@@ -199,7 +212,7 @@ export default function RuleForm({
           onClick={onCancel}
           className="text-sm font-medium text-zinc-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 px-4 py-2 rounded-lg transition-colors"
         >
-          Cancel
+          {t("model-router.rule-form.cancel")}
         </button>
         <button
           type="submit"
@@ -209,12 +222,12 @@ export default function RuleForm({
           {loading ? (
             <>
               <CircleNotch className="h-4 w-4 animate-spin" />
-              Saving...
+              {t("model-router.rule-form.saving")}
             </>
           ) : isEditing ? (
-            "Update Rule"
+            t("model-router.rule-form.update-rule")
           ) : (
-            "Create Rule"
+            t("model-router.rule-form.create-rule")
           )}
         </button>
       </div>
@@ -230,13 +243,14 @@ function CalculatedFields({
   comparators,
   existingRule,
 }) {
+  const { t } = useTranslation();
   const isBoolean = BOOLEAN_PROPERTIES.includes(property);
 
   return (
     <div className={`grid ${isBoolean ? "grid-cols-2" : "grid-cols-3"} gap-4`}>
       <div className="flex flex-col gap-y-1.5">
         <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-          Property
+          {t("model-router.rule-form.property-label")}
         </label>
         <select
           name="property"
@@ -245,7 +259,9 @@ function CalculatedFields({
           className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
           required
         >
-          <option value="">Select</option>
+          <option value="">
+            {t("model-router.rule-form.property-select")}
+          </option>
           {PROPERTIES.map((p) => (
             <option key={p.value} value={p.value}>
               {p.label}
@@ -259,7 +275,7 @@ function CalculatedFields({
           <input type="hidden" name="comparator" value="eq" />
           <div className="flex flex-col gap-y-1.5">
             <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-              Value
+              {t("model-router.rule-form.value-label")}
             </label>
             <select
               name="value"
@@ -276,7 +292,7 @@ function CalculatedFields({
         <>
           <div className="flex flex-col gap-y-1.5">
             <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-              Comparator
+              {t("model-router.rule-form.comparator-label")}
             </label>
             <select
               name="comparator"
@@ -285,7 +301,9 @@ function CalculatedFields({
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
               required
             >
-              <option value="">Select</option>
+              <option value="">
+                {t("model-router.rule-form.property-select")}
+              </option>
               {comparators.map((c) => (
                 <option key={c.value} value={c.value}>
                   {c.label}
@@ -296,7 +314,7 @@ function CalculatedFields({
 
           <div className="flex flex-col gap-y-1.5">
             <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-              Value
+              {t("model-router.rule-form.value-label")}
             </label>
             <input
               type="text"
@@ -326,22 +344,22 @@ function CalculatedFields({
 }
 
 function LLMDescriptionField({ existingRule }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-y-1.5">
       <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-        Match Description
+        {t("model-router.rule-form.match-description-label")}
       </label>
       <textarea
         name="description"
         defaultValue={existingRule?.description || ""}
-        placeholder="e.g. The user is asking about legal topics, contracts, or compliance"
+        placeholder={t("model-router.rule-form.match-description-placeholder")}
         rows={2}
         className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 resize-none"
         required
       />
       <p className="text-[10px] text-zinc-400 light:text-slate-500">
-        Describe when this rule should match. The router's fallback model will
-        read the user's message and decide if it fits this description.
+        {t("model-router.rule-form.match-description-help")}
       </p>
     </div>
   );

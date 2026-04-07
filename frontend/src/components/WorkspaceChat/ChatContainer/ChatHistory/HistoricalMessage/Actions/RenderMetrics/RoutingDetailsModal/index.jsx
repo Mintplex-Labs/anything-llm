@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 
@@ -30,6 +31,7 @@ function formatTps(outputTps) {
 }
 
 export default function RoutingDetailsModal({ routedTo, metrics, onClose }) {
+  const { t } = useTranslation();
   if (!routedTo) return null;
 
   return (
@@ -37,7 +39,7 @@ export default function RoutingDetailsModal({ routedTo, metrics, onClose }) {
       <div className="bg-zinc-900 light:bg-white border border-zinc-700 light:border-slate-300 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-white light:text-slate-900">
-            Routing Details
+            {t("model-router.routing-details.title")}
           </h3>
           <button
             onClick={onClose}
@@ -47,26 +49,37 @@ export default function RoutingDetailsModal({ routedTo, metrics, onClose }) {
           </button>
         </div>
         <div className="flex flex-col gap-y-3">
-          <DetailRow label="Router" value={routedTo.routerName || "Unknown"} />
-          <DetailRow label="Routed to" value={routedTo.model} />
-          <DetailRow label="Provider" value={routedTo.provider} />
           <DetailRow
-            label="Matched rule"
+            label={t("model-router.routing-details.router")}
+            value={
+              routedTo.routerName || t("model-router.routing-details.unknown")
+            }
+          />
+          <DetailRow
+            label={t("model-router.routing-details.routed-to")}
+            value={routedTo.model}
+          />
+          <DetailRow
+            label={t("model-router.routing-details.provider")}
+            value={routedTo.provider}
+          />
+          <DetailRow
+            label={t("model-router.routing-details.matched-rule")}
             value={
               routedTo.isFallback
-                ? "None (fallback)"
-                : `${routedTo.ruleTitle || "Unknown"}${routedTo.ruleType === "llm" ? " (LLM classified)" : ""}`
+                ? t("model-router.routing-details.none-fallback")
+                : `${routedTo.ruleTitle || t("model-router.routing-details.unknown")}${routedTo.ruleType === "llm" ? " (LLM classified)" : ""}`
             }
           />
           {metrics?.duration && (
             <DetailRow
-              label="Response time"
+              label={t("model-router.routing-details.response-time")}
               value={formatDuration(metrics.duration)}
             />
           )}
           {metrics?.outputTps && (
             <DetailRow
-              label="Throughput"
+              label={t("model-router.routing-details.throughput")}
               value={`${formatTps(metrics.outputTps)} tok/s`}
             />
           )}

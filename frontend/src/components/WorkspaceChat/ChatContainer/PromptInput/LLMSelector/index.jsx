@@ -87,7 +87,8 @@ export default function LLMSelectorModal({
       setHasChanges(false);
 
       const isRouter = selectedLLMProvider === "anythingllm-router";
-      if (isRouter && !selectedRouterId) throw new Error("Select a router");
+      if (isRouter && !selectedRouterId)
+        throw new Error(t("model-router.chat.select-router-error"));
 
       const updateData = isRouter
         ? { chatProvider: selectedLLMProvider, router_id: selectedRouterId }
@@ -97,7 +98,7 @@ export default function LLMSelectorModal({
           };
 
       if (!isRouter && !updateData.chatModel)
-        throw new Error("Invalid model selection");
+        throw new Error(t("model-router.chat.invalid-model"));
 
       const { message } = await Workspace.update(slug, updateData);
 

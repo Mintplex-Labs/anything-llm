@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -17,6 +18,7 @@ export default function LLMProviderModelPicker({
   defaultProvider = "",
   defaultModel = "",
 }) {
+  const { t } = useTranslation();
   const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
   const [selectedModel, setSelectedModel] = useState(defaultModel);
   const [models, setModels] = useState([]);
@@ -84,13 +86,18 @@ export default function LLMProviderModelPicker({
     for (const [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save settings: ${error}`, "error");
+      showToast(
+        t("model-router.provider-picker.toast-save-failed", { error }),
+        "error"
+      );
       return;
     }
     const _settings = await System.keys();
     setSettings(_settings ?? {});
     closeModal();
-    showToast("Provider configured successfully", "success", { clear: true });
+    showToast(t("model-router.provider-picker.toast-configured"), "success", {
+      clear: true,
+    });
   }
 
   const selectedLlm = availableProviders.find(
@@ -118,11 +125,15 @@ export default function LLMProviderModelPicker({
             className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
             required
           >
-            <option value="">Select provider</option>
+            <option value="">
+              {t("model-router.provider-picker.select-provider")}
+            </option>
             {availableProviders.map((llm) => (
               <option key={llm.value} value={llm.value}>
                 {llm.name}
-                {!isConfigured(llm.value) ? " (setup required)" : ""}
+                {!isConfigured(llm.value)
+                  ? ` ${t("model-router.provider-picker.setup-required")}`
+                  : ""}
               </option>
             ))}
           </select>
@@ -134,11 +145,13 @@ export default function LLMProviderModelPicker({
               onClick={openModal}
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-blue-400 light:text-blue-500 text-sm rounded-lg block w-full p-2.5 text-left hover:text-blue-300 light:hover:text-blue-600 transition-colors"
             >
-              Configure {selectedLlm.name} to continue
+              {t("model-router.provider-picker.configure-to-continue", {
+                name: selectedLlm.name,
+              })}
             </button>
           ) : loadingModels ? (
             <div className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-zinc-400 light:text-slate-500 text-sm rounded-lg p-2.5">
-              Loading models...
+              {t("model-router.provider-picker.loading-models")}
             </div>
           ) : models.length > 0 ? (
             <select
@@ -148,7 +161,9 @@ export default function LLMProviderModelPicker({
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
               required
             >
-              <option value="">Select model</option>
+              <option value="">
+                {t("model-router.provider-picker.select-model")}
+              </option>
               {models.map((model) => (
                 <option key={model.id} value={model.id}>
                   {model.id}
@@ -163,8 +178,8 @@ export default function LLMProviderModelPicker({
               onChange={(e) => setSelectedModel(e.target.value)}
               placeholder={
                 selectedProvider
-                  ? "Enter model name"
-                  : "Select a provider first"
+                  ? t("model-router.provider-picker.enter-model")
+                  : t("model-router.provider-picker.select-provider-first")
               }
               disabled={!selectedProvider}
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5 disabled:opacity-50"
@@ -186,6 +201,7 @@ export default function LLMProviderModelPicker({
 }
 
 function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
+  const { t } = useTranslation();
   if (!isOpen || !provider) return null;
 
   return (
@@ -201,7 +217,9 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
               />
             )}
             <h3 className="text-lg font-semibold text-white light:text-slate-900">
-              Configure {provider.name}
+              {t("model-router.provider-picker.configure-provider", {
+                name: provider.name,
+              })}
             </h3>
           </div>
           <button
@@ -215,8 +233,9 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
         <form id="provider-setup-form" onSubmit={onSave}>
           <div className="px-6 py-5">
             <p className="text-sm text-zinc-400 light:text-slate-600 mb-4">
-              Enter the required credentials to use {provider.name} as a routing
-              target.
+              {t("model-router.provider-picker.setup-credentials", {
+                name: provider.name,
+              })}
             </p>
             <div className="space-y-4">{provider.options(settings ?? {})}</div>
           </div>
@@ -226,14 +245,14 @@ function ProviderSetupModal({ isOpen, provider, settings, onSave, onClose }) {
               onClick={onClose}
               className="text-sm font-medium text-zinc-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 px-4 py-2 rounded-lg transition-colors"
             >
-              Cancel
+              {t("model-router.provider-picker.cancel")}
             </button>
             <button
               type="submit"
               form="provider-setup-form"
               className="text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg px-5 py-2 hover:opacity-90 transition-opacity duration-200"
             >
-              Save settings
+              {t("model-router.provider-picker.save-settings")}
             </button>
           </div>
         </form>

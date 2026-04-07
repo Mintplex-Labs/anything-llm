@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ModelRouter from "@/models/modelRouter";
 
 export default function RouterPickerSelection({
@@ -6,6 +7,7 @@ export default function RouterPickerSelection({
   setSelectedRouterId,
   setHasChanges,
 }) {
+  const { t } = useTranslation();
   const [routers, setRouters] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,7 @@ export default function RouterPickerSelection({
         disabled
         className="bg-zinc-900 light:bg-white text-white light:text-slate-900 text-sm rounded-lg h-8 w-full px-2.5 outline-none border border-zinc-900 light:border-slate-400 cursor-not-allowed"
       >
-        <option>Loading routers...</option>
+        <option>{t("model-router.router-selection.loading-routers")}</option>
       </select>
     );
   }
@@ -32,8 +34,7 @@ export default function RouterPickerSelection({
   if (routers.length === 0) {
     return (
       <p className="text-xs text-zinc-400 light:text-slate-500">
-        No routers configured. Create one in Settings &gt; AI Providers &gt;
-        Model Router.
+        {t("model-router.router-selection.no-routers-chat")}
       </p>
     );
   }
@@ -47,11 +48,15 @@ export default function RouterPickerSelection({
       }}
       className="bg-zinc-900 light:bg-white text-white light:text-slate-900 text-sm rounded-lg h-8 w-full px-2.5 outline-none border border-zinc-900 light:border-slate-400 cursor-pointer"
     >
-      <option value="">Select a router</option>
+      <option value="">
+        {t("model-router.router-selection.select-router")}
+      </option>
       {routers.map((router) => (
         <option key={router.id} value={router.id}>
           {router.name}
-          {router.ruleCount != null ? ` (${router.ruleCount} rules)` : ""}
+          {router.ruleCount != null
+            ? ` ${t("model-router.router-selection.rule-count", { count: router.ruleCount })}`
+            : ""}
         </option>
       ))}
     </select>

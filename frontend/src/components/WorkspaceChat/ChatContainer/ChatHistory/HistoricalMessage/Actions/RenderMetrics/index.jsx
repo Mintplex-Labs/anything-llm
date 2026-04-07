@@ -1,6 +1,7 @@
 import { formatDateTimeAsMoment } from "@/utils/directories";
 import { numberWithCommas } from "@/utils/numbers";
 import React, { useEffect, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { isMobile } from "react-device-detect";
 import RoutingDetailsModal from "./RoutingDetailsModal";
 const MetricsContext = React.createContext();
@@ -117,6 +118,7 @@ export function MetricsProvider({ children }) {
  * @param {Object|null} [props.routedTo] - { provider, model, ruleTitle, ruleType, isFallback, routerName }
  */
 export default function RenderMetrics({ metrics = {}, routedTo = null }) {
+  const { t } = useTranslation();
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
@@ -137,14 +139,17 @@ export default function RenderMetrics({ metrics = {}, routedTo = null }) {
               role="button"
               tabIndex={0}
               data-tooltip-id="routing-details"
-              data-tooltip-content="View routing details"
+              data-tooltip-content={t(
+                "model-router.metrics.view-routing-details"
+              )}
               onClick={() => setShowRoutingModal(true)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") setShowRoutingModal(true);
               }}
               className="hover:underline"
             >
-              {routedTo.routerName || "Model Router"}
+              {routedTo.routerName ||
+                t("model-router.metrics.model-router-default")}
               {" → "}
               {metrics?.model || routedTo.model}
             </span>
@@ -156,8 +161,8 @@ export default function RenderMetrics({ metrics = {}, routedTo = null }) {
             data-tooltip-id="metrics-visibility"
             data-tooltip-content={
               showMetricsAutomatically
-                ? "Click to only show metrics when hovering"
-                : "Click to show metrics as soon as they are available"
+                ? t("model-router.metrics.click-to-hide-metrics")
+                : t("model-router.metrics.click-to-show-metrics")
             }
             onClick={() => setShowMetricsAutomatically(toggleAutoShowMetrics())}
           >

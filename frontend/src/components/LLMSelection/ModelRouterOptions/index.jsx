@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ModelRouter from "@/models/modelRouter";
 
 export default function ModelRouterOptions({ settings }) {
+  const { t } = useTranslation();
   const [routers, setRouters] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +21,9 @@ export default function ModelRouterOptions({ settings }) {
   if (loading) {
     return (
       <div className="w-full flex flex-col gap-y-4">
-        <p className="text-sm text-white text-opacity-60">Loading routers...</p>
+        <p className="text-sm text-white text-opacity-60">
+          {t("model-router.router-selection.loading-routers")}
+        </p>
       </div>
     );
   }
@@ -28,12 +32,12 @@ export default function ModelRouterOptions({ settings }) {
     return (
       <div className="w-full flex flex-col gap-y-4">
         <p className="text-sm text-white text-opacity-60">
-          No model routers configured yet.{" "}
+          {t("model-router.router-selection.no-routers-prefix-settings")}{" "}
           <Link
             to={paths.settings.modelRouters()}
             className="underline text-white"
           >
-            Create one in Model Router settings
+            {t("model-router.router-selection.no-routers-link")}
           </Link>
           .
         </p>
@@ -46,7 +50,7 @@ export default function ModelRouterOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Model Router
+            {t("model-router.router-selection.model-router-label")}
           </label>
           <select
             name="ModelRouterId"
@@ -54,7 +58,9 @@ export default function ModelRouterOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5"
             required
           >
-            <option value="">Select a router</option>
+            <option value="">
+              {t("model-router.router-selection.select-router")}
+            </option>
             {routers.map((router) => (
               <option key={router.id} value={router.id}>
                 {router.name}

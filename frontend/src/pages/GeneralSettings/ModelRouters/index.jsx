@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import {
@@ -16,6 +17,7 @@ import paths from "@/utils/paths";
 import NewRouterModal from "./NewRouterModal";
 
 export default function ModelRouters() {
+  const { t } = useTranslation();
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(true);
   const [routers, setRouters] = useState([]);
@@ -44,12 +46,10 @@ export default function ModelRouters() {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-2 pb-6 border-b border-white/20 light:border-slate-300">
             <p className="text-lg font-semibold leading-7 text-white light:text-slate-900">
-              Model Routers
+              {t("model-router.title")}
             </p>
             <p className="text-xs leading-4 text-zinc-400 light:text-slate-600 max-w-[700px]">
-              Model routers let you define rules to automatically route chat
-              messages to different LLM providers and models based on
-              conditions.
+              {t("model-router.description")}
             </p>
           </div>
           <div className="w-full justify-end flex mt-4">
@@ -58,7 +58,7 @@ export default function ModelRouters() {
               className="flex items-center gap-x-1.5 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 hover:opacity-90 transition-opacity duration-200"
             >
               <PlusCircle className="h-4 w-4" weight="bold" />
-              Create Router
+              {t("model-router.create-router")}
             </button>
           </div>
           <div className="overflow-x-auto mt-6">
@@ -71,16 +71,16 @@ export default function ModelRouters() {
                 <thead className="text-zinc-400 light:text-slate-500 text-xs leading-[18px] font-bold uppercase border-b border-zinc-700 light:border-slate-200">
                   <tr>
                     <th scope="col" className="px-6 py-3 rounded-tl-lg">
-                      Name
+                      {t("model-router.table.name")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Fallback
+                      {t("model-router.table.fallback")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Rules
+                      {t("model-router.table.rules")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Workspaces
+                      {t("model-router.table.workspaces")}
                     </th>
                     <th scope="col" className="px-6 py-3 rounded-tr-lg">
                       {" "}
@@ -94,7 +94,7 @@ export default function ModelRouters() {
                         colSpan="5"
                         className="px-6 py-4 text-center text-sm text-zinc-400 light:text-slate-500"
                       >
-                        No model routers created yet
+                        {t("model-router.no-routers")}
                       </td>
                     </tr>
                   ) : (
@@ -120,22 +120,21 @@ export default function ModelRouters() {
 }
 
 function RouterRow({ router, removeRouter }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleDelete = async () => {
     if (
-      !window.confirm(
-        `Are you sure you want to delete the router "${router.name}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.`
-      )
+      !window.confirm(t("model-router.delete-confirm", { name: router.name }))
     )
       return;
 
     const { success, error } = await ModelRouter.delete(router.id);
     if (success) {
-      showToast("Router deleted", "info");
+      showToast(t("model-router.toast-deleted"), "info");
       removeRouter(router.id);
     } else {
-      showToast(`Failed to delete router: ${error}`, "error");
+      showToast(t("model-router.toast-delete-failed", { error }), "error");
     }
   };
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   PlusCircle,
   Trash,
@@ -22,6 +23,7 @@ const COMPARATOR_LABELS = {
 };
 
 export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
+  const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
 
@@ -36,13 +38,18 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
   };
 
   const handleDelete = async (rule) => {
-    if (!window.confirm(`Delete rule "${rule.title}"?`)) return;
+    if (
+      !window.confirm(
+        t("model-router.rules.delete-confirm", { title: rule.title })
+      )
+    )
+      return;
     const { success } = await ModelRouterAPI.deleteRule(routerId, rule.id);
     if (success) {
-      showToast("Rule deleted", "info");
+      showToast(t("model-router.rules.toast-deleted"), "info");
       onRulesChanged();
     } else {
-      showToast("Failed to delete rule", "error");
+      showToast(t("model-router.rules.toast-delete-failed"), "error");
     }
   };
 
@@ -73,7 +80,7 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
     if (success) {
       onRulesChanged();
     } else {
-      showToast("Failed to reorder rules", "error");
+      showToast(t("model-router.rules.toast-reorder-failed"), "error");
     }
   };
 
@@ -82,11 +89,10 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
       <div className="flex items-center justify-between pb-4 border-b border-white/20 light:border-slate-300">
         <div>
           <p className="text-base font-semibold text-white light:text-slate-900">
-            Routing Rules
+            {t("model-router.rules.title")}
           </p>
           <p className="text-xs text-zinc-400 light:text-slate-600 mt-1">
-            Rules are evaluated top-to-bottom by priority. Drag to reorder.
-            First match wins.
+            {t("model-router.rules.description")}
           </p>
         </div>
         {!showForm && !editingRule && (
@@ -95,7 +101,7 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
             className="flex items-center gap-x-1.5 text-sm font-medium bg-zinc-50 light:bg-slate-900 text-zinc-900 light:text-white rounded-lg h-9 px-5 hover:opacity-90 transition-opacity duration-200"
           >
             <PlusCircle className="h-4 w-4" weight="bold" />
-            Add Rule
+            {t("model-router.rules.add-rule")}
           </button>
         )}
       </div>
@@ -125,7 +131,7 @@ export default function RuleBuilder({ routerId, rules, onRulesChanged }) {
       <div className="mt-4">
         {(!rules || rules.length === 0) && !showForm ? (
           <p className="text-sm text-zinc-400 light:text-slate-500 py-4 text-center">
-            No rules yet. Add a rule to start routing.
+            {t("model-router.rules.no-rules")}
           </p>
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>

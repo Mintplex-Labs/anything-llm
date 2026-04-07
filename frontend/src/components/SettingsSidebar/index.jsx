@@ -258,7 +258,7 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
-              btnText: "Model Router",
+              btnText: t("settings.model-router"),
               href: paths.settings.modelRouters(),
               flex: true,
               roles: ["admin"],

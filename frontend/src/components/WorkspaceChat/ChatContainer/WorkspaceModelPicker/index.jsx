@@ -15,7 +15,7 @@ import System from "@/models/system";
 import ModelRouterAPI from "@/models/modelRouter";
 import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
 
-async function fetchModelName(slug, setModelName) {
+async function fetchModelName(slug, setModelName, t) {
   if (!slug) return;
   const [workspace, systemSettings] = await Promise.all([
     Workspace.bySlug(slug),
@@ -35,7 +35,7 @@ async function fetchModelName(slug, setModelName) {
         return;
       }
     }
-    setModelName("Model Router");
+    setModelName(t("model-router.metrics.model-router-default"));
     return;
   }
 
@@ -69,14 +69,14 @@ export default function WorkspaceModelPicker({ workspaceSlug = null }) {
 
   // Fetch current model name for display
   useEffect(() => {
-    fetchModelName(slug, setModelName);
+    fetchModelName(slug, setModelName, t);
   }, [slug]);
 
   // Close selector and refresh model name when model is saved
   useEffect(() => {
     function handleSave() {
       setShowSelector(false);
-      fetchModelName(slug, setModelName);
+      fetchModelName(slug, setModelName, t);
     }
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
     return () =>
