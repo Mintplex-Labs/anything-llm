@@ -27,7 +27,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
         process.env.LEMONADE_LLM_BASE_PATH,
         "openai"
       ),
-      apiKey: process.env.LEMONADE_LLM_API_KEY ?? null,
+      apiKey: process.env.LEMONADE_LLM_API_KEY || null,
       maxRetries: 3,
     });
 
