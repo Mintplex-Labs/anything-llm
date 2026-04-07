@@ -15,9 +15,10 @@ const WEEKDAYS = [
 ];
 
 const MINUTE_INTERVALS = [1, 2, 5, 10, 15, 20, 30];
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
 const DAYS_OF_MONTH = Array.from({ length: 31 }, (_, i) => i + 1);
+
+const pad2 = (n) => String(n).padStart(2, "0");
 
 const inputClass =
   "border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button outline-none p-2.5";
@@ -103,29 +104,18 @@ export default function CronBuilder({ value, onChange }) {
         state.frequency === "month") && (
         <div className="flex items-center gap-2 flex-wrap">
           <span className={labelClass}>At</span>
-          <select
-            value={state.hour}
-            onChange={(e) => update({ hour: parseInt(e.target.value, 10) })}
+          <input
+            type="time"
+            value={`${pad2(state.hour)}:${pad2(state.minute)}`}
+            onChange={(e) => {
+              const [h, m] = e.target.value.split(":");
+              update({
+                hour: parseInt(h, 10) || 0,
+                minute: parseInt(m, 10) || 0,
+              });
+            }}
             className={inputClass}
-          >
-            {HOURS.map((n) => (
-              <option key={n} value={n}>
-                {n.toString().padStart(2, "0")}
-              </option>
-            ))}
-          </select>
-          <span className={labelClass}>:</span>
-          <select
-            value={state.minute}
-            onChange={(e) => update({ minute: parseInt(e.target.value, 10) })}
-            className={inputClass}
-          >
-            {MINUTES.map((n) => (
-              <option key={n} value={n}>
-                {n.toString().padStart(2, "0")}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       )}
 
