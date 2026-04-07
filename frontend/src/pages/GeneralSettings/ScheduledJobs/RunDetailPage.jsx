@@ -68,72 +68,6 @@ export default function RunDetailPage() {
 
   const result = run?.result || {};
 
-  function AgentThoughtsSection({ result }) {
-    return (
-      <CollapsibleSection
-        title={`Thinking (${result.thoughts.length} steps)`}
-        icon={Brain}
-      >
-        <div className="space-y-2">
-          {result.thoughts.map((thought, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-2 text-sm text-theme-text-secondary"
-            >
-              <span className="text-xs text-theme-text-secondary/50 mt-0.5 min-w-[20px]">
-                {i + 1}.
-              </span>
-              <span>{thought}</span>
-            </div>
-          ))}
-        </div>
-      </CollapsibleSection>
-    );
-  }
-
-  function ToolCallsSection({ result }) {
-    return (
-      <CollapsibleSection
-        title={`Tool Calls (${result.toolCalls.length})`}
-        icon={Wrench}
-      >
-        <div className="space-y-3">
-          {result.toolCalls.map((toolCall, i) => (
-            <ToolCallCard key={i} toolCall={toolCall} />
-          ))}
-        </div>
-      </CollapsibleSection>
-    );
-  }
-
-  function GeneratedFilesSection({ result }) {
-    return (
-      <CollapsibleSection
-        title={`Generated Documents (${result.generatedFiles.length})`}
-        icon={FileArrowDown}
-        defaultOpen={true}
-      >
-        <div className="space-y-2">
-          {result.generatedFiles.map((file, i) => (
-            <GeneratedFileCard key={i} file={file} />
-          ))}
-        </div>
-      </CollapsibleSection>
-    );
-  }
-
-  function FinalResponseSection({ result }) {
-    return (
-      <CollapsibleSection title="Response" icon={ChatText} defaultOpen={true}>
-        <div
-          className="text-sm text-theme-text-primary markdown"
-          dangerouslySetInnerHTML={{
-            __html: renderMarkdown(result.text),
-          }}
-        />
-      </CollapsibleSection>
-    );
-  }
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -264,6 +198,72 @@ function ErrorSection({ error }) {
   );
 }
 
+function AgentThoughtsSection({ result }) {
+  return (
+    <CollapsibleSection
+      title={`Thinking (${result.thoughts.length} steps)`}
+      icon={Brain}
+    >
+      <div className="space-y-2">
+        {result.thoughts.map((thought, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-2 text-sm text-theme-text-secondary"
+          >
+            <span className="text-xs text-theme-text-secondary/50 mt-0.5 min-w-[20px]">
+              {i + 1}.
+            </span>
+            <span>{thought}</span>
+          </div>
+        ))}
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function ToolCallsSection({ result }) {
+  return (
+    <CollapsibleSection
+      title={`Tool Calls (${result.toolCalls.length})`}
+      icon={Wrench}
+    >
+      <div className="space-y-3">
+        {result.toolCalls.map((toolCall, i) => (
+          <ToolCallCard key={i} toolCall={toolCall} />
+        ))}
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function GeneratedFilesSection({ result }) {
+  return (
+    <CollapsibleSection
+      title={`Generated Documents (${result.generatedFiles.length})`}
+      icon={FileArrowDown}
+      defaultOpen={true}
+    >
+      <div className="space-y-2">
+        {result.generatedFiles.map((file, i) => (
+          <GeneratedFileCard key={i} file={file} />
+        ))}
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function FinalResponseSection({ result }) {
+  return (
+    <CollapsibleSection title="Response" icon={ChatText} defaultOpen={true}>
+      <div
+        className="text-sm text-theme-text-primary markdown"
+        dangerouslySetInnerHTML={{
+          __html: renderMarkdown(result.text),
+        }}
+      />
+    </CollapsibleSection>
+  );
+}
 function MetricsSection({ metrics }) {
   return (
     <div className="border border-white/10 rounded-lg p-4">
