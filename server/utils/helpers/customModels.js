@@ -49,6 +49,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "chutes",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -133,6 +134,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLemonadeModels(basePath);
     case "lemonade-embedder":
       return await getLemonadeModels(basePath, "embedding");
+    case "chutes":
+      return await getChutesModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -316,6 +319,29 @@ async function getGroqAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getChutesModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.CHUTES_API_KEY
+      : _apiKey || process.env.CHUTES_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://llm.chutes.ai/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`ChutesAI:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.CHUTES_API_KEY = apiKey;
   return { models, error: null };
 }
 
