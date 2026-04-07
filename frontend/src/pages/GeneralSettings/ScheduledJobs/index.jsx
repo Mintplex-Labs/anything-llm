@@ -18,7 +18,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
 import showToast from "@/utils/toast";
-import { cronToHuman } from "./utils/cron";
+import { humanizeCron } from "./utils/cron";
 
 function StatusBadge({ status }) {
   const colors = {
@@ -66,7 +66,10 @@ export default function ScheduledJobsPage() {
   };
 
   const handleToggle = async (id) => {
-    await ScheduledJobs.toggle(id);
+    const result = await ScheduledJobs.toggle(id);
+    if (result?.error) {
+      showToast(result.error, "error");
+    }
     fetchJobs();
   };
 
@@ -153,7 +156,7 @@ export default function ScheduledJobsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-theme-text-secondary">
-                      {cronToHuman(job.schedule)}
+                      {humanizeCron(job.schedule)}
                     </td>
                     <td className="px-6 py-4">
                       {job.latestRun ? (

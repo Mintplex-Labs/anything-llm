@@ -3,6 +3,11 @@ const prisma = require("../utils/prisma");
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
 
+  // Maximum number of scheduled jobs that can be enabled at once.
+  // null = no limit. Set to a positive integer to cap concurrent active jobs;
+  // attempting to enable a job past the cap will be rejected at the API layer.
+  MAX_ACTIVE: 2,
+
   /**
    * Compute the next run time from a cron expression.
    * Uses @breejs/later which is already available via Bree.
@@ -134,6 +139,42 @@ const ScheduledJob = {
       console.error("Failed to get enabled scheduled jobs:", error.message);
       return [];
     }
+  },
+
+  /**
+   * Count enabled scheduled jobs, optionally excluding a single job by id.
+   * `excludeId` is used by canActivate so that re-saving an already-enabled job
+   * is not double-counted against the limit.
+   * @param {number|null} excludeId
+   * @returns {Promise<number>}
+   */
+  countActive: async function (excludeId = null) {
+    try {
+      return await prisma.scheduled_jobs.count({
+        where: {
+          enabled: true,
+          ...(excludeId != null ? { NOT: { id: Number(excludeId) } } : {}),
+        },
+      });
+    } catch (error) {
+      console.error("Failed to count active scheduled jobs:", error.message);
+      return 0;
+    }
+  },
+
+  /**
+   * Check whether a job can be activated without exceeding MAX_ACTIVE.
+   * Pass `excludeId` when re-saving an existing job to avoid counting it twice.
+   * @param {{ excludeId?: number|null }} [opts]
+   * @returns {Promise<{ allowed: boolean, limit: number|null, current: number }>}
+   */
+  canActivate: async function ({ excludeId = null } = {}) {
+    const limit = this.MAX_ACTIVE;
+    if (limit == null) {
+      return { allowed: true, limit: null, current: 0 };
+    }
+    const current = await this.countActive(excludeId);
+    return { allowed: current < limit, limit, current };
   },
 
   /**

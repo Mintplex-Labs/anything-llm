@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { CircleNotch, X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
-import { CRON_PRESETS, humanizeCron } from "./utils/cron";
+import { humanizeCron } from "./utils/cron";
+import CronBuilder from "./CronBuilder";
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
   const isEditing = !!job;
@@ -11,28 +12,16 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     name: job?.name || "",
     prompt: job?.prompt || "",
     schedule: job?.schedule || "0 9 * * *",
-    cronPreset: "custom",
+    scheduleMode: "builder",
     selectedTools: job?.tools ? safeJsonParse(job.tools, []) : [],
-    generateInput: "",
-    generateError: "",
   });
   const [availableTools, setAvailableTools] = useState([]);
   const [saving, setSaving] = useState(false);
-  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     ScheduledJobs.availableTools().then(({ tools }) => {
       setAvailableTools(tools || []);
     });
-
-    // Set preset if schedule matches
-    if (job?.schedule) {
-      const match = CRON_PRESETS.find((p) => p.value === job.schedule);
-      setForm((prev) => ({
-        ...prev,
-        cronPreset: match ? match.value : "custom",
-      }));
-    }
   }, []);
 
   const handleChange = (e) => {
@@ -40,37 +29,8 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePresetChange = (value) => {
-    setForm((prev) => ({
-      ...prev,
-      cronPreset: value,
-      // Preserve current schedule for "custom" and "generate"; otherwise apply preset value
-      ...(value !== "custom" && value !== "generate"
-        ? { schedule: value }
-        : {}),
-      generateError: "",
-    }));
-  };
-
-  const handleGenerate = async () => {
-    const input = form.generateInput.trim();
-    if (!input) return;
-    setForm((prev) => ({ ...prev, generateError: "" }));
-    setGenerating(true);
-    const result = await ScheduledJobs.generateCron(input);
-    setGenerating(false);
-    if (!result?.valid) {
-      setForm((prev) => ({
-        ...prev,
-        generateError: result?.error || "Could not generate a cron expression",
-      }));
-      return;
-    }
-    setForm((prev) => ({
-      ...prev,
-      schedule: result.cron,
-      generateError: "",
-    }));
+  const handleModeChange = (mode) => {
+    setForm((prev) => ({ ...prev, scheduleMode: mode }));
   };
 
   const toggleTool = (toolName) => {
@@ -163,66 +123,47 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             <label className="block mb-2 text-sm font-medium text-theme-text-primary">
               Schedule <span className="text-red-400">*</span>
             </label>
-            <div className="flex gap-2">
-              <select
-                value={form.cronPreset}
-                onChange={(e) => handlePresetChange(e.target.value)}
-                className="border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button outline-none p-2.5"
-              >
-                {CRON_PRESETS.map((preset) => (
-                  <option key={preset.value} value={preset.value}>
-                    {preset.label}
-                  </option>
-                ))}
-              </select>
-              {form.cronPreset === "custom" && (
-                <input
-                  type="text"
-                  name="schedule"
-                  value={form.schedule}
-                  onChange={handleChange}
-                  placeholder="Cron expression (e.g. 0 9 * * *)"
-                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block flex-1 p-2.5"
-                />
-              )}
-              {form.cronPreset === "generate" && (
-                <div className="flex flex-1 gap-2">
-                  <input
-                    type="text"
-                    name="generateInput"
-                    value={form.generateInput}
-                    onChange={handleChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleGenerate();
-                      }
-                    }}
-                    placeholder='e.g. "Every Wednesday at 6 PM"'
-                    className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block flex-1 p-2.5"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleGenerate}
-                    disabled={generating || !form.generateInput.trim()}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
-                  >
-                    {generating && (
-                      <CircleNotch
-                        size={14}
-                        weight="bold"
-                        className="animate-spin"
-                      />
-                    )}
-                    {generating ? "Generating..." : "Generate"}
-                  </button>
-                </div>
-              )}
+            <div className="flex gap-1 mb-2 p-1 bg-theme-settings-input-bg rounded-lg w-fit">
+              {[
+                { value: "builder", label: "Builder" },
+                { value: "custom", label: "Custom" },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => handleModeChange(tab.value)}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    form.scheduleMode === tab.value
+                      ? "bg-primary-button text-white"
+                      : "text-theme-text-secondary hover:text-theme-text-primary"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
-            {form.cronPreset === "generate" && form.generateError && (
-              <p className="text-xs text-red-400 mt-1">{form.generateError}</p>
+
+            {form.scheduleMode === "builder" && (
+              <CronBuilder
+                value={form.schedule}
+                onChange={(cron) =>
+                  setForm((prev) => ({ ...prev, schedule: cron }))
+                }
+              />
             )}
-            <p className="text-xs text-theme-text-secondary mt-1">
+
+            {form.scheduleMode === "custom" && (
+              <input
+                type="text"
+                name="schedule"
+                value={form.schedule}
+                onChange={handleChange}
+                placeholder="Cron expression (e.g. 0 9 * * *)"
+                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block w-full p-2.5"
+              />
+            )}
+
+            <p className="text-xs text-theme-text-secondary mt-2">
               Current schedule:{" "}
               <code className="text-theme-text-primary">{form.schedule}</code>
               {form.schedule && (
