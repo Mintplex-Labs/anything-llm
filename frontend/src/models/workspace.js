@@ -55,6 +55,15 @@ const Workspace = {
 
     return { workspace, message };
   },
+  removeQueuedEmbedding: async function (slug, filename) {
+    return fetch(`${API_BASE}/workspace/${slug}/embed-queue`, {
+      method: "DELETE",
+      body: JSON.stringify({ filename }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ success: false }));
+  },
   chatHistory: async function (slug) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
       method: "GET",

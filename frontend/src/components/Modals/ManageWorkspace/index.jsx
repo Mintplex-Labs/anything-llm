@@ -9,6 +9,7 @@ import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
 import ModalWrapper from "@/components/ModalWrapper";
+import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
@@ -102,7 +103,9 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
           )}
 
           {selectedTab === "documents" ? (
-            <DocumentSettings workspace={workspace} />
+            <EmbeddingProgressProvider>
+              <DocumentSettings workspace={workspace} />
+            </EmbeddingProgressProvider>
           ) : (
             <DataConnectors workspace={workspace} systemSettings={settings} />
           )}

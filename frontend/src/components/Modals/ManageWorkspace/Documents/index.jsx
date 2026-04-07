@@ -1,10 +1,11 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import { useWorkspaceEmbeddingProgress } from "@/EmbeddingProgressContext";
 
 export default function DocumentSettings({ workspace }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
@@ -21,6 +22,14 @@ export default function DocumentSettings({ workspace }) {
     availableDocsRef.current = availableDocs;
   }, [availableDocs]);
 
+  const fetchKeysRef = useRef(null);
+  const { embeddingProgress, startEmbedding } = useWorkspaceEmbeddingProgress(
+    workspace.slug,
+    {
+      onProgressCleared: () => fetchKeysRef.current?.(true),
+    }
+  );
+
   async function fetchKeys(refetchWorkspace = false, options = {}) {
     const { autoSelectNew = false } = options;
     const previousIds = new Set();
@@ -31,7 +40,6 @@ export default function DocumentSettings({ workspace }) {
         }
       }
     }
-
     setLoading(true);
     const localFiles = await System.localFiles();
     const currentWorkspace = refetchWorkspace
@@ -100,42 +108,45 @@ export default function DocumentSettings({ workspace }) {
   }
 
   useEffect(() => {
+    fetchKeysRef.current = fetchKeys;
+  });
+
+  useEffect(() => {
     fetchKeys(true);
   }, []);
 
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setLoading(true);
-    showToast("Updating workspace...", "info", { autoClose: false });
     setLoadingMessage("This may take a while for large documents");
 
-    const changesToSend = {
-      adds: movedItems.map((item) => `${item.folderName}/${item.name}`),
-    };
+    const filenames = movedItems.map(
+      (item) => `${item.folderName}/${item.name}`
+    );
+    const changesToSend = { adds: filenames };
 
     setSelectedItems({});
     setHasChanges(false);
     setHighlightWorkspace(false);
-    await Workspace.modifyEmbeddings(workspace.slug, changesToSend)
-      .then((res) => {
-        if (!!res.message) {
-          showToast(`Error: ${res.message}`, "error", { clear: true });
-          return;
-        }
-        showToast("Workspace updated successfully.", "success", {
-          clear: true,
-        });
-      })
-      .catch((error) => {
-        showToast(`Workspace update failed: ${error}`, "error", {
-          clear: true,
-        });
-      });
 
-    setMovedItems([]);
-    await fetchKeys(true);
+    // Fire the embed POST first so the server is already processing the job
+    // by the time the SSE connection opens. This avoids the server sending
+    // idle (no active job) before embedding has started.
+    const embedPromise = Workspace.modifyEmbeddings(
+      workspace.slug,
+      changesToSend
+    );
+    startEmbedding(workspace.slug, filenames);
+
+    embedPromise.catch((error) => {
+      showToast(`Workspace update failed: ${error}`, "error", {
+        clear: true,
+      });
+    });
+
     setLoading(false);
     setLoadingMessage("");
+    setMovedItems([]);
   };
 
   const moveSelectedItemsToWorkspace = () => {
@@ -191,10 +202,29 @@ export default function DocumentSettings({ workspace }) {
     setSelectedItems({});
   };
 
+  const visibleAvailableDocs = useMemo(() => {
+    const embeddingFilenames = new Set(Object.keys(embeddingProgress ?? {}));
+    if (embeddingFilenames.size === 0) return availableDocs;
+    return {
+      ...availableDocs,
+      items: (availableDocs.items ?? []).map((folder) => {
+        if (folder.items && folder.type === "folder") {
+          return {
+            ...folder,
+            items: folder.items.filter(
+              (file) => !embeddingFilenames.has(`${folder.name}/${file.name}`)
+            ),
+          };
+        }
+        return folder;
+      }),
+    };
+  }, [availableDocs, embeddingProgress]);
+
   return (
     <div className="flex upload-modal -mt-6 z-10 relative">
       <Directory
-        files={availableDocs}
+        files={visibleAvailableDocs}
         setFiles={setAvailableDocs}
         loading={loading}
         loadingMessage={loadingMessage}
