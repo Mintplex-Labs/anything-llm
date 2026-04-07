@@ -1,5 +1,5 @@
 import { memo } from "react";
-import FileDownloadCard from "../../FileDownloadCard";
+import FilePreviewCard from "../../FilePreviewCard";
 
 function HistoricalOutputs({ outputs = [] }) {
   if (!outputs || outputs.length === 0) return null;
@@ -7,7 +7,7 @@ function HistoricalOutputs({ outputs = [] }) {
   return (
     <div className="flex flex-col gap-2 mt-4">
       {outputs.map((output, index) => (
-        <FileDownloadCard
+        <FilePreviewCard
           key={`${output.type}-${index}`}
           props={{ content: output.payload }}
         />
@@ -17,3 +17,4 @@ function HistoricalOutputs({ outputs = [] }) {
 }
 
 export default memo(HistoricalOutputs);
+
