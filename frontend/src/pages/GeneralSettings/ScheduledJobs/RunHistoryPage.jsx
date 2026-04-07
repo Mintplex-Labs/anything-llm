@@ -2,35 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import { ArrowLeft, Eye, Circle } from "@phosphor-icons/react";
+import { ArrowLeft } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import usePolling from "@/hooks/usePolling";
 import paths from "@/utils/paths";
-
-function StatusBadge({ status }) {
-  const colors = {
-    running: "bg-yellow-500/20 text-yellow-400",
-    completed: "bg-green-500/20 text-green-400",
-    failed: "bg-red-500/20 text-red-400",
-    timed_out: "bg-orange-500/20 text-orange-400",
-  };
-  return (
-    <span
-      className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || "bg-gray-500/20 text-gray-400"}`}
-    >
-      {status?.replace("_", " ") || "—"}
-    </span>
-  );
-}
-
-function formatDuration(run) {
-  if (!run.completedAt || !run.startedAt) return "—";
-  const ms =
-    new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime();
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${(ms / 60000).toFixed(1)}m`;
-}
+import RunRow from "./components/RunRow";
 
 export default function RunHistoryPage() {
   const { id } = useParams();
@@ -102,49 +78,7 @@ export default function RunHistoryPage() {
                 </thead>
                 <tbody>
                   {runs.map((run) => (
-                    <tr
-                      key={run.id}
-                      className="border-b border-white/5 hover:bg-theme-bg-primary/30"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 relative">
-                          {!run.readAt && run.status !== "running" && (
-                            <Circle
-                              weight="fill"
-                              className="h-2 w-2 text-blue-400 absolute -left-4"
-                            />
-                          )}
-                          <StatusBadge status={run.status} />
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-theme-text-secondary text-xs">
-                        {new Date(run.startedAt).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-theme-text-secondary text-xs">
-                        {formatDuration(run)}
-                      </td>
-                      <td className="px-6 py-4 text-red-400 text-xs max-w-[200px] truncate">
-                        {run.error || "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end">
-                          <button
-                            onClick={() =>
-                              navigate(
-                                paths.settings.scheduledJobRunDetail(
-                                  job.id,
-                                  run.id
-                                )
-                              )
-                            }
-                            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-                            title="View details"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    <RunRow key={run.id} run={run} jobId={job?.id} />
                   ))}
                 </tbody>
               </table>

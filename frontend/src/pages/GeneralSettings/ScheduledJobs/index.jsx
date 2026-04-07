@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import {
-  PlusCircle,
-  Play,
-  Trash,
-  PencilSimple,
-  Eye,
-  Power,
-} from "@phosphor-icons/react";
+import { PlusCircle } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import useWebPushNotifications from "@/hooks/useWebPushNotifications";
 import usePolling from "@/hooks/usePolling";
@@ -18,27 +10,10 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
 import showToast from "@/utils/toast";
-import { humanizeCron } from "./utils/cron";
-
-function StatusBadge({ status }) {
-  const colors = {
-    running: "bg-yellow-500/20 text-yellow-400",
-    completed: "bg-green-500/20 text-green-400",
-    failed: "bg-red-500/20 text-red-400",
-    timed_out: "bg-orange-500/20 text-orange-400",
-  };
-  return (
-    <span
-      className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || "bg-gray-500/20 text-gray-400"}`}
-    >
-      {status?.replace("_", " ") || "—"}
-    </span>
-  );
-}
+import JobRow from "./components/JobRow";
 
 export default function ScheduledJobsPage() {
   useWebPushNotifications();
-  const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
@@ -141,88 +116,14 @@ export default function ScheduledJobsPage() {
               </thead>
               <tbody>
                 {jobs.map((job) => (
-                  <tr
+                  <JobRow
                     key={job.id}
-                    className="border-b border-white/5 hover:bg-theme-bg-primary/30"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`w-2 h-2 rounded-full ${job.enabled ? "bg-green-400" : "bg-gray-500"}`}
-                        />
-                        <span className="text-theme-text-primary font-medium">
-                          {job.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-theme-text-secondary">
-                      {humanizeCron(job.schedule)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {job.latestRun ? (
-                        <StatusBadge status={job.latestRun.status} />
-                      ) : (
-                        <span className="text-theme-text-secondary text-xs">
-                          Never run
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-theme-text-secondary text-xs">
-                      {job.lastRunAt
-                        ? new Date(job.lastRunAt).toLocaleString()
-                        : "—"}
-                    </td>
-                    <td className="px-6 py-4 text-theme-text-secondary text-xs">
-                      {job.enabled && job.nextRunAt
-                        ? new Date(job.nextRunAt).toLocaleString()
-                        : "—"}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() =>
-                            navigate(`/settings/scheduled-jobs/${job.id}/runs`)
-                          }
-                          className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-                          title="View runs"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleTrigger(job.id)}
-                          className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-                          title="Run now"
-                        >
-                          <Play className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleToggle(job.id)}
-                          className={`p-1.5 rounded-lg hover:bg-theme-bg-primary transition-colors ${
-                            job.enabled
-                              ? "text-green-400 hover:text-yellow-400"
-                              : "text-gray-500 hover:text-green-400"
-                          }`}
-                          title={job.enabled ? "Disable" : "Enable"}
-                        >
-                          <Power className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(job)}
-                          className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-                          title="Edit"
-                        >
-                          <PencilSimple className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(job.id)}
-                          className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-red-400 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    job={job}
+                    onTrigger={handleTrigger}
+                    onToggle={handleToggle}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
                 ))}
               </tbody>
             </table>

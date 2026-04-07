@@ -7,260 +7,23 @@ import {
   ChatText,
   Brain,
   Wrench,
-  CaretDown,
-  CaretRight,
   FileArrowDown,
-  DownloadSimple,
-  CircleNotch,
 } from "@phosphor-icons/react";
-import hljs from "highlight.js";
 import ScheduledJobs from "@/models/scheduledJobs";
-import StorageFiles from "@/models/files";
 import usePolling from "@/hooks/usePolling";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import renderMarkdown from "@/utils/chat/markdown";
-import { safeJsonParse } from "@/utils/request";
-import { useTheme } from "@/hooks/useTheme";
+import CollapsibleSection from "./components/CollapsibleSection";
+import ToolCallCard from "./components/ToolCallCard";
+import GeneratedFileCard from "./components/GeneratedFileCard";
 
-function CollapsibleSection({
-  title,
-  icon: Icon,
-  children,
-  defaultOpen = false,
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="border border-white/10 rounded-lg overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2 px-4 py-3 bg-theme-bg-primary/50 hover:bg-theme-bg-primary/70 transition-colors text-left"
-      >
-        {open ? (
-          <CaretDown className="h-4 w-4 text-theme-text-secondary" />
-        ) : (
-          <CaretRight className="h-4 w-4 text-theme-text-secondary" />
-        )}
-        <Icon className="h-4 w-4 text-theme-text-secondary" />
-        <span className="text-sm font-medium text-theme-text-primary">
-          {title}
-        </span>
-      </button>
-      {open && <div className="p-4 border-t border-white/10">{children}</div>}
-    </div>
-  );
-}
-
-function getHljsTheme(isLight) {
-  return isLight ? "github" : "github-dark";
-}
-
-function truncateText(text) {
-  return text.length > 5000 ? text.slice(0, 5000) + "..." : text;
-}
-
-function formatAndHighlight(value) {
-  const parsed =
-    typeof value === "string" ? safeJsonParse(value, value) : value;
-
-  if (typeof parsed === "object" && parsed !== null) {
-    const formatted = JSON.stringify(parsed, null, 2);
-    const truncatedFormatted = truncateText(formatted);
-    const highlighted = hljs.highlight(truncatedFormatted, {
-      language: "json",
-    }).value;
-    return { __html: highlighted };
-  }
-  return null;
-}
-
-function ToolCallCard({ toolCall }) {
-  const [showResult, setShowResult] = useState(false);
-  const { isLight } = useTheme();
-
-  const resultText =
-    typeof toolCall.result === "string"
-      ? toolCall.result
-      : JSON.stringify(toolCall.result, null, 2);
-
-  const truncatedResult = truncateText(resultText);
-  const highlightedResult = formatAndHighlight(toolCall.result);
-  const highlightedArgs = formatAndHighlight(toolCall.arguments);
-
-  return (
-    <div className="border border-white/5 rounded-lg p-3 bg-theme-bg-primary/30">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Wrench className="h-3.5 w-3.5 text-blue-400" />
-          <span className="text-sm font-medium text-theme-text-primary">
-            {toolCall.toolName}
-          </span>
-        </div>
-        {toolCall.timestamp && (
-          <span className="text-xs text-theme-text-secondary">
-            {new Date(toolCall.timestamp).toLocaleTimeString()}
-          </span>
-        )}
-      </div>
-
-      {toolCall.arguments && (
-        <div className="mb-2">
-          <span className="text-xs text-theme-text-secondary">Arguments:</span>
-          {highlightedArgs ? (
-            <pre
-              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme(isLight)}`}
-              dangerouslySetInnerHTML={highlightedArgs}
-            />
-          ) : (
-            <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto white-scrollbar">
-              {typeof toolCall.arguments === "string"
-                ? toolCall.arguments
-                : JSON.stringify(toolCall.arguments, null, 2)}
-            </pre>
-          )}
-        </div>
-      )}
-
-      {resultText && (
-        <div>
-          <button
-            onClick={() => setShowResult(!showResult)}
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            {showResult ? "Hide result" : "Show result"}
-          </button>
-          {showResult &&
-            (highlightedResult ? (
-              <pre
-                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme(isLight)}`}
-                dangerouslySetInnerHTML={highlightedResult}
-              />
-            ) : (
-              <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar">
-                {truncatedResult}
-              </pre>
-            ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function getFileDisplayInfo(filename) {
-  const extension = filename?.split(".")?.pop()?.toLowerCase() ?? "txt";
-  const map = {
-    pptx: {
-      badge: "PPT",
-      bg: "bg-orange-100",
-      text: "text-orange-700",
-      type: "PowerPoint",
-    },
-    ppt: {
-      badge: "PPT",
-      bg: "bg-orange-100",
-      text: "text-orange-700",
-      type: "PowerPoint",
-    },
-    pdf: {
-      badge: "PDF",
-      bg: "bg-red-100",
-      text: "text-red-700",
-      type: "PDF Document",
-    },
-    doc: {
-      badge: "DOC",
-      bg: "bg-blue-100",
-      text: "text-blue-700",
-      type: "Word Document",
-    },
-    docx: {
-      badge: "DOC",
-      bg: "bg-blue-100",
-      text: "text-blue-700",
-      type: "Word Document",
-    },
-    xls: {
-      badge: "XLS",
-      bg: "bg-green-100",
-      text: "text-green-700",
-      type: "Spreadsheet",
-    },
-    xlsx: {
-      badge: "XLS",
-      bg: "bg-green-100",
-      text: "text-green-700",
-      type: "Spreadsheet",
-    },
-    csv: {
-      badge: "CSV",
-      bg: "bg-green-100",
-      text: "text-green-700",
-      type: "Spreadsheet",
-    },
-  };
-  return (
-    map[extension] || {
-      badge: extension.toUpperCase().slice(0, 4),
-      bg: "bg-slate-200",
-      text: "text-slate-700",
-      type: "File",
-    }
-  );
-}
-
-function GeneratedFileCard({ file }) {
-  const [downloading, setDownloading] = useState(false);
-  const { badge, bg, text, type } = getFileDisplayInfo(file.filename);
-
-  const handleDownload = async () => {
-    if (downloading || !file.storageFilename) return;
-    setDownloading(true);
-    try {
-      const blob = await StorageFiles.download(file.storageFilename);
-      if (!blob) throw new Error("Failed to download file");
-      const { saveAs } = await import("file-saver");
-      saveAs(blob, file.filename || file.storageFilename);
-    } catch {
-      showToast("Failed to download file", "error");
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center justify-between border border-white/5 rounded-lg p-3 bg-theme-bg-primary/30">
-      <div className="flex items-center gap-3 min-w-0">
-        <div
-          className={`${bg} ${text} rounded-lg flex items-center justify-center flex-shrink-0 h-10 w-10 text-xs font-bold`}
-        >
-          {badge}
-        </div>
-        <div className="flex flex-col min-w-0">
-          <p className="text-sm font-medium text-theme-text-primary truncate">
-            {file.filename || "Unknown file"}
-          </p>
-          <p className="text-xs text-theme-text-secondary">
-            {file.fileSize ? `${(file.fileSize / 1024).toFixed(1)} KB` : ""}
-            {file.fileSize && type ? " · " : ""}
-            {type}
-          </p>
-        </div>
-      </div>
-      <button
-        onClick={handleDownload}
-        disabled={downloading}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-theme-bg-primary/70 transition-colors text-sm text-theme-text-primary flex-shrink-0 ml-4 disabled:opacity-50"
-      >
-        {downloading ? (
-          <CircleNotch size={14} weight="bold" className="animate-spin" />
-        ) : (
-          <DownloadSimple size={14} weight="bold" />
-        )}
-        {downloading ? "Downloading..." : "Download"}
-      </button>
-    </div>
-  );
-}
+const STATUS_COLORS = {
+  completed: "text-green-400",
+  failed: "text-red-400",
+  timed_out: "text-orange-400",
+  running: "text-yellow-400",
+};
 
 export default function RunDetailPage() {
   const { id, runId } = useParams();
@@ -304,13 +67,73 @@ export default function RunDetailPage() {
   };
 
   const result = run?.result || {};
-  const statusColors = {
-    completed: "text-green-400",
-    failed: "text-red-400",
-    timed_out: "text-orange-400",
-    running: "text-yellow-400",
-  };
 
+  function AgentThoughtsSection({ result }) {
+    return (
+      <CollapsibleSection
+        title={`Thinking (${result.thoughts.length} steps)`}
+        icon={Brain}
+      >
+        <div className="space-y-2">
+          {result.thoughts.map((thought, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-2 text-sm text-theme-text-secondary"
+            >
+              <span className="text-xs text-theme-text-secondary/50 mt-0.5 min-w-[20px]">
+                {i + 1}.
+              </span>
+              <span>{thought}</span>
+            </div>
+          ))}
+        </div>
+      </CollapsibleSection>
+    );
+  }
+
+  function ToolCallsSection({ result }) {
+    return (
+      <CollapsibleSection
+        title={`Tool Calls (${result.toolCalls.length})`}
+        icon={Wrench}
+      >
+        <div className="space-y-3">
+          {result.toolCalls.map((toolCall, i) => (
+            <ToolCallCard key={i} toolCall={toolCall} />
+          ))}
+        </div>
+      </CollapsibleSection>
+    );
+  }
+
+  function GeneratedFilesSection({ result }) {
+    return (
+      <CollapsibleSection
+        title={`Generated Documents (${result.generatedFiles.length})`}
+        icon={FileArrowDown}
+        defaultOpen={true}
+      >
+        <div className="space-y-2">
+          {result.generatedFiles.map((file, i) => (
+            <GeneratedFileCard key={i} file={file} />
+          ))}
+        </div>
+      </CollapsibleSection>
+    );
+  }
+
+  function FinalResponseSection({ result }) {
+    return (
+      <CollapsibleSection title="Response" icon={ChatText} defaultOpen={true}>
+        <div
+          className="text-sm text-theme-text-primary markdown"
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(result.text),
+          }}
+        />
+      </CollapsibleSection>
+    );
+  }
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -327,169 +150,143 @@ export default function RunDetailPage() {
             <p className="text-theme-text-secondary text-sm">Run not found.</p>
           ) : (
             <>
-              {/* Header */}
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
-                <button
-                  onClick={() =>
-                    navigate(`/settings/scheduled-jobs/${id}/runs`)
-                  }
-                  className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
-                >
-                  <ArrowLeft className="h-4 w-4" /> Back
-                </button>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                      {job?.name || "Unknown Job"} — Run #{run.id}
-                    </p>
-                    <div className="flex items-center gap-4 mt-1">
-                      <span
-                        className={`text-sm font-medium ${statusColors[run.status] || "text-gray-400"}`}
-                      >
-                        {run.status?.replace("_", " ")}
-                      </span>
-                      <span className="text-xs text-theme-text-secondary">
-                        {new Date(run.startedAt).toLocaleString()}
-                      </span>
-                      {result.duration && (
-                        <span className="text-xs text-theme-text-secondary">
-                          Duration: {(result.duration / 1000).toFixed(1)}s
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {run.status === "completed" && (
-                    <button
-                      onClick={handleContinueInThread}
-                      disabled={continuing}
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      <ChatText className="h-4 w-4" />
-                      {continuing ? "Creating..." : "Continue in Thread"}
-                    </button>
-                  )}
-                </div>
-              </div>
+              <RunHeader
+                job={job}
+                run={run}
+                result={result}
+                continuing={continuing}
+                onBack={() => navigate(`/settings/scheduled-jobs/${id}/runs`)}
+                onContinueInThread={handleContinueInThread}
+              />
 
-              {/* Run info */}
               <div className="mt-6 space-y-4">
-                {/* Prompt */}
-                <div className="border border-white/10 rounded-lg p-4">
-                  <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
-                    Prompt
-                  </p>
-                  <p className="text-sm text-theme-text-primary whitespace-pre-wrap">
-                    {job?.prompt || "—"}
-                  </p>
-                </div>
+                <PromptSection prompt={job?.prompt} />
 
-                {/* Error */}
-                {run.error && (
-                  <div className="border border-red-500/20 rounded-lg p-4 bg-red-500/5">
-                    <p className="text-xs text-red-400 mb-1 uppercase font-medium">
-                      Error
-                    </p>
-                    <p className="text-sm text-red-300">{run.error}</p>
-                  </div>
+                {run.error && <ErrorSection error={run.error} />}
+
+                {result.thoughts?.length && (
+                  <AgentThoughtsSection result={result} />
                 )}
 
-                {/* Thinking */}
-                {result.thoughts?.length > 0 && (
-                  <CollapsibleSection
-                    title={`Thinking (${result.thoughts.length} steps)`}
-                    icon={Brain}
-                  >
-                    <div className="space-y-2">
-                      {result.thoughts.map((thought, i) => (
-                        <div
-                          key={i}
-                          className="flex items-start gap-2 text-sm text-theme-text-secondary"
-                        >
-                          <span className="text-xs text-theme-text-secondary/50 mt-0.5 min-w-[20px]">
-                            {i + 1}.
-                          </span>
-                          <span>{thought}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CollapsibleSection>
+                {result.toolCalls?.length && (
+                  <ToolCallsSection result={result} />
                 )}
 
-                {/* Tool Calls */}
-                {result.toolCalls?.length > 0 && (
-                  <CollapsibleSection
-                    title={`Tool Calls (${result.toolCalls.length})`}
-                    icon={Wrench}
-                  >
-                    <div className="space-y-3">
-                      {result.toolCalls.map((toolCall, i) => (
-                        <ToolCallCard key={i} toolCall={toolCall} />
-                      ))}
-                    </div>
-                  </CollapsibleSection>
+                {result.generatedFiles?.length && (
+                  <GeneratedFilesSection result={result} />
                 )}
 
-                {/* Generated Documents */}
-                {result.generatedFiles?.length > 0 && (
-                  <CollapsibleSection
-                    title={`Generated Documents (${result.generatedFiles.length})`}
-                    icon={FileArrowDown}
-                    defaultOpen={true}
-                  >
-                    <div className="space-y-2">
-                      {result.generatedFiles.map((file, i) => (
-                        <GeneratedFileCard key={i} file={file} />
-                      ))}
-                    </div>
-                  </CollapsibleSection>
-                )}
+                {result.text && <FinalResponseSection result={result} />}
 
-                {/* Response */}
-                {result.text && (
-                  <CollapsibleSection
-                    title="Response"
-                    icon={ChatText}
-                    defaultOpen={true}
-                  >
-                    <div
-                      className="text-sm text-theme-text-primary markdown"
-                      dangerouslySetInnerHTML={{
-                        __html: renderMarkdown(result.text),
-                      }}
-                    />
-                  </CollapsibleSection>
-                )}
-
-                {/* Metrics */}
                 {result.metrics && Object.keys(result.metrics).length > 0 && (
-                  <div className="border border-white/10 rounded-lg p-4">
-                    <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
-                      Metrics
-                    </p>
-                    <div className="flex gap-6 text-xs text-theme-text-secondary">
-                      {result.metrics.prompt_tokens != null && (
-                        <span>
-                          Prompt tokens:{" "}
-                          <span className="text-theme-text-primary">
-                            {result.metrics.prompt_tokens}
-                          </span>
-                        </span>
-                      )}
-                      {result.metrics.completion_tokens != null && (
-                        <span>
-                          Completion tokens:{" "}
-                          <span className="text-theme-text-primary">
-                            {result.metrics.completion_tokens}
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  <MetricsSection metrics={result.metrics} />
                 )}
               </div>
             </>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function RunHeader({
+  job,
+  run,
+  result,
+  continuing,
+  onBack,
+  onContinueInThread,
+}) {
+  return (
+    <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
+      >
+        <ArrowLeft className="h-4 w-4" /> Back
+      </button>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-lg leading-6 font-bold text-theme-text-primary">
+            {job?.name || "Unknown Job"} — Run #{run.id}
+          </p>
+          <div className="flex items-center gap-4 mt-1">
+            <span
+              className={`text-sm font-medium ${STATUS_COLORS[run.status] || "text-gray-400"}`}
+            >
+              {run.status?.replace("_", " ")}
+            </span>
+            <span className="text-xs text-theme-text-secondary">
+              {new Date(run.startedAt).toLocaleString()}
+            </span>
+            {result.duration && (
+              <span className="text-xs text-theme-text-secondary">
+                Duration: {(result.duration / 1000).toFixed(1)}s
+              </span>
+            )}
+          </div>
+        </div>
+        {run.status === "completed" && (
+          <button
+            onClick={onContinueInThread}
+            disabled={continuing}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
+          >
+            <ChatText className="h-4 w-4" />
+            {continuing ? "Creating..." : "Continue in Thread"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PromptSection({ prompt }) {
+  return (
+    <div className="border border-white/10 rounded-lg p-4">
+      <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
+        Prompt
+      </p>
+      <p className="text-sm text-theme-text-primary whitespace-pre-wrap">
+        {prompt || "—"}
+      </p>
+    </div>
+  );
+}
+
+function ErrorSection({ error }) {
+  return (
+    <div className="border border-red-500/20 rounded-lg p-4 bg-red-500/5">
+      <p className="text-xs text-red-400 mb-1 uppercase font-medium">Error</p>
+      <p className="text-sm text-red-300">{error}</p>
+    </div>
+  );
+}
+
+function MetricsSection({ metrics }) {
+  return (
+    <div className="border border-white/10 rounded-lg p-4">
+      <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
+        Metrics
+      </p>
+      <div className="flex gap-6 text-xs text-theme-text-secondary">
+        {metrics.prompt_tokens != null && (
+          <span>
+            Prompt tokens:{" "}
+            <span className="text-theme-text-primary">
+              {metrics.prompt_tokens}
+            </span>
+          </span>
+        )}
+        {metrics.completion_tokens != null && (
+          <span>
+            Completion tokens:{" "}
+            <span className="text-theme-text-primary">
+              {metrics.completion_tokens}
+            </span>
+          </span>
+        )}
       </div>
     </div>
   );
