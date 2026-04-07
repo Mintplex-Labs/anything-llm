@@ -6,7 +6,7 @@ const ScheduledJob = {
   // Maximum number of scheduled jobs that can be enabled at once.
   // null = no limit. Set to a positive integer to cap concurrent active jobs;
   // attempting to enable a job past the cap will be rejected at the API layer.
-  MAX_ACTIVE: 2,
+  MAX_ACTIVE: null,
 
   /**
    * Compute the next run time from a cron expression.
