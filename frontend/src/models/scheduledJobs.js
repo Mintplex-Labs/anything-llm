@@ -132,6 +132,19 @@ const ScheduledJobs = {
       });
   },
 
+  generateCron: async function (description) {
+    return await fetch(`${API_BASE}/scheduled-jobs/generate-cron`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ description }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { valid: false, error: e.message };
+      });
+  },
+
   availableTools: async function () {
     return await fetch(`${API_BASE}/scheduled-jobs/available-tools`, {
       headers: baseHeaders(),

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { X } from "@phosphor-icons/react";
+import { CircleNotch, X } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
-import { CRON_PRESETS } from "./utils/cron";
+import { CRON_PRESETS, humanizeCron } from "./utils/cron";
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
   const isEditing = !!job;
@@ -13,9 +13,12 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     schedule: job?.schedule || "0 9 * * *",
     cronPreset: "custom",
     selectedTools: job?.tools ? safeJsonParse(job.tools, []) : [],
+    generateInput: "",
+    generateError: "",
   });
   const [availableTools, setAvailableTools] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     ScheduledJobs.availableTools().then(({ tools }) => {
@@ -41,7 +44,32 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     setForm((prev) => ({
       ...prev,
       cronPreset: value,
-      ...(value !== "custom" ? { schedule: value } : {}),
+      // Preserve current schedule for "custom" and "generate"; otherwise apply preset value
+      ...(value !== "custom" && value !== "generate"
+        ? { schedule: value }
+        : {}),
+      generateError: "",
+    }));
+  };
+
+  const handleGenerate = async () => {
+    const input = form.generateInput.trim();
+    if (!input) return;
+    setForm((prev) => ({ ...prev, generateError: "" }));
+    setGenerating(true);
+    const result = await ScheduledJobs.generateCron(input);
+    setGenerating(false);
+    if (!result?.valid) {
+      setForm((prev) => ({
+        ...prev,
+        generateError: result?.error || "Could not generate a cron expression",
+      }));
+      return;
+    }
+    setForm((prev) => ({
+      ...prev,
+      schedule: result.cron,
+      generateError: "",
     }));
   };
 
@@ -157,10 +185,49 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                   className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block flex-1 p-2.5"
                 />
               )}
+              {form.cronPreset === "generate" && (
+                <div className="flex flex-1 gap-2">
+                  <input
+                    type="text"
+                    name="generateInput"
+                    value={form.generateInput}
+                    onChange={handleChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleGenerate();
+                      }
+                    }}
+                    placeholder='e.g. "Every Wednesday at 6 PM"'
+                    className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block flex-1 p-2.5"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={generating || !form.generateInput.trim()}
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {generating && (
+                      <CircleNotch
+                        size={14}
+                        weight="bold"
+                        className="animate-spin"
+                      />
+                    )}
+                    {generating ? "Generating..." : "Generate"}
+                  </button>
+                </div>
+              )}
             </div>
+            {form.cronPreset === "generate" && form.generateError && (
+              <p className="text-xs text-red-400 mt-1">{form.generateError}</p>
+            )}
             <p className="text-xs text-theme-text-secondary mt-1">
               Current schedule:{" "}
               <code className="text-theme-text-primary">{form.schedule}</code>
+              {form.schedule && (
+                <span className="ml-2">— {humanizeCron(form.schedule)}</span>
+              )}
             </p>
           </div>
 

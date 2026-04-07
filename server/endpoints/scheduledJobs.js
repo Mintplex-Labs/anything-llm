@@ -6,6 +6,7 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { isSingleUserMode } = require("../utils/middleware/multiUserProtected");
 const { reqBody, safeJsonParse } = require("../utils/http");
+const { getLLMProvider } = require("../utils/helpers");
 const { agentSkillsFromSystemSettings } = require("../utils/agents/defaults");
 const ImportedPlugin = require("../utils/agents/imported");
 const { AgentFlows } = require("../utils/agentFlows");
@@ -59,6 +60,86 @@ function scheduledJobEndpoints(app) {
         return response
           .status(200)
           .json({ tools: [...builtIn, ...imported, ...flows, ...mcp] });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500);
+      }
+    }
+  );
+
+  // Generate a cron expression from a natural-language description using the system LLM.
+  // Returns { valid: true, cron } on success or { valid: false, error } if the input
+  // is not interpretable or the model produced an invalid cron.
+  app.post(
+    "/scheduled-jobs/generate-cron",
+    [validatedRequest, isSingleUserMode],
+    async (request, response) => {
+      try {
+        const { description } = reqBody(request);
+        if (!description || !description.trim()) {
+          return response
+            .status(400)
+            .json({ valid: false, error: "Description is required" });
+        }
+
+        const systemPrompt = `You convert natural-language schedule descriptions into standard 5-field cron expressions (minute hour day-of-month month day-of-week).
+
+Rules:
+- If the user's input is NOT an interpretable recurring time/schedule expression (e.g. it's a question, a topic, gibberish, or a one-time absolute date with no recurrence), respond with: {"valid": false, "error": "<brief reason>"}
+- Otherwise respond with: {"valid": true, "cron": "<5-field cron expression>"}
+- Output JSON only. No prose, no markdown, no code fences.
+- Day-of-week uses 0-6 where 0 = Sunday.
+- Use the most natural interpretation. Assume the user's local timezone.
+
+Examples:
+Input: "every Wednesday at 6pm"
+Output: {"valid": true, "cron": "0 18 * * 3"}
+
+Input: "every 5 minutes"
+Output: {"valid": true, "cron": "*/5 * * * *"}
+
+Input: "first day of every month at midnight"
+Output: {"valid": true, "cron": "0 0 1 * *"}
+
+Input: "the color blue"
+Output: {"valid": false, "error": "Not a recurring schedule"}`;
+
+        const messages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: description.trim() },
+        ];
+
+        const LLMConnector = getLLMProvider();
+        const { textResponse } = await LLMConnector.getChatCompletion(
+          messages,
+          { temperature: 0 }
+        );
+
+        const parsed = safeJsonParse(textResponse, null);
+        if (!parsed || typeof parsed !== "object") {
+          return response.status(200).json({
+            valid: false,
+            error: "Could not parse a schedule from that description",
+          });
+        }
+
+        if (parsed.valid === true && typeof parsed.cron === "string") {
+          if (!ScheduledJob.isValidCron(parsed.cron)) {
+            return response.status(200).json({
+              valid: false,
+              error: "Generated cron expression was invalid",
+            });
+          }
+          return response.status(200).json({ valid: true, cron: parsed.cron });
+        }
+
+        return response.status(200).json({
+          valid: false,
+          error:
+            typeof parsed.error === "string" && parsed.error
+              ? parsed.error
+              : "Could not interpret that as a recurring schedule",
+        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500);
