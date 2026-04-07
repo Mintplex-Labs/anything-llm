@@ -6,6 +6,7 @@ const VALID_PROPERTIES = [
   "conversationTokenCount",
   "conversationMessageCount",
   "currentHour",
+  "hasImageAttachment",
 ];
 const VALID_COMPARATORS = [
   "contains",

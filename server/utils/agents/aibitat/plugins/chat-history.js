@@ -54,6 +54,7 @@ const chatHistory = {
         const metrics = aibitat.provider?.getUsage?.() ?? {};
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
+        const routingMetadata = aibitat.handlerProps.routingMetadata || null;
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -64,6 +65,7 @@ const chatHistory = {
             attachments,
             metrics,
             ...(outputs.length > 0 ? { outputs } : {}),
+            ...(routingMetadata || {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
@@ -80,6 +82,7 @@ const chatHistory = {
         const citations = aibitat._pendingCitations ?? [];
         const outputs = aibitat._pendingOutputs ?? [];
         const existingSources = options?.sources ?? [];
+        const routingMetadata = aibitat.handlerProps.routingMetadata || null;
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -94,6 +97,7 @@ const chatHistory = {
             attachments,
             metrics,
             ...(outputs.length > 0 ? { outputs } : {}),
+            ...(routingMetadata || {}),
           },
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,

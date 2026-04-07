@@ -22,7 +22,7 @@ function evaluateCondition(property, comparator, value, context) {
   const contextValue = getContextValue(property, context);
   if (contextValue === undefined) return false;
 
-  if (property === "promptContent")
+  if (property === "promptContent" || property === "hasImageAttachment")
     return evaluateStringCondition(contextValue, comparator, value);
 
   return evaluateNumericCondition(contextValue, comparator, value);
@@ -38,6 +38,12 @@ function getContextValue(property, context) {
       return context.conversationMessageCount ?? 0;
     case "currentHour":
       return new Date().getHours();
+    case "hasImageAttachment":
+      return (context.attachments || []).some((a) =>
+        a.mime?.startsWith("image/")
+      )
+        ? "true"
+        : "false";
     default:
       return undefined;
   }

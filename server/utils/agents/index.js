@@ -381,6 +381,12 @@ class AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.invocation.workspace.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
     if (
       this.invocation.workspace.chatProvider &&
@@ -395,6 +401,10 @@ class AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -432,14 +442,46 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
+  async #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
+
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider();
+    }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider() {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.invocation.workspace.router_id
+      ? this.invocation.workspace
+      : {
+          ...this.invocation.workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    await router.resolve(
+      { prompt: this.invocation.prompt },
+      {
+        user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
+        thread: this.invocation.thread_id
+          ? { slug: this.invocation.thread_id }
+          : null,
+      }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
   }
 
   async #validInvocation() {
@@ -629,7 +671,7 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
@@ -712,6 +754,7 @@ class AgentHandler {
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
 

@@ -150,6 +150,21 @@ class AIbitat {
   }
 
   /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (!messageUuid || !routingMetadata?.routedTo) return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "routingMetadata",
+      uuid: messageUuid,
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
+  /**
    * Add an attachment (image) from a tool to be injected into the conversation.
    * The attachment will be added as a user message so the model can "see" it.
    * This leverages existing provider attachment handling for user messages.
@@ -923,6 +938,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
+        this?.flushRoutingMetadata?.(directOutputUUID);
         return result;
       }
 
@@ -964,6 +980,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(responseUuid);
+    this?.flushRoutingMetadata?.(responseUuid);
     return completionStream?.textResponse;
   }
 
@@ -1017,6 +1034,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
+        this?.flushRoutingMetadata?.(msgUUID);
         return (
           finalCompletion?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
@@ -1075,6 +1093,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
+        this?.flushRoutingMetadata?.(msgUUID);
         return result;
       }
 
@@ -1116,6 +1135,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(msgUUID);
+    this?.flushRoutingMetadata?.(msgUUID);
     return completion?.textResponse;
   }
 

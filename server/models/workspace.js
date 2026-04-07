@@ -650,9 +650,28 @@ const Workspace = {
       workspace?.agentProvider ??
       workspace?.chatProvider ??
       process.env.LLM_PROVIDER;
-    // Model router delegates to a resolved provider at chat time,
-    // so we cannot determine tool calling support ahead of time.
-    if (provider === "anythingllm-router") return false;
+    // Model router delegates to a resolved provider at chat time.
+    // Check the router's fallback provider for tool calling support
+    // as a reasonable proxy for the router's capabilities.
+    if (provider === "anythingllm-router") {
+      const { ModelRouter } = require("./modelRouter");
+      const routerId =
+        workspace?.router_id ||
+        (process.env.MODEL_ROUTER_ID
+          ? Number(process.env.MODEL_ROUTER_ID)
+          : null);
+      if (!routerId) return false;
+      const router = await ModelRouter.get({ id: routerId });
+      if (!router) return false;
+      const fallbackConfig = {
+        provider: router.fallback_provider,
+        model: router.fallback_model,
+      };
+      const fallbackProvider = new AIbitat(fallbackConfig).getProviderForConfig(
+        fallbackConfig
+      );
+      return (await fallbackProvider.supportsNativeToolCalling?.()) ?? false;
+    }
     const model =
       workspace?.agentModel ??
       workspace?.chatModel ??

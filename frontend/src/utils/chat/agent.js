@@ -146,6 +146,15 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           );
         }
 
+        if (type === "routingMetadata") {
+          if (!data.content.routedTo) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid
+              ? { ...msg, routedTo: data.content.routedTo }
+              : msg
+          );
+        }
+
         if (type === "citations") {
           if (!data.content.citations) return prev;
           return prev.map((msg) =>

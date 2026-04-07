@@ -41,6 +41,7 @@ export default function RouterFormPage() {
       description: formData.get("description"),
       fallback_provider: formData.get("fallback_provider"),
       fallback_model: formData.get("fallback_model"),
+      cooldown_seconds: Number(formData.get("cooldown_seconds")),
     };
 
     const { router: updated, error } = await ModelRouter.update(id, data);
@@ -118,6 +119,23 @@ export default function RouterFormPage() {
                     defaultProvider={router.fallback_provider}
                     defaultModel={router.fallback_model}
                   />
+                  <div className="flex flex-col gap-y-1.5">
+                    <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+                      Cache Cooldown (seconds)
+                    </label>
+                    <input
+                      type="number"
+                      name="cooldown_seconds"
+                      defaultValue={router.cooldown_seconds ?? 30}
+                      min={0}
+                      max={3600}
+                      className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+                    />
+                    <p className="text-[10px] text-zinc-400 light:text-slate-500">
+                      How long a routing decision is cached before re-evaluating
+                      rules. Set to 0 to disable caching.
+                    </p>
+                  </div>
                   <div className="flex justify-end pt-4">
                     <button
                       type="submit"

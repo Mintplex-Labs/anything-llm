@@ -19,6 +19,7 @@ export default function NewRouterModal({ closeModal, onSuccess }) {
       description: formData.get("description"),
       fallback_provider: formData.get("fallback_provider"),
       fallback_model: formData.get("fallback_model"),
+      cooldown_seconds: Number(formData.get("cooldown_seconds") ?? 30),
     };
 
     if (!data.name) {
@@ -93,6 +94,23 @@ export default function NewRouterModal({ closeModal, onSuccess }) {
                 label="Fallback Provider & Model"
                 description="Used when no routing rule matches"
               />
+              <div className="flex flex-col gap-y-1.5">
+                <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+                  Cache Cooldown (seconds)
+                </label>
+                <input
+                  type="number"
+                  name="cooldown_seconds"
+                  defaultValue={30}
+                  min={0}
+                  max={3600}
+                  className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+                />
+                <p className="text-[10px] text-zinc-400 light:text-slate-500">
+                  How long a routing decision is cached before re-evaluating
+                  rules. Set to 0 to disable caching.
+                </p>
+              </div>
             </div>
             <div className="flex justify-end items-center mt-6 pt-6 border-t border-zinc-700 light:border-slate-200">
               <button

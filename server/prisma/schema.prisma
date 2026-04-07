@@ -403,6 +403,7 @@ model model_routers {
   description       String?
   fallback_provider String
   fallback_model    String
+  cooldown_seconds  Int                  @default(30)
   created_by        Int?
   createdAt         DateTime             @default(now())
   lastUpdatedAt     DateTime             @default(now())

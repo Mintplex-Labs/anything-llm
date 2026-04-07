@@ -18,6 +18,11 @@ const ModelRouter = {
       if (!value || typeof value !== "string") return null;
       return String(value);
     },
+    cooldown_seconds: (value) => {
+      const num = Number(value);
+      if (isNaN(num) || num < 0 || num > 3600) return null;
+      return Math.round(num);
+    },
   },
 
   create: async function (data = {}, creatorId = null) {
@@ -34,6 +39,11 @@ const ModelRouter = {
         message: "Fallback provider and model are required.",
       };
 
+    const cooldown_seconds =
+      data.cooldown_seconds != null
+        ? this.validations.cooldown_seconds(data.cooldown_seconds)
+        : 30;
+
     try {
       const router = await prisma.model_routers.create({
         data: {
@@ -41,6 +51,7 @@ const ModelRouter = {
           description: this.validations.description(data.description),
           fallback_provider,
           fallback_model,
+          cooldown_seconds: cooldown_seconds ?? 30,
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
@@ -123,6 +134,15 @@ const ModelRouter = {
       if (!model)
         return { router: null, message: "Fallback model is required." };
       updates.fallback_model = model;
+    }
+    if (data.cooldown_seconds !== undefined) {
+      const cooldown = this.validations.cooldown_seconds(data.cooldown_seconds);
+      if (cooldown === null)
+        return {
+          router: null,
+          message: "Cooldown must be a number between 0 and 3600.",
+        };
+      updates.cooldown_seconds = cooldown;
     }
 
     if (Object.keys(updates).length === 0)

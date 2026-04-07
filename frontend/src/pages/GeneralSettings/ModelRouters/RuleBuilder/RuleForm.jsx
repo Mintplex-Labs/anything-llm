@@ -24,6 +24,7 @@ const PROPERTIES = [
   { value: "conversationTokenCount", label: "Conversation Token Count" },
   { value: "conversationMessageCount", label: "Conversation Message Count" },
   { value: "currentHour", label: "Current Hour (0-23)" },
+  { value: "hasImageAttachment", label: "Has Image Attachment" },
 ];
 
 const STRING_COMPARATORS = [
@@ -47,6 +48,8 @@ const NUMERIC_PROPERTIES = [
   "conversationMessageCount",
   "currentHour",
 ];
+
+const BOOLEAN_PROPERTIES = ["hasImageAttachment"];
 
 function slugify(text) {
   return text
@@ -227,8 +230,10 @@ function CalculatedFields({
   comparators,
   existingRule,
 }) {
+  const isBoolean = BOOLEAN_PROPERTIES.includes(property);
+
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className={`grid ${isBoolean ? "grid-cols-2" : "grid-cols-3"} gap-4`}>
       <div className="flex flex-col gap-y-1.5">
         <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
           Property
@@ -249,51 +254,73 @@ function CalculatedFields({
         </select>
       </div>
 
-      <div className="flex flex-col gap-y-1.5">
-        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-          Comparator
-        </label>
-        <select
-          name="comparator"
-          defaultValue={existingRule?.comparator || ""}
-          onChange={(e) => setComparator(e.target.value)}
-          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
-          required
-        >
-          <option value="">Select</option>
-          {comparators.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {isBoolean ? (
+        <>
+          <input type="hidden" name="comparator" value="eq" />
+          <div className="flex flex-col gap-y-1.5">
+            <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+              Value
+            </label>
+            <select
+              name="value"
+              defaultValue={existingRule?.value || "true"}
+              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+              required
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-y-1.5">
+            <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+              Comparator
+            </label>
+            <select
+              name="comparator"
+              defaultValue={existingRule?.comparator || ""}
+              onChange={(e) => setComparator(e.target.value)}
+              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 text-sm rounded-lg outline-none block w-full p-2.5"
+              required
+            >
+              <option value="">Select</option>
+              {comparators.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div className="flex flex-col gap-y-1.5">
-        <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
-          Value
-        </label>
-        <input
-          type="text"
-          name="value"
-          defaultValue={existingRule?.value || ""}
-          placeholder={
-            comparator === "between"
-              ? property === "currentHour"
-                ? "e.g. 9,17 (9am to 5pm)"
-                : "e.g. 10,50"
-              : property === "currentHour"
-                ? "e.g. 18 (0-23)"
-                : property === "conversationMessageCount"
-                  ? "e.g. 10"
-                  : NUMERIC_PROPERTIES.includes(property)
-                    ? "e.g. 4000"
-                    : "e.g. code"
-          }
-          className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
-          required
-        />
-      </div>
+          <div className="flex flex-col gap-y-1.5">
+            <label className="text-sm font-medium text-zinc-200 light:text-slate-900">
+              Value
+            </label>
+            <input
+              type="text"
+              name="value"
+              defaultValue={existingRule?.value || ""}
+              placeholder={
+                comparator === "between"
+                  ? property === "currentHour"
+                    ? "e.g. 9,17 (9am to 5pm)"
+                    : "e.g. 10,50"
+                  : property === "currentHour"
+                    ? "e.g. 18 (0-23)"
+                    : property === "conversationMessageCount"
+                      ? "e.g. 10"
+                      : NUMERIC_PROPERTIES.includes(property)
+                        ? "e.g. 4000"
+                        : "e.g. code"
+              }
+              className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-900 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg outline-none block w-full p-2.5"
+              required
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

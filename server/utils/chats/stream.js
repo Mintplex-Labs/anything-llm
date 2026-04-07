@@ -83,7 +83,12 @@ async function streamChatWithWorkspace(
         include: true,
       });
       await router.resolve(
-        { prompt: message, conversationTokenCount, conversationMessageCount },
+        {
+          prompt: message,
+          conversationTokenCount,
+          conversationMessageCount,
+          attachments,
+        },
         { user, thread }
       );
       LLMConnector = router.delegateProvider;

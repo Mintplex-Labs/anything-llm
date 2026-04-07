@@ -5,6 +5,7 @@ CREATE TABLE "model_routers" (
     "description" TEXT,
     "fallback_provider" TEXT NOT NULL,
     "fallback_model" TEXT NOT NULL,
+    "cooldown_seconds" INTEGER NOT NULL DEFAULT 30,
     "created_by" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
