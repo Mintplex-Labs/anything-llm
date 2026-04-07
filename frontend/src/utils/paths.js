@@ -1,5 +1,13 @@
 import { API_BASE } from "./constants";
 
+/**
+ * Check if a href matches the current pathname.
+ * Matches exactly or as a parent path (e.g. /settings/model-routers matches /settings/model-routers/1).
+ */
+export function isPathMatch(href, pathname) {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 function applyOptions(path, options = {}) {
   let updatedPath = path;
   if (!options || Object.keys(options).length === 0) return updatedPath;

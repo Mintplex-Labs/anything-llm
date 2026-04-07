@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import { safeJsonParse } from "@/utils/request";
+import { isPathMatch } from "@/utils/paths";
 import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 
 export default function MenuOption({
@@ -195,12 +196,4 @@ function hasVisibleOptions(user = null, childOptions = []) {
 function generateStorageKey({ key = "" }) {
   const _key = key.replace(/\s+/g, "_").toLowerCase();
   return `anything_llm_menu_${_key}_expanded`;
-}
-
-/**
- * Check if a menu item href matches the current pathname.
- * Matches exactly or as a parent path (e.g. /settings/model-routers matches /settings/model-routers/1).
- */
-function isPathMatch(href, pathname) {
-  return pathname === href || pathname.startsWith(href + "/");
 }
