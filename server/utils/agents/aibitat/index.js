@@ -776,6 +776,21 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       }
     }
 
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      const userPrompt =
+        this.#extractUserPrompt(messages) || route.content || "";
+      const resolved = await this.resolveRoute(userPrompt);
+      if (resolved) {
+        this.defaultProvider = {
+          ...this.defaultProvider,
+          provider: resolved.provider,
+          model: resolved.model,
+        };
+      }
+    }
+
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,

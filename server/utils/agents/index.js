@@ -457,7 +457,7 @@ class AgentHandler {
     this.checkSetup();
   }
 
-  async #resolveRouterProvider() {
+  async #resolveRouterProvider(prompt = null) {
     const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
     const routerWorkspace = this.invocation.workspace.router_id
       ? this.invocation.workspace
@@ -470,7 +470,7 @@ class AgentHandler {
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
     await router.resolve(
-      { prompt: this.invocation.prompt },
+      { prompt: prompt || this.invocation.prompt },
       {
         user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
         thread: this.invocation.thread_id
@@ -761,6 +761,25 @@ class AgentHandler {
     // Register callback to fetch fresh parsed file context on each chat turn
     // This injects parsed files into user messages instead of system prompt
     this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // If the workspace uses the model router, attach a resolver so routing
+    // is re-evaluated on every agent turn instead of only at initialization.
+    if (this.routingMetadata) {
+      this.aibitat.resolveRoute = async (prompt) => {
+        try {
+          await this.#resolveRouterProvider(prompt);
+          this.aibitat.handlerProps.routingMetadata =
+            this.routingMetadata || null;
+          return { provider: this.provider, model: this.model };
+        } catch (e) {
+          this.log(
+            "Router re-resolution failed, keeping current route",
+            e.message
+          );
+          return null;
+        }
+      };
+    }
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
