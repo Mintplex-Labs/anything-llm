@@ -4,6 +4,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { ArrowLeft, Eye, Circle } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
+import usePolling from "@/hooks/usePolling";
 import paths from "@/utils/paths";
 
 function StatusBadge({ status }) {
@@ -38,13 +39,19 @@ export default function RunHistoryPage() {
   const [runs, setRuns] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchRuns = async () => {
+    const { runs: foundRuns } = await ScheduledJobs.runs(id);
+    setRuns(foundRuns || []);
+    setLoading(false);
+  };
+
   useEffect(() => {
     ScheduledJobs.get(id).then(({ job }) => setJob(job));
-    ScheduledJobs.runs(id).then(({ runs: foundRuns }) => {
-      setRuns(foundRuns || []);
-      setLoading(false);
-    });
+    fetchRuns();
   }, [id]);
+
+  // Poll every 5s while visible so new runs appear and running statuses update.
+  usePolling(fetchRuns, 5000);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">

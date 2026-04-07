@@ -16,6 +16,7 @@ import {
 import hljs from "highlight.js";
 import ScheduledJobs from "@/models/scheduledJobs";
 import StorageFiles from "@/models/files";
+import usePolling from "@/hooks/usePolling";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -283,6 +284,10 @@ export default function RunDetailPage() {
       ScheduledJobs.markRunRead(runId);
     }
   };
+
+  // Poll every 3s while a run is in progress so the trace/status updates live.
+  // Stops automatically once the run reaches a terminal state.
+  usePolling(fetchRun, 3000, run?.status === "running");
 
   const handleContinueInThread = async () => {
     setContinuing(true);

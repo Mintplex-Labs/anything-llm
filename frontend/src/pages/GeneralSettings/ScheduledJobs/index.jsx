@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import useWebPushNotifications from "@/hooks/useWebPushNotifications";
+import usePolling from "@/hooks/usePolling";
 import NewJobModal from "./NewJobModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
@@ -52,6 +53,9 @@ export default function ScheduledJobsPage() {
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  // Poll every 5s while tab is visible so status badges and run timestamps stay in sync.
+  usePolling(fetchJobs, 5000);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this scheduled job?"))
