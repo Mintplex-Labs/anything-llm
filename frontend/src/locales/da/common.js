@@ -472,7 +472,36 @@ const TRANSLATIONS = {
       "API-nøgler giver indehaveren mulighed for programmatisk at få adgang til og administrere denne AnythingLLM-instans.",
     link: "Læs API-dokumentationen",
     generate: "Generér ny API-nøgle",
+    empty: "Ingen API-nøgler fundet",
+    actions: "Handlinger",
+    messages: {
+      copied: "API-nøgle kopieret til udklipsholder",
+      deleted: "API-nøglen blev slettet permanent",
+      error: "Fejl: {{error}}",
+    },
+    modal: {
+      title: "Opret ny API-nøgle",
+      cancel: "Annuller",
+      close: "Luk",
+      create: "Opret API-nøgle",
+      helper:
+        "Når API-nøglen er oprettet, kan den bruges til programmatisk at få adgang til og konfigurere denne AnythingLLM-instans.",
+      name: {
+        label: "Navn",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Valgfrit. Brug et sigende navn, så du nemt kan kende nøglen senere.",
+      },
+    },
+    row: {
+      copy: "Kopiér API-nøgle",
+      copied: "Kopieret",
+      unnamed: "--",
+      deleteConfirm:
+        "Er du sikker på, at du vil deaktivere denne API-nøgle?\nNår du gør det, kan den ikke længere bruges.\n\nDenne handling kan ikke fortrydes.",
+    },
     table: {
+      name: "Navn",
       key: "API-nøgle",
       by: "Oprettet af",
       created: "Oprettet",

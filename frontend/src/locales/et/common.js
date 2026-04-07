@@ -550,7 +550,36 @@ const TRANSLATIONS = {
       "API võtmed võimaldavad programmipõhiselt hallata seda AnythingLLM instantsi.",
     link: "Loe API dokumentatsiooni",
     generate: "Genereeri uus API võti",
+    empty: "API võtmeid ei leitud",
+    actions: "Toimingud",
+    messages: {
+      copied: "API võti kopeeriti lõikelauale",
+      deleted: "API võti kustutati jäädavalt",
+      error: "Viga: {{error}}",
+    },
+    modal: {
+      title: "Loo uus API võti",
+      cancel: "Tühista",
+      close: "Sulge",
+      create: "Loo API võti",
+      helper:
+        "Pärast loomist saab API võtit kasutada sellele AnythingLLM-i instantsile programmiga ligi pääsemiseks ja selle seadistamiseks.",
+      name: {
+        label: "Nimi",
+        placeholder: "Tootmiskeskkonna integratsioon",
+        helper:
+          "Valikuline. Kasuta sõbralikku nime, et saaksid võtme hiljem hõlpsasti ära tunda.",
+      },
+    },
+    row: {
+      copy: "Kopeeri API võti",
+      copied: "Kopeeritud",
+      unnamed: "--",
+      deleteConfirm:
+        "Kas soovite selle API võtme kindlasti deaktiveerida?\nPärast seda ei saa seda enam kasutada.\n\nSeda toimingut ei saa tagasi võtta.",
+    },
     table: {
+      name: "Nimi",
       key: "API võti",
       by: "Loonud",
       created: "Loodud",

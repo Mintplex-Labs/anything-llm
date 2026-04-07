@@ -1020,7 +1020,36 @@ const TRANSLATIONS = {
       "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
+    empty: "Nu au fost găsite chei API",
+    actions: "Acțiuni",
+    messages: {
+      copied: "Cheia API a fost copiată în clipboard",
+      deleted: "Cheia API a fost ștearsă definitiv",
+      error: "Eroare: {{error}}",
+    },
+    modal: {
+      title: "Creează o cheie API nouă",
+      cancel: "Anulează",
+      close: "Închide",
+      create: "Creează cheia API",
+      helper:
+        "După creare, cheia API poate fi folosită pentru a accesa și configura programatic această instanță AnythingLLM.",
+      name: {
+        label: "Nume",
+        placeholder: "Integrare de producție",
+        helper:
+          "Opțional. Folosește un nume clar pentru a putea identifica această cheie mai târziu.",
+      },
+    },
+    row: {
+      copy: "Copiază cheia API",
+      copied: "Copiată",
+      unnamed: "--",
+      deleteConfirm:
+        "Sigur doriți să dezactivați această cheie API?\nDupă aceea nu va mai putea fi folosită.\n\nAceastă acțiune este ireversibilă.",
+    },
     table: {
+      name: "Nume",
       key: "Cheie API",
       by: "Creat de",
       created: "Creat la",

@@ -5,9 +5,12 @@ import paths from "@/utils/paths";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function NewApiKeyModal({ closeModal, onSuccess }) {
+  const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
+  const [name, setName] = useState("");
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
@@ -17,7 +20,9 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
 
-    const { apiKey: newApiKey, error } = await Model.generateApiKey();
+    const { apiKey: newApiKey, error } = await Model.generateApiKey({
+      name,
+    });
     if (!!newApiKey) {
       setApiKey(newApiKey);
       onSuccess();
@@ -29,7 +34,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
     setCopied(true);
-    showToast("API key copied to clipboard", "success", {
+    showToast(t("api.messages.copied"), "success", {
       clear: true,
     });
   };
@@ -50,7 +55,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Create new API key
+              {t("api.modal.title")}
             </h3>
           </div>
           <button
@@ -64,7 +69,28 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
         <div className="px-7 py-6">
           <form onSubmit={handleCreate}>
             <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("api.messages.error", { error })}
+                </p>
+              )}
+              {!apiKey && (
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-white">
+                    {t("api.modal.name.label")}
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t("api.modal.name.placeholder")}
+                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
+                  />
+                  <p className="text-white text-opacity-60 text-xs md:text-sm mt-2">
+                    {t("api.modal.name.helper")}
+                  </p>
+                </div>
+              )}
               {apiKey && (
                 <div className="relative">
                   <input
@@ -92,8 +118,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                 </div>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                Once created the API key can be used to programmatically access
-                and configure this AnythingLLM instance.
+                {t("api.modal.helper")}
               </p>
               <a
                 href={paths.apiDocs()}
@@ -112,13 +137,13 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                     type="button"
                     className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm mr-2"
                   >
-                    Cancel
+                    {t("api.modal.cancel")}
                   </button>
                   <button
                     type="submit"
                     className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                   >
-                    Create API Key
+                    {t("api.modal.create")}
                   </button>
                 </>
               ) : (
@@ -127,7 +152,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                   type="button"
                   className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
                 >
-                  Close
+                  {t("api.modal.close")}
                 </button>
               )}
             </div>

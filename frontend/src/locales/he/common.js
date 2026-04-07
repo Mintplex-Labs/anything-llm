@@ -550,7 +550,35 @@ const TRANSLATIONS = {
       "מפתחות API מאפשרים למחזיק בהם לגשת ולנהל באופן תכנותי את מופע AnythingLLM זה.",
     link: "קרא את תיעוד ה-API",
     generate: "צור מפתח API חדש",
+    empty: "לא נמצאו מפתחות API",
+    actions: "פעולות",
+    messages: {
+      copied: "מפתח API הועתק ללוח",
+      deleted: "מפתח API נמחק לצמיתות",
+      error: "שגיאה: {{error}}",
+    },
+    modal: {
+      title: "יצירת מפתח API חדש",
+      cancel: "ביטול",
+      close: "סגירה",
+      create: "צור מפתח API",
+      helper:
+        "לאחר יצירתו, ניתן להשתמש במפתח ה-API כדי לגשת למופע AnythingLLM זה ולהגדיר אותו באופן תכנותי.",
+      name: {
+        label: "שם",
+        placeholder: "אינטגרציית ייצור",
+        helper: "אופציונלי. השתמש בשם ברור כדי שתוכל לזהות את המפתח הזה בהמשך.",
+      },
+    },
+    row: {
+      copy: "העתק מפתח API",
+      copied: "הועתק",
+      unnamed: "--",
+      deleteConfirm:
+        "האם אתה בטוח שברצונך להשבית את מפתח ה-API הזה?\nלאחר מכן לא יהיה ניתן להשתמש בו יותר.\n\nלא ניתן לבטל פעולה זו.",
+    },
     table: {
+      name: "שם",
       key: "מפתח API",
       by: "נוצר על ידי",
       created: "נוצר",

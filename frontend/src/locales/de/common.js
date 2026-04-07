@@ -570,7 +570,36 @@ const TRANSLATIONS = {
       "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
     link: "Lesen Sie die API-Dokumentation",
     generate: "Neuen API-Schlüssel generieren",
+    empty: "Keine API-Schlüssel gefunden",
+    actions: "Aktionen",
+    messages: {
+      copied: "API-Schlüssel in die Zwischenablage kopiert",
+      deleted: "API-Schlüssel dauerhaft gelöscht",
+      error: "Fehler: {{error}}",
+    },
+    modal: {
+      title: "Neuen API-Schlüssel erstellen",
+      cancel: "Abbrechen",
+      close: "Schließen",
+      create: "API-Schlüssel erstellen",
+      helper:
+        "Nach der Erstellung kann der API-Schlüssel verwendet werden, um programmgesteuert auf diese AnythingLLM-Instanz zuzugreifen und sie zu konfigurieren.",
+      name: {
+        label: "Name",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Optional. Verwenden Sie einen leicht verständlichen Namen, damit Sie diesen Schlüssel später wiedererkennen.",
+      },
+    },
+    row: {
+      copy: "API-Schlüssel kopieren",
+      copied: "Kopiert",
+      unnamed: "--",
+      deleteConfirm:
+        "Möchten Sie diesen API-Schlüssel wirklich deaktivieren?\nDanach kann er nicht mehr verwendet werden.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
+    },
     table: {
+      name: "Name",
       key: "API-Schlüssel",
       by: "Erstellt von",
       created: "Erstellt",

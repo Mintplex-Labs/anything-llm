@@ -578,7 +578,36 @@ const TRANSLATIONS = {
       "Las claves de API permiten al titular acceder y administrar programáticamente esta instancia de AnythingLLM.",
     link: "Leer la documentación de la API",
     generate: "Generar nueva clave de API",
+    empty: "No se encontraron claves API",
+    actions: "Acciones",
+    messages: {
+      copied: "Clave API copiada al portapapeles",
+      deleted: "Clave API eliminada permanentemente",
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Crear nueva clave API",
+      cancel: "Cancelar",
+      close: "Cerrar",
+      create: "Crear clave API",
+      helper:
+        "Una vez creada, la clave API se puede usar para acceder y configurar esta instancia de AnythingLLM mediante programación.",
+      name: {
+        label: "Nombre",
+        placeholder: "Integración de producción",
+        helper:
+          "Opcional. Usa un nombre descriptivo para poder identificar esta clave más adelante.",
+      },
+    },
+    row: {
+      copy: "Copiar clave API",
+      copied: "Copiada",
+      unnamed: "--",
+      deleteConfirm:
+        "¿Seguro que deseas desactivar esta clave API?\nDespués de hacerlo ya no se podrá usar.\n\nEsta acción es irreversible.",
+    },
     table: {
+      name: "Nombre",
       key: "Clave de API",
       by: "Creado por",
       created: "Creado",
