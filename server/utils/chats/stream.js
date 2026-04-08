@@ -93,6 +93,15 @@ async function streamChatWithWorkspace(
       );
       LLMConnector = router.delegateProvider;
       routingMetadata = router.routingMetadata;
+
+      // Emit routing notification as an ephemeral event before streaming begins
+      if (routingMetadata?.routedTo) {
+        writeResponseChunk(response, {
+          uuid: `${uuid}:route`,
+          type: "modelRouteNotification",
+          routedTo: routingMetadata.routedTo,
+        });
+      }
     } catch (routerError) {
       writeResponseChunk(response, {
         id: uuid,
@@ -341,7 +350,6 @@ async function streamChatWithWorkspace(
         type: chatMode,
         attachments,
         metrics,
-        ...(routingMetadata || {}),
       },
       threadId: thread?.id || null,
       user,
@@ -354,7 +362,6 @@ async function streamChatWithWorkspace(
       error: false,
       chatId: chat.id,
       metrics,
-      ...(routingMetadata || {}),
     });
     return;
   }

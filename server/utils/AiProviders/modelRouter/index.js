@@ -73,6 +73,8 @@ class AnythingLLMModelRouter {
         ruleType: this.resolvedRoute.ruleType,
         isFallback: this.resolvedRoute.isFallback,
         routerName: this.router?.name,
+        fallbackProvider: this.router?.fallback_provider,
+        fallbackModel: this.router?.fallback_model,
       },
     };
   }

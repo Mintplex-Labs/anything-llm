@@ -158,10 +158,12 @@ class AIbitat {
     const routingMetadata = this.handlerProps?.routingMetadata;
     if (!messageUuid || !routingMetadata?.routedTo) return;
     this.socket?.send?.("reportStreamEvent", {
-      type: "routingMetadata",
-      uuid: messageUuid,
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
       routedTo: routingMetadata.routedTo,
     });
+    // Clear after emitting so it only fires once per routing decision
+    this.handlerProps.routingMetadata = null;
   }
 
   /**
@@ -867,6 +869,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(v4());
+
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
     const completionStream = await this.#safeProviderCall(() =>
       provider.stream(messages, functions, eventHandler)
@@ -953,7 +958,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(directOutputUUID);
-        this?.flushRoutingMetadata?.(directOutputUUID);
         return result;
       }
 
@@ -995,7 +999,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(responseUuid);
-    this?.flushRoutingMetadata?.(responseUuid);
     return completionStream?.textResponse;
   }
 
@@ -1026,6 +1029,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    if (depth === 0) this?.flushRoutingMetadata?.(msgUUID);
+
     // get the chat completion
     const completion = await this.#safeProviderCall(() =>
       provider.complete(messages, functions)
@@ -1049,7 +1055,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
-        this?.flushRoutingMetadata?.(msgUUID);
         return (
           finalCompletion?.textResponse ||
           "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
@@ -1108,7 +1113,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           metrics: provider.getUsage(),
         });
         this?.flushCitations?.(msgUUID);
-        this?.flushRoutingMetadata?.(msgUUID);
         return result;
       }
 
@@ -1150,7 +1154,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       metrics: provider.getUsage(),
     });
     this?.flushCitations?.(msgUUID);
-    this?.flushRoutingMetadata?.(msgUUID);
     return completion?.textResponse;
   }
 

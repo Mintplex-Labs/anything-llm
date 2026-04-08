@@ -35,7 +35,6 @@ const HistoricalMessage = ({
   saveEditedMessage,
   forkThread,
   metrics = {},
-  routedTo = null,
   outputs = [],
 }) => {
   const { t } = useTranslation();
@@ -117,7 +116,6 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
-            routedTo={routedTo}
           />
         </div>
       </div>
@@ -180,7 +178,6 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
-            routedTo={routedTo}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
@@ -203,8 +200,7 @@ export default memo(
       prevProps.isLastMessage === nextProps.isLastMessage &&
       prevProps.chatId === nextProps.chatId &&
       JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
-      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&
-      prevProps.routedTo === nextProps.routedTo
+      JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources)
     );
   }
 );

@@ -25,6 +25,17 @@ export default function handleChat(
     routedTo = null,
   } = chatResult;
 
+  if (type === "modelRouteNotification") {
+    _chatHistory.push({
+      type: "modelRouteNotification",
+      uuid,
+      routedTo,
+      role: "assistant",
+    });
+    setChatHistory([..._chatHistory]);
+    return;
+  }
+
   if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
     setChatHistory([
@@ -40,7 +51,6 @@ export default function handleChat(
         animate,
         pending: false,
         metrics,
-        routedTo,
       },
     ]);
     _chatHistory.push({
@@ -54,7 +64,6 @@ export default function handleChat(
       animate,
       pending: false,
       metrics,
-      routedTo,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
@@ -71,7 +80,6 @@ export default function handleChat(
         pending: false,
         chatId,
         metrics,
-        routedTo,
       },
     ]);
     _chatHistory.push({
@@ -85,7 +93,6 @@ export default function handleChat(
       pending: false,
       chatId,
       metrics,
-      routedTo,
     });
     emitAssistantMessageCompleteEvent(chatId);
   } else if (
@@ -107,7 +114,6 @@ export default function handleChat(
           pending: false,
           chatId,
           metrics,
-          routedTo,
         };
 
         _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID

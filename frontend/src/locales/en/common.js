@@ -712,22 +712,7 @@ const TRANSLATIONS = {
         "No routers configured. Create one in Settings > AI Providers > Model Router.",
       "rule-count": "({{count}} rules)",
     },
-    "routing-details": {
-      title: "Routing Details",
-      router: "Router",
-      unknown: "Unknown",
-      "routed-to": "Routed to",
-      provider: "Provider",
-      "matched-rule": "Matched rule",
-      "none-fallback": "None (fallback)",
-      "response-time": "Response time",
-      throughput: "Throughput",
-    },
     metrics: {
-      "view-routing-details": "View routing details",
-      "click-to-hide-metrics": "Click to only show metrics when hovering",
-      "click-to-show-metrics":
-        "Click to show metrics as soon as they are available",
       "model-router-default": "Model Router",
     },
     chat: {

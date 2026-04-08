@@ -16,6 +16,7 @@ import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import Chartable from "./Chartable";
+import ModelRouteNotification from "./ModelRouteNotification";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -294,6 +295,16 @@ function buildMessages({
       return acc;
     }
 
+    if (props.type === "modelRouteNotification") {
+      acc.push(
+        <ModelRouteNotification
+          key={`route-${props.uuid}`}
+          routedTo={props.routedTo}
+        />
+      );
+      return acc;
+    }
+
     if (props.type === "toolApprovalRequest") {
       acc.push(
         <ToolApprovalRequest
@@ -343,7 +354,6 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
-          routedTo={props.routedTo}
           outputs={props.outputs}
         />
       );

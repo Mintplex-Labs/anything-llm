@@ -52,9 +52,13 @@ function getContextValue(property, context) {
 function evaluateStringCondition(contextValue, comparator, value) {
   switch (comparator) {
     case "contains":
-      return String(contextValue)
-        .toLowerCase()
-        .includes(String(value).toLowerCase());
+      return String(value)
+        .split(",")
+        .map((v) => v.trim().toLowerCase())
+        .filter(Boolean)
+        .some((keyword) =>
+          String(contextValue).toLowerCase().includes(keyword)
+        );
     case "eq":
       return String(contextValue).toLowerCase() === String(value).toLowerCase();
     case "neq":
