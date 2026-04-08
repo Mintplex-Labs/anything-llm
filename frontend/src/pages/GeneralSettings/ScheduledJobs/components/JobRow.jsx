@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 // "View runs" navigation; CRUD callbacks come from the parent.
 export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
       <td className="px-6 py-4">
@@ -28,7 +28,9 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         {job.latestRun ? (
           <StatusBadge status={job.latestRun.status} />
         ) : (
-          <span className="text-theme-text-secondary text-xs">Never run</span>
+          <span className="text-theme-text-secondary text-xs">
+            {t("scheduledJobs.row.neverRun")}
+          </span>
         )}
       </td>
       <td className="px-6 py-4 text-theme-text-secondary text-xs">
@@ -44,14 +46,14 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
           <button
             onClick={() => navigate(`/settings/scheduled-jobs/${job.id}/runs`)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title="View runs"
+            title={t("scheduledJobs.row.viewRuns")}
           >
             <Eye className="h-4 w-4" />
           </button>
           <button
             onClick={() => onTrigger(job.id)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title="Run now"
+            title={t("scheduledJobs.row.runNow")}
           >
             <Play className="h-4 w-4" />
           </button>
@@ -62,21 +64,25 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
                 ? "text-green-400 hover:text-yellow-400"
                 : "text-gray-500 hover:text-green-400"
             }`}
-            title={job.enabled ? "Disable" : "Enable"}
+            title={
+              job.enabled
+                ? t("scheduledJobs.row.disable")
+                : t("scheduledJobs.row.enable")
+            }
           >
             <Power className="h-4 w-4" />
           </button>
           <button
             onClick={() => onEdit(job)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title="Edit"
+            title={t("scheduledJobs.row.edit")}
           >
             <PencilSimple className="h-4 w-4" />
           </button>
           <button
             onClick={() => onDelete(job.id)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-red-400 transition-colors"
-            title="Delete"
+            title={t("scheduledJobs.row.delete")}
           >
             <Trash className="h-4 w-4" />
           </button>

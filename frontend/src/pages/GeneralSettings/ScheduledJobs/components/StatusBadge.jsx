@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 const STATUS_COLORS = {
   running: "bg-yellow-500/20 text-yellow-400",
   completed: "bg-green-500/20 text-green-400",
@@ -8,13 +10,21 @@ const STATUS_COLORS = {
 // Pill badge for a scheduled-job-run status. Used in the jobs list and the
 // run history table to keep the visual treatment consistent.
 export default function StatusBadge({ status }) {
+  const { t } = useTranslation();
+  const statusLabels = {
+    completed: t("scheduledJobs.runDetail.status.completed"),
+    failed: t("scheduledJobs.runDetail.status.failed"),
+    timed_out: t("scheduledJobs.runDetail.status.timed_out"),
+    running: t("scheduledJobs.runDetail.status.running"),
+  };
+  const label = status ? statusLabels[status] || status.replace("_", " ") : "—";
   return (
     <span
       className={`px-2 py-0.5 rounded-full text-xs font-medium ${
         STATUS_COLORS[status] || "bg-gray-500/20 text-gray-400"
       }`}
     >
-      {status?.replace("_", " ") || "—"}
+      {label}
     </span>
   );
 }

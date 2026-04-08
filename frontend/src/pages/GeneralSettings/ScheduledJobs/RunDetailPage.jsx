@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import {
@@ -26,6 +27,7 @@ const STATUS_COLORS = {
 };
 
 export default function RunDetailPage() {
+  const { t } = useTranslation();
   const { id, runId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function RunDetailPage() {
       await ScheduledJobs.continueInThread(runId);
 
     if (error || !workspaceSlug || !threadSlug) {
-      showToast(error || "Failed to create thread", "error");
+      showToast(error || t("scheduledJobs.runDetail.threadFailed"), "error");
       setContinuing(false);
       return;
     }
@@ -78,13 +80,16 @@ export default function RunDetailPage() {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           {loading ? (
             <p className="text-theme-text-secondary text-sm">
-              Loading run details...
+              {t("scheduledJobs.runDetail.loading")}
             </p>
           ) : !run ? (
-            <p className="text-theme-text-secondary text-sm">Run not found.</p>
+            <p className="text-theme-text-secondary text-sm">
+              {t("scheduledJobs.runDetail.notFound")}
+            </p>
           ) : (
             <>
               <RunHeader
+                t={t}
                 job={job}
                 run={run}
                 result={result}
@@ -94,26 +99,26 @@ export default function RunDetailPage() {
               />
 
               <div className="mt-6 space-y-4">
-                <PromptSection prompt={job?.prompt} />
+                <PromptSection t={t} prompt={job?.prompt} />
 
-                {run.error && <ErrorSection error={run.error} />}
+                {run.error && <ErrorSection t={t} error={run.error} />}
 
                 {result.thoughts?.length && (
-                  <AgentThoughtsSection result={result} />
+                  <AgentThoughtsSection t={t} result={result} />
                 )}
 
                 {result.toolCalls?.length && (
-                  <ToolCallsSection result={result} />
+                  <ToolCallsSection t={t} result={result} />
                 )}
 
                 {result.generatedFiles?.length && (
-                  <GeneratedFilesSection result={result} />
+                  <GeneratedFilesSection t={t} result={result} />
                 )}
 
-                {result.text && <FinalResponseSection result={result} />}
+                {result.text && <FinalResponseSection t={t} result={result} />}
 
                 {result.metrics && Object.keys(result.metrics).length > 0 && (
-                  <MetricsSection metrics={result.metrics} />
+                  <MetricsSection t={t} metrics={result.metrics} />
                 )}
               </div>
             </>
@@ -125,6 +130,7 @@ export default function RunDetailPage() {
 }
 
 function RunHeader({
+  t,
   job,
   run,
   result,
@@ -132,31 +138,44 @@ function RunHeader({
   onBack,
   onContinueInThread,
 }) {
+  const statusLabels = {
+    completed: t("scheduledJobs.runDetail.status.completed"),
+    failed: t("scheduledJobs.runDetail.status.failed"),
+    timed_out: t("scheduledJobs.runDetail.status.timed_out"),
+    running: t("scheduledJobs.runDetail.status.running"),
+  };
+  const statusLabel =
+    statusLabels[run.status] || run.status?.replace("_", " ") || "";
   return (
     <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
       >
-        <ArrowLeft className="h-4 w-4" /> Back
+        <ArrowLeft className="h-4 w-4" /> {t("scheduledJobs.runDetail.back")}
       </button>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
-            {job?.name || "Unknown Job"} — Run #{run.id}
+            {t("scheduledJobs.runDetail.runHeading", {
+              name: job?.name || t("scheduledJobs.runDetail.unknownJob"),
+              id: run.id,
+            })}
           </p>
           <div className="flex items-center gap-4 mt-1">
             <span
               className={`text-sm font-medium ${STATUS_COLORS[run.status] || "text-gray-400"}`}
             >
-              {run.status?.replace("_", " ")}
+              {statusLabel}
             </span>
             <span className="text-xs text-theme-text-secondary">
               {new Date(run.startedAt).toLocaleString()}
             </span>
             {result.duration && (
               <span className="text-xs text-theme-text-secondary">
-                Duration: {(result.duration / 1000).toFixed(1)}s
+                {t("scheduledJobs.runDetail.duration", {
+                  seconds: (result.duration / 1000).toFixed(1),
+                })}
               </span>
             )}
           </div>
@@ -168,7 +187,9 @@ function RunHeader({
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
           >
             <ChatText className="h-4 w-4" />
-            {continuing ? "Creating..." : "Continue in Thread"}
+            {continuing
+              ? t("scheduledJobs.runDetail.creating")
+              : t("scheduledJobs.runDetail.continueInThread")}
           </button>
         )}
       </div>
@@ -176,11 +197,11 @@ function RunHeader({
   );
 }
 
-function PromptSection({ prompt }) {
+function PromptSection({ t, prompt }) {
   return (
     <div className="border border-white/10 rounded-lg p-4">
       <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
-        Prompt
+        {t("scheduledJobs.runDetail.sections.prompt")}
       </p>
       <p className="text-sm text-theme-text-primary whitespace-pre-wrap">
         {prompt || "—"}
@@ -189,19 +210,23 @@ function PromptSection({ prompt }) {
   );
 }
 
-function ErrorSection({ error }) {
+function ErrorSection({ t, error }) {
   return (
     <div className="border border-red-500/20 rounded-lg p-4 bg-red-500/5">
-      <p className="text-xs text-red-400 mb-1 uppercase font-medium">Error</p>
+      <p className="text-xs text-red-400 mb-1 uppercase font-medium">
+        {t("scheduledJobs.runDetail.sections.error")}
+      </p>
       <p className="text-sm text-red-300">{error}</p>
     </div>
   );
 }
 
-function AgentThoughtsSection({ result }) {
+function AgentThoughtsSection({ t, result }) {
   return (
     <CollapsibleSection
-      title={`Thinking (${result.thoughts.length} steps)`}
+      title={t("scheduledJobs.runDetail.sections.thinking", {
+        count: result.thoughts.length,
+      })}
       icon={Brain}
     >
       <div className="space-y-2">
@@ -221,10 +246,12 @@ function AgentThoughtsSection({ result }) {
   );
 }
 
-function ToolCallsSection({ result }) {
+function ToolCallsSection({ t, result }) {
   return (
     <CollapsibleSection
-      title={`Tool Calls (${result.toolCalls.length})`}
+      title={t("scheduledJobs.runDetail.sections.toolCalls", {
+        count: result.toolCalls.length,
+      })}
       icon={Wrench}
     >
       <div className="space-y-3">
@@ -236,10 +263,12 @@ function ToolCallsSection({ result }) {
   );
 }
 
-function GeneratedFilesSection({ result }) {
+function GeneratedFilesSection({ t, result }) {
   return (
     <CollapsibleSection
-      title={`Generated Files (${result.generatedFiles.length})`}
+      title={t("scheduledJobs.runDetail.sections.generatedFiles", {
+        count: result.generatedFiles.length,
+      })}
       icon={FileArrowDown}
       defaultOpen={true}
     >
@@ -252,9 +281,13 @@ function GeneratedFilesSection({ result }) {
   );
 }
 
-function FinalResponseSection({ result }) {
+function FinalResponseSection({ t, result }) {
   return (
-    <CollapsibleSection title="Response" icon={ChatText} defaultOpen={true}>
+    <CollapsibleSection
+      title={t("scheduledJobs.runDetail.sections.response")}
+      icon={ChatText}
+      defaultOpen={true}
+    >
       <div
         className="text-sm text-theme-text-primary markdown"
         dangerouslySetInnerHTML={{
@@ -264,16 +297,16 @@ function FinalResponseSection({ result }) {
     </CollapsibleSection>
   );
 }
-function MetricsSection({ metrics }) {
+function MetricsSection({ t, metrics }) {
   return (
     <div className="border border-white/10 rounded-lg p-4">
       <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
-        Metrics
+        {t("scheduledJobs.runDetail.sections.metrics")}
       </p>
       <div className="flex gap-6 text-xs text-theme-text-secondary">
         {metrics.prompt_tokens != null && (
           <span>
-            Prompt tokens:{" "}
+            {t("scheduledJobs.runDetail.metrics.promptTokens")}{" "}
             <span className="text-theme-text-primary">
               {metrics.prompt_tokens}
             </span>
@@ -281,7 +314,7 @@ function MetricsSection({ metrics }) {
         )}
         {metrics.completion_tokens != null && (
           <span>
-            Completion tokens:{" "}
+            {t("scheduledJobs.runDetail.metrics.completionTokens")}{" "}
             <span className="text-theme-text-primary">
               {metrics.completion_tokens}
             </span>

@@ -8,7 +8,7 @@ import CronBuilder from "./CronBuilder";
 import { useTranslation } from "react-i18next";
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isEditing = !!job;
   const [form, setForm] = useState({
     name: job?.name || "",
@@ -47,7 +47,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.prompt.trim() || !form.schedule.trim()) {
-      showToast("Please fill in all required fields", "error");
+      showToast(t("scheduledJobs.modal.requiredFields"), "error");
       return;
     }
 
@@ -70,7 +70,12 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
       return;
     }
 
-    showToast(isEditing ? "Job updated" : "Job created", "success");
+    showToast(
+      isEditing
+        ? t("scheduledJobs.modal.jobUpdated")
+        : t("scheduledJobs.modal.jobCreated"),
+      "success"
+    );
     onSaved();
   };
 
@@ -79,7 +84,9 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
       <div className="relative bg-theme-bg-secondary rounded-lg shadow border border-theme-modal-border">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-theme-modal-border">
           <h3 className="text-xl font-semibold text-theme-text-primary">
-            {isEditing ? "Edit Scheduled Job" : "New Scheduled Job"}
+            {isEditing
+              ? t("scheduledJobs.modal.titleEdit")
+              : t("scheduledJobs.modal.titleNew")}
           </h3>
           <button
             onClick={onClose}
@@ -93,14 +100,15 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-              Name <span className="text-red-400">*</span>
+              {t("scheduledJobs.modal.nameLabel")}{" "}
+              <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="e.g. Daily News Digest"
+              placeholder={t("scheduledJobs.modal.namePlaceholder")}
               className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               required
             />
@@ -108,13 +116,14 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
 
           <div>
             <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-              Prompt <span className="text-red-400">*</span>
+              {t("scheduledJobs.modal.promptLabel")}{" "}
+              <span className="text-red-400">*</span>
             </label>
             <textarea
               name="prompt"
               value={form.prompt}
               onChange={handleChange}
-              placeholder="The instruction to run on each execution..."
+              placeholder={t("scheduledJobs.modal.promptPlaceholder")}
               rows={4}
               className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 resize-y"
               required
@@ -123,12 +132,16 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
 
           <div>
             <label className="block mb-2 text-sm font-medium text-theme-text-primary">
-              Schedule <span className="text-red-400">*</span>
+              {t("scheduledJobs.modal.scheduleLabel")}{" "}
+              <span className="text-red-400">*</span>
             </label>
             <div className="flex gap-1 mb-2 p-1 bg-theme-settings-input-bg rounded-lg w-fit">
               {[
-                { value: "builder", label: "Builder" },
-                { value: "custom", label: "Custom" },
+                {
+                  value: "builder",
+                  label: t("scheduledJobs.modal.modeBuilder"),
+                },
+                { value: "custom", label: t("scheduledJobs.modal.modeCustom") },
               ].map((tab) => (
                 <button
                   key={tab.value}
@@ -160,13 +173,13 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                 name="schedule"
                 value={form.schedule}
                 onChange={handleChange}
-                placeholder="Cron expression (e.g. 0 9 * * *)"
+                placeholder={t("scheduledJobs.modal.cronPlaceholder")}
                 className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button outline-none block w-full p-2.5"
               />
             )}
 
             <p className="text-xs text-theme-text-secondary mt-2">
-              Current schedule:{" "}
+              {t("scheduledJobs.modal.currentSchedule")}{" "}
               <code className="text-theme-text-primary">{form.schedule}</code>
               {form.schedule && (
                 <span className="ml-2">
@@ -180,7 +193,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-sm font-medium text-theme-text-primary">
-                  Tools (optional)
+                  {t("scheduledJobs.modal.toolsLabel")}
                 </label>
                 <button
                   type="button"
@@ -197,12 +210,12 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                   className="px-2 py-0.5 text-xs rounded-md border border-white/10 text-theme-text-secondary hover:text-theme-text-primary hover:border-white/30 transition-colors"
                 >
                   {form.selectedTools.length === availableTools.length
-                    ? "Deselect all"
-                    : "Select all"}
+                    ? t("scheduledJobs.modal.deselectAll")
+                    : t("scheduledJobs.modal.selectAll")}
                 </button>
               </div>
               <p className="text-xs text-theme-text-secondary mb-2">
-                Select which agent tools this job can use.
+                {t("scheduledJobs.modal.toolsDescription")}
               </p>
               <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 bg-theme-settings-input-bg rounded-lg">
                 {availableTools.map((tool) => (
@@ -229,14 +242,18 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary transition-colors"
             >
-              Cancel
+              {t("scheduledJobs.modal.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
             >
-              {saving ? "Saving..." : isEditing ? "Update Job" : "Create Job"}
+              {saving
+                ? t("scheduledJobs.modal.saving")
+                : isEditing
+                  ? t("scheduledJobs.modal.updateJob")
+                  : t("scheduledJobs.modal.createJob")}
             </button>
           </div>
         </form>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { PlusCircle } from "@phosphor-icons/react";
@@ -13,6 +14,7 @@ import showToast from "@/utils/toast";
 import JobRow from "./components/JobRow";
 
 export default function ScheduledJobsPage() {
+  const { t } = useTranslation();
   useWebPushNotifications();
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(true);
@@ -33,10 +35,9 @@ export default function ScheduledJobsPage() {
   usePolling(fetchJobs, 5000);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this scheduled job?"))
-      return;
+    if (!window.confirm(t("scheduledJobs.confirmDelete"))) return;
     await ScheduledJobs.delete(id);
-    showToast("Job deleted", "success");
+    showToast(t("scheduledJobs.toast.deleted"), "success");
     fetchJobs();
   };
 
@@ -51,9 +52,9 @@ export default function ScheduledJobsPage() {
   const handleTrigger = async (id) => {
     const { success, error } = await ScheduledJobs.trigger(id);
     if (success) {
-      showToast("Job triggered successfully", "success");
+      showToast(t("scheduledJobs.toast.triggered"), "success");
     } else {
-      showToast(error || "Failed to trigger job", "error");
+      showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
     }
     fetchJobs();
   };
@@ -79,39 +80,51 @@ export default function ScheduledJobsPage() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                Scheduled Jobs
+                {t("scheduledJobs.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              Create recurring AI tasks that run on a schedule. Each job runs a
-              prompt with optional tools and saves the result for review.
+              {t("scheduledJobs.description")}
             </p>
           </div>
 
           <div className="w-full justify-end flex pt-6 pb-4">
             <CTAButton onClick={handleCreate}>
-              <PlusCircle className="h-4 w-4" weight="bold" /> New Job
+              <PlusCircle className="h-4 w-4" weight="bold" />{" "}
+              {t("scheduledJobs.newJob")}
             </CTAButton>
           </div>
 
           {loading ? (
-            <div className="text-theme-text-secondary text-sm">Loading...</div>
+            <div className="text-theme-text-secondary text-sm">
+              {t("scheduledJobs.loading")}
+            </div>
           ) : jobs.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-theme-text-secondary text-sm">
-                No scheduled jobs yet. Create one to get started.
+                {t("scheduledJobs.empty")}
               </p>
             </div>
           ) : (
             <table className="w-full text-sm text-left rounded-lg overflow-hidden">
               <thead className="text-theme-text-secondary text-xs uppercase border-b border-white/10">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Schedule</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Last Run</th>
-                  <th className="px-6 py-3">Next Run</th>
-                  <th className="px-6 py-3 text-right">Actions</th>
+                  <th className="px-6 py-3">{t("scheduledJobs.table.name")}</th>
+                  <th className="px-6 py-3">
+                    {t("scheduledJobs.table.schedule")}
+                  </th>
+                  <th className="px-6 py-3">
+                    {t("scheduledJobs.table.status")}
+                  </th>
+                  <th className="px-6 py-3">
+                    {t("scheduledJobs.table.lastRun")}
+                  </th>
+                  <th className="px-6 py-3">
+                    {t("scheduledJobs.table.nextRun")}
+                  </th>
+                  <th className="px-6 py-3 text-right">
+                    {t("scheduledJobs.table.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Circle, Eye } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import StatusBadge from "./StatusBadge";
@@ -17,6 +18,7 @@ function formatDuration(run) {
 // One row of the run history table for a job. Shows status, timestamps,
 // duration, error preview, and a link to the run detail page.
 export default function RunRow({ run, jobId }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
@@ -47,7 +49,7 @@ export default function RunRow({ run, jobId }) {
               navigate(paths.settings.scheduledJobRunDetail(jobId, run.id))
             }
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title="View details"
+            title={t("scheduledJobs.runRow.viewDetails")}
           >
             <Eye className="h-4 w-4" />
           </button>

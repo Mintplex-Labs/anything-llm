@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { ArrowLeft } from "@phosphor-icons/react";
@@ -9,6 +10,7 @@ import paths from "@/utils/paths";
 import RunRow from "./components/RunRow";
 
 export default function RunHistoryPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
@@ -42,14 +44,18 @@ export default function RunHistoryPage() {
               onClick={() => navigate(paths.settings.scheduledJobs())}
               className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to jobs
+              <ArrowLeft className="h-4 w-4" />{" "}
+              {t("scheduledJobs.runHistory.back")}
             </button>
             <p className="text-lg leading-6 font-bold text-theme-text-primary">
-              Run History: {job?.name || "..."}
+              {t("scheduledJobs.runHistory.title", {
+                name: job?.name || "...",
+              })}
             </p>
             {job && (
               <p className="text-xs text-theme-text-secondary">
-                Schedule: <code>{job.schedule}</code>
+                {t("scheduledJobs.runHistory.schedule")}{" "}
+                <code>{job.schedule}</code>
               </p>
             )}
           </div>
@@ -57,23 +63,33 @@ export default function RunHistoryPage() {
           <div className="mt-6">
             {loading ? (
               <div className="text-theme-text-secondary text-sm">
-                Loading...
+                {t("scheduledJobs.loading")}
               </div>
             ) : runs.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-theme-text-secondary text-sm">
-                  No runs yet for this job.
+                  {t("scheduledJobs.runHistory.empty")}
                 </p>
               </div>
             ) : (
               <table className="w-full text-sm text-left rounded-lg overflow-hidden">
                 <thead className="text-theme-text-secondary text-xs uppercase border-b border-white/10">
                   <tr>
-                    <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Started</th>
-                    <th className="px-6 py-3">Duration</th>
-                    <th className="px-6 py-3">Error</th>
-                    <th className="px-6 py-3 text-right">Actions</th>
+                    <th className="px-6 py-3">
+                      {t("scheduledJobs.runHistory.table.status")}
+                    </th>
+                    <th className="px-6 py-3">
+                      {t("scheduledJobs.runHistory.table.started")}
+                    </th>
+                    <th className="px-6 py-3">
+                      {t("scheduledJobs.runHistory.table.duration")}
+                    </th>
+                    <th className="px-6 py-3">
+                      {t("scheduledJobs.runHistory.table.error")}
+                    </th>
+                    <th className="px-6 py-3 text-right">
+                      {t("scheduledJobs.runHistory.table.actions")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

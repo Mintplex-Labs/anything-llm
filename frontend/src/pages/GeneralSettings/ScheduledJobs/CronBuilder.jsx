@@ -1,18 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   parseCronToBuilderState,
   buildCronFromBuilderState,
 } from "./utils/cron";
-
-const WEEKDAYS = [
-  { value: 0, label: "Sun" },
-  { value: 1, label: "Mon" },
-  { value: 2, label: "Tue" },
-  { value: 3, label: "Wed" },
-  { value: 4, label: "Thu" },
-  { value: 5, label: "Fri" },
-  { value: 6, label: "Sat" },
-];
 
 const MINUTE_INTERVALS = [1, 2, 5, 10, 15, 20, 30];
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
@@ -29,6 +20,16 @@ const labelClass = "text-sm text-theme-text-secondary";
 // `value` on mount, and emits a fresh 5-field cron string via `onChange`
 // whenever the user changes any sub-field.
 export default function CronBuilder({ value, onChange }) {
+  const { t } = useTranslation();
+  const WEEKDAYS = [
+    { value: 0, label: t("scheduledJobs.builder.weekdays.sun") },
+    { value: 1, label: t("scheduledJobs.builder.weekdays.mon") },
+    { value: 2, label: t("scheduledJobs.builder.weekdays.tue") },
+    { value: 3, label: t("scheduledJobs.builder.weekdays.wed") },
+    { value: 4, label: t("scheduledJobs.builder.weekdays.thu") },
+    { value: 5, label: t("scheduledJobs.builder.weekdays.fri") },
+    { value: 6, label: t("scheduledJobs.builder.weekdays.sat") },
+  ];
   const [state, setState] = useState(
     () => parseCronToBuilderState(value).state
   );
@@ -48,29 +49,38 @@ export default function CronBuilder({ value, onChange }) {
     <div className="flex flex-col gap-3 p-3 bg-theme-settings-input-bg/40 rounded-lg">
       {wasFallback && (
         <p className="text-xs text-yellow-400">
-          This expression can&apos;t be edited visually. Switch to Custom to
-          keep it, or change anything below to overwrite it.
+          {t("scheduledJobs.builder.fallbackWarning")}
         </p>
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
-        <span className={labelClass}>Run</span>
+        <span className={labelClass}>{t("scheduledJobs.builder.run")}</span>
         <select
           value={state.frequency}
           onChange={(e) => update({ frequency: e.target.value })}
           className={inputClass}
         >
-          <option value="minute">every minute</option>
-          <option value="hour">hourly</option>
-          <option value="day">daily</option>
-          <option value="week">weekly</option>
-          <option value="month">monthly</option>
+          <option value="minute">
+            {t("scheduledJobs.builder.frequency.minute")}
+          </option>
+          <option value="hour">
+            {t("scheduledJobs.builder.frequency.hour")}
+          </option>
+          <option value="day">
+            {t("scheduledJobs.builder.frequency.day")}
+          </option>
+          <option value="week">
+            {t("scheduledJobs.builder.frequency.week")}
+          </option>
+          <option value="month">
+            {t("scheduledJobs.builder.frequency.month")}
+          </option>
         </select>
       </div>
 
       {state.frequency === "minute" && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={labelClass}>Every</span>
+          <span className={labelClass}>{t("scheduledJobs.builder.every")}</span>
           <select
             value={state.minuteInterval}
             onChange={(e) =>
@@ -80,7 +90,9 @@ export default function CronBuilder({ value, onChange }) {
           >
             {MINUTE_INTERVALS.map((n) => (
               <option key={n} value={n}>
-                {n === 1 ? "1 minute" : `${n} minutes`}
+                {n === 1
+                  ? t("scheduledJobs.builder.minuteOne")
+                  : t("scheduledJobs.builder.minuteOther", { count: n })}
               </option>
             ))}
           </select>
@@ -89,7 +101,9 @@ export default function CronBuilder({ value, onChange }) {
 
       {state.frequency === "hour" && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={labelClass}>At minute</span>
+          <span className={labelClass}>
+            {t("scheduledJobs.builder.atMinute")}
+          </span>
           <select
             value={state.hourMinuteOffset}
             onChange={(e) =>
@@ -103,7 +117,9 @@ export default function CronBuilder({ value, onChange }) {
               </option>
             ))}
           </select>
-          <span className={labelClass}>past every hour</span>
+          <span className={labelClass}>
+            {t("scheduledJobs.builder.pastEveryHour")}
+          </span>
         </div>
       )}
 
@@ -111,7 +127,7 @@ export default function CronBuilder({ value, onChange }) {
         state.frequency === "week" ||
         state.frequency === "month") && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={labelClass}>At</span>
+          <span className={labelClass}>{t("scheduledJobs.builder.at")}</span>
           <input
             type="time"
             value={`${pad2(state.hour)}:${pad2(state.minute)}`}
@@ -129,7 +145,7 @@ export default function CronBuilder({ value, onChange }) {
 
       {state.frequency === "week" && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={labelClass}>On</span>
+          <span className={labelClass}>{t("scheduledJobs.builder.on")}</span>
           <div className="flex gap-1 flex-wrap">
             {WEEKDAYS.map((day) => {
               const selected = state.weekdays.includes(day.value);
@@ -159,7 +175,7 @@ export default function CronBuilder({ value, onChange }) {
 
       {state.frequency === "month" && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={labelClass}>On day</span>
+          <span className={labelClass}>{t("scheduledJobs.builder.onDay")}</span>
           <select
             value={state.dayOfMonth}
             onChange={(e) =>
@@ -173,7 +189,9 @@ export default function CronBuilder({ value, onChange }) {
               </option>
             ))}
           </select>
-          <span className={labelClass}>of every month</span>
+          <span className={labelClass}>
+            {t("scheduledJobs.builder.ofEveryMonth")}
+          </span>
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Wrench } from "@phosphor-icons/react";
 import hljs from "highlight.js";
 import { safeJsonParse } from "@/utils/request";
@@ -36,6 +37,7 @@ function formatAndHighlight(value) {
 // (on demand) the tool's result. JSON arguments and results are pretty-printed
 // and syntax-highlighted; non-JSON values fall back to plain text.
 export default function ToolCallCard({ toolCall }) {
+  const { t } = useTranslation();
   const [showResult, setShowResult] = useState(false);
   const { isLight } = useTheme();
 
@@ -66,7 +68,9 @@ export default function ToolCallCard({ toolCall }) {
 
       {toolCall.arguments && (
         <div className="mb-2">
-          <span className="text-xs text-theme-text-secondary">Arguments:</span>
+          <span className="text-xs text-theme-text-secondary">
+            {t("scheduledJobs.toolCall.arguments")}
+          </span>
           {highlightedArgs ? (
             <pre
               className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme(isLight)}`}
@@ -88,7 +92,9 @@ export default function ToolCallCard({ toolCall }) {
             onClick={() => setShowResult(!showResult)}
             className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
           >
-            {showResult ? "Hide result" : "Show result"}
+            {showResult
+              ? t("scheduledJobs.toolCall.hideResult")
+              : t("scheduledJobs.toolCall.showResult")}
           </button>
           {showResult &&
             (highlightedResult ? (
