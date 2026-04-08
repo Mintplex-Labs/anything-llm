@@ -149,6 +149,7 @@ function RunHeader({
   return (
     <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
       <button
+        type="button"
         onClick={onBack}
         className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
       >
@@ -182,6 +183,7 @@ function RunHeader({
         </div>
         {run.status === "completed" && (
           <button
+            type="button"
             onClick={onContinueInThread}
             disabled={continuing}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"

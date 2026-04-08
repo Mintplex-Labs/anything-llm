@@ -44,6 +44,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
       <td className="px-6 py-4">
         <div className="flex items-center justify-end gap-2">
           <button
+            type="button"
             onClick={() => navigate(`/settings/scheduled-jobs/${job.id}/runs`)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
             title={t("scheduledJobs.row.viewRuns")}
@@ -51,6 +52,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
             <Eye className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => onTrigger(job.id)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
             title={t("scheduledJobs.row.runNow")}
@@ -58,6 +60,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
             <Play className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => onToggle(job.id)}
             className={`p-1.5 rounded-lg hover:bg-theme-bg-primary transition-colors ${
               job.enabled
@@ -73,6 +76,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
             <Power className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => onEdit(job)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
             title={t("scheduledJobs.row.edit")}
@@ -80,6 +84,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
             <PencilSimple className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => onDelete(job.id)}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-red-400 transition-colors"
             title={t("scheduledJobs.row.delete")}

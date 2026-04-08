@@ -13,6 +13,7 @@ export default function CollapsibleSection({
   return (
     <div className="border border-white/10 rounded-lg overflow-hidden">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-2 px-4 py-3 bg-theme-bg-primary/50 hover:bg-theme-bg-primary/70 transition-colors text-left"
       >

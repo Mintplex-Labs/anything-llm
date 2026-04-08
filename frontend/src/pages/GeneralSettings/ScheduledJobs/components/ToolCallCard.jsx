@@ -89,6 +89,7 @@ export default function ToolCallCard({ toolCall }) {
       {resultText && (
         <div>
           <button
+            type="button"
             onClick={() => setShowResult(!showResult)}
             className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
           >

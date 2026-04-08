@@ -45,6 +45,7 @@ export default function RunRow({ run, jobId }) {
       <td className="px-6 py-4">
         <div className="flex items-center justify-end">
           <button
+            type="button"
             onClick={() =>
               navigate(paths.settings.scheduledJobRunDetail(jobId, run.id))
             }

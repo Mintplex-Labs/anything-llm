@@ -121,6 +121,7 @@ export default function GeneratedFileCard({ file }) {
         </div>
       </div>
       <button
+        type="button"
         onClick={handleDownload}
         disabled={downloading}
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-theme-bg-primary/70 transition-colors text-sm text-theme-text-primary flex-shrink-0 ml-4 disabled:opacity-50"

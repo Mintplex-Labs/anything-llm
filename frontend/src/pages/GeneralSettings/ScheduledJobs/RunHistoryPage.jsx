@@ -41,6 +41,7 @@ export default function RunHistoryPage() {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <button
+              type="button"
               onClick={() => navigate(paths.settings.scheduledJobs())}
               className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
             >
