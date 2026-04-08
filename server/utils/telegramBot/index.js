@@ -268,7 +268,7 @@ class TelegramBotService {
 
       this.#log("Attempting to restart polling...");
       try {
-        this.#bot.startPolling();
+        await this.#bot.startPolling();
         this.#log("Polling restarted successfully.");
       } catch (err) {
         this.#log("Failed to restart polling:", err.message);
