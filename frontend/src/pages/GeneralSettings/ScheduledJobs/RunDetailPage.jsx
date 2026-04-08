@@ -239,7 +239,7 @@ function ToolCallsSection({ result }) {
 function GeneratedFilesSection({ result }) {
   return (
     <CollapsibleSection
-      title={`Generated Documents (${result.generatedFiles.length})`}
+      title={`Generated Files (${result.generatedFiles.length})`}
       icon={FileArrowDown}
       defaultOpen={true}
     >
