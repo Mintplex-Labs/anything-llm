@@ -470,7 +470,10 @@ class AgentHandler {
 
     const router = new AnythingLLMModelRouter(routerWorkspace);
     await router.resolve(
-      { prompt: prompt || this.invocation.prompt },
+      {
+        prompt: prompt || this.invocation.prompt,
+        attachments: this.attachments || [],
+      },
       {
         user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
         thread: this.invocation.thread_id

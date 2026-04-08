@@ -2,35 +2,37 @@ import { ArrowsLeftRight } from "@phosphor-icons/react";
 
 /**
  * Ephemeral notification shown during streaming when the model router
- * routes a message to a specific model. Disappears on page refresh.
+ * switches to a different model via a matched rule. Disappears on page refresh.
  * @param {Object} props
- * @param {Object} props.routedTo - { model, ruleTitle, isFallback, routerName, fallbackModel }
+ * @param {Object} props.routedTo - { model, ruleTitle, routerName }
+ * @param {boolean} [props.isStreaming] - whether the response is still streaming
  */
-export default function ModelRouteNotification({ routedTo }) {
+export default function ModelRouteNotification({ routedTo, isStreaming }) {
   if (!routedTo) return null;
 
-  const label = routedTo.isFallback
-    ? `Using fallback model: ${routedTo.model}`
-    : `Routed to ${routedTo.model}${routedTo.ruleTitle ? ` (rule: ${routedTo.ruleTitle})` : ""}`;
-
   return (
-    <div className="flex justify-center w-full pr-4 my-2">
-      <div className="w-full">
-        <div
-          style={{ borderRadius: "16px" }}
-          className="relative bg-zinc-800 light:bg-slate-100 p-4"
-        >
-          <div className="absolute top-4 left-4 w-[18px] h-[18px] flex items-center justify-center">
-            <ArrowsLeftRight
-              className="w-[18px] h-[18px] text-zinc-200 light:text-slate-600"
-              weight="bold"
-            />
-          </div>
-          <div className="ml-[28px]">
-            <span className="text-zinc-200 light:text-slate-800 font-mono text-sm leading-[18px] block truncate">
-              {label}
+    <div className="flex w-full my-2">
+      <div className="relative rounded-full p-[1.5px] overflow-hidden">
+        {isStreaming && (
+          <div className="absolute inset-0 h-full w-full rounded-full bg-[conic-gradient(from_0deg,transparent,#0ea5e9_10%,transparent_20%)] animate-border-spin" />
+        )}
+        <div className="relative rounded-full bg-zinc-800 light:bg-slate-100 px-3 py-1.5 flex items-center gap-2">
+          <ArrowsLeftRight
+            className="w-3.5 h-3.5 text-sky-400 light:text-sky-600 flex-shrink-0"
+            weight="bold"
+          />
+          <span className="text-xs text-zinc-300 light:text-slate-600 whitespace-nowrap">
+            Routed to{" "}
+            <span className="font-semibold text-white light:text-slate-900">
+              {routedTo.model}
             </span>
-          </div>
+            {routedTo.ruleTitle && (
+              <span className="text-zinc-400 light:text-slate-500">
+                {" "}
+                via {routedTo.ruleTitle}
+              </span>
+            )}
+          </span>
         </div>
       </div>
     </div>

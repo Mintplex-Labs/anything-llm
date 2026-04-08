@@ -94,8 +94,8 @@ async function streamChatWithWorkspace(
       LLMConnector = router.delegateProvider;
       routingMetadata = router.routingMetadata;
 
-      // Emit routing notification as an ephemeral event before streaming begins
-      if (routingMetadata?.routedTo) {
+      // Emit routing notification only when a rule matched and we're switching models
+      if (routingMetadata?.routedTo && !routingMetadata.routedTo.isFallback) {
         writeResponseChunk(response, {
           uuid: `${uuid}:route`,
           type: "modelRouteNotification",

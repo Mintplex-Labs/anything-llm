@@ -156,7 +156,12 @@ class AIbitat {
    */
   flushRoutingMetadata(messageUuid) {
     const routingMetadata = this.handlerProps?.routingMetadata;
-    if (!messageUuid || !routingMetadata?.routedTo) return;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      routingMetadata.routedTo.isFallback
+    )
+      return;
     this.socket?.send?.("reportStreamEvent", {
       type: "modelRouteNotification",
       uuid: `${messageUuid}:route`,

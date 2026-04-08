@@ -296,10 +296,19 @@ function buildMessages({
     }
 
     if (props.type === "modelRouteNotification") {
+      const lastMsg = history[history.length - 1];
+      const isLast =
+        index === history.length - 1 ||
+        (index === history.length - 2 &&
+          (lastMsg?.animate || lastMsg?.pending));
+      const isStreaming =
+        isLast &&
+        (index === history.length - 1 || lastMsg?.animate || lastMsg?.pending);
       acc.push(
         <ModelRouteNotification
           key={`route-${props.uuid}`}
           routedTo={props.routedTo}
+          isStreaming={isStreaming}
         />
       );
       return acc;
