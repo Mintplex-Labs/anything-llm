@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "텔레그램",
     },
+    "model-router": "모델 라우터",
   },
   login: {
     "multi-user": {
@@ -1160,6 +1161,133 @@ const TRANSLATIONS = {
       approve: "승인",
       deny: "부인",
       revoke: "취소",
+    },
+  },
+  "model-router": {
+    title: "모델 라우터",
+    description:
+      "모델 라우터는 특정 조건에 따라 채팅 메시지를 자동으로 다양한 LLM 제공업체 및 모델로 라우팅하도록 규칙을 정의할 수 있도록 합니다.",
+    "create-router": "라우터 생성",
+    table: {
+      name: "이름",
+      fallback: "대체",
+      rules: "규칙",
+      workspaces: "업무 공간",
+    },
+    "no-routers": "아직 모델 라우터는 생성되지 않았습니다.",
+    "delete-confirm":
+      '라우터 "{{name}}"을 삭제하시겠습니까?\n이 작업은 모든 규칙을 삭제하고 해당 라우터를 사용하는 모든 워크스페이스를 분리합니다.\n\n이 작업은 취소할 수 없습니다.',
+    "toast-deleted": "라우터 삭제",
+    "toast-delete-failed": "라우터 삭제에 실패했습니다: {{error}}",
+    "new-router": {
+      title: "새로운 모델 라우터 만들기",
+      name: "이름",
+      "name-placeholder": "예: 비용 최적화",
+      description: "설명",
+      "description-placeholder": "선택 사항 설명",
+      "fallback-label": "대체 제공업체 및 모델",
+      "fallback-description": "경로 규칙이 일치하는 경우에 사용되지 않음",
+      "cooldown-label": "캐시 재활성화 시간 (초)",
+      "cooldown-help":
+        "경로 결정이 재평가되기 전에 얼마나 캐싱되는지 설정합니다. 0으로 설정하면 캐싱을 비활성화합니다.",
+      "name-required": "이름이 필요합니다.",
+      "fallback-required": "대체 제공업체 및 모델이 필요합니다.",
+      cancel: "취소",
+      creating: "만들기...",
+      create: "라우터 생성",
+      "toast-created": "라우터가 성공적으로 생성되었습니다.",
+    },
+    "edit-router": {
+      "back-to-routers": "모델 라우터로 돌아가기",
+      title: "라우터 편집: {{name}}",
+      description: "라우터 설정 및 백업 제공업체/모델을 업데이트합니다.",
+      name: "이름",
+      "description-label": "설명",
+      "description-placeholder": "선택 사항 설명",
+      "fallback-label": "대체 제공업체 및 모델",
+      "fallback-description": "경로 규칙이 일치하지 않을 때 사용",
+      "cooldown-label": "캐시 냉각 시간 (초)",
+      "cooldown-help":
+        "라우팅 결정이 규칙을 재평가하기 전에 얼마나 캐시되는지 설정합니다. 0으로 설정하면 캐싱을 비활성화합니다.",
+      saving: "저축 중...",
+      save: "변경 사항 저장",
+      "toast-updated": "라우터가 성공적으로 업데이트 되었습니다.",
+      "toast-update-failed": "라우터 업데이트에 실패했습니다.",
+    },
+    rules: {
+      title: "라우팅 규칙",
+      description:
+        "규칙들은 우선순위에 따라 상단부터 하단까지 평가됩니다. 원하는 순서대로 드래그하여 재정렬할 수 있습니다. 첫 번째로 일치하는 규칙이 승리합니다.",
+      "add-rule": "규칙 추가",
+      "delete-confirm": '규칙 "{{title}}" 삭제하시겠습니까?',
+      "toast-deleted": "규칙 삭제",
+      "toast-delete-failed": "규칙 삭제에 실패했습니다.",
+      "toast-reorder-failed": "재정렬 규칙 적용 실패",
+      "no-rules":
+        "규칙은 아직 정의되지 않았습니다. 경로 설정 기능을 시작하기 위한 규칙을 추가하세요.",
+    },
+    "rule-form": {
+      "edit-title": "편집 규칙",
+      "new-title": "새로운 규칙",
+      "title-label": "제목",
+      "title-help": "소문자와 밑줄만 사용. 저장 시 자동으로 형식 적용.",
+      "rule-type": "규칙 유형",
+      "property-label": "부동산",
+      "property-select": "선택",
+      "comparator-label": "비교",
+      "value-label": "가치",
+      "match-description-label": "경기 설명",
+      "match-description-placeholder":
+        "예: 사용자가 법률, 계약, 또는 규정 준수와 관련된 질문을 하고 있음",
+      "match-description-help":
+        "이 규칙이 적용되어야 하는 상황을 설명해주세요. 라우터의 기본 설정은 사용자의 메시지를 읽고, 이 설명과 일치하는지 판단합니다.",
+      "route-to-label": "제공업체 및 모델 경로",
+      "route-to-description":
+        "이 규칙과 일치하는 경우, 이 제공업체/모델을 사용하세요.",
+      cancel: "취소",
+      saving: "저축 중...",
+      "update-rule": "업데이트 규칙",
+      "create-rule": "규칙 생성",
+      "title-required": "제목이 필요합니다",
+      "toast-updated": "규칙 업데이트",
+      "toast-created": "규칙이 설정되었습니다",
+      "toast-save-failed": "규칙 저장 실패",
+    },
+    "provider-picker": {
+      "select-provider": "제공업체 선택",
+      "setup-required": "(설치가 필요)",
+      "loading-models": "모델 로딩 중...",
+      "select-model": "모델 선택",
+      "enter-model": "모델 이름을 입력하세요",
+      "select-provider-first": "먼저 제공 업체를 선택하세요.",
+      "configure-to-continue": "{{name}} 설정을 통해 계속 진행",
+      "configure-provider": "{{name}} 설정",
+      "setup-credentials":
+        "{{name}}를 라우팅 대상으로 사용하기 위해 필요한 자격 증명을 입력하세요.",
+      cancel: "취소",
+      "save-settings": "설정을 저장",
+      "toast-save-failed": "설정 저장 실패: {{error}}",
+      "toast-configured": "제공자가 성공적으로 설정되었습니다.",
+    },
+    "router-selection": {
+      "loading-routers": "라우터 로딩 중...",
+      "no-routers-prefix-settings":
+        "아직 라우터 모델 설정은 완료되지 않았습니다.",
+      "no-routers-prefix-workspace": "라우터 설정이 되어 있지 않습니다.",
+      "no-routers-link": "모델 라우터 설정에서 하나를 만드세요.",
+      "model-router-label": "모델 라우터",
+      "select-router": "라우터를 선택하세요",
+      "select-description": "이 작업 공간에 사용할 라우터를 선택하세요.",
+      "no-routers-chat":
+        "라우터가 구성되지 않았습니다. 설정 > AI 제공업체 > 모델 라우터에서 새 라우터를 생성하십시오.",
+      "rule-count": "({{count}} 규칙)",
+    },
+    metrics: {
+      "model-router-default": "모델 라우터",
+    },
+    chat: {
+      "select-router-error": "라우터를 선택하세요",
+      "invalid-model": "유효하지 않은 모델 선택",
     },
   },
 };

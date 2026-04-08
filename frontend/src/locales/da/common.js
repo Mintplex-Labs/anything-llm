@@ -110,6 +110,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Model Router",
   },
   login: {
     "multi-user": {
@@ -1190,6 +1191,137 @@ const TRANSLATIONS = {
       approve: "Godkend",
       deny: "Afvise",
       revoke: "Annullere",
+    },
+  },
+  "model-router": {
+    title: "Modeller af routere",
+    description:
+      "Modellerede routere giver dig mulighed for at definere regler, der automatisk videresender chatbeskeder til forskellige LLM-udbydere og -modeller baseret på bestemte betingelser.",
+    "create-router": "Opret router",
+    table: {
+      name: "Navn",
+      fallback: "Alternativ",
+      rules: "Regler",
+      workspaces: "Arbejdsområder",
+    },
+    "no-routers": "Ingen model-routere er blevet oprettet endnu.",
+    "delete-confirm":
+      'Er du sikker på, at du vil slette routeren "{{name}}"?\nDette vil fjerne alle dens regler og afbryde eventuelle arbejdsområder, der bruger den.\n\nDenne handling er irreversibel.',
+    "toast-deleted": "Router slettet",
+    "toast-delete-failed": "Kunne ikke slette routeren: {{error}}",
+    "new-router": {
+      title: "Opret en ny router-model",
+      name: "Navn",
+      "name-placeholder": "f.eks. Omkostningsoptimeringsværktøj",
+      description: "Beskrivelse",
+      "description-placeholder": "Valgfri beskrivelse",
+      "fallback-label": "Alternativ leverandør og model",
+      "fallback-description":
+        "Bruges, når ingen ruteinstruktion stemmer overens",
+      "cooldown-label": "Cache-nedkøling (sekunder)",
+      "cooldown-help":
+        "Hvor længe en rutebeslutning gemmes, før reglerne evalueres igen. Indstil til 0 for at deaktivere caching.",
+      "name-required": "Navn er påkrævet.",
+      "fallback-required": "En alternativ leverandør og model er påkrævet.",
+      cancel: "Annullér",
+      creating: "Oprettelse...",
+      create: "Opret router",
+      "toast-created": "Router er blevet oprettet med succes",
+    },
+    "edit-router": {
+      "back-to-routers": "Tilbage til modelroutere",
+      title: "Rediger router: {{name}}",
+      description:
+        "Opdater routerens indstillinger og angiv en alternativ udbyder/model.",
+      name: "Navn",
+      "description-label": "Beskrivelse",
+      "description-placeholder": "Valgfri beskrivelse",
+      "fallback-label": "Alternativ leverandør og model",
+      "fallback-description":
+        "Bruges, når ingen af de eksisterende ruteinstruktioner matcher.",
+      "cooldown-label": "Cache-nedkøling (sekunder)",
+      "cooldown-help":
+        "Hvor længe en rutebeslutning gemmes, før reglerne evalueres igen. Sæt til 0 for at deaktivere caching.",
+      saving: "Gem...",
+      save: "Gem ændringer",
+      "toast-updated": "Routeren er blevet opdateret med succes.",
+      "toast-update-failed": "Kunne ikke opdatere routeren",
+    },
+    rules: {
+      title: "Ruteinstrukser",
+      description:
+        "Reglerne evalueres fra top til bund efter prioritet. Træk for at ændre rækkefølgen. Den første, der matcher, vinder.",
+      "add-rule": "Tilføj regel",
+      "delete-confirm": 'Slette regel "{{title}}"?',
+      "toast-deleted": "Reglen er slettet",
+      "toast-delete-failed": "Kunne ikke slette reglen",
+      "toast-reorder-failed": "Kunne ikke genoprette reglerne",
+      "no-rules":
+        "Der er endnu ingen regler. Tilføj en regel for at starte rutingen.",
+    },
+    "rule-form": {
+      "edit-title": "Rediger regel",
+      "new-title": "Ny regel",
+      "title-label": "Overskrift",
+      "title-help":
+        "Lille bogstaver, kun med understregninger. Automatisk formatering ved gemning.",
+      "rule-type": "Regeltype",
+      "property-label": "Ejendom",
+      "property-select": "Vælg",
+      "comparator-label": "Sammenligning",
+      "value-label": "Værdi",
+      "match-description-label": "Kampbeskrivelse",
+      "match-description-placeholder":
+        "f.eks. Brugeren spørger om juridiske emner, kontrakter eller overholdelse af regler",
+      "match-description-help":
+        "Beskriv, hvornår denne regel skal anvendes. Routernes fallback-model vil læse brugerens besked og afgøre, om den passer til denne beskrivelse.",
+      "route-to-label": "Rute til leverandør og model",
+      "route-to-description":
+        "Når denne regel er til stede, skal denne leverandør/model bruges.",
+      cancel: "Annullér",
+      saving: "Gem...",
+      "update-rule": "Opdateringsregel",
+      "create-rule": "Opret regel",
+      "title-required": "Overskrift er påkrævet",
+      "toast-updated": "Reglen er opdateret",
+      "toast-created": "Regel er oprettet",
+      "toast-save-failed": "Kunne ikke gemme reglen",
+    },
+    "provider-picker": {
+      "select-provider": "Vælg leverandør",
+      "setup-required": "(kræver opsætning)",
+      "loading-models": "Indlæser modeller...",
+      "select-model": "Vælg model",
+      "enter-model": "Angiv modelnavn",
+      "select-provider-first": "Vælg først en leverandør",
+      "configure-to-continue": "Konfigurer {{name}} for at fortsætte",
+      "configure-provider": "Konfigurer {{name}}",
+      "setup-credentials":
+        "Indtast de nødvendige oplysninger for at bruge {{name}} som destinationsadresse.",
+      cancel: "Annuller",
+      "save-settings": "Gem indstillinger",
+      "toast-save-failed": "Kunne ikke gemme indstillinger: {{error}}",
+      "toast-configured": "Leverandøren er konfigureret med succes.",
+    },
+    "router-selection": {
+      "loading-routers": "Indlæser routere...",
+      "no-routers-prefix-settings": "Ingen routere er endnu konfigureret.",
+      "no-routers-prefix-workspace": "Ingen routere er konfigureret.",
+      "no-routers-link": "Opret en i indstillingerne for Model Router",
+      "model-router-label": "Model-router",
+      "select-router": "Vælg en router",
+      "select-description":
+        "Vælg, hvilken router der skal bruges til dette arbejdsområde.",
+      "no-routers-chat":
+        "Ingen routere er konfigureret. Opret en i Indstillinger > AI-udbydere > Modelrouter.",
+      "rule-count": "({{count}} regler)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Vælg en router",
+      "invalid-model": "Forkert modelvalg",
     },
   },
 };

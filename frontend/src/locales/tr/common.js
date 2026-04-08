@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Model Router (Modelli Router)",
   },
   login: {
     "multi-user": {
@@ -1183,6 +1184,139 @@ const TRANSLATIONS = {
       approve: "Onayla",
       deny: "İnkar",
       revoke: "İptal et",
+    },
+  },
+  "model-router": {
+    title: "Model Router'lar",
+    description:
+      "Model yönlendiriciler, belirli koşullara göre sohbet mesajlarını otomatik olarak farklı LLM sağlayıcılarına ve modellere yönlendirmek için kurallar tanımlamanıza olanak tanır.",
+    "create-router": "Ruter Oluştur",
+    table: {
+      name: "Ad",
+      fallback: "Yedek çözüm",
+      rules: "Kurallar",
+      workspaces: "Çalışma alanları",
+    },
+    "no-routers": "Henüz herhangi bir model yönlendirici oluşturulmamış.",
+    "delete-confirm":
+      "Emin misiniz, \"{{name}}\" adlı router'ı silmek istiyorsunuz?\nBu, tüm kurallarını kaldıracak ve bu router'ı kullanan tüm çalışma alanlarını birbirinden ayıracaktır.\n\nBu işlem geri alınamaz.",
+    "toast-deleted": "Ruter silindi",
+    "toast-delete-failed": "Router'ın silinmesi başarısız oldu: {{error}}",
+    "new-router": {
+      title: "Yeni bir model yönlendirici oluşturun",
+      name: "Ad",
+      "name-placeholder": "Örneğin, Maliyet Optimizasyon Aracı",
+      description: "Açıklama",
+      "description-placeholder": "İsteğe bağlı açıklama",
+      "fallback-label": "Yedek Sağlayıcı ve Model",
+      "fallback-description":
+        "Kullanılır, ancak hiçbir yönlendirme kuralı eşleşmez",
+      "cooldown-label": "Önbellek Soğuma Süresi (saniye)",
+      "cooldown-help":
+        "Yol seçimi kararı, kuralların yeniden değerlendirilmeden önce ne kadar süre boyunca önbelleğe alınır? Bu değeri 0 olarak ayarlamak, önbelleklemeyi devre dışı bırakır.",
+      "name-required": "İsim zorunludur.",
+      "fallback-required": "Alternatif bir sağlayıcı ve model gereklidir.",
+      cancel: "İptal et",
+      creating: "Yaratmak...",
+      create: "Router oluştur",
+      "toast-created": "Ruter başarıyla oluşturuldu",
+    },
+    "edit-router": {
+      "back-to-routers": "Model Routerlara Dön",
+      title: "Router'ı Düzenle: {{name}}",
+      description:
+        "Router ayarlarını güncelleyin ve yedek sağlayıcı/modeli belirleyin.",
+      name: "Ad",
+      "description-label": "Açıklama",
+      "description-placeholder": "İsteğe bağlı açıklama",
+      "fallback-label": "Yedek Sağlayıcı ve Model",
+      "fallback-description":
+        "Kullanıldığında, herhangi bir yönlendirme kuralı eşleşmediğinde",
+      "cooldown-label": "Önbellek Soğuma Süresi (saniye)",
+      "cooldown-help":
+        "Yol seçimi kararının yeniden değerlendirme öncesinde ne kadar süre boyunca önbelleğe alınacağı ayarlanabilir. Bu değeri 0 olarak ayarlamak, önbelleklemeyi devre dışı bırakır.",
+      saving: "Kaydet...",
+      save: "Değişiklikleri Kaydet",
+      "toast-updated": "Ruter başarıyla güncellendi.",
+      "toast-update-failed": "Router'ı güncelleyemedi.",
+    },
+    rules: {
+      title: "Yönlendirme Kuralları",
+      description:
+        "Kurallar öncelik sırasına göre üstten alta değerlendirilir. Sıralamayı değiştirmek için sürükleyin. İlk maç kazanan taraf kazanır.",
+      "add-rule": "Kuralı ekle",
+      "delete-confirm": '"{{title}}" kuralını silmek?',
+      "toast-deleted": "Kural silindi",
+      "toast-delete-failed": "Kuralın silinmesi başarısız oldu.",
+      "toast-reorder-failed": "Yeniden sıralama kuralları uygulanmadı",
+      "no-rules":
+        "Henüz herhangi bir kural belirlenmedi. Yönlendirmeyi başlatmak için bir kural ekleyin.",
+    },
+    "rule-form": {
+      "edit-title": "Kuralı Düzenle",
+      "new-title": "Yeni Kural",
+      "title-label": "Başlık",
+      "title-help":
+        "Küçük harf, sadece alt çizgilerle. Kayıt işlemi sırasında otomatik olarak biçimlendirilir.",
+      "rule-type": "Kural Türü",
+      "property-label": "Mülk",
+      "property-select": "Seç",
+      "comparator-label": "Karşılaştırma",
+      "value-label": "Değer",
+      "match-description-label": "Maç Açıklaması",
+      "match-description-placeholder":
+        "Örneğin, kullanıcı yasal konular, sözleşmeler veya uyumluluk hakkında bilgi almak istiyor.",
+      "match-description-help":
+        "Bu kuralın hangi durumlarda uygulanması gerektiğini açıklayın. Router'ın yedekleme modeli, kullanıcının mesajını okuyacak ve bu tanıma uygun olup olmadığını belirleyecektir.",
+      "route-to-label": "Sağlayıcıya ve Modeli Bulma Yolu",
+      "route-to-description":
+        "Bu kural eşleştiğinde, bu sağlayıcıyı/modeli kullanın.",
+      cancel: "İptal et",
+      saving: "Kaydet...",
+      "update-rule": "Güncelleme Kuralı",
+      "create-rule": "Kural Oluştur",
+      "title-required": "Başlık zorunludur",
+      "toast-updated": "Kural güncellendi",
+      "toast-created": "Kural oluşturuldu",
+      "toast-save-failed": "Kuralın kaydedilememesi",
+    },
+    "provider-picker": {
+      "select-provider": "Sağlayıcıyı seçin",
+      "setup-required": "(Kurulum gereklidir)",
+      "loading-models": "Modeller yükleniyor...",
+      "select-model": "Model seçin",
+      "enter-model": "Model adını girin",
+      "select-provider-first": "Öncelikle bir sağlayıcı seçin.",
+      "configure-to-continue": "{{name}}'ı yapılandırarak devam edin",
+      "configure-provider": "{{name}}'ı yapılandırın",
+      "setup-credentials":
+        "Gerekli kimlik bilgilerini girerek {{name}}'ı yönlendirme hedefi olarak kullanın.",
+      cancel: "İptal et",
+      "save-settings": "Ayarları kaydet",
+      "toast-save-failed": "Ayarların kaydedilemedi: {{error}}",
+      "toast-configured": "Sağlayıcı başarıyla yapılandırıldı.",
+    },
+    "router-selection": {
+      "loading-routers": "Yönlendiriciler yükleniyor...",
+      "no-routers-prefix-settings":
+        "Henüz herhangi bir yönlendirici modeli yapılandırılmamış.",
+      "no-routers-prefix-workspace":
+        "Hiç bir ağ geçimi modeli yapılandırılmamış.",
+      "no-routers-link": "Model Router ayarlarında bir tane oluşturun.",
+      "model-router-label": "Model Router",
+      "select-router": "Bir yönlendirici seçin",
+      "select-description":
+        "Bu çalışma alanı için hangi yönlendiriciyi kullanacağınızı seçin.",
+      "no-routers-chat":
+        "Hiçbir yönlendirici yapılandırılmamış. Ayarlar > Yapay Zeka Sağlayıcıları > Model Yönlendirici bölümünde bir tane oluşturun.",
+      "rule-count": "({{count}} kuralları)",
+    },
+    metrics: {
+      "model-router-default": "Model Router",
+    },
+    chat: {
+      "select-router-error": "Bir yönlendirici seçin",
+      "invalid-model": "Geçersiz model seçimi",
     },
   },
 };

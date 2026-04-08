@@ -116,6 +116,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Modelový router",
   },
   login: {
     "multi-user": {
@@ -1182,6 +1183,140 @@ const TRANSLATIONS = {
       approve: "Schválit",
       deny: "Odmítnout",
       revoke: "Zrušit",
+    },
+  },
+  "model-router": {
+    title: "Modely routerů",
+    description:
+      "Modely routerů vám umožňují definovat pravidla, která automaticky směrují zprávy z chatu na různé poskytovatele a modely LLM na základě určitých podmínek.",
+    "create-router": "Vytvořte směrovač",
+    table: {
+      name: "Jméno",
+      fallback: "Záložní řešení",
+      rules: "Pravidla",
+      workspaces: "Pracovní prostory",
+    },
+    "no-routers": "Dosud nebyly vytvořeny žádné modely routerů.",
+    "delete-confirm":
+      'Jste si jistí, že chcete smazat router "{{name}}"?\nTímto se odstraní všechny jeho pravidla a odpojím se všechny pracovní prostory, které ho používají.\n\nTato akce je nevratná.',
+    "toast-deleted": "Router byl smazán",
+    "toast-delete-failed": "Nemořilo se odstranit router: {{error}}",
+    "new-router": {
+      title: "Vytvořit nový model routeru",
+      name: "Jméno",
+      "name-placeholder": "např. Nástroj pro optimalizaci nákladů",
+      description: "Popis",
+      "description-placeholder": "Volitelné popisy",
+      "fallback-label": "Náhradní poskytovatel a model",
+      "fallback-description":
+        "Používá se, když žádná z definovaných pravidel pro směrování neplatí.",
+      "cooldown-label": "Doba chlazení (sekundy)",
+      "cooldown-help":
+        "Jak dlouho je rozhodnutí o směrování ukládáno v paměti před opětovným ověřením pravidel. Nastavení na 0 vypne ukládání.",
+      "name-required": "Je nutné zadat jméno.",
+      "fallback-required":
+        "Je nutné mít k dispozici záložního poskytovatele a model.",
+      cancel: "Zrušit",
+      creating: "Vytváření...",
+      create: "Vytvořte směrovač",
+      "toast-created": "Router byl úspěšně vytvořen",
+    },
+    "edit-router": {
+      "back-to-routers": "Zpět na modely routerů",
+      title: "Úprava routeru: {{name}}",
+      description:
+        "Aktualizujte nastavení routeru a případně i nastavení záložního poskytovatele/modulu.",
+      name: "Jméno",
+      "description-label": "Popis",
+      "description-placeholder": "Volitelné popisy",
+      "fallback-label": "Záložní poskytovatel a model",
+      "fallback-description":
+        "Používá se, když žádné z definovaných pravidel pro směrování neplatí.",
+      "cooldown-label": "Doba chlazení (sekundy)",
+      "cooldown-help":
+        "Jak dlouho je rozhodnutí o routování ukládáno v paměti, než jsou znovu zkontrolovány pravidla. Nastavení na 0 vypne ukládání.",
+      saving: "Úspora...",
+      save: "Uložit změny",
+      "toast-updated": "Ruter byl úspěšně aktualizován.",
+      "toast-update-failed": "Nezdařilo se aktualizovat směrovač.",
+    },
+    rules: {
+      title: "Pravidla pro směrování",
+      description:
+        "Pravidla jsou hodnocena od nejvýznamnějšího po nejméně významné. Můžete je přetřídit pomocí tažení. Vyhraje první, které splní všechna pravidla.",
+      "add-rule": "Přidat pravidlo",
+      "delete-confirm": 'Odstranit pravidlo "{{title}}"?',
+      "toast-deleted": "Pravidlo bylo smazáno",
+      "toast-delete-failed": "Nebylo možné smazat pravidlo.",
+      "toast-reorder-failed": "Nezdařilo se znovu nastavit pravidla",
+      "no-rules":
+        "Dosud neexistují žádná pravidla. Přidejte pravidlo, které spustí směrování.",
+    },
+    "rule-form": {
+      "edit-title": "Upravit pravidlo",
+      "new-title": "Nové pravidlo",
+      "title-label": "Název",
+      "title-help":
+        "Malá písmena, pouze s podtržítky. Automatické formátování při uložení.",
+      "rule-type": "Typ pravidla",
+      "property-label": "Vlastnictví",
+      "property-select": "Vyber",
+      "comparator-label": "Srovnávací nástroj",
+      "value-label": "Hodnota",
+      "match-description-label": "Popis utkání",
+      "match-description-placeholder":
+        "např. Uživatel se ptá na právní otázky, smlouvy nebo dodržování předpisů",
+      "match-description-help":
+        "Popište, za jakých okolností by toto pravidlo mělo platit. Systém pro záložní režim routeru přečte zprávu od uživatele a rozhodne, zda odpovídá této definici.",
+      "route-to-label": "Cesta k dodavateli a model",
+      "route-to-description":
+        "Pokud se toto pravidlo shoduje, použijte tohoto poskytovatele/model.",
+      cancel: "Zrušit",
+      saving: "Ukládání...",
+      "update-rule": "Pravidlo aktualizace",
+      "create-rule": "Vytvořit pravidlo",
+      "title-required": "Název je povinný",
+      "toast-updated": "Pravidlo aktualizováno",
+      "toast-created": "Pravidlo bylo vytvořeno",
+      "toast-save-failed": "Nedařilo se uložit pravidlo",
+    },
+    "provider-picker": {
+      "select-provider": "Vyberte dodavatele",
+      "setup-required": "(vyžaduje se instalace)",
+      "loading-models": "Načítají se modely...",
+      "select-model": "Vyberte model",
+      "enter-model": "Zadejte název modelu",
+      "select-provider-first": "Nejprve vyberte dodavatele.",
+      "configure-to-continue": "Konfigurujte {{name}} pro pokračování.",
+      "configure-provider": "Konfigurujte {{name}}",
+      "setup-credentials":
+        "Zadejte požadovaná přihlašovací údaje, abyste mohli používat {{name}} jako cílový adresář.",
+      cancel: "Zrušit",
+      "save-settings": "Uložit nastavení",
+      "toast-save-failed": "Nedaří se uložit nastavení: {{error}}",
+      "toast-configured": "Poskytovatel byl úspěšně nakonfigurován.",
+    },
+    "router-selection": {
+      "loading-routers": "Načítají se routery...",
+      "no-routers-prefix-settings":
+        "Dosud nebyly nakonfigurovány žádné modely routerů.",
+      "no-routers-prefix-workspace":
+        "Nejsou nakonfigurovány žádné modely routerů.",
+      "no-routers-link": "Vytvořte jej v nastavení modelu routeru.",
+      "model-router-label": "Modelový router",
+      "select-router": "Vyberte router",
+      "select-description":
+        "Vyberte, který router chcete použít pro tuto pracovní stanici.",
+      "no-routers-chat":
+        "Nejsou nakonfigurovány žádné směrovače. Vytvořte jeden v části Nastavení > Poskytovatelé AI > Směrovač modelu.",
+      "rule-count": "({{count}} pravidla)",
+    },
+    metrics: {
+      "model-router-default": "Modelový router",
+    },
+    chat: {
+      "select-router-error": "Vyberte si směrovač.",
+      "invalid-model": "Neplatná volba modelu",
     },
   },
 };

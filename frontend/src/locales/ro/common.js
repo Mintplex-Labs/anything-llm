@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Model Router",
   },
   login: {
     "multi-user": {
@@ -1193,6 +1194,138 @@ const TRANSLATIONS = {
       approve: "Aprobă",
       deny: "Negarea",
       revoke: "Anula",
+    },
+  },
+  "model-router": {
+    title: "Modele de routere",
+    description:
+      "Router-ele de model vă permit să definiți reguli pentru a direcționa automat mesajele de chat către diferiți furnizori și modele de LLM, în funcție de anumite condiții.",
+    "create-router": "Creați un router",
+    table: {
+      name: "Nume",
+      fallback: "Opțiune de rezervă",
+      rules: "Reguli",
+      workspaces: "Spații de lucru",
+    },
+    "no-routers": "Nu am creat încă modele de routere.",
+    "delete-confirm":
+      'Sunteți sigur că doriți să ștergeți routerul "{{name}}"?\nAceasta va elimina toate regulile sale și va deconecta orice spațiu de lucru care utilizează acest router.\n\nAceastă acțiune este ireversibilă.',
+    "toast-deleted": "Router-ul a fost șters",
+    "toast-delete-failed": "Nu a reușit să ștergă routerul: {{error}}",
+    "new-router": {
+      title: "Creați un nou router",
+      name: "Nume",
+      "name-placeholder": "de exemplu, Optimizatorul de Costuri",
+      description: "Descriere",
+      "description-placeholder": "Descriere opțională",
+      "fallback-label": "Furnizor alternativ și model",
+      "fallback-description":
+        "Utilizat atunci când nu există nicio regulă de rutare care să se potrivească",
+      "cooldown-label": "Perioada de răcire a memoriei cache (secunde)",
+      "cooldown-help":
+        "Cât timp este stocată în memorie decizia de rutare înainte de a fi reevaluată? Setarea la 0 dezactivează stocarea în memorie.",
+      "name-required": "Este necesară introducerea numelui.",
+      "fallback-required":
+        "Este necesară o alternativă și un model de rezervă.",
+      cancel: "Anula",
+      creating: "Crearea...",
+      create: "Creați un router",
+      "toast-created": "Router-ul a fost creat cu succes.",
+    },
+    "edit-router": {
+      "back-to-routers": "Înapoi la router-ele de model",
+      title: "Modifică routerul: {{name}}",
+      description:
+        "Actualizați setările routerului și selectați un alt furnizor/model de rezervă.",
+      name: "Nume",
+      "description-label": "Descriere",
+      "description-placeholder": "Descriere opțională",
+      "fallback-label": "Furnizor de rezervă și model",
+      "fallback-description":
+        "Utilizat atunci când nu există nicio regulă de rutare care să se potrivească",
+      "cooldown-label": "Perioada de răcire a memoriei cache (secunde)",
+      "cooldown-help":
+        "Cât timp este stocată în memorie o decizie de rutare înainte de a fi reevaluată? Setarea la 0 dezactivează stocarea în memorie.",
+      saving: "Economisire...",
+      save: "Salvați modificările",
+      "toast-updated": "Router-ul a fost actualizat cu succes.",
+      "toast-update-failed": "Nu a reușit să actualizeze router-ul.",
+    },
+    rules: {
+      title: "Reguli de rutare",
+      description:
+        "Regulile sunt evaluate în funcție de prioritate, de sus în jos. Trageți pentru a le reordona. Prima regulă care se potrivește câștigă.",
+      "add-rule": "Adaugă regulă",
+      "delete-confirm": 'Șterge regula "{{title}}"?',
+      "toast-deleted": "Regula a fost eliminată",
+      "toast-delete-failed": "Nu s-a putut elimina regula.",
+      "toast-reorder-failed": "Nu a reușit să aplice regulile",
+      "no-rules":
+        "Nu există reguli în prezent. Adăugați o regulă pentru a începe rutarea.",
+    },
+    "rule-form": {
+      "edit-title": "Modifică regulă",
+      "new-title": "Nouă regulă",
+      "title-label": "Titlu",
+      "title-help":
+        "Litere mici, cu doar cratime. Formatare automată la salvare.",
+      "rule-type": "Tip de regulă",
+      "property-label": "Proprietate",
+      "property-select": "Alege",
+      "comparator-label": "Comparator",
+      "value-label": "Valoare",
+      "match-description-label": "Descrierea meciului",
+      "match-description-placeholder":
+        "De exemplu, utilizatorul solicită informații despre aspecte juridice, contracte sau conformitate.",
+      "match-description-help":
+        "Descrieți situațiile în care această regulă ar trebui aplicată. Modelul de rezervă al routerului va citi mesajul utilizatorului și va determina dacă acesta se potrivește cu această descriere.",
+      "route-to-label": "Calea către furnizor și modelul de funcționare",
+      "route-to-description":
+        "Când această regulă se potrivește, utilizați acest furnizor/model.",
+      cancel: "Anula",
+      saving: "Economisire...",
+      "update-rule": "Regulă de actualizare",
+      "create-rule": "Creați regulă",
+      "title-required": "Este obligatoriu să specificați un titlu.",
+      "toast-updated": "Regulamentul a fost actualizat",
+      "toast-created": "Regula a fost stabilită",
+      "toast-save-failed": "Nu a reușit să salveze regula",
+    },
+    "provider-picker": {
+      "select-provider": "Selectați furnizorul",
+      "setup-required": "(necesită configurare)",
+      "loading-models": "Încărcare modele...",
+      "select-model": "Selectați modelul",
+      "enter-model": "Introduceți numele modelului",
+      "select-provider-first": "Alege mai întâi un furnizor.",
+      "configure-to-continue": "Configurați {{name}} pentru a continua",
+      "configure-provider": "Configurați {{name}}",
+      "setup-credentials":
+        "Introduceți acreditările necesare pentru a utiliza {{name}} ca țintă de rutare.",
+      cancel: "Anula",
+      "save-settings": "Salvați setările",
+      "toast-save-failed": "Nu s-a putut salva setările: {{error}}",
+      "toast-configured": "Furnizorul a fost configurat cu succes.",
+    },
+    "router-selection": {
+      "loading-routers": "Încărcare routere...",
+      "no-routers-prefix-settings": "Momentan, nu există routere configurate.",
+      "no-routers-prefix-workspace": "Nu există routere configurate.",
+      "no-routers-link": "Creați unul în setările routerului.",
+      "model-router-label": "Model de router",
+      "select-router": "Alege un router",
+      "select-description":
+        "Selectați routerul pe care doriți să îl utilizați pentru acest spațiu de lucru.",
+      "no-routers-chat":
+        "Nu există routere configurate. Creați unul în meniul Setări > Furnizori de AI > Router de model.",
+      "rule-count": "({{count}} regulile)",
+    },
+    metrics: {
+      "model-router-default": "Model de router",
+    },
+    chat: {
+      "select-router-error": "Alege un router",
+      "invalid-model": "Alegerea incorectă a modelului",
     },
   },
 };

@@ -109,6 +109,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
+    "model-router": "Máy định tuyến mẫu",
   },
   login: {
     "multi-user": {
@@ -1181,6 +1182,139 @@ const TRANSLATIONS = {
       approve: "Chấp thuận",
       deny: "Từ chối",
       revoke: "Thu hồi",
+    },
+  },
+  "model-router": {
+    title: "Máy định tuyến mẫu",
+    description:
+      "Các router mẫu cho phép bạn định nghĩa các quy tắc để tự động định tuyến tin nhắn trò chuyện đến các nhà cung cấp và mô hình LLM khác nhau dựa trên các điều kiện.",
+    "create-router": "Tạo Router",
+    table: {
+      name: "Tên",
+      fallback: "Giải pháp dự phòng",
+      rules: "Quy tắc",
+      workspaces: "Không gian làm việc",
+    },
+    "no-routers": "Hiện tại chưa có mẫu router nào được tạo ra.",
+    "delete-confirm":
+      'Bạn có chắc chắn muốn xóa thiết bị định tuyến "{{name}}"?\nHành động này sẽ xóa tất cả các quy tắc và ngắt kết nối bất kỳ không gian làm việc nào đang sử dụng nó.\n\nHành động này là không thể hoàn tác.',
+    "toast-deleted": "Router đã bị xóa",
+    "toast-delete-failed": "Không thể xóa thiết bị định tuyến: {{error}}",
+    "new-router": {
+      title: "Tạo một router mới",
+      name: "Tên",
+      "name-placeholder": "ví dụ: Công cụ tối ưu chi phí",
+      description: "Mô tả",
+      "description-placeholder": "Mô tả tùy chọn",
+      "fallback-label": "Nhà cung cấp và mô hình dự phòng",
+      "fallback-description":
+        "Sử dụng khi không có quy tắc định tuyến nào phù hợp.",
+      "cooldown-label": "Thời gian làm chậm (giây)",
+      "cooldown-help":
+        "Thời gian quyết định định tuyến được lưu trong bộ nhớ trước khi đánh giá lại các quy tắc. Đặt giá trị thành 0 để tắt tính năng lưu trữ.",
+      "name-required": "Tên là bắt buộc.",
+      "fallback-required": "Cần có nhà cung cấp và mô hình dự phòng.",
+      cancel: "Hủy",
+      creating: "Tạo ra...",
+      create: "Tạo Router",
+      "toast-created": "Router đã được tạo thành công",
+    },
+    "edit-router": {
+      "back-to-routers": "Quay lại: Router mẫu",
+      title: "Chỉnh sửa Router: {{name}}",
+      description:
+        "Cập nhật cài đặt bộ định tuyến và nhà cung cấp/mô hình dự phòng.",
+      name: "Tên",
+      "description-label": "Mô tả",
+      "description-placeholder": "Mô tả tùy chọn",
+      "fallback-label": "Nhà cung cấp và mô hình dự phòng",
+      "fallback-description":
+        "Sử dụng khi không có quy tắc định tuyến nào phù hợp.",
+      "cooldown-label": "Thời gian làm lại bộ nhớ đệm (giây)",
+      "cooldown-help":
+        "Thời gian quyết định định tuyến được lưu trong bộ nhớ trước khi đánh giá lại các quy tắc. Đặt giá trị thành 0 để tắt tính năng lưu trữ.",
+      saving: "Tiết kiệm...",
+      save: "Lưu",
+      "toast-updated": "Thiết bị định tuyến đã được cập nhật thành công.",
+      "toast-update-failed": "Không thể cập nhật router",
+    },
+    rules: {
+      title: "Quy tắc định tuyến",
+      description:
+        "Các quy tắc được đánh giá theo thứ tự ưu tiên từ trên xuống. Kéo để sắp xếp lại. Trận đấu đầu tiên sẽ thắng.",
+      "add-rule": "Thêm quy tắc",
+      "delete-confirm": 'Xóa quy tắc "{{title}}"?',
+      "toast-deleted": "Quy tắc đã bị xóa",
+      "toast-delete-failed": "Không thể xóa quy tắc.",
+      "toast-reorder-failed": "Không thể áp dụng các quy tắc mới.",
+      "no-rules":
+        "Hiện chưa có quy định nào. Thêm một quy định để bắt đầu định tuyến.",
+    },
+    "rule-form": {
+      "edit-title": "Quy tắc chỉnh sửa",
+      "new-title": "Quy định mới",
+      "title-label": "Tiêu đề",
+      "title-help":
+        "Chỉ sử dụng chữ thường và dấu gạch dưới. Tự động định dạng khi lưu.",
+      "rule-type": "Loại quy tắc",
+      "property-label": "Bất động sản",
+      "property-select": "Chọn",
+      "comparator-label": "Công cụ so sánh",
+      "value-label": "Giá trị",
+      "match-description-label": "Mô tả trận đấu",
+      "match-description-placeholder":
+        "Ví dụ: Người dùng đang hỏi về các vấn đề pháp lý, hợp đồng hoặc tuân thủ quy định.",
+      "match-description-help":
+        "Mô tả điều kiện mà quy tắc này nên áp dụng. Mô hình dự phòng của router sẽ đọc tin nhắn của người dùng và quyết định xem tin nhắn đó có phù hợp với mô tả này hay không.",
+      "route-to-label": "Hướng dẫn đến nhà cung cấp và mô hình",
+      "route-to-description":
+        "Khi quy tắc này được áp dụng, hãy sử dụng nhà cung cấp/mô hình này.",
+      cancel: "Hủy",
+      saving: "Tiết kiệm...",
+      "update-rule": "Quy tắc cập nhật",
+      "create-rule": "Tạo quy tắc",
+      "title-required": "Tiêu đề là bắt buộc",
+      "toast-updated": "Quy định đã được cập nhật",
+      "toast-created": "Quy tắc đã được tạo ra",
+      "toast-save-failed": "Không thể lưu quy tắc",
+    },
+    "provider-picker": {
+      "select-provider": "Chọn nhà cung cấp",
+      "setup-required": "(cần thiết phải chuẩn bị)",
+      "loading-models": "Đang tải mô hình...",
+      "select-model": "Chọn mẫu",
+      "enter-model": "Nhập tên mẫu",
+      "select-provider-first": "Chọn nhà cung cấp trước.",
+      "configure-to-continue": "Cấu hình {{name}} để tiếp tục",
+      "configure-provider": "Cấu hình {{name}}",
+      "setup-credentials":
+        "Nhập thông tin đăng nhập cần thiết để sử dụng {{name}} làm đích chuyển tiếp.",
+      cancel: "Hủy",
+      "save-settings": "Lưu cài đặt",
+      "toast-save-failed": "Không thể lưu cài đặt: {{error}}",
+      "toast-configured": "Thiết bị đã được cấu hình thành công.",
+    },
+    "router-selection": {
+      "loading-routers": "Tải router...",
+      "no-routers-prefix-settings":
+        "Hiện tại chưa có bất kỳ router nào được cấu hình.",
+      "no-routers-prefix-workspace":
+        "Không có bất kỳ bộ định tuyến nào được cấu hình.",
+      "no-routers-link": "Tạo một trong cài đặt của Router mẫu",
+      "model-router-label": "Máy định tuyến mẫu",
+      "select-router": "Chọn một bộ định tuyến",
+      "select-description":
+        "Chọn router nào để sử dụng cho không gian làm việc này.",
+      "no-routers-chat":
+        "Không có bất kỳ router nào được cấu hình. Tạo một router trong phần Cài đặt > Nhà cung cấp AI > Router mẫu.",
+      "rule-count": "(__Quy tắc {{count}})",
+    },
+    metrics: {
+      "model-router-default": "Máy định tuyến mẫu",
+    },
+    chat: {
+      "select-router-error": "Chọn một bộ định tuyến",
+      "invalid-model": "Lựa chọn mô hình không hợp lệ",
     },
   },
 };

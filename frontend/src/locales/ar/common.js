@@ -107,6 +107,7 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "تليجرام",
     },
+    "model-router": "نموذج جهاز توجيه",
   },
   login: {
     "multi-user": {
@@ -1163,6 +1164,135 @@ const TRANSLATIONS = {
       approve: "الموافقة",
       deny: "رفض",
       revoke: "إلغاء",
+    },
+  },
+  "model-router": {
+    title: "نماذج أجهزة التوجيه",
+    description:
+      "تتيح لك أجهزة التوجيه المخصصة تحديد قواعد لتوجيه رسائل الدردشة تلقائيًا إلى مزودي ونماذج LLM المختلفة بناءً على شروط معينة.",
+    "create-router": "إنشاء جهاز توجيه",
+    table: {
+      name: "الاسم",
+      fallback: "الخيار البديل",
+      rules: "القواعد",
+      workspaces: "مساحات العمل",
+    },
+    "no-routers": "لم يتم إنشاء أي نماذج من أجهزة التوجيه حتى الآن.",
+    "delete-confirm":
+      'هل أنت متأكد من أنك تريد حذف جهاز التوجيه "{{name}}"؟\nسيؤدي ذلك إلى إزالة جميع إعداداته وفصل أي مساحات عمل تستخدمه.\n\nهذا الإجراء لا يمكن التراجع عنه.',
+    "toast-deleted": "تم حذف جهاز التوجيه.",
+    "toast-delete-failed": "فشل حذف جهاز التوجيه: {{error}}",
+    "new-router": {
+      title: "إنشاء جهاز توجيه جديد",
+      name: "الاسم",
+      "name-placeholder": "على سبيل المثال: مُحسِّن التكاليف",
+      description: "الوصف",
+      "description-placeholder": "وصف اختياري",
+      "fallback-label": "مزود بديل ونموذج احتياطي",
+      "fallback-description": "يُستخدم عندما لا تتطابق أي قاعدة توجيه.",
+      "cooldown-label": "فترة التبريد (بالثواني)",
+      "cooldown-help":
+        "كم المدة التي يتم فيها تخزين قرار التوجيه قبل إعادة تقييم القواعد؟ اضبط القيمة على 0 لتعطيل التخزين.",
+      "name-required": "الاسم مطلوب.",
+      "fallback-required": "يجب توفير مزود بديل ونموذج احتياطي.",
+      cancel: "إلغاء",
+      creating: "إنشاء...",
+      create: "إنشاء جهاز توجيه",
+      "toast-created": "تم إنشاء جهاز التوجيه بنجاح.",
+    },
+    "edit-router": {
+      "back-to-routers": "العودة إلى أجهزة التوجيه النموذجية",
+      title: "تعديل جهاز التوجيه: {{name}}",
+      description:
+        "قم بتحديث إعدادات جهاز التوجيه وقم بتحديد مزود/نموذج احتياطي.",
+      name: "الاسم",
+      "description-label": "الوصف",
+      "description-placeholder": "وصف اختياري",
+      "fallback-label": "مزود بديل ونموذج احتياطي",
+      "fallback-description":
+        "يتم استخدامه عندما لا يتطابق أي من قواعد التوجيه.",
+      "cooldown-label": "فترة التبريد (بالثواني)",
+      "cooldown-help":
+        "كم من الوقت يتم الاحتفاظ بالقرار الخاص بالتوجيه قبل إعادة تقييم القواعد؟ اضبط القيمة على 0 لتعطيل التخزين المؤقت.",
+      saving: "حفظ...",
+      save: "حفظ التغييرات",
+      "toast-updated": "تم تحديث جهاز التوجيه بنجاح.",
+      "toast-update-failed": "فشل في تحديث جهاز التوجيه.",
+    },
+    rules: {
+      title: "قواعد التوجيه",
+      description:
+        "يتم تقييم القواعد من الأعلى إلى الأسفل حسب الأولوية. اسحب لإعادة الترتيب. الفائز هو أول من يتطابق.",
+      "add-rule": "إضافة قاعدة",
+      "delete-confirm": 'حذف القاعدة "{{title}}"؟',
+      "toast-deleted": "تم حذف القاعدة.",
+      "toast-delete-failed": "فشل حذف القاعدة.",
+      "toast-reorder-failed": "فشل في تطبيق قواعد إعادة الترتيب.",
+      "no-rules": "لا توجد قواعد حتى الآن. أضف قاعدة لبدء عملية التوجيه.",
+    },
+    "rule-form": {
+      "edit-title": "عدّل القاعدة",
+      "new-title": "قاعدة جديدة",
+      "title-label": "العنوان",
+      "title-help":
+        "باستخدام الأحرف الصغيرة ووضع الشرطات السفلية فقط. يتم تنسيقها تلقائيًا عند الحفظ.",
+      "rule-type": "نوع القاعدة",
+      "property-label": "العقار",
+      "property-select": "اختر",
+      "comparator-label": "مقارن",
+      "value-label": "القيمة",
+      "match-description-label": "وصف المباراة",
+      "match-description-placeholder":
+        "على سبيل المثال، المستخدم يسأل عن المواضيع القانونية، أو العقود، أو الامتثال للقوانين.",
+      "match-description-help":
+        "صف الظروف التي يجب أن تتطابق فيها هذه القاعدة. سيقرأ نموذج الاستجابة الخاص بالراوتر الرسالة المرسلة من المستخدم ويحدد ما إذا كانت تتطابق مع هذا الوصف.",
+      "route-to-label": "طريق الوصول إلى المورد ونموذج التوريد",
+      "route-to-description":
+        "عندما يتطابق هذا القانون، استخدم هذا المورد/النموذج.",
+      cancel: "إلغاء",
+      saving: "حفظ...",
+      "update-rule": "قاعدة التحديث",
+      "create-rule": "إنشاء قاعدة",
+      "title-required": "العنوان مطلوب.",
+      "toast-updated": "تم تحديث القاعدة",
+      "toast-created": "تم إنشاء القاعدة",
+      "toast-save-failed": "فشل في حفظ القاعدة.",
+    },
+    "provider-picker": {
+      "select-provider": "اختر المزود",
+      "setup-required": "(يتطلب إعدادًا)",
+      "loading-models": "تحميل النماذج...",
+      "select-model": "اختر الطراز",
+      "enter-model": "أدخل اسم الموديل",
+      "select-provider-first": "اختر مزود الخدمة أولاً.",
+      "configure-to-continue": "قم بتكوين {{name}} للمتابعة.",
+      "configure-provider": "تكوين {{name}}",
+      "setup-credentials":
+        "أدخل بيانات الاعتماد المطلوبة لاستخدام {{name}} كوجهة توجيه.",
+      cancel: "إلغاء",
+      "save-settings": "حفظ الإعدادات",
+      "toast-save-failed": "فشل حفظ الإعدادات: {{error}}",
+      "toast-configured": "تم تكوين المزود بنجاح.",
+    },
+    "router-selection": {
+      "loading-routers": "تحميل أجهزة التوجيه...",
+      "no-routers-prefix-settings":
+        "لم يتم تكوين أي من أجهزة التوجيه (routers) حتى الآن.",
+      "no-routers-prefix-workspace": "لا توجد أجهزة توجيه مُكوّنة.",
+      "no-routers-link": "قم بإنشائه في إعدادات جهاز التوجيه (Router).",
+      "model-router-label": "نموذج جهاز توجيه",
+      "select-router": "اختر جهاز توجيه.",
+      "select-description": "اختر جهاز التوجيه الذي ستستخدمه لهذا المجال.",
+      "no-routers-chat":
+        'لا توجد أجهزة توجيه مُكوَّنة. قم بإنشاء واحدة في قسم "إعدادات" > "مزودي الذكاء الاصطناعي" > "جهاز توجيه النموذج".',
+      "rule-count": "({{count}} القواعد)",
+    },
+    metrics: {
+      "model-router-default": "نموذج جهاز توجيه",
+    },
+    chat: {
+      "select-router-error": "اختر جهاز توجيه",
+      "invalid-model": "اختيار نموذج غير صالح",
     },
   },
 };
