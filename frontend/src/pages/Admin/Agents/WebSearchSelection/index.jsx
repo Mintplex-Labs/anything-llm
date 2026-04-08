@@ -25,6 +25,7 @@ import {
   SearchApiOptions,
   SerperDotDevOptions,
   BingSearchOptions,
+  BaiduSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
@@ -79,6 +80,14 @@ const SEARCH_PROVIDERS = [
     logo: BingSearchIcon,
     options: (settings) => <BingSearchOptions settings={settings} />,
     description: "Web search powered by the Bing Search API (paid service).",
+  },
+  {
+    name: "Baidu Search",
+    value: "baidu-search",
+    logo: AnythingLLMIcon,
+    options: (settings) => <BaiduSearchOptions settings={settings} />,
+    description:
+      "Web search powered by Baidu Search for stronger zh-CN retrieval.",
   },
   {
     name: "Serply.io",
