@@ -145,6 +145,7 @@ class TelegramBotService {
     } catch {
       // Polling may already be stopped
     }
+
     // Kill any active workers before clearing state
     for (const chatId of this.#activeWorkers.keys()) {
       this.abortChat(chatId);
