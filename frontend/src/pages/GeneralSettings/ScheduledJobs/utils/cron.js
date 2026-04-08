@@ -1,14 +1,26 @@
-import cronstrue from "cronstrue";
+import cronstrue from "cronstrue/i18n";
 
 // Render a 5-field cron expression as plain English using cronstrue.
 // Falls back to the raw expression if parsing fails.
-export function humanizeCron(cron) {
+export function humanizeCron(cron, locale) {
   if (!cron) return "";
   try {
-    return cronstrue.toString(cron, { throwExceptionOnParseError: false });
+    return cronstrue.toString(cron, {
+      throwExceptionOnParseError: false,
+      locale: toCronstrueLocale(locale),
+    });
   } catch {
     return cron;
   }
+}
+
+// i18next uses BCP-47-ish codes like "zh-tw"; cronstrue's i18n bundle
+// uses "zh_TW". Convert "xx-yy" → "xx_YY" so region-tagged locales resolve
+// instead of silently falling back to English.
+function toCronstrueLocale(locale) {
+  if (!locale) return undefined;
+  const [lang, region] = locale.split("-");
+  return region ? `${lang}_${region.toUpperCase()}` : lang;
 }
 
 // Default state for the visual builder. Used when an incoming cron expression

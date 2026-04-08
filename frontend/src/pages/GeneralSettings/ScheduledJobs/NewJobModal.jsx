@@ -5,8 +5,10 @@ import showToast from "@/utils/toast";
 import { safeJsonParse } from "@/utils/request";
 import { humanizeCron } from "./utils/cron";
 import CronBuilder from "./CronBuilder";
+import { useTranslation } from "react-i18next";
 
 export default function NewJobModal({ job = null, onClose, onSaved }) {
+  const { i18n } = useTranslation();
   const isEditing = !!job;
   const [form, setForm] = useState({
     name: job?.name || "",
@@ -167,7 +169,9 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
               Current schedule:{" "}
               <code className="text-theme-text-primary">{form.schedule}</code>
               {form.schedule && (
-                <span className="ml-2">— {humanizeCron(form.schedule)}</span>
+                <span className="ml-2">
+                  — {humanizeCron(form.schedule, i18n.language)}
+                </span>
               )}
             </p>
           </div>

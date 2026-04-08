@@ -2,11 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { Eye, Play, Power, PencilSimple, Trash } from "@phosphor-icons/react";
 import { humanizeCron } from "../utils/cron";
 import StatusBadge from "./StatusBadge";
+import { useTranslation } from "react-i18next";
 
 // One row of the scheduled-jobs list. Owns its own action buttons and the
 // "View runs" navigation; CRUD callbacks come from the parent.
 export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   return (
     <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
       <td className="px-6 py-4">
@@ -20,7 +22,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         </div>
       </td>
       <td className="px-6 py-4 text-theme-text-secondary">
-        {humanizeCron(job.schedule)}
+        {humanizeCron(job.schedule, i18n.language)}
       </td>
       <td className="px-6 py-4">
         {job.latestRun ? (
