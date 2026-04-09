@@ -18,13 +18,16 @@ function formatDuration(run) {
 // One row of the run history table for a job. Shows status, timestamps,
 // duration, error preview, and a link to the run detail page.
 export default function RunRow({ run, jobId }) {
+  const unreadAndTerminal =
+    !run.readAt && run.status !== "running" && run.status !== "queued";
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
       <td className="px-6 py-4">
         <div className="flex items-center gap-2 relative">
-          {!run.readAt && run.status !== "running" && (
+          {unreadAndTerminal && (
             <Circle
               weight="fill"
               className="h-2 w-2 text-blue-400 absolute -left-4"

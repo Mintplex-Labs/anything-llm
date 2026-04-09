@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 const STATUS_COLORS = {
+  queued: "bg-blue-500/20 text-blue-400",
   running: "bg-yellow-500/20 text-yellow-400",
   completed: "bg-green-500/20 text-green-400",
   failed: "bg-red-500/20 text-red-400",
@@ -16,6 +17,7 @@ export default function StatusBadge({ status }) {
     failed: t("scheduledJobs.runDetail.status.failed"),
     timed_out: t("scheduledJobs.runDetail.status.timed_out"),
     running: t("scheduledJobs.runDetail.status.running"),
+    queued: t("scheduledJobs.runDetail.status.queued"),
   };
   const label = status ? statusLabels[status] || status.replace("_", " ") : "—";
   return (

@@ -24,6 +24,7 @@ const STATUS_COLORS = {
   failed: "text-red-400",
   timed_out: "text-orange-400",
   running: "text-yellow-400",
+  queued: "text-blue-400",
 };
 
 export default function RunDetailPage() {
@@ -50,9 +51,10 @@ export default function RunDetailPage() {
     }
   };
 
+  const isNonTerminal = run?.status === "running" || run?.status === "queued";
   // Poll every 3s while a run is in progress so the trace/status updates live.
   // Stops automatically once the run reaches a terminal state.
-  usePolling(fetchRun, 3000, run?.status === "running");
+  usePolling(fetchRun, 3000, isNonTerminal);
 
   const handleContinueInThread = async () => {
     setContinuing(true);
@@ -143,6 +145,7 @@ function RunHeader({
     failed: t("scheduledJobs.runDetail.status.failed"),
     timed_out: t("scheduledJobs.runDetail.status.timed_out"),
     running: t("scheduledJobs.runDetail.status.running"),
+    queued: t("scheduledJobs.runDetail.status.queued"),
   };
   const statusLabel =
     statusLabels[run.status] || run.status?.replace("_", " ") || "";

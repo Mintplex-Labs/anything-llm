@@ -13,13 +13,25 @@ process.on("message", async (payload) => {
   const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
 
   // The run row was created by the parent process (BackgroundService) in
-  // status `running`. The worker just executes and transitions to a terminal
-  // state. If the job has been deleted between enqueue and now, fail the row.
+  // status `queued` (it may have been waiting in p-queue). The worker
+  // transitions it to `running` here so `startedAt` reflects actual execution
+  // start, then runs to a terminal state. If the job has been deleted between
+  // enqueue and now, fail the row.
   try {
     const job = await ScheduledJob.get({ id: Number(jobId) });
     if (!job) {
       log(`Scheduled job ${jobId} not found`);
       await ScheduledJobRun.failIfNotTerminal(runId, "Job no longer exists");
+      conclude();
+      return;
+    }
+
+    // Transition queued -> running. If this returns false, the row was
+    // already moved to a terminal state (e.g. parent failed it because it
+    // thought the worker had died). Bail out without touching it further.
+    const transitioned = await ScheduledJobRun.markRunning(runId);
+    if (!transitioned) {
+      log(`Scheduled job run ${runId} was no longer queued, skipping`);
       conclude();
       return;
     }

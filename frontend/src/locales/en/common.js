@@ -1289,6 +1289,7 @@ const TRANSLATIONS = {
         failed: "failed",
         timed_out: "timed out",
         running: "running",
+        queued: "queued",
       },
       sections: {
         prompt: "Prompt",

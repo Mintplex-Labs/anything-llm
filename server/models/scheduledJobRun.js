@@ -2,17 +2,28 @@ const prisma = require("../utils/prisma");
 
 const ScheduledJobRun = {
   statuses: {
+    queued: "queued",
     running: "running",
     completed: "completed",
     failed: "failed",
     timed_out: "timed_out",
   },
 
+  // Non-terminal statuses — a row in any of these states is considered
+  // "in flight" for dedup purposes. The parent claims a row as `queued`
+  // when enqueuing; the worker transitions it to `running` once it
+  // actually begins executing (it may sit in p-queue first).
+  nonTerminalStatuses: ["queued", "running"],
+
   /**
-   * Start a new run for a job. At most one run per job can be `running` at a
-   * time — if one already exists, this returns null and the caller should drop
-   * the request. The check + insert run inside an interactive transaction so
-   * two concurrent callers cannot both pass; SQLite serializes writes.
+   * Claim a new run for a job. At most one in-flight run per job is allowed —
+   * if a `queued` or `running` row already exists, this returns null and the
+   * caller should drop the request. The check + insert run inside an
+   * interactive transaction so two concurrent callers cannot both pass;
+   * SQLite serializes writes.
+   *
+   * The row is created in `queued` status; the worker transitions it to
+   * `running` via markRunning() once it actually begins executing.
    *
    * @param {number} jobId
    * @returns {Promise<object|null>} The created run row, or null if a run is
@@ -24,7 +35,7 @@ const ScheduledJobRun = {
         const existing = await tx.scheduled_job_runs.findFirst({
           where: {
             jobId: Number(jobId),
-            status: this.statuses.running,
+            status: { in: this.nonTerminalStatuses },
           },
           select: { id: true },
         });
@@ -33,13 +44,42 @@ const ScheduledJobRun = {
         return tx.scheduled_job_runs.create({
           data: {
             jobId: Number(jobId),
-            status: this.statuses.running,
+            status: this.statuses.queued,
           },
         });
       });
     } catch (error) {
       console.error("Failed to enqueue scheduled job run:", error.message);
       return null;
+    }
+  },
+
+  /**
+   * Transition a queued run into the running state. Called by the worker as
+   * its first DB write, so `startedAt` reflects actual execution start rather
+   * than queue-claim time. Filtered updateMany makes it a no-op if the row
+   * has already been transitioned to a terminal state (e.g. parent failed it
+   * because the worker failed to spawn, then a stale child somehow boots).
+   *
+   * @param {number} id - scheduled_job_runs.id
+   * @returns {Promise<boolean>} true if the row transitioned, false otherwise
+   */
+  markRunning: async function (id) {
+    try {
+      const result = await prisma.scheduled_job_runs.updateMany({
+        where: { id: Number(id), status: this.statuses.queued },
+        data: {
+          status: this.statuses.running,
+          startedAt: new Date(),
+        },
+      });
+      return result.count > 0;
+    } catch (error) {
+      console.error(
+        "Failed to transition scheduled job run to running:",
+        error.message
+      );
+      return false;
     }
   },
 
@@ -55,7 +95,10 @@ const ScheduledJobRun = {
   failIfNotTerminal: async function (id, errorMsg) {
     try {
       const result = await prisma.scheduled_job_runs.updateMany({
-        where: { id: Number(id), status: this.statuses.running },
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
         data: {
           status: this.statuses.failed,
           error: String(errorMsg || "Worker exited unexpectedly"),
@@ -187,12 +230,13 @@ const ScheduledJobRun = {
   },
 
   /**
-   * Mark all orphaned running runs as failed (for cold startup recovery).
+   * Mark all orphaned in-flight runs (queued or running) as failed — used on
+   * cold startup to recover rows whose owning worker died with the server.
    */
   failOrphanedRuns: async function () {
     try {
       const result = await prisma.scheduled_job_runs.updateMany({
-        where: { status: this.statuses.running },
+        where: { status: { in: this.nonTerminalStatuses } },
         data: {
           status: this.statuses.failed,
           error: "Server restarted during execution",

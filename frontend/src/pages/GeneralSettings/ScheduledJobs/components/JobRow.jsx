@@ -9,10 +9,11 @@ import { useTranslation } from "react-i18next";
 export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  // A job has at most one in-flight run; disable "Run now" while it's running
-  // so users get visible feedback that their click registered and so the
-  // backend dedup never has to drop a manual trigger silently.
-  const isRunning = job.latestRun?.status === "running";
+  // A job has at most one in-flight run; disable "Run now" while it's queued
+  // or running so users get visible feedback that their click registered and
+  // so the backend dedup never has to drop a manual trigger silently.
+  const inFlight =
+    job.latestRun?.status === "running" || job.latestRun?.status === "queued";
   return (
     <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
       <td className="px-6 py-4">
@@ -58,7 +59,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
           <button
             type="button"
             onClick={() => onTrigger(job.id)}
-            disabled={isRunning}
+            disabled={inFlight}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-theme-text-secondary"
             title={t("scheduledJobs.row.runNow")}
           >

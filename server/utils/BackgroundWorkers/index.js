@@ -176,9 +176,12 @@ class BackgroundService {
   // scheduling from execution so we can route jobs through p-queue
   // for global concurrency control before spawning workers.
   //
-  // Per-job dedup lives in the database, not in process memory: a
-  // `running` row in scheduled_job_runs means the job has a run in
-  // flight. ScheduledJobRun.start() does the check + insert atomically.
+  // Per-job dedup lives in the database, not in process memory: any
+  // non-terminal row (`queued` or `running`) in scheduled_job_runs means
+  // the job has a run in flight. ScheduledJobRun.start() does the check +
+  // insert atomically and creates the row in `queued` status. The worker
+  // transitions it to `running` once it actually begins executing, so
+  // `startedAt` reflects execution start rather than queue-claim time.
   // Cron-fired and manually-triggered enqueues use the same rule —
   // at most one in-flight run per job, regardless of source.
   // ---------------------------------------------------------------
