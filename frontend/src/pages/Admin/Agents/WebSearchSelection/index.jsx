@@ -5,6 +5,7 @@ import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import BaiduSearchIcon from "./icons/baidu.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
@@ -84,7 +85,7 @@ const SEARCH_PROVIDERS = [
   {
     name: "Baidu Search",
     value: "baidu-search",
-    logo: AnythingLLMIcon,
+    logo: BaiduSearchIcon,
     options: (settings) => <BaiduSearchOptions settings={settings} />,
     description:
       "Web search powered by Baidu Search for stronger zh-CN retrieval.",

@@ -634,7 +634,6 @@ const webBrowsing = {
                 body: JSON.stringify({
                   messages: [{ role: "user", content: query }],
                   resource_type_filter: [{ type: "web", top_k: 10 }],
-                  search_source: "baidu_search_v2",
                 }),
               }
             )
