@@ -410,15 +410,15 @@ model scheduled_jobs {
 }
 
 model scheduled_job_runs {
-  id          Int             @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   jobId       Int
-  status      String          @default("running") // running | completed | failed | timed_out
+  status      String         @default("queued") // queued | running | completed | failed | timed_out — model always sets explicitly
   result      String? // JSON execution trace
   error       String?
-  startedAt   DateTime        @default(now())
+  startedAt   DateTime       @default(now())
   completedAt DateTime?
   readAt      DateTime? // null = unread
-  job         scheduled_jobs  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job         scheduled_jobs @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@index([jobId])
 }

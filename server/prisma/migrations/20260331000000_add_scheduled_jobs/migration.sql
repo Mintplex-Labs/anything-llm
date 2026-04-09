@@ -16,7 +16,7 @@ CREATE TABLE "scheduled_jobs" (
 CREATE TABLE "scheduled_job_runs" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "jobId" INTEGER NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'running',
+    "status" TEXT NOT NULL DEFAULT 'queued',
     "result" TEXT,
     "error" TEXT,
     "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
