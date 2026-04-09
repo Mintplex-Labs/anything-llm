@@ -10,7 +10,6 @@ import {
   PencilSimple,
 } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
-import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
@@ -111,9 +110,11 @@ export default function ModelRouters() {
             )}
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
-          <NewRouterModal closeModal={closeModal} onSuccess={fetchRouters} />
-        </ModalWrapper>
+        <NewRouterModal
+          isOpen={isOpen}
+          closeModal={closeModal}
+          onSuccess={fetchRouters}
+        />
       </div>
     </div>
   );

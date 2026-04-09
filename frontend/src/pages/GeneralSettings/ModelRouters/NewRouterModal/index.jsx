@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import { CircleNotch, X } from "@phosphor-icons/react";
 import ModelRouter from "@/models/modelRouter";
 import showToast from "@/utils/toast";
+import ModalWrapper from "@/components/ModalWrapper";
 import LLMProviderModelPicker from "../LLMProviderModelPicker";
 
-export default function NewRouterModal({ closeModal, onSuccess }) {
+export default function NewRouterModal({ isOpen, closeModal, onSuccess }) {
   const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -51,7 +52,7 @@ export default function NewRouterModal({ closeModal, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+    <ModalWrapper isOpen={isOpen}>
       <div className="relative w-full max-w-2xl bg-zinc-900 light:bg-white rounded-xl shadow border border-zinc-700 light:border-slate-300">
         <div className="relative p-6 border-b border-zinc-700 light:border-slate-200">
           <h3 className="text-lg font-semibold text-white light:text-slate-900">
@@ -143,6 +144,6 @@ export default function NewRouterModal({ closeModal, onSuccess }) {
           </form>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 }
