@@ -429,9 +429,7 @@ function scheduledJobEndpoints(app) {
         }
 
         const { BackgroundService } = require("../utils/BackgroundWorkers");
-        new BackgroundService().enqueueScheduledJob(job.id, {
-          priority: true,
-        });
+        new BackgroundService().enqueueScheduledJob(job.id);
 
         return response.status(200).json({ success: true, error: null });
       } catch (e) {

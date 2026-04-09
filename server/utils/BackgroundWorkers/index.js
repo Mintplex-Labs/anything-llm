@@ -14,7 +14,6 @@ class BackgroundService {
   #scheduledJobQueue = new PQueue({
     concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 1,
   });
-  #pendingJobIds = new Set();
 
   #alwaysRunJobs = [
     {
@@ -96,7 +95,6 @@ class BackgroundService {
       this.#scheduledJobTimers.delete(id);
     }
     this.#scheduledJobQueue.clear();
-    this.#pendingJobIds.clear();
     if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
     this.bree = null;
     this.graceful = null;
@@ -176,8 +174,13 @@ class BackgroundService {
   // spawns a child process with no way to intercept it. We manage
   // our own cron timers (via later.setInterval) to decouple
   // scheduling from execution so we can route jobs through p-queue
-  // for concurrency control, dedup, and priority ordering before
-  // spawning workers via runJob().
+  // for global concurrency control before spawning workers.
+  //
+  // Per-job dedup lives in the database, not in process memory: a
+  // `running` row in scheduled_job_runs means the job has a run in
+  // flight. ScheduledJobRun.start() does the check + insert atomically.
+  // Cron-fired and manually-triggered enqueues use the same rule —
+  // at most one in-flight run per job, regardless of source.
   // ---------------------------------------------------------------
 
   /**
@@ -215,14 +218,15 @@ class BackgroundService {
   }
 
   /**
-   * Remove an in-process cron timer and dequeue a scheduled job.
+   * Remove an in-process cron timer for a scheduled job.
+   * Any in-flight run for this job will continue until the worker exits.
+   * If the job row was deleted, the FK cascade cleans up its scheduled_job_runs.
    * @param {number} jobId - scheduled_jobs.id
    */
   removeScheduledJob(jobId) {
     const timer = this.#scheduledJobTimers.get(jobId);
     if (timer) timer.clear();
     this.#scheduledJobTimers.delete(jobId);
-    this.#pendingJobIds.delete(jobId);
   }
 
   /**
@@ -240,26 +244,29 @@ class BackgroundService {
   }
 
   /**
-   * Add a scheduled job to the execution queue.
+   * Enqueue a scheduled job for execution. Called by both the cron timer
+   * (in addScheduledJob) and the manual trigger endpoint. ScheduledJobRun.start()
+   * atomically rejects the call if the job already has a run in flight.
+   *
    * @param {number} jobId - scheduled_jobs.id
-   * @param {object} [opts]
-   * @param {boolean} [opts.priority=false] - If true, skip dedup and add to front of queue
    */
-  enqueueScheduledJob(jobId, { priority = false } = {}) {
-    if (!priority && this.#pendingJobIds.has(jobId)) return;
-    this.#pendingJobIds.add(jobId);
+  async enqueueScheduledJob(jobId) {
+    const { ScheduledJobRun } = require("../../models/scheduledJobRun");
 
-    this.#scheduledJobQueue
-      .add(
-        () =>
-          this.runJob("run-scheduled-job", { jobId }).catch((err) =>
-            this.#log(`Scheduled job ${jobId} failed: ${err.message}`)
-          ),
-        { priority: priority ? 1 : 0 }
+    const run = await ScheduledJobRun.start(jobId);
+    if (!run) return;
+
+    this.#scheduledJobQueue.add(() =>
+      this.runJob("run-scheduled-job", { jobId, runId: run.id }).catch(
+        async (err) => {
+          this.#log(`Scheduled job ${jobId} failed: ${err.message}`);
+          // Worker exited unexpectedly — mark the run failed if it didn't
+          // already reach a terminal state on its own. Filtered updateMany
+          // prevents clobbering a row the worker already marked completed.
+          await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
+        }
       )
-      .finally(() => {
-        this.#pendingJobIds.delete(jobId);
-      });
+    );
   }
 }
 

@@ -8,18 +8,67 @@ const ScheduledJobRun = {
     timed_out: "timed_out",
   },
 
-  create: async function (jobId) {
+  /**
+   * Start a new run for a job. At most one run per job can be `running` at a
+   * time — if one already exists, this returns null and the caller should drop
+   * the request. The check + insert run inside an interactive transaction so
+   * two concurrent callers cannot both pass; SQLite serializes writes.
+   *
+   * @param {number} jobId
+   * @returns {Promise<object|null>} The created run row, or null if a run is
+   *   already in progress for this job (or on failure).
+   */
+  start: async function (jobId) {
     try {
-      const run = await prisma.scheduled_job_runs.create({
+      return await prisma.$transaction(async (tx) => {
+        const existing = await tx.scheduled_job_runs.findFirst({
+          where: {
+            jobId: Number(jobId),
+            status: this.statuses.running,
+          },
+          select: { id: true },
+        });
+        if (existing) return null;
+
+        return tx.scheduled_job_runs.create({
+          data: {
+            jobId: Number(jobId),
+            status: this.statuses.running,
+          },
+        });
+      });
+    } catch (error) {
+      console.error("Failed to enqueue scheduled job run:", error.message);
+      return null;
+    }
+  },
+
+  /**
+   * Mark a run as failed only if it has not already reached a terminal state.
+   * Used by the parent process when a worker exits unexpectedly — atomic
+   * filtered update prevents clobbering a row the worker already transitioned
+   * to `completed` (the rare race where the worker succeeded but exited
+   * non-zero during cleanup).
+   * @param {number} id - scheduled_job_runs.id
+   * @param {string} errorMsg
+   */
+  failIfNotTerminal: async function (id, errorMsg) {
+    try {
+      const result = await prisma.scheduled_job_runs.updateMany({
+        where: { id: Number(id), status: this.statuses.running },
         data: {
-          jobId: Number(jobId),
-          status: this.statuses.running,
+          status: this.statuses.failed,
+          error: String(errorMsg || "Worker exited unexpectedly"),
+          completedAt: new Date(),
         },
       });
-      return run || null;
+      return result.count > 0;
     } catch (error) {
-      console.error("Failed to create scheduled job run:", error.message);
-      return null;
+      console.error(
+        "Failed to conditionally fail scheduled job run:",
+        error.message
+      );
+      return false;
     }
   },
 

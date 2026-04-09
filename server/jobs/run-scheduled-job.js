@@ -3,8 +3,8 @@ const { v4: uuidv4 } = require("uuid");
 const { safeJsonParse } = require("../utils/http");
 
 process.on("message", async (payload) => {
-  const { jobId } = payload;
-  if (!jobId) {
+  const { jobId, runId } = payload;
+  if (!jobId || !runId) {
     conclude();
     return;
   }
@@ -12,25 +12,19 @@ process.on("message", async (payload) => {
   const { ScheduledJob } = require("../models/scheduledJob.js");
   const { ScheduledJobRun } = require("../models/scheduledJobRun.js");
 
-  let run = null;
-
+  // The run row was created by the parent process (BackgroundService) in
+  // status `running`. The worker just executes and transitions to a terminal
+  // state. If the job has been deleted between enqueue and now, fail the row.
   try {
     const job = await ScheduledJob.get({ id: Number(jobId) });
     if (!job) {
       log(`Scheduled job ${jobId} not found`);
+      await ScheduledJobRun.failIfNotTerminal(runId, "Job no longer exists");
       conclude();
       return;
     }
 
     log(`Starting scheduled job: "${job.name}" (id=${job.id})`);
-
-    // Create run record
-    run = await ScheduledJobRun.create(job.id);
-    if (!run) {
-      log(`Failed to create run record for job ${job.id}`);
-      conclude();
-      return;
-    }
 
     // Update timestamps now so nextRunAt advances even if the job fails
     await ScheduledJob.updateRunTimestamps(job.id);
@@ -159,7 +153,7 @@ process.on("message", async (payload) => {
     const duration = Date.now() - startTime;
 
     // Save completed result
-    await ScheduledJobRun.complete(run.id, {
+    await ScheduledJobRun.complete(runId, {
       result: {
         text: textResponse,
         thoughts,
@@ -189,7 +183,7 @@ process.on("message", async (payload) => {
               (textResponse.length > 100 ? "..." : "")
             : "Job completed",
           data: {
-            onClickUrl: `/settings/scheduled-jobs/${job.id}/runs/${run.id}`,
+            onClickUrl: `/settings/scheduled-jobs/${job.id}/runs/${runId}`,
           },
         },
       });
@@ -204,12 +198,10 @@ process.on("message", async (payload) => {
         : `Scheduled job error: ${error.message}`
     );
 
-    if (run) {
-      if (isTimeout) {
-        await ScheduledJobRun.timeout(run.id);
-      } else {
-        await ScheduledJobRun.fail(run.id, { error: error.message });
-      }
+    if (isTimeout) {
+      await ScheduledJobRun.timeout(runId);
+    } else {
+      await ScheduledJobRun.fail(runId, { error: error.message });
     }
   } finally {
     conclude();
