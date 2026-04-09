@@ -1,4 +1,5 @@
 const gmailLib = require("../lib.js");
+const { handleAttachments } = require("../lib.js");
 
 module.exports.GmailReadThread = {
   name: "gmail-read-thread",
@@ -59,12 +60,15 @@ module.exports.GmailReadThread = {
                 ? `Labels: ${thread.labels.join(", ")}`
                 : "No labels";
 
+              const { allAttachments, parsedContent: parsedAttachmentContent } =
+                await handleAttachments(this, thread.messages);
+
               const messagesFormatted = thread.messages
                 .map((msg, i) => {
-                  const attachmentInfo =
-                    msg.attachments?.length > 0
-                      ? `\n   Attachments: ${msg.attachments.map((a) => `${a.name} (${a.contentType}, ${(a.size / 1024).toFixed(1)}KB)`).join(", ")}`
-                      : "";
+                  let attachmentInfo = "";
+                  if (msg.attachments?.length > 0) {
+                    attachmentInfo = `\n   Attachments: ${msg.attachments.map((a) => `${a.name} (${a.contentType}, ${(a.size / 1024).toFixed(1)}KB)`).join(", ")}`;
+                  }
                   return (
                     `--- Message ${i + 1} ---\n` +
                     `From: ${msg.from}\n` +
@@ -87,14 +91,18 @@ module.exports.GmailReadThread = {
                 `Thread: "${thread.subject}"\n` +
                 `Thread ID: ${thread.id}\n` +
                 `Messages: ${thread.messageCount}\n` +
+                `Total Attachments: ${allAttachments.length}\n` +
                 `Status: ${thread.isUnread ? "UNREAD" : "READ"}${thread.isImportant ? ", IMPORTANT" : ""}${thread.hasStarredMessages ? ", HAS STARRED" : ""}\n` +
                 `Location: ${thread.isInInbox ? "Inbox" : ""}${thread.isInSpam ? "Spam" : ""}${thread.isInTrash ? "Trash" : ""}\n` +
                 `${labels}\n` +
                 `Permalink: ${thread.permalink}\n\n` +
-                messagesFormatted
+                messagesFormatted +
+                parsedAttachmentContent
               );
             } catch (e) {
-              this.super.handlerProps.log(`gmail-read-thread error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-read-thread error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error reading Gmail thread: ${e.message}`;
             }

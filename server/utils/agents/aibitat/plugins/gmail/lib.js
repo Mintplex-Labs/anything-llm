@@ -1,4 +1,144 @@
 const { SystemSettings } = require("../../../../../models/systemSettings");
+const { CollectorApi } = require("../../../../collectorApi");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+/**
+ * Parse an attachment using the CollectorApi for secure content extraction.
+ * Writes the base64 data to a temp file, parses it, then cleans up.
+ * @param {Object} attachment - The attachment object with name, contentType, size, data (base64)
+ * @returns {Promise<{success: boolean, content: string|null, error: string|null}>}
+ */
+async function parseAttachment(attachment) {
+  const tempDir = os.tmpdir();
+  const safeFilename = attachment.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const tempFilePath = path.join(
+    tempDir,
+    `gmail-attachment-${Date.now()}-${safeFilename}`
+  );
+
+  try {
+    const buffer = Buffer.from(attachment.data, "base64");
+    fs.writeFileSync(tempFilePath, buffer);
+
+    const collector = new CollectorApi();
+    const result = await collector.parseDocument(safeFilename, {
+      absolutePath: tempFilePath,
+    });
+
+    if (fs.existsSync(tempFilePath)) {
+      fs.unlinkSync(tempFilePath);
+    }
+
+    if (!result.success) {
+      return {
+        success: false,
+        content: null,
+        error: result.reason || "Failed to parse attachment",
+      };
+    }
+
+    const textContent = result.documents
+      ?.map((doc) => doc.pageContent || doc.content || "")
+      .filter(Boolean)
+      .join("\n\n");
+
+    return {
+      success: true,
+      content: textContent || "(No text content extracted)",
+      error: null,
+    };
+  } catch (e) {
+    if (fs.existsSync(tempFilePath)) {
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch {}
+    }
+    return { success: false, content: null, error: e.message };
+  }
+}
+
+/**
+ * Collect attachments from messages and optionally parse them with user approval.
+ * @param {Object} context - The handler context (this) from the aibitat function
+ * @param {Array} messages - Array of message objects (single message should be wrapped in array)
+ * @returns {Promise<{allAttachments: Array, parsedContent: string}>}
+ */
+async function handleAttachments(context, messages) {
+  const allAttachments = [];
+  messages.forEach((msg, msgIndex) => {
+    if (msg.attachments?.length > 0) {
+      msg.attachments.forEach((att) => {
+        allAttachments.push({
+          ...att,
+          messageIndex: msgIndex + 1,
+          messageId: msg.id,
+        });
+      });
+    }
+  });
+
+  let parsedContent = "";
+  if (allAttachments.length > 0 && context.super.requestToolApproval) {
+    const attachmentNames = allAttachments.map((a) => a.name).join(", ");
+
+    const approval = await context.super.requestToolApproval({
+      skillName: context.name,
+      payload: { attachments: attachmentNames },
+      description: `Parse attachments (${attachmentNames}) to extract text content?`,
+    });
+
+    if (approval.approved) {
+      context.super.introspect(
+        `${context.caller}: Parsing ${allAttachments.length} attachment(s)...`
+      );
+
+      const parsedResults = [];
+      for (const attachment of allAttachments) {
+        if (!attachment.data) {
+          parsedResults.push({
+            name: attachment.name,
+            messageIndex: attachment.messageIndex,
+            success: false,
+            error: "No attachment data available",
+          });
+          continue;
+        }
+
+        context.super.introspect(
+          `${context.caller}: Parsing "${attachment.name}"...`
+        );
+        const parseResult = await parseAttachment(attachment);
+        parsedResults.push({
+          name: attachment.name,
+          messageIndex: attachment.messageIndex,
+          ...parseResult,
+        });
+      }
+
+      parsedContent =
+        "\n\n--- Parsed Attachment Content ---\n" +
+        parsedResults
+          .map((r) => {
+            if (r.success) {
+              return `\n[Message ${r.messageIndex}: ${r.name}]\n${r.content}`;
+            } else {
+              return `\n[Message ${r.messageIndex}: ${r.name}] - Could not parse: ${r.error}`;
+            }
+          })
+          .join("\n");
+
+      context.super.introspect(`${context.caller}: Finished parsing attachments`);
+    } else {
+      context.super.introspect(
+        `${context.caller}: User declined to parse attachments`
+      );
+    }
+  }
+
+  return { allAttachments, parsedContent };
+}
 
 /**
  * Gmail Bridge Library
@@ -360,3 +500,5 @@ class GmailBridge {
 
 module.exports = new GmailBridge();
 module.exports.GmailBridge = GmailBridge;
+module.exports.parseAttachment = parseAttachment;
+module.exports.handleAttachments = handleAttachments;

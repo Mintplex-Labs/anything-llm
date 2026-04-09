@@ -421,7 +421,7 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: "Gmail Integration",
+        title: "GMail Connector",
         description:
           "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. Requires a Google Apps Script deployment.",
         multiUserWarning:
@@ -441,28 +441,24 @@ const TRANSLATIONS = {
         skillsConfiguration: "Gmail Skills",
         categories: {
           search: {
-            title: "Search & Read",
+            title: "Search & Read Emails",
             description: "Search and read emails from your Gmail inbox",
           },
           drafts: {
-            title: "Drafts",
+            title: "Draft Emails",
             description: "Create, edit, and manage email drafts",
           },
           send: {
-            title: "Send & Reply",
+            title: "Send & Reply to Emails",
             description: "Send emails and reply to threads immediately",
           },
           threads: {
-            title: "Thread Management",
+            title: "Manage Email Threads",
             description:
               "Manage email threads - mark read/unread, archive, trash",
           },
-          labels: {
-            title: "Labels",
-            description: "View and manage Gmail labels on threads",
-          },
           account: {
-            title: "Account",
+            title: "Integration Statistics",
             description: "View mailbox statistics and account information",
           },
         },

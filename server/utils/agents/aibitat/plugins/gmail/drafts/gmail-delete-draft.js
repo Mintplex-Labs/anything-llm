@@ -73,7 +73,9 @@ module.exports.GmailDeleteDraft = {
 
               return `Successfully deleted Gmail draft (ID: ${draftId}).`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-delete-draft error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-delete-draft error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error deleting Gmail draft: ${e.message}`;
             }
