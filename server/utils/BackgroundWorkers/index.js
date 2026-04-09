@@ -254,15 +254,13 @@ class BackgroundService {
     const { ScheduledJobRun } = require("../../models/scheduledJobRun");
 
     const run = await ScheduledJobRun.start(jobId);
+    // if start returns null, skip enqueuing, schueduled job already has a run in flight
     if (!run) return;
 
     this.#scheduledJobQueue.add(() =>
       this.runJob("run-scheduled-job", { jobId, runId: run.id }).catch(
         async (err) => {
           this.#log(`Scheduled job ${jobId} failed: ${err.message}`);
-          // Worker exited unexpectedly — mark the run failed if it didn't
-          // already reach a terminal state on its own. Filtered updateMany
-          // prevents clobbering a row the worker already marked completed.
           await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
         }
       )
