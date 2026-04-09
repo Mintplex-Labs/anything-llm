@@ -23,11 +23,6 @@ const { GmailMoveToTrash } = require("./threads/gmail-move-to-trash.js");
 const { GmailMoveToArchive } = require("./threads/gmail-move-to-archive.js");
 const { GmailMoveToInbox } = require("./threads/gmail-move-to-inbox.js");
 
-// Labels
-const { GmailListLabels } = require("./labels/gmail-list-labels.js");
-const { GmailAddLabel } = require("./labels/gmail-add-label.js");
-const { GmailRemoveLabel } = require("./labels/gmail-remove-label.js");
-
 // Account
 const { GmailGetMailboxStats } = require("./account/gmail-get-mailbox-stats.js");
 
@@ -61,11 +56,6 @@ const gmailAgent = {
     GmailMoveToTrash,
     GmailMoveToArchive,
     GmailMoveToInbox,
-
-    // Labels (list is read-only, add/remove are modifying)
-    GmailListLabels,
-    GmailAddLabel,
-    GmailRemoveLabel,
 
     // Account (read-only)
     GmailGetMailboxStats,
