@@ -35,6 +35,9 @@ const SystemSettings = {
     "disabled_agent_skills",
     "disabled_filesystem_skills",
     "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_deployment_id",
+    "gmail_api_key",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -54,6 +57,9 @@ const SystemSettings = {
     "disabled_agent_skills",
     "disabled_filesystem_skills",
     "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_deployment_id",
+    "gmail_api_key",
     "agent_sql_connections",
     "custom_app_name",
     "default_system_prompt",
@@ -173,6 +179,23 @@ const SystemSettings = {
         console.error(`Could not validate disabled create files skills.`);
         return JSON.stringify([]);
       }
+    },
+    disabled_gmail_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled gmail skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    gmail_deployment_id: (update) => {
+      if (!update || typeof update !== "string") return null;
+      return String(update).trim();
+    },
+    gmail_api_key: (update) => {
+      if (!update || typeof update !== "string") return null;
+      return String(update).trim();
     },
     agent_sql_connections: async (updates) => {
       const existingConnections = safeJsonParse(

@@ -1,0 +1,362 @@
+const { SystemSettings } = require("../../../../../models/systemSettings");
+
+/**
+ * Gmail Bridge Library
+ * Handles communication with the AnythingLLM Gmail Google Apps Script deployment.
+ */
+class GmailBridge {
+  #deploymentId = null;
+  #apiKey = null;
+  #isInitialized = false;
+
+  /**
+   * Initializes the Gmail bridge by fetching configuration from system settings.
+   * @returns {Promise<{success: boolean, error?: string}>}
+   */
+  async initialize() {
+    if (this.#isInitialized) return { success: true };
+
+    try {
+      const isMultiUser = await SystemSettings.isMultiUserMode();
+      if (isMultiUser) {
+        return {
+          success: false,
+          error:
+            "Gmail integration is not available in multi-user mode for security reasons.",
+        };
+      }
+
+      const deploymentId = await SystemSettings.getValueOrFallback(
+        { label: "gmail_deployment_id" },
+        null
+      );
+      const apiKey = await SystemSettings.getValueOrFallback(
+        { label: "gmail_api_key" },
+        null
+      );
+
+      if (!deploymentId || !apiKey) {
+        return {
+          success: false,
+          error:
+            "Gmail integration is not configured. Please set the Deployment ID and API Key in the agent settings.",
+        };
+      }
+
+      this.#deploymentId = deploymentId;
+      this.#apiKey = apiKey;
+      this.#isInitialized = true;
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Checks if the Gmail bridge is properly configured and available.
+   * @returns {Promise<boolean>}
+   */
+  async isAvailable() {
+    const result = await this.initialize();
+    return result.success;
+  }
+
+  /**
+   * Checks if Gmail tools are available (not in multi-user mode and has configuration).
+   * @returns {Promise<boolean>}
+   */
+  static async isToolAvailable() {
+    const isMultiUser = await SystemSettings.isMultiUserMode();
+    if (isMultiUser) return false;
+
+    const deploymentId = await SystemSettings.getValueOrFallback(
+      { label: "gmail_deployment_id" },
+      null
+    );
+    const apiKey = await SystemSettings.getValueOrFallback(
+      { label: "gmail_api_key" },
+      null
+    );
+
+    return !!(deploymentId && apiKey);
+  }
+
+  /**
+   * Gets the base URL for the Gmail Google Apps Script deployment.
+   * @returns {string}
+   */
+  #getBaseUrl() {
+    return `https://script.google.com/macros/s/${this.#deploymentId}/exec`;
+  }
+
+  /**
+   * Makes a request to the Gmail Google Apps Script API.
+   * @param {string} action - The action to perform
+   * @param {object} params - Additional parameters for the action
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async request(action, params = {}) {
+    const initResult = await this.initialize();
+    if (!initResult.success) {
+      return { success: false, error: initResult.error };
+    }
+
+    try {
+      const response = await fetch(this.#getBaseUrl(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-AnythingLLM-UA": "AnythingLLM-Gmail-Agent/1.0",
+        },
+        body: JSON.stringify({
+          key: this.#apiKey,
+          action,
+          ...params,
+        }),
+      });
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: `Gmail API request failed with status ${response.status}`,
+        };
+      }
+
+      const result = await response.json();
+
+      if (result.status === "error") {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data, quota: result.quota };
+    } catch (error) {
+      return { success: false, error: `Gmail API request failed: ${error.message}` };
+    }
+  }
+
+  /**
+   * Search emails using Gmail query syntax.
+   * @param {string} query - Gmail search query
+   * @param {number} limit - Maximum results to return
+   * @param {number} start - Starting offset
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async search(query = "is:inbox", limit = 10, start = 0) {
+    return this.request("search", { query, limit, start });
+  }
+
+  /**
+   * Read a full thread by ID.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async readThread(threadId) {
+    return this.request("read_thread", { threadId });
+  }
+
+  /**
+   * Read a single message by ID.
+   * @param {string} messageId - The message ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async readMessage(messageId) {
+    return this.request("read_message", { messageId });
+  }
+
+  /**
+   * Create a new draft email.
+   * @param {string} to - Recipient email
+   * @param {string} subject - Email subject
+   * @param {string} body - Email body
+   * @param {object} options - Additional options (cc, bcc, htmlBody, etc.)
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async createDraft(to, subject, body, options = {}) {
+    return this.request("create_draft", { to, subject, body, ...options });
+  }
+
+  /**
+   * Create a draft reply to an existing thread.
+   * @param {string} threadId - The thread ID to reply to
+   * @param {string} body - Reply body
+   * @param {boolean} replyAll - Whether to reply all
+   * @param {object} options - Additional options
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async createDraftReply(threadId, body, replyAll = false, options = {}) {
+    return this.request("create_draft_reply", {
+      threadId,
+      body,
+      replyAll,
+      ...options,
+    });
+  }
+
+  /**
+   * Update an existing draft.
+   * @param {string} draftId - The draft ID
+   * @param {string} to - Recipient email
+   * @param {string} subject - Email subject
+   * @param {string} body - Email body
+   * @param {object} options - Additional options
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async updateDraft(draftId, to, subject, body, options = {}) {
+    return this.request("update_draft", {
+      draftId,
+      to,
+      subject,
+      body,
+      ...options,
+    });
+  }
+
+  /**
+   * Get a specific draft by ID.
+   * @param {string} draftId - The draft ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async getDraft(draftId) {
+    return this.request("get_draft", { draftId });
+  }
+
+  /**
+   * List all drafts.
+   * @param {number} limit - Maximum drafts to return
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async listDrafts(limit = 25) {
+    return this.request("list_drafts", { limit });
+  }
+
+  /**
+   * Delete a draft.
+   * @param {string} draftId - The draft ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async deleteDraft(draftId) {
+    return this.request("delete_draft", { draftId });
+  }
+
+  /**
+   * Send an existing draft.
+   * @param {string} draftId - The draft ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async sendDraft(draftId) {
+    return this.request("send_draft", { draftId });
+  }
+
+  /**
+   * Send an email immediately.
+   * @param {string} to - Recipient email
+   * @param {string} subject - Email subject
+   * @param {string} body - Email body
+   * @param {object} options - Additional options
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async sendEmail(to, subject, body, options = {}) {
+    return this.request("send_email", { to, subject, body, ...options });
+  }
+
+  /**
+   * Reply to a thread immediately.
+   * @param {string} threadId - The thread ID
+   * @param {string} body - Reply body
+   * @param {boolean} replyAll - Whether to reply all
+   * @param {object} options - Additional options
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async replyToThread(threadId, body, replyAll = false, options = {}) {
+    return this.request("reply_to_thread", {
+      threadId,
+      body,
+      replyAll,
+      ...options,
+    });
+  }
+
+  /**
+   * Mark a thread as read.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async markRead(threadId) {
+    return this.request("mark_read", { threadId });
+  }
+
+  /**
+   * Mark a thread as unread.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async markUnread(threadId) {
+    return this.request("mark_unread", { threadId });
+  }
+
+  /**
+   * Move a thread to trash.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async moveToTrash(threadId) {
+    return this.request("move_to_trash", { threadId });
+  }
+
+  /**
+   * Archive a thread.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async moveToArchive(threadId) {
+    return this.request("move_to_archive", { threadId });
+  }
+
+  /**
+   * Move a thread to inbox.
+   * @param {string} threadId - The thread ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async moveToInbox(threadId) {
+    return this.request("move_to_inbox", { threadId });
+  }
+
+  /**
+   * List all user labels.
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async listLabels() {
+    return this.request("list_labels");
+  }
+
+  /**
+   * Add a label to a thread.
+   * @param {string} threadId - The thread ID
+   * @param {string} labelName - The label name
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async addLabel(threadId, labelName) {
+    return this.request("add_label", { threadId, labelName });
+  }
+
+  /**
+   * Remove a label from a thread.
+   * @param {string} threadId - The thread ID
+   * @param {string} labelName - The label name
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async removeLabel(threadId, labelName) {
+    return this.request("remove_label", { threadId, labelName });
+  }
+
+  /**
+   * Get mailbox statistics.
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async getMailboxStats() {
+    return this.request("get_mailbox_stats");
+  }
+}
+
+module.exports = new GmailBridge();
+module.exports.GmailBridge = GmailBridge;

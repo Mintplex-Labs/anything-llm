@@ -420,6 +420,139 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail Integration",
+        description:
+          "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. Requires a Google Apps Script deployment.",
+        multiUserWarning:
+          "Gmail integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
+        configuration: "Gmail Configuration",
+        deploymentId: "Deployment ID",
+        deploymentIdHelp:
+          "The deployment ID from your Google Apps Script web app",
+        apiKey: "API Key",
+        apiKeyHelp:
+          "The API key you configured in your Google Apps Script deployment",
+        configurationRequired:
+          "Please configure the Deployment ID and API Key to enable Gmail skills.",
+        configured: "Configured",
+        searchSkills: "Search skills...",
+        noSkillsFound: "No skills match your search.",
+        skillsConfiguration: "Gmail Skills",
+        categories: {
+          search: {
+            title: "Search & Read",
+            description: "Search and read emails from your Gmail inbox",
+          },
+          drafts: {
+            title: "Drafts",
+            description: "Create, edit, and manage email drafts",
+          },
+          send: {
+            title: "Send & Reply",
+            description: "Send emails and reply to threads immediately",
+          },
+          threads: {
+            title: "Thread Management",
+            description:
+              "Manage email threads - mark read/unread, archive, trash",
+          },
+          labels: {
+            title: "Labels",
+            description: "View and manage Gmail labels on threads",
+          },
+          account: {
+            title: "Account",
+            description: "View mailbox statistics and account information",
+          },
+        },
+        skills: {
+          search: {
+            title: "Search Emails",
+            description: "Search emails using Gmail query syntax",
+          },
+          readThread: {
+            title: "Read Thread",
+            description: "Read a full email thread by ID",
+          },
+          readMessage: {
+            title: "Read Message",
+            description: "Read a single email message by ID",
+          },
+          createDraft: {
+            title: "Create Draft",
+            description: "Create a new draft email",
+          },
+          createDraftReply: {
+            title: "Create Draft Reply",
+            description: "Create a draft reply to an existing thread",
+          },
+          updateDraft: {
+            title: "Update Draft",
+            description: "Update an existing draft email",
+          },
+          getDraft: {
+            title: "Get Draft",
+            description: "Retrieve a specific draft by ID",
+          },
+          listDrafts: {
+            title: "List Drafts",
+            description: "List all draft emails",
+          },
+          deleteDraft: {
+            title: "Delete Draft",
+            description: "Delete a draft email",
+          },
+          sendDraft: {
+            title: "Send Draft",
+            description: "Send an existing draft email",
+          },
+          sendEmail: {
+            title: "Send Email",
+            description: "Send an email immediately",
+          },
+          replyToThread: {
+            title: "Reply to Thread",
+            description: "Reply to an email thread immediately",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Mark a thread as read",
+          },
+          markUnread: {
+            title: "Mark Unread",
+            description: "Mark a thread as unread",
+          },
+          moveToTrash: {
+            title: "Move to Trash",
+            description: "Move a thread to trash",
+          },
+          moveToArchive: {
+            title: "Archive",
+            description: "Archive a thread",
+          },
+          moveToInbox: {
+            title: "Move to Inbox",
+            description: "Move a thread to inbox",
+          },
+          listLabels: {
+            title: "List Labels",
+            description: "List all Gmail labels",
+          },
+          addLabel: {
+            title: "Add Label",
+            description: "Add a label to a thread",
+          },
+          removeLabel: {
+            title: "Remove Label",
+            description: "Remove a label from a thread",
+          },
+          getMailboxStats: {
+            title: "Mailbox Stats",
+            description: "Get unread counts and mailbox statistics",
+          },
+        },
+      },
       default_skill:
         "By default, this skill is enabled, but you can disable it if you don't want it to be available to the agent.",
     },

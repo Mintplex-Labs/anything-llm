@@ -863,6 +863,21 @@ const System = {
       .catch(() => false);
   },
 
+  /**
+   * Checks if the gmail-agent skill is available.
+   * The gmail-agent skill is only available in single-user mode with proper configuration.
+   * @returns {Promise<boolean>}
+   */
+  isGmailAgentAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/gmail-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
