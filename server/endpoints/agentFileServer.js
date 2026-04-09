@@ -103,6 +103,8 @@ async function findFileSource(storageFilename, { user, isMultiUser }) {
     });
     if (fromChat) return fromChat;
 
+    if (isMultiUser) return null;
+
     return await findInScheduledJobRuns(storageFilename);
   } catch (error) {
     console.error("[findFileSource] Error:", error.message);
