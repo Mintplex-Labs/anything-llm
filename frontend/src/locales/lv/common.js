@@ -417,116 +417,128 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "GMail savienojums",
+        description:
+          "Ļauj savam pārstāvim interaktīvi strādāt ar Gmail – meklēt e-pastus, lasīt diskusijas, veidot projekte, nosūtīt e-pastus un pārvaldīt savu e-pasta kārtojumu. <a>Izlasiet dokumentāciju</a>.",
+        multiUserWarning:
+          "Gmail integrācija nav pieejama, kad izmantojat vairākus lietotājus, jo tas ir saistīts ar drošības apsvērumiem. Lūdzu, atslēgt vairāku lietotāju režimu, lai izmantotu šo funkciju.",
+        configuration: "Gmail konfigurācija",
+        deploymentId: "Ieraksta ID",
+        deploymentIdHelp:
+          "Jūsu Google Apps Script veidotās web lietojamās lietojamās ID",
+        apiKey: "API atslēga",
+        apiKeyHelp:
+          "API atslēga, ko jūs konfigurējāt savā Google Apps Script instalēšanā.",
+        configurationRequired:
+          'Lūdzu, konfigurējiet "Deployment ID" un API atslēgu, lai aktivizētu Gmail funkcijas.',
+        configured: "Ierobežots",
+        searchSkills: "Meklēšanas prasmes...",
+        noSkillsFound: "Neatrodītas atbilstības jūsu meklējumiem.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Meklē un lasiet e-pastus",
+            description:
+              "Meklējiet un lasiet e-pasta vēstnes no jūsu Gmail ievakā.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Pamatraksti e-pasta vēstījumiem",
+            description: "Izveidot, rediģēt un pārvaldīt e-pasta rakstus",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Sūtiet un atbildiet uz e-pasta vēstījumiem",
+            description:
+              "Nosūtiet e-pasta ziņojus un atbildiet uz diskusiju tēriņiem nekavējoties.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Aizgrieziet e-pasta sarunas",
+            description:
+              "Aizvadīt e-pasta sarunas – atzīmēt kā lasītu/neizlasītu, glabāt arhīvā, atrast atkritumos",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Integrācijas statistika",
+            description:
+              "Apspriediet pasta skapja statistiku un konta informāciju.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Meklē e-pastus",
+            description:
+              "Meklēt e-pasta vēstures, izmantojot Gmail meklēšanas sintaksi",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Izlasīt tēmu",
+            description: "Izlasiet pilnu e-pasta sarunu, izmantojot ID",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Izlasīt vēstījumu",
+            description: "Izlasiet vienu e-pasta vēstuli, norādot tās ID",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Izveidot izstrādi",
+            description: "Izveidot jaunu e-pasta rakstu",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Izveidot atbildes projekta",
+            description: "Izveidot atbildes projekta par esošu tematu.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Pārredzētās versijas",
+            description: "Atjaunini esošā e-pasta projekta",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Saņemiet projekta versiju",
+            description: "Atgūt specifisku dokumentu pēc identifikatora",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Pamatdarba projekti",
+            description:
+              "Izveidot sarakstu ar visiem izstrādātajiem e-pasta vēstījumiem",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Dzēst projekta versiju",
+            description: "Dzēst izstrādāto e-pastu",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Nosūtīt projekta versiju",
+            description: "Nosūtiet esošo e-pasta projekta vēstuli",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Sūtiet e-pastu",
+            description: "Sūtiet e-pastu nekavējoties",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Atbildēt uz tēmu",
+            description: "Atbildiet uz e-pasta sarunu nekavējoties",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Reads",
+            description: "Atzīmējiet tēmu kā lasītu.",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Mark – neizlasīts",
+            description: "Atzīmējiet tēmu kā neizlasītu.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Aizvest uz atkritumu konteineru",
+            description: "Pārvietojiet tēmu uz atkritumu failu",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Arhivs",
+            description: "Saglabāt tēmu",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: 'Pārvietot uz "Ienākošās"',
+            description: "Pārvietojiet tēmu uz e-pasta skatīšanās rindā",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Pasta kastes statistika",
+            description:
+              "Iesaļojiet neskaitītās e-pasta ziņojumu un e-pasta kastes statistikas",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Atsvēdināt e-pasta skatīšanās rindu",
+            description: "Efektīvs veids, kā saņemt e-pastus no Gmail konta",
           },
         },
       },

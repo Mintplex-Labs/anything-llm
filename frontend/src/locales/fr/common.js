@@ -414,116 +414,132 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Connecteur GMail",
+        description:
+          "Permettez à votre agent d'interagir avec Gmail : rechercher des e-mails, lire les conversations, rédiger des brouillons, envoyer des e-mails et gérer votre boîte de réception. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Gmail n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs pour utiliser cette fonctionnalité.",
+        configuration: "Configuration de Gmail",
+        deploymentId: "Identifiant de déploiement",
+        deploymentIdHelp:
+          "L'identifiant de déploiement de votre application web Google Apps Script",
+        apiKey: "Clé API",
+        apiKeyHelp:
+          "La clé API que vous avez configurée lors de votre déploiement de Google Apps Script",
+        configurationRequired:
+          "Veuillez configurer l'ID de déploiement et la clé API pour activer les fonctionnalités de Gmail.",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucune compétence ne correspond à votre recherche.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Rechercher et lire des e-mails",
+            description:
+              "Recherchez et lisez vos e-mails dans votre boîte de réception Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Modèles de courriels",
+            description: "Créer, modifier et gérer des brouillons d'e-mails.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Envoyer et répondre aux e-mails",
+            description:
+              "Envoyez des e-mails et répondez immédiatement aux discussions.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Gérer les conversations par e-mail",
+            description:
+              "Gérer les conversations par e-mail : marquer comme lu/non lu, archiver, supprimer",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statistiques d'intégration",
+            description:
+              "Consultez les statistiques de votre boîte de réception et les informations de votre compte.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Rechercher dans les e-mails",
+            description:
+              "Rechercher des e-mails en utilisant la syntaxe de recherche de Gmail",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Lire le fil de discussion",
+            description: "Lire l'intégralité d'une conversation par ID",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Lire le message",
+            description: "Lire un seul message de courriel par identifiant",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Créer une version préliminaire",
+            description: "Créez une nouvelle version de l'e-mail.",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Créer une réponse brouillon",
+            description:
+              "Rédiger une réponse préliminaire à un fil de discussion existant.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Mise à jour de la version préliminaire",
+            description: "Mettre à jour un brouillon de courriel existant",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Obtenir la version préliminaire",
+            description:
+              "Récupérer une version spécifique par son identifiant.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Propositions/Brouillons",
+            description: "Énumérer tous les courriels en brouillon.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Supprimer la version brouillon",
+            description: "Supprimer une brouillon de courriel",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Envoyer une version préliminaire",
+            description: "Envoyer une version existante d'un courriel",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Envoyer un e-mail",
+            description: "Envoyez un courriel immédiatement.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Répondre à la discussion",
+            description:
+              "Répondre immédiatement à une conversation par e-mail.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Indiquer qu'un fil de discussion a été lu",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Signaler comme non lu",
+            description: "Indiquer qu'un fil de discussion est non lu",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Envoyer à la poubelle",
+            description: "Déplacer un fil dans la corbeille d'ordures",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archives",
+            description: "Archiver une discussion",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Envoyer vers la boîte de réception",
+            description:
+              "Déplacer un fil de discussion dans la boîte de réception",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statistiques de la boîte de réception",
+            description:
+              "Obtenez le nombre d'emails non lus et les statistiques de votre boîte de réception.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Accéder à la boîte de réception",
+            description:
+              "Une méthode simple et efficace pour récupérer les e-mails de votre boîte de réception Gmail.",
           },
         },
       },

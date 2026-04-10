@@ -409,116 +409,125 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Kết nối GMail",
+        description:
+          "Cho phép đại lý của bạn tương tác với Gmail – tìm kiếm email, đọc các cuộc trò chuyện, soạn thảo bản nháp, gửi email và quản lý hộp thư. Đọc tài liệu hướng dẫn<a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Gmail không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Gmail",
+        deploymentId: "Mã triển khai",
+        deploymentIdHelp:
+          "Mã triển khai từ ứng dụng web Google Apps Script của bạn",
+        apiKey: "Khóa API",
+        apiKeyHelp:
+          "Khóa API mà bạn đã cấu hình trong quá trình triển khai Google Apps Script của mình.",
+        configurationRequired:
+          "Vui lòng cấu hình ID triển khai và khóa API để kích hoạt các tính năng của Gmail.",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả phù hợp với tìm kiếm của bạn.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Gmail của bạn.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Gửi và trả lời email",
+            description:
+              "Gửi email và trả lời các cuộc thảo luận ngay lập tức.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Quản lý các chuỗi email",
+            description:
+              "Quản lý các chuỗi email – đánh dấu là đã đọc/chưa đọc, lưu trữ, xóa",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Tìm kiếm trong các email",
+            description: "Tìm kiếm trong email bằng cú pháp truy vấn của Gmail",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Đọc chủ đề",
+            description: "Đọc toàn bộ chuỗi email theo ID",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Đọc tin nhắn",
+            description: "Đọc một tin nhắn email duy nhất theo ID",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Tạo bản nháp",
+            description: "Tạo một bản nháp email mới",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Tạo bản nháp trả lời",
+            description: "Tạo một bản dự thảo trả lời cho một chủ đề hiện có.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật bản nháp email hiện có",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Xem bản nháp",
+            description: "Lấy lại một bản nháp cụ thể theo ID",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Gửi email",
+            description: "Gửi một email ngay lập tức",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Trả lời cuộc thảo luận",
+            description: "Trả lời một chuỗi email ngay lập tức.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Đánh dấu một chủ đề đã đọc",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Đánh dấu là chưa đọc",
+            description: "Đánh dấu một chủ đề là chưa đọc",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Xóa",
+            description: 'Di chuyển một chủ đề vào thư mục "rác"',
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Thư mục lưu trữ",
+            description: "Lưu trữ một chủ đề",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Di chuyển đến mục Thùng thư",
+            description: "Di chuyển một chủ đề vào hộp thư mục",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Thống kê hộp thư",
+            description:
+              "Hiển thị số lượng email chưa đọc và thống kê hộp thư.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Truy cập hộp thư",
+            description: "Cách đơn giản để lấy các email trong hộp thư Gmail.",
           },
         },
       },

@@ -424,116 +424,134 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Conector de GMail",
+        description:
+          "Permita que su agente interactúe con Gmail: buscar correos electrónicos, leer hilos, redactar borradores, enviar correos electrónicos y gestionar su bandeja de entrada. <a>Consulte la documentación</a>.",
+        multiUserWarning:
+          "La integración con Gmail no está disponible en el modo para múltiples usuarios por razones de seguridad. Para utilizar esta función, por favor, desactive el modo para múltiples usuarios.",
+        configuration: "Configuración de Gmail",
+        deploymentId: "ID de despliegue",
+        deploymentIdHelp:
+          "El ID de implementación de tu aplicación web de Google Apps Script",
+        apiKey: "Clave API",
+        apiKeyHelp:
+          "La clave de API que configuraste en la implementación de tu Google Apps Script.",
+        configurationRequired:
+          "Por favor, configure el ID de implementación y la clave de API para habilitar las funciones de Gmail.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de búsqueda...",
+        noSkillsFound: "No se encontraron coincidencias con tu búsqueda.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Buscar y leer correos electrónicos",
+            description:
+              "Busque y lea correos electrónicos de su bandeja de entrada de Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Plantillas de correos electrónicos",
+            description:
+              "Crea, edita y gestiona borradores de correo electrónico.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Enviar y responder a correos electrónicos",
+            description:
+              "Envía correos electrónicos y responde a las conversaciones de inmediato.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Gestionar hilos de correo electrónico",
+            description:
+              "Gestionar hilos de correo electrónico: marcar como leído/no leído, archivar, eliminar",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Estadísticas de integración",
+            description:
+              "Visualice estadísticas de la bandeja de entrada y información de la cuenta.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Buscar correos electrónicos",
+            description:
+              "Busque correos electrónicos utilizando la sintaxis de consulta de Gmail.",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Leer el hilo",
+            description:
+              "Lee la conversación completa de correo electrónico, ordenada por ID.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Leer mensaje",
+            description:
+              "Leer un solo mensaje de correo electrónico mediante su ID.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Crear borrador",
+            description: "Crea un nuevo borrador de correo electrónico.",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Crear respuesta preliminar",
+            description:
+              "Cree una respuesta preliminar a un hilo de discusión existente.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Versión actualizada del borrador",
+            description:
+              "Actualizar un borrador de correo electrónico existente",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Obtener borrador",
+            description: "Recuperar un borrador específico mediante su ID.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Borradores",
+            description: "Enumera todos los correos electrónicos en proyecto.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Eliminar borrador",
+            description: "Eliminar un borrador de correo electrónico",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Enviar borrador",
+            description: "Enviar una versión previa de un correo electrónico.",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Enviar correo electrónico",
+            description: "Envía un correo electrónico inmediatamente.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Responder a la discusión",
+            description:
+              "Responder a una conversación por correo electrónico de inmediato.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Indicar que un hilo ha sido leído.",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Marcar como no leído",
+            description: "Indicar que un hilo está sin leer.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Mover a la papelera",
+            description: "Mover un hilo a la papelera",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archivo",
+            description: "Archivar un hilo de conversación",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Mover a la bandeja de entrada",
+            description: "Mover un hilo a la bandeja de entrada",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Estadísticas de la bandeja de entrada",
+            description:
+              "Obtén el número de correos no leídos y estadísticas de la bandeja de entrada.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Acceder a la bandeja de entrada",
+            description:
+              "Una forma sencilla de acceder a los correos electrónicos de la bandeja de entrada de Gmail.",
           },
         },
       },

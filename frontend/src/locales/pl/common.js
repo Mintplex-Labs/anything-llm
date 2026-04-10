@@ -418,116 +418,132 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Połączenie z GMail",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Gmail – wyszukiwanie wiadomości e-mail, czytanie wątków, tworzenie projektów, wysyłanie wiadomości e-mail oraz zarządzanie skrzynką odbiorczą. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Gmailem nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby korzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja Gmaila",
+        deploymentId: "Identyfikator wdrażania",
+        deploymentIdHelp:
+          "ID aplikacji webowej z Google Apps Script, której używasz",
+        apiKey: "Klucz API",
+        apiKeyHelp:
+          "Klucz API, który skonfigurowałeś w swoim projekcie Google Apps Script",
+        configurationRequired:
+          "Prosimy o skonfigurowanie identyfikatora wdrażania i klucza API, aby włączyć funkcje związane z Gmail.",
+        configured: "Skonfigurowany",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Wyszukaj i przeczytaj wiadomości e-mail",
+            description:
+              "Wyszukaj i przeczytaj e-maile z swojej skrzynki odbiorczej Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Proponowane wiadomości e-mail",
+            description: "Twórz, edytuj i zarządzaj wersjami e-maili.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Wysyłanie i odpowiadanie na e-maile",
+            description:
+              "Wysyłaj e-maile i odpowiadaj na dyskusje natychmiast.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Zarządzaj wątkami wiadomości e-mail",
+            description:
+              "Zarządzaj wątkami e-maili – oznaczaj jako przeczytane/nieprzeczytane, archiwizuj, usuwaj",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statystyki dotyczące integracji",
+            description:
+              "Przejrzyj statystyki skrzynki pocztowej oraz informacje dotyczące konta.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Wyszukaj wiadomości",
+            description:
+              "Wyszukaj wiadomości e-mail, używając składni zapytań w Gmail.",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Przeczytaj wątek",
+            description:
+              "Przeczytaj pełną sekcję korespondencji e-mail według identyfikatora.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Przeczytaj wiadomość",
+            description:
+              "Przeanalizuj pojedynczą wiadomość e-mail, korzystając z jej identyfikatora.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Utwórz wersję roboczą",
+            description: "Utwórz nowy projekt wiadomości e-mail",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Stwórz wersję odpowiedzi",
+            description: "Stwórz wstępną odpowiedź do istniejącego wątku.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Aktualizacja wersji roboczej",
+            description: "Zaktualizuj istniejący projekt e-maila",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Otrzymaj wersję roboczą",
+            description:
+              "Pobierz konkretny wers dokumentu po jego identyfikatorze.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Proponowane wersje",
+            description: "Wyświetl wszystkie wersje e-maili.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Usuń wersję roboczą",
+            description: "Usuń wersję roboczą wiadomości e-mail",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Wyślij wersję roboczą",
+            description: "Wyślij istniejący projekt wiadomości e-mail",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Wyślij e-mail",
+            description: "Wyślij e-mail natychmiast",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Odpowiedź na wątek",
+            description: "Odpowiedz na wątek wiadomości e-mail natychmiast",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Oznacz wątek jako przeczytany",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Oznacz jako nieprzeczytane",
+            description: "Oznacz wątek jako nieprzeczytany",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Przenieś do kosza",
+            description: "Przenieś wątek do kosza",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archiwum",
+            description: "Zarchiwizuj wątek",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: 'Przenieś do folderu "Otrzymane"',
+            description: "Przenieś wątek do folderu „Ostatnie wiadomości”",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statystyki skrzynki pocztowej",
+            description:
+              "Uzyskaj informacje o liczbie nieprzeczytanych wiadomości oraz statystyki dotyczące skrzynki pocztowej.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Otwórz skrzynkę odbiorczą",
+            description:
+              "Sprawne rozwiązanie, dzięki któremu można łatwo pobierać wiadomości z skrzynki odbiorczej z Gmaila.",
           },
         },
       },

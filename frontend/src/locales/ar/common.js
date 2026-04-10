@@ -408,116 +408,128 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "موصل Gmail",
+        description:
+          "اسمح لمسؤولك بالتفاعل مع Gmail - للبحث عن رسائل البريد الإلكتروني، وقراءة المحادثات، وكتابة المسودات، وإرسال رسائل البريد الإلكتروني، وإدارة صندوق الوارد الخاص بك. <a>اقرأ الوثائق</a>.",
+        multiUserWarning:
+          "لا تتوفر تكامل Gmail في الوضع متعدد المستخدمين لأسباب تتعلق بالأمان. يرجى تعطيل الوضع متعدد المستخدمين لاستخدام هذه الميزة.",
+        configuration: "إعدادات Gmail",
+        deploymentId: "رقم التوزيع",
+        deploymentIdHelp:
+          "معرّف النشر من تطبيق الويب الخاص بك في Google Apps Script",
+        apiKey: "مفتاح واجهة برمجة التطبيقات",
+        apiKeyHelp:
+          "مفتاح واجهة برمجة التطبيقات (API) الذي قمت بتكوينه في تطبيق Google Apps Script الخاص بك.",
+        configurationRequired:
+          "يرجى تكوين مُعرّف النشر والمفتاح الخاص لواجهة برمجة التطبيقات لتمكين ميزات Gmail.",
+        configured: "تم التكوين",
+        searchSkills: "مهارات البحث...",
+        noSkillsFound: "لا توجد مهارات تتطابق مع بحثك.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "البحث عن الرسائل وقراءتها",
+            description:
+              "ابحث و اقرأ رسائل البريد الإلكتروني من صندوق بريدك الوارد في Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "نماذج رسائل بريد إلكتروني",
+            description: "إنشاء، وتحرير، وإدارة مسودات الرسائل الإلكترونية.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "إرسال واستقبال الرسائل الإلكترونية",
+            description: "أرسل رسائل بريد إلكتروني واستجب للمناقشات على الفور.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "إدارة سلاسل رسائل البريد الإلكتروني",
+            description:
+              'إدارة سلاسل رسائل البريد الإلكتروني: وضع علامة "قرأ/لم يقرأ"، والاحتفاظ بها، وحذفها.',
           },
           account: {
-            title: null,
-            description: null,
+            title: "إحصائيات التكامل",
+            description: "عرض إحصائيات صندوق البريد ومعلومات الحساب.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "البحث في رسائل البريد الإلكتروني",
+            description:
+              "ابحث في رسائل البريد الإلكتروني باستخدام صيغة استعلام Gmail.",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "اقرأ الموضوع",
+            description:
+              "اقرأ سلسلة رسائل بريد إلكتروني كاملة من خلال معرف المستخدم (ID).",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "اقرأ الرسالة",
+            description:
+              "اقرأ رسالة بريد إلكتروني واحدة بناءً على رقم التعريف.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "إنشاء مسودة",
+            description: "إنشاء رسالة بريد إلكتروني جديدة.",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "إنشاء رد مقترح",
+            description: "قم بإنشاء رد مقترح على موضوع قائم.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "تحديث المسودة",
+            description: "تحديث رسالة بريد إلكتروني مسودة موجودة.",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "الحصول على النسخة الأولية",
+            description: "استرجاع مسودة محددة باستخدام رقم التعريف.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "قائمة المسودات",
+            description: "اعرض جميع رسائل البريد الإلكتروني المقترحة.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "حذف المسودة",
+            description: "حذف رسالة بريد إلكتروني مسودة.",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "إرسال مسودة",
+            description: "أرسل نسخة من رسالة بريد إلكتروني موجودة.",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "إرسال بريد إلكتروني",
+            description: "أرسل بريدًا إلكترونيًا على الفور.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "الرد على الموضوع",
+            description: "الرد على سلسلة رسائل البريد الإلكتروني على الفور.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "مارك ريد",
+            description: "ضع علامة على الموضوع بأنه تمت قراءته.",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: 'وضع علامة "لم يقرأ"',
+            description: 'ضع علامة على الموضوع ليكون "غير مقروء".',
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "إرسال إلى سلة المهملات",
+            description: "نقل موضوع إلى سلة المهملات",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "أرشيف",
+            description: "أرشفة الموضوع",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "انتقل إلى صندوق الوارد",
+            description: "انقل موضوعًا إلى صندوق الوارد",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "إحصائيات صندوق البريد",
+            description:
+              "احصل على عدد الرسائل غير المقروء وإحصائيات صندوق البريد.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "الوصول إلى صندوق الوارد",
+            description:
+              "طريقة مبسطة للحصول على رسائل البريد الإلكتروني الواردة من حساب Gmail.",
           },
         },
       },

@@ -411,116 +411,126 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "GMail-verbinding",
+        description:
+          "Maak het mogelijk voor uw agent om met Gmail te communiceren: e-mails zoeken, threads lezen, e-mails opstellen, e-mails versturen en uw inbox beheren. <a>Bekijk de documentatie</a>.",
+        multiUserWarning:
+          "De integratie met Gmail is niet beschikbaar in de modus voor meerdere gebruikers, om veiligheidsredenen. Schakel de modus voor meerdere gebruikers uit om deze functie te gebruiken.",
+        configuration: "Gmail-instellingen",
+        deploymentId: "Identificatiecode voor de implementatie",
+        deploymentIdHelp: "De deployment-ID van je Google Apps Script web-app",
+        apiKey: "API-sleutel",
+        apiKeyHelp:
+          "De API-sleutel die u hebt geconfigureerd in uw Google Apps Script-implementatie.",
+        configurationRequired:
+          "Configureer de Deployment ID en de API-sleutel om de Gmail-functionaliteit te activeren.",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound: "Geen resultaten die overeenkomen met uw zoekopdracht.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Zoeken en e-mails lezen",
+            description: "Zoek en lees e-mails uit uw Gmail inbox.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Voorbeeld-e-mails",
+            description: "Maak, bewerk en beheer e-mailontwerpen.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Verzenden en antwoorden op e-mails",
+            description:
+              "Verzend e-mails en reageer direct op discussieberichten.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Beheer e-mailconversaties",
+            description:
+              "Beheer e-mailconversaties – markeer als gelezen/niet gelezen, archiveren, verwijderen",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statistieken over integratie",
+            description:
+              "Bekijk statistieken en accountinformatie van uw e-mail.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Zoek naar e-mails",
+            description:
+              "Zoek naar e-mails met behulp van de zoeksyntax van Gmail.",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Lees het gesprek",
+            description: "Lees het volledige e-mailgesprek, gesorteerd op ID.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Lees bericht",
+            description: "Lees een enkel e-mailbericht op basis van een ID.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Maak een concept",
+            description: "Maak een nieuwe concept-e-mail",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Maak een concept-antwoord",
+            description: "Maak een concept-antwoord op een bestaand gesprek.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Aanpassen: Ontwerp",
+            description: "Pas een bestaand concept-e-mail aan.",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Bekijk concept",
+            description: "Haal een specifiek ontwerp op, gebaseerd op zijn ID.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Ontwerpen",
+            description: "Maak een lijst van alle concept-e-mails.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Verwijder concept",
+            description: "Verwijder een concept-e-mail",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Verzend concept",
+            description: "Verzend een bestaand e-mailconcept.",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Stuur e-mail",
+            description: "Stuur onmiddellijk een e-mail.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Reageer op dit gesprek",
+            description: "Reageer onmiddellijk op een e-mailthread.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Markeer een draad als gelezen",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Mark ongelezen",
+            description: "Markeer een bericht als ongelezen.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Verplaatsen naar prullenbak",
+            description: "Verplaats een onderwerp naar de prullenbak",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archief",
+            description: "Een gesprek archiveren",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Verplaats naar inbox",
+            description: "Verplaats een bericht naar de inbox",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statistieken van de e-mail inbox",
+            description:
+              "Bekijk het aantal ongelezen berichten en statistieken over uw e-mailbox.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Open de inbox",
+            description:
+              "Een eenvoudige manier om de e-mails in uw inbox van Gmail te bekijken.",
           },
         },
       },

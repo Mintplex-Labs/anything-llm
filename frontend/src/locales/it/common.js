@@ -415,116 +415,133 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Connettore per GMail",
+        description:
+          "Permetti al tuo agente di interagire con Gmail: cercare email, leggere conversazioni, creare bozze, inviare email e gestire la tua casella di posta. <a>Consulta la documentazione</a>.",
+        multiUserWarning:
+          "L'integrazione con Gmail non è disponibile in modalità multi-utente per motivi di sicurezza. Per utilizzare questa funzione, è necessario disattivare la modalità multi-utente.",
+        configuration: "Configurazione di Gmail",
+        deploymentId: "ID di distribuzione",
+        deploymentIdHelp:
+          "L'ID di implementazione della tua applicazione web Google Apps Script",
+        apiKey: "Chiave API",
+        apiKeyHelp:
+          "La chiave API che hai configurato nella tua implementazione di Google Apps Script",
+        configurationRequired:
+          "Si prega di configurare l'ID di distribuzione e la chiave API per abilitare le funzionalità di Gmail.",
+        configured: "Configurato",
+        searchSkills: "Competenze di ricerca...",
+        noSkillsFound:
+          "Non sono state trovate corrispondenze per la tua ricerca.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Cerca e leggi le email",
+            description:
+              "Cerca e leggi le email dalla tua casella di posta Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Bozze di email",
+            description: "Creare, modificare e gestire bozze di email.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Invia e rispondi alle e-mail",
+            description:
+              "Invia e-mail e rispondi immediatamente ai thread di discussione.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Gestire le conversazioni via email",
+            description:
+              "Gestire le conversazioni via email: contrassegnare come lette/non lette, archiviare, eliminare",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statistiche sull'integrazione",
+            description:
+              "Visualizza le statistiche della casella di posta e le informazioni sull'account.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Cerca email",
+            description:
+              "Cerca email utilizzando la sintassi di ricerca di Gmail",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Leggi la discussione",
+            description:
+              "Leggi l'intera conversazione via email, ordinata per ID.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Leggi il messaggio",
+            description:
+              "Leggi un singolo messaggio di posta elettronica tramite il suo ID.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Crea una bozza",
+            description: "Crea una nuova bozza di e-mail",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Crea una bozza di risposta",
+            description: "Crea una bozza di risposta a un thread esistente.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Versione aggiornata",
+            description: "Aggiornare una bozza di email esistente",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Visualizza la bozza",
+            description: "Recupera una bozza specifica utilizzando l'ID.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Proposte",
+            description: "Elenca tutte le bozze di email.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Elimina bozza",
+            description: "Elimina una bozza di e-mail",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Invia versione bozze",
+            description: "Invia una bozza di email esistente.",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Invia e-mail",
+            description: "Invia un'e-mail immediatamente.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Rispondere al thread",
+            description:
+              "Rispondere immediatamente a una conversazione via email.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Segna un thread come letto",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Segna come non letto",
+            description: "Segna un thread come non letto.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Elimina",
+            description: "Sposta un thread nel cestino.",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archivio",
+            description: "Archivia la conversazione",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Sposta nella cartella di posta in arrivo",
+            description:
+              "Sposta la conversazione nella casella di posta in arrivo.",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statistiche della casella di posta elettronica",
+            description:
+              "Ottieni il numero di email non lette e le statistiche della casella di posta.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Accedi alla casella di posta",
+            description:
+              "Un modo semplice ed efficiente per accedere alle email nella casella di posta di Gmail.",
           },
         },
       },

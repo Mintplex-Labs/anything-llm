@@ -412,116 +412,125 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Gmail-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Gmail – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrere din indbakke. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Gmail er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Gmail",
+        deploymentId: "Implementerings-ID",
+        deploymentIdHelp: "Deployment-ID'en fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Venligst konfigurer Deployment ID og API-nøglen for at aktivere Gmail-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Gmail-indbakke",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Send og svar på e-mails",
+            description: "Send e-mails og svar på tråde øjeblikkeligt",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Administrer e-mailtråde",
+            description:
+              "Administrer e-mailtråde – marker som læst/ulæst, arkiver, slet",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statistik for integration",
+            description:
+              "Se statistik for din e-postindbakke og kontoinformation.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Gmail's forespørgselssprog",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Læs tråd",
+            description: "Læs hele e-mailtråden sorteret efter ID",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Læs besked",
+            description: "Læs en enkelt e-mailbesked baseret på ID",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Opret udkast",
+            description: "Opret et nyt udkast til en e-mail",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Opret udkast",
+            description: "Opret et udkast til et svar på en eksisterende tråd.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Få udkast",
+            description: "Hent en bestemt udkast baseret på ID",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Slet udkast",
+            description: "Slet et udkast til e-mail",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Send e-mail",
+            description: "Send en e-mail med det samme",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Svar på tråd",
+            description: "Svar på en e-mailtråd med det samme",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Marker en tråd som læst",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Marker som ikke læst",
+            description: "Marker en tråd som ikke læst",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Flyt til papirkurven",
+            description: "Flyt en tråd til papirkurven",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Arkiv",
+            description: "Arkiver tråden",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Flyt til indbakken",
+            description: "Flyt en tråd til indbakken",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statistik for postkasse",
+            description:
+              "Få oplysninger om antallet af ulæste beskeder og statistik for din e-mailindbakke.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Åbn indbakken",
+            description:
+              "En effektiv måde at hente e-mails fra din Gmail-indbakke",
           },
         },
       },

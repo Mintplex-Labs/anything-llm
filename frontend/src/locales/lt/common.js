@@ -423,116 +423,126 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "GMail sąsaja",
+        description:
+          "Įgalinkite savo agentą, kad galėtų interaktuoti su Gmail – ieškoti pašto žinučių, skaityti pokalbius, kurti projekte, siųsti pašto žinučių ir valdyti savo pašto dėžę. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Gmail“ integracija negali būti naudojama kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "Gmail konfigūracija",
+        deploymentId: "Įrenginio ID",
+        deploymentIdHelp: "Jūsų „Google Apps Script“ svetainės programos ID",
+        apiKey: "API raktas",
+        apiKeyHelp:
+          "„API“ raktas, kurį konfigūruojate savo „Google Apps Script“ programoje.",
+        configurationRequired:
+          "Prašome nustatyti „Deployment ID“ ir API raktą, kad būtų įgalintos Gmail funkcijos.",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškos kriterijams.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Paieškos ir skaitymas el. paštą",
+            description:
+              "Paieškokite ir skaitykite el. laiimus iš savo „Gmail“ sąrašo",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Pagalbos el. pašto rašto projektai",
+            description: "Sukurkite, redaguo, ir valdykite el. pašto rašinius.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Siųstis ir atsakyti el. pašto žinutėms",
+            description:
+              "Siųkite el. pašto žinutes ir atsakykite į diskusijų siužus nedelsiant.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Valdykite el. pašto žinias",
+            description:
+              "Valdykite el. pašto žinias – pažymėkite kaip „perskaityta“ arba „neperskaityta“, archyvuokite, ištrinkite.",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Integracijos statistika",
+            description:
+              "Peržiūrėkite pašto dėžės statistikos ir sąskaitos informaciją.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Paieškos el. paštu",
+            description:
+              "Paieškokite el. laiimus naudodami Gmail paieškos sintaksę",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Peržiūrėti temą",
+            description: "Peržiūrėkite visą el. pašto seką pagal ID.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Peržiūrėti pranešimą",
+            description: "Peržiūrėkite vieną el. pašto žinutę pagal ID",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Sukurti projekto variantą",
+            description: "Sukurkite naują el. pašto projekto variantą",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Sukurti projekto atsakymą",
+            description: "Sukurkite atsakinimo projektą esamai temai.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Paskaitos projekto atnaujinimas",
+            description: "Atnaujinti esamą el. pašto projekto",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Gaukite projekto variantą",
+            description: "Gauti konkretų variantą pagal ID",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Paskaitų planas",
+            description: "Įrašykite visus suvestus el. pašto projektus",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Ištrinkti projekto",
+            description: "Ištrinkite projekto el. laišką",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Siųstis projekto",
+            description: "Siųstis esamą el. pašto projekto",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Siųstis el. pašto laišką",
+            description: "Nurodyti el. pašto žinutę nedelsiant",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Atsakymas į temą",
+            description: "Atsakyti į el. pašto žinią nedelsiant",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Markas Redas",
+            description: "Žymkite temą kaip perskaitytą",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Žymėti kaip neperskaityta",
+            description: "Žymkite temą kaip neperskaitytą",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Perkelti į šiukšlių sąvartą",
+            description: "Perkelkite temą į šiukšlių sąsandynę",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archivų",
+            description: "Įrašyti temą į archyvą",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Perkelkite į „Įvesalą“",
+            description: "Perkelti temą į pašto dėžę",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Pašto dėžės statistika",
+            description:
+              "Gaukite neatsakytų žinučių skaičių ir pašto dėžės statistikos duomenis.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Peržiūrėti laiškų dėžę",
+            description: "Efektyvus būdas gauti el. laiškus iš „Gmail“ sąrašo",
           },
         },
       },

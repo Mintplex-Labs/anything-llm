@@ -418,116 +418,131 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Gmail-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, mit Gmail zu interagieren: E-Mails durchsuchen, E-Mail-Threads lesen, Entwürfe erstellen, E-Mails senden und Ihren Posteingang verwalten. <a>Lesen Sie die Dokumentation</a>.",
+        multiUserWarning:
+          "Die Integration mit Gmail ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion zu nutzen.",
+        configuration: "Gmail-Konfiguration",
+        deploymentId: "Deployment-ID",
+        deploymentIdHelp:
+          "Die Bereitstellungs-ID Ihrer Google Apps Script Webanwendung",
+        apiKey: "API-Schlüssel",
+        apiKeyHelp:
+          "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
+        configurationRequired:
+          "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Gmail-Funktionen zu aktivieren.",
+        configured: "Konfiguriert",
+        searchSkills: "Suchfähigkeiten...",
+        noSkillsFound: "Keine Ergebnisse zu Ihrer Suche.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Nachrichten suchen und lesen",
+            description:
+              "Suchen und lesen Sie E-Mails aus Ihrem Gmail-Posteingang.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Entwurf-E-Mails",
+            description:
+              "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen",
           },
           send: {
-            title: null,
-            description: null,
+            title: "E-Mails senden und beantworten",
+            description:
+              "Senden Sie E-Mails und antworten Sie sofort auf Nachrichten.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "E-Mail-Verläufe verwalten",
+            description:
+              "E-Mail-Threads verwalten – als gelesen/unleserlich markieren, archivieren, in den Papierkorb verschieben",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Statistiken zur Integration",
+            description:
+              "Anzeigen von Postfachstatistiken und Kontoinformationen",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "E-Mails durchsuchen",
+            description: "E-Mails mit der Gmail-Suchsyntax durchsuchen",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Den Thread lesen",
+            description:
+              "Lesen Sie den vollständigen E-Mail-Thread anhand der ID",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Nachricht lesen",
+            description: "Eine einzelne E-Mail-Nachricht anhand ihrer ID lesen",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Entwurf erstellen",
+            description: "Erstelle eine neue Entwurf-E-Mail",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Entwurf für Antwort erstellen",
+            description:
+              "Erstellen Sie eine Entwurfsantwort an ein bestehendes Thema.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Entwurf aktualisieren",
+            description: "Eine bestehende Entwurf-E-Mail aktualisieren",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Entwurf anfordern",
+            description:
+              "Eine bestimmte Entwurfversion anhand ihrer ID abrufen.",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Entwürfe",
+            description: "Liste alle Entwurf-E-Mails auf",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Entwurf löschen",
+            description: "Einen Entwurf für eine E-Mail löschen",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Entwurf senden",
+            description: "Senden Sie eine bestehende Entwurf-E-Mail",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "E-Mail senden",
+            description: "Senden Sie sofort eine E-Mail.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Antwort auf den Thread",
+            description: "Antworten Sie umgehend auf einen E-Mail-Thread.",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Mark Read",
+            description: "Markiere einen Thread als gelesen.",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Als nicht gelesen markieren",
+            description: "Markiere einen Thread als nicht gelesen.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "In den Papierkorb verschieben",
+            description: "Ein Thema in den Papierkorb verschieben",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Archiv",
+            description: "Thread archivieren",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: "Zum Posteingang verschieben",
+            description: "Einen Thread in den Posteingang verschieben",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Statistiken für E-Mail-Postfach",
+            description:
+              "Erhalten Sie Informationen über die Anzahl nicht gelesener E-Mails und Statistiken für Ihr Postfach.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "E-Mail-Postfach öffnen",
+            description:
+              "Ein einfacher und effizienter Weg, um E-Mails aus dem Gmail-Posteingang zu erhalten.",
           },
         },
       },

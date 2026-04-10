@@ -410,116 +410,131 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: null,
-        description: null,
-        multiUserWarning: null,
-        configuration: null,
-        deploymentId: null,
-        deploymentIdHelp: null,
-        apiKey: null,
-        apiKeyHelp: null,
-        configurationRequired: null,
-        configured: null,
-        searchSkills: null,
-        noSkillsFound: null,
+        title: "Подключение к GMail",
+        description:
+          "Предоставьте своему агенту возможность взаимодействовать с Gmail: искать письма, читать цепочки сообщений, составлять черновики, отправлять письма и управлять своей почтой. <a>Ознакомьтесь с документацией</a>.",
+        multiUserWarning:
+          "Интеграция с Gmail недоступна в многопользовательском режиме по соображениям безопасности. Пожалуйста, отключите многопользовательский режим, чтобы использовать эту функцию.",
+        configuration: "Настройка Gmail",
+        deploymentId: "Идентификатор развертывания",
+        deploymentIdHelp:
+          "Идентификатор развертывания вашего веб-приложения Google Apps Script",
+        apiKey: "Ключ API",
+        apiKeyHelp:
+          "Ключ API, который вы настроили в своем проекте Google Apps Script",
+        configurationRequired:
+          "Пожалуйста, настройте идентификатор развертывания и API-ключ, чтобы активировать функции Gmail.",
+        configured: "Настроен",
+        searchSkills: "Навыки поиска...",
+        noSkillsFound: "Не найдено ни одного совпадения с вашим запросом.",
         categories: {
           search: {
-            title: null,
-            description: null,
+            title: "Поиск и чтение электронных писем",
+            description:
+              "Найдите и прочитайте электронные письма из вашей почты Gmail.",
           },
           drafts: {
-            title: null,
-            description: null,
+            title: "Черновики электронных писем",
+            description:
+              "Создавайте, редактируйте и управляйте черновиками электронных писем.",
           },
           send: {
-            title: null,
-            description: null,
+            title: "Отправка и ответы на электронные письма",
+            description:
+              "Отправляйте электронные письма и оперативно отвечайте на сообщения в обсуждениях.",
           },
           threads: {
-            title: null,
-            description: null,
+            title: "Управление цепочками писем",
+            description:
+              "Управление цепочками электронных писем: пометка как прочитанные/непрочитанные, архивирование, удаление",
           },
           account: {
-            title: null,
-            description: null,
+            title: "Статистика интеграции",
+            description:
+              "Просмотрите статистику использования почтового ящика и информацию об учетной записи.",
           },
         },
         skills: {
           search: {
-            title: null,
-            description: null,
+            title: "Поиск в электронных письмах",
+            description: "Искать письма, используя синтаксис запросов Gmail",
           },
           readThread: {
-            title: null,
-            description: null,
+            title: "Прочитать тему",
+            description:
+              "Просмотрите всю цепочку электронных писем, отсортированную по идентификатору.",
           },
           readMessage: {
-            title: null,
-            description: null,
+            title: "Прочитать сообщение",
+            description:
+              "Прочитать одно электронное письмо по его идентификатору.",
           },
           createDraft: {
-            title: null,
-            description: null,
+            title: "Создать черновик",
+            description: "Создайте новый черновик электронного письма",
           },
           createDraftReply: {
-            title: null,
-            description: null,
+            title: "Создать черновик ответа",
+            description:
+              "Составьте черновик ответа к существующему обсуждению.",
           },
           updateDraft: {
-            title: null,
-            description: null,
+            title: "Обновленная версия проекта",
+            description: "Обновить существующий черновик электронного письма",
           },
           getDraft: {
-            title: null,
-            description: null,
+            title: "Получить черновик",
+            description: "Получить конкретный черновик по его идентификатору",
           },
           listDrafts: {
-            title: null,
-            description: null,
+            title: "Черновики",
+            description: "Перечислите все черновики электронных писем.",
           },
           deleteDraft: {
-            title: null,
-            description: null,
+            title: "Удалить черновик",
+            description: "Удалить черновик письма",
           },
           sendDraft: {
-            title: null,
-            description: null,
+            title: "Отправить черновик",
+            description: "Отправить существующий черновик электронного письма",
           },
           sendEmail: {
-            title: null,
-            description: null,
+            title: "Отправить электронное письмо",
+            description: "Немедленно отправьте электронное письмо.",
           },
           replyToThread: {
-            title: null,
-            description: null,
+            title: "Ответить на тему",
+            description: "Ответить на цепочку писем немедленно",
           },
           markRead: {
-            title: null,
-            description: null,
+            title: "Марк Рид",
+            description: "Отметьте тему как прочитанную.",
           },
           markUnread: {
-            title: null,
-            description: null,
+            title: "Отмечено как непрочитанное",
+            description: "Отметьте тему как непрочитанную.",
           },
           moveToTrash: {
-            title: null,
-            description: null,
+            title: "Переместить в корзину",
+            description: "Переместить тему в корзину",
           },
           moveToArchive: {
-            title: null,
-            description: null,
+            title: "Архив",
+            description: "Архивировать тему",
           },
           moveToInbox: {
-            title: null,
-            description: null,
+            title: 'Переместить в папку "Входящие"',
+            description: "Переместить тему в папку «Входящие»",
           },
           getMailboxStats: {
-            title: null,
-            description: null,
+            title: "Статистика почтового ящика",
+            description:
+              "Получите информацию о количестве непрочитанных писем и статистику почтового ящика.",
           },
           getInbox: {
-            title: null,
-            description: null,
+            title: "Открыть входящие",
+            description:
+              "Удобный способ получения писем из почтового ящика Gmail.",
           },
         },
       },
