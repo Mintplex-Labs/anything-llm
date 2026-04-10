@@ -566,7 +566,34 @@ const TRANSLATIONS = {
       "Klucze API umożliwiają dostęp do instancji AnythingLLM i zarządzanie nią.",
     link: "Przeczytaj dokumentację API",
     generate: "Generuj nowy klucz API",
+    empty: "Nie znaleziono kluczy API",
+    actions: "Akcje",
+    messages: {
+      error: "Błąd: {{error}}",
+    },
+    modal: {
+      title: "Utwórz nowy klucz API",
+      cancel: "Anuluj",
+      close: "Zamknij",
+      create: "Utwórz klucz API",
+      helper:
+        "Po utworzeniu klucz API może być używany do programowego dostępu do tej instancji AnythingLLM i jej konfiguracji.",
+      name: {
+        label: "Nazwa",
+        placeholder: "Integracja produkcyjna",
+        helper:
+          "Opcjonalne. Użyj przyjaznej nazwy, aby później łatwo rozpoznać ten klucz.",
+      },
+    },
+    row: {
+      copy: "Kopiuj klucz API",
+      copied: "Skopiowano",
+      unnamed: "--",
+      deleteConfirm:
+        "Czy na pewno chcesz dezaktywować ten klucz API?\nPo tej operacji nie będzie już można go używać.\n\nTej akcji nie można cofnąć.",
+    },
     table: {
+      name: "Nazwa",
       key: "Klucz API",
       by: "Utworzony przez",
       created: "Utworzony o",
@@ -1132,9 +1159,6 @@ const TRANSLATIONS = {
         description:
           "Wklej token API, który otrzymałeś od @BotFather, i wybierz domyślny przestrzeń roboczą, z której Twój bot będzie mógł komunikować się.",
         "bot-token": "Token Bot",
-        "default-workspace": "Domyślne miejsce pracy",
-        "no-workspace":
-          "Brak dostępnych miejsc pracy. Nowe zostanie utworzone.",
         connecting: "Połączenie...",
         "connect-bot": "Bot łączący",
       },
@@ -1175,20 +1199,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
     },
     users: {
-      "pending-title": "Czekając na zatwierdzenie",
       "pending-description":
         "Użytkownicy, którzy czekają na weryfikację. Dopasuj kod parowania, który znajduje się tutaj, z tym, który widnieje w ich rozmowie na Telegramie.",
-      "approved-title": "Użytkownicy, którym przyznano uprawnienia",
-      "approved-description":
-        "Użytkownicy, którzy zostali zatwierdzeni do rozmowy z Twoim botem.",
-      user: "Użytkownik",
-      "pairing-code": "Kod dopasowania",
-      "no-pending": "Brak oczekujących żądań",
-      "no-approved": "Brak zatwierdzonych użytkowników",
       unknown: "Nieznany",
-      approve: "Zaakceptować",
-      deny: "Odrzucać",
-      revoke: "Odstrzegać",
     },
   },
 };

@@ -476,7 +476,34 @@ const TRANSLATIONS = {
       "Le chiavi API consentono al titolare di accedere e gestire in modo programmatico questa istanza AnythingLLM.",
     link: "Leggi la documentazione API",
     generate: "Genera nuova chiave API",
+    empty: "Nessuna chiave API trovata",
+    actions: "Azioni",
+    messages: {
+      error: "Errore: {{error}}",
+    },
+    modal: {
+      title: "Crea una nuova chiave API",
+      cancel: "Annulla",
+      close: "Chiudi",
+      create: "Crea chiave API",
+      helper:
+        "Una volta creata, la chiave API può essere usata per accedere e configurare questa istanza AnythingLLM in modo programmatico.",
+      name: {
+        label: "Nome",
+        placeholder: "Integrazione di produzione",
+        helper:
+          "Facoltativo. Usa un nome descrittivo così potrai riconoscere questa chiave in seguito.",
+      },
+    },
+    row: {
+      copy: "Copia chiave API",
+      copied: "Copiata",
+      unnamed: "--",
+      deleteConfirm:
+        "Sei sicuro di voler disattivare questa chiave API?\nDopo questa azione non potrà più essere utilizzata.\n\nQuesta azione è irreversibile.",
+    },
     table: {
+      name: "Nome",
       key: "Chiave API",
       by: "Creato da",
       created: "Creato",
@@ -1155,9 +1182,6 @@ const TRANSLATIONS = {
         description:
           "Incolla il token API che hai ricevuto da @BotFather e seleziona uno spazio di lavoro predefinito per il tuo bot, in modo che possa comunicare.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spazio di lavoro predefinito",
-        "no-workspace":
-          "Non sono disponibili spazi di lavoro. Ne verrà creato uno nuovo.",
         connecting: "Connessione...",
         "connect-bot": "Bot di connessione",
       },
@@ -1199,20 +1223,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Impossibile revocare l'accesso dell'utente.",
     },
     users: {
-      "pending-title": "In attesa di approvazione",
       "pending-description":
         "Utenti in attesa di verifica. Confrontare il codice di abbinamento visualizzato qui con quello visualizzato nella loro chat di Telegram.",
-      "approved-title": "Utenti approvati",
-      "approved-description":
-        "Utenti che sono stati approvati per chattare con il vostro bot.",
-      user: "Utente",
-      "pairing-code": "Codice di abbinamento",
-      "no-pending": "Non ci sono richieste in sospeso.",
-      "no-approved": "Nessun utente autorizzato",
       unknown: "Sconosciuto",
-      approve: "Approvare",
-      deny: "Negare",
-      revoke: "Annullare",
     },
   },
 };
