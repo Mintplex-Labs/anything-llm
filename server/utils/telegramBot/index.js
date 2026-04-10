@@ -33,6 +33,12 @@ class TelegramBotService {
   static #BASE_RETRY_DELAY_MS = 1000;
   static #MAX_RETRY_DELAY_MS = 5 * 60 * 1000; // 5 minutes
   static #NETWORK_ERROR_PATTERNS = [
+    "EPIPE",
+    "EPROTO",
+    "ECONNABORTED",
+    "EHOSTDOWN",
+    "ENETDOWN",
+    "EADDRNOTAVAIL",
     "ETIMEDOUT",
     "ECONNRESET",
     "ECONNREFUSED",
@@ -44,7 +50,20 @@ class TelegramBotService {
     "socket hang up",
     "network",
     "timeout",
-    "409 Conflict",
+    "bad gateway",
+    "flood",
+    "429",
+    "409",
+    "500",
+    "501",
+    "502",
+    "503",
+    "504",
+    "520",
+    "521",
+    "522",
+    "523",
+    "524",
   ];
 
   /** @type {TelegramBot|null} */
