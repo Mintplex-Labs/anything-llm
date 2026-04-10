@@ -37,7 +37,7 @@ export default function MemoryModal({
 
   return (
     <ModalWrapper isOpen={isOpen}>
-      <div className="bg-zinc-800 light:bg-white border border-zinc-700 light:border-slate-300 rounded-lg p-6 w-[400px] flex flex-col gap-5">
+      <div className="bg-zinc-900 light:bg-white border border-zinc-800 light:border-slate-300 rounded-lg p-6 w-[400px] flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <div className="flex items-start justify-between">
             <p className="font-semibold text-base leading-6 text-zinc-50 light:text-slate-800">
@@ -65,7 +65,7 @@ export default function MemoryModal({
             onChange={(e) => setContent(e.target.value)}
             placeholder="Enter a description..."
             rows={4}
-            className="w-full border border-zinc-700 light:border-slate-300 bg-zinc-900 light:bg-white text-zinc-50 light:text-slate-700 placeholder:text-zinc-500 light:placeholder:text-slate-400 text-sm rounded-lg p-3 resize-none outline-none focus:border-zinc-500 light:focus:border-slate-400"
+            className="w-full bg-zinc-800 light:bg-white text-zinc-50 light:border light:border-slate-300 light:text-slate-700 placeholder:text-zinc-500 light:placeholder:text-slate-400 text-sm rounded-lg p-3 resize-none outline-none focus:border-zinc-500 light:focus:border-slate-400"
           />
         </div>
         <div className="flex items-start justify-between">
