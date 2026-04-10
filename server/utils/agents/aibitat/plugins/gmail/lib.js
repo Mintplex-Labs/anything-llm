@@ -294,11 +294,20 @@ class GmailBridge {
     return !!(deploymentId && apiKey);
   }
 
+  get maskedDeploymentId() {
+    return (
+      this.#deploymentId.substring(0, 5) +
+      "..." +
+      this.#deploymentId.substring(this.#deploymentId.length - 5)
+    );
+  }
+
   /**
    * Gets the base URL for the Gmail Google Apps Script deployment.
    * @returns {string}
    */
   #getBaseUrl() {
+    console.log(`Getting base URL for deployment ID`, this.maskedDeploymentId);
     return `https://script.google.com/macros/s/${this.#deploymentId}/exec`;
   }
 

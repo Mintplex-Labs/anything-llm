@@ -423,7 +423,7 @@ const TRANSLATIONS = {
       gmail: {
         title: "GMail Connector",
         description:
-          "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. Requires a Google Apps Script deployment.",
+          "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
         multiUserWarning:
           "Gmail integration is not available in multi-user mode for security reasons. Please disable multi-user mode to use this feature.",
         configuration: "Gmail Configuration",

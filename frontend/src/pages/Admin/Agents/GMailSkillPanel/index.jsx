@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import Toggle, { SimpleToggleSwitch } from "@/components/lib/Toggle";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import debounce from "lodash.debounce";
 import {
   MagnifyingGlass,
@@ -14,11 +14,175 @@ import {
   Warning,
   CaretDown,
   CheckCircle,
+  Info,
 } from "@phosphor-icons/react";
 import GMailIcon from "./gmail.png";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import { getGmailSkills, filterSkillCategories } from "./utils";
+import { Tooltip } from "react-tooltip";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
+
+export default function GMailSkillPanel({
+  title,
+  skill,
+  toggleSkill,
+  enabled = false,
+  disabled = false,
+  setHasChanges,
+  hasChanges = false,
+}) {
+  const { t } = useTranslation();
+  const [disabledSkills, setDisabledSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deploymentId, setDeploymentId] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [isMultiUserMode, setIsMultiUserMode] = useState(false);
+  const [configDefaultExpanded, setConfigDefaultExpanded] = useState(true);
+  const prevHasChanges = useRef(hasChanges);
+  const skillCategories = getGmailSkills(t);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      Admin.systemPreferencesByFields([
+        "disabled_gmail_skills",
+        "gmail_deployment_id",
+        "gmail_api_key",
+      ]),
+      System.keys(),
+    ])
+      .then(([prefsRes, settingsRes]) => {
+        const loadedDeploymentId =
+          prefsRes?.settings?.gmail_deployment_id ?? "";
+        const loadedApiKey = prefsRes?.settings?.gmail_api_key ?? "";
+        setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
+        setDeploymentId(loadedDeploymentId);
+        setApiKey(loadedApiKey);
+        setIsMultiUserMode(settingsRes?.MultiUserMode ?? false);
+        setConfigDefaultExpanded(!(loadedDeploymentId && loadedApiKey));
+      })
+      .catch(() => {
+        setDisabledSkills([]);
+        setDeploymentId("");
+        setApiKey("");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (prevHasChanges.current === true && hasChanges === false) {
+      Admin.systemPreferencesByFields([
+        "disabled_gmail_skills",
+        "gmail_deployment_id",
+        "gmail_api_key",
+      ])
+        .then((res) => {
+          setDisabledSkills(res?.settings?.disabled_gmail_skills ?? []);
+          setDeploymentId(res?.settings?.gmail_deployment_id ?? "");
+          setApiKey(res?.settings?.gmail_api_key ?? "");
+        })
+        .catch(() => {});
+    }
+    prevHasChanges.current = hasChanges;
+  }, [hasChanges]);
+
+  function toggleGmailSkill(skillName) {
+    setHasChanges(true);
+    setDisabledSkills((prev) =>
+      prev.includes(skillName)
+        ? prev.filter((s) => s !== skillName)
+        : [...prev, skillName]
+    );
+  }
+
+  const isConfigured = deploymentId && apiKey;
+
+  return (
+    <div className="p-2">
+      <div className="flex flex-col gap-y-[18px] max-w-[500px]">
+        <div className="flex w-full justify-between items-center">
+          <div className="flex items-center gap-x-2">
+            <img src={GMailIcon} alt="GMail" className="w-6 h-6" />
+            <label className="text-theme-text-primary text-md font-bold">
+              {title}
+            </label>
+          </div>
+          <Toggle
+            size="lg"
+            enabled={enabled}
+            disabled={disabled || isMultiUserMode}
+            onChange={() => toggleSkill(skill)}
+          />
+        </div>
+
+        {isMultiUserMode && (
+          <div className="flex items-center gap-x-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <Warning size={20} className="text-yellow-500 shrink-0" />
+            <p className="text-yellow-500 text-xs">
+              {t("agent.skill.gmail.multiUserWarning")}
+            </p>
+          </div>
+        )}
+
+        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
+          <Trans
+            i18nKey="agent.skill.gmail.description"
+            components={{
+              a: (
+                <Link
+                  className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
+                  to={paths.docs("/features/gmail-agent")}
+                  target="_blank"
+                />
+              ),
+            }}
+          />
+        </p>
+
+        {enabled && !isMultiUserMode && (
+          <>
+            <HiddenFormInputs
+              disabledSkills={disabledSkills}
+              deploymentId={deploymentId}
+              apiKey={apiKey}
+            />
+
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <CircleNotch
+                  size={24}
+                  className="animate-spin text-theme-text-primary"
+                />
+              </div>
+            ) : (
+              <>
+                <ConfigurationSection
+                  deploymentId={deploymentId}
+                  setDeploymentId={setDeploymentId}
+                  apiKey={apiKey}
+                  setApiKey={setApiKey}
+                  setHasChanges={setHasChanges}
+                  isConfigured={isConfigured}
+                  defaultExpanded={configDefaultExpanded}
+                />
+
+                {isConfigured && (
+                  <SkillsSection
+                    skillCategories={skillCategories}
+                    disabledSkills={disabledSkills}
+                    onToggle={toggleGmailSkill}
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ConfigurationSection({
   deploymentId,
@@ -37,7 +201,7 @@ function ConfigurationSection({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-3 bg-theme-bg-secondary/30 hover:bg-theme-bg-secondary/50 transition-colors"
+        className="border-none w-full flex items-center justify-between p-3 bg-theme-bg-secondary/30 hover:bg-theme-bg-secondary/50 transition-colors"
       >
         <div className="flex items-center gap-x-2">
           <span className="text-theme-text-primary font-semibold text-sm">
@@ -61,9 +225,24 @@ function ConfigurationSection({
       {expanded && (
         <div className="p-3 flex flex-col gap-y-4 border-t border-theme-sidebar-border/50">
           <div className="flex flex-col gap-y-2">
-            <label className="text-theme-text-primary text-sm font-medium">
-              {t("agent.skill.gmail.deploymentId")}
-            </label>
+            <div className="flex items-center gap-x-2">
+              <label className="text-theme-text-primary text-sm font-medium">
+                {t("agent.skill.gmail.deploymentId")}
+              </label>
+              <Info
+                data-tooltip-id="deployment-id-tooltip"
+                size={16}
+                className="text-theme-text-secondary"
+              />
+              <Tooltip
+                id="deployment-id-tooltip"
+                place="top"
+                delayShow={300}
+                className="tooltip !text-xs !opacity-100"
+              >
+                {t("agent.skill.gmail.deploymentIdHelp")}
+              </Tooltip>
+            </div>
             <input
               type="text"
               value={deploymentId}
@@ -74,15 +253,27 @@ function ConfigurationSection({
               placeholder="AKfycb..."
               className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-sidebar-border rounded-lg text-theme-text-primary text-sm placeholder:text-theme-text-secondary/50"
             />
-            <p className="text-theme-text-secondary text-xs">
-              {t("agent.skill.gmail.deploymentIdHelp")}
-            </p>
           </div>
 
           <div className="flex flex-col gap-y-2">
-            <label className="text-theme-text-primary text-sm font-medium">
-              {t("agent.skill.gmail.apiKey")}
-            </label>
+            <div className="flex items-center gap-x-2">
+              <label className="text-theme-text-primary text-sm font-medium">
+                {t("agent.skill.gmail.apiKey")}
+              </label>
+              <Info
+                data-tooltip-id="api-key-tooltip"
+                size={16}
+                className="text-theme-text-secondary"
+              />
+              <Tooltip
+                id="api-key-tooltip"
+                place="top"
+                delayShow={300}
+                className="tooltip !text-xs !opacity-100"
+              >
+                {t("agent.skill.gmail.apiKeyHelp")}
+              </Tooltip>
+            </div>
             <input
               type="password"
               value={apiKey}
@@ -93,11 +284,7 @@ function ConfigurationSection({
               placeholder="Your API key..."
               className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-sidebar-border rounded-lg text-theme-text-primary text-sm placeholder:text-theme-text-secondary/50"
             />
-            <p className="text-theme-text-secondary text-xs">
-              {t("agent.skill.gmail.apiKeyHelp")}
-            </p>
           </div>
-
           {!isConfigured && (
             <div className="flex items-center gap-x-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
               <Warning size={20} className="text-orange-500 shrink-0" />
@@ -252,154 +439,5 @@ function HiddenFormInputs({ disabledSkills, deploymentId, apiKey }) {
       />
       <input name="system::gmail_api_key" type="hidden" value={apiKey} />
     </>
-  );
-}
-
-export default function GMailSkillPanel({
-  title,
-  skill,
-  toggleSkill,
-  enabled = false,
-  disabled = false,
-  setHasChanges,
-  hasChanges = false,
-}) {
-  const { t } = useTranslation();
-  const [disabledSkills, setDisabledSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [deploymentId, setDeploymentId] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [isMultiUserMode, setIsMultiUserMode] = useState(false);
-  const [configDefaultExpanded, setConfigDefaultExpanded] = useState(true);
-  const prevHasChanges = useRef(hasChanges);
-  const skillCategories = getGmailSkills(t);
-
-  useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      Admin.systemPreferencesByFields([
-        "disabled_gmail_skills",
-        "gmail_deployment_id",
-        "gmail_api_key",
-      ]),
-      System.keys(),
-    ])
-      .then(([prefsRes, settingsRes]) => {
-        const loadedDeploymentId =
-          prefsRes?.settings?.gmail_deployment_id ?? "";
-        const loadedApiKey = prefsRes?.settings?.gmail_api_key ?? "";
-        setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
-        setDeploymentId(loadedDeploymentId);
-        setApiKey(loadedApiKey);
-        setIsMultiUserMode(settingsRes?.MultiUserMode ?? false);
-        setConfigDefaultExpanded(!(loadedDeploymentId && loadedApiKey));
-      })
-      .catch(() => {
-        setDisabledSkills([]);
-        setDeploymentId("");
-        setApiKey("");
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (prevHasChanges.current === true && hasChanges === false) {
-      Admin.systemPreferencesByFields([
-        "disabled_gmail_skills",
-        "gmail_deployment_id",
-        "gmail_api_key",
-      ])
-        .then((res) => {
-          setDisabledSkills(res?.settings?.disabled_gmail_skills ?? []);
-          setDeploymentId(res?.settings?.gmail_deployment_id ?? "");
-          setApiKey(res?.settings?.gmail_api_key ?? "");
-        })
-        .catch(() => {});
-    }
-    prevHasChanges.current = hasChanges;
-  }, [hasChanges]);
-
-  function toggleGmailSkill(skillName) {
-    setHasChanges(true);
-    setDisabledSkills((prev) =>
-      prev.includes(skillName)
-        ? prev.filter((s) => s !== skillName)
-        : [...prev, skillName]
-    );
-  }
-
-  const isConfigured = deploymentId && apiKey;
-
-  return (
-    <div className="p-2">
-      <div className="flex flex-col gap-y-[18px] max-w-[500px]">
-        <div className="flex w-full justify-between items-center">
-          <div className="flex items-center gap-x-2">
-            <img src={GMailIcon} alt="GMail" className="w-6 h-6" />
-            <label className="text-theme-text-primary text-md font-bold">
-              {title}
-            </label>
-          </div>
-          <Toggle
-            size="lg"
-            enabled={enabled}
-            disabled={disabled || isMultiUserMode}
-            onChange={() => toggleSkill(skill)}
-          />
-        </div>
-
-        {isMultiUserMode && (
-          <div className="flex items-center gap-x-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-            <Warning size={20} className="text-yellow-500 shrink-0" />
-            <p className="text-yellow-500 text-xs">
-              {t("agent.skill.gmail.multiUserWarning")}
-            </p>
-          </div>
-        )}
-
-        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
-          {t("agent.skill.gmail.description")}
-        </p>
-
-        {enabled && !isMultiUserMode && (
-          <>
-            <HiddenFormInputs
-              disabledSkills={disabledSkills}
-              deploymentId={deploymentId}
-              apiKey={apiKey}
-            />
-
-            {loading ? (
-              <div className="flex items-center justify-center py-4">
-                <CircleNotch
-                  size={24}
-                  className="animate-spin text-theme-text-primary"
-                />
-              </div>
-            ) : (
-              <>
-                <ConfigurationSection
-                  deploymentId={deploymentId}
-                  setDeploymentId={setDeploymentId}
-                  apiKey={apiKey}
-                  setApiKey={setApiKey}
-                  setHasChanges={setHasChanges}
-                  isConfigured={isConfigured}
-                  defaultExpanded={configDefaultExpanded}
-                />
-
-                {isConfigured && (
-                  <SkillsSection
-                    skillCategories={skillCategories}
-                    disabledSkills={disabledSkills}
-                    onToggle={toggleGmailSkill}
-                  />
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
-    </div>
   );
 }
