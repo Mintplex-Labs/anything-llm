@@ -573,8 +573,6 @@ const TRANSLATIONS = {
     empty: "Keine API-Schlüssel gefunden",
     actions: "Aktionen",
     messages: {
-      copied: "API-Schlüssel in die Zwischenablage kopiert",
-      deleted: "API-Schlüssel dauerhaft gelöscht",
       error: "Fehler: {{error}}",
     },
     modal: {
@@ -1170,9 +1168,6 @@ const TRANSLATIONS = {
         description:
           "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
         "bot-token": "Bot-Token",
-        "default-workspace": "Standardarbeitsbereich",
-        "no-workspace":
-          "Keine verfügbaren Arbeitsbereiche. Ein neuer Bereich wird erstellt.",
         connecting: "Verbinde...",
         "connect-bot": "Connect-Bot",
       },
@@ -1219,20 +1214,9 @@ const TRANSLATIONS = {
         "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren.",
     },
     users: {
-      "pending-title": "Warte auf Genehmigung",
       "pending-description":
         "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
-      "approved-title": "Benutzer mit Genehmigung",
-      "approved-description":
-        "Nutzer, denen die Erlaubnis erteilt wurde, mit Ihrem Bot zu kommunizieren.",
-      user: "Benutzer",
-      "pairing-code": "Paarcode",
-      "no-pending": "Keine ausstehenden Anfragen",
-      "no-approved": "Keine autorisierten Benutzer",
       unknown: "Unbekannt",
-      approve: "Genehmigen",
-      deny: "Leugnen",
-      revoke: "Aufheben",
     },
   },
 };

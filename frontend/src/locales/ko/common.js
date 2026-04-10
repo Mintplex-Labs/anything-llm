@@ -559,8 +559,6 @@ const TRANSLATIONS = {
     empty: "API 키를 찾을 수 없습니다",
     actions: "작업",
     messages: {
-      copied: "API 키가 클립보드에 복사되었습니다",
-      deleted: "API 키가 영구적으로 삭제되었습니다",
       error: "오류: {{error}}",
     },
     modal: {
@@ -1136,9 +1134,6 @@ const TRANSLATIONS = {
         description:
           "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
         "bot-token": "봇 토큰",
-        "default-workspace": "기본 워크스페이스",
-        "no-workspace":
-          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
         connecting: "연결 중...",
         "connect-bot": "연결 봇",
       },
@@ -1176,19 +1171,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
     },
     users: {
-      "pending-title": "승인 대기 중",
       "pending-description":
         "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
-      "approved-title": "승인된 사용자",
-      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
-      user: "사용자",
-      "pairing-code": "코드 매칭",
-      "no-pending": "처리 중인 요청이 없습니다.",
-      "no-approved": "승인된 사용자가 없습니다",
       unknown: "알 수 없음",
-      approve: "승인",
-      deny: "부인",
-      revoke: "취소",
     },
   },
 };

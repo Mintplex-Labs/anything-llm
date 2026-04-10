@@ -474,8 +474,6 @@ const TRANSLATIONS = {
     empty: "API anahtarları bulunamadı",
     actions: "İşlemler",
     messages: {
-      copied: "API anahtarı panoya kopyalandı",
-      deleted: "API anahtarı kalıcı olarak silindi",
       error: "Hata: {{error}}",
     },
     modal: {
@@ -1156,9 +1154,6 @@ const TRANSLATIONS = {
         description:
           "Aldığınız API token'ı (@BotFather) kopyalayın ve botunuzun iletişim kuracağı varsayılan çalışma alanını seçin.",
         "bot-token": "Bot Token",
-        "default-workspace": "Varsayılan Çalışma Alanı",
-        "no-workspace":
-          "Mevcut çalışma alanları bulunmamaktadır. Yeni bir çalışma alanı oluşturulacaktır.",
         connecting: "Bağlantı kuruluyor...",
         "connect-bot": "Bağlantı Botu",
       },
@@ -1198,20 +1193,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Kullanıcıyı silme işlemi başarısız oldu.",
     },
     users: {
-      "pending-title": "Onay Bekliyor",
       "pending-description":
         "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
-      "approved-title": "Onaylanmış Kullanıcılar",
-      "approved-description":
-        "Botunuzla sohbet etmeye yetkili olan kullanıcılar.",
-      user: "Kullanıcı",
-      "pairing-code": "Eşleştirme Kodu",
-      "no-pending": "Henüz tamamlanmamış herhangi bir istek bulunmamaktadır.",
-      "no-approved": "Onaylanmış kullanıcı bulunmamaktadır",
       unknown: "Bilinmiyor",
-      approve: "Onayla",
-      deny: "İnkar",
-      revoke: "İptal et",
     },
   },
 };

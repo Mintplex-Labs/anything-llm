@@ -474,8 +474,6 @@ const TRANSLATIONS = {
     empty: "Geen API-sleutels gevonden",
     actions: "Acties",
     messages: {
-      copied: "API-sleutel naar klembord gekopieerd",
-      deleted: "API-sleutel permanent verwijderd",
       error: "Fout: {{error}}",
     },
     modal: {
@@ -1164,9 +1162,6 @@ const TRANSLATIONS = {
         description:
           "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standaard werkruimte",
-        "no-workspace":
-          "Er zijn geen beschikbare werkplekken. Een nieuwe zal worden aangemaakt.",
         connecting: "Verbinding wordt gemaakt...",
         "connect-bot": "Connect Bot",
       },
@@ -1209,20 +1204,9 @@ const TRANSLATIONS = {
         "Fout bij het intrekken van het gebruikersaccount.",
     },
     users: {
-      "pending-title": "Afhankelijk van goedkeuring",
       "pending-description":
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
-      "approved-title": "Goedgekeurde gebruikers",
-      "approved-description":
-        "Gebruikers die zijn goedgekeurd om met uw bot te communiceren.",
-      user: "Gebruiker",
-      "pairing-code": "Code voor het koppelen",
-      "no-pending": "Er zijn geen lopende verzoeken.",
-      "no-approved": "Geen goedgekeurde gebruikers",
       unknown: "Onbekend",
-      approve: "Goedkeuren",
-      deny: "Afgewijzen",
-      revoke: "Intrekken",
     },
   },
 };

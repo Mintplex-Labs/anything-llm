@@ -568,8 +568,6 @@ const TRANSLATIONS = {
     empty: "API atslēgas nav atrastas",
     actions: "Darbības",
     messages: {
-      copied: "API atslēga nokopēta starpliktuvē",
-      deleted: "API atslēga neatgriezeniski dzēsta",
       error: "Kļūda: {{error}}",
     },
     modal: {
@@ -1164,8 +1162,6 @@ const TRANSLATIONS = {
         description:
           "Ievietojiet API atslēgu, ko saņēsit no @BotFather, un izvēlieties nokārtotā darba telpu, kuras jūsu bots varēs veikt sazi.",
         "bot-token": "Bots tokens",
-        "default-workspace": "Pamatojas darba videne",
-        "no-workspace": "Nav pieejamas darba vietas. Tiks izveidota jauna.",
         connecting: "Savienojums...",
         "connect-bot": "Saistītais bot",
       },
@@ -1206,20 +1202,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
     },
     users: {
-      "pending-title": "Atkarībā no apstākļiem",
       "pending-description":
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
-      "approved-title": "Atļautie lietotāji",
-      "approved-description":
-        "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
-      user: "Izmantotājs",
-      "pairing-code": "Kopējā koda numura kombinācija",
-      "no-pending": "Neizpildīti pieprasījumi",
-      "no-approved": "No apstiprinātiem lietotājiem",
       unknown: "Nezināms",
-      approve: "Aptver",
-      deny: "Atbrīsties; atgrūst",
-      revoke: "Atcel",
     },
   },
 };

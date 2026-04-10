@@ -468,8 +468,6 @@ const TRANSLATIONS = {
     empty: "APIキーが見つかりません",
     actions: "操作",
     messages: {
-      copied: "APIキーをクリップボードにコピーしました",
-      deleted: "APIキーを完全に削除しました",
       error: "エラー: {{error}}",
     },
     modal: {
@@ -1156,9 +1154,6 @@ const TRANSLATIONS = {
         description:
           "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
         "bot-token": "ボット トークン",
-        "default-workspace": "デフォルトのワークスペース",
-        "no-workspace":
-          "利用可能な作業スペースがありません。新しい作業スペースが作成されます。",
         connecting: "接続中...",
         "connect-bot": "コネクトボット",
       },
@@ -1196,20 +1191,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "ユーザーの権限停止に失敗。",
     },
     users: {
-      "pending-title": "承認待ち",
       "pending-description":
         "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
-      "approved-title": "承認されたユーザー",
-      "approved-description":
-        "あなたのボットとのチャットを許可されたユーザー。",
-      user: "利用者",
-      "pairing-code": "組み合わせコード",
-      "no-pending": "処理中のリクエストはありません",
-      "no-approved": "承認されたユーザーはいません",
       unknown: "不明",
-      approve: "承認",
-      deny: "否定",
-      revoke: "無効化する",
     },
   },
 };

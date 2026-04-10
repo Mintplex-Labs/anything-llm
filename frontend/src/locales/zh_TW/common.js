@@ -446,8 +446,6 @@ const TRANSLATIONS = {
     empty: "找不到 API 金鑰",
     actions: "操作",
     messages: {
-      copied: "API 金鑰已複製到剪貼簿",
-      deleted: "API 金鑰已永久刪除",
       error: "錯誤：{{error}}",
     },
     modal: {
@@ -1080,8 +1078,6 @@ const TRANSLATIONS = {
         description:
           "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
         "bot-token": "機器人代幣",
-        "default-workspace": "預設工作空間",
-        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
         connecting: "正在連接...",
         "connect-bot": "連線機器人",
       },
@@ -1117,19 +1113,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能取消使用者權限。",
     },
     users: {
-      "pending-title": "待審核",
       "pending-description":
         "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
-      "approved-title": "已授權的使用者",
-      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
-      user: "使用者",
-      "pairing-code": "編碼組合",
-      "no-pending": "目前沒有待處理的請求",
-      "no-approved": "目前沒有已授權的使用者",
       unknown: "未知的",
-      approve: "批准",
-      deny: "拒絕",
-      revoke: "撤銷",
     },
   },
 };

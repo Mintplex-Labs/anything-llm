@@ -573,8 +573,6 @@ const TRANSLATIONS = {
     empty: "No API keys found",
     actions: "Actions",
     messages: {
-      copied: "API key copied to clipboard",
-      deleted: "API Key permanently deleted",
       error: "Error: {{error}}",
     },
     modal: {
@@ -719,8 +717,6 @@ const TRANSLATIONS = {
         description:
           "Paste the API token you received from @BotFather to connect your bot.",
         "bot-token": "Bot Token",
-        "default-workspace": "Default Workspace",
-        "no-workspace": "No available workspaces. A new one will be created.",
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
@@ -757,20 +753,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Failed to revoke user.",
     },
     users: {
-      "pending-title": "Pending Approval",
       "pending-description":
         "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
-      "approved-title": "Approved Users",
-      "approved-description":
-        "Users who have been approved to chat with your bot.",
-      user: "User",
-      "pairing-code": "Pairing Code",
-      "no-pending": "No pending requests",
-      "no-approved": "No approved users",
       unknown: "Unknown",
-      approve: "Approve",
-      deny: "Deny",
-      revoke: "Revoke",
     },
   },
   security: {

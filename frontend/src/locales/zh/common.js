@@ -534,8 +534,6 @@ const TRANSLATIONS = {
     empty: "未找到 API 密钥",
     actions: "操作",
     messages: {
-      copied: "API 密钥已复制到剪贴板",
-      deleted: "API 密钥已被永久删除",
       error: "错误：{{error}}",
     },
     modal: {
@@ -1085,8 +1083,6 @@ const TRANSLATIONS = {
         description:
           "将您从 @BotFather 获得的 API 令牌粘贴到指定位置，并选择一个默认的工作区，以便您的机器人可以进行对话。",
         "bot-token": "机器人代币",
-        "default-workspace": "默认工作区",
-        "no-workspace": "目前没有可用的工作空间。将会创建一个新的工作空间。",
         connecting: "正在连接...",
         "connect-bot": "连接机器人",
       },
@@ -1122,19 +1118,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能撤销用户权限。",
     },
     users: {
-      "pending-title": "待审批",
       "pending-description":
         "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
-      "approved-title": "已批准的用户",
-      "approved-description": "已获得批准，可以与您的机器人进行对话的用户。",
-      user: "用户",
-      "pairing-code": "配对代码",
-      "no-pending": "目前没有待处理的请求",
-      "no-approved": "未批准的用户",
       unknown: "未知",
-      approve: "批准",
-      deny: "否认",
-      revoke: "撤销",
     },
   },
 };

@@ -479,8 +479,6 @@ const TRANSLATIONS = {
     empty: "Nessuna chiave API trovata",
     actions: "Azioni",
     messages: {
-      copied: "Chiave API copiata negli appunti",
-      deleted: "Chiave API eliminata definitivamente",
       error: "Errore: {{error}}",
     },
     modal: {
@@ -1184,9 +1182,6 @@ const TRANSLATIONS = {
         description:
           "Incolla il token API che hai ricevuto da @BotFather e seleziona uno spazio di lavoro predefinito per il tuo bot, in modo che possa comunicare.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spazio di lavoro predefinito",
-        "no-workspace":
-          "Non sono disponibili spazi di lavoro. Ne verrà creato uno nuovo.",
         connecting: "Connessione...",
         "connect-bot": "Bot di connessione",
       },
@@ -1228,20 +1223,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Impossibile revocare l'accesso dell'utente.",
     },
     users: {
-      "pending-title": "In attesa di approvazione",
       "pending-description":
         "Utenti in attesa di verifica. Confrontare il codice di abbinamento visualizzato qui con quello visualizzato nella loro chat di Telegram.",
-      "approved-title": "Utenti approvati",
-      "approved-description":
-        "Utenti che sono stati approvati per chattare con il vostro bot.",
-      user: "Utente",
-      "pairing-code": "Codice di abbinamento",
-      "no-pending": "Non ci sono richieste in sospeso.",
-      "no-approved": "Nessun utente autorizzato",
       unknown: "Sconosciuto",
-      approve: "Approvare",
-      deny: "Negare",
-      revoke: "Annullare",
     },
   },
 };

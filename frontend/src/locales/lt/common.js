@@ -574,8 +574,6 @@ const TRANSLATIONS = {
     empty: "API raktų nerasta",
     actions: "Veiksmai",
     messages: {
-      copied: "API raktas nukopijuotas į iškarpinę",
-      deleted: "API raktas visam laikui ištrintas",
       error: "Klaida: {{error}}",
     },
     modal: {
@@ -1158,8 +1156,6 @@ const TRANSLATIONS = {
         description:
           "Įveskite API žymiklį, kurį gavote iš @BotFather, ir pasirinkite numatytą darbo vietą, kur jūsų bot galės kalbėti.",
         "bot-token": "„Bot Token“",
-        "default-workspace": "Numatytasis darbo erdvė",
-        "no-workspace": "Nėra laisvų darbo vietų. Bus sukurta nauja.",
         connecting: "Prisijungiam...",
         "connect-bot": "„Connect Bot“",
       },
@@ -1200,20 +1196,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nepavyko atšalinti vartotojo.",
     },
     users: {
-      "pending-title": "Laikant patvirtinimo",
       "pending-description":
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
-      "approved-title": "Įsijungę vartotojai",
-      "approved-description":
-        "Naudotojai, kuriems suteikiama galimybė kalbėti su jūsų botu.",
-      user: "Naudotojas",
-      "pairing-code": "Kombinacijos kodas",
-      "no-pending": "Nėra atidėtų užklausų",
-      "no-approved": "Nėra patvirtintų vartotojų",
       unknown: "Nenurodytas",
-      approve: "Aptinka",
-      deny: "Atsisakyti",
-      revoke: "Anuliuoti",
     },
   },
 };

@@ -471,8 +471,6 @@ const TRANSLATIONS = {
     empty: "لم يتم العثور على مفاتيح API",
     actions: "الإجراءات",
     messages: {
-      copied: "تم نسخ مفتاح API إلى الحافظة",
-      deleted: "تم حذف مفتاح API نهائيًا",
       error: "خطأ: {{error}}",
     },
     modal: {
@@ -1139,8 +1137,6 @@ const TRANSLATIONS = {
         description:
           "الصق رمز API الذي تلقيته من @BotFather، ثم اختر مساحة عمل افتراضية لجهازك التابع للروبوت للدردشة فيها.",
         "bot-token": "رمز الرمز (Token)",
-        "default-workspace": "مساحة العمل الافتراضية",
-        "no-workspace": "لا توجد مساحات عمل متاحة. سيتم إنشاء مساحة عمل جديدة.",
         connecting: "التحميل...",
         "connect-bot": "روبوت الاتصال",
       },
@@ -1178,20 +1174,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "فشل إلغاء صلاحية المستخدم.",
     },
     users: {
-      "pending-title": "معلق على الموافقة",
       "pending-description":
         "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
-      "approved-title": "المستخدمون المعتمدون",
-      "approved-description":
-        "المستخدمون الذين تم منحهم الإذن للتواصل مع روبوتك.",
-      user: "المستخدم",
-      "pairing-code": "رمز التوفيق",
-      "no-pending": "لا توجد طلبات معلقة.",
-      "no-approved": "لا يوجد مستخدمون معتمدون.",
       unknown: "غير معروف",
-      approve: "الموافقة",
-      deny: "رفض",
-      revoke: "إلغاء",
     },
   },
 };

@@ -1023,8 +1023,6 @@ const TRANSLATIONS = {
     empty: "Nu au fost găsite chei API",
     actions: "Acțiuni",
     messages: {
-      copied: "Cheia API a fost copiată în clipboard",
-      deleted: "Cheia API a fost ștearsă definitiv",
       error: "Eroare: {{error}}",
     },
     modal: {
@@ -1164,9 +1162,6 @@ const TRANSLATIONS = {
         description:
           "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spațiu de lucru implicit",
-        "no-workspace":
-          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
         connecting: "Conectare...",
         "connect-bot": "Conectare automată",
       },
@@ -1208,20 +1203,9 @@ const TRANSLATIONS = {
         "Nu a fost posibil să se anuleze contul utilizatorului.",
     },
     users: {
-      "pending-title": "Așteptare aprobare",
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
-      "approved-title": "Utilizatori autorizați",
-      "approved-description":
-        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
-      user: "Utilizator",
-      "pairing-code": "Cod de asociere",
-      "no-pending": "Nu există cereri în așteptare.",
-      "no-approved": "Nu există utilizatori autorizați.",
       unknown: "Necunoscut",
-      approve: "Aprobă",
-      deny: "Negarea",
-      revoke: "Anula",
     },
   },
 };

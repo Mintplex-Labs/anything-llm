@@ -475,8 +475,6 @@ const TRANSLATIONS = {
     empty: "Ingen API-nøgler fundet",
     actions: "Handlinger",
     messages: {
-      copied: "API-nøgle kopieret til udklipsholder",
-      deleted: "API-nøglen blev slettet permanent",
       error: "Fejl: {{error}}",
     },
     modal: {
@@ -1162,9 +1160,6 @@ const TRANSLATIONS = {
         description:
           "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standardarbejdsområde",
-        "no-workspace":
-          "Ingen ledige arbejdsområder. Et nyt vil blive oprettet.",
         connecting: "Forbindes...",
         "connect-bot": "Connect Bot",
       },
@@ -1205,20 +1200,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
     },
     users: {
-      "pending-title": "Afventer godkendelse",
       "pending-description":
         "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
-      "approved-title": "Godkendte brugere",
-      "approved-description":
-        "Brugere, der er blevet godkendt til at kommunikere med din bot.",
-      user: "Bruger",
-      "pairing-code": "Kombinationskode",
-      "no-pending": "Ingen igangværende anmodninger",
-      "no-approved": "Ingen godkendte brugere",
       unknown: "Ukendt",
-      approve: "Godkend",
-      deny: "Afvise",
-      revoke: "Annullere",
     },
   },
 };

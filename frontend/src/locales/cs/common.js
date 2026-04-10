@@ -576,8 +576,6 @@ const TRANSLATIONS = {
     empty: "Nebyly nalezeny žádné API klíče",
     actions: "Akce",
     messages: {
-      copied: "API klíč zkopírován do schránky",
-      deleted: "API klíč byl trvale odstraněn",
       error: "Chyba: {{error}}",
     },
     modal: {
@@ -1155,9 +1153,6 @@ const TRANSLATIONS = {
         description:
           "Vložte API token, který jste obdrželi od účtu @BotFather, a vyberte výchozí pracovní prostor, se kterým bude váš bot komunikovat.",
         "bot-token": "Token Bot",
-        "default-workspace": "Výchozí pracovní prostor",
-        "no-workspace":
-          "Nejsou k dispozici žádné pracovní prostory. Bude vytvořeno nové.",
         connecting: "Připojování...",
         "connect-bot": "Bot pro připojení",
       },
@@ -1197,20 +1192,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nezdařilo se zrušit uživatelskou účet.",
     },
     users: {
-      "pending-title": "Čeká na schválení",
       "pending-description":
         "Uživatelé, kteří čekají na ověření. Porovnejte kód pro spárování, který je zde uveden, s tím, který je zobrazen v jejich chatu na Telegramu.",
-      "approved-title": "Schválení uživatelů",
-      "approved-description":
-        "Uživatelé, kteří byli schváleni pro komunikaci s vaším botem.",
-      user: "Uživatel",
-      "pairing-code": "Kód pro párování",
-      "no-pending": "Žádné čekající požadavky",
-      "no-approved": "Žádní registrovaní uživatelé",
       unknown: "Neznámé",
-      approve: "Schválit",
-      deny: "Odmítnout",
-      revoke: "Zrušit",
     },
   },
 };

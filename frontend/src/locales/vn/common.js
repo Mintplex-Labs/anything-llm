@@ -472,8 +472,6 @@ const TRANSLATIONS = {
     empty: "Không tìm thấy khóa API nào",
     actions: "Thao tác",
     messages: {
-      copied: "Đã sao chép khóa API vào bảng tạm",
-      deleted: "Khóa API đã bị xóa vĩnh viễn",
       error: "Lỗi: {{error}}",
     },
     modal: {
@@ -1154,9 +1152,6 @@ const TRANSLATIONS = {
         description:
           "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
         "bot-token": "Token Bot",
-        "default-workspace": "Không gian làm việc mặc định",
-        "no-workspace":
-          "Không có không gian làm việc nào khả dụng. Một không gian mới sẽ được tạo ra.",
         connecting: "Kết nối...",
         "connect-bot": "Bot kết nối",
       },
@@ -1196,20 +1191,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
     },
     users: {
-      "pending-title": "Chờ phê duyệt",
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
-      "approved-title": "Người dùng đã được phê duyệt",
-      "approved-description":
-        "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
-      user: "Người dùng",
-      "pairing-code": "Mã ghép",
-      "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
-      "no-approved": "Không có người dùng được xác nhận",
       unknown: "Không xác định",
-      approve: "Chấp thuận",
-      deny: "Từ chối",
-      revoke: "Thu hồi",
     },
   },
 };

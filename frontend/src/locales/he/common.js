@@ -553,8 +553,6 @@ const TRANSLATIONS = {
     empty: "לא נמצאו מפתחות API",
     actions: "פעולות",
     messages: {
-      copied: "מפתח API הועתק ללוח",
-      deleted: "מפתח API נמחק לצמיתות",
       error: "שגיאה: {{error}}",
     },
     modal: {
@@ -1118,8 +1116,6 @@ const TRANSLATIONS = {
         description:
           "הדבק את טוקן ה-API שקיבלת מחשבון @BotFather ובחר את חלל העבודה הראשי עבור הבוט שלך, כדי שיוכל לתקשר.",
         "bot-token": "טוקן בוט",
-        "default-workspace": "סביבת עבודה ברירת מחדל",
-        "no-workspace": "אין מקומות עבודה זמינים. ייקבע מקום עבודה חדש.",
         connecting: "חיבור...",
         "connect-bot": "צ'אטבוט",
       },
@@ -1156,19 +1152,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
     },
     users: {
-      "pending-title": "נמצא בהמתנה לאישור",
       "pending-description":
         "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
-      "approved-title": "משתמשים מורשים",
-      "approved-description": "משתמשים שאושרו לנהל שיחה עם הבוט שלכם.",
-      user: "משתמש",
-      "pairing-code": "קוד התאמה",
-      "no-pending": "אין בקשות בתהליך",
-      "no-approved": "אין משתמשים מורשים",
       unknown: "לא ידוע",
-      approve: "אישור",
-      deny: "לדחות",
-      revoke: "בטל",
     },
   },
 };
