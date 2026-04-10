@@ -142,14 +142,12 @@ function TextSizeSubmenu({ selectedSize, onSizeChange }) {
 }
 
 function MemoriesRow({ onClose }) {
-  const { t } = useTranslation();
-  const memoriesCtx = useMemoriesSidebar();
-  const sourcesCtx = useSourcesSidebar();
+  const { toggleSidebar } = useMemoriesSidebar();
+  const { closeSidebar } = useSourcesSidebar();
 
   function handleClick() {
-    if (!memoriesCtx?.toggleSidebar) return;
-    sourcesCtx?.closeSidebar?.();
-    memoriesCtx.toggleSidebar();
+    closeSidebar();
+    toggleSidebar();
     onClose();
   }
 
@@ -159,7 +157,7 @@ function MemoriesRow({ onClose }) {
       className="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-200"
     >
       <span className="text-sm font-normal text-white light:text-slate-800">
-        {t("personalization.table.memories")}
+        Memories
       </span>
     </div>
   );

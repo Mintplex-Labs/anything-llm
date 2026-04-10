@@ -44,9 +44,8 @@ export function useChatSidebar() {
 }
 
 export function useSourcesSidebar() {
-  const ctx = useContext(ChatSidebarContext);
-  if (!ctx) return {};
-  const { activeSidebar, sidebarData, openSidebar, closeSidebar } = ctx;
+  const { activeSidebar, sidebarData, openSidebar, closeSidebar } =
+    useContext(ChatSidebarContext);
   return {
     sidebarOpen: activeSidebar === "sources",
     sources: activeSidebar === "sources" ? sidebarData : [],
@@ -56,9 +55,8 @@ export function useSourcesSidebar() {
 }
 
 export function useMemoriesSidebar() {
-  const ctx = useContext(ChatSidebarContext);
-  if (!ctx) return {};
-  const { activeSidebar, toggleSidebar, closeSidebar } = ctx;
+  const { activeSidebar, toggleSidebar, closeSidebar } =
+    useContext(ChatSidebarContext);
   return {
     sidebarOpen: activeSidebar === "memories",
     toggleSidebar: () => toggleSidebar("memories"),

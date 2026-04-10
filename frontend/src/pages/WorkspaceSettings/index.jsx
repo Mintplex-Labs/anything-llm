@@ -11,18 +11,16 @@ import {
   Database,
   Robot,
   User,
-  UserFocus,
   Wrench,
 } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import GeneralAppearance from "./GeneralAppearance";
 import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
-import Personalization from "./Personalization";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
@@ -33,7 +31,6 @@ const TABS = {
   "vector-database": VectorDatabase,
   members: Members,
   "agent-config": WorkspaceAgentConfiguration,
-  personalization: Personalization,
 };
 
 export default function WorkspaceSettings() {
@@ -53,7 +50,6 @@ function ShowWorkspaceChat() {
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [memoryEnabled, setMemoryEnabled] = useState(false);
 
   useEffect(() => {
     async function getWorkspace() {
@@ -71,32 +67,12 @@ function ShowWorkspaceChat() {
         vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
-      setMemoryEnabled(_settings?.MemoryEnabled === true);
-
       setLoading(false);
     }
     getWorkspace();
   }, [slug, tab]);
 
   if (loading) return <FullScreenLoader />;
-
-  const isDefaultUser = user?.role === "default";
-
-  // Redirect away from personalization tab when feature is disabled
-  if (tab === "personalization" && !memoryEnabled) {
-    if (isDefaultUser) {
-      return <Navigate to={paths.workspace.chat(slug)} />;
-    }
-    return <Navigate to={paths.workspace.settings.generalAppearance(slug)} />;
-  }
-
-  // Default users can only access the personalization tab
-  if (isDefaultUser && tab !== "personalization") {
-    if (memoryEnabled) {
-      return <Navigate to={paths.workspace.settings.personalization(slug)} />;
-    }
-    return <Navigate to={paths.workspace.chat(slug)} />;
-  }
 
   const TabContent = TABS[tab];
   return (
@@ -117,19 +93,16 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.general")}
             icon={<Wrench className="h-6 w-6" />}
             to={paths.workspace.settings.generalAppearance(slug)}
-            visible={!isDefaultUser}
           />
           <TabItem
             title={t("workspaces—settings.chat")}
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
-            visible={!isDefaultUser}
           />
           <TabItem
             title={t("workspaces—settings.vector")}
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
-            visible={!isDefaultUser}
           />
           <TabItem
             title={t("workspaces—settings.members")}
@@ -141,13 +114,6 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
-            visible={!isDefaultUser}
-          />
-          <TabItem
-            title={t("workspaces—settings.personalization")}
-            icon={<UserFocus className="h-6 w-6" />}
-            to={paths.workspace.settings.personalization(slug)}
-            visible={memoryEnabled}
           />
         </div>
         <div className="px-16 py-6">

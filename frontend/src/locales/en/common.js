@@ -110,7 +110,6 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "mobile-app": "AnythingLLM Mobile",
-    personalization: "Personalization",
     channels: "Channels",
     "available-channels": {
       telegram: "Telegram",
@@ -154,7 +153,6 @@ const TRANSLATIONS = {
     vector: "Vector Database",
     members: "Members",
     agent: "Agent Configuration",
-    personalization: "Personalization",
   },
   general: {
     vector: {
@@ -1087,88 +1085,6 @@ const TRANSLATIONS = {
       chatSettings: "Chat Settings",
       help: "Show keyboard shortcuts help",
       showLLMSelector: "Show workspace LLM Selector",
-    },
-  },
-  personalization: {
-    title: "Personalization",
-    description:
-      "AnythingLLM can learn about you over time to provide more relevant and personalized responses. Memories are extracted automatically from your conversations.",
-    toggle: {
-      label: "Enable Personalization",
-      description:
-        "When enabled, AnythingLLM will learn user preferences and context from conversations.",
-    },
-    actions: {
-      "run-extraction": "Run Extraction Now",
-      extracting: "Extracting...",
-      "clear-all": "Clear All My Memories",
-      clearing: "Clearing...",
-    },
-    global: {
-      title: "Global Memories ({{count}}/{{max}})",
-      "add-button": "Add Global Memory",
-      description: "These memories are applied across all workspaces.",
-      "applied-description": "Applied across all workspaces.",
-      placeholder: "Enter a global memory (e.g. 'My name is Sean')",
-      "empty-title": "No global memories yet",
-      "empty-description":
-        "Add them manually or promote workspace memories to global.",
-    },
-    workspace: {
-      title: "Workspace Memories ({{count}}/{{max}})",
-      "list-title": "Workspace Memories",
-      "list-description":
-        "Manage workspace-specific memories from each workspace's settings.",
-      "add-button": "Add Memory",
-      description:
-        "Memories specific to this workspace. These are automatically extracted from conversations and used to personalize responses.",
-      "no-workspaces": "No workspaces found.",
-      "empty-title": "No memories yet",
-      "empty-description":
-        "Memories will be extracted automatically from your conversations, or you can add them manually.",
-    },
-    form: {
-      placeholder: "Enter a memory (e.g. 'I prefer concise responses')",
-      hint: "Each memory should be a single, concise fact or preference in one sentence.",
-      save: "Save",
-      add: "Add",
-      cancel: "Cancel",
-    },
-    item: {
-      edit: "Edit",
-      "promote-to-global": "Promote to global",
-      delete: "Delete",
-    },
-    scope: {
-      workspace: "Workspace",
-      global: "Global",
-    },
-    table: {
-      workspace: "Workspace",
-      memories: "Memories",
-      manage: "Manage",
-    },
-    loading: "Loading personalization data...",
-    toast: {
-      "setting-update-failed": "Failed to update setting: {{error}}",
-      enabled: "Personalization enabled.",
-      disabled: "Personalization disabled.",
-      "extraction-failed": "Extraction failed: {{error}}",
-      "extraction-completed": "Memory extraction completed.",
-      "clear-confirm":
-        "Are you sure? This will permanently delete all of your personalization memories.",
-      "clear-failed": "Failed to clear memories: {{error}}",
-      "clear-success": "All personalization memories cleared.",
-      "delete-confirm": "Delete this memory?",
-      "delete-failed": "Failed to delete memory.",
-      "delete-success": "Memory deleted.",
-      "update-failed": "Failed to update memory.",
-      "update-success": "Memory updated.",
-      "add-failed": "Failed to add memory.",
-      "add-global-success": "Global memory added.",
-      "add-success": "Memory added.",
-      "promote-failed": "Failed to promote memory.",
-      "promote-success": "Memory promoted to global.",
     },
   },
   community_hub: {

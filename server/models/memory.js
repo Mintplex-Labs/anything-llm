@@ -4,19 +4,6 @@ const GLOBAL_LIMIT = 5;
 const WORKSPACE_LIMIT = 20;
 
 const Memory = {
-  forUser: async function (userId) {
-    try {
-      const memories = await prisma.memories.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-      });
-      return memories;
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   forUserWorkspace: async function (userId, workspaceId) {
     try {
       const memories = await prisma.memories.findMany({
@@ -189,16 +176,6 @@ const Memory = {
           });
         }
       });
-      return true;
-    } catch (error) {
-      console.error(error.message);
-      return false;
-    }
-  },
-
-  deleteAllForUser: async function (userId) {
-    try {
-      await prisma.memories.deleteMany({ where: { userId } });
       return true;
     } catch (error) {
       console.error(error.message);

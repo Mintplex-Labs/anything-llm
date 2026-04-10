@@ -87,9 +87,6 @@ export default {
       agentConfig: (slug) => {
         return `/workspace/${slug}/settings/agent-config`;
       },
-      personalization: (slug) => {
-        return `/workspace/${slug}/settings/personalization`;
-      },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;
@@ -169,9 +166,6 @@ export default {
     },
     experimental: () => {
       return `/settings/beta-features`;
-    },
-    personalization: () => {
-      return `/settings/personalization`;
     },
     mobileConnections: () => {
       return `/settings/mobile-connections`;

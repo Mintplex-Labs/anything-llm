@@ -238,15 +238,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/settings/personalization",
-        lazy: async () => {
-          const { default: Personalization } = await import(
-            "@/pages/Admin/Personalization"
-          );
-          return { element: <AdminRoute Component={Personalization} /> };
-        },
-      },
-      {
         path: "/settings/beta-features",
         lazy: async () => {
           const { default: ExperimentalFeatures } = await import(

@@ -362,12 +362,6 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
-            {
-              btnText: t("settings.personalization"),
-              href: paths.settings.personalization(),
-              flex: true,
-              roles: ["admin"],
-            },
           ]}
         />
         <Option
