@@ -596,12 +596,39 @@ const TRANSLATIONS = {
     },
   },
   api: {
-    title: "API Anahtarları",
+    title: "API anahtarları",
     description:
       "API anahtarları, bu AnythingLLM örneğine programatik olarak erişmeye ve yönetmeye olanak tanır.",
     link: "API dokümantasyonunu okuyun",
     generate: "Yeni API Anahtarı Oluştur",
+    empty: "API anahtarları bulunamadı",
+    actions: "İşlemler",
+    messages: {
+      error: "Hata: {{error}}",
+    },
+    modal: {
+      title: "Yeni API anahtarı oluştur",
+      cancel: "İptal",
+      close: "Kapat",
+      create: "API anahtarı oluştur",
+      helper:
+        "Oluşturulduktan sonra API anahtarı, bu AnythingLLM örneğine programatik olarak erişmek ve onu yapılandırmak için kullanılabilir.",
+      name: {
+        label: "Ad",
+        placeholder: "Üretim entegrasyonu",
+        helper:
+          "İsteğe bağlıdır. Bu anahtarı daha sonra kolayca tanıyabilmek için açıklayıcı bir ad kullanın.",
+      },
+    },
+    row: {
+      copy: "API anahtarını kopyala",
+      copied: "Kopyalandı",
+      unnamed: "--",
+      deleteConfirm:
+        "Bu API anahtarını devre dışı bırakmak istediğinizden emin misiniz?\nBunu yaptıktan sonra artık kullanılamaz.\n\nBu işlem geri alınamaz.",
+    },
     table: {
+      name: "Ad",
       key: "API Anahtarı",
       by: "Oluşturan",
       created: "Oluşturulma Tarihi",

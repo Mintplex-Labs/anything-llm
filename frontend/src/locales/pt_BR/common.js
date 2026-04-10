@@ -686,10 +686,37 @@ const TRANSLATIONS = {
     description: "Chaves API permitem acesso programático a esta instância.",
     link: "Leia a documentação da API",
     generate: "Gerar Nova Chave",
+    empty: "Nenhuma chave de API encontrada",
+    actions: "Ações",
+    messages: {
+      error: "Erro: {{error}}",
+    },
+    modal: {
+      title: "Criar nova chave de API",
+      cancel: "Cancelar",
+      close: "Fechar",
+      create: "Criar chave de API",
+      helper:
+        "Depois de criada, a chave de API pode ser usada para acessar e configurar esta instância do AnythingLLM programaticamente.",
+      name: {
+        label: "Nome",
+        placeholder: "Integração de produção",
+        helper:
+          "Opcional. Use um nome amigável para identificar esta chave depois.",
+      },
+    },
+    row: {
+      copy: "Copiar chave de API",
+      copied: "Copiado",
+      unnamed: "--",
+      deleteConfirm:
+        "Tem certeza de que deseja desativar esta chave de API?\nDepois disso ela não poderá mais ser usada.\n\nEsta ação é irreversível.",
+    },
     table: {
+      name: "Nome",
       key: "Chave API",
-      by: "Criado Por",
-      created: "Criado Em",
+      by: "Criada Por",
+      created: "Criada Em",
     },
   },
   llm: {

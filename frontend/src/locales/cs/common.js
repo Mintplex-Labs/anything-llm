@@ -697,7 +697,34 @@ const TRANSLATIONS = {
       "API klíče umožňují držiteli programově přistupovat a spravovat tuto instanci AnythingLLM.",
     link: "Přečíst dokumentaci API",
     generate: "Generovat nový API klíč",
+    empty: "Nebyly nalezeny žádné API klíče",
+    actions: "Akce",
+    messages: {
+      error: "Chyba: {{error}}",
+    },
+    modal: {
+      title: "Vytvořit nový API klíč",
+      cancel: "Zrušit",
+      close: "Zavřít",
+      create: "Vytvořit API klíč",
+      helper:
+        "Po vytvoření lze API klíč použít pro programový přístup k této instanci AnythingLLM a její správu.",
+      name: {
+        label: "Název",
+        placeholder: "Produkční integrace",
+        helper:
+          "Volitelné. Použijte přívětivý název, abyste klíč později snadno rozpoznali.",
+      },
+    },
+    row: {
+      copy: "Kopírovat API klíč",
+      copied: "Zkopírováno",
+      unnamed: "--",
+      deleteConfirm:
+        "Opravdu chcete deaktivovat tento API klíč?\nPoté už nebude možné jej používat.\n\nTuto akci nelze vrátit zpět.",
+    },
     table: {
+      name: "Název",
       key: "API klíč",
       by: "Vytvořil",
       created: "Vytvořeno",

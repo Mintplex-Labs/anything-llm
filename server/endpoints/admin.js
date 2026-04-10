@@ -512,10 +512,11 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { apiKey, error } = await ApiKey.create(user.id);
+        const { name = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(user.id, name);
         await EventLogs.logEvent(
           "api_key_created",
-          { createdBy: user?.username },
+          { createdBy: user?.username, name: apiKey?.name },
           user?.id
         );
         return response.status(200).json({

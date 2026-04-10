@@ -647,7 +647,32 @@ const TRANSLATIONS = {
     description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
+    empty: "未找到 API 密钥",
+    actions: "操作",
+    messages: {
+      error: "错误：{{error}}",
+    },
+    modal: {
+      title: "创建新的 API 密钥",
+      cancel: "取消",
+      close: "关闭",
+      create: "创建 API 密钥",
+      helper: "创建后，API 密钥可用于以编程方式访问并配置此 AnythingLLM 实例。",
+      name: {
+        label: "名称",
+        placeholder: "生产环境集成",
+        helper: "可选。使用一个易于识别的名称，以便之后识别此密钥。",
+      },
+    },
+    row: {
+      copy: "复制 API 密钥",
+      copied: "已复制",
+      unnamed: "--",
+      deleteConfirm:
+        "确定要停用此 API 密钥吗？\n停用后将无法再使用。\n\n此操作不可撤销。",
+    },
     table: {
+      name: "名称",
       key: "API 密钥",
       by: "创建者",
       created: "创建时间",
