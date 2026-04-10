@@ -97,8 +97,8 @@ module.exports.GmailCreateDraft = {
             try {
               this.super.handlerProps.log(`Using the gmail-create-draft tool.`);
 
-              if (!to || !subject) {
-                return "Error: 'to' and 'subject' are required.";
+              if (!to || !subject || !body) {
+                return "Error: 'to', 'subject', and 'body' are required.";
               }
 
               const preparedAttachments = [];

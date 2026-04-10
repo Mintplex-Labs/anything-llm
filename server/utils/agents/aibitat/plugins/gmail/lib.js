@@ -218,6 +218,10 @@ class GmailBridge {
   #apiKey = null;
   #isInitialized = false;
 
+  #log(text, ...args) {
+    console.log(`\x1b[36m[GmailBridge]\x1b[0m ${text}`, ...args);
+  }
+
   /**
    * Resets the bridge state, forcing re-initialization on next use.
    * Call this when configuration changes (e.g., deployment ID updated).
@@ -301,6 +305,7 @@ class GmailBridge {
   }
 
   get maskedDeploymentId() {
+    if (!this.#deploymentId) return "(not configured)";
     return (
       this.#deploymentId.substring(0, 5) +
       "..." +
@@ -313,7 +318,7 @@ class GmailBridge {
    * @returns {string}
    */
   #getBaseUrl() {
-    console.log(`Getting base URL for deployment ID`, this.maskedDeploymentId);
+    this.#log(`Getting base URL for deployment ID ${this.maskedDeploymentId}`);
     return `https://script.google.com/macros/s/${this.#deploymentId}/exec`;
   }
 
@@ -550,34 +555,6 @@ class GmailBridge {
    */
   async moveToInbox(threadId) {
     return this.request("move_to_inbox", { threadId });
-  }
-
-  /**
-   * List all user labels.
-   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
-   */
-  async listLabels() {
-    return this.request("list_labels");
-  }
-
-  /**
-   * Add a label to a thread.
-   * @param {string} threadId - The thread ID
-   * @param {string} labelName - The label name
-   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
-   */
-  async addLabel(threadId, labelName) {
-    return this.request("add_label", { threadId, labelName });
-  }
-
-  /**
-   * Remove a label from a thread.
-   * @param {string} threadId - The thread ID
-   * @param {string} labelName - The label name
-   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
-   */
-  async removeLabel(threadId, labelName) {
-    return this.request("remove_label", { threadId, labelName });
   }
 
   /**
