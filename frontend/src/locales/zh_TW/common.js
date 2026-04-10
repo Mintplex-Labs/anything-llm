@@ -384,6 +384,118 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 連接器",
+        description:
+          "讓您的代理能夠與 Gmail 互動：搜尋郵件、閱讀郵件討論、撰寫草稿、發送郵件，以及管理您的收件匣。請參閱相關文件。",
+        multiUserWarning:
+          "由於安全考量，Gmail 整合功能在多使用者模式下無法使用。請停用多使用者模式才能使用此功能。",
+        configuration: "Gmail 設定",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 網頁應用程式的部署 ID",
+        apiKey: "API 關鍵字",
+        apiKeyHelp: "您在 Google Apps Script 部署中設定的 API 金鑰",
+        configurationRequired: "請設定部署 ID 和 API 關鍵，以啟用 Gmail 功能。",
+        configured: "設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          search: {
+            title: "搜尋和閱讀電子郵件",
+            description: "搜尋並閱讀您 Gmail 收件匣中的電子郵件。",
+          },
+          drafts: {
+            title: "草稿郵件",
+            description: "創建、編輯和管理電子郵件草稿",
+          },
+          send: {
+            title: "發送和回覆電子郵件",
+            description: "立即發送電子郵件並回覆討論串",
+          },
+          threads: {
+            title: "管理電子郵件串",
+            description: "管理電子郵件對話 - 標示已讀/未讀、歸檔、刪除",
+          },
+          account: {
+            title: "整合統計",
+            description: "查看郵箱統計資料和帳戶資訊",
+          },
+        },
+        skills: {
+          search: {
+            title: "搜尋郵件",
+            description: "使用 Gmail 的查詢語法搜尋電子郵件",
+          },
+          readThread: {
+            title: "閱讀主題",
+            description: "閱讀由 ID 創建的完整電子郵件對話",
+          },
+          createDraft: {
+            title: "建立草稿",
+            description: "建立新的電子郵件草稿",
+          },
+          createDraftReply: {
+            title: "撰寫草稿回覆",
+            description: "撰寫一份針對已有的討論串的回覆草稿。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新現有電子郵件草稿",
+          },
+          getDraft: {
+            title: "取得草稿",
+            description: "根據 ID 取得特定草稿",
+          },
+          listDrafts: {
+            title: "草稿清單",
+            description: "列出所有草稿電子郵件",
+          },
+          deleteDraft: {
+            title: "刪除草稿",
+            description: "刪除草稿電子郵件",
+          },
+          sendDraft: {
+            title: "發送草稿",
+            description: "發送現有電子郵件草稿",
+          },
+          sendEmail: {
+            title: "發送電子郵件",
+            description: "立即發送電子郵件",
+          },
+          replyToThread: {
+            title: "回覆主題",
+            description: "立即回覆電子郵件討論串",
+          },
+          markRead: {
+            title: "馬克·瑞德",
+            description: "標示某個主題已閱讀",
+          },
+          markUnread: {
+            title: "標示為未讀",
+            description: "將某個主題標示為未讀",
+          },
+          moveToTrash: {
+            title: "移至垃圾桶",
+            description: "將主題移動到垃圾桶",
+          },
+          moveToArchive: {
+            title: "檔案",
+            description: "將主題歸檔",
+          },
+          moveToInbox: {
+            title: "移動到收件匣",
+            description: "將主題移動到收件匣",
+          },
+          getMailboxStats: {
+            title: "郵箱統計",
+            description: "查看未讀郵件數量及郵箱統計數據",
+          },
+          getInbox: {
+            title: "開啟收件匣",
+            description: "簡潔的方式，讓您能輕鬆取得 Gmail 郵箱中的郵件。",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",

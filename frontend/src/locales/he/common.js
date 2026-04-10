@@ -405,6 +405,123 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "חיבור ל-GMail",
+        description:
+          'אפשר לאгент שלכם לתקשר עם Gmail – לחפש הודעות דוא"ל, לקרוא דיונים, ליצור טיוטות, לשלוח הודעות דוא"ל ולנהל תיבת הדואר. <a>קרא את התיעוד</a>.',
+        multiUserWarning:
+          "שילוב עם ג'ימל אינו זמין במצב רב משתמשים מטעמי אבטחה. אנא כבו את מצב רב משתמשים כדי להשתמש בתכונה זו.",
+        configuration: "הגדרת חשבון Gmail",
+        deploymentId: "מזהה הפריסה",
+        deploymentIdHelp: "מזהה הפריסה מהאפליקציה שלך של Google Apps Script.",
+        apiKey: "מפתח API",
+        apiKeyHelp:
+          "מפתח ה-API שבה הגדרת בסביבת העבודה של Google Apps Script שלך.",
+        configurationRequired:
+          "אנא הגדירו את מזהה ההפצה ואת מפתח ה-API כדי לאפשר את יכולות Gmail.",
+        configured: "הוגדר",
+        searchSkills: "כישורים לחיפוש...",
+        noSkillsFound: "לא נמצאו תוצאות התואמות את החיפוש שלך.",
+        categories: {
+          search: {
+            title: 'חיפוש וקריאת הודעות דוא"ל',
+            description: 'חפש וקרא הודעות דוא"ל מהתיבת הדוא"ל של ג\'ימל שלך.',
+          },
+          drafts: {
+            title: 'הודעות דוא"ל לדוגמה',
+            description: 'יצירה, עריכה וניהול של טיוטות של הודעות דוא"ל.',
+          },
+          send: {
+            title: "שליחה ומתן מענה למיילים",
+            description: "שלחו מיילים ונענו לדיונים באופן מיידי.",
+          },
+          threads: {
+            title: 'ניהול שרשראות דוא"ל',
+            description:
+              'ניהול תכתובות דוא"ל – סימון כ"קרא/לא קרא", ארכיון, תיבת זבל',
+          },
+          account: {
+            title: "נתונים על שילוב",
+            description: "צפו בסטטיסטיקות של תיבת הדואר ובתמונות החשבון",
+          },
+        },
+        skills: {
+          search: {
+            title: 'חיפוש הודעות דוא"ל',
+            description: "חיפוש הודעות דוא\"ל באמצעות תחביר שאילתות של ג'ימייל",
+          },
+          readThread: {
+            title: "קרא את השרשור",
+            description: "קרא את כל שרשרת האימיילים שנוצרה על ידי ID.",
+          },
+          createDraft: {
+            title: "יצירת טיוטה",
+            description: "צור טיוטת אימייל חדשה",
+          },
+          createDraftReply: {
+            title: "יצירת תגובה ראשונית",
+            description: "צור תגובה ראשונית לפורום קיים.",
+          },
+          updateDraft: {
+            title: "גרסה עדכנית",
+            description: 'עדכן הודעת דוא"ל קיימת',
+          },
+          getDraft: {
+            title: "קבל טיוטה",
+            description: "השגת גרסה ספציפית לפי מספר זיהוי",
+          },
+          listDrafts: {
+            title: "גרסאות טיוטה",
+            description: "רשום את כל ההודעות המאובזרות",
+          },
+          deleteDraft: {
+            title: "מחיקת טיוטה",
+            description: "מחיקת תגובה מקושטת",
+          },
+          sendDraft: {
+            title: "שלח טיוטה",
+            description: "שלח גרסה קיימת של מייל",
+          },
+          sendEmail: {
+            title: "שלח אימייל",
+            description: "שלח מייל באופן מיידי",
+          },
+          replyToThread: {
+            title: "תגובה לדיון",
+            description: "התגובה מיידית לשרשור אימיילים",
+          },
+          markRead: {
+            title: "מרק רד",
+            description: 'סמנו נושא כ"קרא"',
+          },
+          markUnread: {
+            title: "סמן כלא קרא",
+            description: "סמנו נושא כלא קרא",
+          },
+          moveToTrash: {
+            title: "העבר למיחזור",
+            description: "העברת נושא לקבצי האשפה",
+          },
+          moveToArchive: {
+            title: "ארכיון",
+            description: "שמור את הדיון",
+          },
+          moveToInbox: {
+            title: "העבר לסמאר",
+            description: "העבר את הדיון לתיבת הדואר הנכנס",
+          },
+          getMailboxStats: {
+            title: "סטטיסטיקות של תיבת דואר",
+            description:
+              "קבל ספירה של הודעות שטרם נקראו וסטטיסטיקות של תיבת הדואר.",
+          },
+          getInbox: {
+            title: "קבל תיבת הדואר",
+            description:
+              'דרך פשוטה ומהירה לקבל את הודעות הדוא"ל מהתיבת הדוא"ל של ג\'ימל',
+          },
+        },
+      },
     },
     mcp: {
       title: "שרתי MCP",

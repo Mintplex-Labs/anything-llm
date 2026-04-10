@@ -404,6 +404,121 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 接続",
+        description:
+          "エージェントがGmailと連携できるようにする：メールの検索、スレッドの閲覧、ドラフトの作成、メールの送信、およびインボックスの管理を可能にします。詳細については、<a>ドキュメントを参照</a>。",
+        multiUserWarning:
+          "セキュリティ上の理由から、Gmailとの連携はマルチユーザーモードでは利用できません。この機能を使用するには、まずマルチユーザーモードを無効にしてください。",
+        configuration: "Gmail の設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptウェブアプリケーションのデプロイメントID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Gmail の機能を有効にするには、デプロイメント ID と API キーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound: "検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          search: {
+            title: "メールの検索と閲覧",
+            description: "Gmail の受信トレイから、メールを検索および閲覧する",
+          },
+          drafts: {
+            title: "サンプルメール",
+            description: "メールの作成、編集、および管理",
+          },
+          send: {
+            title: "メールの送信と返信",
+            description: "メールを送信し、スレッドへの返信をすぐに行う。",
+          },
+          threads: {
+            title: "メールのトピックを管理する",
+            description:
+              "メールのトピックを管理する - 既読/未読のマーク、アーカイブ、削除",
+          },
+          account: {
+            title: "統合に関する統計",
+            description: "メールボックスの統計情報とアカウント情報を表示する",
+          },
+        },
+        skills: {
+          search: {
+            title: "メールを検索する",
+            description: "Gmail のクエリ構文を使用して、メールを検索する",
+          },
+          readThread: {
+            title: "スレッドを読む",
+            description: "IDでメールの全文を閲覧する",
+          },
+          createDraft: {
+            title: "ドラフト作成",
+            description: "新しいメールの草案を作成する",
+          },
+          createDraftReply: {
+            title: "草案の返信を作成する",
+            description: "既存のスレッドに対する返信の草案を作成する",
+          },
+          updateDraft: {
+            title: "ドラフトの更新",
+            description: "既存のメールドラフトを更新する",
+          },
+          getDraft: {
+            title: "草案を入手",
+            description: "IDで特定のドラフトを取得する",
+          },
+          listDrafts: {
+            title: "ドラフト案リスト",
+            description: "すべての草案メールの一覧を表示する",
+          },
+          deleteDraft: {
+            title: "草案を削除",
+            description: "草案のメールを削除する",
+          },
+          sendDraft: {
+            title: "草案を送信",
+            description: "既存のメールドラフトを送信する",
+          },
+          sendEmail: {
+            title: "メールを送信する",
+            description: "すぐにメールを送信してください",
+          },
+          replyToThread: {
+            title: "スレッドへの返信",
+            description: "メールのやり取りにすぐに返信する",
+          },
+          markRead: {
+            title: "マーク・リード",
+            description: "スレッドを「読了」としてマークする",
+          },
+          markUnread: {
+            title: "未読としてマーク",
+            description: "スレッドを「未読」としてマークする",
+          },
+          moveToTrash: {
+            title: "ゴミ箱へ移動",
+            description: "スレッドをゴミ箱に移動する",
+          },
+          moveToArchive: {
+            title: "アーカイブ",
+            description: "スレッドをアーカイブする",
+          },
+          moveToInbox: {
+            title: "受信トレイへ移動",
+            description: "スレッドをインボックスに移動する",
+          },
+          getMailboxStats: {
+            title: "メールボックスの統計情報",
+            description: "未読件数とメールボックスの統計情報を取得する",
+          },
+          getInbox: {
+            title: "インボックスを開く",
+            description: "Gmail から受信したメールを効率的に取得する方法",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP サーバー",

@@ -409,6 +409,120 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail 연결기",
+        description:
+          "제 에이전트가 Gmail과 상호 작용할 수 있도록 설정하세요 - 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 받은 메일 관리 기능을 사용하세요. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Gmail 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주세요.",
+        configuration: "Gmail 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 Google Apps Script 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "당신이 Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "Gmail 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색 결과와 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Gmail 계정에서 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집, 관리",
+          },
+          send: {
+            title: "이메일 보내기 및 답변",
+            description: "이메일을 보내고, 토론 스레드에 즉시 응답",
+          },
+          threads: {
+            title: "이메일 스레드 관리",
+            description:
+              "이메일 스레드 관리 - 읽음/미읽음 표시, 아카이브, 삭제",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          search: {
+            title: "이메일 검색",
+            description: "Gmail 쿼리 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "게시글 전체 읽기",
+            description: "ID를 기준으로 전체 이메일 스레드를 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description: "새로운 이메일 초안 작성",
+          },
+          createDraftReply: {
+            title: "초안 답변 작성",
+            description: "기존 스레드에 대한 답변 초안 작성",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          getDraft: {
+            title: "초안 보기",
+            description: "ID를 사용하여 특정 초안을 검색/불러오기",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "즉시 이메일을 보내세요.",
+          },
+          replyToThread: {
+            title: "게시글에 답변",
+            description: "이메일 스레드에 즉시 답변",
+          },
+          markRead: {
+            title: "마크 리드",
+            description: '특정 게시글을 "읽음"으로 표시',
+          },
+          markUnread: {
+            title: "미리 읽기",
+            description: '특정 스레드를 "읽지 않은 상태"로 표시',
+          },
+          moveToTrash: {
+            title: "삭제",
+            description: "스레드를 쓰레기함으로 이동",
+          },
+          moveToArchive: {
+            title: "보관",
+            description: "게시글을 보관",
+          },
+          moveToInbox: {
+            title: "받은 편지함으로 이동",
+            description: "스레드를 받은 편지함으로 이동",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "읽지 않은 이메일 수 및 메일함 통계 확인",
+          },
+          getInbox: {
+            title: "메일함 보기",
+            description: "Gmail에서 받은 이메일을 효율적으로 관리하는 방법",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
