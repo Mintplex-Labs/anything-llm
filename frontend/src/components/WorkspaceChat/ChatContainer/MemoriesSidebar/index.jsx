@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import ChatSidebar, { useMemoriesSidebar } from "../ChatSidebar";
 import useUser from "@/hooks/useUser";
-import Admin from "@/models/admin";
+import System from "@/models/system";
 import Memory from "@/models/memory";
 import PersonalizationToggle from "./PersonalizationToggle";
 import MemoryTabs from "./MemoryTabs";
@@ -24,9 +24,8 @@ export default function MemoriesSidebar({ workspace }) {
 
   useEffect(() => {
     if (!sidebarOpen) return;
-    Admin.systemPreferencesByFields(["memory_enabled"]).then(({ settings }) => {
-      const isOn = settings?.memory_enabled === "on";
-      setEnabled(isOn);
+    System.keys().then((settings) => {
+      setEnabled(!!settings?.MemoryEnabled);
       setLoadingEnabled(false);
     });
   }, [sidebarOpen]);

@@ -43,7 +43,7 @@ export default function MemoryTabs({
       <button
         type="button"
         onClick={onAdd}
-        className="flex items-center justify-center size-6 rounded-lg border-none bg-transparent cursor-pointer text-zinc-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-200 transition-colors"
+        className="-mr-1 flex items-center justify-center size-6 rounded-lg border-none bg-transparent cursor-pointer text-zinc-50 light:text-slate-900 hover:bg-zinc-800 light:hover:bg-slate-200 transition-colors"
       >
         <Plus size={16} weight="bold" />
       </button>

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { SlidersHorizontal, CaretRight } from "@phosphor-icons/react";
 import useLoginMode from "@/hooks/useLoginMode";
+import useUser from "@/hooks/useUser";
+import System from "@/models/system";
 import { useTranslation } from "react-i18next";
 import { useMemoriesSidebar, useSourcesSidebar } from "../ChatSidebar";
 
@@ -12,9 +14,20 @@ const TEXT_SIZES = [
 
 export default function ChatSettingsMenu() {
   const mode = useLoginMode();
+  const { user } = useUser();
+  const isAdmin = !user || user?.role === "admin";
   const [showMenu, setShowMenu] = useState(false);
+  const [memoryEnabled, setMemoryEnabled] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+
+  useEffect(() => {
+    System.keys().then((settings) => {
+      setMemoryEnabled(!!settings?.MemoryEnabled);
+    });
+  }, []);
+
+  const showMemoriesOption = isAdmin || memoryEnabled;
 
   useEffect(() => {
     if (!showMenu) return;
@@ -65,7 +78,9 @@ export default function ChatSettingsMenu() {
           className="absolute right-0 top-[42px] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg p-3.5 w-[226px] flex flex-col gap-1.5 shadow-lg"
         >
           <TextSizeRow />
-          <MemoriesRow onClose={() => setShowMenu(false)} />
+          {showMemoriesOption && (
+            <MemoriesRow onClose={() => setShowMenu(false)} />
+          )}
         </div>
       )}
     </div>
