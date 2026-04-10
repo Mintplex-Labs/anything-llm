@@ -25,13 +25,13 @@ export default function CardMenu({
   useEffect(() => {
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
-    setPos({ top: rect.bottom + 4, left: rect.right - 160 });
+    setPos({ top: rect.bottom + 4, left: rect.right - 170 });
   }, []);
 
   return createPortal(
     <div
       ref={menuRef}
-      className="fixed z-[9999] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg p-3 flex flex-col gap-1.5 shadow-lg w-[160px]"
+      className="fixed z-[9999] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg py-3 px-2 flex flex-col shadow-lg w-[170px]"
       style={{ top: pos.top, left: pos.left }}
     >
       <MenuItem label="Edit" onClick={onEdit} />
@@ -50,7 +50,7 @@ function MenuItem({ label, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left text-sm font-medium text-zinc-50 light:text-slate-700 border-none bg-transparent cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-200 rounded px-2 py-1 transition-colors"
+      className="w-full text-left text-sm font-medium text-zinc-50 light:text-slate-800 border-none bg-transparent cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-200 rounded px-2.5 py-1 transition-colors"
     >
       {label}
     </button>
