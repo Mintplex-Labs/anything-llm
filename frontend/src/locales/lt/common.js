@@ -695,7 +695,34 @@ const TRANSLATIONS = {
       "API raktai leidžia programiškai pasiekti ir valdyti šią AnythingLLM instanciją.",
     link: "Skaityti API dokumentaciją",
     generate: "Generuoti naują API raktą",
+    empty: "API raktų nerasta",
+    actions: "Veiksmai",
+    messages: {
+      error: "Klaida: {{error}}",
+    },
+    modal: {
+      title: "Sukurti naują API raktą",
+      cancel: "Atšaukti",
+      close: "Uždaryti",
+      create: "Sukurti API raktą",
+      helper:
+        "Sukūrus API raktą, jį galima naudoti programiškai pasiekti ir konfigūruoti šį AnythingLLM egzempliorių.",
+      name: {
+        label: "Pavadinimas",
+        placeholder: "Produkcinė integracija",
+        helper:
+          "Neprivaloma. Naudokite aiškų pavadinimą, kad vėliau lengvai atpažintumėte šį raktą.",
+      },
+    },
+    row: {
+      copy: "Kopijuoti API raktą",
+      copied: "Nukopijuota",
+      unnamed: "--",
+      deleteConfirm:
+        "Ar tikrai norite išjungti šį API raktą?\nPo to jo nebebus galima naudoti.\n\nŠio veiksmo atšaukti negalima.",
+    },
     table: {
+      name: "Pavadinimas",
       key: "API raktas",
       by: "Sukūrė",
       created: "Sukurta",

@@ -691,7 +691,34 @@ const TRANSLATIONS = {
       "API atslēgas ļauj to īpašniekam programmatiski piekļūt un pārvaldīt šo AnythingLLM instanci.",
     link: "Lasīt API dokumentāciju",
     generate: "Ģenerēt jaunu API atslēgu",
+    empty: "API atslēgas nav atrastas",
+    actions: "Darbības",
+    messages: {
+      error: "Kļūda: {{error}}",
+    },
+    modal: {
+      title: "Izveidot jaunu API atslēgu",
+      cancel: "Atcelt",
+      close: "Aizvērt",
+      create: "Izveidot API atslēgu",
+      helper:
+        "Pēc izveides API atslēgu var izmantot, lai programmatiski piekļūtu šai AnythingLLM instancei un to konfigurētu.",
+      name: {
+        label: "Nosaukums",
+        placeholder: "Produkcijas integrācija",
+        helper:
+          "Nav obligāti. Izmantojiet saprotamu nosaukumu, lai vēlāk šo atslēgu būtu viegli atpazīt.",
+      },
+    },
+    row: {
+      copy: "Kopēt API atslēgu",
+      copied: "Nokopēts",
+      unnamed: "--",
+      deleteConfirm:
+        "Vai tiešām vēlaties deaktivizēt šo API atslēgu?\nPēc tam to vairs nevarēs izmantot.\n\nŠo darbību nevar atsaukt.",
+    },
     table: {
+      name: "Nosaukums",
       key: "API atslēga",
       by: "Izveidoja",
       created: "Izveidots",

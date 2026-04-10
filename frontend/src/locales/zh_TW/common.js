@@ -559,7 +559,33 @@ const TRANSLATIONS = {
       "API 金鑰可讓持有人透過程式方式存取並管理這個 AnythingLLM 系統。",
     link: "閱讀 API 文件",
     generate: "產生新的 API 金鑰",
+    empty: "找不到 API 金鑰",
+    actions: "操作",
+    messages: {
+      error: "錯誤：{{error}}",
+    },
+    modal: {
+      title: "建立新的 API 金鑰",
+      cancel: "取消",
+      close: "關閉",
+      create: "建立 API 金鑰",
+      helper:
+        "建立後，API 金鑰可用於以程式方式存取並設定這個 AnythingLLM 執行個體。",
+      name: {
+        label: "名稱",
+        placeholder: "正式環境整合",
+        helper: "選填。請使用易於辨識的名稱，方便你之後識別這把金鑰。",
+      },
+    },
+    row: {
+      copy: "複製 API 金鑰",
+      copied: "已複製",
+      unnamed: "--",
+      deleteConfirm:
+        "確定要停用此 API 金鑰嗎？\n停用後將無法再使用。\n\n此操作無法復原。",
+    },
     table: {
+      name: "名稱",
       key: "API 金鑰",
       by: "建立者",
       created: "建立時間",

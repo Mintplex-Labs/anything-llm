@@ -595,7 +595,34 @@ const TRANSLATIONS = {
       "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
     link: "Lees de API-documentatie",
     generate: "Genereer Nieuwe API-sleutel",
+    empty: "Geen API-sleutels gevonden",
+    actions: "Acties",
+    messages: {
+      error: "Fout: {{error}}",
+    },
+    modal: {
+      title: "Nieuwe API-sleutel maken",
+      cancel: "Annuleren",
+      close: "Sluiten",
+      create: "API-sleutel maken",
+      helper:
+        "Na het aanmaken kan de API-sleutel worden gebruikt om programmatisch toegang te krijgen tot deze AnythingLLM-instantie en deze te configureren.",
+      name: {
+        label: "Naam",
+        placeholder: "Productie-integratie",
+        helper:
+          "Optioneel. Gebruik een duidelijke naam zodat je deze sleutel later makkelijk kunt herkennen.",
+      },
+    },
+    row: {
+      copy: "API-sleutel kopiëren",
+      copied: "Gekopieerd",
+      unnamed: "--",
+      deleteConfirm:
+        "Weet je zeker dat je deze API-sleutel wilt uitschakelen?\nDaarna kan deze niet meer worden gebruikt.\n\nDeze actie kan niet ongedaan worden gemaakt.",
+    },
     table: {
+      name: "Naam",
       key: "API-sleutel",
       by: "Aangemaakt Door",
       created: "Aangemaakt",
