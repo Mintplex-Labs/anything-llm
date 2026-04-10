@@ -408,6 +408,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "سرورهای MCP",
@@ -1123,9 +1233,6 @@ const TRANSLATIONS = {
         description:
           "توکن API را که از @BotFather دریافت کرده‌اید، کپی کنید و یک فضای کاری پیش‌فرض را برای ربات خود انتخاب کنید تا بتواند با کاربران ارتباط برقرار کند.",
         "bot-token": "توکن ربات",
-        "default-workspace": "فضای کاری پیش‌فرض",
-        "no-workspace":
-          "فضاهای کاری موجود نیست. یک فضای کاری جدید ایجاد خواهد شد.",
         connecting: "در حال اتصال...",
         "connect-bot": "اتصال ربات",
       },
@@ -1165,19 +1272,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "امکان لغو کردن حساب کاربری وجود نداشت.",
     },
     users: {
-      "pending-title": "منتظر تایید",
       "pending-description":
         "کاربرانی که منتظر تایید هستند. کد تطبیقی که در اینجا نشان داده شده را با کد موجود در چت تلگرام خود مطابقت دهید.",
-      "approved-title": "کاربران تایید شده",
-      "approved-description": "کاربرانی که مجوز دارند با ربات شما گفتگو کنند.",
-      user: "کاربر",
-      "pairing-code": "کد جفت‌سازی",
-      "no-pending": "هیچ درخواست در حال انجام وجود ندارد.",
-      "no-approved": "کاربران تایید شده وجود ندارد",
       unknown: "نامشخص",
-      approve: "تایید",
-      deny: "رد",
-      revoke: "اعلام لغو",
     },
   },
 };

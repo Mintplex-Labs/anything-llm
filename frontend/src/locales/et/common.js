@@ -406,6 +406,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -1088,9 +1198,6 @@ const TRANSLATIONS = {
         description:
           "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
         "bot-token": "Bot token",
-        "default-workspace": "Vaikimisi kasutatav tööruum",
-        "no-workspace":
-          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
         connecting: "Ühendamine...",
         "connect-bot": "Ühendusrobott",
       },
@@ -1129,20 +1236,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
     },
     users: {
-      "pending-title": "Ootea faasis, ootamas heakskiitu",
       "pending-description":
         "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
-      "approved-title": "Heakskiidud kasutajad",
-      "approved-description":
-        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
-      user: "Kasutaja",
-      "pairing-code": "Koosamis kood",
-      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
-      "no-approved": "Pole heakskiidud kasutajaid",
       unknown: "Tuntud pole",
-      approve: "Heakskiid",
-      deny: "Nõgata",
-      revoke: "Tingimata",
     },
   },
 };

@@ -410,6 +410,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -1135,9 +1245,6 @@ const TRANSLATIONS = {
         description:
           "Plak de API-token die je van @BotFather hebt ontvangen en selecteer een standaard werkruimte voor je bot om mee te communiceren.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standaard werkruimte",
-        "no-workspace":
-          "Er zijn geen beschikbare werkplekken. Een nieuwe zal worden aangemaakt.",
         connecting: "Verbinding wordt gemaakt...",
         "connect-bot": "Connect Bot",
       },
@@ -1180,20 +1287,9 @@ const TRANSLATIONS = {
         "Fout bij het intrekken van het gebruikersaccount.",
     },
     users: {
-      "pending-title": "Afhankelijk van goedkeuring",
       "pending-description":
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
-      "approved-title": "Goedgekeurde gebruikers",
-      "approved-description":
-        "Gebruikers die zijn goedgekeurd om met uw bot te communiceren.",
-      user: "Gebruiker",
-      "pairing-code": "Code voor het koppelen",
-      "no-pending": "Er zijn geen lopende verzoeken.",
-      "no-approved": "Geen goedgekeurde gebruikers",
       unknown: "Onbekend",
-      approve: "Goedkeuren",
-      deny: "Afgewijzen",
-      revoke: "Intrekken",
     },
   },
 };

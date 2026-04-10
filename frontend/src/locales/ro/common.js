@@ -866,6 +866,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Servere MCP",
@@ -1135,9 +1245,6 @@ const TRANSLATIONS = {
         description:
           "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spațiu de lucru implicit",
-        "no-workspace":
-          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
         connecting: "Conectare...",
         "connect-bot": "Conectare automată",
       },
@@ -1179,20 +1286,9 @@ const TRANSLATIONS = {
         "Nu a fost posibil să se anuleze contul utilizatorului.",
     },
     users: {
-      "pending-title": "Așteptare aprobare",
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
-      "approved-title": "Utilizatori autorizați",
-      "approved-description":
-        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
-      user: "Utilizator",
-      "pairing-code": "Cod de asociere",
-      "no-pending": "Nu există cereri în așteptare.",
-      "no-approved": "Nu există utilizatori autorizați.",
       unknown: "Necunoscut",
-      approve: "Aprobă",
-      deny: "Negarea",
-      revoke: "Anula",
     },
   },
 };

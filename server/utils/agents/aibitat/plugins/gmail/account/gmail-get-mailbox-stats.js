@@ -10,11 +10,11 @@ module.exports.GmailGetMailboxStats = {
           super: aibitat,
           name: this.name,
           description:
-            "Get Gmail mailbox statistics including unread counts for inbox, " +
+            "Used for general account information. Reports Gmail mailbox statistics including unread counts for inbox, " +
             "priority inbox, starred messages, and spam folder.",
           examples: [
             {
-              prompt: "How many unread emails do I have?",
+              prompt: "How much of my mailbox quota is remaining?",
               call: JSON.stringify({}),
             },
             {

@@ -424,6 +424,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
@@ -1126,9 +1236,6 @@ const TRANSLATIONS = {
         description:
           "Vložte API token, který jste obdrželi od účtu @BotFather, a vyberte výchozí pracovní prostor, se kterým bude váš bot komunikovat.",
         "bot-token": "Token Bot",
-        "default-workspace": "Výchozí pracovní prostor",
-        "no-workspace":
-          "Nejsou k dispozici žádné pracovní prostory. Bude vytvořeno nové.",
         connecting: "Připojování...",
         "connect-bot": "Bot pro připojení",
       },
@@ -1168,20 +1275,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nezdařilo se zrušit uživatelskou účet.",
     },
     users: {
-      "pending-title": "Čeká na schválení",
       "pending-description":
         "Uživatelé, kteří čekají na ověření. Porovnejte kód pro spárování, který je zde uveden, s tím, který je zobrazen v jejich chatu na Telegramu.",
-      "approved-title": "Schválení uživatelů",
-      "approved-description":
-        "Uživatelé, kteří byli schváleni pro komunikaci s vaším botem.",
-      user: "Uživatel",
-      "pairing-code": "Kód pro párování",
-      "no-pending": "Žádné čekající požadavky",
-      "no-approved": "Žádní registrovaní uživatelé",
       unknown: "Neznámé",
-      approve: "Schválit",
-      deny: "Odmítnout",
-      revoke: "Zrušit",
     },
   },
 };

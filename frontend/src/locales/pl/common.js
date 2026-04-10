@@ -417,6 +417,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -1132,9 +1242,6 @@ const TRANSLATIONS = {
         description:
           "Wklej token API, który otrzymałeś od @BotFather, i wybierz domyślny przestrzeń roboczą, z której Twój bot będzie mógł komunikować się.",
         "bot-token": "Token Bot",
-        "default-workspace": "Domyślne miejsce pracy",
-        "no-workspace":
-          "Brak dostępnych miejsc pracy. Nowe zostanie utworzone.",
         connecting: "Połączenie...",
         "connect-bot": "Bot łączący",
       },
@@ -1175,20 +1282,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
     },
     users: {
-      "pending-title": "Czekając na zatwierdzenie",
       "pending-description":
         "Użytkownicy, którzy czekają na weryfikację. Dopasuj kod parowania, który znajduje się tutaj, z tym, który widnieje w ich rozmowie na Telegramie.",
-      "approved-title": "Użytkownicy, którym przyznano uprawnienia",
-      "approved-description":
-        "Użytkownicy, którzy zostali zatwierdzeni do rozmowy z Twoim botem.",
-      user: "Użytkownik",
-      "pairing-code": "Kod dopasowania",
-      "no-pending": "Brak oczekujących żądań",
-      "no-approved": "Brak zatwierdzonych użytkowników",
       unknown: "Nieznany",
-      approve: "Zaakceptować",
-      deny: "Odrzucać",
-      revoke: "Odstrzegać",
     },
   },
 };

@@ -190,12 +190,22 @@ const SystemSettings = {
       }
     },
     gmail_deployment_id: (update) => {
-      if (!update || typeof update !== "string") return null;
-      return String(update).trim();
+      try {
+        if (!update || typeof update !== "string") return null;
+        return String(update).trim();
+      } finally {
+        const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
+        GmailBridge.reset();
+      }
     },
     gmail_api_key: (update) => {
-      if (!update || typeof update !== "string") return null;
-      return String(update).trim();
+      try {
+        if (!update || typeof update !== "string") return null;
+        return String(update).trim();
+      } finally {
+        const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
+        GmailBridge.reset();
+      }
     },
     agent_sql_connections: async (updates) => {
       const existingConnections = safeJsonParse(

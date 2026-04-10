@@ -1,4 +1,5 @@
-// Search & Read
+// Get Inbox & Search
+const { GmailGetInbox } = require("./search/gmail-get-inbox.js");
 const { GmailSearch } = require("./search/gmail-search.js");
 const { GmailReadThread } = require("./search/gmail-read-thread.js");
 const { GmailReadMessage } = require("./search/gmail-read-message.js");
@@ -36,6 +37,9 @@ const gmailAgent = {
     params: {},
   },
   plugin: [
+    // Alias for easy access to the inbox
+    GmailGetInbox,
+
     // Search & Read (read-only)
     GmailSearch,
     GmailReadThread,

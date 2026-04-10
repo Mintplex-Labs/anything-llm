@@ -384,6 +384,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -1052,8 +1162,6 @@ const TRANSLATIONS = {
         description:
           "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
         "bot-token": "機器人代幣",
-        "default-workspace": "預設工作空間",
-        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
         connecting: "正在連接...",
         "connect-bot": "連線機器人",
       },
@@ -1089,19 +1197,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能取消使用者權限。",
     },
     users: {
-      "pending-title": "待審核",
       "pending-description":
         "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
-      "approved-title": "已授權的使用者",
-      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
-      user: "使用者",
-      "pairing-code": "編碼組合",
-      "no-pending": "目前沒有待處理的請求",
-      "no-approved": "目前沒有已授權的使用者",
       unknown: "未知的",
-      approve: "批准",
-      deny: "拒絕",
-      revoke: "撤銷",
     },
   },
 };

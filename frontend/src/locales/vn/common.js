@@ -408,6 +408,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -1125,9 +1235,6 @@ const TRANSLATIONS = {
         description:
           "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
         "bot-token": "Token Bot",
-        "default-workspace": "Không gian làm việc mặc định",
-        "no-workspace":
-          "Không có không gian làm việc nào khả dụng. Một không gian mới sẽ được tạo ra.",
         connecting: "Kết nối...",
         "connect-bot": "Bot kết nối",
       },
@@ -1167,20 +1274,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
     },
     users: {
-      "pending-title": "Chờ phê duyệt",
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
-      "approved-title": "Người dùng đã được phê duyệt",
-      "approved-description":
-        "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
-      user: "Người dùng",
-      "pairing-code": "Mã ghép",
-      "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
-      "no-approved": "Không có người dùng được xác nhận",
       unknown: "Không xác định",
-      approve: "Chấp thuận",
-      deny: "Từ chối",
-      revoke: "Thu hồi",
     },
   },
 };

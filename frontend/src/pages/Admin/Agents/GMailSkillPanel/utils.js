@@ -16,6 +16,11 @@ export const getGmailSkills = (t) => ({
     icon: MagnifyingGlass,
     skills: [
       {
+        name: "gmail-get-inbox",
+        title: t("agent.skill.gmail.skills.getInbox.title"),
+        description: t("agent.skill.gmail.skills.getInbox.description"),
+      },
+      {
         name: "gmail-search",
         title: t("agent.skill.gmail.skills.search.title"),
         description: t("agent.skill.gmail.skills.search.description"),

@@ -438,7 +438,6 @@ const TRANSLATIONS = {
         configured: "Configured",
         searchSkills: "Search skills...",
         noSkillsFound: "No skills match your search.",
-        skillsConfiguration: "Gmail Skills",
         categories: {
           search: {
             title: "Search & Read Emails",
@@ -463,6 +462,10 @@ const TRANSLATIONS = {
           },
         },
         skills: {
+          getInbox: {
+            title: "Get Inbox",
+            description: "Streamlined way to get the inbox emails from Gmail",
+          },
           search: {
             title: "Search Emails",
             description: "Search emails using Gmail query syntax",
@@ -530,18 +533,6 @@ const TRANSLATIONS = {
           moveToInbox: {
             title: "Move to Inbox",
             description: "Move a thread to inbox",
-          },
-          listLabels: {
-            title: "List Labels",
-            description: "List all Gmail labels",
-          },
-          addLabel: {
-            title: "Add Label",
-            description: "Add a label to a thread",
-          },
-          removeLabel: {
-            title: "Remove Label",
-            description: "Remove a label from a thread",
           },
           getMailboxStats: {
             title: "Mailbox Stats",
@@ -819,8 +810,6 @@ const TRANSLATIONS = {
         description:
           "Paste the API token you received from @BotFather to connect your bot.",
         "bot-token": "Bot Token",
-        "default-workspace": "Default Workspace",
-        "no-workspace": "No available workspaces. A new one will be created.",
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
@@ -857,20 +846,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Failed to revoke user.",
     },
     users: {
-      "pending-title": "Pending Approval",
       "pending-description":
         "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
-      "approved-title": "Approved Users",
-      "approved-description":
-        "Users who have been approved to chat with your bot.",
-      user: "User",
-      "pairing-code": "Pairing Code",
-      "no-pending": "No pending requests",
-      "no-approved": "No approved users",
       unknown: "Unknown",
-      approve: "Approve",
-      deny: "Deny",
-      revoke: "Revoke",
     },
   },
   security: {

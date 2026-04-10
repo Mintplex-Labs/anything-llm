@@ -151,6 +151,7 @@ async function handleAttachments(context, messages) {
   });
 
   let parsedContent = "";
+  const citations = [];
   if (allAttachments.length > 0 && context.super.requestToolApproval) {
     const attachmentNames = allAttachments.map((a) => a.name).join(", ");
 
@@ -167,20 +168,20 @@ async function handleAttachments(context, messages) {
 
       const parsedResults = [];
       for (const attachment of allAttachments) {
-        if (!attachment.data) {
-          parsedResults.push({
-            name: attachment.name,
-            messageIndex: attachment.messageIndex,
-            success: false,
-            error: "No attachment data available",
-          });
-          continue;
-        }
-
+        if (!attachment.data) continue;
         context.super.introspect(
           `${context.caller}: Parsing "${attachment.name}"...`
         );
         const parseResult = await parseAttachment(attachment);
+        if (!parseResult.success) continue;
+
+        citations.push({
+          id: `gmail-attachment-${attachment.messageId}-${attachment.name}`,
+          title: attachment.name,
+          text: parseResult.content,
+          chunkSource: "gmail-attachment://" + attachment.name,
+          score: null,
+        });
         parsedResults.push({
           name: attachment.name,
           messageIndex: attachment.messageIndex,
@@ -191,13 +192,7 @@ async function handleAttachments(context, messages) {
       parsedContent =
         "\n\n--- Parsed Attachment Content ---\n" +
         parsedResults
-          .map((r) => {
-            if (r.success) {
-              return `\n[Message ${r.messageIndex}: ${r.name}]\n${r.content}`;
-            } else {
-              return `\n[Message ${r.messageIndex}: ${r.name}] - Could not parse: ${r.error}`;
-            }
-          })
+          .map((r) => `\n[Message ${r.messageIndex}: ${r.name}]\n${r.content}`)
           .join("\n");
 
       context.super.introspect(
@@ -210,6 +205,7 @@ async function handleAttachments(context, messages) {
     }
   }
 
+  citations.forEach((c) => context.super.addCitation?.(c));
   return { allAttachments, parsedContent };
 }
 
@@ -221,6 +217,16 @@ class GmailBridge {
   #deploymentId = null;
   #apiKey = null;
   #isInitialized = false;
+
+  /**
+   * Resets the bridge state, forcing re-initialization on next use.
+   * Call this when configuration changes (e.g., deployment ID updated).
+   */
+  reset() {
+    this.#deploymentId = null;
+    this.#apiKey = null;
+    this.#isInitialized = false;
+  }
 
   /**
    * Initializes the Gmail bridge by fetching configuration from system settings.

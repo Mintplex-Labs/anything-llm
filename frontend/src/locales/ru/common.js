@@ -409,6 +409,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Серверы MCP",
@@ -1141,8 +1251,6 @@ const TRANSLATIONS = {
         description:
           "Вставьте API-токен, который вы получили от @BotFather, и выберите основной рабочий стол для вашего бота, чтобы он мог общаться.",
         "bot-token": "Токен бота",
-        "default-workspace": "Основной рабочий стол",
-        "no-workspace": "Недоступны рабочие места. Будет создано новое.",
         connecting: "Устанавливается соединение...",
         "connect-bot": "Bot Connect",
       },
@@ -1184,20 +1292,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Не удалось отменить действия пользователя.",
     },
     users: {
-      "pending-title": "Ожидается утверждение",
       "pending-description":
         "Пользователи, ожидающие подтверждения. Сравните код, указанный здесь, с кодом, отображаемым в их чате в Telegram.",
-      "approved-title": "Утвержденные пользователи",
-      "approved-description":
-        "Пользователи, которым разрешено общаться с вашим ботом.",
-      user: "Пользователь",
-      "pairing-code": "Код сопоставления",
-      "no-pending": "Отсутствуют незавершенные запросы.",
-      "no-approved": "Нет зарегистрированных пользователей",
       unknown: "Неизвестно",
-      approve: "Одобрить",
-      deny: "Отрицать",
-      revoke: "Отменить",
     },
   },
 };

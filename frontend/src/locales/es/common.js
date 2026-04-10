@@ -423,6 +423,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -1154,9 +1264,6 @@ const TRANSLATIONS = {
         description:
           "Copia el token de API que recibiste de @BotFather y selecciona un espacio de trabajo predeterminado para que tu bot pueda comunicarse.",
         "bot-token": "Token de Bot",
-        "default-workspace": "Espacio de trabajo predeterminado",
-        "no-workspace":
-          "No hay espacios de trabajo disponibles. Se creará uno nuevo.",
         connecting: "Conectando...",
         "connect-bot": "Bot de conexión",
       },
@@ -1198,20 +1305,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "No se pudo revocar el acceso del usuario.",
     },
     users: {
-      "pending-title": "Sujeto a aprobación",
       "pending-description":
         "Usuarios que están esperando la verificación. Compara el código de emparejamiento que se muestra aquí con el que aparece en su conversación de Telegram.",
-      "approved-title": "Usuarios autorizados",
-      "approved-description":
-        "Usuarios que han sido aprobados para comunicarse con tu bot.",
-      user: "Usuario",
-      "pairing-code": "Código de combinación",
-      "no-pending": "No hay solicitudes pendientes.",
-      "no-approved": "Usuarios no autorizados",
       unknown: "Desconocido",
-      approve: "Aprobar",
-      deny: "Negar",
-      revoke: "Revocar",
     },
   },
 };

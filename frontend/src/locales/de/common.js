@@ -417,6 +417,116 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: null,
+        description: null,
+        multiUserWarning: null,
+        configuration: null,
+        deploymentId: null,
+        deploymentIdHelp: null,
+        apiKey: null,
+        apiKeyHelp: null,
+        configurationRequired: null,
+        configured: null,
+        searchSkills: null,
+        noSkillsFound: null,
+        categories: {
+          search: {
+            title: null,
+            description: null,
+          },
+          drafts: {
+            title: null,
+            description: null,
+          },
+          send: {
+            title: null,
+            description: null,
+          },
+          threads: {
+            title: null,
+            description: null,
+          },
+          account: {
+            title: null,
+            description: null,
+          },
+        },
+        skills: {
+          search: {
+            title: null,
+            description: null,
+          },
+          readThread: {
+            title: null,
+            description: null,
+          },
+          readMessage: {
+            title: null,
+            description: null,
+          },
+          createDraft: {
+            title: null,
+            description: null,
+          },
+          createDraftReply: {
+            title: null,
+            description: null,
+          },
+          updateDraft: {
+            title: null,
+            description: null,
+          },
+          getDraft: {
+            title: null,
+            description: null,
+          },
+          listDrafts: {
+            title: null,
+            description: null,
+          },
+          deleteDraft: {
+            title: null,
+            description: null,
+          },
+          sendDraft: {
+            title: null,
+            description: null,
+          },
+          sendEmail: {
+            title: null,
+            description: null,
+          },
+          replyToThread: {
+            title: null,
+            description: null,
+          },
+          markRead: {
+            title: null,
+            description: null,
+          },
+          markUnread: {
+            title: null,
+            description: null,
+          },
+          moveToTrash: {
+            title: null,
+            description: null,
+          },
+          moveToArchive: {
+            title: null,
+            description: null,
+          },
+          moveToInbox: {
+            title: null,
+            description: null,
+          },
+          getMailboxStats: {
+            title: null,
+            description: null,
+          },
+        },
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
@@ -1141,9 +1251,6 @@ const TRANSLATIONS = {
         description:
           "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
         "bot-token": "Bot-Token",
-        "default-workspace": "Standardarbeitsbereich",
-        "no-workspace":
-          "Keine verfügbaren Arbeitsbereiche. Ein neuer Bereich wird erstellt.",
         connecting: "Verbinde...",
         "connect-bot": "Connect-Bot",
       },
@@ -1190,20 +1297,9 @@ const TRANSLATIONS = {
         "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren.",
     },
     users: {
-      "pending-title": "Warte auf Genehmigung",
       "pending-description":
         "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
-      "approved-title": "Benutzer mit Genehmigung",
-      "approved-description":
-        "Nutzer, denen die Erlaubnis erteilt wurde, mit Ihrem Bot zu kommunizieren.",
-      user: "Benutzer",
-      "pairing-code": "Paarcode",
-      "no-pending": "Keine ausstehenden Anfragen",
-      "no-approved": "Keine autorisierten Benutzer",
       unknown: "Unbekannt",
-      approve: "Genehmigen",
-      deny: "Leugnen",
-      revoke: "Aufheben",
     },
   },
 };
