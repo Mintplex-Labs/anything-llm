@@ -1,9 +1,6 @@
 const gmailLib = require("../lib.js");
-const {
-  prepareAttachment,
-  formatFileSize,
-  MAX_TOTAL_ATTACHMENT_SIZE,
-} = require("../lib.js");
+const { prepareAttachment, MAX_TOTAL_ATTACHMENT_SIZE } = require("../lib.js");
+const { humanFileSize } = require("../../../../../helpers");
 
 module.exports.GmailSendEmail = {
   name: "gmail-send-email",
@@ -126,7 +123,10 @@ module.exports.GmailSendEmail = {
 
                   totalAttachmentSize += result.fileInfo.size;
                   if (totalAttachmentSize > MAX_TOTAL_ATTACHMENT_SIZE) {
-                    const totalFormatted = formatFileSize(totalAttachmentSize);
+                    const totalFormatted = humanFileSize(
+                      totalAttachmentSize,
+                      true
+                    );
                     this.super.introspect(
                       `${this.caller}: Total attachment size (${totalFormatted}) exceeds 20MB limit`
                     );

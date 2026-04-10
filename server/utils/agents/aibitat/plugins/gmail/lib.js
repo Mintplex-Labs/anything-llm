@@ -4,19 +4,9 @@ const os = require("os");
 const mime = require("mime");
 const { SystemSettings } = require("../../../../../models/systemSettings");
 const { CollectorApi } = require("../../../../collectorApi");
+const { humanFileSize } = require("../../../../helpers");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attachments combined
-
-/**
- * Formats a byte size into a human-readable string.
- * @param {number} bytes - Size in bytes
- * @returns {string} Formatted size string
- */
-function formatFileSize(bytes) {
-  if (bytes < 1024) return `${bytes} bytes`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 /**
  * Validates and prepares a file attachment for email.
@@ -66,7 +56,7 @@ function prepareAttachment(filePath) {
         path: filePath,
         name: fileName,
         size: stats.size,
-        sizeFormatted: formatFileSize(stats.size),
+        sizeFormatted: humanFileSize(stats.size, true),
         contentType,
       },
     };
@@ -569,7 +559,6 @@ class GmailBridge {
 module.exports = new GmailBridge();
 module.exports.GmailBridge = GmailBridge;
 module.exports.prepareAttachment = prepareAttachment;
-module.exports.formatFileSize = formatFileSize;
 module.exports.parseAttachment = parseAttachment;
 module.exports.handleAttachments = handleAttachments;
 module.exports.MAX_TOTAL_ATTACHMENT_SIZE = MAX_TOTAL_ATTACHMENT_SIZE;
