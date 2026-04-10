@@ -14,7 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
-import { useSourcesSidebar } from "../../SourcesSidebar";
+import { useSourcesSidebar } from "../../ChatSidebar";
 
 const CIRCLE_ICONS = {
   file: FileText,

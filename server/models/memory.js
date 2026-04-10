@@ -121,6 +121,38 @@ const Memory = {
     }
   },
 
+  demoteToWorkspace: async function (id, workspaceId) {
+    try {
+      const existing = await prisma.memories.findUnique({ where: { id } });
+      if (!existing) return { memory: null, message: "Memory not found." };
+      if (existing.scope === "workspace")
+        return {
+          memory: existing,
+          message: "Memory is already workspace-scoped.",
+        };
+
+      const wsCount = await this.countForScope(
+        existing.userId,
+        workspaceId,
+        "workspace"
+      );
+      if (wsCount >= WORKSPACE_LIMIT)
+        return {
+          memory: null,
+          message: `Maximum workspace memory limit (${WORKSPACE_LIMIT}) reached.`,
+        };
+
+      const memory = await prisma.memories.update({
+        where: { id },
+        data: { scope: "workspace", workspaceId, updatedAt: new Date() },
+      });
+      return { memory, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { memory: null, message: error.message };
+    }
+  },
+
   updateLastUsed: async function (ids = []) {
     if (!ids.length) return;
     try {

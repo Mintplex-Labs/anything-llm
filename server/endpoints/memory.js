@@ -218,6 +218,43 @@ function memoryEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/memories/:memoryId/demote",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const memoryId = Number(request.params.memoryId);
+        const { workspaceId } = reqBody(request);
+
+        if (!workspaceId) {
+          response.status(400).json({ error: "workspaceId is required." });
+          return;
+        }
+
+        const existing = await Memory.get({ id: memoryId });
+        if (!existing || !ownerMatch(existing, user)) {
+          response.status(404).json({ error: "Memory not found." });
+          return;
+        }
+
+        const { memory, message } = await Memory.demoteToWorkspace(
+          memoryId,
+          Number(workspaceId)
+        );
+        if (!memory) {
+          response.status(400).json({ error: message });
+          return;
+        }
+
+        response.status(200).json({ memory });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { memoryEndpoints };

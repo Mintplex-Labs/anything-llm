@@ -78,6 +78,19 @@ const Memory = {
       });
   },
 
+  demoteToWorkspace: async function (memoryId, workspaceId) {
+    return await fetch(`${API_BASE}/memories/${memoryId}/demote`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ workspaceId }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { memory: null, error: e.message };
+      });
+  },
+
   clearAll: async function () {
     return await fetch(`${API_BASE}/memories`, {
       method: "DELETE",
