@@ -64,10 +64,25 @@ export default function AdminAgents() {
     useState(false);
 
   const defaultSkills = getDefaultSkills(t);
-  const configurableSkills = getConfigurableSkills(t, {
+  const allConfigurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
     createFilesAgentAvailable,
   });
+
+  // Filter skills based on mode restrictions
+  // singleUserOnly -> hidden in multi-user mode
+  // multiUserOnly -> hidden when NOT in multi-user mode
+  const isMultiUserMode = settings?.MultiUserMode ?? false;
+  const configurableSkills = Object.fromEntries(
+    Object.entries(allConfigurableSkills).filter(([_, skillConfig]) => {
+      if (!skillConfig.mode) return true;
+      if (skillConfig.mode.includes("singleUserOnly") && isMultiUserMode)
+        return false;
+      if (skillConfig.mode.includes("multiUserOnly") && !isMultiUserMode)
+        return false;
+      return true;
+    })
+  );
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {

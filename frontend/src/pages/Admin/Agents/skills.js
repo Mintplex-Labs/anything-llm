@@ -4,6 +4,7 @@ import GenericSkillPanel from "./GenericSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
 import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import CreateFileSkillPanel from "./CreateFileSkillPanel";
+import GMailSkillPanel from "./GMailSkillPanel";
 import {
   Brain,
   File,
@@ -11,6 +12,7 @@ import {
   ChartBar,
   FolderOpen,
   FilePlus,
+  EnvelopeSimple,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -89,5 +91,13 @@ export const getConfigurableSkills = (
     description: t("agent.skill.sql.description"),
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "gmail-agent": {
+    title: t("agent.skill.gmail.title"),
+    description: t("agent.skill.gmail.description"),
+    component: GMailSkillPanel,
+    skill: "gmail-agent",
+    icon: EnvelopeSimple,
+    mode: ["singleUserOnly"],
   },
 });
