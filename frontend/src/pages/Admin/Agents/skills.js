@@ -98,5 +98,6 @@ export const getConfigurableSkills = (
     component: GMailSkillPanel,
     skill: "gmail-agent",
     icon: EnvelopeSimple,
+    mode: ["singleUserOnly"],
   },
 });
