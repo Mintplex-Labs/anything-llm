@@ -18,7 +18,12 @@ const { Telemetry } = require("../../models/telemetry");
 const { CollectorApi } = require("../collectorApi");
 const fs = require("fs");
 const path = require("path");
-const { hotdirPath, normalizePath, isWithin } = require("../files");
+const {
+  hotdirPath,
+  normalizePath,
+  isWithin,
+  sanitizeFileName,
+} = require("../files");
 /**
  * @typedef ResponseObject
  * @property {string} id - uuid of response
@@ -73,8 +78,8 @@ async function processDocumentAttachments(attachments = []) {
       if (dataUriMatch) base64Data = dataUriMatch[1];
 
       const buffer = Buffer.from(base64Data, "base64");
-      const filename = normalizePath(
-        attachment.name || `attachment-${uuidv4()}`
+      const filename = sanitizeFileName(
+        normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
       const filePath = normalizePath(path.join(hotdirPath, filename));
       if (!isWithin(hotdirPath, filePath))

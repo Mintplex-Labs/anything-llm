@@ -843,25 +843,18 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     );
 
     if (completionStream.functionCall) {
-      if (depth >= this.maxToolCalls) {
-        this.handlerProps?.log?.(
-          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
-        );
-        this?.introspect?.(
-          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
-        );
-
-        const finalStream = await this.#safeProviderCall(() =>
-          provider.stream(messages, [], eventHandler)
-        );
-        const finalResponse =
-          finalStream?.textResponse ||
-          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run.";
-        return finalResponse;
-      }
-
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
+
+      if (reachedToolLimit) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
+        );
+      }
 
       if (!fn) {
         return await this.handleAsyncExecution(
@@ -875,7 +868,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
               originalFunctionCall: completionStream.functionCall,
             },
           ],
-          functions,
+          reachedToolLimit ? [] : functions,
           byAgent,
           depth + 1
         );
@@ -951,7 +944,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       return await this.handleAsyncExecution(
         provider,
         newMessages,
-        functions,
+        reachedToolLimit ? [] : functions,
         byAgent,
         depth + 1
       );
@@ -1000,31 +993,18 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     );
 
     if (completion.functionCall) {
-      if (depth >= this.maxToolCalls) {
-        this.handlerProps?.log?.(
-          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Making final response without tools.`
-        );
-        this?.introspect?.(
-          `Maximum tool call limit (${this.maxToolCalls}) reached. Generating a final response from what I have so far.`
-        );
-
-        const finalCompletion = await this.#safeProviderCall(() =>
-          provider.complete(messages, [])
-        );
-        eventHandler?.("reportStreamEvent", {
-          type: "usageMetrics",
-          uuid: msgUUID,
-          metrics: provider.getUsage(),
-        });
-        this?.flushCitations?.(msgUUID);
-        return (
-          finalCompletion?.textResponse ||
-          "I reached the maximum number of tool calls allowed for a single response. Here is what I have so far based on the tools I was able to run."
-        );
-      }
-
       const { name, arguments: args } = completion.functionCall;
       const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
+
+      if (reachedToolLimit) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
+        );
+      }
 
       if (!fn) {
         return await this.handleExecution(
@@ -1038,7 +1018,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
               originalFunctionCall: completion.functionCall,
             },
           ],
-          functions,
+          reachedToolLimit ? [] : functions,
           byAgent,
           depth + 1,
           msgUUID
@@ -1103,7 +1083,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       return await this.handleExecution(
         provider,
         newMessages,
-        functions,
+        reachedToolLimit ? [] : functions,
         byAgent,
         depth + 1,
         msgUUID
