@@ -32,7 +32,8 @@ module.exports.GmailSearch = {
               }),
             },
             {
-              prompt: "Search for emails with attachments from last week about invoices",
+              prompt:
+                "Search for emails with attachments from last week about invoices",
               call: JSON.stringify({
                 query: "has:attachment newer_than:7d invoice",
                 limit: 15,
@@ -70,7 +71,11 @@ module.exports.GmailSearch = {
             required: ["query"],
             additionalProperties: false,
           },
-          handler: async function ({ query = "is:inbox", limit = 10, start = 0 }) {
+          handler: async function ({
+            query = "is:inbox",
+            limit = 10,
+            start = 0,
+          }) {
             try {
               this.super.handlerProps.log(`Using the gmail-search tool.`);
               this.super.introspect(
@@ -80,7 +85,9 @@ module.exports.GmailSearch = {
               const result = await gmailLib.search(query, limit, start);
 
               if (!result.success) {
-                this.super.introspect(`${this.caller}: Gmail search failed - ${result.error}`);
+                this.super.introspect(
+                  `${this.caller}: Gmail search failed - ${result.error}`
+                );
                 return `Error searching Gmail: ${result.error}`;
               }
 

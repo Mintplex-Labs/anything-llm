@@ -80,7 +80,9 @@ module.exports.GmailSendDraft = {
                 `The email has been sent and removed from drafts.`
               );
             } catch (e) {
-              this.super.handlerProps.log(`gmail-send-draft error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-send-draft error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error sending Gmail draft: ${e.message}`;
             }

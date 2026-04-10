@@ -5,7 +5,9 @@ const { GmailReadMessage } = require("./search/gmail-read-message.js");
 
 // Drafts
 const { GmailCreateDraft } = require("./drafts/gmail-create-draft.js");
-const { GmailCreateDraftReply } = require("./drafts/gmail-create-draft-reply.js");
+const {
+  GmailCreateDraftReply,
+} = require("./drafts/gmail-create-draft-reply.js");
 const { GmailUpdateDraft } = require("./drafts/gmail-update-draft.js");
 const { GmailGetDraft } = require("./drafts/gmail-get-draft.js");
 const { GmailListDrafts } = require("./drafts/gmail-list-drafts.js");
@@ -24,7 +26,9 @@ const { GmailMoveToArchive } = require("./threads/gmail-move-to-archive.js");
 const { GmailMoveToInbox } = require("./threads/gmail-move-to-inbox.js");
 
 // Account
-const { GmailGetMailboxStats } = require("./account/gmail-get-mailbox-stats.js");
+const {
+  GmailGetMailboxStats,
+} = require("./account/gmail-get-mailbox-stats.js");
 
 const gmailAgent = {
   name: "gmail-agent",

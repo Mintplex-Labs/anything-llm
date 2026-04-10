@@ -34,7 +34,9 @@ module.exports.GmailMoveToArchive = {
           },
           handler: async function ({ threadId }) {
             try {
-              this.super.handlerProps.log(`Using the gmail-move-to-archive tool.`);
+              this.super.handlerProps.log(
+                `Using the gmail-move-to-archive tool.`
+              );
 
               if (!threadId) {
                 return "Error: 'threadId' is required.";
@@ -73,7 +75,9 @@ module.exports.GmailMoveToArchive = {
 
               return `Successfully archived thread ${threadId}. It can still be found in All Mail or by searching.`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-move-to-archive error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-move-to-archive error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error archiving thread: ${e.message}`;
             }

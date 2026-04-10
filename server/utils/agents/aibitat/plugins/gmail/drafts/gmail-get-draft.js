@@ -70,7 +70,9 @@ module.exports.GmailGetDraft = {
                 `\n--- Body ---\n${draft.body}`
               );
             } catch (e) {
-              this.super.handlerProps.log(`gmail-get-draft error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-get-draft error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error retrieving Gmail draft: ${e.message}`;
             }

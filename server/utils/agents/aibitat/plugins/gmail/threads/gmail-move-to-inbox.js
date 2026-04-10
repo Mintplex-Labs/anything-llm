@@ -34,7 +34,9 @@ module.exports.GmailMoveToInbox = {
           },
           handler: async function ({ threadId }) {
             try {
-              this.super.handlerProps.log(`Using the gmail-move-to-inbox tool.`);
+              this.super.handlerProps.log(
+                `Using the gmail-move-to-inbox tool.`
+              );
 
               if (!threadId) {
                 return "Error: 'threadId' is required.";
@@ -73,7 +75,9 @@ module.exports.GmailMoveToInbox = {
 
               return `Successfully moved thread ${threadId} to inbox.`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-move-to-inbox error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-move-to-inbox error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error moving thread to inbox: ${e.message}`;
             }

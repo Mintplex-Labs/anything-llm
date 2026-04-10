@@ -34,7 +34,9 @@ module.exports.GmailMoveToTrash = {
           },
           handler: async function ({ threadId }) {
             try {
-              this.super.handlerProps.log(`Using the gmail-move-to-trash tool.`);
+              this.super.handlerProps.log(
+                `Using the gmail-move-to-trash tool.`
+              );
 
               if (!threadId) {
                 return "Error: 'threadId' is required.";
@@ -73,7 +75,9 @@ module.exports.GmailMoveToTrash = {
 
               return `Successfully moved thread ${threadId} to trash. It can be recovered within 30 days.`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-move-to-trash error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-move-to-trash error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error moving thread to trash: ${e.message}`;
             }

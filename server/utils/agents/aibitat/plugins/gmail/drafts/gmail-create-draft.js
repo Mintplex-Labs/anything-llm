@@ -1,4 +1,9 @@
 const gmailLib = require("../lib.js");
+const {
+  prepareAttachment,
+  formatFileSize,
+  MAX_TOTAL_ATTACHMENT_SIZE,
+} = require("../lib.js");
 
 module.exports.GmailCreateDraft = {
   name: "gmail-create-draft",
@@ -11,10 +16,11 @@ module.exports.GmailCreateDraft = {
           name: this.name,
           description:
             "Create a new draft email in Gmail. The draft will be saved but not sent. " +
-            "You can optionally include CC, BCC recipients and HTML body content.",
+            "You can optionally include CC, BCC recipients, HTML body content, and file attachments.",
           examples: [
             {
-              prompt: "Create a draft email to john@example.com about the meeting",
+              prompt:
+                "Create a draft email to john@example.com about the meeting",
               call: JSON.stringify({
                 to: "john@example.com",
                 subject: "Meeting Tomorrow",
@@ -30,6 +36,15 @@ module.exports.GmailCreateDraft = {
                 cc: "manager@example.com",
               }),
             },
+            {
+              prompt: "Create a draft with an attachment",
+              call: JSON.stringify({
+                to: "john@example.com",
+                subject: "Report",
+                body: "Please find the report attached.",
+                attachments: ["/Users/me/Documents/report.pdf"],
+              }),
+            },
           ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
@@ -37,7 +52,8 @@ module.exports.GmailCreateDraft = {
             properties: {
               to: {
                 type: "string",
-                description: "Recipient email address(es). Multiple addresses can be comma-separated.",
+                description:
+                  "Recipient email address(es). Multiple addresses can be comma-separated.",
               },
               subject: {
                 type: "string",
@@ -59,11 +75,25 @@ module.exports.GmailCreateDraft = {
                 type: "string",
                 description: "HTML version of the email body. Optional.",
               },
+              attachments: {
+                type: "array",
+                items: { type: "string" },
+                description:
+                  "Array of absolute file paths to attach to the draft.",
+              },
             },
             required: ["to", "subject", "body"],
             additionalProperties: false,
           },
-          handler: async function ({ to, subject, body, cc, bcc, htmlBody }) {
+          handler: async function ({
+            to,
+            subject,
+            body,
+            cc,
+            bcc,
+            htmlBody,
+            attachments,
+          }) {
             try {
               this.super.handlerProps.log(`Using the gmail-create-draft tool.`);
 
@@ -71,11 +101,56 @@ module.exports.GmailCreateDraft = {
                 return "Error: 'to' and 'subject' are required.";
               }
 
+              const preparedAttachments = [];
+              const attachmentSummaries = [];
+              let totalAttachmentSize = 0;
+
+              if (Array.isArray(attachments) && attachments.length > 0) {
+                this.super.introspect(
+                  `${this.caller}: Validating ${attachments.length} attachment(s)...`
+                );
+
+                for (const filePath of attachments) {
+                  const result = prepareAttachment(filePath);
+                  if (!result.success) {
+                    this.super.introspect(
+                      `${this.caller}: Attachment validation failed - ${result.error}`
+                    );
+                    return `Error with attachment: ${result.error}`;
+                  }
+
+                  totalAttachmentSize += result.fileInfo.size;
+                  if (totalAttachmentSize > MAX_TOTAL_ATTACHMENT_SIZE) {
+                    const totalFormatted = formatFileSize(totalAttachmentSize);
+                    this.super.introspect(
+                      `${this.caller}: Total attachment size (${totalFormatted}) exceeds 20MB limit`
+                    );
+                    return `Error: Total attachment size (${totalFormatted}) exceeds the 20MB limit. Please reduce the number or size of attachments.`;
+                  }
+
+                  preparedAttachments.push(result.attachment);
+                  attachmentSummaries.push(
+                    `${result.fileInfo.name} (${result.fileInfo.sizeFormatted})`
+                  );
+                  this.super.introspect(
+                    `${this.caller}: Prepared attachment "${result.fileInfo.name}"`
+                  );
+                }
+              }
+
               if (this.super.requestToolApproval) {
+                const attachmentNote =
+                  preparedAttachments.length > 0
+                    ? ` with ${preparedAttachments.length} attachment(s): ${attachmentSummaries.join(", ")}`
+                    : "";
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
-                  payload: { to, subject },
-                  description: `Create Gmail draft to "${to}" with subject "${subject}"`,
+                  payload: {
+                    to,
+                    subject,
+                    attachmentCount: preparedAttachments.length,
+                  },
+                  description: `Create Gmail draft to "${to}" with subject "${subject}"${attachmentNote}`,
                 });
                 if (!approval.approved) {
                   this.super.introspect(
@@ -86,15 +161,23 @@ module.exports.GmailCreateDraft = {
               }
 
               this.super.introspect(
-                `${this.caller}: Creating Gmail draft to ${to}`
+                `${this.caller}: Creating Gmail draft to ${to}${preparedAttachments.length > 0 ? ` with ${preparedAttachments.length} attachment(s)` : ""}`
               );
 
               const options = {};
               if (cc) options.cc = cc;
               if (bcc) options.bcc = bcc;
               if (htmlBody) options.htmlBody = htmlBody;
+              if (preparedAttachments.length > 0) {
+                options.attachments = preparedAttachments;
+              }
 
-              const result = await gmailLib.createDraft(to, subject, body, options);
+              const result = await gmailLib.createDraft(
+                to,
+                subject,
+                body,
+                options
+              );
 
               if (!result.success) {
                 this.super.introspect(
@@ -113,11 +196,16 @@ module.exports.GmailCreateDraft = {
                 `Draft ID: ${draft.draftId}\n` +
                 `Message ID: ${draft.messageId}\n` +
                 `To: ${draft.to}\n` +
-                `Subject: ${draft.subject}\n\n` +
-                `The draft has been saved and can be edited or sent later.`
+                `Subject: ${draft.subject}\n` +
+                (preparedAttachments.length > 0
+                  ? `Attachments: ${attachmentSummaries.join(", ")}\n`
+                  : "") +
+                `\nThe draft has been saved and can be edited or sent later.`
               );
             } catch (e) {
-              this.super.handlerProps.log(`gmail-create-draft error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-create-draft error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error creating Gmail draft: ${e.message}`;
             }

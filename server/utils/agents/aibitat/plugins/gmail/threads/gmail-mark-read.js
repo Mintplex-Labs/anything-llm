@@ -73,7 +73,9 @@ module.exports.GmailMarkRead = {
 
               return `Successfully marked thread ${threadId} as read.`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-mark-read error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-mark-read error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error marking thread as read: ${e.message}`;
             }

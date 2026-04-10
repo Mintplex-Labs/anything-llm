@@ -73,7 +73,9 @@ module.exports.GmailMarkUnread = {
 
               return `Successfully marked thread ${threadId} as unread.`;
             } catch (e) {
-              this.super.handlerProps.log(`gmail-mark-unread error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-mark-unread error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error marking thread as unread: ${e.message}`;
             }

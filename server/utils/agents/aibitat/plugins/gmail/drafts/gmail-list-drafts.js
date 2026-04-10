@@ -32,7 +32,8 @@ module.exports.GmailListDrafts = {
             properties: {
               limit: {
                 type: "number",
-                description: "Maximum number of drafts to return (1-100). Defaults to 25.",
+                description:
+                  "Maximum number of drafts to return (1-100). Defaults to 25.",
                 default: 25,
               },
             },
@@ -81,7 +82,9 @@ module.exports.GmailListDrafts = {
                 `or gmail-send-draft to send.`
               );
             } catch (e) {
-              this.super.handlerProps.log(`gmail-list-drafts error: ${e.message}`);
+              this.super.handlerProps.log(
+                `gmail-list-drafts error: ${e.message}`
+              );
               this.super.introspect(`Error: ${e.message}`);
               return `Error listing Gmail drafts: ${e.message}`;
             }

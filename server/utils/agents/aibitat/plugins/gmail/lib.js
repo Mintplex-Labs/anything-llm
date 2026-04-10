@@ -1,8 +1,79 @@
-const { SystemSettings } = require("../../../../../models/systemSettings");
-const { CollectorApi } = require("../../../../collectorApi");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const mime = require("mime");
+const { SystemSettings } = require("../../../../../models/systemSettings");
+const { CollectorApi } = require("../../../../collectorApi");
+
+const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attachments combined
+
+/**
+ * Formats a byte size into a human-readable string.
+ * @param {number} bytes - Size in bytes
+ * @returns {string} Formatted size string
+ */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} bytes`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+/**
+ * Validates and prepares a file attachment for email.
+ * Note: Does not check total size limit - caller should track cumulative size.
+ * @param {string} filePath - Absolute path to the file
+ * @returns {{success: boolean, attachment?: object, error?: string, fileInfo?: object}}
+ */
+function prepareAttachment(filePath) {
+  if (process.env.ANYTHING_LLM_RUNTIME === "docker") {
+    return {
+      success: false,
+      error: "File attachments are not supported in Docker environments.",
+    };
+  }
+
+  if (!path.isAbsolute(filePath)) {
+    return { success: false, error: `Path must be absolute: ${filePath}` };
+  }
+
+  if (!fs.existsSync(filePath)) {
+    return { success: false, error: `File does not exist: ${filePath}` };
+  }
+
+  const stats = fs.statSync(filePath);
+  if (!stats.isFile()) {
+    return { success: false, error: `Path is not a file: ${filePath}` };
+  }
+
+  if (stats.size === 0) {
+    return { success: false, error: `File is empty: ${filePath}` };
+  }
+
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const base64Data = fileBuffer.toString("base64");
+    const fileName = path.basename(filePath);
+    const contentType = mime.getType(filePath) || "application/octet-stream";
+
+    return {
+      success: true,
+      attachment: {
+        name: fileName,
+        contentType,
+        data: base64Data,
+      },
+      fileInfo: {
+        path: filePath,
+        name: fileName,
+        size: stats.size,
+        sizeFormatted: formatFileSize(stats.size),
+        contentType,
+      },
+    };
+  } catch (e) {
+    return { success: false, error: `Failed to read file: ${e.message}` };
+  }
+}
 
 /**
  * Parse an attachment using the CollectorApi for secure content extraction.
@@ -129,7 +200,9 @@ async function handleAttachments(context, messages) {
           })
           .join("\n");
 
-      context.super.introspect(`${context.caller}: Finished parsing attachments`);
+      context.super.introspect(
+        `${context.caller}: Finished parsing attachments`
+      );
     } else {
       context.super.introspect(
         `${context.caller}: User declined to parse attachments`
@@ -270,7 +343,10 @@ class GmailBridge {
 
       return { success: true, data: result.data, quota: result.quota };
     } catch (error) {
-      return { success: false, error: `Gmail API request failed: ${error.message}` };
+      return {
+        success: false,
+        error: `Gmail API request failed: ${error.message}`,
+      };
     }
   }
 
@@ -500,5 +576,8 @@ class GmailBridge {
 
 module.exports = new GmailBridge();
 module.exports.GmailBridge = GmailBridge;
+module.exports.prepareAttachment = prepareAttachment;
+module.exports.formatFileSize = formatFileSize;
 module.exports.parseAttachment = parseAttachment;
 module.exports.handleAttachments = handleAttachments;
+module.exports.MAX_TOTAL_ATTACHMENT_SIZE = MAX_TOTAL_ATTACHMENT_SIZE;
