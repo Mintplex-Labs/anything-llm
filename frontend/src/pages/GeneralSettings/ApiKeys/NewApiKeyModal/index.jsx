@@ -4,7 +4,6 @@ import Admin from "@/models/admin";
 import paths from "@/utils/paths";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 import { useTranslation } from "react-i18next";
 
 export default function NewApiKeyModal({ closeModal, onSuccess }) {
@@ -34,9 +33,6 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
     setCopied(true);
-    showToast(t("api.messages.copied"), "success", {
-      clear: true,
-    });
   };
 
   useEffect(() => {

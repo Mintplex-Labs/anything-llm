@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
-import showToast from "@/utils/toast";
 import { Trash } from "@phosphor-icons/react";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
@@ -15,14 +14,12 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
     await Model.deleteApiKey(apiKey.id);
-    showToast(t("api.messages.deleted"), "info");
     removeApiKey(apiKey.id);
   };
 
   const copyApiKey = () => {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
-    showToast(t("api.messages.copied"), "success");
     setCopied(true);
   };
 
