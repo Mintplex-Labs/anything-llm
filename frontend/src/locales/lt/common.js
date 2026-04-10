@@ -530,6 +530,10 @@ const TRANSLATIONS = {
             title: null,
             description: null,
           },
+          getInbox: {
+            title: null,
+            description: null,
+          },
         },
       },
     },
