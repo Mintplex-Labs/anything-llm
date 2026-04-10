@@ -565,7 +565,34 @@ const TRANSLATIONS = {
       "API atslēgas ļauj to īpašniekam programmatiski piekļūt un pārvaldīt šo AnythingLLM instanci.",
     link: "Lasīt API dokumentāciju",
     generate: "Ģenerēt jaunu API atslēgu",
+    empty: "API atslēgas nav atrastas",
+    actions: "Darbības",
+    messages: {
+      error: "Kļūda: {{error}}",
+    },
+    modal: {
+      title: "Izveidot jaunu API atslēgu",
+      cancel: "Atcelt",
+      close: "Aizvērt",
+      create: "Izveidot API atslēgu",
+      helper:
+        "Pēc izveides API atslēgu var izmantot, lai programmatiski piekļūtu šai AnythingLLM instancei un to konfigurētu.",
+      name: {
+        label: "Nosaukums",
+        placeholder: "Produkcijas integrācija",
+        helper:
+          "Nav obligāti. Izmantojiet saprotamu nosaukumu, lai vēlāk šo atslēgu būtu viegli atpazīt.",
+      },
+    },
+    row: {
+      copy: "Kopēt API atslēgu",
+      copied: "Nokopēts",
+      unnamed: "--",
+      deleteConfirm:
+        "Vai tiešām vēlaties deaktivizēt šo API atslēgu?\nPēc tam to vairs nevarēs izmantot.\n\nŠo darbību nevar atsaukt.",
+    },
     table: {
+      name: "Nosaukums",
       key: "API atslēga",
       by: "Izveidoja",
       created: "Izveidots",
@@ -1135,8 +1162,6 @@ const TRANSLATIONS = {
         description:
           "Ievietojiet API atslēgu, ko saņēsit no @BotFather, un izvēlieties nokārtotā darba telpu, kuras jūsu bots varēs veikt sazi.",
         "bot-token": "Bots tokens",
-        "default-workspace": "Pamatojas darba videne",
-        "no-workspace": "Nav pieejamas darba vietas. Tiks izveidota jauna.",
         connecting: "Savienojums...",
         "connect-bot": "Saistītais bot",
       },
@@ -1177,20 +1202,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
     },
     users: {
-      "pending-title": "Atkarībā no apstākļiem",
       "pending-description":
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
-      "approved-title": "Atļautie lietotāji",
-      "approved-description":
-        "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
-      user: "Izmantotājs",
-      "pairing-code": "Kopējā koda numura kombinācija",
-      "no-pending": "Neizpildīti pieprasījumi",
-      "no-approved": "No apstiprinātiem lietotājiem",
       unknown: "Nezināms",
-      approve: "Aptver",
-      deny: "Atbrīsties; atgrūst",
-      revoke: "Atcel",
     },
   },
 };

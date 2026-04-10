@@ -1020,7 +1020,34 @@ const TRANSLATIONS = {
       "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
+    empty: "Nu au fost găsite chei API",
+    actions: "Acțiuni",
+    messages: {
+      error: "Eroare: {{error}}",
+    },
+    modal: {
+      title: "Creează o cheie API nouă",
+      cancel: "Anulează",
+      close: "Închide",
+      create: "Creează cheia API",
+      helper:
+        "După creare, cheia API poate fi folosită pentru a accesa și configura programatic această instanță AnythingLLM.",
+      name: {
+        label: "Nume",
+        placeholder: "Integrare de producție",
+        helper:
+          "Opțional. Folosește un nume clar pentru a putea identifica această cheie mai târziu.",
+      },
+    },
+    row: {
+      copy: "Copiază cheia API",
+      copied: "Copiată",
+      unnamed: "--",
+      deleteConfirm:
+        "Sigur doriți să dezactivați această cheie API?\nDupă aceea nu va mai putea fi folosită.\n\nAceastă acțiune este ireversibilă.",
+    },
     table: {
+      name: "Nume",
       key: "Cheie API",
       by: "Creat de",
       created: "Creat la",
@@ -1135,9 +1162,6 @@ const TRANSLATIONS = {
         description:
           "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spațiu de lucru implicit",
-        "no-workspace":
-          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
         connecting: "Conectare...",
         "connect-bot": "Conectare automată",
       },
@@ -1179,20 +1203,9 @@ const TRANSLATIONS = {
         "Nu a fost posibil să se anuleze contul utilizatorului.",
     },
     users: {
-      "pending-title": "Așteptare aprobare",
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
-      "approved-title": "Utilizatori autorizați",
-      "approved-description":
-        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
-      user: "Utilizator",
-      "pairing-code": "Cod de asociere",
-      "no-pending": "Nu există cereri în așteptare.",
-      "no-approved": "Nu există utilizatori autorizați.",
       unknown: "Necunoscut",
-      approve: "Aprobă",
-      deny: "Negarea",
-      revoke: "Anula",
     },
   },
 };

@@ -2,17 +2,20 @@ const prisma = require("../utils/prisma");
 
 const ApiKey = {
   tablename: "api_keys",
-  writable: [],
+  writable: ["name"],
 
   makeSecret: () => {
     const uuidAPIKey = require("uuid-apikey");
     return uuidAPIKey.create().apiKey;
   },
 
-  create: async function (createdByUserId = null) {
+  create: async function (createdByUserId = null, name = null) {
     try {
+      const normalizedName =
+        typeof name === "string" && name.trim().length > 0 ? name.trim() : null;
       const apiKey = await prisma.api_keys.create({
         data: {
+          name: normalizedName,
           secret: this.makeSecret(),
           createdBy: createdByUserId,
         },

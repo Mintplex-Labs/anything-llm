@@ -556,7 +556,34 @@ const TRANSLATIONS = {
       "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
+    empty: "API 키를 찾을 수 없습니다",
+    actions: "작업",
+    messages: {
+      error: "오류: {{error}}",
+    },
+    modal: {
+      title: "새 API 키 만들기",
+      cancel: "취소",
+      close: "닫기",
+      create: "API 키 만들기",
+      helper:
+        "생성된 API 키는 이 AnythingLLM 인스턴스에 프로그래밍 방식으로 접근하고 구성하는 데 사용할 수 있습니다.",
+      name: {
+        label: "이름",
+        placeholder: "프로덕션 통합",
+        helper:
+          "선택 사항입니다. 나중에 쉽게 식별할 수 있도록 알아보기 쉬운 이름을 사용하세요.",
+      },
+    },
+    row: {
+      copy: "API 키 복사",
+      copied: "복사됨",
+      unnamed: "--",
+      deleteConfirm:
+        "이 API 키를 비활성화하시겠습니까?\n비활성화하면 더 이상 사용할 수 없습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    },
     table: {
+      name: "이름",
       key: "API 키",
       by: "생성한 사람",
       created: "생성일",
@@ -1107,9 +1134,6 @@ const TRANSLATIONS = {
         description:
           "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
         "bot-token": "봇 토큰",
-        "default-workspace": "기본 워크스페이스",
-        "no-workspace":
-          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
         connecting: "연결 중...",
         "connect-bot": "연결 봇",
       },
@@ -1147,19 +1171,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
     },
     users: {
-      "pending-title": "승인 대기 중",
       "pending-description":
         "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
-      "approved-title": "승인된 사용자",
-      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
-      user: "사용자",
-      "pairing-code": "코드 매칭",
-      "no-pending": "처리 중인 요청이 없습니다.",
-      "no-approved": "승인된 사용자가 없습니다",
       unknown: "알 수 없음",
-      approve: "승인",
-      deny: "부인",
-      revoke: "취소",
     },
   },
 };

@@ -570,7 +570,34 @@ const TRANSLATIONS = {
       "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
     link: "Lesen Sie die API-Dokumentation",
     generate: "Neuen API-Schlüssel generieren",
+    empty: "Keine API-Schlüssel gefunden",
+    actions: "Aktionen",
+    messages: {
+      error: "Fehler: {{error}}",
+    },
+    modal: {
+      title: "Neuen API-Schlüssel erstellen",
+      cancel: "Abbrechen",
+      close: "Schließen",
+      create: "API-Schlüssel erstellen",
+      helper:
+        "Nach der Erstellung kann der API-Schlüssel verwendet werden, um programmgesteuert auf diese AnythingLLM-Instanz zuzugreifen und sie zu konfigurieren.",
+      name: {
+        label: "Name",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Optional. Verwenden Sie einen leicht verständlichen Namen, damit Sie diesen Schlüssel später wiedererkennen.",
+      },
+    },
+    row: {
+      copy: "API-Schlüssel kopieren",
+      copied: "Kopiert",
+      unnamed: "--",
+      deleteConfirm:
+        "Möchten Sie diesen API-Schlüssel wirklich deaktivieren?\nDanach kann er nicht mehr verwendet werden.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
+    },
     table: {
+      name: "Name",
       key: "API-Schlüssel",
       by: "Erstellt von",
       created: "Erstellt",
@@ -1141,9 +1168,6 @@ const TRANSLATIONS = {
         description:
           "Fügen Sie den API-Token ein, den Sie von @BotFather erhalten haben, und wählen Sie einen Standard-Arbeitsbereich für Ihren Bot aus, mit dem er kommunizieren soll.",
         "bot-token": "Bot-Token",
-        "default-workspace": "Standardarbeitsbereich",
-        "no-workspace":
-          "Keine verfügbaren Arbeitsbereiche. Ein neuer Bereich wird erstellt.",
         connecting: "Verbinde...",
         "connect-bot": "Connect-Bot",
       },
@@ -1190,20 +1214,9 @@ const TRANSLATIONS = {
         "Fehlgeschlagener Versuch, das Benutzerkonto zu deaktivieren.",
     },
     users: {
-      "pending-title": "Warte auf Genehmigung",
       "pending-description":
         "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
-      "approved-title": "Benutzer mit Genehmigung",
-      "approved-description":
-        "Nutzer, denen die Erlaubnis erteilt wurde, mit Ihrem Bot zu kommunizieren.",
-      user: "Benutzer",
-      "pairing-code": "Paarcode",
-      "no-pending": "Keine ausstehenden Anfragen",
-      "no-approved": "Keine autorisierten Benutzer",
       unknown: "Unbekannt",
-      approve: "Genehmigen",
-      deny: "Leugnen",
-      revoke: "Aufheben",
     },
   },
 };

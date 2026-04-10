@@ -578,7 +578,34 @@ const TRANSLATIONS = {
       "Las claves de API permiten al titular acceder y administrar programáticamente esta instancia de AnythingLLM.",
     link: "Leer la documentación de la API",
     generate: "Generar nueva clave de API",
+    empty: "No se encontraron claves API",
+    actions: "Acciones",
+    messages: {
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Crear nueva clave API",
+      cancel: "Cancelar",
+      close: "Cerrar",
+      create: "Crear clave API",
+      helper:
+        "Una vez creada, la clave API se puede usar para acceder y configurar esta instancia de AnythingLLM mediante programación.",
+      name: {
+        label: "Nombre",
+        placeholder: "Integración de producción",
+        helper:
+          "Opcional. Usa un nombre descriptivo para poder identificar esta clave más adelante.",
+      },
+    },
+    row: {
+      copy: "Copiar clave API",
+      copied: "Copiada",
+      unnamed: "--",
+      deleteConfirm:
+        "¿Seguro que deseas desactivar esta clave API?\nDespués de hacerlo ya no se podrá usar.\n\nEsta acción es irreversible.",
+    },
     table: {
+      name: "Nombre",
       key: "Clave de API",
       by: "Creado por",
       created: "Creado",
@@ -1154,9 +1181,6 @@ const TRANSLATIONS = {
         description:
           "Copia el token de API que recibiste de @BotFather y selecciona un espacio de trabajo predeterminado para que tu bot pueda comunicarse.",
         "bot-token": "Token de Bot",
-        "default-workspace": "Espacio de trabajo predeterminado",
-        "no-workspace":
-          "No hay espacios de trabajo disponibles. Se creará uno nuevo.",
         connecting: "Conectando...",
         "connect-bot": "Bot de conexión",
       },
@@ -1198,20 +1222,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "No se pudo revocar el acceso del usuario.",
     },
     users: {
-      "pending-title": "Sujeto a aprobación",
       "pending-description":
         "Usuarios que están esperando la verificación. Compara el código de emparejamiento que se muestra aquí con el que aparece en su conversación de Telegram.",
-      "approved-title": "Usuarios autorizados",
-      "approved-description":
-        "Usuarios que han sido aprobados para comunicarse con tu bot.",
-      user: "Usuario",
-      "pairing-code": "Código de combinación",
-      "no-pending": "No hay solicitudes pendientes.",
-      "no-approved": "Usuarios no autorizados",
       unknown: "Desconocido",
-      approve: "Aprobar",
-      deny: "Negar",
-      revoke: "Revocar",
     },
   },
 };

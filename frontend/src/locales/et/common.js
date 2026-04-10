@@ -550,7 +550,34 @@ const TRANSLATIONS = {
       "API võtmed võimaldavad programmipõhiselt hallata seda AnythingLLM instantsi.",
     link: "Loe API dokumentatsiooni",
     generate: "Genereeri uus API võti",
+    empty: "API võtmeid ei leitud",
+    actions: "Toimingud",
+    messages: {
+      error: "Viga: {{error}}",
+    },
+    modal: {
+      title: "Loo uus API võti",
+      cancel: "Tühista",
+      close: "Sulge",
+      create: "Loo API võti",
+      helper:
+        "Pärast loomist saab API võtit kasutada sellele AnythingLLM-i instantsile programmiga ligi pääsemiseks ja selle seadistamiseks.",
+      name: {
+        label: "Nimi",
+        placeholder: "Tootmiskeskkonna integratsioon",
+        helper:
+          "Valikuline. Kasuta sõbralikku nime, et saaksid võtme hiljem hõlpsasti ära tunda.",
+      },
+    },
+    row: {
+      copy: "Kopeeri API võti",
+      copied: "Kopeeritud",
+      unnamed: "--",
+      deleteConfirm:
+        "Kas soovite selle API võtme kindlasti deaktiveerida?\nPärast seda ei saa seda enam kasutada.\n\nSeda toimingut ei saa tagasi võtta.",
+    },
     table: {
+      name: "Nimi",
       key: "API võti",
       by: "Loonud",
       created: "Loodud",
@@ -1088,9 +1115,6 @@ const TRANSLATIONS = {
         description:
           "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
         "bot-token": "Bot token",
-        "default-workspace": "Vaikimisi kasutatav tööruum",
-        "no-workspace":
-          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
         connecting: "Ühendamine...",
         "connect-bot": "Ühendusrobott",
       },
@@ -1129,20 +1153,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
     },
     users: {
-      "pending-title": "Ootea faasis, ootamas heakskiitu",
       "pending-description":
         "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
-      "approved-title": "Heakskiidud kasutajad",
-      "approved-description":
-        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
-      user: "Kasutaja",
-      "pairing-code": "Koosamis kood",
-      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
-      "no-approved": "Pole heakskiidud kasutajaid",
       unknown: "Tuntud pole",
-      approve: "Heakskiid",
-      deny: "Nõgata",
-      revoke: "Tingimata",
     },
   },
 };

@@ -443,7 +443,33 @@ const TRANSLATIONS = {
       "API 金鑰可讓持有人透過程式方式存取並管理這個 AnythingLLM 系統。",
     link: "閱讀 API 文件",
     generate: "產生新的 API 金鑰",
+    empty: "找不到 API 金鑰",
+    actions: "操作",
+    messages: {
+      error: "錯誤：{{error}}",
+    },
+    modal: {
+      title: "建立新的 API 金鑰",
+      cancel: "取消",
+      close: "關閉",
+      create: "建立 API 金鑰",
+      helper:
+        "建立後，API 金鑰可用於以程式方式存取並設定這個 AnythingLLM 執行個體。",
+      name: {
+        label: "名稱",
+        placeholder: "正式環境整合",
+        helper: "選填。請使用易於辨識的名稱，方便你之後識別這把金鑰。",
+      },
+    },
+    row: {
+      copy: "複製 API 金鑰",
+      copied: "已複製",
+      unnamed: "--",
+      deleteConfirm:
+        "確定要停用此 API 金鑰嗎？\n停用後將無法再使用。\n\n此操作無法復原。",
+    },
     table: {
+      name: "名稱",
       key: "API 金鑰",
       by: "建立者",
       created: "建立時間",
@@ -1052,8 +1078,6 @@ const TRANSLATIONS = {
         description:
           "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
         "bot-token": "機器人代幣",
-        "default-workspace": "預設工作空間",
-        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
         connecting: "正在連接...",
         "connect-bot": "連線機器人",
       },
@@ -1089,19 +1113,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能取消使用者權限。",
     },
     users: {
-      "pending-title": "待審核",
       "pending-description":
         "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
-      "approved-title": "已授權的使用者",
-      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
-      user: "使用者",
-      "pairing-code": "編碼組合",
-      "no-pending": "目前沒有待處理的請求",
-      "no-approved": "目前沒有已授權的使用者",
       unknown: "未知的",
-      approve: "批准",
-      deny: "拒絕",
-      revoke: "撤銷",
     },
   },
 };

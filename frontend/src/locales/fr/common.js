@@ -475,7 +475,34 @@ const TRANSLATIONS = {
       "Les clés API permettent au titulaire d'accéder et de gérer de manière programmatique cette instance AnythingLLM.",
     link: "Lisez la documentation de l'API",
     generate: "Générer une nouvelle clé API",
+    empty: "Aucune clé API trouvée",
+    actions: "Actions",
+    messages: {
+      error: "Erreur : {{error}}",
+    },
+    modal: {
+      title: "Créer une nouvelle clé API",
+      cancel: "Annuler",
+      close: "Fermer",
+      create: "Créer une clé API",
+      helper:
+        "Une fois créée, la clé API peut être utilisée pour accéder à cette instance AnythingLLM et la configurer de manière programmatique.",
+      name: {
+        label: "Nom",
+        placeholder: "Intégration de production",
+        helper:
+          "Facultatif. Utilisez un nom explicite pour pouvoir retrouver facilement cette clé plus tard.",
+      },
+    },
+    row: {
+      copy: "Copier la clé API",
+      copied: "Copiée",
+      unnamed: "--",
+      deleteConfirm:
+        "Voulez-vous vraiment désactiver cette clé API ?\nAprès cela, elle ne pourra plus être utilisée.\n\nCette action est irréversible.",
+    },
     table: {
+      name: "Nom",
       key: "Clé API",
       by: "Créé par",
       created: "Créé",
@@ -1132,9 +1159,6 @@ const TRANSLATIONS = {
         description:
           "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
         "bot-token": "Token Bot",
-        "default-workspace": "Espace de travail par défaut",
-        "no-workspace":
-          "Il n'y a pas d'espaces de travail disponibles. Un nouvel espace sera créé.",
         connecting: "Connexion...",
         "connect-bot": "Bot de connexion",
       },
@@ -1175,20 +1199,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
     },
     users: {
-      "pending-title": "En attente d'approbation",
       "pending-description":
         "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
-      "approved-title": "Utilisateurs autorisés",
-      "approved-description":
-        "Utilisateurs qui ont été autorisés à communiquer avec votre bot.",
-      user: "Utilisateur",
-      "pairing-code": "Code de correspondance",
-      "no-pending": "Aucune demande en cours",
-      "no-approved": "Aucun utilisateur autorisé",
       unknown: "Inconnu",
-      approve: "Approuver",
-      deny: "Rejeter",
-      revoke: "Annuler",
     },
   },
 };

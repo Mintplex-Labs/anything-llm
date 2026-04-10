@@ -465,7 +465,33 @@ const TRANSLATIONS = {
       "APIキーにより、プログラム経由でこのAnythingLLMインスタンスにアクセスおよび管理できます。",
     link: "APIドキュメントを読む",
     generate: "新しいAPIキーを生成",
+    empty: "APIキーが見つかりません",
+    actions: "操作",
+    messages: {
+      error: "エラー: {{error}}",
+    },
+    modal: {
+      title: "新しいAPIキーを作成",
+      cancel: "キャンセル",
+      close: "閉じる",
+      create: "APIキーを作成",
+      helper:
+        "作成したAPIキーは、このAnythingLLMインスタンスにプログラムからアクセスして設定するために使用できます。",
+      name: {
+        label: "名前",
+        placeholder: "本番環境の統合",
+        helper: "任意です。後でこのキーを識別しやすい名前を付けてください。",
+      },
+    },
+    row: {
+      copy: "APIキーをコピー",
+      copied: "コピー済み",
+      unnamed: "--",
+      deleteConfirm:
+        "このAPIキーを無効化してもよろしいですか？\n無効化すると、以後このキーは使用できなくなります。\n\nこの操作は元に戻せません。",
+    },
     table: {
+      name: "名前",
       key: "APIキー",
       by: "作成者",
       created: "作成日",
@@ -1128,9 +1154,6 @@ const TRANSLATIONS = {
         description:
           "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
         "bot-token": "ボット トークン",
-        "default-workspace": "デフォルトのワークスペース",
-        "no-workspace":
-          "利用可能な作業スペースがありません。新しい作業スペースが作成されます。",
         connecting: "接続中...",
         "connect-bot": "コネクトボット",
       },
@@ -1168,20 +1191,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "ユーザーの権限停止に失敗。",
     },
     users: {
-      "pending-title": "承認待ち",
       "pending-description":
         "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
-      "approved-title": "承認されたユーザー",
-      "approved-description":
-        "あなたのボットとのチャットを許可されたユーザー。",
-      user: "利用者",
-      "pairing-code": "組み合わせコード",
-      "no-pending": "処理中のリクエストはありません",
-      "no-approved": "承認されたユーザーはいません",
       unknown: "不明",
-      approve: "承認",
-      deny: "否定",
-      revoke: "無効化する",
     },
   },
 };

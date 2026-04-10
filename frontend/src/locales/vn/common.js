@@ -469,7 +469,34 @@ const TRANSLATIONS = {
       "Khóa API cho phép người sở hữu truy cập và quản lý phiên bản AnythingLLM này theo chương trình.",
     link: "Đọc tài liệu API",
     generate: "Tạo Khóa API Mới",
+    empty: "Không tìm thấy khóa API nào",
+    actions: "Thao tác",
+    messages: {
+      error: "Lỗi: {{error}}",
+    },
+    modal: {
+      title: "Tạo khóa API mới",
+      cancel: "Hủy",
+      close: "Đóng",
+      create: "Tạo khóa API",
+      helper:
+        "Sau khi được tạo, khóa API có thể được dùng để truy cập và cấu hình phiên bản AnythingLLM này theo chương trình.",
+      name: {
+        label: "Tên",
+        placeholder: "Tích hợp production",
+        helper:
+          "Tùy chọn. Hãy dùng tên dễ nhận biết để bạn có thể xác định khóa này sau này.",
+      },
+    },
+    row: {
+      copy: "Sao chép khóa API",
+      copied: "Đã sao chép",
+      unnamed: "--",
+      deleteConfirm:
+        "Bạn có chắc muốn vô hiệu hóa khóa API này không?\nSau đó khóa sẽ không thể sử dụng được nữa.\n\nHành động này không thể hoàn tác.",
+    },
     table: {
+      name: "Tên",
       key: "Khóa API",
       by: "Tạo bởi",
       created: "Ngày tạo",
@@ -1125,9 +1152,6 @@ const TRANSLATIONS = {
         description:
           "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
         "bot-token": "Token Bot",
-        "default-workspace": "Không gian làm việc mặc định",
-        "no-workspace":
-          "Không có không gian làm việc nào khả dụng. Một không gian mới sẽ được tạo ra.",
         connecting: "Kết nối...",
         "connect-bot": "Bot kết nối",
       },
@@ -1167,20 +1191,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
     },
     users: {
-      "pending-title": "Chờ phê duyệt",
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
-      "approved-title": "Người dùng đã được phê duyệt",
-      "approved-description":
-        "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
-      user: "Người dùng",
-      "pairing-code": "Mã ghép",
-      "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
-      "no-approved": "Không có người dùng được xác nhận",
       unknown: "Không xác định",
-      approve: "Chấp thuận",
-      deny: "Từ chối",
-      revoke: "Thu hồi",
     },
   },
 };

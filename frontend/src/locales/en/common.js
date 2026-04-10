@@ -570,7 +570,34 @@ const TRANSLATIONS = {
       "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
     link: "Read the API documentation",
     generate: "Generate New API Key",
+    empty: "No API keys found",
+    actions: "Actions",
+    messages: {
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Create new API key",
+      cancel: "Cancel",
+      close: "Close",
+      create: "Create API Key",
+      helper:
+        "Once created the API key can be used to programmatically access and configure this AnythingLLM instance.",
+      name: {
+        label: "Name",
+        placeholder: "Production integration",
+        helper:
+          "Optional. Use a friendly name so you can identify this key later.",
+      },
+    },
+    row: {
+      copy: "Copy API Key",
+      copied: "Copied",
+      unnamed: "--",
+      deleteConfirm:
+        "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.",
+    },
     table: {
+      name: "Name",
       key: "API Key",
       by: "Created By",
       created: "Created",
@@ -690,8 +717,6 @@ const TRANSLATIONS = {
         description:
           "Paste the API token you received from @BotFather to connect your bot.",
         "bot-token": "Bot Token",
-        "default-workspace": "Default Workspace",
-        "no-workspace": "No available workspaces. A new one will be created.",
         connecting: "Connecting...",
         "connect-bot": "Connect Bot",
       },
@@ -728,20 +753,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Failed to revoke user.",
     },
     users: {
-      "pending-title": "Pending Approval",
       "pending-description":
         "Users waiting to be verified. Match the pairing code shown here with the one displayed in their Telegram chat.",
-      "approved-title": "Approved Users",
-      "approved-description":
-        "Users who have been approved to chat with your bot.",
-      user: "User",
-      "pairing-code": "Pairing Code",
-      "no-pending": "No pending requests",
-      "no-approved": "No approved users",
       unknown: "Unknown",
-      approve: "Approve",
-      deny: "Deny",
-      revoke: "Revoke",
     },
   },
   security: {

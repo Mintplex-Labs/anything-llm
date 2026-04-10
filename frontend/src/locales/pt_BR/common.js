@@ -558,10 +558,37 @@ const TRANSLATIONS = {
     description: "Chaves API permitem acesso programático a esta instância.",
     link: "Leia a documentação da API",
     generate: "Gerar Nova Chave",
+    empty: "Nenhuma chave de API encontrada",
+    actions: "Ações",
+    messages: {
+      error: "Erro: {{error}}",
+    },
+    modal: {
+      title: "Criar nova chave de API",
+      cancel: "Cancelar",
+      close: "Fechar",
+      create: "Criar chave de API",
+      helper:
+        "Depois de criada, a chave de API pode ser usada para acessar e configurar esta instância do AnythingLLM programaticamente.",
+      name: {
+        label: "Nome",
+        placeholder: "Integração de produção",
+        helper:
+          "Opcional. Use um nome amigável para identificar esta chave depois.",
+      },
+    },
+    row: {
+      copy: "Copiar chave de API",
+      copied: "Copiado",
+      unnamed: "--",
+      deleteConfirm:
+        "Tem certeza de que deseja desativar esta chave de API?\nDepois disso ela não poderá mais ser usada.\n\nEsta ação é irreversível.",
+    },
     table: {
+      name: "Nome",
       key: "Chave API",
-      by: "Criado Por",
-      created: "Criado Em",
+      by: "Criada Por",
+      created: "Criada Em",
     },
   },
   llm: {
@@ -1109,9 +1136,6 @@ const TRANSLATIONS = {
         description:
           "Cole o token da API que recebeu do @BotFather e selecione um espaço de trabalho padrão para que seu bot possa conversar.",
         "bot-token": "Token do Bot",
-        "default-workspace": "Espaço de Trabalho Padrão",
-        "no-workspace":
-          "Não há espaços de trabalho disponíveis. Um novo será criado.",
         connecting: "Conectando...",
         "connect-bot": "Bot de Conexão",
       },
@@ -1151,20 +1175,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Falhou ao revogar o acesso do usuário.",
     },
     users: {
-      "pending-title": "Aguardando Aprovação",
       "pending-description":
         "Usuários aguardando a verificação. Compare o código de pareamento exibido aqui com o que aparece em seu chat do Telegram.",
-      "approved-title": "Usuários Aprovados",
-      "approved-description":
-        "Usuários que foram aprovados para conversar com o seu bot.",
-      user: "Usuário",
-      "pairing-code": "Código de emparelhamento",
-      "no-pending": "Não há solicitações pendentes.",
-      "no-approved": "Sem usuários autorizados",
       unknown: "Desconhecido",
-      approve: "Aprovar",
-      deny: "Negar",
-      revoke: "Anular",
     },
   },
 };

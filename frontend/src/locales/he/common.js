@@ -550,7 +550,33 @@ const TRANSLATIONS = {
       "מפתחות API מאפשרים למחזיק בהם לגשת ולנהל באופן תכנותי את מופע AnythingLLM זה.",
     link: "קרא את תיעוד ה-API",
     generate: "צור מפתח API חדש",
+    empty: "לא נמצאו מפתחות API",
+    actions: "פעולות",
+    messages: {
+      error: "שגיאה: {{error}}",
+    },
+    modal: {
+      title: "יצירת מפתח API חדש",
+      cancel: "ביטול",
+      close: "סגירה",
+      create: "צור מפתח API",
+      helper:
+        "לאחר יצירתו, ניתן להשתמש במפתח ה-API כדי לגשת למופע AnythingLLM זה ולהגדיר אותו באופן תכנותי.",
+      name: {
+        label: "שם",
+        placeholder: "אינטגרציית ייצור",
+        helper: "אופציונלי. השתמש בשם ברור כדי שתוכל לזהות את המפתח הזה בהמשך.",
+      },
+    },
+    row: {
+      copy: "העתק מפתח API",
+      copied: "הועתק",
+      unnamed: "--",
+      deleteConfirm:
+        "האם אתה בטוח שברצונך להשבית את מפתח ה-API הזה?\nלאחר מכן לא יהיה ניתן להשתמש בו יותר.\n\nלא ניתן לבטל פעולה זו.",
+    },
     table: {
+      name: "שם",
       key: "מפתח API",
       by: "נוצר על ידי",
       created: "נוצר",
@@ -1090,8 +1116,6 @@ const TRANSLATIONS = {
         description:
           "הדבק את טוקן ה-API שקיבלת מחשבון @BotFather ובחר את חלל העבודה הראשי עבור הבוט שלך, כדי שיוכל לתקשר.",
         "bot-token": "טוקן בוט",
-        "default-workspace": "סביבת עבודה ברירת מחדל",
-        "no-workspace": "אין מקומות עבודה זמינים. ייקבע מקום עבודה חדש.",
         connecting: "חיבור...",
         "connect-bot": "צ'אטבוט",
       },
@@ -1128,19 +1152,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "לא הצלחתי לבטל את החשבון של המשתמש.",
     },
     users: {
-      "pending-title": "נמצא בהמתנה לאישור",
       "pending-description":
         "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
-      "approved-title": "משתמשים מורשים",
-      "approved-description": "משתמשים שאושרו לנהל שיחה עם הבוט שלכם.",
-      user: "משתמש",
-      "pairing-code": "קוד התאמה",
-      "no-pending": "אין בקשות בתהליך",
-      "no-approved": "אין משתמשים מורשים",
       unknown: "לא ידוע",
-      approve: "אישור",
-      deny: "לדחות",
-      revoke: "בטל",
     },
   },
 };
