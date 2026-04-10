@@ -457,10 +457,6 @@ const TRANSLATIONS = {
             title: "خواندن موضوع",
             description: "خواندن کل یک رشته ایمیل بر اساس شناسه (ID)",
           },
-          readMessage: {
-            title: "خواندن پیام",
-            description: "خواندن یک پیام ایمیل بر اساس شناسه (ID)",
-          },
           createDraft: {
             title: "ایجاد پیش‌نویس",
             description: "یک پیش‌نویس ایمیل جدید ایجاد کنید.",

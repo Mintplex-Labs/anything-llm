@@ -475,10 +475,6 @@ const TRANSLATIONS = {
             title: "Peržiūrėti temą",
             description: "Peržiūrėkite visą el. pašto seką pagal ID.",
           },
-          readMessage: {
-            title: "Peržiūrėti pranešimą",
-            description: "Peržiūrėkite vieną el. pašto žinutę pagal ID",
-          },
           createDraft: {
             title: "Sukurti projekto variantą",
             description: "Sukurkite naują el. pašto projekto variantą",

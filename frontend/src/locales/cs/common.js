@@ -476,10 +476,6 @@ const TRANSLATIONS = {
             title: "Přečtěte si vlákno",
             description: "Přečtěte si kompletní řetězec e-mailů podle ID.",
           },
-          readMessage: {
-            title: "Přečíst zprávu",
-            description: "Přečtěte si jednu e-mailovou zprávu podle jejího ID.",
-          },
           createDraft: {
             title: "Vytvořit návrh",
             description: "Vytvořte nový návrh e-mailu",

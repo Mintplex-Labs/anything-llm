@@ -430,10 +430,6 @@ const TRANSLATIONS = {
             title: "閱讀主題",
             description: "閱讀由 ID 創建的完整電子郵件對話",
           },
-          readMessage: {
-            title: "閱讀訊息",
-            description: "閱讀特定 ID 上的單一電子郵件",
-          },
           createDraft: {
             title: "建立草稿",
             description: "建立新的電子郵件草稿",

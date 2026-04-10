@@ -462,10 +462,6 @@ const TRANSLATIONS = {
             title: "Læs tråd",
             description: "Læs hele e-mailtråden sorteret efter ID",
           },
-          readMessage: {
-            title: "Læs besked",
-            description: "Læs en enkelt e-mailbesked baseret på ID",
-          },
           createDraft: {
             title: "Opret udkast",
             description: "Opret et nyt udkast til en e-mail",

@@ -454,10 +454,6 @@ const TRANSLATIONS = {
             title: "קרא את השרשור",
             description: "קרא את כל שרשרת האימיילים שנוצרה על ידי ID.",
           },
-          readMessage: {
-            title: "קרא הודעה",
-            description: 'קרא הודעת דוא"ל בודדת לפי מספר זיהוי.',
-          },
           createDraft: {
             title: "יצירת טיוטה",
             description: "צור טיוטת אימייל חדשה",

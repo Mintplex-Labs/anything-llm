@@ -30,11 +30,6 @@ export const getGmailSkills = (t) => ({
         title: t("agent.skill.gmail.skills.readThread.title"),
         description: t("agent.skill.gmail.skills.readThread.description"),
       },
-      {
-        name: "gmail-read-message",
-        title: t("agent.skill.gmail.skills.readMessage.title"),
-        description: t("agent.skill.gmail.skills.readMessage.description"),
-      },
     ],
   },
   drafts: {

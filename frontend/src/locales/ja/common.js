@@ -453,10 +453,6 @@ const TRANSLATIONS = {
             title: "スレッドを読む",
             description: "IDでメールの全文を閲覧する",
           },
-          readMessage: {
-            title: "メッセージを読む",
-            description: "IDを指定して、単一のメールメッセージを読み取る",
-          },
           createDraft: {
             title: "ドラフト作成",
             description: "新しいメールの草案を作成する",

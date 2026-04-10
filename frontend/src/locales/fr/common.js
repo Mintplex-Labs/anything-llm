@@ -467,10 +467,6 @@ const TRANSLATIONS = {
             title: "Lire le fil de discussion",
             description: "Lire l'intégralité d'une conversation par ID",
           },
-          readMessage: {
-            title: "Lire le message",
-            description: "Lire un seul message de courriel par identifiant",
-          },
           createDraft: {
             title: "Créer une version préliminaire",
             description: "Créez une nouvelle version de l'e-mail.",

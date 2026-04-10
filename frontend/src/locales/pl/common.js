@@ -473,11 +473,6 @@ const TRANSLATIONS = {
             description:
               "Przeczytaj pełną sekcję korespondencji e-mail według identyfikatora.",
           },
-          readMessage: {
-            title: "Przeczytaj wiadomość",
-            description:
-              "Przeanalizuj pojedynczą wiadomość e-mail, korzystając z jej identyfikatora.",
-          },
           createDraft: {
             title: "Utwórz wersję roboczą",
             description: "Utwórz nowy projekt wiadomości e-mail",

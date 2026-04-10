@@ -462,10 +462,6 @@ const TRANSLATIONS = {
             title: "Lees het gesprek",
             description: "Lees het volledige e-mailgesprek, gesorteerd op ID.",
           },
-          readMessage: {
-            title: "Lees bericht",
-            description: "Lees een enkel e-mailbericht op basis van een ID.",
-          },
           createDraft: {
             title: "Maak een concept",
             description: "Maak een nieuwe concept-e-mail",

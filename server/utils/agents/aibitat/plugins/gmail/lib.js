@@ -381,15 +381,6 @@ class GmailBridge {
   }
 
   /**
-   * Read a single message by ID.
-   * @param {string} messageId - The message ID
-   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
-   */
-  async readMessage(messageId) {
-    return this.request("read_message", { messageId });
-  }
-
-  /**
    * Create a new draft email.
    * @param {string} to - Recipient email
    * @param {string} subject - Email subject

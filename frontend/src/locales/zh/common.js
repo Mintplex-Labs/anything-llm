@@ -440,10 +440,6 @@ const TRANSLATIONS = {
             title: "阅读此主题",
             description: "阅读由ID发起的完整邮件往来",
           },
-          readMessage: {
-            title: "阅读消息",
-            description: "通过ID阅读单个电子邮件消息",
-          },
           createDraft: {
             title: "创建草稿",
             description: "创建一个新的电子邮件草稿",

@@ -921,10 +921,6 @@ const TRANSLATIONS = {
             description:
               "Citește întregul fir de e-mail, folosind un identificator (ID).",
           },
-          readMessage: {
-            title: "Citește mesajul",
-            description: "Citește un singur mesaj de e-mail, folosind ID-ul",
-          },
           createDraft: {
             title: "Creează o schiță",
             description: "Creați un proiect nou de e-mail",

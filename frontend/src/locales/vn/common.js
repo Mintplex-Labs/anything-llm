@@ -460,10 +460,6 @@ const TRANSLATIONS = {
             title: "Đọc chủ đề",
             description: "Đọc toàn bộ chuỗi email theo ID",
           },
-          readMessage: {
-            title: "Đọc tin nhắn",
-            description: "Đọc một tin nhắn email duy nhất theo ID",
-          },
           createDraft: {
             title: "Tạo bản nháp",
             description: "Tạo một bản nháp email mới",

@@ -474,10 +474,6 @@ const TRANSLATIONS = {
             title: "Read Thread",
             description: "Read a full email thread by ID",
           },
-          readMessage: {
-            title: "Read Message",
-            description: "Read a single email message by ID",
-          },
           createDraft: {
             title: "Create Draft",
             description: "Create a new draft email",

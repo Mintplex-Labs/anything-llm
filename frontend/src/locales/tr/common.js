@@ -465,11 +465,6 @@ const TRANSLATIONS = {
             description:
               "ID numarasına göre, e-posta iletişimin bütününü okuyun.",
           },
-          readMessage: {
-            title: "Mesajı oku",
-            description:
-              "Belirli bir ID numarasına sahip tek bir e-posta mesajını okuyun.",
-          },
           createDraft: {
             title: "Taslak Oluştur",
             description: "Yeni bir e-posta taslağı oluşturun",

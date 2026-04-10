@@ -2,7 +2,6 @@
 const { GmailGetInbox } = require("./search/gmail-get-inbox.js");
 const { GmailSearch } = require("./search/gmail-search.js");
 const { GmailReadThread } = require("./search/gmail-read-thread.js");
-const { GmailReadMessage } = require("./search/gmail-read-message.js");
 
 // Drafts
 const { GmailCreateDraft } = require("./drafts/gmail-create-draft.js");
@@ -43,7 +42,6 @@ const gmailAgent = {
     // Search & Read (read-only)
     GmailSearch,
     GmailReadThread,
-    GmailReadMessage,
 
     // Drafts (modifying)
     GmailCreateDraft,

@@ -455,10 +455,6 @@ const TRANSLATIONS = {
             title: "Loe teemat",
             description: "Vaata kogu e-kirjade sarja ID järgi",
           },
-          readMessage: {
-            title: "Vaata sõnumit",
-            description: "Leia üks e-posti sõnum ID-ga",
-          },
           createDraft: {
             title: "Loo esialgne versioon",
             description: "Loo uus e-posti eelnäide",

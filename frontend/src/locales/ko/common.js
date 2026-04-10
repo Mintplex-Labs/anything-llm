@@ -457,10 +457,6 @@ const TRANSLATIONS = {
             title: "게시글 전체 읽기",
             description: "ID를 기준으로 전체 이메일 스레드를 읽기",
           },
-          readMessage: {
-            title: "메시지 읽기",
-            description: "ID를 사용하여 단일 이메일 메시지를 읽기",
-          },
           createDraft: {
             title: "초안 작성",
             description: "새로운 이메일 초안 작성",

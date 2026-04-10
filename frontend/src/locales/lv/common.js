@@ -470,10 +470,6 @@ const TRANSLATIONS = {
             title: "Izlasīt tēmu",
             description: "Izlasiet pilnu e-pasta sarunu, izmantojot ID",
           },
-          readMessage: {
-            title: "Izlasīt vēstījumu",
-            description: "Izlasiet vienu e-pasta vēstuli, norādot tās ID",
-          },
           createDraft: {
             title: "Izveidot izstrādi",
             description: "Izveidot jaunu e-pasta rakstu",

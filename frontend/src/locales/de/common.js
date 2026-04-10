@@ -472,10 +472,6 @@ const TRANSLATIONS = {
             description:
               "Lesen Sie den vollständigen E-Mail-Thread anhand der ID",
           },
-          readMessage: {
-            title: "Nachricht lesen",
-            description: "Eine einzelne E-Mail-Nachricht anhand ihrer ID lesen",
-          },
           createDraft: {
             title: "Entwurf erstellen",
             description: "Erstelle eine neue Entwurf-E-Mail",
