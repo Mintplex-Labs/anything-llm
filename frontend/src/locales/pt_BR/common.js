@@ -415,6 +415,130 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Conector do GMail",
+        description:
+          "Permita que seu agente interaja com o Gmail – pesquise e-mails, leia conversas, crie rascunhos, envie e-mails e gerencie sua caixa de entrada. <a>Consulte a documentação</a>.",
+        multiUserWarning:
+          "A integração com o Gmail não está disponível no modo multiusuário, por razões de segurança. Por favor, desative o modo multiusuário para utilizar esta funcionalidade.",
+        configuration: "Configuração do Gmail",
+        deploymentId: "ID de implantação",
+        deploymentIdHelp:
+          "O ID de implantação da sua aplicação web do Google Apps Script",
+        apiKey: "Chave de API",
+        apiKeyHelp:
+          "A chave de API que você configurou no seu projeto Google Apps Script",
+        configurationRequired:
+          "Por favor, configure o ID de Implantação e a Chave de API para habilitar as funcionalidades do Gmail.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de pesquisa...",
+        noSkillsFound:
+          "Não encontramos nenhum resultado que corresponda à sua pesquisa.",
+        categories: {
+          search: {
+            title: "Pesquisar e ler e-mails",
+            description:
+              "Pesquise e leia e-mails da sua caixa de entrada do Gmail.",
+          },
+          drafts: {
+            title: "Rascunhos de e-mails",
+            description: "Crie, edite e gerencie rascunhos de e-mails.",
+          },
+          send: {
+            title: "Enviar e responder a e-mails",
+            description: "Envie e-mails e responda a discussões imediatamente.",
+          },
+          threads: {
+            title: "Gerenciar Fios de E-mail",
+            description:
+              "Gerenciar threads de e-mail: marcar como lido/não lido, arquivar, excluir.",
+          },
+          account: {
+            title: "Estatísticas de integração",
+            description:
+              "Visualize estatísticas da caixa de correio e informações da conta.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Pesquisar e-mails",
+            description:
+              "Pesquise e-mails usando a sintaxe de consulta do Gmail.",
+          },
+          readThread: {
+            title: "Leia a discussão",
+            description: "Leia toda a sequência de e-mails por ID.",
+          },
+          createDraft: {
+            title: "Criar rascunho",
+            description: "Crie uma nova versão do e-mail.",
+          },
+          createDraftReply: {
+            title: "Criar resposta preliminar",
+            description:
+              "Crie uma resposta preliminar a um tópico já existente.",
+          },
+          updateDraft: {
+            title: "Versão atualizada",
+            description: "Atualizar um rascunho de e-mail existente",
+          },
+          getDraft: {
+            title: "Obter rascunho",
+            description: "Recuperar uma versão específica por ID",
+          },
+          listDrafts: {
+            title: "Rascunhos",
+            description: "Liste todos os e-mails em rascunho.",
+          },
+          deleteDraft: {
+            title: "Excluir rascunho",
+            description: "Excluir um rascunho de e-mail",
+          },
+          sendDraft: {
+            title: "Enviar rascunho",
+            description: "Envie uma versão prévia de um e-mail existente.",
+          },
+          sendEmail: {
+            title: "Enviar e-mail",
+            description: "Envie um e-mail imediatamente.",
+          },
+          replyToThread: {
+            title: "Responder à discussão",
+            description:
+              "Responder a uma discussão por e-mail o mais rápido possível.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marque um tópico como lido",
+          },
+          markUnread: {
+            title: "Marcar como não lido",
+            description: "Marque um tópico como não lido",
+          },
+          moveToTrash: {
+            title: "Mover para a lixeira",
+            description: "Mover um tópico para a lixeira",
+          },
+          moveToArchive: {
+            title: "Arquivo",
+            description: "Arquivar um tópico",
+          },
+          moveToInbox: {
+            title: "Mover para a caixa de entrada",
+            description: "Mova a discussão para a caixa de entrada",
+          },
+          getMailboxStats: {
+            title: "Estatísticas da caixa de correio",
+            description:
+              "Obtenha o número de e-mails não lidos e estatísticas da caixa de correio.",
+          },
+          getInbox: {
+            title: "Acessar a caixa de entrada",
+            description:
+              "Uma maneira eficiente de acessar os e-mails na caixa de entrada do Gmail.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

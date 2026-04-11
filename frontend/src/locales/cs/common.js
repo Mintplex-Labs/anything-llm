@@ -424,6 +424,126 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Připojení k GMail",
+        description:
+          "Umožněte svému agentovi, aby interagoval s Gmail – vyhledával e-maily, četl konverzace, vytvářel návrhy, posílal e-maily a spravoval vaši schránku. <a>Prostudujte dokumentaci</a>.",
+        multiUserWarning:
+          "Integrace s Gmailem není dostupná v režimu pro více uživatelů z bezpečnostních důvodů. Pro použití této funkce, prosím, deaktivujte režim pro více uživatelů.",
+        configuration: "Konfigurace Gmailu",
+        deploymentId: "ID nasazení",
+        deploymentIdHelp:
+          "Identifikátor nasazení z vaší webové aplikace Google Apps Script",
+        apiKey: "Klíč API",
+        apiKeyHelp:
+          "Klíč API, který jste nakonfigurovali ve vaší instalaci Google Apps Script",
+        configurationRequired:
+          "Prosím, nakonfigurujte ID nasazení a klíč API, abyste aktivovali funkce pro Gmail.",
+        configured: "Nastaveno",
+        searchSkills: "Dovednosti pro vyhledávání...",
+        noSkillsFound: "Žádný z nabízených profilů neodpovídá vašim kritériím.",
+        categories: {
+          search: {
+            title: "Vyhledávání a čtení e-mailů",
+            description: "Vyhledejte a čtěte e-maily z vaší schránky Gmail.",
+          },
+          drafts: {
+            title: "Návrhy e-mailů",
+            description: "Vytvářejte, upravujte a spravujte návrhy e-mailů.",
+          },
+          send: {
+            title: "Odesílejte a odpovídejte na e-maily",
+            description:
+              "Odesílejte e-maily a okamžitě odpovídejte na diskuse.",
+          },
+          threads: {
+            title: "Spravujte emailové vlákna",
+            description:
+              "Spravujte e-mailové vlákna – označte jako přečtené/ne přečtené, archivujte, vyhoďte",
+          },
+          account: {
+            title: "Statistiky integrace",
+            description:
+              "Zobrazte statistiky poštovní schránky a informace o účtu.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Hledat e-maily",
+            description: "Hledejte e-maily pomocí syntaxe dotazů v Gmailu",
+          },
+          readThread: {
+            title: "Přečtěte si vlákno",
+            description: "Přečtěte si kompletní řetězec e-mailů podle ID.",
+          },
+          createDraft: {
+            title: "Vytvořit návrh",
+            description: "Vytvořte nový návrh e-mailu",
+          },
+          createDraftReply: {
+            title: "Vytvořit návrh odpovědi",
+            description: "Vytvořte návrh odpovědi na existující téma.",
+          },
+          updateDraft: {
+            title: "Aktualizovaná verze návrhu",
+            description: "Aktualizujte existující návrh e-mailu",
+          },
+          getDraft: {
+            title: "Získej návrh",
+            description: "Získejte konkrétní verzi dokumentu podle jejího ID.",
+          },
+          listDrafts: {
+            title: "Návrhy (seznam)",
+            description: "Vypište všechny návrhy e-mailů.",
+          },
+          deleteDraft: {
+            title: "Smazat návrh",
+            description: "Smazat návrh e-mailu",
+          },
+          sendDraft: {
+            title: "Odešlete návrh",
+            description: "Odešlete existující návrh e-mailu",
+          },
+          sendEmail: {
+            title: "Odeslat e-mail",
+            description: "Odešlete e-mail co nejrychleji.",
+          },
+          replyToThread: {
+            title: "Odpovědět na vlákno",
+            description: "Odpovězte na e-mailovou diskuzi co nejdříve.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Označit vlákno jako přečtené",
+          },
+          markUnread: {
+            title: "Označit jako nepročtené",
+            description: "Označte vlákno jako nepročtené.",
+          },
+          moveToTrash: {
+            title: "Přesun do koše",
+            description: "Přesuňte vlákno do koše",
+          },
+          moveToArchive: {
+            title: "Archiv",
+            description: "Uložte vlákno do archivu",
+          },
+          moveToInbox: {
+            title: "Přesun do schránky",
+            description: "Přesuňte vlákno do schránky (účetní knihy)",
+          },
+          getMailboxStats: {
+            title: "Statistiky poštovní schránky",
+            description:
+              "Získejte informace o počtu nečtených e-mailů a statistiky poštovní schránky.",
+          },
+          getInbox: {
+            title: "Otevřít schránku",
+            description:
+              "Jednoduchý způsob, jak získat e-maily z vaší schránky Gmail.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",
