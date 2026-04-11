@@ -534,6 +534,41 @@ function toChunks(arr, size) {
   );
 }
 
+/**
+ * Report chunk-level embedding progress from any embedder.
+ * Works in both the child worker process (IPC via process.send) and the
+ * main server process (direct SSE emit via EmbeddingWorkerManager).
+ *
+ * Requires `global.__embeddingProgress` to be set by the caller with
+ * { workspaceSlug, filename, userId }.
+ *
+ * @param {number} chunksProcessed
+ * @param {number} totalChunks
+ */
+function reportEmbeddingProgress(chunksProcessed, totalChunks) {
+  if (!global.__embeddingProgress) return;
+  const ctx = global.__embeddingProgress;
+  const event = {
+    type: "chunk_progress",
+    workspaceSlug: ctx.workspaceSlug,
+    filename: ctx.filename,
+    userId: ctx.userId,
+    chunksProcessed,
+    totalChunks,
+    silent: true,
+  };
+
+  if (typeof process.send === "function") {
+    try {
+      process.send(event);
+    } catch {}
+    return;
+  }
+
+  const { emitProgress } = require("../EmbeddingWorkerManager");
+  emitProgress(ctx.workspaceSlug, event);
+}
+
 function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
@@ -567,4 +602,5 @@ module.exports = {
   getLLMProvider,
   toChunks,
   humanFileSize,
+  reportEmbeddingProgress,
 };

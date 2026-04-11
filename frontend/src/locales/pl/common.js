@@ -419,6 +419,131 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Połączenie z GMail",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Gmail – wyszukiwanie wiadomości e-mail, czytanie wątków, tworzenie projektów, wysyłanie wiadomości e-mail oraz zarządzanie skrzynką odbiorczą. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Gmailem nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby korzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja Gmaila",
+        deploymentId: "Identyfikator wdrażania",
+        deploymentIdHelp:
+          "ID aplikacji webowej z Google Apps Script, której używasz",
+        apiKey: "Klucz API",
+        apiKeyHelp:
+          "Klucz API, który skonfigurowałeś w swoim projekcie Google Apps Script",
+        configurationRequired:
+          "Prosimy o skonfigurowanie identyfikatora wdrażania i klucza API, aby włączyć funkcje związane z Gmail.",
+        configured: "Skonfigurowany",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
+        categories: {
+          search: {
+            title: "Wyszukaj i przeczytaj wiadomości e-mail",
+            description:
+              "Wyszukaj i przeczytaj e-maile z swojej skrzynki odbiorczej Gmail.",
+          },
+          drafts: {
+            title: "Proponowane wiadomości e-mail",
+            description: "Twórz, edytuj i zarządzaj wersjami e-maili.",
+          },
+          send: {
+            title: "Wysyłanie i odpowiadanie na e-maile",
+            description:
+              "Wysyłaj e-maile i odpowiadaj na dyskusje natychmiast.",
+          },
+          threads: {
+            title: "Zarządzaj wątkami wiadomości e-mail",
+            description:
+              "Zarządzaj wątkami e-maili – oznaczaj jako przeczytane/nieprzeczytane, archiwizuj, usuwaj",
+          },
+          account: {
+            title: "Statystyki dotyczące integracji",
+            description:
+              "Przejrzyj statystyki skrzynki pocztowej oraz informacje dotyczące konta.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Wyszukaj wiadomości",
+            description:
+              "Wyszukaj wiadomości e-mail, używając składni zapytań w Gmail.",
+          },
+          readThread: {
+            title: "Przeczytaj wątek",
+            description:
+              "Przeczytaj pełną sekcję korespondencji e-mail według identyfikatora.",
+          },
+          createDraft: {
+            title: "Utwórz wersję roboczą",
+            description: "Utwórz nowy projekt wiadomości e-mail",
+          },
+          createDraftReply: {
+            title: "Stwórz wersję odpowiedzi",
+            description: "Stwórz wstępną odpowiedź do istniejącego wątku.",
+          },
+          updateDraft: {
+            title: "Aktualizacja wersji roboczej",
+            description: "Zaktualizuj istniejący projekt e-maila",
+          },
+          getDraft: {
+            title: "Otrzymaj wersję roboczą",
+            description:
+              "Pobierz konkretny wers dokumentu po jego identyfikatorze.",
+          },
+          listDrafts: {
+            title: "Proponowane wersje",
+            description: "Wyświetl wszystkie wersje e-maili.",
+          },
+          deleteDraft: {
+            title: "Usuń wersję roboczą",
+            description: "Usuń wersję roboczą wiadomości e-mail",
+          },
+          sendDraft: {
+            title: "Wyślij wersję roboczą",
+            description: "Wyślij istniejący projekt wiadomości e-mail",
+          },
+          sendEmail: {
+            title: "Wyślij e-mail",
+            description: "Wyślij e-mail natychmiast",
+          },
+          replyToThread: {
+            title: "Odpowiedź na wątek",
+            description: "Odpowiedz na wątek wiadomości e-mail natychmiast",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Oznacz wątek jako przeczytany",
+          },
+          markUnread: {
+            title: "Oznacz jako nieprzeczytane",
+            description: "Oznacz wątek jako nieprzeczytany",
+          },
+          moveToTrash: {
+            title: "Przenieś do kosza",
+            description: "Przenieś wątek do kosza",
+          },
+          moveToArchive: {
+            title: "Archiwum",
+            description: "Zarchiwizuj wątek",
+          },
+          moveToInbox: {
+            title: 'Przenieś do folderu "Otrzymane"',
+            description: "Przenieś wątek do folderu „Ostatnie wiadomości”",
+          },
+          getMailboxStats: {
+            title: "Statystyki skrzynki pocztowej",
+            description:
+              "Uzyskaj informacje o liczbie nieprzeczytanych wiadomości oraz statystyki dotyczące skrzynki pocztowej.",
+          },
+          getInbox: {
+            title: "Otwórz skrzynkę odbiorczą",
+            description:
+              "Sprawne rozwiązanie, dzięki któremu można łatwo pobierać wiadomości z skrzynki odbiorczej z Gmaila.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -568,7 +693,34 @@ const TRANSLATIONS = {
       "Klucze API umożliwiają dostęp do instancji AnythingLLM i zarządzanie nią.",
     link: "Przeczytaj dokumentację API",
     generate: "Generuj nowy klucz API",
+    empty: "Nie znaleziono kluczy API",
+    actions: "Akcje",
+    messages: {
+      error: "Błąd: {{error}}",
+    },
+    modal: {
+      title: "Utwórz nowy klucz API",
+      cancel: "Anuluj",
+      close: "Zamknij",
+      create: "Utwórz klucz API",
+      helper:
+        "Po utworzeniu klucz API może być używany do programowego dostępu do tej instancji AnythingLLM i jej konfiguracji.",
+      name: {
+        label: "Nazwa",
+        placeholder: "Integracja produkcyjna",
+        helper:
+          "Opcjonalne. Użyj przyjaznej nazwy, aby później łatwo rozpoznać ten klucz.",
+      },
+    },
+    row: {
+      copy: "Kopiuj klucz API",
+      copied: "Skopiowano",
+      unnamed: "--",
+      deleteConfirm:
+        "Czy na pewno chcesz dezaktywować ten klucz API?\nPo tej operacji nie będzie już można go używać.\n\nTej akcji nie można cofnąć.",
+    },
     table: {
+      name: "Nazwa",
       key: "Klucz API",
       by: "Utworzony przez",
       created: "Utworzony o",
@@ -1134,9 +1286,6 @@ const TRANSLATIONS = {
         description:
           "Wklej token API, który otrzymałeś od @BotFather, i wybierz domyślny przestrzeń roboczą, z której Twój bot będzie mógł komunikować się.",
         "bot-token": "Token Bot",
-        "default-workspace": "Domyślne miejsce pracy",
-        "no-workspace":
-          "Brak dostępnych miejsc pracy. Nowe zostanie utworzone.",
         connecting: "Połączenie...",
         "connect-bot": "Bot łączący",
       },
@@ -1177,20 +1326,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
     },
     users: {
-      "pending-title": "Czekając na zatwierdzenie",
       "pending-description":
         "Użytkownicy, którzy czekają na weryfikację. Dopasuj kod parowania, który znajduje się tutaj, z tym, który widnieje w ich rozmowie na Telegramie.",
-      "approved-title": "Użytkownicy, którym przyznano uprawnienia",
-      "approved-description":
-        "Użytkownicy, którzy zostali zatwierdzeni do rozmowy z Twoim botem.",
-      user: "Użytkownik",
-      "pairing-code": "Kod dopasowania",
-      "no-pending": "Brak oczekujących żądań",
-      "no-approved": "Brak zatwierdzonych użytkowników",
       unknown: "Nieznany",
-      approve: "Zaakceptować",
-      deny: "Odrzucać",
-      revoke: "Odstrzegać",
     },
   },
   personalization: {

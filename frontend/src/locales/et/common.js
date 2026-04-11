@@ -408,6 +408,123 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail-iga ühendamine",
+        description:
+          "Lase oma esindajal interakteeruda Gmailiga – otsida e-kirju, lugeda teemasid, luua esialgseid versioone, saatada e-kirju ja hallata oma postkasti. <a>Vaata dokumentatsiooni</a>.",
+        multiUserWarning:
+          "Gmaili integreerimine ei ole saadaval mitme kasutaja režiimis turvalisuse huvides. Palun deaktiveerige mitme kasutaja režiim, et kasutada seda funktsiooni.",
+        configuration: "Gmaili seadmine",
+        deploymentId: "Paigaldamis ID",
+        deploymentIdHelp: "Veebirakenduse Google Apps Scripti ID",
+        apiKey: "API võti",
+        apiKeyHelp:
+          "API võti, mida olete konfigureerinud oma Google Apps Scripti rakenduses.",
+        configurationRequired:
+          'Palun konfigureerige "Deployment ID" ja API võti, et Gmaili funktsionaalsus oleks aktiivne.',
+        configured: "Konfigureeritud",
+        searchSkills: "otsinguteadused...",
+        noSkillsFound: "Leidke ei leitud sobivaid oskusi teie otsingu põhjal.",
+        categories: {
+          search: {
+            title: "Leia ja luge e-kirju",
+            description: "Kutsutage ja looge Gmaili postkasti olevad e-kirjad",
+          },
+          drafts: {
+            title: "Esimesed kirjad",
+            description: "Loo, muuda ja hallata e-kirjade projekte",
+          },
+          send: {
+            title: "Saada ja vastata e-kirjadele",
+            description: "Saada e-kirju ja vastata teemades kohe",
+          },
+          threads: {
+            title: "Hallata e-kirjade seeriaid",
+            description:
+              "Hallata e-posti vestlusi – märgistada kui lugemata/lugemata, salvestada, kustutada",
+          },
+          account: {
+            title: "Integreerimise statistika",
+            description: "Vaata postkasti statistikat ja konto teavet.",
+          },
+        },
+        skills: {
+          search: {
+            title: "E-kirjade otsing",
+            description: "Kutse e-kirju Gmaili küsimismängu sintaksiga",
+          },
+          readThread: {
+            title: "Loe teemat",
+            description: "Vaata kogu e-kirjade sarja ID järgi",
+          },
+          createDraft: {
+            title: "Loo esialgne versioon",
+            description: "Loo uus e-posti eelnäide",
+          },
+          createDraftReply: {
+            title: "Loo esialgne vastus",
+            description: "Loo esialgne vastus olemasolevale teemale.",
+          },
+          updateDraft: {
+            title: "Väljaanne",
+            description: "Värskendada olemasolevat e-kirja projekti",
+          },
+          getDraft: {
+            title: "Vaata esialgne versioon",
+            description: "Taasta konkreetne versioon ID-täringuga",
+          },
+          listDrafts: {
+            title: "Esialgne versioon",
+            description: "Loeda kõik e-kirjade plaani",
+          },
+          deleteDraft: {
+            title: "Hüvata projekti",
+            description: "Hüvata e-kirja, mis on loodud",
+          },
+          sendDraft: {
+            title: "Saada projekti",
+            description: "Saada olemasolev e-kirja esialgne versioon",
+          },
+          sendEmail: {
+            title: "Saatke e-kiri",
+            description: "Saatke e-kiri kohe",
+          },
+          replyToThread: {
+            title: "Vastata teemale",
+            description: "Vasta e-posti teemale kohe",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Märki, et teema on lugemata.",
+          },
+          markUnread: {
+            title: "Märgi kui vaatamata",
+            description: "Märki, et teema on lugemata",
+          },
+          moveToTrash: {
+            title: "Saada jäätmeteks",
+            description: "Liigu teema prügikasti",
+          },
+          moveToArchive: {
+            title: "Arhiiv",
+            description: "Salvatage teema",
+          },
+          moveToInbox: {
+            title: "Liiguta postkasti",
+            description: 'Liiga "Saadud" pildile',
+          },
+          getMailboxStats: {
+            title: "Postkasti statistika",
+            description:
+              "Vaata, mitu ebakirjutatud kirja on, ning postkasti statistikat.",
+          },
+          getInbox: {
+            title: "Ava postkasti",
+            description:
+              "Lihtne viis, kuidas saada Gmailist oma postkasti e-kirjad.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -552,7 +669,34 @@ const TRANSLATIONS = {
       "API võtmed võimaldavad programmipõhiselt hallata seda AnythingLLM instantsi.",
     link: "Loe API dokumentatsiooni",
     generate: "Genereeri uus API võti",
+    empty: "API võtmeid ei leitud",
+    actions: "Toimingud",
+    messages: {
+      error: "Viga: {{error}}",
+    },
+    modal: {
+      title: "Loo uus API võti",
+      cancel: "Tühista",
+      close: "Sulge",
+      create: "Loo API võti",
+      helper:
+        "Pärast loomist saab API võtit kasutada sellele AnythingLLM-i instantsile programmiga ligi pääsemiseks ja selle seadistamiseks.",
+      name: {
+        label: "Nimi",
+        placeholder: "Tootmiskeskkonna integratsioon",
+        helper:
+          "Valikuline. Kasuta sõbralikku nime, et saaksid võtme hiljem hõlpsasti ära tunda.",
+      },
+    },
+    row: {
+      copy: "Kopeeri API võti",
+      copied: "Kopeeritud",
+      unnamed: "--",
+      deleteConfirm:
+        "Kas soovite selle API võtme kindlasti deaktiveerida?\nPärast seda ei saa seda enam kasutada.\n\nSeda toimingut ei saa tagasi võtta.",
+    },
     table: {
+      name: "Nimi",
       key: "API võti",
       by: "Loonud",
       created: "Loodud",
@@ -1090,9 +1234,6 @@ const TRANSLATIONS = {
         description:
           "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
         "bot-token": "Bot token",
-        "default-workspace": "Vaikimisi kasutatav tööruum",
-        "no-workspace":
-          "Praegu pole saadaval vaba töökohti. Ühe uue töökohtade loomine on plaanis.",
         connecting: "Ühendamine...",
         "connect-bot": "Ühendusrobott",
       },
@@ -1131,20 +1272,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
     },
     users: {
-      "pending-title": "Ootea faasis, ootamas heakskiitu",
       "pending-description":
         "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
-      "approved-title": "Heakskiidud kasutajad",
-      "approved-description":
-        "Kasutajad, kellele on antud lubadus teie botiga vestelda.",
-      user: "Kasutaja",
-      "pairing-code": "Koosamis kood",
-      "no-pending": "Hetkel pole ootamisel ühtegi taotlust",
-      "no-approved": "Pole heakskiidud kasutajaid",
       unknown: "Tuntud pole",
-      approve: "Heakskiid",
-      deny: "Nõgata",
-      revoke: "Tingimata",
     },
   },
   personalization: {

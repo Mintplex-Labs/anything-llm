@@ -52,8 +52,8 @@ export default {
   discord: () => {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
-  docs: () => {
-    return "https://docs.anythingllm.com";
+  docs: (path = "") => {
+    return `https://docs.anythingllm.com${path}`;
   },
   chatModes: () => {
     return "https://docs.anythingllm.com/features/chat-modes";
@@ -86,9 +86,6 @@ export default {
       },
       agentConfig: (slug) => {
         return `/workspace/${slug}/settings/agent-config`;
-      },
-      personalization: (slug) => {
-        return `/workspace/${slug}/settings/personalization`;
       },
     },
     thread: (wsSlug, threadSlug) => {
@@ -169,9 +166,6 @@ export default {
     },
     experimental: () => {
       return `/settings/beta-features`;
-    },
-    personalization: () => {
-      return `/settings/personalization`;
     },
     mobileConnections: () => {
       return `/settings/mobile-connections`;

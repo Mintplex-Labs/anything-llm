@@ -2,19 +2,6 @@ import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 
 const Memory = {
-  all: async function () {
-    return await fetch(`${API_BASE}/memories`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res?.memories || [])
-      .catch((e) => {
-        console.error(e);
-        return [];
-      });
-  },
-
   forWorkspace: async function (workspaceId) {
     return await fetch(`${API_BASE}/workspaces/${workspaceId}/memories`, {
       method: "GET",
@@ -78,27 +65,16 @@ const Memory = {
       });
   },
 
-  clearAll: async function () {
-    return await fetch(`${API_BASE}/memories`, {
-      method: "DELETE",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
-
-  runExtraction: async function () {
-    return await fetch(`${API_BASE}/memories/run-extraction`, {
+  demoteToWorkspace: async function (memoryId, workspaceId) {
+    return await fetch(`${API_BASE}/memories/${memoryId}/demote`, {
       method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify({ workspaceId }),
     })
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);
-        return { success: false, error: e.message };
+        return { memory: null, error: e.message };
       });
   },
 };

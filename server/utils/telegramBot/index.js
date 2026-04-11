@@ -29,9 +29,48 @@ const {
 
 class TelegramBotService {
   static _instance = null;
+  static #MAX_POLLING_RETRIES = 10;
+  static #BASE_RETRY_DELAY_MS = 1000;
+  static #MAX_RETRY_DELAY_MS = 5 * 60 * 1000; // 5 minutes
+  static #NETWORK_ERROR_PATTERNS = [
+    "EPIPE",
+    "EPROTO",
+    "ECONNABORTED",
+    "EHOSTDOWN",
+    "ENETDOWN",
+    "EADDRNOTAVAIL",
+    "ETIMEDOUT",
+    "ECONNRESET",
+    "ECONNREFUSED",
+    "ENOTFOUND",
+    "ENETUNREACH",
+    "EHOSTUNREACH",
+    "EAI_AGAIN",
+    "EFATAL",
+    "socket hang up",
+    "network",
+    "timeout",
+    "bad gateway",
+    "flood",
+    "429",
+    "409",
+    "500",
+    "501",
+    "502",
+    "503",
+    "504",
+    "520",
+    "521",
+    "522",
+    "523",
+    "524",
+  ];
+
+  /** @type {TelegramBot|null} */
   #bot = null;
   #config = null;
   #queue = new MessageQueue();
+  #pollingRetry = { timer: null, count: 0 };
   // Per-chat state: { workspaceSlug, threadSlug }
   #chatState = new Map();
   // Pending pairing requests: chatId -> { code, telegramUsername, firstName }
@@ -138,13 +177,26 @@ class TelegramBotService {
     Object.assign(this.#config, updates);
   }
 
+  /**
+   * Stop the bot and clear all state.
+   * @returns {Promise<void>}
+   */
   async stop() {
     if (!this.#bot) return;
+
+    // Clear any pending retry timer
+    if (this.#pollingRetry.timer) {
+      clearTimeout(this.#pollingRetry.timer);
+      this.#pollingRetry.timer = null;
+    }
+    this.#pollingRetry.count = 0;
+
     try {
       await this.#bot.stopPolling();
     } catch {
       // Polling may already be stopped
     }
+
     // Kill any active workers before clearing state
     for (const chatId of this.#activeWorkers.keys()) {
       this.abortChat(chatId);
@@ -171,23 +223,77 @@ class TelegramBotService {
   }
 
   /**
-   * Handle polling errors with special handling for 401 Unauthorized.
-   * - 401 errors: Self-cleanup and delete connector
-   * - Other HTTP error codes: Stop polling immediately
+   * Check if an error is a transient network issue that warrants retry.
+   */
+  #isNetworkError(error) {
+    const msg = (error.message || "").toLowerCase();
+    return TelegramBotService.#NETWORK_ERROR_PATTERNS.some(
+      (p) => msg.includes(p.toLowerCase()) || error.code === p
+    );
+  }
+
+  /**
+   * Handle polling errors with retry logic for network issues.
+   * - 401 errors: Self-cleanup and delete connector (token invalid)
+   * - Network errors (ETIMEDOUT, ECONNRESET, etc.): Retry with exponential backoff
+   * - Other errors: Stop polling immediately
    */
   async #handlePollingError(error) {
+    // Ignore errors while already waiting to retry
+    if (this.#pollingRetry.timer) return;
     this.#log("Polling error:", error.message);
+
+    // 401 = invalid token, cleanup and stop
     if (error.message?.includes("401")) {
       this.#log(
-        "Got 401 - bot token may be invalid. Stopping polling and deleting connector."
+        "Got 401 - bot token invalid. Stopping and deleting connector."
       );
       return this.#selfCleanup("401 Unauthorized");
     }
 
-    this.#log(
-      `Got HTTP error ${error.message}. Stopping polling to prevent further errors.`
+    // For non-network errors, stop immediately, but don't delete the connector
+    if (!this.#isNetworkError(error)) {
+      this.#log(`Got HTTP error ${error.message}. Stopping polling.`);
+      return await this.stop();
+    }
+
+    // Network error - attempt retry with exponential backoff
+    const maxRetries = TelegramBotService.#MAX_POLLING_RETRIES;
+    this.#pollingRetry.count++;
+    if (this.#pollingRetry.count > maxRetries) {
+      this.#log(
+        `Network error. Max retries (${maxRetries}) exceeded. Stopping.`
+      );
+      this.#pollingRetry.count = 0;
+      return await this.stop();
+    }
+
+    const delay = Math.min(
+      TelegramBotService.#BASE_RETRY_DELAY_MS *
+        Math.pow(2, this.#pollingRetry.count - 1),
+      TelegramBotService.#MAX_RETRY_DELAY_MS
     );
-    return this.stop();
+    this.#log(
+      `Network error. Retry ${this.#pollingRetry.count}/${maxRetries} in ${Math.round(delay / 1000)}s...`
+    );
+
+    this.#pollingRetry.timer = setTimeout(async () => {
+      this.#pollingRetry.timer = null;
+      if (!this.#bot || !this.#config) return;
+
+      try {
+        await this.#bot.stopPolling();
+      } catch {}
+
+      this.#log("Attempting to restart polling...");
+      try {
+        await this.#bot.startPolling();
+        this.#log("Polling restarted successfully.");
+      } catch (err) {
+        this.#log("Failed to restart polling:", err.message);
+        await this.stop();
+      }
+    }, delay);
   }
 
   /**
@@ -321,9 +427,21 @@ class TelegramBotService {
     return false;
   }
 
+  /**
+   * Reset the polling retry state and clear the timer if it exists.
+   */
+  #resetPollingRetry() {
+    this.#pollingRetry.count = 0;
+    if (this.#pollingRetry.timer) clearTimeout(this.#pollingRetry.timer);
+    this.#pollingRetry.timer = null;
+  }
+
   #setupHandlers() {
     const ctx = this.#createContext();
     const guard = async (msg, handler) => {
+      if (!this.#config) return;
+      this.#resetPollingRetry(); // Reset the polling on successful message receipt
+
       if (!isVerified(this.#config.approved_users, msg.chat.id)) {
         sendPairingRequest(this.#bot, msg, this.#pendingPairings);
         return;

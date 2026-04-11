@@ -27,54 +27,6 @@ async function memoryEnabled(_req, response, next) {
 function memoryEndpoints(app) {
   if (!app) return;
 
-  app.delete(
-    "/memories",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        await Memory.deleteAllForUser(user?.id);
-        response.status(200).json({ success: true });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/memories/run-extraction",
-    [validatedRequest, flexUserRoleValid([ROLES.admin]), memoryEnabled],
-    async (_request, response) => {
-      try {
-        const {
-          BackgroundService,
-        } = require("../utils/BackgroundWorkers/index");
-        const bg = new BackgroundService();
-        await bg.runJob("extract-memories");
-        response.status(200).json({ success: true });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.get(
-    "/memories",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        const memories = await Memory.forUser(user?.id ?? null);
-        response.status(200).json({ memories });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   app.get(
     "/workspaces/:workspaceId/memories",
     [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
@@ -206,6 +158,43 @@ function memoryEndpoints(app) {
         }
 
         const { memory, message } = await Memory.promoteToGlobal(memoryId);
+        if (!memory) {
+          response.status(400).json({ error: message });
+          return;
+        }
+
+        response.status(200).json({ memory });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/memories/:memoryId/demote",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), memoryEnabled],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const memoryId = Number(request.params.memoryId);
+        const { workspaceId } = reqBody(request);
+
+        if (!workspaceId) {
+          response.status(400).json({ error: "workspaceId is required." });
+          return;
+        }
+
+        const existing = await Memory.get({ id: memoryId });
+        if (!existing || !ownerMatch(existing, user)) {
+          response.status(404).json({ error: "Memory not found." });
+          return;
+        }
+
+        const { memory, message } = await Memory.demoteToWorkspace(
+          memoryId,
+          Number(workspaceId)
+        );
         if (!memory) {
           response.status(400).json({ error: message });
           return;

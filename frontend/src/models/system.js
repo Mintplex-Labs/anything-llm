@@ -520,10 +520,11 @@ const System = {
         return { apiKey: null, error: e.message };
       });
   },
-  generateApiKey: async function () {
+  generateApiKey: async function (data = {}) {
     return fetch(`${API_BASE}/system/generate-api-key`, {
       method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         if (!res.ok) {

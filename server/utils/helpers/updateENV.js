@@ -1336,6 +1336,9 @@ function dumpENV() {
 
     // Allow native tool calling for specific providers.
     "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
+
+    // Allow auto-approval of skills
+    "AGENT_AUTO_APPROVED_SKILLS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

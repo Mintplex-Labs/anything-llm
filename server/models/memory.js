@@ -4,19 +4,6 @@ const GLOBAL_LIMIT = 5;
 const WORKSPACE_LIMIT = 20;
 
 const Memory = {
-  forUser: async function (userId) {
-    try {
-      const memories = await prisma.memories.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-      });
-      return memories;
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   forUserWorkspace: async function (userId, workspaceId) {
     try {
       const memories = await prisma.memories.findMany({
@@ -121,6 +108,38 @@ const Memory = {
     }
   },
 
+  demoteToWorkspace: async function (id, workspaceId) {
+    try {
+      const existing = await prisma.memories.findUnique({ where: { id } });
+      if (!existing) return { memory: null, message: "Memory not found." };
+      if (existing.scope === "workspace")
+        return {
+          memory: existing,
+          message: "Memory is already workspace-scoped.",
+        };
+
+      const wsCount = await this.countForScope(
+        existing.userId,
+        workspaceId,
+        "workspace"
+      );
+      if (wsCount >= WORKSPACE_LIMIT)
+        return {
+          memory: null,
+          message: `Maximum workspace memory limit (${WORKSPACE_LIMIT}) reached.`,
+        };
+
+      const memory = await prisma.memories.update({
+        where: { id },
+        data: { scope: "workspace", workspaceId, updatedAt: new Date() },
+      });
+      return { memory, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { memory: null, message: error.message };
+    }
+  },
+
   updateLastUsed: async function (ids = []) {
     if (!ids.length) return;
     try {
@@ -157,16 +176,6 @@ const Memory = {
           });
         }
       });
-      return true;
-    } catch (error) {
-      console.error(error.message);
-      return false;
-    }
-  },
-
-  deleteAllForUser: async function (userId) {
-    try {
-      await prisma.memories.deleteMany({ where: { userId } });
       return true;
     } catch (error) {
       console.error(error.message);

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { SlidersHorizontal } from "@phosphor-icons/react";
 import useLoginMode from "@/hooks/useLoginMode";
 import { useTranslation } from "react-i18next";
+import { isMobile } from "react-device-detect";
 
 function getTextSizes(t) {
   return [
@@ -47,6 +48,7 @@ export default function TextSizeMenu() {
   // User icon is visible when login mode is active (single with password or multi-user)
   const hasUserIcon = mode !== null;
 
+  if (isMobile) return null;
   return (
     <div
       className={`absolute top-3 md:top-5 z-30 ${hasUserIcon ? "right-[55px] md:right-[67px]" : "right-4 md:right-6"}`}

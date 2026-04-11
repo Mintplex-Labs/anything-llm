@@ -868,6 +868,129 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Conectorul GMail",
+        description:
+          "Permite-i agentului tău să interacționeze cu Gmail: caută e-mailuri, citește conversații, redactează proiecte, trimite e-mailuri și gestionează folderul tău de e-mail. Consultă documentația disponibilă aici.",
+        multiUserWarning:
+          "Integrarea cu Gmail nu este disponibilă în modul multi-utilizator, din motive de securitate. Vă rugăm să dezactivați modul multi-utilizator pentru a utiliza această funcție.",
+        configuration: "Configurarea contului Gmail",
+        deploymentId: "Identificator de implementare",
+        deploymentIdHelp:
+          "ID-ul de implementare al aplicației web Google Apps Script",
+        apiKey: "Cheie API",
+        apiKeyHelp:
+          "Cheia API pe care ați configurat în mediul de implementare Google Apps Script",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul de implementare și cheia API pentru a activa funcționalitățile Gmail.",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          search: {
+            title: "Căutați și citiți e-mailuri",
+            description:
+              "Căutați și citiți e-mailuri din folderul dumneavoastră Gmail",
+          },
+          drafts: {
+            title: "Propuneri de e-mail",
+            description: "Creați, editați și gestionați schițele de e-mail.",
+          },
+          send: {
+            title: "Trimite și răspunde la e-mailuri",
+            description: "Trimite e-mailuri și răspunde imediat la discuții",
+          },
+          threads: {
+            title: "Gestionați conversațiile prin e-mail",
+            description:
+              "Gestionați corespondența prin e-mail: marcați ca fiind citite/nepuse în evidență, arhivați, eliminați",
+          },
+          account: {
+            title: "Statistici privind integrarea",
+            description:
+              "Vizualizați statistici privind cutia poștală și informații despre cont",
+          },
+        },
+        skills: {
+          search: {
+            title: "Căutați în e-mailuri",
+            description:
+              "Căutați în e-mailuri folosind sintaxa de interogare a Gmail",
+          },
+          readThread: {
+            title: "Citește thread-ul",
+            description:
+              "Citește întregul fir de e-mail, folosind un identificator (ID).",
+          },
+          createDraft: {
+            title: "Creează o schiță",
+            description: "Creați un proiect nou de e-mail",
+          },
+          createDraftReply: {
+            title: "Creează un răspuns preliminar",
+            description: "Creați un proiect de răspuns la un thread existent.",
+          },
+          updateDraft: {
+            title: "Actualizare proiect",
+            description: "Actualizați un e-mail existent, draft",
+          },
+          getDraft: {
+            title: "Obține versiunea preliminară",
+            description: "Recuperați un proiect specific folosind ID-ul său",
+          },
+          listDrafts: {
+            title: "Propuneri",
+            description: "Enumerați toate e-mailurile draft",
+          },
+          deleteDraft: {
+            title: "Șterge proiectul",
+            description: "Șterge un proiect de email",
+          },
+          sendDraft: {
+            title: "Trimite versiunea preliminară",
+            description: "Trimiteți o versiune existentă a unui e-mail",
+          },
+          sendEmail: {
+            title: "Trimite e-mail",
+            description: "Trimiteți un e-mail imediat.",
+          },
+          replyToThread: {
+            title: "Răspunde la discuție",
+            description: "Răspundeți imediat la un fir de e-mail",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marcați un fir ca fiind citit",
+          },
+          markUnread: {
+            title: "Marchează ca necitit",
+            description: "Marcați un thread ca fiind necitit",
+          },
+          moveToTrash: {
+            title: "Mută în coșul de gunoi",
+            description: "Mută un fir în coșul de gunoi",
+          },
+          moveToArchive: {
+            title: "Arhivă",
+            description: "Arhivează un thread",
+          },
+          moveToInbox: {
+            title: "Mută în Inbox",
+            description: "Mută un fir în folderul „Intrări”",
+          },
+          getMailboxStats: {
+            title: "Statistici cutie poștală",
+            description:
+              "Obține numărul de e-mailuri necitite și statistici privind cutia poștală.",
+          },
+          getInbox: {
+            title: 'Accesează folderul "Inbox"',
+            description:
+              "O modalitate eficientă de a accesa e-mailurile din inbox-ul Gmail.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servere MCP",
@@ -1022,7 +1145,34 @@ const TRANSLATIONS = {
       "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
+    empty: "Nu au fost găsite chei API",
+    actions: "Acțiuni",
+    messages: {
+      error: "Eroare: {{error}}",
+    },
+    modal: {
+      title: "Creează o cheie API nouă",
+      cancel: "Anulează",
+      close: "Închide",
+      create: "Creează cheia API",
+      helper:
+        "După creare, cheia API poate fi folosită pentru a accesa și configura programatic această instanță AnythingLLM.",
+      name: {
+        label: "Nume",
+        placeholder: "Integrare de producție",
+        helper:
+          "Opțional. Folosește un nume clar pentru a putea identifica această cheie mai târziu.",
+      },
+    },
+    row: {
+      copy: "Copiază cheia API",
+      copied: "Copiată",
+      unnamed: "--",
+      deleteConfirm:
+        "Sigur doriți să dezactivați această cheie API?\nDupă aceea nu va mai putea fi folosită.\n\nAceastă acțiune este ireversibilă.",
+    },
     table: {
+      name: "Nume",
       key: "Cheie API",
       by: "Creat de",
       created: "Creat la",
@@ -1137,9 +1287,6 @@ const TRANSLATIONS = {
         description:
           "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
         "bot-token": "Token Bot",
-        "default-workspace": "Spațiu de lucru implicit",
-        "no-workspace":
-          "Nu există spații de lucru disponibile. Va fi creat unul nou.",
         connecting: "Conectare...",
         "connect-bot": "Conectare automată",
       },
@@ -1181,20 +1328,9 @@ const TRANSLATIONS = {
         "Nu a fost posibil să se anuleze contul utilizatorului.",
     },
     users: {
-      "pending-title": "Așteptare aprobare",
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
-      "approved-title": "Utilizatori autorizați",
-      "approved-description":
-        "Utilizatorii care au fost autorizați să interacționeze cu botul dumneavoastră.",
-      user: "Utilizator",
-      "pairing-code": "Cod de asociere",
-      "no-pending": "Nu există cereri în așteptare.",
-      "no-approved": "Nu există utilizatori autorizați.",
       unknown: "Necunoscut",
-      approve: "Aprobă",
-      deny: "Negarea",
-      revoke: "Anula",
     },
   },
   personalization: {

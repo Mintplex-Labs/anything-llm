@@ -386,6 +386,118 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 連接器",
+        description:
+          "讓您的代理能夠與 Gmail 互動：搜尋郵件、閱讀郵件討論、撰寫草稿、發送郵件，以及管理您的收件匣。請參閱相關文件。",
+        multiUserWarning:
+          "由於安全考量，Gmail 整合功能在多使用者模式下無法使用。請停用多使用者模式才能使用此功能。",
+        configuration: "Gmail 設定",
+        deploymentId: "部署 ID",
+        deploymentIdHelp: "您的 Google Apps Script 網頁應用程式的部署 ID",
+        apiKey: "API 關鍵字",
+        apiKeyHelp: "您在 Google Apps Script 部署中設定的 API 金鑰",
+        configurationRequired: "請設定部署 ID 和 API 關鍵，以啟用 Gmail 功能。",
+        configured: "設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          search: {
+            title: "搜尋和閱讀電子郵件",
+            description: "搜尋並閱讀您 Gmail 收件匣中的電子郵件。",
+          },
+          drafts: {
+            title: "草稿郵件",
+            description: "創建、編輯和管理電子郵件草稿",
+          },
+          send: {
+            title: "發送和回覆電子郵件",
+            description: "立即發送電子郵件並回覆討論串",
+          },
+          threads: {
+            title: "管理電子郵件串",
+            description: "管理電子郵件對話 - 標示已讀/未讀、歸檔、刪除",
+          },
+          account: {
+            title: "整合統計",
+            description: "查看郵箱統計資料和帳戶資訊",
+          },
+        },
+        skills: {
+          search: {
+            title: "搜尋郵件",
+            description: "使用 Gmail 的查詢語法搜尋電子郵件",
+          },
+          readThread: {
+            title: "閱讀主題",
+            description: "閱讀由 ID 創建的完整電子郵件對話",
+          },
+          createDraft: {
+            title: "建立草稿",
+            description: "建立新的電子郵件草稿",
+          },
+          createDraftReply: {
+            title: "撰寫草稿回覆",
+            description: "撰寫一份針對已有的討論串的回覆草稿。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新現有電子郵件草稿",
+          },
+          getDraft: {
+            title: "取得草稿",
+            description: "根據 ID 取得特定草稿",
+          },
+          listDrafts: {
+            title: "草稿清單",
+            description: "列出所有草稿電子郵件",
+          },
+          deleteDraft: {
+            title: "刪除草稿",
+            description: "刪除草稿電子郵件",
+          },
+          sendDraft: {
+            title: "發送草稿",
+            description: "發送現有電子郵件草稿",
+          },
+          sendEmail: {
+            title: "發送電子郵件",
+            description: "立即發送電子郵件",
+          },
+          replyToThread: {
+            title: "回覆主題",
+            description: "立即回覆電子郵件討論串",
+          },
+          markRead: {
+            title: "馬克·瑞德",
+            description: "標示某個主題已閱讀",
+          },
+          markUnread: {
+            title: "標示為未讀",
+            description: "將某個主題標示為未讀",
+          },
+          moveToTrash: {
+            title: "移至垃圾桶",
+            description: "將主題移動到垃圾桶",
+          },
+          moveToArchive: {
+            title: "檔案",
+            description: "將主題歸檔",
+          },
+          moveToInbox: {
+            title: "移動到收件匣",
+            description: "將主題移動到收件匣",
+          },
+          getMailboxStats: {
+            title: "郵箱統計",
+            description: "查看未讀郵件數量及郵箱統計數據",
+          },
+          getInbox: {
+            title: "開啟收件匣",
+            description: "簡潔的方式，讓您能輕鬆取得 Gmail 郵箱中的郵件。",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -445,7 +557,33 @@ const TRANSLATIONS = {
       "API 金鑰可讓持有人透過程式方式存取並管理這個 AnythingLLM 系統。",
     link: "閱讀 API 文件",
     generate: "產生新的 API 金鑰",
+    empty: "找不到 API 金鑰",
+    actions: "操作",
+    messages: {
+      error: "錯誤：{{error}}",
+    },
+    modal: {
+      title: "建立新的 API 金鑰",
+      cancel: "取消",
+      close: "關閉",
+      create: "建立 API 金鑰",
+      helper:
+        "建立後，API 金鑰可用於以程式方式存取並設定這個 AnythingLLM 執行個體。",
+      name: {
+        label: "名稱",
+        placeholder: "正式環境整合",
+        helper: "選填。請使用易於辨識的名稱，方便你之後識別這把金鑰。",
+      },
+    },
+    row: {
+      copy: "複製 API 金鑰",
+      copied: "已複製",
+      unnamed: "--",
+      deleteConfirm:
+        "確定要停用此 API 金鑰嗎？\n停用後將無法再使用。\n\n此操作無法復原。",
+    },
     table: {
+      name: "名稱",
       key: "API 金鑰",
       by: "建立者",
       created: "建立時間",
@@ -1054,8 +1192,6 @@ const TRANSLATIONS = {
         description:
           "請將您從 @BotFather 處獲得的 API 令牌複製並貼上，然後選擇一個預設的工作空間，讓您的機器人與其對話。",
         "bot-token": "機器人代幣",
-        "default-workspace": "預設工作空間",
-        "no-workspace": "目前沒有可用的工作空間。將會創建一個新的工作空間。",
         connecting: "正在連接...",
         "connect-bot": "連線機器人",
       },
@@ -1091,19 +1227,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "未能取消使用者權限。",
     },
     users: {
-      "pending-title": "待審核",
       "pending-description":
         "等待驗證的使用者。請將這裡顯示的配對碼與他們在 Telegram 聊天中顯示的配對碼對齊。",
-      "approved-title": "已授權的使用者",
-      "approved-description": "已獲得批准，可以與您的機器人進行對話的使用者。",
-      user: "使用者",
-      "pairing-code": "編碼組合",
-      "no-pending": "目前沒有待處理的請求",
-      "no-approved": "目前沒有已授權的使用者",
       unknown: "未知的",
-      approve: "批准",
-      deny: "拒絕",
-      revoke: "撤銷",
     },
   },
   personalization: {
