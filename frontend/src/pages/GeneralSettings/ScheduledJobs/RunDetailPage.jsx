@@ -105,15 +105,14 @@ export default function RunDetailPage() {
 
                 {run.error && <ErrorSection t={t} error={run.error} />}
 
-                {result.thoughts?.length && (
+                {result.thoughts?.length > 0 && (
                   <AgentThoughtsSection t={t} result={result} />
                 )}
 
-                {result.toolCalls?.length && (
+                {result.toolCalls?.length > 0 && (
                   <ToolCallsSection t={t} result={result} />
                 )}
-
-                {result.generatedFiles?.length && (
+                {result.generatedFiles?.length > 0 && (
                   <GeneratedFilesSection t={t} result={result} />
                 )}
 
