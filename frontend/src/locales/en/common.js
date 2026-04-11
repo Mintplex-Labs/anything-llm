@@ -1182,6 +1182,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Tool call was approved",
       tool_call_was_rejected: "Tool call was rejected",
     },
+    memories: {
+      title: "Memories",
+      empty:
+        "No memories so far. After you interact with the chatbot more memories will fill in or <cta>create a new memory</cta>",
+      tab_workspace: "Workspace",
+      tab_global: "Global",
+      toggle: {
+        label: "Enable Personalization",
+        description:
+          "When enabled, AnythingLLM will learn user preferences and context from conversations",
+      },
+      menu: {
+        edit: "Edit",
+        delete: "Delete",
+        move_to_global: "Move to Global",
+        move_to_workspace: "Move to Workspace",
+      },
+      modal: {
+        create_title: "Create Memory",
+        edit_title: "Edit Memory",
+        create_description:
+          "This memory will be saved and used to personalize future responses.",
+        edit_description: "Update the content of this memory.",
+        label: "Memory",
+        placeholder: "Enter a description...",
+        create: "Create",
+        save: "Save",
+        cancel: "Cancel",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Edit Account",

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 /**
  * Portal-rendered dropdown menu for a memory card.
@@ -20,6 +21,7 @@ export default function CardMenu({
   onMove,
   onDelete,
 }) {
+  const { t } = useTranslation();
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
@@ -34,12 +36,19 @@ export default function CardMenu({
       className="fixed z-[9999] bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg py-3 px-2 flex flex-col shadow-lg w-[170px]"
       style={{ top: pos.top, left: pos.left }}
     >
-      <MenuItem label="Edit" onClick={onEdit} />
+      <MenuItem label={t("chat_window.memories.menu.edit")} onClick={onEdit} />
       <MenuItem
-        label={isWorkspace ? "Move to Global" : "Move to Workspace"}
+        label={
+          isWorkspace
+            ? t("chat_window.memories.menu.move_to_global")
+            : t("chat_window.memories.menu.move_to_workspace")
+        }
         onClick={onMove}
       />
-      <MenuItem label="Delete" onClick={onDelete} />
+      <MenuItem
+        label={t("chat_window.memories.menu.delete")}
+        onClick={onDelete}
+      />
     </div>,
     document.body
   );

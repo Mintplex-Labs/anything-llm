@@ -1,4 +1,5 @@
 import { SimpleToggleSwitch } from "@/components/lib/Toggle";
+import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
 
 /**
@@ -8,6 +9,8 @@ import Admin from "@/models/admin";
  * @param {function} props.onToggle - Called with the new enabled value
  */
 export default function PersonalizationToggle({ enabled, loading, onToggle }) {
+  const { t } = useTranslation();
+
   async function handleToggle(checked) {
     const value = checked ? "on" : "off";
     const { success } = await Admin.updateSystemPreferences({
@@ -24,11 +27,10 @@ export default function PersonalizationToggle({ enabled, loading, onToggle }) {
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-zinc-50 light:text-slate-900">
-            Enable Personalization
+            {t("chat_window.memories.toggle.label")}
           </p>
           <p className="text-xs leading-4 text-zinc-400 light:text-slate-500">
-            When enabled, AnythingLLM will learn user preferences and context
-            from conversations
+            {t("chat_window.memories.toggle.description")}
           </p>
         </div>
         <SimpleToggleSwitch

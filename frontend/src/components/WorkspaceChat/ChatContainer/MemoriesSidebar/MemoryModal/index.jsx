@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import ModalWrapper from "@/components/ModalWrapper";
 
 /**
@@ -17,17 +18,22 @@ export default function MemoryModal({
   initialContent = "",
   mode = "create",
 }) {
+  const { t } = useTranslation();
   const [content, setContent] = useState(initialContent);
 
   useEffect(() => {
     if (isOpen) setContent(initialContent);
   }, [isOpen, initialContent]);
   const isCreate = mode === "create";
-  const title = isCreate ? "Create Memory" : "Edit Memory";
-  const submitLabel = isCreate ? "Create" : "Save";
+  const title = isCreate
+    ? t("chat_window.memories.modal.create_title")
+    : t("chat_window.memories.modal.edit_title");
+  const submitLabel = isCreate
+    ? t("chat_window.memories.modal.create")
+    : t("chat_window.memories.modal.save");
   const description = isCreate
-    ? "This memory will be saved and used to personalize future responses."
-    : "Update the content of this memory.";
+    ? t("chat_window.memories.modal.create_description")
+    : t("chat_window.memories.modal.edit_description");
 
   function handleSubmit() {
     if (!content.trim()) return;
@@ -57,13 +63,13 @@ export default function MemoryModal({
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-zinc-200 light:text-slate-700">
-            Memory
+            {t("chat_window.memories.modal.label")}
           </label>
           <textarea
             autoFocus
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Enter a description..."
+            placeholder={t("chat_window.memories.modal.placeholder")}
             rows={4}
             className="w-full bg-zinc-800 light:bg-white text-zinc-50 light:border light:border-slate-300 light:text-slate-700 placeholder:text-zinc-500 light:placeholder:text-slate-400 text-sm rounded-lg p-3 resize-none outline-none focus:border-zinc-500 light:focus:border-slate-400"
           />
@@ -74,7 +80,7 @@ export default function MemoryModal({
             onClick={onClose}
             className="h-9 px-5 rounded-lg border border-zinc-500 light:border-slate-600 bg-transparent text-zinc-50 light:text-slate-900 text-sm font-medium cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-100 transition-colors"
           >
-            Cancel
+            {t("chat_window.memories.modal.cancel")}
           </button>
           <button
             type="button"

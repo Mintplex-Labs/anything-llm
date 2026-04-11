@@ -1,4 +1,5 @@
 import { Plus } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 const LIMITS = {
   workspace: 20,
@@ -22,7 +23,9 @@ export default function MemoryTabs({
   globalCount,
   onAdd,
 }) {
-  const workspaceName = workspace?.name || "Workspace";
+  const { t } = useTranslation();
+  const workspaceName =
+    workspace?.name || t("chat_window.memories.tab_workspace");
 
   return (
     <div className="flex items-center justify-between shrink-0">
@@ -34,7 +37,7 @@ export default function MemoryTabs({
           onClick={() => onTabChange("workspace")}
         />
         <TabPill
-          label="Global"
+          label={t("chat_window.memories.tab_global")}
           count={`${globalCount}/${LIMITS.global}`}
           active={activeTab === "global"}
           onClick={() => onTabChange("global")}

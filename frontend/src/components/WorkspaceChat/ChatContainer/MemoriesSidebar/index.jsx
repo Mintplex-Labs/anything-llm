@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
+import { Trans, useTranslation } from "react-i18next";
 import ChatSidebar, { useMemoriesSidebar } from "../ChatSidebar";
 import useUser from "@/hooks/useUser";
 import System from "@/models/system";
@@ -151,10 +152,11 @@ export default function MemoriesSidebar({ workspace }) {
 }
 
 function SidebarHeader({ onClose }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-start justify-between shrink-0">
       <p className="font-medium text-base leading-6 text-zinc-50 light:text-slate-900">
-        Memories
+        {t("chat_window.memories.title")}
       </p>
       <button
         onClick={onClose}
@@ -170,15 +172,18 @@ function SidebarHeader({ onClose }) {
 function EmptyState({ onCreateClick }) {
   return (
     <p className="text-sm leading-5 text-zinc-400 light:text-slate-600 text-center">
-      No memories so far. After you interact with the chatbot more memories will
-      fill in or{" "}
-      <button
-        type="button"
-        onClick={onCreateClick}
-        className="text-zinc-50 light:text-slate-900 underline border-none bg-transparent cursor-pointer p-0 text-sm leading-5 font-normal"
-      >
-        create a new memory
-      </button>
+      <Trans
+        i18nKey="chat_window.memories.empty"
+        components={{
+          cta: (
+            <button
+              type="button"
+              onClick={onCreateClick}
+              className="text-zinc-50 light:text-slate-900 underline border-none bg-transparent cursor-pointer p-0 text-sm leading-5 font-normal"
+            />
+          ),
+        }}
+      />
     </p>
   );
 }

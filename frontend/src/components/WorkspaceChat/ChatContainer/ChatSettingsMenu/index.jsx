@@ -157,6 +157,7 @@ function TextSizeSubmenu({ selectedSize, onSizeChange }) {
 }
 
 function MemoriesRow({ onClose }) {
+  const { t } = useTranslation();
   const { toggleSidebar } = useMemoriesSidebar();
   const { closeSidebar } = useSourcesSidebar();
 
@@ -172,7 +173,7 @@ function MemoriesRow({ onClose }) {
       className="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-zinc-700 light:hover:bg-slate-200"
     >
       <span className="text-sm font-normal text-white light:text-slate-800">
-        Memories
+        {t("chat_window.memories.title")}
       </span>
     </div>
   );
