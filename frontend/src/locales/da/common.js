@@ -110,7 +110,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personalisering",
   },
   login: {
     "multi-user": {
@@ -141,7 +140,6 @@ const TRANSLATIONS = {
     vector: "Vektordatabase",
     members: "Medlemmer",
     agent: "Agentkonfiguration",
-    personalization: "Personalisering",
   },
   general: {
     vector: {
@@ -1010,6 +1008,36 @@ const TRANSLATIONS = {
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
     },
+    memories: {
+      title: "Erindringer",
+      empty:
+        "Indtil videre er der ingen minder. Når du interagerer med chatbotten, vil der opstå flere minder, eller <cta>en ny hukommelse vil blive skabt</cta>.",
+      tab_workspace: "Arbejdsområde",
+      tab_global: "Global",
+      toggle: {
+        label: "Aktiver personlig tilpasning",
+        description:
+          "Når det er aktiveret, vil AnythingLLM lære af brugerens præferencer og kontekst fra samtaler.",
+      },
+      menu: {
+        edit: "Rediger",
+        delete: "Slet",
+        move_to_global: "Flyt til globalt niveau",
+        move_to_workspace: "Flyt til arbejdsområdet",
+      },
+      modal: {
+        create_title: "Opret minde",
+        edit_title: "Rediger hukommelse",
+        create_description:
+          "Denne information vil blive gemt og bruges til at tilpasse fremtidige svar.",
+        edit_description: "Opdater indholdet i denne hukommelse.",
+        label: "Hukommelse",
+        placeholder: "Indtast en beskrivelse...",
+        create: "Opret",
+        save: "Gem",
+        cancel: "Annullér",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -1324,88 +1352,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
       unknown: "Ukendt",
-    },
-  },
-  personalization: {
-    title: "Personalisering",
-    description:
-      "AnythingLLM kan lære om dig over tid for at give mere relevante og personlige svar. Hukommelsen udtrækkes automatisk fra dine samtaler.",
-    toggle: {
-      label: "Aktiver personlig tilpasning",
-      description:
-        "Når den er aktiveret, vil AnythingLLM lære af brugerens præferencer og kontekst fra samtaler.",
-    },
-    actions: {
-      "run-extraction": "Start ekstraktion nu",
-      extracting: "Udtrækning...",
-      "clear-all": "Slet alle mine minder",
-      clearing: "Rydning...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Tilføj Globalt Hukommelse",
-      description: "Disse minder anvendes i alle arbejdsområder.",
-      "applied-description": "Anvendes på alle arbejdsområder.",
-      placeholder: "Indtast en global hukommelse (f.eks. 'Mit navn er Sean')",
-      "empty-title": "Ingen globale hukommelsesarbejde endnu",
-      "empty-description":
-        "Tilføj dem manuelt eller del dine arbejdsplads-erindringer med resten af organisationen.",
-    },
-    workspace: {
-      title: "Arbejdspladsens minder ({{count}}/{{max}})",
-      "list-title": "Erindringer fra arbejdspladsen",
-      "list-description":
-        "Administrer hukommelsesarbejde, der er specifikke for hvert arbejdsområde, fra indstillingerne for det pågældende arbejdsområde.",
-      "add-button": "Tilføj hukommelse",
-      description:
-        "Hukommelser, der er specifikke for dette arbejdsområde. Disse udtrækkes automatisk fra samtaler og bruges til at tilpasse svarene.",
-      "no-workspaces": "Ingen arbejdsområder fundet.",
-      "empty-title": "Ingen minder endnu",
-      "empty-description":
-        "Hukommelsesspor vil automatisk blive udvundet fra dine samtaler, eller du kan tilføje dem manuelt.",
-    },
-    form: {
-      placeholder: 'Indtast et minde (f.eks. "Jeg foretrækker korte svar")',
-      save: "Gem",
-      add: "Tilføj",
-      cancel: "Annullér",
-      hint: "Hvert minde skal være en enkelt, præcis fakta eller præference, udtrykt i en enkelt sætning.",
-    },
-    item: {
-      edit: "Rediger",
-      "promote-to-global": "Fremme på globalt niveau",
-      delete: "Slette",
-    },
-    scope: {
-      workspace: "Arbejdsområde",
-      global: "Global",
-    },
-    table: {
-      workspace: "Arbejdsområde",
-      memories: "Erindringer",
-      manage: "Administrere",
-    },
-    loading: "Indlæser personlighedsdata...",
-    toast: {
-      "setting-update-failed": "Kunne ikke opdatere indstilling: {{error}}",
-      enabled: "Mulighed for personlig tilpasning.",
-      disabled: "Personalisering er deaktiveret.",
-      "extraction-failed": "Fejl ved udtrækning: {{error}}",
-      "extraction-completed": "Hukommelsen er blevet udvundet.",
-      "clear-confirm":
-        "Er du sikker? Dette vil permanent slette alle dine personlige indstillinger.",
-      "clear-failed": "Kunne ikke frigive hukommelsen: {{error}}",
-      "clear-success": "Alle personlige indstillinger er blevet slettet.",
-      "delete-confirm": "Slette dette minde?",
-      "delete-failed": "Kunne ikke slette hukommelsen.",
-      "delete-success": "Hukommelsen er slettet.",
-      "update-failed": "Kunne ikke opdatere hukommelsen.",
-      "update-success": "Hukommelsen er opdateret.",
-      "add-failed": "Kunne ikke tilføje hukommelse.",
-      "add-global-success": "Global hukommelse er tilføjet.",
-      "add-success": "Hukommelse tilføjet.",
-      "promote-failed": "Manglende evne til at fremme hukommelsen.",
-      "promote-success": "Memory blev forfremmet til en global stilling.",
     },
   },
 };

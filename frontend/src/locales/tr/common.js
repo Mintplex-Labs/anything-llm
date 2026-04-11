@@ -109,7 +109,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Kişiselleştirme",
   },
   login: {
     "multi-user": {
@@ -139,7 +138,6 @@ const TRANSLATIONS = {
     vector: "Vektör Veritabanı",
     members: "Üyeler",
     agent: "Ajan Yapılandırması",
-    personalization: "Kişiselleştirme",
   },
   general: {
     vector: {
@@ -1011,6 +1009,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
     },
+    memories: {
+      title: "Anılar",
+      empty:
+        "Şu ana kadar herhangi bir anı oluşmadı. Sohbet botuyla etkileşiminiz arttıkça, daha fazla anı oluşacak veya yeni bir anı oluşturulacak.",
+      tab_workspace: "Çalışma alanı",
+      tab_global: "Küresel",
+      toggle: {
+        label: "Kişiselleştirme özelliğini etkinleştirin",
+        description:
+          "Etkinleştirildiğinde, AnythingLLM, kullanıcı tercihlerini ve bağlamı sohbetlerden öğrenecektir.",
+      },
+      menu: {
+        edit: "Düzenle",
+        delete: "Sil",
+        move_to_global: "Küresel ölçeğe geçin",
+        move_to_workspace: "Çalışma Alanına Geç",
+      },
+      modal: {
+        create_title: "Anılar Oluştur",
+        edit_title: "Bellek Düzenle",
+        create_description:
+          "Bu bilgi kaydedilecek ve gelecekteki yanıtları kişiselleştirmek için kullanılacaktır.",
+        edit_description: "Bu belleğin içeriğini güncelleyin.",
+        label: "Bellek",
+        placeholder: "Açıklama girin...",
+        create: "Oluştur",
+        save: "Kaydet",
+        cancel: "İptal et",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",
@@ -1323,89 +1351,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
       unknown: "Bilinmiyor",
-    },
-  },
-  personalization: {
-    title: "Kişiselleştirme",
-    description:
-      "AnythingLLM, zamanla sizin hakkında edindiği bilgileri kullanarak daha alakalı ve kişiselleştirilmiş yanıtlar sunabilir. Sohbetlerinizden otomatik olarak anılar çıkarılır.",
-    toggle: {
-      label: "Kişiselleştirme özelliğini etkinleştirin",
-      description:
-        "Etkinleştirildiğinde, AnythingLLM, kullanıcı tercihlerini ve bağlamı konuşmalardan öğrenecektir.",
-    },
-    actions: {
-      "run-extraction": "Şimdi Veri Çekme",
-      extracting: "Çıkarma...",
-      "clear-all": "Tüm anılarımı sıfırla",
-      clearing: "Temizleme...",
-    },
-    global: {
-      title: "Küresel Anılar ({{count}}, {{max}})",
-      "add-button": "Küresel Belleği ekle",
-      description: "Bu anılar, tüm çalışma alanlarında uygulanmaktadır.",
-      "applied-description": "Tüm çalışma alanlarında uygulanmaktadır.",
-      placeholder:
-        'Küresel bir hafıza girişi yapın (örneğin, "Benim adım Sean").',
-      "empty-title": "Henüz küresel hafıza sistemi bulunmamaktadır.",
-      "empty-description":
-        "Bunları manuel olarak ekleyin veya çalışma alanınızdaki anıları küresel olarak paylaşın.",
-    },
-    workspace: {
-      title: "Çalışma Alanı Anıları ({{count}} / {{max}})",
-      "list-title": "Çalışma Alanı Anıları",
-      "list-description":
-        "Her çalışma alanının ayarlarından, çalışma alanına özgü anıları yönetin.",
-      "add-button": "Bellek ekle",
-      description:
-        "Bu çalışma ortamına özgü anılar. Bu anılar, konuşmalardan otomatik olarak çıkarılır ve yanıtları kişiselleştirmek için kullanılır.",
-      "no-workspaces": "Çalışma alanı bulunamadı.",
-      "empty-title": "Henüz hiçbir anı yok.",
-      "empty-description":
-        "Konuşmalarınızdan otomatik olarak anılar çıkarılacak veya bunları siz manuel olarak da ekleyebilirsiniz.",
-    },
-    form: {
-      placeholder: "Bir anıyı girin (örneğin, 'Kısa yanıtları tercih ederim').",
-      save: "Kaydet",
-      add: "Ekle",
-      cancel: "İptal et",
-      hint: "Her bir anı, tek, öz bir bilgi veya tercihten oluşan, tek bir cümlede ifade edilmelidir.",
-    },
-    item: {
-      edit: "Düzenle",
-      "promote-to-global": "Küresel düzeyde tanıtım",
-      delete: "Sil",
-    },
-    scope: {
-      workspace: "Çalışma alanı",
-      global: "Küresel",
-    },
-    table: {
-      workspace: "Çalışma alanı",
-      memories: "Anılar",
-      manage: "Yönet",
-    },
-    loading: "Kişiselleştirme verileri yükleniyor...",
-    toast: {
-      "setting-update-failed": "Ayarın güncellenmesi başarısız: {{error}}",
-      enabled: "Kişiselleştirme özelliği etkinleştirildi.",
-      disabled: "Kişiselleştirme devre dışı bırakılmıştır.",
-      "extraction-failed": "Veri çıkarımı başarısız oldu: {{error}}",
-      "extraction-completed": "Bellek aktarımı tamamlandı.",
-      "clear-confirm":
-        "Emin misiniz? Bu, tüm kişiselleştirme hatırlarınızı kalıcı olarak silecektir.",
-      "clear-failed": "Bellekleri temizleme başarısız oldu: {{error}}",
-      "clear-success": "Tüm kişiselleştirme hatırlamaları silindi.",
-      "delete-confirm": "Bu anıyı silmek mi?",
-      "delete-failed": "Bellek silme işlemi başarısız oldu.",
-      "delete-success": "Bellek silindi.",
-      "update-failed": "Bellek güncellemeleri başarısız oldu.",
-      "update-success": "Bellek güncellendi.",
-      "add-failed": "Bellek eklenemedi.",
-      "add-global-success": "Küresel bellek eklendi.",
-      "add-success": "Bellek eklendi.",
-      "promote-failed": "Belleği teşvik etmede başarısız.",
-      "promote-success": "Memory, üst pozisyona yükseltildi.",
     },
   },
 };

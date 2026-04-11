@@ -107,7 +107,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "تليجرام",
     },
-    personalization: "التخصيص",
   },
   login: {
     "multi-user": {
@@ -138,7 +137,6 @@ const TRANSLATIONS = {
     vector: "قاعدة بيانات المتجهات",
     members: "أعضاء",
     agent: "تكوين الوكيل",
-    personalization: "التخصيص",
   },
   general: {
     vector: {
@@ -997,6 +995,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
       tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
     },
+    memories: {
+      title: "ذكريات",
+      empty:
+        "حتى الآن، لا توجد ذكريات. بعد التفاعل مع برنامج الدردشة، ستتكون المزيد من الذكريات أو <cta>ستُنشأ ذاكرة جديدة</cta>.",
+      tab_workspace: "مساحة العمل",
+      tab_global: "عالمي",
+      toggle: {
+        label: "تمكين التخصيص",
+        description:
+          "عند تفعيلها، سيتعلم نموذج AnythingLLM تفضيلات المستخدم والسياق من خلال المحادثات.",
+      },
+      menu: {
+        edit: "تحرير",
+        delete: "حذف",
+        move_to_global: "انتقل إلى المستوى العالمي",
+        move_to_workspace: "انتقل إلى مساحة العمل",
+      },
+      modal: {
+        create_title: "إنشاء ذاكرة",
+        edit_title: "تحرير الذاكرة",
+        create_description:
+          "سيتم حفظ هذه الذاكرة واستخدامها لتخصيص الردود المستقبلية.",
+        edit_description: "حدث محتوى هذه الذاكرة.",
+        label: "الذاكرة",
+        placeholder: "أدخل وصفًا...",
+        create: "إنشاء",
+        save: "احفظ",
+        cancel: "إلغاء",
+      },
+    },
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
@@ -1300,87 +1328,6 @@ const TRANSLATIONS = {
       "pending-description":
         "المستخدمون في انتظار التحقق. قارن رمز المطابقة المعروض هنا بالرمز المعروض في محادثتهم على تطبيق Telegram.",
       unknown: "غير معروف",
-    },
-  },
-  personalization: {
-    title: "التخصيص",
-    description:
-      "يمكن لـ AnythingLLM أن تتعلم عنك بمرور الوقت لتقديم استجابات أكثر صلة وشخصية. يتم استخراج الذكريات تلقائيًا من محادثاتك.",
-    toggle: {
-      label: "تمكين التخصيص",
-      description:
-        "عند تفعيلها، سيتعلم نموذج AnythingLLM تفضيلات المستخدم والسياق من المحادثات.",
-    },
-    actions: {
-      "run-extraction": "ابدأ الاستخراج الآن",
-      extracting: "استخراج...",
-      "clear-all": "مسح جميع ذكرياتي",
-      clearing: "التنظيف...",
-    },
-    global: {
-      title: "ذكريات عالمية (اسم الشركة/الموقع)",
-      "add-button": "أضف ذاكرة عالمية",
-      description: "تُطبَّق هذه الذكريات في جميع أماكن العمل.",
-      "applied-description": "يتم تطبيقه في جميع أماكن العمل.",
-      placeholder: 'أدخل ذاكرة عالمية (على سبيل المثال: "اسمي هو شون")',
-      "empty-title": "لا توجد ذاكرة عالمية حتى الآن.",
-      "empty-description": "أضفهم يدويًا أو شارك ذكريات مساحة العمل مع العالم.",
-    },
-    workspace: {
-      title: "ذكريات المكتب ({{count}}/{{max}})",
-      "list-title": "ذكريات المكتب",
-      "list-description":
-        "إدارة الذاكرة الخاصة بكل مساحة عمل، وذلك من خلال إعدادات مساحة العمل المعينة.",
-      "add-button": "إضافة ذاكرة",
-      description:
-        "ذكريات خاصة بهذا المكان. يتم استخلاصها تلقائيًا من المحادثات واستخدامها لتخصيص الردود.",
-      "no-workspaces": "لم يتم العثور على أي مساحات عمل.",
-      "empty-title": "لا توجد ذكريات حتى الآن",
-      "empty-description":
-        "سيتم استخلاص الذكريات تلقائيًا من محادثاتك، أو يمكنك إضافتها يدويًا.",
-    },
-    form: {
-      placeholder: 'أدخل ذاكرة (على سبيل المثال: "أفضل الردود الموجزة")',
-      save: "احفظ",
-      add: "أضف",
-      cancel: "إلغاء",
-      hint: "يجب أن تكون كل معلومة عبارة عن حقيقة أو تفضيل واحد، وموجز، في جملة واحدة.",
-    },
-    item: {
-      edit: "تحرير",
-      "promote-to-global": "الترويج على مستوى عالمي",
-      delete: "حذف",
-    },
-    scope: {
-      workspace: "مساحة العمل",
-      global: "عالمي",
-    },
-    table: {
-      workspace: "مساحة العمل",
-      memories: "ذكريات",
-      manage: "إدارة",
-    },
-    loading: "تحميل بيانات التخصيص...",
-    toast: {
-      "setting-update-failed": "فشل تحديث الإعداد: {{error}}",
-      enabled: "تم تمكين التخصيص.",
-      disabled: "تم تعطيل التخصيص.",
-      "extraction-failed": "فشل الاستخراج: {{error}}",
-      "extraction-completed": "تم استخراج البيانات المخزنة.",
-      "clear-confirm":
-        "هل أنت متأكد؟ هذا سيؤدي إلى حذف جميع ذاكرات التخصيص الخاصة بك بشكل دائم.",
-      "clear-failed": "فشل في مسح الذاكرة: {{error}}",
-      "clear-success": "تم حذف جميع ذكريات التخصيص.",
-      "delete-confirm": "هل تريد حذف هذه الذاكرة؟",
-      "delete-failed": "فشل في حذف الذاكرة.",
-      "delete-success": "تم حذف الذاكرة.",
-      "update-failed": "فشل في تحديث الذاكرة.",
-      "update-success": "تم تحديث الذاكرة.",
-      "add-failed": "فشل في إضافة الذاكرة.",
-      "add-global-success": "تمت إضافة الذاكرة العالمية.",
-      "add-success": "تمت إضافة الذاكرة.",
-      "promote-failed": "لم يساهم في تعزيز الذاكرة.",
-      "promote-success": 'تم ترقية "مِيمي" إلى منصب عالمي.',
     },
   },
 };

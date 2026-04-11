@@ -109,7 +109,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personalisatie",
   },
   login: {
     "multi-user": {
@@ -140,7 +139,6 @@ const TRANSLATIONS = {
     vector: "Vector Database",
     members: "Leden",
     agent: "Agent Configuratie",
-    personalization: "Personalisatie",
   },
   general: {
     vector: {
@@ -1009,6 +1007,36 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    memories: {
+      title: "Herinneringen",
+      empty:
+        "Tot nu toe zijn er geen herinneringen. Naarmate je meer interactie hebt met de chatbot, zullen er meer herinneringen ontstaan, of <cta>een nieuwe herinnering creëren</cta>.",
+      tab_workspace: "Werkplek",
+      tab_global: "Wereldwijd",
+      toggle: {
+        label: "Activeer personalisatie",
+        description:
+          "Wanneer AnythingLLM is ingeschakeld, zal het de voorkeuren en context van de gebruiker leren op basis van de gesprekken.",
+      },
+      menu: {
+        edit: "Bewerk",
+        delete: "Verwijderen",
+        move_to_global: "Verplaats naar wereldwijd",
+        move_to_workspace: "Ga naar de werkruimte",
+      },
+      modal: {
+        create_title: "Creëer een herinnering",
+        edit_title: "Bewerk geheugen",
+        create_description:
+          "Deze informatie zal worden opgeslagen en gebruikt om toekomstige antwoorden te personaliseren.",
+        edit_description: "Update de inhoud van dit geheugen.",
+        label: "Geheugen",
+        placeholder: "Voer een beschrijving in...",
+        create: "Creëren",
+        save: "Opslaan",
+        cancel: "Annuleren",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",
@@ -1329,92 +1357,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Gebruikers die nog geverifieerd moeten worden. Vergelijk de code die hier wordt getoond met de code die in hun Telegram-chat wordt weergegeven.",
       unknown: "Onbekend",
-    },
-  },
-  personalization: {
-    title: "Personalisatie",
-    description:
-      "AnythingLLM kan over tijd meer leren over u om relevantere en meer gepersonaliseerde antwoorden te geven. Herinneringen worden automatisch geëxtraheerd uit uw gesprekken.",
-    toggle: {
-      label: "Activeer gepersonaliseerde instellingen",
-      description:
-        "Wanneer AnythingLLM is ingeschakeld, zal het de voorkeuren en context van de gebruiker leren op basis van de gesprekken.",
-    },
-    actions: {
-      "run-extraction": "Start de extractie nu",
-      extracting: "Extraheren...",
-      "clear-all": "Alle herinneringen wissen",
-      clearing: "Opruimen...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Voeg Global Memory toe",
-      description: "Deze ervaringen worden toegepast in alle werkplekken.",
-      "applied-description": "Dit wordt toegepast in alle werkplekken.",
-      placeholder:
-        "Voer een globale geheugenwaarde in (bijvoorbeeld: 'Mijn naam is Sean')",
-      "empty-title": "Er zijn nog geen wereldwijde herinneringen",
-      "empty-description":
-        "Voeg ze handmatig toe, of deel de relevante informatie met het hele team.",
-    },
-    workspace: {
-      title: "Herinneringen aan de werkplek ({{count}}/{{max}})",
-      "list-title": "Herinneringen aan de werkplek",
-      "list-description":
-        "Beheer de specifieke herinneringen voor elk werkplek, gebaseerd op de instellingen van die werkplek.",
-      "add-button": "Voeg geheugen toe",
-      description:
-        "Herinneringen die specifiek zijn voor deze werkruimte. Deze worden automatisch geëxtraheerd uit gesprekken en worden gebruikt om de antwoorden te personaliseren.",
-      "no-workspaces": "Geen werkruimtes gevonden.",
-      "empty-title": "Nog geen herinneringen",
-      "empty-description":
-        "Herinneringen worden automatisch geëxtraheerd uit uw gesprekken, of u kunt ze handmatig toevoegen.",
-    },
-    form: {
-      placeholder:
-        "Voer een herinnering in (bijvoorbeeld: 'Ik geef de voorkeur aan beknopte antwoorden')",
-      save: "Opslaan",
-      add: "Voeg toe",
-      cancel: "Annuleren",
-      hint: "Elk geheugenpunt moet één, beknopte feit of voorkeur zijn, uitgedrukt in één zin.",
-    },
-    item: {
-      edit: "Bewerk",
-      "promote-to-global": "Verspreid wereldwijd",
-      delete: "Verwijderen",
-    },
-    scope: {
-      workspace: "Werkplek",
-      global: "Wereldwijd",
-    },
-    table: {
-      workspace: "Werkplek",
-      memories: "Herinneringen",
-      manage: "Beheren",
-    },
-    loading: "Laad persoonlijke gegevens...",
-    toast: {
-      "setting-update-failed":
-        "Fout bij het bijwerken van de instelling: {{error}}",
-      enabled: "Personalisatie is mogelijk.",
-      disabled: "Personalisatie is uitgeschakeld.",
-      "extraction-failed": "Extractie mislukt: {{error}}",
-      "extraction-completed": "Extractie van de gegevens is voltooid.",
-      "clear-confirm":
-        "Zijn u er zeker van? Dit zal alle persoonlijke instellingen permanent verwijderen.",
-      "clear-failed": "Kon geheugen niet legen: {{error}}",
-      "clear-success":
-        "Alle persoonlijke instellingen en gegevens zijn verwijderd.",
-      "delete-confirm": "Deze herinnering verwijderen?",
-      "delete-failed": "Fout bij het verwijderen van geheugen.",
-      "delete-success": "Geheugen gewist.",
-      "update-failed": "Het was niet mogelijk om het geheugen bij te werken.",
-      "update-success": "Geheugen is bijgewerkt.",
-      "add-failed": "Fout bij het toevoegen van geheugen.",
-      "add-global-success": "Globale geheugenruimte toegevoegd.",
-      "add-success": "Geheugen toegevoegd.",
-      "promote-failed": "Niet in staat geweest om het geheugen te stimuleren.",
-      "promote-success": "Memory is benoemd tot wereldwijd verantwoordelijke.",
     },
   },
 };

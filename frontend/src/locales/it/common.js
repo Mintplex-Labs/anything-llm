@@ -110,7 +110,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personalizzazione",
   },
   login: {
     "multi-user": {
@@ -141,7 +140,6 @@ const TRANSLATIONS = {
     vector: "Database vettoriale",
     members: "Membri",
     agent: "Configurazione dell'agente",
-    personalization: "Personalizzazione",
   },
   general: {
     vector: {
@@ -1027,6 +1025,36 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La richiesta di accesso all'attrezzatura è stata rifiutata.",
     },
+    memories: {
+      title: "Ricordi",
+      empty:
+        "Al momento, non ci sono ricordi. Interagendo maggiormente con il chatbot, verranno creati nuovi ricordi o <cta>saranno ricostruiti quelli esistenti</cta>.",
+      tab_workspace: "Spazio di lavoro",
+      tab_global: "Globale",
+      toggle: {
+        label: "Abilita la personalizzazione",
+        description:
+          "Quando è abilitato, AnythingLLM imparerà le preferenze e il contesto dell'utente dalle conversazioni.",
+      },
+      menu: {
+        edit: "Modifica",
+        delete: "Elimina",
+        move_to_global: "Passare a livello globale",
+        move_to_workspace: "Passa all'area di lavoro",
+      },
+      modal: {
+        create_title: "Crea un ricordo",
+        edit_title: "Modifica la memoria",
+        create_description:
+          "Queste informazioni saranno salvate e utilizzate per personalizzare le risposte future.",
+        edit_description: "Aggiorna il contenuto di questa memoria.",
+        label: "Memoria",
+        placeholder: "Inserisci una descrizione...",
+        create: "Creare",
+        save: "Salva",
+        cancel: "Annulla",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",
@@ -1354,93 +1382,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Utenti in attesa di verifica. Confrontare il codice di abbinamento visualizzato qui con quello visualizzato nella loro chat di Telegram.",
       unknown: "Sconosciuto",
-    },
-  },
-  personalization: {
-    title: "Personalizzazione",
-    description:
-      "AnythingLLM può imparare su di te nel tempo per fornire risposte più pertinenti e personalizzate. Le informazioni vengono estratte automaticamente dalle tue conversazioni.",
-    toggle: {
-      label: "Abilitare la personalizzazione",
-      description:
-        "Quando è attivo, AnythingLLM imparerà le preferenze e il contesto dell'utente dalle conversazioni.",
-    },
-    actions: {
-      "run-extraction": "Avvia l'estrazione ora",
-      extracting: "Estrazione...",
-      "clear-all": "Eliminare tutti i miei ricordi",
-      clearing: "Sgombero...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Aggiungi memoria globale",
-      description:
-        "Questi ricordi vengono applicati in tutti gli ambienti di lavoro.",
-      "applied-description": "Applicabile a tutti gli ambienti di lavoro.",
-      placeholder:
-        'Inserire una memoria globale (ad esempio, "Il mio nome è Sean")',
-      "empty-title": "Al momento non esiste una memoria globale.",
-      "empty-description":
-        "Aggiungili manualmente o condividi i ricordi del posto di lavoro a livello globale.",
-    },
-    workspace: {
-      title: "Ricordi del luogo di lavoro ({{count}} / {{max}})",
-      "list-title": "Ricordi del luogo di lavoro",
-      "list-description":
-        "Gestisci i ricordi specifici per ogni ambiente di lavoro, tramite le impostazioni di ciascun ambiente.",
-      "add-button": "Aggiungi memoria",
-      description:
-        "Ricordi specifici relativi a questo ambiente di lavoro. Questi vengono estratti automaticamente dalle conversazioni e utilizzati per personalizzare le risposte.",
-      "no-workspaces": "Non sono stati trovati spazi di lavoro.",
-      "empty-title": "Al momento, non ci sono ricordi.",
-      "empty-description":
-        "I ricordi verranno estratti automaticamente dalle tue conversazioni, oppure puoi aggiungerli manualmente.",
-    },
-    form: {
-      placeholder:
-        'Inserire un\'affermazione (ad esempio, "Preferisco risposte concise")',
-      save: "Salva",
-      add: "Aggiungi",
-      cancel: "Annulla",
-      hint: "Ogni ricordo dovrebbe essere una singola e concisa affermazione o preferenza, espressa in una sola frase.",
-    },
-    item: {
-      edit: "Modifica",
-      "promote-to-global": "Promuovere a livello globale",
-      delete: "Elimina",
-    },
-    scope: {
-      workspace: "Spazio di lavoro",
-      global: "Globale",
-    },
-    table: {
-      workspace: "Spazio di lavoro",
-      memories: "Ricordi",
-      manage: "Gestire",
-    },
-    loading: "Caricamento dei dati di personalizzazione...",
-    toast: {
-      "setting-update-failed":
-        "Impossibile aggiornare l'impostazione: {{error}}",
-      enabled: "Funzionalità di personalizzazione abilitata.",
-      disabled: "La personalizzazione è disattivata.",
-      "extraction-failed": "Operazione di estrazione fallita: {{error}}",
-      "extraction-completed": "Estrazione della memoria completata.",
-      "clear-confirm":
-        "È sicuro? Questa operazione cancellerà definitivamente tutti i tuoi dati di personalizzazione.",
-      "clear-failed": "Impossibile svuotare la memoria: {{error}}",
-      "clear-success":
-        "Tutte le informazioni di personalizzazione sono state cancellate.",
-      "delete-confirm": "Eliminare questo dato?",
-      "delete-failed": "Impossibile eliminare la memoria.",
-      "delete-success": "Memoria cancellata.",
-      "update-failed": "Impossibile aggiornare la memoria.",
-      "update-success": "Memoria aggiornata.",
-      "add-failed": "Impossibile aggiungere la memoria.",
-      "add-global-success": "Memoria globale aggiunta.",
-      "add-success": "Memoria aggiunta.",
-      "promote-failed": "Non ha promosso la memoria.",
-      "promote-success": "Memory è stato promosso a livello globale.",
     },
   },
 };

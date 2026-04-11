@@ -107,7 +107,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "텔레그램",
     },
-    personalization: "맞춤 설정",
   },
   login: {
     "multi-user": {
@@ -145,7 +144,6 @@ const TRANSLATIONS = {
     vector: "벡터 데이터베이스",
     members: "구성원",
     agent: "에이전트 구성",
-    personalization: "개인 맞춤 설정",
   },
   general: {
     vector: {
@@ -1077,6 +1075,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "도구 사용 승인",
       tool_call_was_rejected: "도구 호출이 거부되었습니다.",
     },
+    memories: {
+      title: "추억",
+      empty:
+        "현재까지 기억은 없습니다. 챗봇과의 상호 작용이 증가하면 기억이 채워지거나 새로운 기억이 생성될 것입니다.",
+      tab_workspace: "업무 공간",
+      tab_global: "글로벌",
+      toggle: {
+        label: "개인 맞춤 설정 활성화",
+        description:
+          '"AnythingLLM을 활성화하면, 사용자의 선호도와 맥락을 대화 내용으로부터 학습합니다."',
+      },
+      menu: {
+        edit: "수정",
+        delete: "삭제",
+        move_to_global: "글로벌로 확장",
+        move_to_workspace: "워크스페이스로 이동",
+      },
+      modal: {
+        create_title: "추억 만들기",
+        edit_title: "메모리 편집",
+        create_description:
+          "이 정보는 저장되어 앞으로의 응답을 개인화하는 데 사용됩니다.",
+        edit_description: "이 메모의 내용을 업데이트하세요.",
+        label: "기억",
+        placeholder: "설명을 입력하세요...",
+        create: "만들다",
+        save: "저장",
+        cancel: "취소",
+      },
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",
@@ -1290,89 +1318,6 @@ const TRANSLATIONS = {
       "pending-description":
         "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
       unknown: "알 수 없음",
-    },
-  },
-  personalization: {
-    title: "개인화",
-    description:
-      "AnythingLLM는 시간이 지남에 따라 귀하에 대해 더 많은 정보를 학습하여 더욱 관련성 있고 개인화된 응답을 제공할 수 있습니다. 대화 내용에서 자동으로 기억을 추출합니다.",
-    toggle: {
-      label: "개인 맞춤 설정 활성화",
-      description:
-        "활성화되면, AnythingLLM은 사용자의 선호도와 맥락을 대화 내용으로부터 학습합니다.",
-    },
-    actions: {
-      "run-extraction": "지금 추출 시작",
-      extracting: "추출 중...",
-      "clear-all": "저의 모든 기억을 삭제",
-      clearing: "정리...",
-    },
-    global: {
-      title: "글로벌 메모리즈 ({{count}}, {{max}})",
-      "add-button": "글로벌 메모리 추가",
-      description: "이러한 기억은 모든 작업 공간에서 적용됩니다.",
-      "applied-description": "모든 작업 공간에 적용",
-      placeholder:
-        '전 세계적으로 사용 가능한 메모를 입력합니다 (예: "제 이름은 스 Sean입니다").',
-      "empty-title": "현재는 전 세계적인 기억 기능은 없습니다.",
-      "empty-description":
-        "수동으로 추가하거나, 워크스페이스의 기억을 전 세계적으로 공유할 수 있습니다.",
-    },
-    workspace: {
-      title: "업무 공간의 추억 ({{count}}, {{max}})",
-      "list-title": "업무 공간의 추억",
-      "list-description":
-        "각 워크스페이스의 설정에서 워크스페이스별로 저장된 메모리를 관리합니다.",
-      "add-button": "메모리 추가",
-      description:
-        "이 작업 공간과 관련된 특정 기억. 이러한 정보는 대화에서 자동으로 추출되어 응답을 개인화하는 데 사용됩니다.",
-      "no-workspaces": "작업 공간을 찾을 수 없습니다.",
-      "empty-title": "아직 기억은 없음",
-      "empty-description":
-        "대화 내용에서 자동으로 기억을 추출하거나, 수동으로 추가할 수도 있습니다.",
-    },
-    form: {
-      placeholder: '기억을 입력합니다 (예: "저는 간결한 답변을 선호합니다").',
-      save: "저장",
-      add: "추가",
-      cancel: "취소",
-      hint: "각 기억은 단일하고 간결한 사실이나 선호도를 하나의 문장으로 표현해야 합니다.",
-    },
-    item: {
-      edit: "편집",
-      "promote-to-global": "글로벌 시장으로 확장",
-      delete: "삭제",
-    },
-    scope: {
-      workspace: "업무 공간",
-      global: "전 세계",
-    },
-    table: {
-      workspace: "업무 공간",
-      memories: "추억",
-      manage: "관리",
-    },
-    loading: "개인화 데이터 로딩 중...",
-    toast: {
-      "setting-update-failed": "설정 업데이트 실패: {{error}}",
-      enabled: "개인 맞춤 설정 기능 활성화.",
-      disabled: "개인화 기능이 비활성화되었습니다.",
-      "extraction-failed": "추출 실패: {{error}}",
-      "extraction-completed": "메모리 추출 완료.",
-      "clear-confirm":
-        "확실하신가요? 이 기능을 사용하면 저장된 모든 개인 설정 정보가 영구적으로 삭제됩니다.",
-      "clear-failed": "메모리 삭제 실패: {{error}}",
-      "clear-success": "모든 맞춤 설정된 기억이 삭제되었습니다.",
-      "delete-confirm": "이 메모를 삭제하시겠습니까?",
-      "delete-failed": "메모리 삭제에 실패했습니다.",
-      "delete-success": "메모 삭제됨.",
-      "update-failed": "메모리 업데이트에 실패했습니다.",
-      "update-success": "메모리가 업데이트되었습니다.",
-      "add-failed": "메모리 추가에 실패했습니다.",
-      "add-global-success": "글로벌 메모리 추가됨.",
-      "add-success": "메모 추가됨.",
-      "promote-failed": "기억력 향상에 실패했습니다.",
-      "promote-success": "메모리가 글로벌 직책으로 승진",
     },
   },
 };

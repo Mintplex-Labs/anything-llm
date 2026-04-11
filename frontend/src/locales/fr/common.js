@@ -108,7 +108,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personnalisation",
   },
   login: {
     "multi-user": {
@@ -139,7 +138,6 @@ const TRANSLATIONS = {
     vector: "Base de données vectorielle",
     members: "Membres",
     agent: "Configuration de l'agent",
-    personalization: "Personnalisation",
   },
   general: {
     vector: {
@@ -1019,6 +1017,36 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La demande d'utilisation de l'outil a été rejetée.",
     },
+    memories: {
+      title: "Souvenirs",
+      empty:
+        "Aucun souvenir pour l'instant. Une fois que vous interagirez davantage avec le chatbot, de nouveaux souvenirs apparaîtront ou <cta>créeront de nouveaux souvenirs</cta>.",
+      tab_workspace: "Espace de travail",
+      tab_global: "Global",
+      toggle: {
+        label: "Activer la personnalisation",
+        description:
+          "Lorsque cette fonctionnalité est activée, AnythingLLM apprendra les préférences et le contexte de l'utilisateur à partir des conversations.",
+      },
+      menu: {
+        edit: "Modifier",
+        delete: "Supprimer",
+        move_to_global: "Passer à l'échelle mondiale",
+        move_to_workspace: "Passer à l'espace de travail",
+      },
+      modal: {
+        create_title: "Créer un souvenir",
+        edit_title: "Modifier la mémoire",
+        create_description:
+          "Cette information sera sauvegardée et utilisée pour personnaliser les réponses futures.",
+        edit_description: "Mettez à jour le contenu de cette mémoire.",
+        label: "Mémoire",
+        placeholder: "Saisissez une description...",
+        create: "Créer",
+        save: "Enregistrer",
+        cancel: "Annuler",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Modifier le compte",
@@ -1330,93 +1358,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
       unknown: "Inconnu",
-    },
-  },
-  personalization: {
-    title: "Personnalisation",
-    description:
-      "AnythingLLM peut apprendre à votre sujet au fil du temps pour fournir des réponses plus pertinentes et personnalisées. Les souvenirs sont extraits automatiquement de vos conversations.",
-    toggle: {
-      label: "Activer la personnalisation",
-      description:
-        "Une fois activé, AnythingLLM apprendra les préférences et le contexte de l'utilisateur à partir des conversations.",
-    },
-    actions: {
-      "run-extraction": "Exécuter l'extraction maintenant",
-      extracting: "Extraction...",
-      "clear-all": "Effacer toutes mes souvenirs",
-      clearing: "Nettoyage...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Ajouter la mémoire globale",
-      description:
-        "Ces souvenirs sont appliqués dans tous les environnements de travail.",
-      "applied-description": "Appliqué à tous les espaces de travail.",
-      placeholder:
-        'Définir une mémoire globale (par exemple, "Mon nom est Sean")',
-      "empty-title": "Aucune mémoire globale pour le moment.",
-      "empty-description":
-        "Ajoutez-les manuellement ou partagez les souvenirs de votre espace de travail avec le reste de l'entreprise.",
-    },
-    workspace: {
-      title: "Souvenirs du lieu de travail ({{count}}/{{max}})",
-      "list-title": "Souvenirs du lieu de travail",
-      "list-description":
-        "Gérer les souvenirs spécifiques à chaque espace de travail, en utilisant les paramètres de cet espace de travail.",
-      "add-button": "Ajouter de la mémoire",
-      description:
-        "Souvenirs spécifiques à cet espace de travail. Ils sont automatiquement extraits des conversations et utilisés pour personnaliser les réponses.",
-      "no-workspaces": "Aucun espace de travail n'a été trouvé.",
-      "empty-title": "Aucun souvenir pour l'instant",
-      "empty-description":
-        "Les souvenirs seront extraits automatiquement à partir de vos conversations, ou vous pouvez les ajouter manuellement.",
-    },
-    form: {
-      placeholder:
-        "Entrez une phrase ou une expression (par exemple, « Je préfère des réponses courtes »)",
-      save: "Enregistrer",
-      add: "Ajouter",
-      cancel: "Annuler",
-      hint: "Chaque souvenir doit être une seule et unique information ou préférence, exprimée en une seule phrase.",
-    },
-    item: {
-      edit: "Modifier",
-      "promote-to-global": "Développer à l'échelle mondiale",
-      delete: "Supprimer",
-    },
-    scope: {
-      workspace: "Espace de travail",
-      global: "Global",
-    },
-    table: {
-      workspace: "Espace de travail",
-      memories: "Souvenirs",
-      manage: "Gérer",
-    },
-    loading: "Chargement des données de personnalisation...",
-    toast: {
-      "setting-update-failed":
-        "Impossible de mettre à jour la configuration : {{error}}",
-      enabled: "Personnalisation activée.",
-      disabled: "La personnalisation est désactivée.",
-      "extraction-failed": "Échec de l'extraction : {{error}}",
-      "extraction-completed": "Extraction de la mémoire terminée.",
-      "clear-confirm":
-        "Êtes-vous sûr ? Cela supprimera définitivement tous vos paramètres.",
-      "clear-failed": "Échec de la vidange de la mémoire : {{error}}",
-      "clear-success":
-        "Toutes les données de personnalisation ont été effacées.",
-      "delete-confirm": "Supprimer cette mémoire ?",
-      "delete-failed": "Échec de la suppression de la mémoire.",
-      "delete-success": "La mémoire a été effacée.",
-      "update-failed": "Échec de la mise à jour de la mémoire.",
-      "update-success": "Mémoire mise à jour.",
-      "add-failed": "Impossible d'ajouter de la mémoire.",
-      "add-global-success": "Mémoire globale ajoutée.",
-      "add-success": "Mémoire ajoutée.",
-      "promote-failed": "N'a pas favorisé le développement de la mémoire.",
-      "promote-success": "Promotion de Memory au niveau mondial.",
     },
   },
 };

@@ -115,7 +115,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "„Telegram“",
     },
-    personalization: "Individualizavimas",
   },
   login: {
     "multi-user": {
@@ -154,7 +153,6 @@ const TRANSLATIONS = {
     vector: "Vektorių duomenų bazė",
     members: "Nariai",
     agent: "Agento konfigūracija",
-    personalization: "Individualizavimas",
   },
   general: {
     vector: {
@@ -1128,6 +1126,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
       tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
     },
+    memories: {
+      title: "Atmintys",
+      empty:
+        "Kol kas nėra jokios atminimo. Kai bendrausite su chatbot'u, atminimas bus užpildytas arba <cta>sukurs naują atminimą</cta>",
+      tab_workspace: "Darbo zona",
+      tab_global: "Pasaulinis",
+      toggle: {
+        label: "Aaktyvinkite individualizavimą",
+        description:
+          "Kai įjungtas, „AnythingLLM“ išmokys vartotojo preferencijų ir konteksto iš pokalbių.",
+      },
+      menu: {
+        edit: "Redaguoti",
+        delete: "Ištrink",
+        move_to_global: "Perėjus į pasaulinį lygį",
+        move_to_workspace: "Perkelkite į darbo vietą",
+      },
+      modal: {
+        create_title: "Sukurkite atminimą",
+        edit_title: "Redaguoti atmintį",
+        create_description:
+          "Šis įslaptas duomenys bus išsaugomi ir bus naudojami, kad būtų galima individualizuoti ateities atsakymus.",
+        edit_description: "Atnaujink šio įspėjimo turinį.",
+        label: "Atmintis",
+        placeholder: "Įveskite aprašymą...",
+        create: "Sukurti",
+        save: "Išsaugoti",
+        cancel: "Atšaukti",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
@@ -1321,88 +1349,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
       unknown: "Nenurodytas",
-    },
-  },
-  personalization: {
-    title: "Individualizavimas",
-    description:
-      "„AnythingLLM“ gali sužinoti apie jus daugiau informacijos per laiką, kad galėtų teikti daugiau atitinkančias ir individualizavusias atsakymas. Atmintys automatiškai gaunamos iš jūsų pokalbių.",
-    toggle: {
-      label: "Įgalinkite asmeninį pritaikymą",
-      description:
-        "Kai įjungtas, „AnythingLLM“ bus gebėjęs mokytis vartotojų preferencijų ir konteksto iš pokalbių.",
-    },
-    actions: {
-      "run-extraction": "Pradėkite duomenų eksportavimą dabar",
-      extracting: "Išėmimas...",
-      "clear-all": "Ištrynkite visus mano prisiminimus",
-      clearing: "Apsivalymas...",
-    },
-    global: {
-      title: "„Global Memories“ ({{count}}, {{max}})",
-      "add-button": "Įtraukti „Global Memory“",
-      description: "Šie įspūdžiai taikomi visuose darbo srityse.",
-      "applied-description": "Taikoma visuose darbo vietose.",
-      placeholder: 'Įveskite globalią atmintį (pvz., "Man vadinasi Sean")',
-      "empty-title": "Šiuo metu nėra globalios atminties",
-      "empty-description":
-        "Įtraukite jas rankiniu būdu arba paskelbkite darbo vietos prisiminimus visame pasaulyje.",
-    },
-    workspace: {
-      title: "Darbo erdvės atminimas ({{count}}, {{max}})",
-      "list-title": "Darbo vietos atminiai",
-      "list-description":
-        "Valdykite darbo vietos specifiškas atminties funkcijas, naudodami kiekvienos darbo vietos nustatymus.",
-      "add-button": "Pridėti atmintį",
-      description:
-        "Specifinės atminties, susijusios su šiuo darbo vieta. Jos automatiškai gaunamos iš pokalbių ir naudojamos, kad būtų individualizuotos atsakymas.",
-      "no-workspaces": 'Nefound "darbo vietų".',
-      "empty-title": "Vis dar nėra jokios atminties",
-      "empty-description":
-        "Atmintis bus automatiškai renkamas iš jūsų pokalbių, arba galite pridėti jį rankiniu būdu.",
-    },
-    form: {
-      placeholder: "Įveskite atsiminimą (pvz., „Aš noriu glaustos atsakymų“)",
-      save: "Įrašyti",
-      add: "Pridėti",
-      cancel: "Atšaukti",
-      hint: "Kiekviena atsiminimas turėtų būti vienas, glaustas faktas arba pasirinkimas, išreikotas vienoje frazėje.",
-    },
-    item: {
-      edit: "Redaguo; Redagavimas",
-      "promote-to-global": "Palaikyti tarptautinį vystymą",
-      delete: "Trinkinti",
-    },
-    scope: {
-      workspace: "Darbo zona",
-      global: "Pasaulinis",
-    },
-    table: {
-      workspace: "Darbo zona",
-      memories: "Atmintys",
-      manage: "Valdyti",
-    },
-    loading: "Naudojamos asmeninės informacijos duomenys...",
-    toast: {
-      "setting-update-failed": "Nepavyko atnaujinti nustatymo: {{error}}",
-      enabled: "Individualizavimas įmanomas.",
-      disabled: "Individualizavimas išjungtas.",
-      "extraction-failed": "Nepavyko atlikti: {{error}}",
-      "extraction-completed": "Pamėninimas buvo pavykęs.",
-      "clear-confirm":
-        "Ar esate tikri? Tai visiems jūsų individualizuotų prisijungimų duomenys bus nušalinti.",
-      "clear-failed": "Nepavyko išvalyti atminties: {{error}}",
-      "clear-success": "Visos personalizacijos atmintys ištrintos.",
-      "delete-confirm": "Ar norite ištrinti šią informaciją?",
-      "delete-failed": "Nepavyko pašalinti atminties.",
-      "delete-success": "Įsijungimas ištrintas.",
-      "update-failed": "Nepavyko atnaujinti atminties.",
-      "update-success": "Įsisagnytas naujas duomenys.",
-      "add-failed": "Nepavyko įdėti atmintį.",
-      "add-global-success": "Įtraukta globalinė atminta.",
-      "add-success": "Įsisagnytas į atmintį.",
-      "promote-failed": "Nepavyko pagerinti atminties.",
-      "promote-success": "„Memory“ įtrauktas į pasaulinį sąrašą.",
     },
   },
 };

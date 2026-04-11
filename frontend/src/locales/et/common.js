@@ -108,7 +108,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Kohandamine",
   },
   login: {
     "multi-user": {
@@ -146,7 +145,6 @@ const TRANSLATIONS = {
     vector: "Vektoriandmebaas",
     members: "Liikmed",
     agent: "Agendi konfiguratsioon",
-    personalization: "Kohandamine",
   },
   general: {
     vector: {
@@ -1066,6 +1064,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Vahendite tellimuse kinnitati.",
       tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
     },
+    memories: {
+      title: "Mälestused",
+      empty:
+        "Hetkel pole mälestusi. Kui te hakkate rohkem interakteeruma chatbotiga, siis mälestused täituvad või <cta>uued mälestused</cta> algavad.",
+      tab_workspace: "Tööruum",
+      tab_global: "Globaalne",
+      toggle: {
+        label: "Aktiveeri isikupärastamine",
+        description:
+          "Kui funktsioon on sisse lülitatud, siis AnythingLLM õpib kasutaja eelistusi ja konteksti vestluste põhjal.",
+      },
+      menu: {
+        edit: "Redigeerimine",
+        delete: "Hüvida",
+        move_to_global: "Liigutage globaalsele tasandile",
+        move_to_workspace: "Liigutage tööruumile",
+      },
+      modal: {
+        create_title: "Loo mälestus",
+        edit_title: "Muuda mälu",
+        create_description:
+          "See teave salvestatakse ja kasutatakse tulevaste vastuste kohandamiseks.",
+        edit_description: "Päivitage selle andmealade sisu.",
+        label: "Mälestus",
+        placeholder: "Sisestage kirjeldus...",
+        create: "Loo",
+        save: "Salvesta",
+        cancel: "Katkuda\nTühista",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",
@@ -1275,90 +1303,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
       unknown: "Tuntud pole",
-    },
-  },
-  personalization: {
-    title: "Kohandamine",
-    description:
-      "AnythingLLM saab aega möödudes teist kohta rohkem teada, et pakkuda relevantsemat ja isiklikumat vastuste. Muistmeid on automaatselt teatud teie vestlustest.",
-    toggle: {
-      label: "Sisselülita isiklik kohandamine",
-      description:
-        "Kui see on lubatud, siis AnythingLLM õpib kasutaja eelistusi ja konteksti vestlustest.",
-    },
-    actions: {
-      "run-extraction": "Alusta andmete ekstraheerimist kohe",
-      extracting: "Väljalõömine...",
-      "clear-all": "Vabandan kõik oma mälestused",
-      clearing: "Tähtstamine...",
-    },
-    global: {
-      title: "Globaalsed mälestused ({{count}}, {{max}})",
-      "add-button": 'Lisage "Globaalne mälu"',
-      description: "Need mälestused rakendatakse kõigis tööruumides.",
-      "applied-description": "Rakendatav kõigis tööruumides.",
-      placeholder: 'Sisestage ülemaailmne muist (nt "Minu nimi on Sean")',
-      "empty-title": "Hetkel pole ülemaailmseid mälestusi",
-      "empty-description":
-        "Lisage need käsitsi või jagage tööruumi mälestusi kogu maailmaga.",
-    },
-    workspace: {
-      title: "Tööruumi mälestused ({{count}}, {{max}})",
-      "list-title": "Töökoha mälestused",
-      "list-description":
-        "Hallake tööruumi jaoks spetsiifilisi mäluandmeid, mis on sätestatud iga tööruumi seadetes.",
-      "add-button": "Lisage mälu",
-      description:
-        "Erised, mis on seotud selle tööruumiga. Need on automaatselt saadud vestlustest ja kasutatakse vastuste personaliseerimiseks.",
-      "no-workspaces": "Välja ei leidnud ühtegi tööala.",
-      "empty-title": "Välja pole veel mälestusi",
-      "empty-description":
-        "Mälestused on automaatselt saadud teie vestlustest, või saate neid lisada käsitsi.",
-    },
-    form: {
-      placeholder:
-        'Sisestage meeldejäänud fakt (nt "Ma eelistan lühikesid vastuseid")',
-      save: "Salvesta",
-      add: "Lisada",
-      cancel: "Katkuda\nTühista",
-      hint: "Iga üksik mälestus peab olema ühes lauses, selge ja kokkuvõtteva fakt või eelistus.",
-    },
-    item: {
-      edit: "Muuda",
-      "promote-to-global": "Edasi arendada ja levitada globaalselt",
-      delete: "Hüvida",
-    },
-    scope: {
-      workspace: "Tööruum",
-      global: "Globaalne",
-    },
-    table: {
-      workspace: "Tööruum",
-      memories: "Mälestused",
-      manage: "Hallata",
-    },
-    loading: "Personaliseeritud andmete laadimine...",
-    toast: {
-      "setting-update-failed":
-        "Ei õnnestunud seadistuse värskendamist: {{error}}",
-      enabled: "Kohandamine on lubatud.",
-      disabled: "Kohandamine keelatud.",
-      "extraction-failed": "Tugastamine ebaõnnestunud: {{error}}",
-      "extraction-completed": "Mälu taastamine lõppenud.",
-      "clear-confirm":
-        "Kas olete kindel? See kustutab kõik teie isikupärastamise seaded.",
-      "clear-failed": "Ei õnnestunud andmeid kustutada: {{error}}",
-      "clear-success": "Kõik isikupärastamise seaded on kustutatud.",
-      "delete-confirm": "Kas soovite seda andmetüki kustutada?",
-      "delete-failed": "Ei õnnestunud muukaasade kustutada.",
-      "delete-success": "Mälestus kustutatud.",
-      "update-failed": "Ei õnnestunud muukaid uuendada.",
-      "update-success": "Mälu on uuendatud.",
-      "add-failed": "Ei õnnestunud muudatust salvestada.",
-      "add-global-success": "Globaalne mälu lisatud.",
-      "add-success": "Mälestus lisatud.",
-      "promote-failed": "Ei suutnud ergutada mälu.",
-      "promote-success": "Memory tõsteti ametisse globaalse tasandil.",
     },
   },
 };

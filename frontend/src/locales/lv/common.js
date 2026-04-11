@@ -108,7 +108,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Individualizācija",
   },
   login: {
     "multi-user": {
@@ -147,7 +146,6 @@ const TRANSLATIONS = {
     vector: "Vektoru datubāze",
     members: "Dalībnieki",
     agent: "Aģenta konfigurācija",
-    personalization: "Personālizēšana",
   },
   general: {
     vector: {
@@ -1107,6 +1105,36 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
     },
+    memories: {
+      title: "Atmiņas",
+      empty:
+        "Vēl nav veidojušās atmiņas. Kad jūs vairāk iejiegsies ar šo chatbot, atmiņas automātiski piepildīsies vai <cta>izveidos jaunas atmiņas</cta>.",
+      tab_workspace: "Darba telpa",
+      tab_global: "Vispārīgs",
+      toggle: {
+        label: "Ierīkojiet personalizāciju",
+        description:
+          "Kad tas ir aktivizēts, AnythingLLM mācīsies no lietotāja preferencēm un konteksta, kas norisinās sarunās.",
+      },
+      menu: {
+        edit: "Rediģēt",
+        delete: "Dzēst",
+        move_to_global: "Migrācija uz globālu",
+        move_to_workspace: "Pārvietoties uz darba telpu",
+      },
+      modal: {
+        create_title: "Izveidot atmiņu",
+        edit_title: "Rediģēt atmiņas",
+        create_description:
+          "Šis atgriezties tiks saglabāts un izmantots, lai pielāgotu nākotnes atbildes.",
+        edit_description: "Atjaunini šī atmiņas saturu.",
+        label: "Atmiņa",
+        placeholder: "Ievietojiet aprakstu...",
+        create: "Izveidot",
+        save: "Saglabāt",
+        cancel: "Atcelt",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",
@@ -1329,89 +1357,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
       unknown: "Nezināms",
-    },
-  },
-  personalization: {
-    title: "Personālizēšana",
-    description:
-      "AnythingLLM var uzzināt par jums vairāk ar laiku, lai sniegtu precizākus un personalizētus atbildes. Atmiņas tiek automātiski izveidotas no jūsu sarunu.",
-    toggle: {
-      label: "Ievērojiet personalizēšanu",
-      description:
-        "Kad tas ir aktivizēts, AnythingLLM mācīsies no sarunu, iegūstot informāciju par lietotāja vērtībām un kontekstu.",
-    },
-    actions: {
-      "run-extraction": "Informācijas ekstrahēšana tagad",
-      extracting: "Izveidot...",
-      "clear-all": "Dzēst visus savus atmiņas",
-      clearing: "Notīšana...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": 'Pievienot "Global Memory"',
-      description: "Šie atmiņas tiek izmantotas visās darba vietās.",
-      "applied-description": "Ierīkots visās darba vietās.",
-      placeholder:
-        'Ievadiet globālu atmiņas datus (piemēram, "Man vārds ir Seans")',
-      "empty-title": "Vēl nav pieejamas globālas atmiņas",
-      "empty-description":
-        "Ievietojiet tos manuāli, vai arī dalībai ar visiem, izmantojot darba vietas atmiņas.",
-    },
-    workspace: {
-      title: "Darba vietas atmiņas ({{count}} / {{max}})",
-      "list-title": "Darba vietas atmiņas",
-      "list-description":
-        "Apglabāt atmiņas, kas ir saistītas ar katru darba vietu, izmantojot katras darba vietas iestatījumus.",
-      "add-button": "Papildiniet atmiņas",
-      description:
-        "Atgādinājumi, kas ir specifiski šim darba vidē. Tie tiek automātiski izveidoti no sarunām un izmantoti, lai personalizētu atbildes.",
-      "no-workspaces": "Nav atrasti darba vietas.",
-      "empty-title": "Vēl nav atmiņu",
-      "empty-description":
-        "Atgādinājumi tiks iegūti automātiski no jūsu sarunām, vai arī jūs varat pievienot tos manuāli.",
-    },
-    form: {
-      placeholder: 'Ievadīt atmiņas (piemēram, "Es vērtēju īsas atbildes")',
-      save: "Saglabāt",
-      add: "Pievienot",
-      cancel: "Atcelt",
-      hint: "Katrs atgādinājums jāizteic kā vienkārša, skaidra fakts vai vēlme vienā teikumā.",
-    },
-    item: {
-      edit: "Rediģēt",
-      "promote-to-global": "Iesaistīt pasaulē",
-      delete: "Dzēst",
-    },
-    scope: {
-      workspace: "Darba vieta",
-      global: "Vispārīgs",
-    },
-    table: {
-      workspace: "Darba vieta",
-      memories: "Atmiņas",
-      manage: "Vadīt, pārvaldīt",
-    },
-    loading: "Ielāde personalizācijas datus...",
-    toast: {
-      "setting-update-failed": "Neizdevās atjaunināt iestatījumu: {{error}}",
-      enabled: "Personalisēšana ir iespējota.",
-      disabled: "Personālizēšana atspēta.",
-      "extraction-failed": "Izvilināšana neizdevās: {{error}}",
-      "extraction-completed": "Atgriezties datu iegūts.",
-      "clear-confirm":
-        "Vai jūs to droši zināt? Tas noņems visas jūsu personalizācijas atmiņas.",
-      "clear-failed": "Neizdevās notverēt atmiņas: {{error}}",
-      "clear-success": "Visas personalizētas atmiņas ir dzēstas.",
-      "delete-confirm": "Dzēst šo atmiņu?",
-      "delete-failed": "Neizdevās dzēst atmiņas.",
-      "delete-success": "Atgādinājums dzēsts.",
-      "update-failed": "Neizdevās atjaunināt atmiņas.",
-      "update-success": "Atgādinājums atjaunots.",
-      "add-failed": "Neizdevās pievienot atmiņas vietu.",
-      "add-global-success": "Pieejama globālā atmiņa.",
-      "add-success": "Atgādinājums pievienots.",
-      "promote-failed": "Nespēja veicināt atmiņas attīstību.",
-      "promote-success": '"Memory" tika paaugstināts uz globālu līmeni.',
     },
   },
 };

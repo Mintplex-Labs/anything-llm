@@ -109,7 +109,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personalizare",
   },
   login: {
     "multi-user": {
@@ -148,7 +147,6 @@ const TRANSLATIONS = {
     vector: "Baza de date vectorială",
     members: "Membri",
     agent: "Configurare agent",
-    personalization: "Personalizare",
   },
   general: {
     vector: {
@@ -578,6 +576,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
+    },
+    memories: {
+      title: "Amintiri",
+      empty:
+        "Până acum, nu există nicio amintire. După ce interacționați mai mult cu chatbot-ul, veți avea mai multe amintiri sau <cta>veți crea o nouă amintire</cta>.",
+      tab_workspace: "Spațiu de lucru",
+      tab_global: "Global",
+      toggle: {
+        label: "Activează personalizarea",
+        description:
+          "Când este activat, AnythingLLM va învăța preferințele și contextul utilizatorului din conversații.",
+      },
+      menu: {
+        edit: "Editează",
+        delete: "Șterge",
+        move_to_global: "Migrați către nivel global",
+        move_to_workspace: "Mutare în spațiul de lucru",
+      },
+      modal: {
+        create_title: "Creați o amintire",
+        edit_title: "Modifică memoria",
+        create_description:
+          "Această informație va fi salvată și utilizată pentru a personaliza răspunsurile viitoare.",
+        edit_description: "Actualizați conținutul acestei memorii.",
+        label: "Memorie",
+        placeholder: "Introduceți o descriere...",
+        create: "Creați",
+        save: "Salvați",
+        cancel: "Anula",
+      },
     },
   },
   profile_settings: {
@@ -1331,91 +1359,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
       unknown: "Necunoscut",
-    },
-  },
-  personalization: {
-    title: "Personalizare",
-    description:
-      "AnythingLLM poate învăța despre dumneavoastră în timp pentru a oferi răspunsuri mai relevante și personalizate. Memoriile sunt extrase automat din conversațiile dumneavoastră.",
-    toggle: {
-      label: "Activează personalizarea",
-      description:
-        "Când este activat, AnythingLLM va învăța preferințele și contextul utilizatorului din conversații.",
-    },
-    actions: {
-      "run-extraction": "Extrageți acum",
-      extracting: "Extragerea...",
-      "clear-all": "Șterge toate amintirile mele",
-      clearing: "Curățare...",
-    },
-    global: {
-      title: "Global Memories (locație/categorie)",
-      "add-button": "Adăugați Memoria Globală",
-      description: "Aceste amintiri sunt aplicate în toate zonele de lucru.",
-      "applied-description": "Aplicat în toate spațiile de lucru.",
-      placeholder:
-        "Introduceți o memorie globală (de exemplu, „Numele meu este Sean”)",
-      "empty-title": "Nu există încă memorii globale",
-      "empty-description":
-        "Adăugați-le manual sau împărtășiți-le cu toți utilizatorii.",
-    },
-    workspace: {
-      title: "Amintiri din birou ({{count}}, {{max}})",
-      "list-title": "Amintiri din birou",
-      "list-description":
-        "Gestionați amintirile specifice fiecărui spațiu de lucru, extrase din setările acestuia.",
-      "add-button": "Adaugă memorie",
-      description:
-        "Amintiri specifice pentru acest spațiu de lucru. Acestea sunt extrase automat din conversații și utilizate pentru a personaliza răspunsurile.",
-      "no-workspaces": "Nu au fost găsite spații de lucru.",
-      "empty-title": "Nu există încă amintiri.",
-      "empty-description":
-        "Amintirile vor fi extrase automat din conversațiile dumneavoastră, sau puteți adăuga manual.",
-    },
-    form: {
-      placeholder:
-        "Introduceți un fragment de memorie (de exemplu, „Prefer răspunsuri scurte”)",
-      save: "Salvați",
-      add: "Adaugă",
-      cancel: "Anula",
-      hint: "Fiecare amintire trebuie să fie un fapt sau o preferință clară, exprimată într-o singură propoziție.",
-    },
-    item: {
-      edit: "Editează",
-      "promote-to-global": "Promovați la nivel global",
-      delete: "Șterge",
-    },
-    scope: {
-      workspace: "Spațiu de lucru",
-      global: "Global",
-    },
-    table: {
-      workspace: "Spațiu de lucru",
-      memories: "Amintiri",
-      manage: "Gestionați",
-    },
-    loading: "Încărcare date de personalizare...",
-    toast: {
-      "setting-update-failed": "Nu a reușit să actualizeze setarea: {{error}}",
-      enabled: "Funcționalitatea de personalizare este activată.",
-      disabled: "Funcția de personalizare este dezactivată.",
-      "extraction-failed": "Operațiunea de extragere a eșuat: {{error}}",
-      "extraction-completed":
-        "Extragerea datelor din memorie a fost finalizată.",
-      "clear-confirm":
-        "Sunteți sigur? Aceasta va șterge permanent toate setările și preferințele.",
-      "clear-failed": "Nu a reușit să curețe memoria: {{error}}",
-      "clear-success": "Toate datele de personalizare au fost șterse.",
-      "delete-confirm": "Ar trebui să șterg această informație?",
-      "delete-failed": "Nu a reușit să ștergați memoria.",
-      "delete-success": "Memoria a fost șterasă.",
-      "update-failed": "Nu a reușit să actualizeze memoria.",
-      "update-success": "Memoria a fost actualizată.",
-      "add-failed": "Nu a reușit să adauge memorie.",
-      "add-global-success": "Memoria globală a fost adăugată.",
-      "add-success": "Am adăugat o memorie.",
-      "promote-failed": "Nu a reușit să stimuleze memoria.",
-      "promote-success": "Memory a fost promovat la nivel global.",
     },
   },
 };

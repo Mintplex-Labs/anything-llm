@@ -108,7 +108,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "テレグラム",
     },
-    personalization: "パーソナライズ",
   },
   login: {
     "multi-user": {
@@ -139,7 +138,6 @@ const TRANSLATIONS = {
     vector: "ベクターデータベース",
     members: "メンバー",
     agent: "エージェント構成",
-    personalization: "パーソナライズ",
   },
   general: {
     vector: {
@@ -991,6 +989,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "ツールの使用許可が承認されました",
       tool_call_was_rejected: "ツール呼び出しは拒否されました",
     },
+    memories: {
+      title: "思い出",
+      empty:
+        "現時点では記憶はまだありません。チャットボットとのやり取りが増えるほど、記憶が埋められていくか、または新しい記憶が生まれる<cta>",
+      tab_workspace: "作業スペース",
+      tab_global: "世界的な",
+      toggle: {
+        label: "パーソナライズ機能を有効にする",
+        description:
+          "「AnythingLLM」を有効にすると、会話からユーザーの好みや文脈を学習します。",
+      },
+      menu: {
+        edit: "編集",
+        delete: "削除",
+        move_to_global: "グローバル展開へ",
+        move_to_workspace: "ワークスペースへ移動",
+      },
+      modal: {
+        create_title: "思い出を創造する",
+        edit_title: "メモリの編集",
+        create_description:
+          "この情報は保存され、将来の回答をパーソナライズするために使用されます。",
+        edit_description: "このメモリの内容を更新してください。",
+        label: "記憶",
+        placeholder: "説明を入力してください...",
+        create: "作成する",
+        save: "保存",
+        cancel: "キャンセル",
+      },
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -1311,88 +1339,6 @@ const TRANSLATIONS = {
       "pending-description":
         "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
       unknown: "不明",
-    },
-  },
-  personalization: {
-    title: "個別化",
-    description:
-      "AnythingLLMは、時間とともにあなたの情報に基づいて、より関連性の高い、パーソナライズされた回答を提供できるよう学習します。会話から、自動的に記憶を抽出します。",
-    toggle: {
-      label: "パーソナライズ機能を有効にする",
-      description:
-        "「AnythingLLM」を有効にすると、会話からユーザーの好みや文脈を学習します。",
-    },
-    actions: {
-      "run-extraction": "現在、抽出を開始",
-      extracting: "抽出...",
-      "clear-all": "私自身の記憶をすべて消去する",
-      clearing: "整理...",
-    },
-    global: {
-      title: "グローバル・メモリーズ ({{count}}, {{max}})",
-      "add-button": "グローバル メモリを追加",
-      description: "これらの記憶は、すべての作業環境で利用されます。",
-      "applied-description": "すべての作業環境で適用されます。",
-      placeholder: "グローバルな記憶（例：「私の名前はseanです」）を入力する",
-      "empty-title": "現時点では、グローバルな記憶機能はまだありません。",
-      "empty-description":
-        "手動で追加するか、ワークスペースの思い出をグローバルに共有することも可能です。",
-    },
-    workspace: {
-      title: "職場での思い出 ({{count}}, {{max}})",
-      "list-title": "職場での思い出",
-      "list-description":
-        "各ワークスペースの設定から、ワークスペース固有の情報を管理する。",
-      "add-button": "メモリを追加する",
-      description:
-        "この作業スペースに特有の記憶。これらは会話から自動的に抽出され、応答をパーソナライズするために使用されます。",
-      "no-workspaces": "作業スペースは見つかりませんでした。",
-      "empty-title": "まだ何も覚えていない",
-      "empty-description":
-        "会話から自動的に記憶を抽出することも、手動で追加することも可能です。",
-    },
-    form: {
-      placeholder: "ある記憶（例：「簡潔な回答を好みます」）を入力してください",
-      save: "保存",
-      add: "追加",
-      cancel: "キャンセル",
-      hint: "それぞれの記憶は、1つの文で表現される、簡潔な事実または好みを1つにまとめるべきです。",
-    },
-    item: {
-      edit: "編集",
-      "promote-to-global": "グローバル展開を促進する",
-      delete: "削除",
-    },
-    scope: {
-      workspace: "作業スペース",
-      global: "世界的な",
-    },
-    table: {
-      workspace: "作業スペース",
-      memories: "思い出",
-      manage: "管理する",
-    },
-    loading: "パーソナライズされたデータ読み込み中...",
-    toast: {
-      "setting-update-failed": "設定の更新に失敗しました：{{error}}",
-      enabled: "パーソナライズ機能が有効になっています。",
-      disabled: "パーソナライズ機能は無効になっています。",
-      "extraction-failed": "抽出に失敗しました: {{error}}",
-      "extraction-completed": "メモリからのデータ抽出は完了しました。",
-      "clear-confirm":
-        "本当に削除しますか？ この操作により、すべてのパーソナライズ設定が完全に消去されます。",
-      "clear-failed": "メモリのクリアに失敗: {{error}}",
-      "clear-success": "すべてのパーソナライズされた記憶をクリアしました。",
-      "delete-confirm": "このデータを削除しますか？",
-      "delete-failed": "メモリの削除に失敗しました。",
-      "delete-success": "記憶は削除されました。",
-      "update-failed": "メモリの更新に失敗しました。",
-      "update-success": "メモリが更新されました。",
-      "add-failed": "メモリの追加に失敗しました。",
-      "add-global-success": "グローバルなメモリが追加されました。",
-      "add-success": "メモリが追加されました。",
-      "promote-failed": "記憶の定着を促すことができなかった。",
-      "promote-success": "メモリがグローバルレベルへの昇進",
     },
   },
 };

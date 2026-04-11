@@ -105,7 +105,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "电报",
     },
-    personalization: "个性化",
   },
   login: {
     "multi-user": {
@@ -143,7 +142,6 @@ const TRANSLATIONS = {
     vector: "向量数据库",
     members: "成员",
     agent: "代理配置",
-    personalization: "个性化",
   },
   general: {
     vector: {
@@ -1029,6 +1027,34 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具使用申请已获得批准。",
       tool_call_was_rejected: "请求获取工具已被拒绝。",
     },
+    memories: {
+      title: "回忆",
+      empty:
+        "目前还没有任何回忆。在您与聊天机器人互动后，更多回忆会逐渐产生，或者<cta>创造新的回忆</cta>。",
+      tab_workspace: "工作空间",
+      tab_global: "全球",
+      toggle: {
+        label: "启用个性化设置",
+        description: "启用后，AnythingLLM 将会从对话中学习用户的偏好和语境。",
+      },
+      menu: {
+        edit: "编辑",
+        delete: "删除",
+        move_to_global: "拓展全球市场",
+        move_to_workspace: "进入工作空间",
+      },
+      modal: {
+        create_title: "创造回忆",
+        edit_title: "编辑内存",
+        create_description: "这段记忆将被保存下来，并用于个性化未来的回复。",
+        edit_description: "更新此存储内容的。",
+        label: "记忆",
+        placeholder: "请输入描述...",
+        create: "创造",
+        save: "保存",
+        cancel: "取消",
+      },
+    },
   },
   profile_settings: {
     edit_account: "编辑帐户",
@@ -1235,87 +1261,6 @@ const TRANSLATIONS = {
       "pending-description":
         "等待验证的用户。请将此处显示的配对代码与他们在 Telegram 聊天中显示的配对代码进行匹配。",
       unknown: "未知",
-    },
-  },
-  personalization: {
-    title: "个性化",
-    description:
-      "AnythingLLM 可以随着时间的推移，通过您的对话来了解您，从而提供更相关和个性化的回复。 记忆会自动从您的对话中提取出来。",
-    toggle: {
-      label: "启用个性化设置",
-      description:
-        "启用后，AnythingLLM 将会学习用户偏好和语境信息，这些信息来源于对话。",
-    },
-    actions: {
-      "run-extraction": "立即开始提取",
-      extracting: "提取...",
-      "clear-all": "清除我所有的记忆",
-      clearing: "清理...",
-    },
-    global: {
-      title: "全球记忆 ({{count}}/{{max}})",
-      "add-button": "添加全球内存",
-      description: "这些记忆应用于所有工作空间。",
-      "applied-description": "适用于所有工作场所。",
-      placeholder: "输入一个全局变量（例如：“我的名字是Sean”）",
-      "empty-title": "目前还没有实现全球记忆功能。",
-      "empty-description":
-        "您可以手动添加，也可以将工作空间中的记忆信息推广到全球范围。",
-    },
-    workspace: {
-      title: "工作场所的回忆 ({{count}}, {{max}})",
-      "list-title": "工作场所的回忆",
-      "list-description":
-        "管理每个工作空间的特定设置，以存储和管理工作空间相关的记忆。",
-      "add-button": "添加内存",
-      description:
-        "与此工作空间相关的特定记忆。这些记忆会自动从对话中提取，并用于个性化回复。",
-      "no-workspaces": "未找到任何工作区域。",
-      "empty-title": "目前还没有任何回忆",
-      "empty-description":
-        "系统会自动从您的对话中提取记忆，或者您也可以手动添加。",
-    },
-    form: {
-      placeholder: "输入一个记忆（例如：“我更喜欢简洁的回复”）",
-      save: "保存",
-      add: "添加",
-      cancel: "取消",
-      hint: "每个记忆都应该是一个简洁明了的陈述或偏好，用一句话表达。",
-    },
-    item: {
-      edit: "编辑",
-      "promote-to-global": "推广至全球",
-      delete: "删除",
-    },
-    scope: {
-      workspace: "工作空间",
-      global: "全球",
-    },
-    table: {
-      workspace: "工作空间",
-      memories: "回忆",
-      manage: "管理",
-    },
-    loading: "正在加载个性化数据...",
-    toast: {
-      "setting-update-failed": "未能更新设置：{{error}}",
-      enabled: "支持个性化设置。",
-      disabled: "个性化功能已关闭。",
-      "extraction-failed": "提取失败：{{error}}",
-      "extraction-completed": "内存提取已完成。",
-      "clear-confirm": "您确定吗？这将永久删除您所有的个性化设置。",
-      "clear-failed": "未能清除内存：{{error}}",
-      "clear-success": "所有个性化设置已清除。",
-      "delete-confirm": "删除此条记忆？",
-      "delete-failed": "未能成功删除内存。",
-      "delete-success": "已删除记忆。",
-      "update-failed": "未能更新内存。",
-      "update-success": "内存已更新。",
-      "add-failed": "未能添加内存。",
-      "add-global-success": "已添加全球内存。",
-      "add-success": "已添加记忆。",
-      "promote-failed": "未能促进记忆力。",
-      "promote-success": "Memory 晋升为全球职位",
     },
   },
 };

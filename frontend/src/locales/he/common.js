@@ -106,7 +106,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "טלגרם",
     },
-    personalization: "התאמה אישית",
   },
   login: {
     "multi-user": {
@@ -144,7 +143,6 @@ const TRANSLATIONS = {
     vector: "מסד נתונים וקטורי",
     members: "חברים",
     agent: "תצורת סוכן",
-    personalization: "התאמה אישית",
   },
   general: {
     vector: {
@@ -1066,6 +1064,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
       tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
     },
+    memories: {
+      title: "זיכרונות",
+      empty:
+        "עד כה, אין זיכרונות. לאחר שאתמקד יותר באינטראקציה עם הצ'אטבוט, זיכרונות חדשים יופיעו או <cta>יצרו זיכרון חדש</cta>",
+      tab_workspace: "חלל עבודה",
+      tab_global: "גלובלי",
+      toggle: {
+        label: "אפשרות להתאים אישית",
+        description:
+          "כשיהיה פעיל, מודל ה-AnythingLLM ילמד את העדפות המשתמש ואת ההקשר מהשיחות.",
+      },
+      menu: {
+        edit: "עריכה",
+        delete: "מחיקה",
+        move_to_global: "מעבר לשוק הגלובלי",
+        move_to_workspace: "מעבר למרחב העבודה",
+      },
+      modal: {
+        create_title: "צור זיכרון",
+        edit_title: "ערוך זיכרון",
+        create_description:
+          "זיכרון זה יישמר וישמש כדי להתאים את התגובות העתידיות.",
+        edit_description: "עדכן את התוכן של הזיכרון הזה.",
+        label: "זיכרון",
+        placeholder: "הזינו תיאור...",
+        create: "צור",
+        save: "שמור",
+        cancel: "בטל",
+      },
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
@@ -1274,88 +1302,6 @@ const TRANSLATIONS = {
       "pending-description":
         "משתמשים הממתינים לאישור. יש להתאים את הקוד שמוצג כאן עם הקוד המוצג בשיחה שלהם ב-Telegram.",
       unknown: "לא ידוע",
-    },
-  },
-  personalization: {
-    title: "התאמה אישית",
-    description:
-      "כל מה ש-AnythingLLM יכול ללמוד עליך לאורך זמן, כדי לספק תשובות רלוונטיות ומותאמות אישית יותר. הזיכרונות נאספים באופן אוטומטי מהשיחות שלך.",
-    toggle: {
-      label: "אפשרות להתאים אישית",
-      description:
-        "כשיהיה פעיל, מודל ה-AnythingLLM ילמד את העדפות המשתמש ואת ההקשר מהשיחות.",
-    },
-    actions: {
-      "run-extraction": "התחל את תהליך הגירוש עכשיו",
-      extracting: "איסוף...",
-      "clear-all": "מחיקת כל הזיכרונות שלי",
-      clearing: "ניקיון...",
-    },
-    global: {
-      title: "זיכרונות גלובליים (({{count}}, {{max}}))",
-      "add-button": "הוסף זיכרון גלובלי",
-      description: "זיכרונות אלה מיושמים בכל סביבת העבודה.",
-      "applied-description": "היישום יחול בכל סביבת העבודה.",
-      placeholder: "הזן זיכרון גלובלי (למשל, 'שמי הוא סייאן')",
-      "empty-title": "אין עדיין זיכרון גלובלי",
-      "empty-description":
-        "הוסף אותם באופן ידני או שתף זיכרונות מהעבודה ברמה הגלובלית.",
-    },
-    workspace: {
-      title: "זיכרונות מהמשרד ({{count}}, {{max}})",
-      "list-title": "זיכרונות מהעבודה",
-      "list-description":
-        "ניהול זיכרונות ספציפיים לסביבת העבודה, בהתבסס על ההגדרות של כל סביבת עבודה.",
-      "add-button": "הוסף זיכרון",
-      description:
-        "זיכרונות ספציפיים לסביבת העבודה הזו. זיכרונות אלו מוּחלטים באופן אוטומטי מהשיחות ומשמשים להתאמה אישית של התגובות.",
-      "no-workspaces": "לא נמצאו מקומות עבודה.",
-      "empty-title": "עדיין אין זיכרונות",
-      "empty-description":
-        "הזיכרונות ייאספו באופן אוטומטי מהשיחות שלכם, או שתוכלו להוסיף אותם באופן ידני.",
-    },
-    form: {
-      placeholder: 'הזן תזכורת (למשל, "אני מעדיף תשובות תמציתיות")',
-      save: "שמור",
-      add: "הוסף",
-      cancel: "בטל",
-      hint: "כל זיכרון צריך להיות עובדה או העדפה בודדת, בצורה תמציתית, במשפט אחד.",
-    },
-    item: {
-      edit: "ערוך",
-      "promote-to-global": "להפיץ ברמה גלובלית",
-      delete: "מחיקה",
-    },
-    scope: {
-      workspace: "חלל עבודה",
-      global: "גלובלי",
-    },
-    table: {
-      workspace: "מרחב עבודה",
-      memories: "זיכרונות",
-      manage: "ניהול",
-    },
-    loading: "טעינת נתוני התאמה אישית...",
-    toast: {
-      "setting-update-failed": "לא הצליח לעדכן הגדרה: {{error}}",
-      enabled: "אפשרות להתאים אישית.",
-      disabled: "התאמה אישית מושבתת.",
-      "extraction-failed": "כישלון בהחלצה: {{error}}",
-      "extraction-completed": "החל איסוף הזיכרון הושלם.",
-      "clear-confirm":
-        "האם אתה בטוח? פעולה זו תמחק באופן סופי את כל הזיכרונות המותאמים אישית שלך.",
-      "clear-failed": "לא הצליח למחוק זיכרונות: {{error}}",
-      "clear-success": "כל הזיכרונות המותאמים אישית נמחקו.",
-      "delete-confirm": "מחק את הזיכרון הזה?",
-      "delete-failed": "לא הצליח למחוק זיכרון.",
-      "delete-success": "הזיכרון נמחק.",
-      "update-failed": "לא הצליח לעדכן את הזיכרון.",
-      "update-success": "זיכרון עודכן.",
-      "add-failed": "לא הצלחתי להוסיף זיכרון.",
-      "add-global-success": "זיכרון גלובלי נוסף.",
-      "add-success": "זיכרון נוסף הוסף.",
-      "promote-failed": "לא הצליח להגביר את הזיכרון.",
-      "promote-success": "העלאת הדרגה של מנהל לפעילות גלובלית.",
     },
   },
 };

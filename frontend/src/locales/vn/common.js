@@ -109,7 +109,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Cá nhân hóa",
   },
   login: {
     "multi-user": {
@@ -139,7 +138,6 @@ const TRANSLATIONS = {
     vector: "Cơ sở dữ liệu Vector",
     members: "Thành viên",
     agent: "Cấu hình Agent",
-    personalization: "Cá nhân hóa",
   },
   general: {
     vector: {
@@ -1001,6 +999,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
       tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
     },
+    memories: {
+      title: "Những kỷ niệm",
+      empty:
+        "Hiện tại chưa có ký ức nào. Sau khi bạn tương tác với chatbot, những ký ức sẽ dần dần được tạo ra hoặc <cta>tạo ra một ký ức mới</cta>.",
+      tab_workspace: "Không gian làm việc",
+      tab_global: "Toàn cầu",
+      toggle: {
+        label: "Kích hoạt tùy chỉnh",
+        description:
+          "Khi được kích hoạt, AnythingLLM sẽ học hỏi sở thích và ngữ cảnh của người dùng từ các cuộc trò chuyện.",
+      },
+      menu: {
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        move_to_global: "Di chuyển sang cấp toàn cầu",
+        move_to_workspace: "Di chuyển đến không gian làm việc",
+      },
+      modal: {
+        create_title: "Tạo ra ký ức",
+        edit_title: "Chỉnh sửa bộ nhớ",
+        create_description:
+          "Dữ liệu này sẽ được lưu lại và sử dụng để cá nhân hóa các phản hồi trong tương lai.",
+        edit_description: "Cập nhật nội dung của bộ nhớ này.",
+        label: "Bộ nhớ",
+        placeholder: "Nhập mô tả...",
+        create: "Tạo ra",
+        save: "Lưu",
+        cancel: "Hủy",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -1315,91 +1343,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
       unknown: "Không xác định",
-    },
-  },
-  personalization: {
-    title: "Cá nhân hóa",
-    description:
-      "AnythingLLM có thể học hỏi về bạn theo thời gian để cung cấp các phản hồi phù hợp và cá nhân hóa hơn. Các thông tin và ghi nhớ được trích xuất tự động từ các cuộc trò chuyện của bạn.",
-    toggle: {
-      label: "Kích hoạt tùy chỉnh",
-      description:
-        "Khi được kích hoạt, AnythingLLM sẽ học hỏi sở thích và ngữ cảnh của người dùng từ các cuộc trò chuyện.",
-    },
-    actions: {
-      "run-extraction": "Bắt đầu trích xuất ngay",
-      extracting: "Lấy ra...",
-      "clear-all": "Xóa tất cả các ký ức của tôi",
-      clearing: "Làm sạch...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Thêm bộ nhớ toàn cầu",
-      description:
-        "Những ký ức này được áp dụng trên tất cả các môi trường làm việc.",
-      "applied-description": "Áp dụng trên tất cả các không gian làm việc.",
-      placeholder: 'Nhập một thông tin toàn cầu (ví dụ: "Tên tôi là Sean")',
-      "empty-title": "Hiện chưa có bộ nhớ toàn cầu.",
-      "empty-description":
-        "Thêm chúng thủ công hoặc chia sẻ những kỷ niệm làm việc lên toàn cầu.",
-    },
-    workspace: {
-      title: "Ký ức trong không gian làm việc ({{count}}, {{max}})",
-      "list-title": "Những kỷ niệm trong không gian làm việc",
-      "list-description":
-        "Quản lý các thông tin cụ thể cho từng không gian làm việc từ cài đặt của từng không gian đó.",
-      "add-button": "Thêm bộ nhớ",
-      description:
-        "Những thông tin cụ thể liên quan đến không gian làm việc này. Những thông tin này được tự động trích xuất từ các cuộc trò chuyện và được sử dụng để cá nhân hóa phản hồi.",
-      "no-workspaces": "Không tìm thấy không gian làm việc.",
-      "empty-title": "Vẫn chưa có ký ức.",
-      "empty-description":
-        "Các đoạn hội thoại của bạn sẽ được trích xuất tự động, hoặc bạn có thể thêm chúng thủ công.",
-    },
-    form: {
-      placeholder:
-        'Nhập một thông tin (ví dụ: "Tôi thích nhận được câu trả lời ngắn gọn").',
-      save: "Lưu",
-      add: "Thêm",
-      cancel: "Hủy",
-      hint: "Mỗi thông tin nên là một sự thật hoặc sở thích ngắn gọn, được diễn đạt trong một câu.",
-    },
-    item: {
-      edit: "Chỉnh sửa",
-      "promote-to-global": "Phát triển trên quy mô toàn cầu",
-      delete: "Xóa",
-    },
-    scope: {
-      workspace: "Không gian làm việc",
-      global: "Toàn cầu",
-    },
-    table: {
-      workspace: "Không gian làm việc",
-      memories: "Những kỷ niệm",
-      manage: "Quản lý",
-    },
-    loading: "Đang tải dữ liệu tùy chỉnh...",
-    toast: {
-      "setting-update-failed": "Không thể cập nhật cài đặt: {{error}}",
-      enabled: "Chức năng tùy chỉnh đã được kích hoạt.",
-      disabled: "Tính năng tùy chỉnh đã bị tắt.",
-      "extraction-failed": "Không thể trích xuất: {{error}}",
-      "extraction-completed": "Quá trình trích xuất dữ liệu hoàn thành.",
-      "clear-confirm":
-        "Bạn có chắc chứ? Điều này sẽ xóa vĩnh viễn tất cả các cài đặt và thông tin cá nhân của bạn.",
-      "clear-failed": "Không thể xóa bộ nhớ: {{error}}",
-      "clear-success": "Tất cả các thông tin cá nhân đã được xóa.",
-      "delete-confirm": "Xóa bộ nhớ này?",
-      "delete-failed": "Không thể xóa bộ nhớ.",
-      "delete-success": "Dữ liệu đã bị xóa.",
-      "update-failed": "Không thể cập nhật bộ nhớ.",
-      "update-success": "Bộ nhớ đã được cập nhật.",
-      "add-failed": "Không thể thêm bộ nhớ.",
-      "add-global-success": "Bộ nhớ toàn cầu đã được thêm.",
-      "add-success": "Bộ nhớ đã được thêm.",
-      "promote-failed":
-        "Không thành công trong việc thúc đẩy khả năng ghi nhớ.",
-      "promote-success": "Memory được thăng tiến lên vị trí toàn cầu.",
     },
   },
 };

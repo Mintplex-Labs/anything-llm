@@ -109,7 +109,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Individualisierung",
   },
   login: {
     "multi-user": {
@@ -148,7 +147,6 @@ const TRANSLATIONS = {
     vector: "Vektordatenbank",
     members: "Mitglieder",
     agent: "Agentenkonfiguration",
-    personalization: "Individualisierung",
   },
   general: {
     vector: {
@@ -1113,6 +1111,36 @@ const TRANSLATIONS = {
         "Die Genehmigung für die Bestellung der Werkzeuge wurde erteilt.",
       tool_call_was_rejected: "Die Anfrage nach dem Werkzeug wurde abgelehnt.",
     },
+    memories: {
+      title: "Erinnerungen",
+      empty:
+        "Bisher keine Erinnerungen. Wenn Sie mehr mit dem Chatbot interagieren, werden weitere Erinnerungen erstellt oder <cta>eine neue Erinnerung</cta> entsteht.",
+      tab_workspace: "Arbeitsbereich",
+      tab_global: "Global",
+      toggle: {
+        label: "Personalisierung aktivieren",
+        description:
+          "Wenn aktiviert, lernt AnythingLLM aus Gesprächen die Präferenzen und den Kontext des Benutzers.",
+      },
+      menu: {
+        edit: "Bearbeiten",
+        delete: "Löschen",
+        move_to_global: "Internationalisierung",
+        move_to_workspace: "Zur Arbeitsumgebung wechseln",
+      },
+      modal: {
+        create_title: "Erinnerungen schaffen",
+        edit_title: "Speicher bearbeiten",
+        create_description:
+          "Diese Information wird gespeichert und verwendet, um zukünftige Antworten zu personalisieren.",
+        edit_description: "Aktualisieren Sie den Inhalt dieses Speichers.",
+        label: "Gedächtnis",
+        placeholder: "Bitte geben Sie eine Beschreibung ein...",
+        create: "Erstellen",
+        save: "Speichern",
+        cancel: "Abbrechen",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
@@ -1344,94 +1372,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Benutzer, die noch verifiziert werden müssen. Vergleichen Sie den hier angezeigten Pairing-Code mit dem, der in ihrem Telegram-Chat angezeigt wird.",
       unknown: "Unbekannt",
-    },
-  },
-  personalization: {
-    title: "Individualisierung",
-    description:
-      "AnythingLLM kann im Laufe der Zeit mehr über Sie lernen, um relevantere und persönlichere Antworten zu geben. Erinnerungen werden automatisch aus Ihren Gesprächen extrahiert.",
-    toggle: {
-      label: "Personalisierung aktivieren",
-      description:
-        "Wenn aktiviert, lernt AnythingLLM aus Gesprächen die Präferenzen und den Kontext des Nutzers.",
-    },
-    actions: {
-      "run-extraction": "Datenextraktion jetzt starten",
-      extracting: "Extrahieren...",
-      "clear-all": "Alle meine Erinnerungen löschen",
-      clearing: "Aufräumen...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Fügen Sie Global Memory hinzu",
-      description:
-        "Diese Erinnerungen werden in allen Arbeitsbereichen angewendet.",
-      "applied-description":
-        "Diese Richtlinien gelten für alle Arbeitsbereiche.",
-      placeholder:
-        "Geben Sie einen globalen Speicherwert ein (z. B. „Mein Name ist Sean“)",
-      "empty-title": "Noch keine globalen Erinnerungen vorhanden.",
-      "empty-description":
-        "Fügen Sie sie manuell hinzu oder teilen Sie Arbeitsplatz-Erinnerungen mit der gesamten Organisation.",
-    },
-    workspace: {
-      title: "Erinnerungen an den Arbeitsplatz ({{count}}/{{max}})",
-      "list-title": "Erinnerungen an den Arbeitsplatz",
-      "list-description":
-        "Verwalten Sie Arbeitsbereich-spezifische Erinnerungen aus den Einstellungen jedes Arbeitsbereichs.",
-      "add-button": "Speicher hinzufügen",
-      description:
-        "Erinnerungen, die spezifisch für diesen Arbeitsbereich sind. Diese werden automatisch aus Gesprächen extrahiert und verwendet, um die Antworten zu personalisieren.",
-      "no-workspaces": "Keine Arbeitsbereiche gefunden.",
-      "empty-title": "Noch keine Erinnerungen",
-      "empty-description":
-        "Erinnerungen werden automatisch aus Ihren Gesprächen extrahiert, oder Sie können sie manuell hinzufügen.",
-    },
-    form: {
-      placeholder:
-        'Geben Sie eine Erinnerung ein (z. B. "Ich bevorzuge prägnante Antworten")',
-      save: "Speichern",
-      add: "Hinzufügen",
-      cancel: "Abbrechen",
-      hint: "Jede Erinnerung sollte eine einzelne, prägnante Tatsache oder Präferenz in einem Satz enthalten.",
-    },
-    item: {
-      edit: "Bearbeiten",
-      "promote-to-global": "Internationalisieren/Weltweit ausweiten",
-      delete: "Löschen",
-    },
-    scope: {
-      workspace: "Arbeitsbereich",
-      global: "Global",
-    },
-    table: {
-      workspace: "Arbeitsbereich",
-      memories: "Erinnerungen",
-      manage: "Verwalten",
-    },
-    loading: "Personalisierungsdaten werden geladen...",
-    toast: {
-      "setting-update-failed":
-        "Fehler beim Aktualisieren der Einstellung: {{error}}",
-      enabled: "Personalisierung möglich.",
-      disabled: "Personalisierung deaktiviert.",
-      "extraction-failed": "Fehler beim Extrahieren: {{error}}",
-      "extraction-completed": "Speicherinhalt extrahiert.",
-      "clear-confirm":
-        "Sind Sie sicher? Dies löscht dauerhaft alle Ihre persönlichen Einstellungen.",
-      "clear-failed": "Fehlgeschlagen bei der Speicherbereinigung: {{error}}",
-      "clear-success": "Alle gespeicherten Personalisierungen wurden gelöscht.",
-      "delete-confirm": "Diesen Eintrag löschen?",
-      "delete-failed": "Fehlgeschlagenes Löschen des Speichers.",
-      "delete-success": "Speicher gelöscht.",
-      "update-failed": "Fehlgeschlagenes Speicherspeicher-Update.",
-      "update-success": "Speicher aktualisiert.",
-      "add-failed": "Fehlgeschlagen beim Hinzufügen von Speicher.",
-      "add-global-success": "Globaler Speicher hinzugefügt.",
-      "add-success": "Speicher hinzugefügt.",
-      "promote-failed":
-        "Nicht erfolgreich bei der Förderung der Gedächtnisleistung.",
-      "promote-success": "Memory wurde zur globalen Führungskraft befördert.",
     },
   },
 };

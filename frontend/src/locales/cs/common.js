@@ -116,7 +116,6 @@ const TRANSLATIONS = {
     "available-channels": {
       telegram: "Telegram",
     },
-    personalization: "Personalizace",
   },
   login: {
     "multi-user": {
@@ -154,7 +153,6 @@ const TRANSLATIONS = {
     vector: "Vektorová databáze",
     members: "Členové",
     agent: "Konfigurace agenta",
-    personalization: "Personalizace",
   },
   general: {
     vector: {
@@ -1126,6 +1124,36 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Žádost o použití nástroje byla schválena.",
       tool_call_was_rejected: "Žádost o použití nástroje byla zamítnuta.",
     },
+    memories: {
+      title: "Paměti",
+      empty:
+        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se objevovat nové vzpomínky nebo <cta>vytvářet nové</cta>.",
+      tab_workspace: "Pracovní prostor",
+      tab_global: "Globální",
+      toggle: {
+        label: "Povolte personalizaci",
+        description:
+          "Po aktivaci se AnythingLLM naučí uživatelské preference a kontext z rozhovorů.",
+      },
+      menu: {
+        edit: "Upravit",
+        delete: "Smazat",
+        move_to_global: "Přechod na mezinárodní úroveň",
+        move_to_workspace: "Přesun do pracovního prostředí",
+      },
+      modal: {
+        create_title: "Vytvořte vzpomínku",
+        edit_title: "Upravit paměť",
+        create_description:
+          "Tato informace bude uložena a použita k přizpůsobení budoucích odpovědí.",
+        edit_description: "Aktualizujte obsah této paměti.",
+        label: "Paměť",
+        placeholder: "Zadejte popis...",
+        create: "Vytvořit",
+        save: "Uložit",
+        cancel: "Zrušit",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",
@@ -1317,89 +1345,6 @@ const TRANSLATIONS = {
       "pending-description":
         "Uživatelé, kteří čekají na ověření. Porovnejte kód pro spárování, který je zde uveden, s tím, který je zobrazen v jejich chatu na Telegramu.",
       unknown: "Neznámé",
-    },
-  },
-  personalization: {
-    title: "Personalizace",
-    description:
-      "AnythingLLM se postupně učí o vás, aby vám mohlo poskytovat relevantnější a personalizovanější odpovědi. Paměť je automaticky extrahována z vašich konverzací.",
-    toggle: {
-      label: "Povolte personalizaci",
-      description:
-        "Po aktivaci se AnythingLLM naučí uživatelské preference a kontext z konverzací.",
-    },
-    actions: {
-      "run-extraction": "Spusťte extrakci dat nyní",
-      extracting: "Extrahování...",
-      "clear-all": "Vymazat všechny mé vzpomínky",
-      clearing: "Úklid...",
-    },
-    global: {
-      title: "Global Memories ({{count}}, {{max}})",
-      "add-button": "Přidat globální paměť",
-      description:
-        "Tyto vzpomínky se používají ve všech pracovních prostředích.",
-      "applied-description": "Aplikováno ve všech pracovních prostředích.",
-      placeholder: "Zadejte globální paměť (např. „Můj jmen je Sean“)",
-      "empty-title": "Dosud neexistuje žádná globální paměť.",
-      "empty-description":
-        "Přidejte je ručně, nebo sdílejte vzpomínky z pracovního prostředí na celou organizaci.",
-    },
-    workspace: {
-      title: "Paměti z pracovního prostředí ({{count}}, {{max}})",
-      "list-title": "Paměti z pracovního prostředí",
-      "list-description":
-        "Spravujte specifické vzpomínky pro každé pracovní prostředí z nastavení daného prostředí.",
-      "add-button": "Přidat paměť",
-      description:
-        "Paměti specifické pro dané pracovní prostředí. Ty jsou automaticky získávány z konverzací a používají se k přizpůsobení odpovědí.",
-      "no-workspaces": "Nebyl nalezen žádný pracovní prostor.",
-      "empty-title": "Stále žádné vzpomínky",
-      "empty-description":
-        "Paměti budou automaticky extrahovány z vašich konverzací, nebo je můžete přidat i ručně.",
-    },
-    form: {
-      placeholder: "Zadejte paměť (např. „Preferuji stručné odpovědi“)",
-      save: "Uložit",
-      add: "Přidat",
-      cancel: "Zrušit",
-      hint: "Každá paměť by měla být jediným, stručným faktem nebo preferencí, vyjádřeným v jedné větě.",
-    },
-    item: {
-      edit: "Upravit",
-      "promote-to-global": "Získejte globální rozsah",
-      delete: "Odstranit",
-    },
-    scope: {
-      workspace: "Pracovní prostor",
-      global: "Globální",
-    },
-    table: {
-      workspace: "Pracovní prostor",
-      memories: "Paměti",
-      manage: "Řídit",
-    },
-    loading: "Načítají se data pro personalizaci...",
-    toast: {
-      "setting-update-failed": "Selhalo provedení změny nastavení: {{error}}",
-      enabled: "Možnost personalizace.",
-      disabled: "Personalizace je vypnuta.",
-      "extraction-failed": "Neúspěšné extrahování: {{error}}",
-      "extraction-completed": "Extrakce paměti byla dokončena.",
-      "clear-confirm":
-        "Jste si jisti? Toto trvale smaže všechny vaše nastavení a preference.",
-      "clear-failed": "Nezdařilo se vymazat paměť: {{error}}",
-      "clear-success": "Všechny uložené osobní údaje byly smazány.",
-      "delete-confirm": "Mám smazat tuto paměť?",
-      "delete-failed": "Nepodařilo se smazat paměť.",
-      "delete-success": "Paměť smazána.",
-      "update-failed": "Nezucceededo aktualizovat paměť.",
-      "update-success": "Paměť byla aktualizována.",
-      "add-failed": "Nezdařilo se přidat paměť.",
-      "add-global-success": "Přidáno globální paměťové úložiště.",
-      "add-success": "Paměť byla přidána.",
-      "promote-failed": "Nezucceededo podpořit paměť.",
-      "promote-success": "Memory byl povýšen na globální pozici.",
     },
   },
 };
