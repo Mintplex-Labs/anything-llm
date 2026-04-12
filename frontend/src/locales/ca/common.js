@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -233,7 +234,8 @@ const TRANSLATIONS = {
         restore: "Restaura",
         delete: "Elimina",
         publish: "Publica al Centre de la comunitat",
-        deleteConfirm: "Estàs segur que vols eliminar aquest element de l'historial?",
+        deleteConfirm:
+          "Estàs segur que vols eliminar aquest element de l'historial?",
         clearAllConfirm:
           "Estàs segur que vols esborrar tot l'historial? Aquesta acció no es pot desfer.",
         expand: "Expandeix",
@@ -280,8 +282,10 @@ const TRANSLATIONS = {
       resetting: "Esborrant vectors...",
       confirm:
         "Estàs a punt de restablir la base de dades vectorial d'aquest espai de treball. Això eliminarà tots els embeddings vectorials actuals.\n\nEls fitxers originals no es modificaran. Aquesta acció és irreversible.",
-      error: "No s'ha pogut restablir la base de dades vectorial de l'espai de treball!",
-      success: "La base de dades vectorial de l'espai de treball s'ha restablert!",
+      error:
+        "No s'ha pogut restablir la base de dades vectorial de l'espai de treball!",
+      success:
+        "La base de dades vectorial de l'espai de treball s'ha restablert!",
     },
   },
   agent: {
@@ -307,7 +311,7 @@ const TRANSLATIONS = {
       rag: {
         title: "RAG i memòria a llarg termini",
         description:
-          'Permet que l\'agent aprofiti els teus documents locals per respondre una consulta o demana a l\'agent que "recordi" fragments de contingut per a la recuperació de memòria a llarg termini.',
+          "Permet que l'agent aprofiti els teus documents locals per respondre una consulta o demana a l'agent que \"recordi\" fragments de contingut per a la recuperació de memòria a llarg termini.",
       },
       view: {
         title: "Visualitza i resumeix documents",
@@ -417,8 +421,7 @@ const TRANSLATIONS = {
           },
           "create-docx": {
             title: "Documents de Word",
-            description:
-              "Crea documents de Word amb estil i format bàsics",
+            description: "Crea documents de Word amb estil i format bàsics",
           },
         },
       },
@@ -439,11 +442,13 @@ const TRANSLATIONS = {
           "Configura l'ID de desplegament i la clau API per activar les habilitats de Gmail.",
         configured: "Configurat",
         searchSkills: "Cerca habilitats...",
-        noSkillsFound: "No hi ha habilitats que coincideixin amb la teva cerca.",
+        noSkillsFound:
+          "No hi ha habilitats que coincideixin amb la teva cerca.",
         categories: {
           search: {
             title: "Cerca i llegeix correus",
-            description: "Cerca i llegeix correus de la teva safata d'entrada de Gmail",
+            description:
+              "Cerca i llegeix correus de la teva safata d'entrada de Gmail",
           },
           drafts: {
             title: "Esborranys de correus",
@@ -460,13 +465,15 @@ const TRANSLATIONS = {
           },
           account: {
             title: "Estadístiques d'integració",
-            description: "Visualitza estadístiques de la safata i informació del compte",
+            description:
+              "Visualitza estadístiques de la safata i informació del compte",
           },
         },
         skills: {
           getInbox: {
             title: "Obté la safata d'entrada",
-            description: "Manera simplificada d'obtenir els correus de la safata d'entrada de Gmail",
+            description:
+              "Manera simplificada d'obtenir els correus de la safata d'entrada de Gmail",
           },
           search: {
             title: "Cerca correus",
@@ -534,7 +541,8 @@ const TRANSLATIONS = {
           },
           getMailboxStats: {
             title: "Estadístiques de la safata",
-            description: "Obté el recompte de no llegits i estadístiques de la safata",
+            description:
+              "Obté el recompte de no llegits i estadístiques de la safata",
           },
         },
       },
@@ -543,7 +551,8 @@ const TRANSLATIONS = {
     },
     mcp: {
       title: "Servidors MCP",
-      "loading-from-config": "Carregant servidors MCP des del fitxer de configuració",
+      "loading-from-config":
+        "Carregant servidors MCP des del fitxer de configuració",
       "learn-more": "Aprèn més sobre els servidors MCP.",
       "no-servers-found": "No s'han trobat servidors MCP",
       "tool-warning":
@@ -598,7 +607,8 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "Preferències d'interfície",
-      description: "Estableix les teves preferències d'interfície per a AnythingLLM.",
+      description:
+        "Estableix les teves preferències d'interfície per a AnythingLLM.",
     },
     branding: {
       title: "Marca i etiqueta blanca",
@@ -626,7 +636,8 @@ const TRANSLATIONS = {
     items: {
       theme: {
         title: "Tema",
-        description: "Selecciona el teu tema de colors preferit per a l'aplicació.",
+        description:
+          "Selecciona el teu tema de colors preferit per a l'aplicació.",
       },
       "show-scrollbar": {
         title: "Mostra la barra de desplaçament",
@@ -650,7 +661,8 @@ const TRANSLATIONS = {
       },
       logo: {
         title: "Logotip de la marca",
-        description: "Puja el teu logotip personalitzat per mostrar-lo a totes les pàgines.",
+        description:
+          "Puja el teu logotip personalitzat per mostrar-lo a totes les pàgines.",
         add: "Afegeix un logotip personalitzat",
         recommended: "Mida recomanada: 800 x 200",
         remove: "Elimina",
@@ -667,7 +679,8 @@ const TRANSLATIONS = {
         },
         favicon: {
           title: "Favicon",
-          description: "Usa un favicon personalitzat per a la pestanya del navegador.",
+          description:
+            "Usa un favicon personalitzat per a la pestanya del navegador.",
         },
       },
       "sidebar-footer": {
@@ -854,7 +867,8 @@ const TRANSLATIONS = {
     },
     connected: {
       status: "Connectat",
-      "status-disconnected": "Desconnectat: el token pot haver caducat o ser invàlid",
+      "status-disconnected":
+        "Desconnectat: el token pot haver caducat o ser invàlid",
       "placeholder-token": "Enganxa el nou token del bot...",
       reconnect: "Reconnecta",
       workspace: "Espai de treball",
@@ -1018,8 +1032,7 @@ const TRANSLATIONS = {
     },
     confluence: {
       name: "Confluence",
-      description:
-        "Importa una pàgina sencera de Confluence en un sol clic.",
+      description: "Importa una pàgina sencera de Confluence en un sol clic.",
       deployment_type: "Tipus de desplegament de Confluence",
       deployment_type_explained:
         "Determina si la teva instància de Confluence està allotjada al núvol d'Atlassian o és autogestionada.",
@@ -1113,7 +1126,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    attachments_processing: "Els adjunts s'estan processant. Si us plau, espera...",
+    attachments_processing:
+      "Els adjunts s'estan processant. Si us plau, espera...",
     send_message: "Envia un missatge",
     attach_file: "Adjunta un fitxer a aquest xat",
     text_size: "Canvia la mida del text.",
@@ -1138,10 +1152,12 @@ const TRANSLATIONS = {
     edit_response: "Edita la resposta",
     edit_info_user:
       '"Envia" regenera la resposta de la IA. "Desa" actualitza només el teu missatge.',
-    edit_info_assistant: "Els teus canvis es desaran directament en aquesta resposta.",
+    edit_info_assistant:
+      "Els teus canvis es desaran directament en aquesta resposta.",
     see_less: "Veu menys",
     see_more: "Veu més",
-    preset_reset_description: "Esborra l'historial del xat i comença un xat nou",
+    preset_reset_description:
+      "Esborra l'historial del xat i comença un xat nou",
     preset_exit_description: "Atura la sessió de l'agent actual",
     add_new_preset: " Afegeix una nova ordre predefinida",
     add_new: "Afegeix nou",
@@ -1171,9 +1187,11 @@ const TRANSLATIONS = {
       "Pots usar eines al xat iniciant una sessió de l'agent amb '@agent' al principi del teu missatge.",
     workspace_llm_manager: {
       search: "Cerca",
-      loading_workspace_settings: "Carregant la configuració de l'espai de treball...",
+      loading_workspace_settings:
+        "Carregant la configuració de l'espai de treball...",
       available_models: "Models disponibles per a {{provider}}",
-      available_models_description: "Selecciona un model per usar en aquest espai de treball.",
+      available_models_description:
+        "Selecciona un model per usar en aquest espai de treball.",
       save: "Usa aquest model",
       saving: "Establint el model com a predeterminat de l'espai de treball...",
       missing_credentials: "Falta les credencials d'aquest proveïdor!",
@@ -1232,7 +1250,8 @@ const TRANSLATIONS = {
         view_on_hub: "Visualitza al Centre de la comunitat",
         modal_title: "Publica el missatge del sistema",
         name_label: "Nom",
-        name_description: "Aquest és el nom visible del teu missatge del sistema.",
+        name_description:
+          "Aquest és el nom visible del teu missatge del sistema.",
         name_placeholder: "El meu missatge del sistema",
         description_label: "Descripció",
         description_description:
