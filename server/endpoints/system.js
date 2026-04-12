@@ -69,7 +69,7 @@ function systemEndpoints(app) {
     response.status(200).json({ online: true });
   });
 
-  app.get("/migrate", async (_, response) => {
+  app.get("/migrate", [validatedRequest], async (_, response) => {
     response.sendStatus(200);
   });
 
