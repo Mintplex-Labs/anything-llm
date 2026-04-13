@@ -9,6 +9,10 @@ spec:
   selector:
     matchLabels:
       {{- include "anythingllm.selectorLabels" . | nindent 6 }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -30,10 +34,6 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- with .Values.initContainers }}
       initContainers:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.strategy }}
-      strategy:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
