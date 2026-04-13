@@ -149,18 +149,19 @@ process.on("message", async (payload) => {
       Number(process.env.SCHEDULED_JOB_TIMEOUT_MS) || 5 * 60 * 1000;
     const startTime = Date.now();
 
+    let timeoutId;
     await Promise.race([
       agentHandler.startAgentCluster(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("SCHEDULED_JOB_TIMEOUT")), TIMEOUT)
-      ),
-    ]);
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error("SCHEDULED_JOB_TIMEOUT")),
+          TIMEOUT
+        );
+      }),
+    ]).finally(() => clearTimeout(timeoutId));
 
     // Wait for handler close (agent termination)
-    await Promise.race([
-      handlerPromise,
-      new Promise((resolve) => setTimeout(resolve, 5000)),
-    ]);
+    await handlerPromise;
 
     const duration = Date.now() - startTime;
 
