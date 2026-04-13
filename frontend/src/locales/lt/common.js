@@ -422,6 +422,126 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail sąsaja",
+        description:
+          "Įgalinkite savo agentą, kad galėtų interaktuoti su Gmail – ieškoti pašto žinučių, skaityti pokalbius, kurti projekte, siųsti pašto žinučių ir valdyti savo pašto dėžę. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Gmail“ integracija negali būti naudojama kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "Gmail konfigūracija",
+        deploymentId: "Įrenginio ID",
+        deploymentIdHelp: "Jūsų „Google Apps Script“ svetainės programos ID",
+        apiKey: "API raktas",
+        apiKeyHelp:
+          "„API“ raktas, kurį konfigūruojate savo „Google Apps Script“ programoje.",
+        configurationRequired:
+          "Prašome nustatyti „Deployment ID“ ir API raktą, kad būtų įgalintos Gmail funkcijos.",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškos kriterijams.",
+        categories: {
+          search: {
+            title: "Paieškos ir skaitymas el. paštą",
+            description:
+              "Paieškokite ir skaitykite el. laiimus iš savo „Gmail“ sąrašo",
+          },
+          drafts: {
+            title: "Pagalbos el. pašto rašto projektai",
+            description: "Sukurkite, redaguo, ir valdykite el. pašto rašinius.",
+          },
+          send: {
+            title: "Siųstis ir atsakyti el. pašto žinutėms",
+            description:
+              "Siųkite el. pašto žinutes ir atsakykite į diskusijų siužus nedelsiant.",
+          },
+          threads: {
+            title: "Valdykite el. pašto žinias",
+            description:
+              "Valdykite el. pašto žinias – pažymėkite kaip „perskaityta“ arba „neperskaityta“, archyvuokite, ištrinkite.",
+          },
+          account: {
+            title: "Integracijos statistika",
+            description:
+              "Peržiūrėkite pašto dėžės statistikos ir sąskaitos informaciją.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Paieškos el. paštu",
+            description:
+              "Paieškokite el. laiimus naudodami Gmail paieškos sintaksę",
+          },
+          readThread: {
+            title: "Peržiūrėti temą",
+            description: "Peržiūrėkite visą el. pašto seką pagal ID.",
+          },
+          createDraft: {
+            title: "Sukurti projekto variantą",
+            description: "Sukurkite naują el. pašto projekto variantą",
+          },
+          createDraftReply: {
+            title: "Sukurti projekto atsakymą",
+            description: "Sukurkite atsakinimo projektą esamai temai.",
+          },
+          updateDraft: {
+            title: "Paskaitos projekto atnaujinimas",
+            description: "Atnaujinti esamą el. pašto projekto",
+          },
+          getDraft: {
+            title: "Gaukite projekto variantą",
+            description: "Gauti konkretų variantą pagal ID",
+          },
+          listDrafts: {
+            title: "Paskaitų planas",
+            description: "Įrašykite visus suvestus el. pašto projektus",
+          },
+          deleteDraft: {
+            title: "Ištrinkti projekto",
+            description: "Ištrinkite projekto el. laišką",
+          },
+          sendDraft: {
+            title: "Siųstis projekto",
+            description: "Siųstis esamą el. pašto projekto",
+          },
+          sendEmail: {
+            title: "Siųstis el. pašto laišką",
+            description: "Nurodyti el. pašto žinutę nedelsiant",
+          },
+          replyToThread: {
+            title: "Atsakymas į temą",
+            description: "Atsakyti į el. pašto žinią nedelsiant",
+          },
+          markRead: {
+            title: "Markas Redas",
+            description: "Žymkite temą kaip perskaitytą",
+          },
+          markUnread: {
+            title: "Žymėti kaip neperskaityta",
+            description: "Žymkite temą kaip neperskaitytą",
+          },
+          moveToTrash: {
+            title: "Perkelti į šiukšlių sąvartą",
+            description: "Perkelkite temą į šiukšlių sąsandynę",
+          },
+          moveToArchive: {
+            title: "Archivų",
+            description: "Įrašyti temą į archyvą",
+          },
+          moveToInbox: {
+            title: "Perkelkite į „Įvesalą“",
+            description: "Perkelti temą į pašto dėžę",
+          },
+          getMailboxStats: {
+            title: "Pašto dėžės statistika",
+            description:
+              "Gaukite neatsakytų žinučių skaičių ir pašto dėžės statistikos duomenis.",
+          },
+          getInbox: {
+            title: "Peržiūrėti laiškų dėžę",
+            description: "Efektyvus būdas gauti el. laiškus iš „Gmail“ sąrašo",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveriai",
@@ -571,7 +691,34 @@ const TRANSLATIONS = {
       "API raktai leidžia programiškai pasiekti ir valdyti šią AnythingLLM instanciją.",
     link: "Skaityti API dokumentaciją",
     generate: "Generuoti naują API raktą",
+    empty: "API raktų nerasta",
+    actions: "Veiksmai",
+    messages: {
+      error: "Klaida: {{error}}",
+    },
+    modal: {
+      title: "Sukurti naują API raktą",
+      cancel: "Atšaukti",
+      close: "Uždaryti",
+      create: "Sukurti API raktą",
+      helper:
+        "Sukūrus API raktą, jį galima naudoti programiškai pasiekti ir konfigūruoti šį AnythingLLM egzempliorių.",
+      name: {
+        label: "Pavadinimas",
+        placeholder: "Produkcinė integracija",
+        helper:
+          "Neprivaloma. Naudokite aiškų pavadinimą, kad vėliau lengvai atpažintumėte šį raktą.",
+      },
+    },
+    row: {
+      copy: "Kopijuoti API raktą",
+      copied: "Nukopijuota",
+      unnamed: "--",
+      deleteConfirm:
+        "Ar tikrai norite išjungti šį API raktą?\nPo to jo nebebus galima naudoti.\n\nŠio veiksmo atšaukti negalima.",
+    },
     table: {
+      name: "Pavadinimas",
       key: "API raktas",
       by: "Sukūrė",
       created: "Sukurta",
@@ -1129,8 +1276,6 @@ const TRANSLATIONS = {
         description:
           "Įveskite API žymiklį, kurį gavote iš @BotFather, ir pasirinkite numatytą darbo vietą, kur jūsų bot galės kalbėti.",
         "bot-token": "„Bot Token“",
-        "default-workspace": "Numatytasis darbo erdvė",
-        "no-workspace": "Nėra laisvų darbo vietų. Bus sukurta nauja.",
         connecting: "Prisijungiam...",
         "connect-bot": "„Connect Bot“",
       },
@@ -1171,20 +1316,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Nepavyko atšalinti vartotojo.",
     },
     users: {
-      "pending-title": "Laikant patvirtinimo",
       "pending-description":
         "Naudotojai, laukiantys patvirtinimo. Palyginkite čia pateiktą kodą su tuo, kuris rodomas jų „Telegram“ pokalbyje.",
-      "approved-title": "Įsijungę vartotojai",
-      "approved-description":
-        "Naudotojai, kuriems suteikiama galimybė kalbėti su jūsų botu.",
-      user: "Naudotojas",
-      "pairing-code": "Kombinacijos kodas",
-      "no-pending": "Nėra atidėtų užklausų",
-      "no-approved": "Nėra patvirtintų vartotojų",
       unknown: "Nenurodytas",
-      approve: "Aptinka",
-      deny: "Atsisakyti",
-      revoke: "Anuliuoti",
     },
   },
 };

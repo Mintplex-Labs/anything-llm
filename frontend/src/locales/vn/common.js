@@ -408,6 +408,125 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Kết nối GMail",
+        description:
+          "Cho phép đại lý của bạn tương tác với Gmail – tìm kiếm email, đọc các cuộc trò chuyện, soạn thảo bản nháp, gửi email và quản lý hộp thư. Đọc tài liệu hướng dẫn<a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Gmail không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Gmail",
+        deploymentId: "Mã triển khai",
+        deploymentIdHelp:
+          "Mã triển khai từ ứng dụng web Google Apps Script của bạn",
+        apiKey: "Khóa API",
+        apiKeyHelp:
+          "Khóa API mà bạn đã cấu hình trong quá trình triển khai Google Apps Script của mình.",
+        configurationRequired:
+          "Vui lòng cấu hình ID triển khai và khóa API để kích hoạt các tính năng của Gmail.",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả phù hợp với tìm kiếm của bạn.",
+        categories: {
+          search: {
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Gmail của bạn.",
+          },
+          drafts: {
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
+          },
+          send: {
+            title: "Gửi và trả lời email",
+            description:
+              "Gửi email và trả lời các cuộc thảo luận ngay lập tức.",
+          },
+          threads: {
+            title: "Quản lý các chuỗi email",
+            description:
+              "Quản lý các chuỗi email – đánh dấu là đã đọc/chưa đọc, lưu trữ, xóa",
+          },
+          account: {
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
+          },
+        },
+        skills: {
+          search: {
+            title: "Tìm kiếm trong các email",
+            description: "Tìm kiếm trong email bằng cú pháp truy vấn của Gmail",
+          },
+          readThread: {
+            title: "Đọc chủ đề",
+            description: "Đọc toàn bộ chuỗi email theo ID",
+          },
+          createDraft: {
+            title: "Tạo bản nháp",
+            description: "Tạo một bản nháp email mới",
+          },
+          createDraftReply: {
+            title: "Tạo bản nháp trả lời",
+            description: "Tạo một bản dự thảo trả lời cho một chủ đề hiện có.",
+          },
+          updateDraft: {
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật bản nháp email hiện có",
+          },
+          getDraft: {
+            title: "Xem bản nháp",
+            description: "Lấy lại một bản nháp cụ thể theo ID",
+          },
+          listDrafts: {
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
+          },
+          deleteDraft: {
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
+          },
+          sendDraft: {
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
+          },
+          sendEmail: {
+            title: "Gửi email",
+            description: "Gửi một email ngay lập tức",
+          },
+          replyToThread: {
+            title: "Trả lời cuộc thảo luận",
+            description: "Trả lời một chuỗi email ngay lập tức.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Đánh dấu một chủ đề đã đọc",
+          },
+          markUnread: {
+            title: "Đánh dấu là chưa đọc",
+            description: "Đánh dấu một chủ đề là chưa đọc",
+          },
+          moveToTrash: {
+            title: "Xóa",
+            description: 'Di chuyển một chủ đề vào thư mục "rác"',
+          },
+          moveToArchive: {
+            title: "Thư mục lưu trữ",
+            description: "Lưu trữ một chủ đề",
+          },
+          moveToInbox: {
+            title: "Di chuyển đến mục Thùng thư",
+            description: "Di chuyển một chủ đề vào hộp thư mục",
+          },
+          getMailboxStats: {
+            title: "Thống kê hộp thư",
+            description:
+              "Hiển thị số lượng email chưa đọc và thống kê hộp thư.",
+          },
+          getInbox: {
+            title: "Truy cập hộp thư",
+            description: "Cách đơn giản để lấy các email trong hộp thư Gmail.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
@@ -469,7 +588,34 @@ const TRANSLATIONS = {
       "Khóa API cho phép người sở hữu truy cập và quản lý phiên bản AnythingLLM này theo chương trình.",
     link: "Đọc tài liệu API",
     generate: "Tạo Khóa API Mới",
+    empty: "Không tìm thấy khóa API nào",
+    actions: "Thao tác",
+    messages: {
+      error: "Lỗi: {{error}}",
+    },
+    modal: {
+      title: "Tạo khóa API mới",
+      cancel: "Hủy",
+      close: "Đóng",
+      create: "Tạo khóa API",
+      helper:
+        "Sau khi được tạo, khóa API có thể được dùng để truy cập và cấu hình phiên bản AnythingLLM này theo chương trình.",
+      name: {
+        label: "Tên",
+        placeholder: "Tích hợp production",
+        helper:
+          "Tùy chọn. Hãy dùng tên dễ nhận biết để bạn có thể xác định khóa này sau này.",
+      },
+    },
+    row: {
+      copy: "Sao chép khóa API",
+      copied: "Đã sao chép",
+      unnamed: "--",
+      deleteConfirm:
+        "Bạn có chắc muốn vô hiệu hóa khóa API này không?\nSau đó khóa sẽ không thể sử dụng được nữa.\n\nHành động này không thể hoàn tác.",
+    },
     table: {
+      name: "Tên",
       key: "Khóa API",
       by: "Tạo bởi",
       created: "Ngày tạo",
@@ -1125,9 +1271,6 @@ const TRANSLATIONS = {
         description:
           "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
         "bot-token": "Token Bot",
-        "default-workspace": "Không gian làm việc mặc định",
-        "no-workspace":
-          "Không có không gian làm việc nào khả dụng. Một không gian mới sẽ được tạo ra.",
         connecting: "Kết nối...",
         "connect-bot": "Bot kết nối",
       },
@@ -1167,20 +1310,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
     },
     users: {
-      "pending-title": "Chờ phê duyệt",
       "pending-description":
         "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
-      "approved-title": "Người dùng đã được phê duyệt",
-      "approved-description":
-        "Người dùng đã được chấp thuận để trò chuyện với bot của bạn.",
-      user: "Người dùng",
-      "pairing-code": "Mã ghép",
-      "no-pending": "Không có yêu cầu nào đang chờ xử lý.",
-      "no-approved": "Không có người dùng được xác nhận",
       unknown: "Không xác định",
-      approve: "Chấp thuận",
-      deny: "Từ chối",
-      revoke: "Thu hồi",
     },
   },
 };
