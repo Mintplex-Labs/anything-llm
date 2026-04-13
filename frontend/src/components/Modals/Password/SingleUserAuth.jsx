@@ -7,7 +7,7 @@ import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
 
-export default function SingleUserAuth() {
+export default function SingleUserAuth({ loginLogo, isCustomLogo }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -80,6 +80,14 @@ export default function SingleUserAuth() {
                 {t("login.multi-user.welcome")}
               </h3>
             </div>
+            {loginLogo && (
+              <img
+                src={loginLogo}
+                alt="Logo"
+                className={`max-h-[80px] ${isCustomLogo ? "rounded-lg" : ""}`}
+                style={{ objectFit: "contain" }}
+              />
+            )}
             <p className="text-zinc-400 light:text-zinc-600 text-sm text-center">
               {t("login.sign-in", { appName: customAppName || "AnythingLLM" })}
             </p>
