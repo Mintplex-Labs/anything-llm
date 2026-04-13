@@ -46,7 +46,7 @@ async function loadConfluence(
     };
   }
 
-  const normalizedBaseUrl = normalizeBaseUrl(baseUrl, cloud);
+  const normalizedBaseUrl = resolveConfluenceBaseUrl(baseUrl, cloud);
   const { hostname } = new URL(normalizedBaseUrl);
   console.log(`-- Working Confluence ${normalizedBaseUrl} --`);
   const loader = new ConfluencePagesLoader({
@@ -183,7 +183,7 @@ async function fetchConfluencePage({
   }
 
   console.log(`-- Working Confluence Page ${pageUrl} --`);
-  const normalizedBaseUrl = normalizeBaseUrl(baseUrl, cloud);
+  const normalizedBaseUrl = resolveConfluenceBaseUrl(baseUrl, cloud);
   const loader = new ConfluencePagesLoader({
     baseUrl: normalizedBaseUrl,
     spaceKey,
@@ -246,19 +246,18 @@ function validBaseUrl(baseUrl) {
 }
 
 /**
- * Normalizes the configured Confluence base URL while preserving context paths
- * for self-hosted deployments.
+ * Resolves the Confluence base URL, preserving context paths for self-hosted deployments.
  * @param {string} baseUrl
  * @param {boolean} cloud
  * @returns {string}
  */
-function normalizeBaseUrl(baseUrl, cloud = true) {
+function resolveConfluenceBaseUrl(baseUrl, cloud = true) {
   const url = new URL(baseUrl);
-  const pathname = url.pathname.replace(/\/+$/, "");
-  const normalizedPath = pathname === "/" ? "" : pathname;
-  const basePath = cloud ? "" : normalizedPath;
+  // Cloud URLs use just the origin; self-hosted may have a context path like /confluence
+  if (cloud) return url.origin;
 
-  return `${url.origin}${basePath}`;
+  const contextPath = url.pathname.replace(/\/+$/, "");
+  return `${url.origin}${contextPath}`;
 }
 
 /**
@@ -289,5 +288,5 @@ function generateChunkSource(
 module.exports = {
   loadConfluence,
   fetchConfluencePage,
-  normalizeBaseUrl,
+  resolveConfluenceBaseUrl,
 };
