@@ -6,11 +6,13 @@ import System from "@/models/system";
 import { useTranslation } from "react-i18next";
 import { useMemoriesSidebar, useSourcesSidebar } from "../ChatSidebar";
 
-const TEXT_SIZES = [
-  { key: "small", labelKey: "chat_window.small" },
-  { key: "normal", labelKey: "chat_window.normal" },
-  { key: "large", labelKey: "chat_window.large" },
-];
+function getTextSizes(t) {
+  return [
+    { key: "small", label: t("chat_window.small") },
+    { key: "normal", label: t("chat_window.normal") },
+    { key: "large", label: t("chat_window.large") },
+  ];
+}
 
 export default function ChatSettingsMenu() {
   const mode = useLoginMode();
@@ -134,11 +136,12 @@ function TextSizeRow() {
 
 function TextSizeSubmenu({ selectedSize, onSizeChange }) {
   const { t } = useTranslation();
+  const textSizes = getTextSizes(t);
 
   return (
     <div className="absolute right-full top-0 -mr-2 pr-2 pt-0">
       <div className="bg-zinc-800 light:bg-slate-50 border border-zinc-700 light:border-slate-300 rounded-lg p-3.5 w-[98px] flex flex-col gap-1.5 shadow-lg">
-        {TEXT_SIZES.map(({ key, labelKey }) => (
+        {textSizes.map(({ key, label }) => (
           <div
             key={key}
             onClick={() => onSizeChange(key)}
@@ -148,7 +151,7 @@ function TextSizeSubmenu({ selectedSize, onSizeChange }) {
                 : "hover:bg-zinc-700/50 light:hover:bg-slate-100"
             }`}
           >
-            {t(labelKey)}
+            {label}
           </div>
         ))}
       </div>

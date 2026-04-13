@@ -1185,7 +1185,8 @@ const TRANSLATIONS = {
     memories: {
       title: "Memories",
       empty:
-        "No memories so far. After you interact with the chatbot more memories will fill in or <cta>create a new memory</cta>",
+        "No memories so far. After you interact with the chatbot more memories will fill in or",
+      empty_cta: "create a new memory",
       tab_workspace: "Workspace",
       tab_global: "Global",
       toggle: {
