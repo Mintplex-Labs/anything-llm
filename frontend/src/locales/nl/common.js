@@ -1010,7 +1010,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Herinneringen",
       empty:
-        "Tot nu toe zijn er geen herinneringen. Naarmate je meer interactie hebt met de chatbot, zullen er meer herinneringen ontstaan, of <cta>een nieuwe herinnering creëren</cta>.",
+        "Tot nu toe zijn er geen herinneringen. Naarmate u meer interactie heeft met de chatbot, zullen er meer herinneringen worden gevuld.",
       tab_workspace: "Werkplek",
       tab_global: "Wereldwijd",
       toggle: {
@@ -1036,6 +1036,7 @@ const TRANSLATIONS = {
         save: "Opslaan",
         cancel: "Annuleren",
       },
+      empty_cta: "maak een nieuwe herinnering",
     },
   },
   profile_settings: {

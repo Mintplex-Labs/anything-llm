@@ -1012,7 +1012,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Anılar",
       empty:
-        "Şu ana kadar herhangi bir anı oluşmadı. Sohbet botuyla etkileşiminiz arttıkça, daha fazla anı oluşacak veya yeni bir anı oluşturulacak.",
+        "Şimdiye kadar herhangi bir anı oluşmadı. Sohbet botuyla daha fazla etkileşimde bulunduktan sonra, anılar otomatik olarak oluşmaya başlayacaktır.",
       tab_workspace: "Çalışma alanı",
       tab_global: "Küresel",
       toggle: {
@@ -1038,6 +1038,7 @@ const TRANSLATIONS = {
         save: "Kaydet",
         cancel: "İptal et",
       },
+      empty_cta: "yeni bir anı oluştur",
     },
   },
   profile_settings: {

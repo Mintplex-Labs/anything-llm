@@ -992,7 +992,7 @@ const TRANSLATIONS = {
     memories: {
       title: "思い出",
       empty:
-        "現時点では記憶はまだありません。チャットボットとのやり取りが増えるほど、記憶が埋められていくか、または新しい記憶が生まれる<cta>",
+        "現時点では、記憶はまだ何もありません。チャットボットとのやり取りが増えるほど、記憶が埋まっていくでしょう。",
       tab_workspace: "作業スペース",
       tab_global: "世界的な",
       toggle: {
@@ -1018,6 +1018,7 @@ const TRANSLATIONS = {
         save: "保存",
         cancel: "キャンセル",
       },
+      empty_cta: "新しい記憶を作成する",
     },
   },
   profile_settings: {

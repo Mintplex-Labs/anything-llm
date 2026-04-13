@@ -1078,7 +1078,7 @@ const TRANSLATIONS = {
     memories: {
       title: "추억",
       empty:
-        "현재까지 기억은 없습니다. 챗봇과의 상호 작용이 증가하면 기억이 채워지거나 새로운 기억이 생성될 것입니다.",
+        "현재까지 기억은 없습니다. 챗봇과 상호작용할수록 기억이 더 채워질 것입니다.",
       tab_workspace: "업무 공간",
       tab_global: "글로벌",
       toggle: {
@@ -1104,6 +1104,7 @@ const TRANSLATIONS = {
         save: "저장",
         cancel: "취소",
       },
+      empty_cta: "새로운 기억을 만들다",
     },
   },
   profile_settings: {

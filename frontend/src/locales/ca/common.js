@@ -1205,6 +1205,38 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La crida a l'eina ha estat aprovada",
       tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
     },
+    memories: {
+      title: "Recordacions",
+      empty:
+        "No hi ha cap memòria fins ara. Quan interactueu amb el chatbot, es començaran a crear noves memòries.",
+      empty_cta: "crear una nova memòria",
+      tab_workspace: "Espai de treball",
+      tab_global: "Global",
+      toggle: {
+        label: "Activar la personalització",
+        description:
+          "Quan estigui activat, AnythingLLM aprendrà les preferències i el context de l'usuari a partir de les converses.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Passar a Global",
+        move_to_workspace: "Passar a l'espai de treball",
+      },
+      modal: {
+        create_title: "Crear un record",
+        edit_title: "Editar memòria",
+        create_description:
+          'Els records han de ser una única declaració concisa. Per exemple: "L\'usuari prefereix Python a JavaScript".',
+        edit_description: "Actualitza el contingut d'aquesta memòria.",
+        label: "Memòria",
+        placeholder:
+          "Per exemple, el nom de l'usuari és Joe, l'usuari treballa amb AnythingLLM, etc.",
+        create: "Crear",
+        save: "Guarda",
+        cancel: "Cancel·lar",
+      },
+    },
   },
   profile_settings: {
     edit_account: "Edita el compte",

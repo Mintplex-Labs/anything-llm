@@ -1092,7 +1092,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Memórias",
       empty:
-        "Até agora, não há memórias registradas. Após você interagir mais com o chatbot, novas memórias serão criadas ou <cta>relembradas__.</cta>",
+        "Até agora, não há memórias. Após você interagir mais com o chatbot, novas memórias serão criadas.",
       tab_workspace: "Espaço de trabalho",
       tab_global: "Global",
       toggle: {
@@ -1118,6 +1118,7 @@ const TRANSLATIONS = {
         save: "Salvar",
         cancel: "Cancelar",
       },
+      empty_cta: "criar uma nova memória",
     },
   },
   profile_settings: {

@@ -1129,7 +1129,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Atmintys",
       empty:
-        "Kol kas nėra jokios atminimo. Kai bendrausite su chatbot'u, atminimas bus užpildytas arba <cta>sukurs naują atminimą</cta>",
+        "Kol kas nėra jokios atminimo. Kai su chatbotu bendrausite, atminimas bus užpildytas arba",
       tab_workspace: "Darbo zona",
       tab_global: "Pasaulinis",
       toggle: {
@@ -1155,6 +1155,7 @@ const TRANSLATIONS = {
         save: "Išsaugoti",
         cancel: "Atšaukti",
       },
+      empty_cta: "sukurti naują atmintį",
     },
   },
   profile_settings: {

@@ -1020,7 +1020,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Souvenirs",
       empty:
-        "Aucun souvenir pour l'instant. Une fois que vous interagirez davantage avec le chatbot, de nouveaux souvenirs apparaîtront ou <cta>créeront de nouveaux souvenirs</cta>.",
+        "Aucun souvenir pour le moment. Une fois que vous interagirez davantage avec le chatbot, de nouveaux souvenirs apparaîtront.",
       tab_workspace: "Espace de travail",
       tab_global: "Global",
       toggle: {
@@ -1046,6 +1046,7 @@ const TRANSLATIONS = {
         save: "Enregistrer",
         cancel: "Annuler",
       },
+      empty_cta: "créer un nouveau souvenir",
     },
   },
   profile_settings: {

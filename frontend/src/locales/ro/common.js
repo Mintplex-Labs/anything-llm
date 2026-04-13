@@ -580,7 +580,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Amintiri",
       empty:
-        "Până acum, nu există nicio amintire. După ce interacționați mai mult cu chatbot-ul, veți avea mai multe amintiri sau <cta>veți crea o nouă amintire</cta>.",
+        "Până acum, nu există amintiri. Odată ce interacționați mai mult cu chatbot-ul, veți începe să aveți mai multe amintiri.",
       tab_workspace: "Spațiu de lucru",
       tab_global: "Global",
       toggle: {
@@ -606,6 +606,7 @@ const TRANSLATIONS = {
         save: "Salvați",
         cancel: "Anula",
       },
+      empty_cta: "crează o nouă memorie",
     },
   },
   profile_settings: {

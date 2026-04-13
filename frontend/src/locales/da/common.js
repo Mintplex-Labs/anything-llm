@@ -1011,7 +1011,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Erindringer",
       empty:
-        "Indtil videre er der ingen minder. Når du interagerer med chatbotten, vil der opstå flere minder, eller <cta>en ny hukommelse vil blive skabt</cta>.",
+        "Indtil videre er der ingen minder. Efter at du har interageret med chatbotten, vil flere minder blive oprettet eller",
       tab_workspace: "Arbejdsområde",
       tab_global: "Global",
       toggle: {
@@ -1037,6 +1037,7 @@ const TRANSLATIONS = {
         save: "Gem",
         cancel: "Annullér",
       },
+      empty_cta: "opret et nyt minde",
     },
   },
   profile_settings: {

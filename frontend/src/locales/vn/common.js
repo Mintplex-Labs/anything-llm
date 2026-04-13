@@ -1002,7 +1002,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Những kỷ niệm",
       empty:
-        "Hiện tại chưa có ký ức nào. Sau khi bạn tương tác với chatbot, những ký ức sẽ dần dần được tạo ra hoặc <cta>tạo ra một ký ức mới</cta>.",
+        "Hiện tại chưa có thông tin gì. Khi bạn tương tác với chatbot, thông tin sẽ dần dần được điền vào.",
       tab_workspace: "Không gian làm việc",
       tab_global: "Toàn cầu",
       toggle: {
@@ -1028,6 +1028,7 @@ const TRANSLATIONS = {
         save: "Lưu",
         cancel: "Hủy",
       },
+      empty_cta: "tạo ra một ký ức mới",
     },
   },
   profile_settings: {

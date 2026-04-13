@@ -1067,7 +1067,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Mälestused",
       empty:
-        "Hetkel pole mälestusi. Kui te hakkate rohkem interakteeruma chatbotiga, siis mälestused täituvad või <cta>uued mälestused</cta> algavad.",
+        "Hetkel pole mälestusi. Kui te interakteerute chatbotiga, siis mälestused hakkavad täituma.",
       tab_workspace: "Tööruum",
       tab_global: "Globaalne",
       toggle: {
@@ -1093,6 +1093,7 @@ const TRANSLATIONS = {
         save: "Salvesta",
         cancel: "Katkuda\nTühista",
       },
+      empty_cta: "loo uus mälestus",
     },
   },
   profile_settings: {

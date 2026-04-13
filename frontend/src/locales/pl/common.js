@@ -1108,7 +1108,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Wspomnienia",
       empty:
-        "Na razie brak wspomnień. Po interakcji z chatbotem, więcej wspomnień się pojawi lub <cta>utworzy się nowe wspomnienie</cta>.",
+        "Na razie nie ma żadnych wspomnień. Po interakcji z chatbotem, wspomnienia będą się pojawiać.",
       tab_workspace: "Przestrzeń robocza",
       tab_global: "Globalny",
       toggle: {
@@ -1134,6 +1134,7 @@ const TRANSLATIONS = {
         save: "Zapisz",
         cancel: "Anuluj",
       },
+      empty_cta: "stworzyć nową pamięć",
     },
   },
   profile_settings: {

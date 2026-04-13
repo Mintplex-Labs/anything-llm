@@ -941,8 +941,7 @@ const TRANSLATIONS = {
     },
     memories: {
       title: "回憶",
-      empty:
-        "目前還沒有任何回憶。當您與聊天機器人互動後，記憶會逐漸填補或<cta>產生新的記憶</cta>。",
+      empty: "目前還沒有任何回憶。當您與聊天機器人互動後，記憶會逐漸充盈。",
       tab_workspace: "工作空間",
       tab_global: "全球",
       toggle: {
@@ -967,6 +966,7 @@ const TRANSLATIONS = {
         save: "儲存",
         cancel: "取消",
       },
+      empty_cta: "創造新的回憶",
     },
   },
   profile_settings: {

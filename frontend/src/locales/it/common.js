@@ -1028,7 +1028,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Ricordi",
       empty:
-        "Al momento, non ci sono ricordi. Interagendo maggiormente con il chatbot, verranno creati nuovi ricordi o <cta>saranno ricostruiti quelli esistenti</cta>.",
+        "Al momento, non ci sono ricordi. Tuttavia, interagendo di più con il chatbot, si formeranno nuovi ricordi.",
       tab_workspace: "Spazio di lavoro",
       tab_global: "Globale",
       toggle: {
@@ -1054,6 +1054,7 @@ const TRANSLATIONS = {
         save: "Salva",
         cancel: "Annulla",
       },
+      empty_cta: "creare un nuovo ricordo",
     },
   },
   profile_settings: {

@@ -1108,7 +1108,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Atmiņas",
       empty:
-        "Vēl nav veidojušās atmiņas. Kad jūs vairāk iejiegsies ar šo chatbot, atmiņas automātiski piepildīsies vai <cta>izveidos jaunas atmiņas</cta>.",
+        "Līdz šim nav atmiņu. Kad jūs vairāk iejiegsas ar šo chatbot, atmiņas sāks piepildīties.",
       tab_workspace: "Darba telpa",
       tab_global: "Vispārīgs",
       toggle: {
@@ -1134,6 +1134,7 @@ const TRANSLATIONS = {
         save: "Saglabāt",
         cancel: "Atcelt",
       },
+      empty_cta: "izveidot jaunu atmiņu",
     },
   },
   profile_settings: {

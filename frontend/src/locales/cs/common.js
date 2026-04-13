@@ -1127,7 +1127,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Paměti",
       empty:
-        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se objevovat nové vzpomínky nebo <cta>vytvářet nové</cta>.",
+        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se postupně objevovat další.",
       tab_workspace: "Pracovní prostor",
       tab_global: "Globální",
       toggle: {
@@ -1153,6 +1153,7 @@ const TRANSLATIONS = {
         save: "Uložit",
         cancel: "Zrušit",
       },
+      empty_cta: "vytvořit novou paměť",
     },
   },
   profile_settings: {

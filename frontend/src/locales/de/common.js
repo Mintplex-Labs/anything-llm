@@ -1114,7 +1114,7 @@ const TRANSLATIONS = {
     memories: {
       title: "Erinnerungen",
       empty:
-        "Bisher keine Erinnerungen. Wenn Sie mehr mit dem Chatbot interagieren, werden weitere Erinnerungen erstellt oder <cta>eine neue Erinnerung</cta> entsteht.",
+        "Bisher gibt es keine Erinnerungen. Durch die Interaktion mit dem Chatbot werden jedoch weitere Erinnerungen erstellt oder ergänzt.",
       tab_workspace: "Arbeitsbereich",
       tab_global: "Global",
       toggle: {
@@ -1140,6 +1140,7 @@ const TRANSLATIONS = {
         save: "Speichern",
         cancel: "Abbrechen",
       },
+      empty_cta: "erstellen Sie einen neuen Speicher",
     },
   },
   profile_settings: {
