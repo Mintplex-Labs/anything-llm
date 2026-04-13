@@ -1,4 +1,6 @@
 const prisma = require("../utils/prisma");
+const later = require("@breejs/later");
+const cronValidate = require("cron-validate").default;
 
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
@@ -16,7 +18,6 @@ const ScheduledJob = {
    */
   computeNextRunAt: function (cronExpression) {
     try {
-      const later = require("@breejs/later");
       const sched = later.parse.cron(cronExpression);
       const next = later.schedule(sched).next(1);
       return next || null;
@@ -37,8 +38,7 @@ const ScheduledJob = {
    */
   isValidCron: function (cronExpression) {
     try {
-      const cron = require("cron-validate").default;
-      return cron(cronExpression).isValid();
+      return cronValidate(cronExpression).isValid();
     } catch {
       return false;
     }
