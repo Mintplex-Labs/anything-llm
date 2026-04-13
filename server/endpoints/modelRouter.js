@@ -11,7 +11,7 @@ function modelRouterEndpoints(app) {
   if (!app) return;
 
   app.get(
-    "/admin/model-routers",
+    "/model-routers",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
@@ -35,7 +35,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.get(
-    "/admin/model-routers/:id",
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -58,7 +58,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
-    "/admin/model-routers/new",
+    "/model-routers/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -77,7 +77,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
-    "/admin/model-routers/:id",
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -93,7 +93,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.delete(
-    "/admin/model-routers/:id",
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -111,7 +111,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
-    "/admin/model-routers/:id/rules/new",
+    "/model-routers/:id/rules/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -132,7 +132,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
-    "/admin/model-routers/:id/rules/reorder",
+    "/model-routers/:id/rules/reorder",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -154,7 +154,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.post(
-    "/admin/model-routers/:id/rules/:ruleId",
+    "/model-routers/:id/rules/:ruleId",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -173,7 +173,7 @@ function modelRouterEndpoints(app) {
   );
 
   app.delete(
-    "/admin/model-routers/:id/rules/:ruleId",
+    "/model-routers/:id/rules/:ruleId",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
