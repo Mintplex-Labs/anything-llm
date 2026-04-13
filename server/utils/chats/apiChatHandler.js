@@ -190,7 +190,7 @@ async function chatSync({
     return await eventListener
       .waitForClose()
       .then(async ({ thoughts, textResponse }) => {
-        await WorkspaceChats.new({
+        const { chat } = await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
           response: {
@@ -200,8 +200,10 @@ async function chatSync({
             type: chatMode,
             thoughts,
           },
-          include: false,
+          include: true,
+          threadId: thread?.id || null,
           apiSessionId: sessionId,
+          user,
         });
         return {
           id: uuid,
@@ -209,6 +211,7 @@ async function chatSync({
           sources: [],
           close: true,
           error: null,
+          chatId: chat?.id,
           textResponse,
           thoughts,
         };
@@ -538,7 +541,7 @@ async function streamChat({
     return eventListener
       .streamAgentEvents(response, uuid)
       .then(async ({ thoughts, textResponse }) => {
-        await WorkspaceChats.new({
+        const { chat } = await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
           response: {
@@ -551,6 +554,7 @@ async function streamChat({
           include: true,
           threadId: thread?.id || null,
           apiSessionId: sessionId,
+          user,
         });
         writeResponseChunk(response, {
           uuid,
@@ -559,6 +563,7 @@ async function streamChat({
           thoughts,
           close: true,
           error: false,
+          chatId: chat?.id,
         });
       });
   }
