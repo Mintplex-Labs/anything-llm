@@ -15,21 +15,11 @@ function modelRouterEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const routers = await ModelRouter.where();
-        const results = [];
-        for (const router of routers) {
-          const rules = await ModelRouterRule.forRouter(router.id);
-          const workspaceCount = await ModelRouter.workspaceCount(router.id);
-          results.push({
-            ...router,
-            ruleCount: rules.length,
-            workspaceCount,
-          });
-        }
-        response.status(200).json({ routers: results });
+        const routers = await ModelRouter.getAllWithCounts();
+        response.status(200).json({ routers });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );

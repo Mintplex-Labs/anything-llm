@@ -110,6 +110,30 @@ const ModelRouter = {
     }
   },
 
+  getAllWithCounts: async function () {
+    try {
+      const routers = await prisma.model_routers.findMany({
+        orderBy: { createdAt: "asc" },
+        include: {
+          _count: {
+            select: {
+              rules: true,
+              workspaces: true,
+            },
+          },
+        },
+      });
+      return routers.map(({ _count, ...router }) => ({
+        ...router,
+        ruleCount: _count.rules,
+        workspaceCount: _count.workspaces,
+      }));
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   update: async function (id = null, data = {}) {
     if (!id) throw new Error("No router id provided for update");
 
