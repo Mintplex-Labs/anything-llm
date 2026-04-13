@@ -42,7 +42,7 @@ const ModelRouter = {
 
   update: async (id, data) => {
     return await fetch(`${API_BASE}/model-routers/${id}`, {
-      method: "POST",
+      method: "PUT",
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
@@ -82,7 +82,7 @@ const ModelRouter = {
     return await fetch(
       `${API_BASE}/model-routers/${routerId}/rules/${ruleId}`,
       {
-        method: "POST",
+        method: "PUT",
         headers: baseHeaders(),
         body: JSON.stringify(data),
       }
@@ -111,7 +111,7 @@ const ModelRouter = {
 
   reorderRules: async (routerId, ruleUpdates) => {
     return await fetch(`${API_BASE}/model-routers/${routerId}/rules/reorder`, {
-      method: "POST",
+      method: "PUT",
       headers: baseHeaders(),
       body: JSON.stringify({ ruleUpdates }),
     })

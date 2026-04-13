@@ -1,3 +1,4 @@
+const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 
 const ModelRouter = {
@@ -27,7 +28,7 @@ const ModelRouter = {
 
   create: async function (data = {}, creatorId = null) {
     const name = this.validations.name(data.name);
-    if (!name) return { router: null, message: "Name is required." };
+    if (!name) return { router: null, error: "Name is required." };
 
     const fallback_provider = this.validations.fallback_provider(
       data.fallback_provider
@@ -36,7 +37,7 @@ const ModelRouter = {
     if (!fallback_provider || !fallback_model)
       return {
         router: null,
-        message: "Fallback provider and model are required.",
+        error: "Fallback provider and model are required.",
       };
 
     const cooldown_seconds =
@@ -55,15 +56,19 @@ const ModelRouter = {
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
-      return { router, message: null };
+      return { router, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      )
         return {
           router: null,
-          message: "A router with that name already exists.",
+          error: "A router with that name already exists.",
         };
-      return { router: null, message: error.message };
+      return { router: null, error: error.message };
     }
   },
 
@@ -90,6 +95,28 @@ const ModelRouter = {
         },
       });
       return router || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  getWithRulesAndCount: async function (clause = {}) {
+    try {
+      const router = await prisma.model_routers.findFirst({
+        where: clause,
+        include: {
+          rules: {
+            orderBy: { priority: "asc" },
+          },
+          _count: {
+            select: { workspaces: true },
+          },
+        },
+      });
+      if (!router) return null;
+      const { _count, ...rest } = router;
+      return { ...rest, workspaceCount: _count.workspaces };
     } catch (error) {
       console.error(error.message);
       return null;
@@ -140,7 +167,7 @@ const ModelRouter = {
     const updates = {};
     if (data.name !== undefined) {
       const name = this.validations.name(data.name);
-      if (!name) return { router: null, message: "Name cannot be empty." };
+      if (!name) return { router: null, error: "Name cannot be empty." };
       updates.name = name;
     }
     if (data.description !== undefined)
@@ -150,13 +177,12 @@ const ModelRouter = {
         data.fallback_provider
       );
       if (!provider)
-        return { router: null, message: "Fallback provider is required." };
+        return { router: null, error: "Fallback provider is required." };
       updates.fallback_provider = provider;
     }
     if (data.fallback_model !== undefined) {
       const model = this.validations.fallback_model(data.fallback_model);
-      if (!model)
-        return { router: null, message: "Fallback model is required." };
+      if (!model) return { router: null, error: "Fallback model is required." };
       updates.fallback_model = model;
     }
     if (data.cooldown_seconds !== undefined) {
@@ -164,28 +190,32 @@ const ModelRouter = {
       if (cooldown === null)
         return {
           router: null,
-          message: "Cooldown must be a number between 0 and 3600.",
+          error: "Cooldown must be a number between 0 and 3600.",
         };
       updates.cooldown_seconds = cooldown;
     }
 
     if (Object.keys(updates).length === 0)
-      return { router: { id }, message: "No valid fields to update." };
+      return { router: { id }, error: "No valid fields to update." };
 
     try {
       const router = await prisma.model_routers.update({
         where: { id: Number(id) },
         data: updates,
       });
-      return { router, message: null };
+      return { router, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      )
         return {
           router: null,
-          message: "A router with that name already exists.",
+          error: "A router with that name already exists.",
         };
-      return { router: null, message: error.message };
+      return { router: null, error: error.message };
     }
   },
 
@@ -193,12 +223,6 @@ const ModelRouter = {
     if (!id) return false;
 
     try {
-      // Null out any workspace references before deleting
-      await prisma.workspaces.updateMany({
-        where: { router_id: Number(id) },
-        data: { router_id: null },
-      });
-
       await prisma.model_routers.delete({
         where: { id: Number(id) },
       });

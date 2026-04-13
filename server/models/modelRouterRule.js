@@ -1,3 +1,4 @@
+const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 
 const VALID_TYPES = ["calculated", "llm"];
@@ -26,7 +27,7 @@ const ModelRouterRule = {
   VALID_COMPARATORS,
 
   create: async function (routerId, data = {}, creatorId = null) {
-    if (!routerId) return { rule: null, message: "Router ID is required." };
+    if (!routerId) return { rule: null, error: "Router ID is required." };
 
     const title = this._validateTitle(data.title);
     if (!title)
@@ -93,23 +94,28 @@ const ModelRouterRule = {
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
-      return { rule, message: null };
+      return { rule, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint")) {
-        if (error.message.includes("title"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const target = error.meta?.target;
+        if (target?.includes("title"))
           return {
             rule: null,
             message: "A rule with that title already exists on this router.",
           };
-        if (error.message.includes("priority"))
+        if (target?.includes("priority"))
           return {
             rule: null,
             message: "A rule with that priority already exists on this router.",
           };
-        return { rule: null, message: "Duplicate rule constraint violated." };
+        return { rule: null, error: "Duplicate rule constraint violated." };
       }
-      return { rule: null, message: error.message };
+      return { rule: null, error: error.message };
     }
   },
 
@@ -207,30 +213,35 @@ const ModelRouterRule = {
       updates.route_model = String(data.route_model);
 
     if (Object.keys(updates).length === 0)
-      return { rule: { id }, message: "No valid fields to update." };
+      return { rule: { id }, error: "No valid fields to update." };
 
     try {
       const rule = await prisma.model_router_rules.update({
         where: { id: Number(id) },
         data: updates,
       });
-      return { rule, message: null };
+      return { rule, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint")) {
-        if (error.message.includes("title"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const target = error.meta?.target;
+        if (target?.includes("title"))
           return {
             rule: null,
             message: "A rule with that title already exists on this router.",
           };
-        if (error.message.includes("priority"))
+        if (target?.includes("priority"))
           return {
             rule: null,
             message: "A rule with that priority already exists on this router.",
           };
-        return { rule: null, message: "Duplicate rule constraint violated." };
+        return { rule: null, error: "Duplicate rule constraint violated." };
       }
-      return { rule: null, message: error.message };
+      return { rule: null, error: error.message };
     }
   },
 
@@ -261,10 +272,10 @@ const ModelRouterRule = {
           })
         )
       );
-      return { success: true, message: null };
+      return { success: true, error: null };
     } catch (error) {
       console.error(error.message);
-      return { success: false, message: error.message };
+      return { success: false, error: error.message };
     }
   },
 
