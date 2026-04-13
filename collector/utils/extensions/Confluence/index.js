@@ -46,10 +46,11 @@ async function loadConfluence(
     };
   }
 
-  const { origin, hostname } = new URL(baseUrl);
-  console.log(`-- Working Confluence ${origin} --`);
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl, cloud);
+  const { hostname } = new URL(normalizedBaseUrl);
+  console.log(`-- Working Confluence ${normalizedBaseUrl} --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl: origin, // Use the origin to avoid issues with subdomains, ports, protocols, etc.
+    baseUrl: normalizedBaseUrl,
     spaceKey,
     username,
     accessToken,
@@ -98,13 +99,13 @@ async function loadConfluence(
       id: v4(),
       url: doc.metadata.url + ".page",
       title: doc.metadata.title || doc.metadata.source,
-      docAuthor: origin,
+      docAuthor: normalizedBaseUrl,
       description: doc.metadata.title,
-      docSource: `${origin} Confluence`,
+      docSource: `${normalizedBaseUrl} Confluence`,
       chunkSource: generateChunkSource(
         {
           doc,
-          baseUrl: origin,
+          baseUrl: normalizedBaseUrl,
           spaceKey,
           accessToken,
           username,
@@ -182,8 +183,9 @@ async function fetchConfluencePage({
   }
 
   console.log(`-- Working Confluence Page ${pageUrl} --`);
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl, cloud);
   const loader = new ConfluencePagesLoader({
-    baseUrl, // Should be the origin of the baseUrl
+    baseUrl: normalizedBaseUrl,
     spaceKey,
     username,
     accessToken,
@@ -244,6 +246,22 @@ function validBaseUrl(baseUrl) {
 }
 
 /**
+ * Normalizes the configured Confluence base URL while preserving context paths
+ * for self-hosted deployments.
+ * @param {string} baseUrl
+ * @param {boolean} cloud
+ * @returns {string}
+ */
+function normalizeBaseUrl(baseUrl, cloud = true) {
+  const url = new URL(baseUrl);
+  const pathname = url.pathname.replace(/\/+$/, "");
+  const normalizedPath = pathname === "/" ? "" : pathname;
+  const basePath = cloud ? "" : normalizedPath;
+
+  return `${url.origin}${basePath}`;
+}
+
+/**
  * Generate the full chunkSource for a specific Confluence page so that we can resync it later.
  * This data is encrypted into a single `payload` query param so we can replay credentials later
  * since this was encrypted with the systems persistent password and salt.
@@ -271,4 +289,5 @@ function generateChunkSource(
 module.exports = {
   loadConfluence,
   fetchConfluencePage,
+  normalizeBaseUrl,
 };
