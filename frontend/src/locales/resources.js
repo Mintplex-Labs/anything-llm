@@ -38,6 +38,7 @@ import Polish from "./pl/common.js";
 import Romanian from "./ro/common.js";
 import Czech from "./cs/common.js";
 import Lithuanian from "./lt/common.js";
+import Catalan from "./ca/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -112,5 +113,8 @@ export const resources = {
   },
   lt: {
     common: Lithuanian,
+  },
+  ca: {
+    common: Catalan,
   },
 };
