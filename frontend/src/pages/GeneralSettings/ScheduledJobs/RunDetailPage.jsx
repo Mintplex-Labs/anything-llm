@@ -96,7 +96,7 @@ export default function RunDetailPage() {
                 run={run}
                 result={result}
                 continuing={continuing}
-                onBack={() => navigate(`/settings/scheduled-jobs/${id}/runs`)}
+                onBack={() => navigate(paths.settings.scheduledJobRuns(id))}
                 onContinueInThread={handleContinueInThread}
               />
 

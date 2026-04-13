@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Eye, Play, Power, PencilSimple, Trash } from "@phosphor-icons/react";
+import paths from "@/utils/paths";
 import { humanizeCron } from "../utils/cron";
 import StatusBadge from "./StatusBadge";
 import { useTranslation } from "react-i18next";
@@ -50,7 +51,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
-            onClick={() => navigate(`/settings/scheduled-jobs/${job.id}/runs`)}
+            onClick={() => navigate(paths.settings.scheduledJobRuns(job.id))}
             className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
             title={t("scheduledJobs.row.viewRuns")}
           >
