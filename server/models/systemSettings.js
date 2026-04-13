@@ -565,6 +565,13 @@ const SystemSettings = {
       // PGVector Keys
       PGVectorConnectionString: !!PGVector.connectionString() || false,
       PGVectorTableName: PGVector.tableName(),
+
+      // OceanBase Keys (MySQL protocol; VECTOR type per-workspace tables VTB_*)
+      OceanBaseHost: process.env.OB_HOST || null,
+      OceanBasePort: process.env.OB_PORT || null,
+      OceanBaseUser: process.env.OB_USER || null,
+      OceanBasePassword: !!process.env.OB_PASSWORD,
+      OceanBaseDataBase: process.env.OB_DATABASE || null,
     };
   },
 
