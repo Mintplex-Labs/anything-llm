@@ -5,6 +5,7 @@ import DefaultSkillPanel from "./DefaultSkillPanel";
 import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import CreateFileSkillPanel from "./CreateFileSkillPanel";
 import GMailSkillPanel from "./GMailSkillPanel";
+import OutlookSkillPanel from "./OutlookSkillPanel";
 import {
   Brain,
   File,
@@ -13,6 +14,7 @@ import {
   FolderOpen,
   FilePlus,
   EnvelopeSimple,
+  MicrosoftOutlookLogo,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -98,6 +100,14 @@ export const getConfigurableSkills = (
     component: GMailSkillPanel,
     skill: "gmail-agent",
     icon: EnvelopeSimple,
+    mode: ["singleUserOnly"],
+  },
+  "outlook-agent": {
+    title: t("agent.skill.outlook.title"),
+    description: t("agent.skill.outlook.description"),
+    component: OutlookSkillPanel,
+    skill: "outlook-agent",
+    icon: MicrosoftOutlookLogo,
     mode: ["singleUserOnly"],
   },
 });
