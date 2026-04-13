@@ -59,11 +59,6 @@ process.on("message", async (payload) => {
     const generatedFiles = [];
     let textResponse = "";
     let metrics = {};
-    let handlerResolve = null;
-
-    const handlerPromise = new Promise((resolve) => {
-      handlerResolve = resolve;
-    });
 
     const handler = {
       send(jsonStr) {
@@ -99,9 +94,7 @@ process.on("message", async (payload) => {
           if (!textResponse) textResponse = data.content;
         }
       },
-      close() {
-        if (handlerResolve) handlerResolve();
-      },
+      close() {},
     };
 
     // Create agent handler
@@ -159,9 +152,6 @@ process.on("message", async (payload) => {
         );
       }),
     ]).finally(() => clearTimeout(timeoutId));
-
-    // Wait for handler close (agent termination)
-    await handlerPromise;
 
     const duration = Date.now() - startTime;
 
