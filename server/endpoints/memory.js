@@ -1,6 +1,7 @@
 const { Memory } = require("../models/memory");
+const { Workspace } = require("../models/workspace");
 const { SystemSettings } = require("../models/systemSettings");
-const { userFromSession, reqBody } = require("../utils/http");
+const { userFromSession, reqBody, multiUserMode } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -34,6 +35,15 @@ function memoryEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const workspaceId = Number(request.params.workspaceId);
+
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: workspaceId })
+          : await Workspace.get({ id: workspaceId });
+        if (!workspace) {
+          response.status(403).json({ error: "Invalid workspace." });
+          return;
+        }
+
         const globalMemories = await Memory.globalForUser(user?.id);
         const workspaceMemories = await Memory.forUserWorkspace(
           user?.id,
@@ -60,6 +70,14 @@ function memoryEndpoints(app) {
 
         if (!content || !content.trim()) {
           response.status(400).json({ error: "Content is required." });
+          return;
+        }
+
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: workspaceId })
+          : await Workspace.get({ id: workspaceId });
+        if (!workspace) {
+          response.status(403).json({ error: "Invalid workspace." });
           return;
         }
 
@@ -188,6 +206,14 @@ function memoryEndpoints(app) {
         const existing = await Memory.get({ id: memoryId });
         if (!existing || !ownerMatch(existing, user)) {
           response.status(404).json({ error: "Memory not found." });
+          return;
+        }
+
+        const targetWorkspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: Number(workspaceId) })
+          : await Workspace.get({ id: Number(workspaceId) });
+        if (!targetWorkspace) {
+          response.status(403).json({ error: "Invalid workspace." });
           return;
         }
 

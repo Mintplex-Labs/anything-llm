@@ -1185,7 +1185,8 @@ const TRANSLATIONS = {
     memories: {
       title: "Memories",
       empty:
-        "No memories so far. After you interact with the chatbot more memories will fill in or <cta>create a new memory</cta>",
+        "No memories so far. After you interact with the chatbot more memories will fill in or",
+      empty_cta: "create a new memory",
       tab_workspace: "Workspace",
       tab_global: "Global",
       toggle: {
@@ -1203,10 +1204,10 @@ const TRANSLATIONS = {
         create_title: "Create Memory",
         edit_title: "Edit Memory",
         create_description:
-          "This memory will be saved and used to personalize future responses.",
+          'Memories should be a single, concise statement. e.g. "User prefers Python over JavaScript"',
         edit_description: "Update the content of this memory.",
         label: "Memory",
-        placeholder: "Enter a description...",
+        placeholder: "e.g. User's name is Joe, User works on AnythingLLM, etc.",
         create: "Create",
         save: "Save",
         cancel: "Cancel",

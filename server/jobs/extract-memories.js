@@ -69,16 +69,6 @@ function parseMemoriesResponse(text) {
       return;
     }
 
-    const lastChat = await WorkspaceChats.get({}, null, { createdAt: "desc" });
-    if (lastChat) {
-      const msSinceLastChat =
-        Date.now() - new Date(lastChat.createdAt).getTime();
-      if (msSinceLastChat < IDLE_THRESHOLD_MS) {
-        log("User is still active. Skipping extraction.");
-        return;
-      }
-    }
-
     const allUnprocessed = await WorkspaceChats.where(
       { memoryProcessed: false },
       null,
@@ -101,6 +91,17 @@ function parseMemoriesResponse(text) {
     for (const [, chats] of groups) {
       const { user_id: userId, workspaceId } = chats[0];
       try {
+        // Check idle per-group so one active user doesn't block extraction for others.
+        // Chats are sorted asc, so the last element is the most recent in this group.
+        const lastChatInGroup = chats[chats.length - 1];
+        const msSinceLastChat =
+          Date.now() - new Date(lastChatInGroup.createdAt).getTime();
+        if (msSinceLastChat < IDLE_THRESHOLD_MS) {
+          log(
+            `User ${userId} in workspace ${workspaceId} is still active. Skipping.`
+          );
+          continue;
+        }
         const workspace = await Workspace.get({ id: workspaceId });
         if (!workspace) {
           log(`Workspace ${workspaceId} not found. Skipping.`);

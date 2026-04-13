@@ -31,9 +31,15 @@ const WORKSPACE_AGENT = {
    * @param {string} provider
    * @param {import("@prisma/client").workspaces | null} workspace
    * @param {import("@prisma/client").users | null} user
+   * @param {string} [prompt] - Current user message for memory reranking
    * @returns {Promise<{ role: string, functions: object[] }>}
    */
-  getDefinition: async (provider = null, workspace = null, user = null) => {
+  getDefinition: async (
+    provider = null,
+    workspace = null,
+    user = null,
+    prompt = ""
+  ) => {
     const basePrompt = await Provider.systemPrompt({
       provider,
       workspace,
@@ -43,6 +49,7 @@ const WORKSPACE_AGENT = {
       systemPrompt: basePrompt,
       userId: user?.id ?? null,
       workspaceId: workspace?.id,
+      prompt,
     });
 
     return {
