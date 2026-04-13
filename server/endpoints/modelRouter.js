@@ -11,180 +11,197 @@ function modelRouterEndpoints(app) {
   if (!app) return;
 
   app.get(
-    "/admin/model-routers",
+    "/model-routers",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const routers = await ModelRouter.where();
-        const results = [];
-        for (const router of routers) {
-          const rules = await ModelRouterRule.forRouter(router.id);
-          const workspaceCount = await ModelRouter.workspaceCount(router.id);
-          results.push({
-            ...router,
-            ruleCount: rules.length,
-            workspaceCount,
-          });
-        }
-        response.status(200).json({ routers: results });
+        const routers = await ModelRouter.getAllWithCounts();
+        response.status(200).json({ routers });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
   app.get(
-    "/admin/model-routers/:id",
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
-        const router = await ModelRouter.getWithRules({ id: Number(id) });
+        const router = await ModelRouter.getWithRulesAndCount({
+          id: Number(id),
+        });
         if (!router) {
           response
             .status(404)
             .json({ router: null, error: "Router not found." });
           return;
         }
-
-        const workspaceCount = await ModelRouter.workspaceCount(router.id);
-        response.status(200).json({ router: { ...router, workspaceCount } });
+        response.status(200).json({ router });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
   app.post(
-    "/admin/model-routers/new",
+    "/model-routers/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
         const data = reqBody(request);
-        const { router, message } = await ModelRouter.create(
+        const { router, error } = await ModelRouter.create(
           data,
           user?.id || null
         );
-        response.status(200).json({ router, error: message });
+        if (error) {
+          response.status(400).json({ router, error });
+          return;
+        }
+        response.status(200).json({ router });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
-  app.post(
-    "/admin/model-routers/:id",
+  app.put(
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
         const data = reqBody(request);
-        const { router, message } = await ModelRouter.update(Number(id), data);
-        response.status(200).json({ router, error: message });
+        const { router, error } = await ModelRouter.update(Number(id), data);
+        if (error) {
+          response.status(400).json({ router, error });
+          return;
+        }
+        response.status(200).json({ router });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
   app.delete(
-    "/admin/model-routers/:id",
+    "/model-routers/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
         const success = await ModelRouter.delete(Number(id));
-        response.status(200).json({
-          success,
-          error: success ? null : "Failed to delete router.",
-        });
+        if (!success) {
+          response
+            .status(400)
+            .json({ success: false, error: "Failed to delete router." });
+          return;
+        }
+        response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
   app.post(
-    "/admin/model-routers/:id/rules/new",
+    "/model-routers/:id/rules/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
         const user = await userFromSession(request, response);
         const data = reqBody(request);
-        const { rule, message } = await ModelRouterRule.create(
+        const { rule, error } = await ModelRouterRule.create(
           Number(id),
           data,
           user?.id || null
         );
-        response.status(200).json({ rule, error: message });
+        if (error) {
+          response.status(400).json({ rule, error });
+          return;
+        }
+        response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
-  app.post(
-    "/admin/model-routers/:id/rules/reorder",
+  app.put(
+    "/model-routers/:id/rules/reorder",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { ruleUpdates } = reqBody(request);
         if (!Array.isArray(ruleUpdates)) {
           response
-            .status(200)
+            .status(400)
             .json({ success: false, error: "ruleUpdates must be an array." });
           return;
         }
-        const { success, message } =
+        const { success, error } =
           await ModelRouterRule.reorderRules(ruleUpdates);
-        response.status(200).json({ success, error: message });
+        if (error) {
+          response.status(400).json({ success, error });
+          return;
+        }
+        response.status(200).json({ success });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
-  app.post(
-    "/admin/model-routers/:id/rules/:ruleId",
+  app.put(
+    "/model-routers/:id/rules/:ruleId",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { ruleId } = request.params;
         const data = reqBody(request);
-        const { rule, message } = await ModelRouterRule.update(
+        const { rule, error } = await ModelRouterRule.update(
           Number(ruleId),
           data
         );
-        response.status(200).json({ rule, error: message });
+        if (error) {
+          response.status(400).json({ rule, error });
+          return;
+        }
+        response.status(200).json({ rule });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );
 
   app.delete(
-    "/admin/model-routers/:id/rules/:ruleId",
+    "/model-routers/:id/rules/:ruleId",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { ruleId } = request.params;
         const success = await ModelRouterRule.delete(Number(ruleId));
-        response
-          .status(200)
-          .json({ success, error: success ? null : "Failed to delete rule." });
+        if (!success) {
+          response
+            .status(400)
+            .json({ success: false, error: "Failed to delete rule." });
+          return;
+        }
+        response.status(200).json({ success: true });
       } catch (e) {
         console.error(e);
-        response.sendStatus(500).end();
+        response.sendStatus(500);
       }
     }
   );

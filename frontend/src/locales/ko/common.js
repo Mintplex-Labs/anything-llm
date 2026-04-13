@@ -410,6 +410,120 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail 연결기",
+        description:
+          "제 에이전트가 Gmail과 상호 작용할 수 있도록 설정하세요 - 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 받은 메일 관리 기능을 사용하세요. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Gmail 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주세요.",
+        configuration: "Gmail 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 Google Apps Script 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "당신이 Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "Gmail 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색 결과와 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Gmail 계정에서 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집, 관리",
+          },
+          send: {
+            title: "이메일 보내기 및 답변",
+            description: "이메일을 보내고, 토론 스레드에 즉시 응답",
+          },
+          threads: {
+            title: "이메일 스레드 관리",
+            description:
+              "이메일 스레드 관리 - 읽음/미읽음 표시, 아카이브, 삭제",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          search: {
+            title: "이메일 검색",
+            description: "Gmail 쿼리 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "게시글 전체 읽기",
+            description: "ID를 기준으로 전체 이메일 스레드를 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description: "새로운 이메일 초안 작성",
+          },
+          createDraftReply: {
+            title: "초안 답변 작성",
+            description: "기존 스레드에 대한 답변 초안 작성",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          getDraft: {
+            title: "초안 보기",
+            description: "ID를 사용하여 특정 초안을 검색/불러오기",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "즉시 이메일을 보내세요.",
+          },
+          replyToThread: {
+            title: "게시글에 답변",
+            description: "이메일 스레드에 즉시 답변",
+          },
+          markRead: {
+            title: "마크 리드",
+            description: '특정 게시글을 "읽음"으로 표시',
+          },
+          markUnread: {
+            title: "미리 읽기",
+            description: '특정 스레드를 "읽지 않은 상태"로 표시',
+          },
+          moveToTrash: {
+            title: "삭제",
+            description: "스레드를 쓰레기함으로 이동",
+          },
+          moveToArchive: {
+            title: "보관",
+            description: "게시글을 보관",
+          },
+          moveToInbox: {
+            title: "받은 편지함으로 이동",
+            description: "스레드를 받은 편지함으로 이동",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "읽지 않은 이메일 수 및 메일함 통계 확인",
+          },
+          getInbox: {
+            title: "메일함 보기",
+            description: "Gmail에서 받은 이메일을 효율적으로 관리하는 방법",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
@@ -557,7 +671,34 @@ const TRANSLATIONS = {
       "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
+    empty: "API 키를 찾을 수 없습니다",
+    actions: "작업",
+    messages: {
+      error: "오류: {{error}}",
+    },
+    modal: {
+      title: "새 API 키 만들기",
+      cancel: "취소",
+      close: "닫기",
+      create: "API 키 만들기",
+      helper:
+        "생성된 API 키는 이 AnythingLLM 인스턴스에 프로그래밍 방식으로 접근하고 구성하는 데 사용할 수 있습니다.",
+      name: {
+        label: "이름",
+        placeholder: "프로덕션 통합",
+        helper:
+          "선택 사항입니다. 나중에 쉽게 식별할 수 있도록 알아보기 쉬운 이름을 사용하세요.",
+      },
+    },
+    row: {
+      copy: "API 키 복사",
+      copied: "복사됨",
+      unnamed: "--",
+      deleteConfirm:
+        "이 API 키를 비활성화하시겠습니까?\n비활성화하면 더 이상 사용할 수 없습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    },
     table: {
+      name: "이름",
       key: "API 키",
       by: "생성한 사람",
       created: "생성일",
@@ -1108,9 +1249,6 @@ const TRANSLATIONS = {
         description:
           "@BotFather로부터 받은 API 토큰을 복사하여, 봇이 채팅할 기본 워크스페이스를 선택하세요.",
         "bot-token": "봇 토큰",
-        "default-workspace": "기본 워크스페이스",
-        "no-workspace":
-          "사용 가능한 작업 공간이 없습니다. 새로운 작업 공간이 생성될 것입니다.",
         connecting: "연결 중...",
         "connect-bot": "연결 봇",
       },
@@ -1148,19 +1286,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "사용자 계정 삭제에 실패했습니다.",
     },
     users: {
-      "pending-title": "승인 대기 중",
       "pending-description":
         "승인 대기 중인 사용자. 여기 표시된 매칭 코드를 자신의 Telegram 채팅에서 표시된 코드로 일치시켜 주세요.",
-      "approved-title": "승인된 사용자",
-      "approved-description": "당신의 봇과 대화할 수 있도록 승인된 사용자.",
-      user: "사용자",
-      "pairing-code": "코드 매칭",
-      "no-pending": "처리 중인 요청이 없습니다.",
-      "no-approved": "승인된 사용자가 없습니다",
       unknown: "알 수 없음",
-      approve: "승인",
-      deny: "부인",
-      revoke: "취소",
     },
   },
   "model-router": {

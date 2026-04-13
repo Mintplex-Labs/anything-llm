@@ -405,6 +405,121 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail 接続",
+        description:
+          "エージェントがGmailと連携できるようにする：メールの検索、スレッドの閲覧、ドラフトの作成、メールの送信、およびインボックスの管理を可能にします。詳細については、<a>ドキュメントを参照</a>。",
+        multiUserWarning:
+          "セキュリティ上の理由から、Gmailとの連携はマルチユーザーモードでは利用できません。この機能を使用するには、まずマルチユーザーモードを無効にしてください。",
+        configuration: "Gmail の設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptウェブアプリケーションのデプロイメントID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Gmail の機能を有効にするには、デプロイメント ID と API キーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound: "検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          search: {
+            title: "メールの検索と閲覧",
+            description: "Gmail の受信トレイから、メールを検索および閲覧する",
+          },
+          drafts: {
+            title: "サンプルメール",
+            description: "メールの作成、編集、および管理",
+          },
+          send: {
+            title: "メールの送信と返信",
+            description: "メールを送信し、スレッドへの返信をすぐに行う。",
+          },
+          threads: {
+            title: "メールのトピックを管理する",
+            description:
+              "メールのトピックを管理する - 既読/未読のマーク、アーカイブ、削除",
+          },
+          account: {
+            title: "統合に関する統計",
+            description: "メールボックスの統計情報とアカウント情報を表示する",
+          },
+        },
+        skills: {
+          search: {
+            title: "メールを検索する",
+            description: "Gmail のクエリ構文を使用して、メールを検索する",
+          },
+          readThread: {
+            title: "スレッドを読む",
+            description: "IDでメールの全文を閲覧する",
+          },
+          createDraft: {
+            title: "ドラフト作成",
+            description: "新しいメールの草案を作成する",
+          },
+          createDraftReply: {
+            title: "草案の返信を作成する",
+            description: "既存のスレッドに対する返信の草案を作成する",
+          },
+          updateDraft: {
+            title: "ドラフトの更新",
+            description: "既存のメールドラフトを更新する",
+          },
+          getDraft: {
+            title: "草案を入手",
+            description: "IDで特定のドラフトを取得する",
+          },
+          listDrafts: {
+            title: "ドラフト案リスト",
+            description: "すべての草案メールの一覧を表示する",
+          },
+          deleteDraft: {
+            title: "草案を削除",
+            description: "草案のメールを削除する",
+          },
+          sendDraft: {
+            title: "草案を送信",
+            description: "既存のメールドラフトを送信する",
+          },
+          sendEmail: {
+            title: "メールを送信する",
+            description: "すぐにメールを送信してください",
+          },
+          replyToThread: {
+            title: "スレッドへの返信",
+            description: "メールのやり取りにすぐに返信する",
+          },
+          markRead: {
+            title: "マーク・リード",
+            description: "スレッドを「読了」としてマークする",
+          },
+          markUnread: {
+            title: "未読としてマーク",
+            description: "スレッドを「未読」としてマークする",
+          },
+          moveToTrash: {
+            title: "ゴミ箱へ移動",
+            description: "スレッドをゴミ箱に移動する",
+          },
+          moveToArchive: {
+            title: "アーカイブ",
+            description: "スレッドをアーカイブする",
+          },
+          moveToInbox: {
+            title: "受信トレイへ移動",
+            description: "スレッドをインボックスに移動する",
+          },
+          getMailboxStats: {
+            title: "メールボックスの統計情報",
+            description: "未読件数とメールボックスの統計情報を取得する",
+          },
+          getInbox: {
+            title: "インボックスを開く",
+            description: "Gmail から受信したメールを効率的に取得する方法",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP サーバー",
@@ -466,7 +581,33 @@ const TRANSLATIONS = {
       "APIキーにより、プログラム経由でこのAnythingLLMインスタンスにアクセスおよび管理できます。",
     link: "APIドキュメントを読む",
     generate: "新しいAPIキーを生成",
+    empty: "APIキーが見つかりません",
+    actions: "操作",
+    messages: {
+      error: "エラー: {{error}}",
+    },
+    modal: {
+      title: "新しいAPIキーを作成",
+      cancel: "キャンセル",
+      close: "閉じる",
+      create: "APIキーを作成",
+      helper:
+        "作成したAPIキーは、このAnythingLLMインスタンスにプログラムからアクセスして設定するために使用できます。",
+      name: {
+        label: "名前",
+        placeholder: "本番環境の統合",
+        helper: "任意です。後でこのキーを識別しやすい名前を付けてください。",
+      },
+    },
+    row: {
+      copy: "APIキーをコピー",
+      copied: "コピー済み",
+      unnamed: "--",
+      deleteConfirm:
+        "このAPIキーを無効化してもよろしいですか？\n無効化すると、以後このキーは使用できなくなります。\n\nこの操作は元に戻せません。",
+    },
     table: {
+      name: "名前",
       key: "APIキー",
       by: "作成者",
       created: "作成日",
@@ -1129,9 +1270,6 @@ const TRANSLATIONS = {
         description:
           "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
         "bot-token": "ボット トークン",
-        "default-workspace": "デフォルトのワークスペース",
-        "no-workspace":
-          "利用可能な作業スペースがありません。新しい作業スペースが作成されます。",
         connecting: "接続中...",
         "connect-bot": "コネクトボット",
       },
@@ -1169,20 +1307,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "ユーザーの権限停止に失敗。",
     },
     users: {
-      "pending-title": "承認待ち",
       "pending-description":
         "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
-      "approved-title": "承認されたユーザー",
-      "approved-description":
-        "あなたのボットとのチャットを許可されたユーザー。",
-      user: "利用者",
-      "pairing-code": "組み合わせコード",
-      "no-pending": "処理中のリクエストはありません",
-      "no-approved": "承認されたユーザーはいません",
       unknown: "不明",
-      approve: "承認",
-      deny: "否定",
-      revoke: "無効化する",
     },
   },
   "model-router": {

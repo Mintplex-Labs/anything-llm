@@ -1,3 +1,4 @@
+const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 
 const VALID_TYPES = ["calculated", "llm"];
@@ -26,7 +27,7 @@ const ModelRouterRule = {
   VALID_COMPARATORS,
 
   create: async function (routerId, data = {}, creatorId = null) {
-    if (!routerId) return { rule: null, message: "Router ID is required." };
+    if (!routerId) return { rule: null, error: "Router ID is required." };
 
     const title = this._validateTitle(data.title);
     if (!title)
@@ -93,23 +94,28 @@ const ModelRouterRule = {
           created_by: creatorId ? Number(creatorId) : null,
         },
       });
-      return { rule, message: null };
+      return { rule, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint")) {
-        if (error.message.includes("title"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const target = error.meta?.target;
+        if (target?.includes("title"))
           return {
             rule: null,
             message: "A rule with that title already exists on this router.",
           };
-        if (error.message.includes("priority"))
+        if (target?.includes("priority"))
           return {
             rule: null,
             message: "A rule with that priority already exists on this router.",
           };
-        return { rule: null, message: "Duplicate rule constraint violated." };
+        return { rule: null, error: "Duplicate rule constraint violated." };
       }
-      return { rule: null, message: error.message };
+      return { rule: null, error: error.message };
     }
   },
 
@@ -162,75 +168,71 @@ const ModelRouterRule = {
       if (!title)
         return {
           rule: null,
-          message: "Title must be lowercase with underscores only.",
+          error: "Title must be lowercase with underscores only.",
         };
       updates.title = title;
     }
 
-    if (data.enabled !== undefined) updates.enabled = Boolean(data.enabled);
-    if (data.priority !== undefined) updates.priority = Number(data.priority);
-    if (data.description !== undefined)
-      updates.description = data.description || null;
-
-    if (data.type !== undefined) {
-      if (!VALID_TYPES.includes(data.type))
-        return {
-          rule: null,
-          message: `Type must be one of: ${VALID_TYPES.join(", ")}`,
-        };
-      updates.type = data.type;
+    const simpleFields = [
+      ["enabled", (v) => Boolean(v)],
+      ["priority", (v) => Number(v)],
+      ["description", (v) => v || null],
+      ["value", (v) => (v != null ? String(v) : null)],
+      ["route_provider", (v) => String(v)],
+      ["route_model", (v) => String(v)],
+    ];
+    for (const [key, map] of simpleFields) {
+      if (data[key] !== undefined) updates[key] = map(data[key]);
     }
 
-    if (data.property !== undefined) {
-      if (data.property && !VALID_PROPERTIES.includes(data.property))
-        return {
-          rule: null,
-          message: `Property must be one of: ${VALID_PROPERTIES.join(", ")}`,
-        };
-      updates.property = data.property || null;
-    }
-
-    if (data.comparator !== undefined) {
-      if (data.comparator && !VALID_COMPARATORS.includes(data.comparator))
-        return {
-          rule: null,
-          message: `Comparator must be one of: ${VALID_COMPARATORS.join(", ")}`,
-        };
-      updates.comparator = data.comparator || null;
-    }
-
-    if (data.value !== undefined)
-      updates.value = data.value != null ? String(data.value) : null;
-    if (data.route_provider !== undefined)
-      updates.route_provider = String(data.route_provider);
-    if (data.route_model !== undefined)
-      updates.route_model = String(data.route_model);
+    const enumErr =
+      assignEnum(updates, data, "type", VALID_TYPES, "Type") ||
+      assignEnumOrNull(
+        updates,
+        data,
+        "property",
+        VALID_PROPERTIES,
+        "Property"
+      ) ||
+      assignEnumOrNull(
+        updates,
+        data,
+        "comparator",
+        VALID_COMPARATORS,
+        "Comparator"
+      );
+    if (enumErr) return enumErr;
 
     if (Object.keys(updates).length === 0)
-      return { rule: { id }, message: "No valid fields to update." };
+      return { rule: { id }, error: "No valid fields to update." };
 
     try {
       const rule = await prisma.model_router_rules.update({
         where: { id: Number(id) },
         data: updates,
       });
-      return { rule, message: null };
+      return { rule, error: null };
     } catch (error) {
       console.error(error.message);
-      if (error.message.includes("Unique constraint")) {
-        if (error.message.includes("title"))
+      // P2002 is the unique constraint violation error code
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const target = error.meta?.target;
+        if (target?.includes("title"))
           return {
             rule: null,
-            message: "A rule with that title already exists on this router.",
+            error: "A rule with that title already exists on this router.",
           };
-        if (error.message.includes("priority"))
+        if (target?.includes("priority"))
           return {
             rule: null,
-            message: "A rule with that priority already exists on this router.",
+            error: "A rule with that priority already exists on this router.",
           };
-        return { rule: null, message: "Duplicate rule constraint violated." };
+        return { rule: null, error: "Duplicate rule constraint violated." };
       }
-      return { rule: null, message: error.message };
+      return { rule: null, error: error.message };
     }
   },
 
@@ -261,10 +263,10 @@ const ModelRouterRule = {
           })
         )
       );
-      return { success: true, message: null };
+      return { success: true, error: null };
     } catch (error) {
       console.error(error.message);
-      return { success: false, message: error.message };
+      return { success: false, error: error.message };
     }
   },
 
@@ -275,5 +277,28 @@ const ModelRouterRule = {
     return cleaned;
   },
 };
+
+function assignEnum(updates, data, key, validList, label) {
+  if (data[key] === undefined) return null;
+  if (!validList.includes(data[key]))
+    return {
+      rule: null,
+      error: `${label} must be one of: ${validList.join(", ")}`,
+    };
+  updates[key] = data[key];
+  return null;
+}
+
+function assignEnumOrNull(updates, data, key, validList, label) {
+  if (data[key] === undefined) return null;
+  const v = data[key];
+  if (v && !validList.includes(v))
+    return {
+      rule: null,
+      error: `${label} must be one of: ${validList.join(", ")}`,
+    };
+  updates[key] = v || null;
+  return null;
+}
 
 module.exports = { ModelRouterRule };

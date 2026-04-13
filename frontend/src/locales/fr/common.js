@@ -414,6 +414,132 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Connecteur GMail",
+        description:
+          "Permettez à votre agent d'interagir avec Gmail : rechercher des e-mails, lire les conversations, rédiger des brouillons, envoyer des e-mails et gérer votre boîte de réception. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Gmail n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs pour utiliser cette fonctionnalité.",
+        configuration: "Configuration de Gmail",
+        deploymentId: "Identifiant de déploiement",
+        deploymentIdHelp:
+          "L'identifiant de déploiement de votre application web Google Apps Script",
+        apiKey: "Clé API",
+        apiKeyHelp:
+          "La clé API que vous avez configurée lors de votre déploiement de Google Apps Script",
+        configurationRequired:
+          "Veuillez configurer l'ID de déploiement et la clé API pour activer les fonctionnalités de Gmail.",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucune compétence ne correspond à votre recherche.",
+        categories: {
+          search: {
+            title: "Rechercher et lire des e-mails",
+            description:
+              "Recherchez et lisez vos e-mails dans votre boîte de réception Gmail.",
+          },
+          drafts: {
+            title: "Modèles de courriels",
+            description: "Créer, modifier et gérer des brouillons d'e-mails.",
+          },
+          send: {
+            title: "Envoyer et répondre aux e-mails",
+            description:
+              "Envoyez des e-mails et répondez immédiatement aux discussions.",
+          },
+          threads: {
+            title: "Gérer les conversations par e-mail",
+            description:
+              "Gérer les conversations par e-mail : marquer comme lu/non lu, archiver, supprimer",
+          },
+          account: {
+            title: "Statistiques d'intégration",
+            description:
+              "Consultez les statistiques de votre boîte de réception et les informations de votre compte.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Rechercher dans les e-mails",
+            description:
+              "Rechercher des e-mails en utilisant la syntaxe de recherche de Gmail",
+          },
+          readThread: {
+            title: "Lire le fil de discussion",
+            description: "Lire l'intégralité d'une conversation par ID",
+          },
+          createDraft: {
+            title: "Créer une version préliminaire",
+            description: "Créez une nouvelle version de l'e-mail.",
+          },
+          createDraftReply: {
+            title: "Créer une réponse brouillon",
+            description:
+              "Rédiger une réponse préliminaire à un fil de discussion existant.",
+          },
+          updateDraft: {
+            title: "Mise à jour de la version préliminaire",
+            description: "Mettre à jour un brouillon de courriel existant",
+          },
+          getDraft: {
+            title: "Obtenir la version préliminaire",
+            description:
+              "Récupérer une version spécifique par son identifiant.",
+          },
+          listDrafts: {
+            title: "Propositions/Brouillons",
+            description: "Énumérer tous les courriels en brouillon.",
+          },
+          deleteDraft: {
+            title: "Supprimer la version brouillon",
+            description: "Supprimer une brouillon de courriel",
+          },
+          sendDraft: {
+            title: "Envoyer une version préliminaire",
+            description: "Envoyer une version existante d'un courriel",
+          },
+          sendEmail: {
+            title: "Envoyer un e-mail",
+            description: "Envoyez un courriel immédiatement.",
+          },
+          replyToThread: {
+            title: "Répondre à la discussion",
+            description:
+              "Répondre immédiatement à une conversation par e-mail.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Indiquer qu'un fil de discussion a été lu",
+          },
+          markUnread: {
+            title: "Signaler comme non lu",
+            description: "Indiquer qu'un fil de discussion est non lu",
+          },
+          moveToTrash: {
+            title: "Envoyer à la poubelle",
+            description: "Déplacer un fil dans la corbeille d'ordures",
+          },
+          moveToArchive: {
+            title: "Archives",
+            description: "Archiver une discussion",
+          },
+          moveToInbox: {
+            title: "Envoyer vers la boîte de réception",
+            description:
+              "Déplacer un fil de discussion dans la boîte de réception",
+          },
+          getMailboxStats: {
+            title: "Statistiques de la boîte de réception",
+            description:
+              "Obtenez le nombre d'emails non lus et les statistiques de votre boîte de réception.",
+          },
+          getInbox: {
+            title: "Accéder à la boîte de réception",
+            description:
+              "Une méthode simple et efficace pour récupérer les e-mails de votre boîte de réception Gmail.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serveurs MCP",
@@ -476,7 +602,34 @@ const TRANSLATIONS = {
       "Les clés API permettent au titulaire d'accéder et de gérer de manière programmatique cette instance AnythingLLM.",
     link: "Lisez la documentation de l'API",
     generate: "Générer une nouvelle clé API",
+    empty: "Aucune clé API trouvée",
+    actions: "Actions",
+    messages: {
+      error: "Erreur : {{error}}",
+    },
+    modal: {
+      title: "Créer une nouvelle clé API",
+      cancel: "Annuler",
+      close: "Fermer",
+      create: "Créer une clé API",
+      helper:
+        "Une fois créée, la clé API peut être utilisée pour accéder à cette instance AnythingLLM et la configurer de manière programmatique.",
+      name: {
+        label: "Nom",
+        placeholder: "Intégration de production",
+        helper:
+          "Facultatif. Utilisez un nom explicite pour pouvoir retrouver facilement cette clé plus tard.",
+      },
+    },
+    row: {
+      copy: "Copier la clé API",
+      copied: "Copiée",
+      unnamed: "--",
+      deleteConfirm:
+        "Voulez-vous vraiment désactiver cette clé API ?\nAprès cela, elle ne pourra plus être utilisée.\n\nCette action est irréversible.",
+    },
     table: {
+      name: "Nom",
       key: "Clé API",
       by: "Créé par",
       created: "Créé",
@@ -1133,9 +1286,6 @@ const TRANSLATIONS = {
         description:
           "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
         "bot-token": "Token Bot",
-        "default-workspace": "Espace de travail par défaut",
-        "no-workspace":
-          "Il n'y a pas d'espaces de travail disponibles. Un nouvel espace sera créé.",
         connecting: "Connexion...",
         "connect-bot": "Bot de connexion",
       },
@@ -1176,20 +1326,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
     },
     users: {
-      "pending-title": "En attente d'approbation",
       "pending-description":
         "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
-      "approved-title": "Utilisateurs autorisés",
-      "approved-description":
-        "Utilisateurs qui ont été autorisés à communiquer avec votre bot.",
-      user: "Utilisateur",
-      "pairing-code": "Code de correspondance",
-      "no-pending": "Aucune demande en cours",
-      "no-approved": "Aucun utilisateur autorisé",
       unknown: "Inconnu",
-      approve: "Approuver",
-      deny: "Rejeter",
-      revoke: "Annuler",
     },
   },
   "model-router": {

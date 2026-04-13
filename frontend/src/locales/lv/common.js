@@ -417,6 +417,128 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail savienojums",
+        description:
+          "Ļauj savam pārstāvim interaktīvi strādāt ar Gmail – meklēt e-pastus, lasīt diskusijas, veidot projekte, nosūtīt e-pastus un pārvaldīt savu e-pasta kārtojumu. <a>Izlasiet dokumentāciju</a>.",
+        multiUserWarning:
+          "Gmail integrācija nav pieejama, kad izmantojat vairākus lietotājus, jo tas ir saistīts ar drošības apsvērumiem. Lūdzu, atslēgt vairāku lietotāju režimu, lai izmantotu šo funkciju.",
+        configuration: "Gmail konfigurācija",
+        deploymentId: "Ieraksta ID",
+        deploymentIdHelp:
+          "Jūsu Google Apps Script veidotās web lietojamās lietojamās ID",
+        apiKey: "API atslēga",
+        apiKeyHelp:
+          "API atslēga, ko jūs konfigurējāt savā Google Apps Script instalēšanā.",
+        configurationRequired:
+          'Lūdzu, konfigurējiet "Deployment ID" un API atslēgu, lai aktivizētu Gmail funkcijas.',
+        configured: "Ierobežots",
+        searchSkills: "Meklēšanas prasmes...",
+        noSkillsFound: "Neatrodītas atbilstības jūsu meklējumiem.",
+        categories: {
+          search: {
+            title: "Meklē un lasiet e-pastus",
+            description:
+              "Meklējiet un lasiet e-pasta vēstnes no jūsu Gmail ievakā.",
+          },
+          drafts: {
+            title: "Pamatraksti e-pasta vēstījumiem",
+            description: "Izveidot, rediģēt un pārvaldīt e-pasta rakstus",
+          },
+          send: {
+            title: "Sūtiet un atbildiet uz e-pasta vēstījumiem",
+            description:
+              "Nosūtiet e-pasta ziņojus un atbildiet uz diskusiju tēriņiem nekavējoties.",
+          },
+          threads: {
+            title: "Aizgrieziet e-pasta sarunas",
+            description:
+              "Aizvadīt e-pasta sarunas – atzīmēt kā lasītu/neizlasītu, glabāt arhīvā, atrast atkritumos",
+          },
+          account: {
+            title: "Integrācijas statistika",
+            description:
+              "Apspriediet pasta skapja statistiku un konta informāciju.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Meklē e-pastus",
+            description:
+              "Meklēt e-pasta vēstures, izmantojot Gmail meklēšanas sintaksi",
+          },
+          readThread: {
+            title: "Izlasīt tēmu",
+            description: "Izlasiet pilnu e-pasta sarunu, izmantojot ID",
+          },
+          createDraft: {
+            title: "Izveidot izstrādi",
+            description: "Izveidot jaunu e-pasta rakstu",
+          },
+          createDraftReply: {
+            title: "Izveidot atbildes projekta",
+            description: "Izveidot atbildes projekta par esošu tematu.",
+          },
+          updateDraft: {
+            title: "Pārredzētās versijas",
+            description: "Atjaunini esošā e-pasta projekta",
+          },
+          getDraft: {
+            title: "Saņemiet projekta versiju",
+            description: "Atgūt specifisku dokumentu pēc identifikatora",
+          },
+          listDrafts: {
+            title: "Pamatdarba projekti",
+            description:
+              "Izveidot sarakstu ar visiem izstrādātajiem e-pasta vēstījumiem",
+          },
+          deleteDraft: {
+            title: "Dzēst projekta versiju",
+            description: "Dzēst izstrādāto e-pastu",
+          },
+          sendDraft: {
+            title: "Nosūtīt projekta versiju",
+            description: "Nosūtiet esošo e-pasta projekta vēstuli",
+          },
+          sendEmail: {
+            title: "Sūtiet e-pastu",
+            description: "Sūtiet e-pastu nekavējoties",
+          },
+          replyToThread: {
+            title: "Atbildēt uz tēmu",
+            description: "Atbildiet uz e-pasta sarunu nekavējoties",
+          },
+          markRead: {
+            title: "Mark Reads",
+            description: "Atzīmējiet tēmu kā lasītu.",
+          },
+          markUnread: {
+            title: "Mark – neizlasīts",
+            description: "Atzīmējiet tēmu kā neizlasītu.",
+          },
+          moveToTrash: {
+            title: "Aizvest uz atkritumu konteineru",
+            description: "Pārvietojiet tēmu uz atkritumu failu",
+          },
+          moveToArchive: {
+            title: "Arhivs",
+            description: "Saglabāt tēmu",
+          },
+          moveToInbox: {
+            title: 'Pārvietot uz "Ienākošās"',
+            description: "Pārvietojiet tēmu uz e-pasta skatīšanās rindā",
+          },
+          getMailboxStats: {
+            title: "Pasta kastes statistika",
+            description:
+              "Iesaļojiet neskaitītās e-pasta ziņojumu un e-pasta kastes statistikas",
+          },
+          getInbox: {
+            title: "Atsvēdināt e-pasta skatīšanās rindu",
+            description: "Efektīvs veids, kā saņemt e-pastus no Gmail konta",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -566,7 +688,34 @@ const TRANSLATIONS = {
       "API atslēgas ļauj to īpašniekam programmatiski piekļūt un pārvaldīt šo AnythingLLM instanci.",
     link: "Lasīt API dokumentāciju",
     generate: "Ģenerēt jaunu API atslēgu",
+    empty: "API atslēgas nav atrastas",
+    actions: "Darbības",
+    messages: {
+      error: "Kļūda: {{error}}",
+    },
+    modal: {
+      title: "Izveidot jaunu API atslēgu",
+      cancel: "Atcelt",
+      close: "Aizvērt",
+      create: "Izveidot API atslēgu",
+      helper:
+        "Pēc izveides API atslēgu var izmantot, lai programmatiski piekļūtu šai AnythingLLM instancei un to konfigurētu.",
+      name: {
+        label: "Nosaukums",
+        placeholder: "Produkcijas integrācija",
+        helper:
+          "Nav obligāti. Izmantojiet saprotamu nosaukumu, lai vēlāk šo atslēgu būtu viegli atpazīt.",
+      },
+    },
+    row: {
+      copy: "Kopēt API atslēgu",
+      copied: "Nokopēts",
+      unnamed: "--",
+      deleteConfirm:
+        "Vai tiešām vēlaties deaktivizēt šo API atslēgu?\nPēc tam to vairs nevarēs izmantot.\n\nŠo darbību nevar atsaukt.",
+    },
     table: {
+      name: "Nosaukums",
       key: "API atslēga",
       by: "Izveidoja",
       created: "Izveidots",
@@ -1136,8 +1285,6 @@ const TRANSLATIONS = {
         description:
           "Ievietojiet API atslēgu, ko saņēsit no @BotFather, un izvēlieties nokārtotā darba telpu, kuras jūsu bots varēs veikt sazi.",
         "bot-token": "Bots tokens",
-        "default-workspace": "Pamatojas darba videne",
-        "no-workspace": "Nav pieejamas darba vietas. Tiks izveidota jauna.",
         connecting: "Savienojums...",
         "connect-bot": "Saistītais bot",
       },
@@ -1178,20 +1325,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Neizdevās atcelt lietotāja tiesības.",
     },
     users: {
-      "pending-title": "Atkarībā no apstākļiem",
       "pending-description":
         "Izmantotāji, kas gaida apstiprinājumu. Salīdziniet šeit norādīto koda numuru ar to, kas redzams viņu Telegram sarunā.",
-      "approved-title": "Atļautie lietotāji",
-      "approved-description":
-        "Izmantotāji, kuriem ir atļauts veikt saziņai ar jūsu botu.",
-      user: "Izmantotājs",
-      "pairing-code": "Kopējā koda numura kombinācija",
-      "no-pending": "Neizpildīti pieprasījumi",
-      "no-approved": "No apstiprinātiem lietotājiem",
       unknown: "Nezināms",
-      approve: "Aptver",
-      deny: "Atbrīsties; atgrūst",
-      revoke: "Atcel",
     },
   },
   "model-router": {

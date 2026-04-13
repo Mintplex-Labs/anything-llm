@@ -171,6 +171,13 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           );
         }
 
+        if (type === "chatId") {
+          if (!data.content.chatId) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid ? { ...msg, chatId: data.content.chatId } : msg
+          );
+        }
+
         if (type === "textResponseChunk") {
           return prev
             .map((msg) =>

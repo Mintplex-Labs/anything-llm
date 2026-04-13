@@ -3,7 +3,7 @@ import { baseHeaders } from "@/utils/request";
 
 const ModelRouter = {
   getAll: async () => {
-    return await fetch(`${API_BASE}/admin/model-routers`, {
+    return await fetch(`${API_BASE}/model-routers`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -16,7 +16,7 @@ const ModelRouter = {
   },
 
   get: async (id) => {
-    return await fetch(`${API_BASE}/admin/model-routers/${id}`, {
+    return await fetch(`${API_BASE}/model-routers/${id}`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -28,7 +28,7 @@ const ModelRouter = {
   },
 
   create: async (data) => {
-    return await fetch(`${API_BASE}/admin/model-routers/new`, {
+    return await fetch(`${API_BASE}/model-routers/new`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -41,8 +41,8 @@ const ModelRouter = {
   },
 
   update: async (id, data) => {
-    return await fetch(`${API_BASE}/admin/model-routers/${id}`, {
-      method: "POST",
+    return await fetch(`${API_BASE}/model-routers/${id}`, {
+      method: "PUT",
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
@@ -54,7 +54,7 @@ const ModelRouter = {
   },
 
   delete: async (id) => {
-    return await fetch(`${API_BASE}/admin/model-routers/${id}`, {
+    return await fetch(`${API_BASE}/model-routers/${id}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -66,14 +66,11 @@ const ModelRouter = {
   },
 
   createRule: async (routerId, data) => {
-    return await fetch(
-      `${API_BASE}/admin/model-routers/${routerId}/rules/new`,
-      {
-        method: "POST",
-        headers: baseHeaders(),
-        body: JSON.stringify(data),
-      }
-    )
+    return await fetch(`${API_BASE}/model-routers/${routerId}/rules/new`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);
@@ -83,9 +80,9 @@ const ModelRouter = {
 
   updateRule: async (routerId, ruleId, data) => {
     return await fetch(
-      `${API_BASE}/admin/model-routers/${routerId}/rules/${ruleId}`,
+      `${API_BASE}/model-routers/${routerId}/rules/${ruleId}`,
       {
-        method: "POST",
+        method: "PUT",
         headers: baseHeaders(),
         body: JSON.stringify(data),
       }
@@ -99,7 +96,7 @@ const ModelRouter = {
 
   deleteRule: async (routerId, ruleId) => {
     return await fetch(
-      `${API_BASE}/admin/model-routers/${routerId}/rules/${ruleId}`,
+      `${API_BASE}/model-routers/${routerId}/rules/${ruleId}`,
       {
         method: "DELETE",
         headers: baseHeaders(),
@@ -113,14 +110,11 @@ const ModelRouter = {
   },
 
   reorderRules: async (routerId, ruleUpdates) => {
-    return await fetch(
-      `${API_BASE}/admin/model-routers/${routerId}/rules/reorder`,
-      {
-        method: "POST",
-        headers: baseHeaders(),
-        body: JSON.stringify({ ruleUpdates }),
-      }
-    )
+    return await fetch(`${API_BASE}/model-routers/${routerId}/rules/reorder`, {
+      method: "PUT",
+      headers: baseHeaders(),
+      body: JSON.stringify({ ruleUpdates }),
+    })
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);
