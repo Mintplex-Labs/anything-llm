@@ -1444,8 +1444,14 @@ const TRANSLATIONS = {
       modeCustom: "Custom",
       cronPlaceholder: "Cron expression (e.g. 0 9 * * *)",
       currentSchedule: "Current schedule:",
-      toolsLabel: "Tools (optional)",
-      toolsDescription: "Select which agent tools this job can use.",
+      toolsLabel: "Tools (Optional)",
+      toolsDescription:
+        "Select which agent tools this job can use. Leave empty to use all enabled tools.",
+      toolsSearch: "Search",
+      toolsNoResults: "No tools match",
+      required: "Required",
+      requiredFieldsBanner:
+        "Please fill out all required fields in order to create job.",
       selectAll: "Select all",
       deselectAll: "Deselect all",
       cancel: "Cancel",
