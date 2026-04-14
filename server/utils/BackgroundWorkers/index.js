@@ -284,13 +284,38 @@ class BackgroundService {
     if (!run) return;
 
     this.#scheduledJobQueue.add(() =>
-      this.runJob("run-scheduled-job", { jobId, runId: run.id }).catch(
-        async (err) => {
-          this.#log(`Scheduled job ${jobId} failed: ${err.message}`);
-          await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
-        }
-      )
+      this.#runScheduledJobWorker(jobId, run.id).catch(async (err) => {
+        this.#log(`Scheduled job ${jobId} failed: ${err.message}`);
+        await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
+      })
     );
+  }
+
+  /**
+   * Spawn the run-scheduled-job worker for a given run and resolve when it
+   * exits so p-queue can advance. The worker reads its payload from an IPC
+   * `process.on("message", ...)` handler.
+   *
+   * @param {number} jobId
+   * @param {number} runId
+   * @returns {Promise<void>}
+   */
+  async #runScheduledJobWorker(jobId, runId) {
+    const scriptPath = path.resolve(this.jobsRoot, "run-scheduled-job.js");
+    const { worker, jobId: workerId } = await this.spawnWorker(scriptPath);
+
+    try {
+      worker.send({ jobId, runId });
+      await new Promise((resolve, reject) => {
+        worker.on("exit", (code) => {
+          if (code === 0 || code == null) resolve();
+          else reject(new Error(`Worker exited with code ${code}`));
+        });
+        worker.on("error", reject);
+      });
+    } finally {
+      await this.removeJob(workerId).catch(() => {});
+    }
   }
 }
 
