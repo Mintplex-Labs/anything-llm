@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import { PlusCircle } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import useWebPushNotifications from "@/hooks/useWebPushNotifications";
 import usePolling from "@/hooks/usePolling";
 import NewJobModal from "./NewJobModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
-import CTAButton from "@/components/lib/CTAButton";
 import showToast from "@/utils/toast";
 import JobRow from "./components/JobRow";
 
@@ -77,69 +75,87 @@ export default function ScheduledJobsPage() {
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
-            <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-theme-text-primary">
+          <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 border-b-2">
+            <div className="flex flex-col gap-y-2">
+              <p className="text-lg leading-7 font-semibold text-zinc-50">
                 {t("scheduledJobs.title")}
               </p>
+              <p className="text-xs leading-4 text-zinc-400 max-w-[700px]">
+                {t("scheduledJobs.description")}
+              </p>
             </div>
-            <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              {t("scheduledJobs.description")}
-            </p>
-          </div>
-
-          <div className="w-full justify-end flex pt-6 pb-4">
-            <CTAButton onClick={handleCreate}>
-              <PlusCircle className="h-4 w-4" weight="bold" />{" "}
-              {t("scheduledJobs.newJob")}
-            </CTAButton>
+            {!loading && jobs.length > 0 && (
+              <button
+                type="button"
+                onClick={handleCreate}
+                className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors shrink-0"
+              >
+                {t("scheduledJobs.newJob")}
+              </button>
+            )}
           </div>
 
           {loading ? (
-            <div className="text-theme-text-secondary text-sm">
+            <div className="text-zinc-400 text-sm pt-8">
               {t("scheduledJobs.loading")}
             </div>
-          ) : jobs.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-theme-text-secondary text-sm">
-                {t("scheduledJobs.empty")}
-              </p>
-            </div>
           ) : (
-            <table className="w-full text-sm text-left rounded-lg overflow-hidden">
-              <thead className="text-theme-text-secondary text-xs uppercase border-b border-white/10">
-                <tr>
-                  <th className="px-6 py-3">{t("scheduledJobs.table.name")}</th>
-                  <th className="px-6 py-3">
-                    {t("scheduledJobs.table.schedule")}
-                  </th>
-                  <th className="px-6 py-3">
-                    {t("scheduledJobs.table.status")}
-                  </th>
-                  <th className="px-6 py-3">
-                    {t("scheduledJobs.table.lastRun")}
-                  </th>
-                  <th className="px-6 py-3">
-                    {t("scheduledJobs.table.nextRun")}
-                  </th>
-                  <th className="px-6 py-3 text-right">
-                    {t("scheduledJobs.table.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job) => (
-                  <JobRow
-                    key={job.id}
-                    job={job}
-                    onTrigger={handleTrigger}
-                    onToggle={handleToggle}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div className="pt-8">
+              <div className="flex items-center justify-between px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-500">
+                <span className="w-[150px]">
+                  {t("scheduledJobs.table.name")}
+                </span>
+                <span className="w-[180px]">
+                  {t("scheduledJobs.table.schedule")}
+                </span>
+                <span className="w-[120px]">
+                  {t("scheduledJobs.table.status")}
+                </span>
+                <span className="w-[180px]">
+                  {t("scheduledJobs.table.lastRun")}
+                </span>
+                <span className="w-[180px]">
+                  {t("scheduledJobs.table.nextRun")}
+                </span>
+                <span className="w-[140px] text-right">
+                  {t("scheduledJobs.table.actions")}
+                </span>
+              </div>
+              <div className="h-px w-full bg-white/10" />
+
+              {jobs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
+                  <div className="flex flex-col gap-1.5">
+                    <p className="text-base font-semibold text-zinc-50">
+                      {t("scheduledJobs.emptyTitle")}
+                    </p>
+                    <p className="text-sm font-medium text-zinc-400">
+                      {t("scheduledJobs.emptySubtitle")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCreate}
+                    className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors"
+                  >
+                    {t("scheduledJobs.newJob")}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col divide-y divide-white/5">
+                  {jobs.map((job) => (
+                    <JobRow
+                      key={job.id}
+                      job={job}
+                      onTrigger={handleTrigger}
+                      onToggle={handleToggle}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

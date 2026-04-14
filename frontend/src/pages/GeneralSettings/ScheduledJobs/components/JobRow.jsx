@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Eye, Play, Power, PencilSimple, Trash } from "@phosphor-icons/react";
+import { Play, PencilSimple, X } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import { humanizeCron } from "../utils/cron";
-import StatusBadge from "./StatusBadge";
 import { useTranslation } from "react-i18next";
 
-// One row of the scheduled-jobs list. Owns its own action buttons and the
-// "View runs" navigation; CRUD callbacks come from the parent.
+// One row of the scheduled-jobs list. Clicking the name navigates to the
+// run history; CRUD callbacks come from the parent.
 export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -15,91 +14,82 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
   // so the backend dedup never has to drop a manual trigger silently.
   const inFlight =
     job.latestRun?.status === "running" || job.latestRun?.status === "queued";
+
+  const statusText = job.latestRun
+    ? t(`scheduledJobs.status.${job.latestRun.status}`, job.latestRun.status)
+    : t("scheduledJobs.row.neverRun");
+
   return (
-    <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-2 h-2 rounded-full ${job.enabled ? "bg-green-400" : "bg-gray-500"}`}
-          />
-          <span className="text-theme-text-primary font-medium">
-            {job.name}
-          </span>
-        </div>
-      </td>
-      <td className="px-6 py-4 text-theme-text-secondary">
+    <div className="flex items-center justify-between px-4 h-14 hover:bg-white/5 transition-colors">
+      <button
+        type="button"
+        onClick={() => navigate(paths.settings.scheduledJobRuns(job.id))}
+        className="w-[150px] text-left text-sm font-medium text-white hover:text-zinc-200 truncate"
+        title={t("scheduledJobs.row.viewRuns")}
+      >
+        {job.name}
+      </button>
+      <span className="w-[180px] text-sm text-zinc-400 truncate">
         {humanizeCron(job.schedule, i18n.language)}
-      </td>
-      <td className="px-6 py-4">
-        {job.latestRun ? (
-          <StatusBadge status={job.latestRun.status} />
-        ) : (
-          <span className="text-theme-text-secondary text-xs">
-            {t("scheduledJobs.row.neverRun")}
-          </span>
-        )}
-      </td>
-      <td className="px-6 py-4 text-theme-text-secondary text-xs">
+      </span>
+      <span className="w-[120px] text-sm text-zinc-400 truncate">
+        {statusText}
+      </span>
+      <span className="w-[180px] text-sm text-zinc-400 truncate">
         {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "—"}
-      </td>
-      <td className="px-6 py-4 text-theme-text-secondary text-xs">
+      </span>
+      <span className="w-[180px] text-sm text-zinc-400 truncate">
         {job.enabled && job.nextRunAt
           ? new Date(job.nextRunAt).toLocaleString()
           : "—"}
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => navigate(paths.settings.scheduledJobRuns(job.id))}
-            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title={t("scheduledJobs.row.viewRuns")}
-          >
-            <Eye className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onTrigger(job.id)}
-            disabled={inFlight}
-            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-theme-text-secondary"
-            title={t("scheduledJobs.row.runNow")}
-          >
-            <Play className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggle(job.id)}
-            className={`p-1.5 rounded-lg hover:bg-theme-bg-primary transition-colors ${
-              job.enabled
-                ? "text-green-400 hover:text-yellow-400"
-                : "text-gray-500 hover:text-green-400"
+      </span>
+      <div className="w-[140px] flex items-center justify-end gap-3.5">
+        <button
+          type="button"
+          onClick={() => onDelete(job.id)}
+          className="text-zinc-400 hover:text-red-400 transition-colors"
+          title={t("scheduledJobs.row.delete")}
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onEdit(job)}
+          className="text-zinc-400 hover:text-white transition-colors"
+          title={t("scheduledJobs.row.edit")}
+        >
+          <PencilSimple className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onTrigger(job.id)}
+          disabled={inFlight}
+          className="text-zinc-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          title={t("scheduledJobs.row.runNow")}
+        >
+          <Play className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={job.enabled}
+          onClick={() => onToggle(job.id)}
+          title={
+            job.enabled
+              ? t("scheduledJobs.row.disable")
+              : t("scheduledJobs.row.enable")
+          }
+          className={`relative h-[15px] w-7 rounded-full p-0.5 transition-colors ${
+            job.enabled ? "bg-green-400" : "bg-zinc-600"
+          }`}
+        >
+          <span
+            className={`block h-3 w-3 rounded-full bg-white shadow transition-transform ${
+              job.enabled ? "translate-x-[13px]" : "translate-x-0"
             }`}
-            title={
-              job.enabled
-                ? t("scheduledJobs.row.disable")
-                : t("scheduledJobs.row.enable")
-            }
-          >
-            <Power className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(job)}
-            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title={t("scheduledJobs.row.edit")}
-          >
-            <PencilSimple className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(job.id)}
-            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-red-400 transition-colors"
-            title={t("scheduledJobs.row.delete")}
-          >
-            <Trash className="h-4 w-4" />
-          </button>
-        </div>
-      </td>
-    </tr>
+          />
+        </button>
+      </div>
+    </div>
   );
 }

@@ -1409,6 +1409,8 @@ const TRANSLATIONS = {
     newJob: "New Job",
     loading: "Loading...",
     empty: "No scheduled jobs yet. Create one to get started.",
+    emptyTitle: "No Scheduled Jobs yet",
+    emptySubtitle: "Create one to get started.",
     table: {
       name: "Name",
       schedule: "Schedule",
