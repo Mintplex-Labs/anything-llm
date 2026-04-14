@@ -655,6 +655,95 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Conector para Google Calendar",
+        description:
+          "Permita que su agente interactúe con Google Calendar: visualice calendarios, obtenga información sobre eventos, cree y actualice eventos, y gestione las confirmaciones de asistencia. <a>Consulte la documentación</a>.",
+        multiUserWarning:
+          "La integración con Google Calendar no está disponible en el modo de varios usuarios por razones de seguridad. Para utilizar esta función, por favor, desactive el modo de varios usuarios.",
+        configuration: "Configuración de Google Calendar",
+        deploymentId: "ID de implementación",
+        deploymentIdHelp:
+          "El ID de implementación de su aplicación web de Google Apps Script",
+        apiKey: "Clave de API",
+        apiKeyHelp:
+          "La clave API que configuraste en tu implementación de Google Apps Script.",
+        configurationRequired:
+          "Por favor, configure el ID de implementación y la clave de API para habilitar las funciones de Google Calendar.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de búsqueda...",
+        noSkillsFound:
+          "No se encontraron resultados que coincidan con tu búsqueda.",
+        categories: {
+          calendars: {
+            title: "Calendarios",
+            description: "Visualiza y administra tus calendarios de Google.",
+          },
+          readEvents: {
+            title: "Leer eventos",
+            description: "Visualice y busque eventos en el calendario.",
+          },
+          writeEvents: {
+            title: "Crear y actualizar eventos",
+            description: "Crear nuevos eventos y modificar los existentes.",
+          },
+          rsvp: {
+            title: "Gestión de confirmaciones de asistencia",
+            description: "Gestiona el estado de tus respuestas para eventos.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendarios",
+            description:
+              "Enumere todos los calendarios que posee o a los que esté suscrito.",
+          },
+          getCalendar: {
+            title: "Obtén los detalles del calendario",
+            description:
+              "Obtenga información detallada sobre un calendario específico.",
+          },
+          getEvent: {
+            title: "Obtener información del evento",
+            description:
+              "Obtenga información detallada sobre un evento específico.",
+          },
+          getEventsForDay: {
+            title: "Encuentra eventos para el día.",
+            description:
+              "Obtén todos los eventos programados para una fecha específica.",
+          },
+          getEvents: {
+            title: "Obtener eventos (rango de fechas)",
+            description:
+              "Obtener eventos dentro de un rango de fechas personalizado.",
+          },
+          getUpcomingEvents: {
+            title: "Consulta los próximos eventos",
+            description:
+              "Encuentre eventos para hoy, esta semana o este mes utilizando palabras clave sencillas.",
+          },
+          quickAdd: {
+            title: "Añadir evento rápidamente",
+            description:
+              'Crear un evento a partir de lenguaje natural (por ejemplo, "Reunión mañana a las 3 de la tarde")',
+          },
+          createEvent: {
+            title: "Crear evento",
+            description:
+              "Cree un nuevo evento con control total sobre todas las propiedades.",
+          },
+          updateEvent: {
+            title: "Actualización del evento",
+            description: "Actualizar un evento existente en el calendario",
+          },
+          setMyStatus: {
+            title: "Establecer estado de confirmación",
+            description:
+              "Aceptar, rechazar o aceptar provisionalmente un evento.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

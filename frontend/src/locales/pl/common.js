@@ -646,6 +646,94 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Łącznik do Google Kalendarza",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Google Calendar – przeglądaj kalendarze, sprawdzaj wydarzenia, twórz i aktualizuj wydarzenia oraz zarządzaj potwierdzeniami obecności. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Google Calendar nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby korzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja kalendarza Google",
+        deploymentId: "Identyfikator wdrożenia",
+        deploymentIdHelp:
+          "ID aplikacji webowej z Google Apps Script, której używasz.",
+        apiKey: "Klucz API",
+        apiKeyHelp:
+          "Klucz API, który skonfigurowałeś w swoim projekcie Google Apps Script",
+        configurationRequired:
+          "Prosimy o skonfigurowanie ID wdrażania i klucza API, aby włączyć funkcje związane z Google Calendar.",
+        configured: "Skonfigurowane",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
+        categories: {
+          calendars: {
+            title: "Kalendarze",
+            description: "Przeglądaj i zarządzaj swoimi kalendarzami Google.",
+          },
+          readEvents: {
+            title: "Sprawdź wydarzenia",
+            description: "Przeglądaj i wyszukuj wydarzenia w kalendarzu",
+          },
+          writeEvents: {
+            title: "Tworzenie i aktualizacja wydarzeń",
+            description: "Twórz nowe wydarzenia i modyfikuj istniejące.",
+          },
+          rsvp: {
+            title: "Zarządzanie rezerwacjami",
+            description: "Zarządzaj statusem odpowiedzi dla wydarzeń",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendarze",
+            description:
+              "Wypisz wszystkie kalendarze, które posiadasz lub do których subskrybujesz.",
+          },
+          getCalendar: {
+            title: "Uzyskaj szczegółowe informacje o kalendarzu",
+            description:
+              "Uzyskaj szczegółowe informacje na temat konkretnego kalendarza.",
+          },
+          getEvent: {
+            title: "Uzyskaj informacje o wydarzeniu",
+            description:
+              "Uzyskaj szczegółowe informacje na temat konkretnego wydarzenia",
+          },
+          getEventsForDay: {
+            title: "Sprawdź wydarzenia na dany dzień",
+            description:
+              "Pobierz wszystkie wydarzenia zaplanowane na konkretny dzień.",
+          },
+          getEvents: {
+            title: "Wyszukaj wydarzenia (zakres dat)",
+            description: "Pobierz wydarzenia w określonym przedziale dat.",
+          },
+          getUpcomingEvents: {
+            title: "Sprawdź nadchodzące wydarzenia",
+            description:
+              "Znajdź wydarzenia na dzisiaj, w tym tygodniu lub w tym miesiącu, używając prostych słów kluczowych.",
+          },
+          quickAdd: {
+            title: "Szybkie dodanie wydarzenia",
+            description:
+              "Utwórz wydarzenie na podstawie opisu w języku naturalnym (np. „Spotkanie jutro o 15:00”)",
+          },
+          createEvent: {
+            title: "Utwórz wydarzenie",
+            description:
+              "Utwórz nowe wydarzenie, mając pełną kontrolę nad wszystkimi jego właściwościami.",
+          },
+          updateEvent: {
+            title: "Aktualizacja wydarzenia",
+            description: "Zaktualizuj istniejącą wydarzenie w kalendarzu",
+          },
+          setMyStatus: {
+            title: "Ustaw status odpowiedzi",
+            description:
+              "Przyjęć, odrzucić lub wyrazić wstępne zainteresowanie udziałem w wydarzeniu",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serwery MCP",

@@ -641,6 +641,91 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Kalendāra integrācija",
+        description:
+          "Ļauj savam pārstāvim interaktīvi darboties ar Google Kalendāru – skatīt kalendārus, iegūt pasākumus, izveidot un atjaunot pasākumus, kā arī pārvaldīt reģistrāciju. <a>Lasiet dokumentāciju</a>.",
+        multiUserWarning:
+          "Google Kalendāra integrācija nav pieejama vairāku lietotāju režīmā, lai nodrošinātu drošību. Lūdzu, atgrieziet multilietotāju režīmu, lai izmantotu šo funkciju.",
+        configuration: "Google kalendāra konfigurācija",
+        deploymentId: "Ierīces identifikators",
+        deploymentIdHelp: "Jūsu Google Apps Script veidlapas ID",
+        apiKey: "API atslēga",
+        apiKeyHelp:
+          "API atslēga, ko jūs konfigurējāt savā Google Apps Script instalācijā",
+        configurationRequired:
+          'Lūdzu, konfigurējiet "Deployment ID" un API atslēgu, lai aktivizētu Google Kalendāra funkcijas.',
+        configured: "Ierīkots",
+        searchSkills: "Meklēšanas prasmes...",
+        noSkillsFound: "Neatrodītas atbilstības jūsu meklējumiem.",
+        categories: {
+          calendars: {
+            title: "Kalendāri",
+            description: "Skatiet un pārvaldiet savus Google kalendārus.",
+          },
+          readEvents: {
+            title: "Lasīt pasākumus",
+            description: "Skatiet un meklējiet kalendāra notikumus",
+          },
+          writeEvents: {
+            title: "Izveidot un atjaunināt pasākumus",
+            description: "Izveidot jaunas pasākumus un mainīt esošos",
+          },
+          rsvp: {
+            title: "Piedalīšanās reģistrācija",
+            description: "Pārvaldiet savu atbildes statusu pasākumiem",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendāri",
+            description:
+              "Izveidojot sarakstu, norādi visus kalendārus, ko tu īpašoj un uz kuriem esi reģistrējies.",
+          },
+          getCalendar: {
+            title: "Iegūstiet kalendāra informāciju",
+            description: "Iesaļojiet detalizētus datus par konkrētu kalendāru.",
+          },
+          getEvent: {
+            title: "Iegūstiet pasākuma informāciju",
+            description:
+              "Iesaļojiet detalizētu informāciju par konkrētu pasākumu",
+          },
+          getEventsForDay: {
+            title: "Ieskats uz pasākumiem šajā dienā",
+            description:
+              "Ieskaitiet visus pasākumus, kas plānoti konkrētā datumā",
+          },
+          getEvents: {
+            title: "Iegūstiet pasākumus (datu diapazons)",
+            description:
+              "Iegūt pasākumus, kas notiek konkrētā datuma diapazonā",
+          },
+          getUpcomingEvents: {
+            title: "Uznāciet nākamo pasākumu",
+            description:
+              "Atrodiet pasākumus šodien, šajā nedēļā vai šajā mēnesī, izmantojot vienkāržus atslēvvadus.",
+          },
+          quickAdd: {
+            title: "Ātri pievienot pasākumu",
+            description:
+              'Izveidot pasākumu, izmantojot dabas valodu (piemēram, "Sanākšana rīt plkst. 15:00")',
+          },
+          createEvent: {
+            title: "Izveidot pasākumu",
+            description:
+              "Izveidot jaunu pasākumu, nodrošinot pilnu kontroli pār visām tās īpašībām.",
+          },
+          updateEvent: {
+            title: "Pasākuma atjauninājums",
+            description: "Atjaunināt esošas kalendāra notikuma informāciju",
+          },
+          setMyStatus: {
+            title: "Norādiet atbildes statusu",
+            description: "Atzīst, atgrūst vai temporāri apstiprināt pasākumu",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveri",
