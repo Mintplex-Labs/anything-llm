@@ -13,33 +13,6 @@ const DEFAULT_SKILLS = [
   AgentPlugins.webScraping.name,
 ];
 
-/**
- * Configuration for agent skills that require availability checks and disabled sub-skill lists.
- * Each entry maps a skill name to its availability checker and disabled skills list key.
- */
-const SKILL_FILTER_CONFIG = {
-  "filesystem-agent": {
-    getAvailability: () =>
-      require("./aibitat/plugins/filesystem/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_filesystem_skills",
-  },
-  "create-files-agent": {
-    getAvailability: () =>
-      require("./aibitat/plugins/create-files/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_create_files_skills",
-  },
-  "gmail-agent": {
-    getAvailability: async () =>
-      require("./aibitat/plugins/gmail/lib").GmailBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_gmail_skills",
-  },
-  "outlook-agent": {
-    getAvailability: async () =>
-      require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_outlook_skills",
-  },
-};
-
 const USER_AGENT = {
   name: "USER",
   getDefinition: () => {
@@ -99,6 +72,33 @@ async function agentSkillsFromSystemSettings() {
       systemFunctions.push(AgentPlugins[skill].name);
   });
 
+  // Load disabled filesystem sub-skills
+  const _disabledFilesystemSkills = safeJsonParse(
+    await SystemSettings.getValueOrFallback(
+      { label: "disabled_filesystem_skills" },
+      "[]"
+    ),
+    []
+  );
+
+  // Load disabled create-files sub-skills
+  const _disabledCreateFilesSkills = safeJsonParse(
+    await SystemSettings.getValueOrFallback(
+      { label: "disabled_create_files_skills" },
+      "[]"
+    ),
+    []
+  );
+
+  // Load disabled gmail sub-skills
+  const _disabledGmailSkills = safeJsonParse(
+    await SystemSettings.getValueOrFallback(
+      { label: "disabled_gmail_skills" },
+      "[]"
+    ),
+    []
+  );
+
   // Load non-imported built-in skills that are configurable.
   const _setting = safeJsonParse(
     await SystemSettings.getValueOrFallback(
@@ -108,21 +108,11 @@ async function agentSkillsFromSystemSettings() {
     []
   );
 
-  // Pre-load disabled sub-skills and availability for configured skills
-  const skillFilterState = {};
-  for (const skillName of Object.keys(SKILL_FILTER_CONFIG)) {
-    if (!_setting.includes(skillName)) continue;
-    const config = SKILL_FILTER_CONFIG[skillName];
-    skillFilterState[skillName] = {
-      available: await config.getAvailability(),
-      disabledSubSkills: safeJsonParse(
-        await SystemSettings.getValueOrFallback(
-          { label: config.disabledSettingKey },
-          "[]"
-        ),
-        []
-      ),
-    };
+  // Pre-check gmail availability once (async) to avoid await inside loop
+  let gmailAvailable = false;
+  if (_setting.includes("gmail-agent")) {
+    const gmailTool = require("./aibitat/plugins/gmail/lib");
+    gmailAvailable = await gmailTool.GmailBridge.isToolAvailable();
   }
 
   for (const skillName of _setting) {
@@ -132,11 +122,34 @@ async function agentSkillsFromSystemSettings() {
     // need to be named via `${parent}#${child}` naming convention
     if (Array.isArray(AgentPlugins[skillName].plugin)) {
       for (const subPlugin of AgentPlugins[skillName].plugin) {
-        // Check if this skill has filter configuration
-        const filterState = skillFilterState[skillName];
-        if (filterState) {
-          if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
+        /**
+         * If the filesystem tool is not available, or the sub-skill is explicitly disabled, skip it
+         * This is a docker specific skill so it cannot be used in other environments.
+         */
+        if (skillName === "filesystem-agent") {
+          const filesystemTool = require("./aibitat/plugins/filesystem/lib");
+          if (!filesystemTool.isToolAvailable()) continue;
+          if (_disabledFilesystemSkills.includes(subPlugin.name)) continue;
+        }
+
+        /**
+         * If the create-files tool is not available, or the sub-skill is explicitly disabled, skip it
+         * This is a docker specific skill so it cannot be used in other environments.
+         */
+        if (skillName === "create-files-agent") {
+          const createFilesTool = require("./aibitat/plugins/create-files/lib");
+          if (!createFilesTool.isToolAvailable()) continue;
+          if (_disabledCreateFilesSkills.includes(subPlugin.name)) continue;
+        }
+
+        /**
+         * If the gmail tool is not available (multi-user mode or missing config),
+         * or the sub-skill is explicitly disabled, skip it.
+         * Gmail integration is only available in single-user mode for security reasons.
+         */
+        if (skillName === "gmail-agent") {
+          if (!gmailAvailable) continue;
+          if (_disabledGmailSkills.includes(subPlugin.name)) continue;
         }
 
         systemFunctions.push(

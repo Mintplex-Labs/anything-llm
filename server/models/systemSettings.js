@@ -18,21 +18,6 @@ function isNullOrNaN(value) {
   return isNaN(value);
 }
 
-/**
- * Merges a string field from source to target if it passes validation.
- * @param {Object} target - The target object to merge into
- * @param {Object} source - The source object to read from
- * @param {string} fieldName - The field name to merge
- * @param {Function|null} validator - Optional validator function that returns false to reject the value
- */
-function mergeStringField(target, source, fieldName, validator = null) {
-  const value = source[fieldName];
-  if (value && typeof value === "string" && value.trim()) {
-    if (validator && !validator(value)) return;
-    target[fieldName] = value.trim();
-  }
-}
-
 const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
@@ -53,8 +38,6 @@ const SystemSettings = {
     "disabled_gmail_skills",
     "gmail_deployment_id",
     "gmail_api_key",
-    "disabled_outlook_skills",
-    "outlook_agent_config",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -77,8 +60,6 @@ const SystemSettings = {
     "disabled_gmail_skills",
     "gmail_deployment_id",
     "gmail_api_key",
-    "disabled_outlook_skills",
-    "outlook_agent_config",
     "agent_sql_connections",
     "custom_app_name",
     "default_system_prompt",
@@ -224,56 +205,6 @@ const SystemSettings = {
       } finally {
         const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
         GmailBridge.reset();
-      }
-    },
-    disabled_outlook_skills: (updates) => {
-      try {
-        const skills = updates.split(",").filter((skill) => !!skill);
-        return JSON.stringify(skills);
-      } catch {
-        console.error(`Could not validate disabled outlook skills.`);
-        return JSON.stringify([]);
-      }
-    },
-    outlook_agent_config: async (update) => {
-      const OutlookBridge = require("../utils/agents/aibitat/plugins/outlook/lib");
-      try {
-        if (!update) return JSON.stringify({});
-
-        const newConfig =
-          typeof update === "string" ? safeJsonParse(update, {}) : update;
-        const existingConfig = safeJsonParse(
-          (await SystemSettings.get({ label: "outlook_agent_config" }))?.value,
-          {}
-        );
-
-        const mergedConfig = { ...existingConfig };
-
-        mergeStringField(mergedConfig, newConfig, "clientId");
-        mergeStringField(mergedConfig, newConfig, "tenantId");
-        mergeStringField(
-          mergedConfig,
-          newConfig,
-          "clientSecret",
-          (v) => !v.match(/^\*+$/)
-        );
-
-        if (newConfig.accessToken !== undefined) {
-          mergedConfig.accessToken = newConfig.accessToken;
-        }
-        if (newConfig.refreshToken !== undefined) {
-          mergedConfig.refreshToken = newConfig.refreshToken;
-        }
-        if (newConfig.tokenExpiry !== undefined) {
-          mergedConfig.tokenExpiry = newConfig.tokenExpiry;
-        }
-
-        return JSON.stringify(mergedConfig);
-      } catch (e) {
-        console.error(`Could not validate outlook agent config:`, e.message);
-        return JSON.stringify({});
-      } finally {
-        OutlookBridge.reset();
       }
     },
     agent_sql_connections: async (updates) => {
@@ -501,18 +432,6 @@ const SystemSettings = {
     });
 
     return this._updateSettings(updates);
-  },
-
-  delete: async function (clause = {}) {
-    try {
-      if (!Object.keys(clause).length)
-        throw new Error("Clause cannot be empty");
-      await prisma.system_settings.deleteMany({ where: clause });
-      return true;
-    } catch (error) {
-      console.error(error.message);
-      return false;
-    }
   },
 
   // Explicit update of settings + key validations.
