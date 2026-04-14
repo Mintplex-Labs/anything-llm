@@ -256,18 +256,18 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             />
           )}
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-between pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary transition-colors"
+              className="h-[34px] px-3.5 text-sm font-medium text-zinc-50 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors"
             >
               {t("scheduledJobs.modal.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
+              className="h-[34px] px-3.5 text-sm font-medium text-zinc-950 bg-zinc-50 hover:bg-zinc-200 rounded-lg transition-colors disabled:opacity-50"
             >
               {saving
                 ? t("scheduledJobs.modal.saving")
