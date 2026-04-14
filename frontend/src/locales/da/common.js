@@ -1008,6 +1008,37 @@ const TRANSLATIONS = {
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
     },
+    memories: {
+      title: "Erindringer",
+      empty:
+        "Indtil videre er der ingen minder. Efter at du har interageret med chatbotten, vil flere minder blive oprettet eller",
+      tab_workspace: "Arbejdsområde",
+      tab_global: "Global",
+      toggle: {
+        label: "Aktiver personlig tilpasning",
+        description:
+          "Når det er aktiveret, vil AnythingLLM lære af brugerens præferencer og kontekst fra samtaler.",
+      },
+      menu: {
+        edit: "Rediger",
+        delete: "Slet",
+        move_to_global: "Flyt til globalt niveau",
+        move_to_workspace: "Flyt til arbejdsområdet",
+      },
+      modal: {
+        create_title: "Opret minde",
+        edit_title: "Rediger hukommelse",
+        create_description:
+          "Denne information vil blive gemt og bruges til at tilpasse fremtidige svar.",
+        edit_description: "Opdater indholdet i denne hukommelse.",
+        label: "Hukommelse",
+        placeholder: "Indtast en beskrivelse...",
+        create: "Opret",
+        save: "Gem",
+        cancel: "Annullér",
+      },
+      empty_cta: "opret et nyt minde",
+    },
   },
   profile_settings: {
     edit_account: "Rediger konto",

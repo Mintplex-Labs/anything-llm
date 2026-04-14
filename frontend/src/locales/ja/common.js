@@ -989,6 +989,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "ツールの使用許可が承認されました",
       tool_call_was_rejected: "ツール呼び出しは拒否されました",
     },
+    memories: {
+      title: "思い出",
+      empty:
+        "現時点では、記憶はまだ何もありません。チャットボットとのやり取りが増えるほど、記憶が埋まっていくでしょう。",
+      tab_workspace: "作業スペース",
+      tab_global: "世界的な",
+      toggle: {
+        label: "パーソナライズ機能を有効にする",
+        description:
+          "「AnythingLLM」を有効にすると、会話からユーザーの好みや文脈を学習します。",
+      },
+      menu: {
+        edit: "編集",
+        delete: "削除",
+        move_to_global: "グローバル展開へ",
+        move_to_workspace: "ワークスペースへ移動",
+      },
+      modal: {
+        create_title: "思い出を創造する",
+        edit_title: "メモリの編集",
+        create_description:
+          "この情報は保存され、将来の回答をパーソナライズするために使用されます。",
+        edit_description: "このメモリの内容を更新してください。",
+        label: "記憶",
+        placeholder: "説明を入力してください...",
+        create: "作成する",
+        save: "保存",
+        cancel: "キャンセル",
+      },
+      empty_cta: "新しい記憶を作成する",
+    },
   },
   profile_settings: {
     edit_account: "アカウントを編集",

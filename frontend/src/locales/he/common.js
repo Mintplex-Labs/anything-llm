@@ -1064,6 +1064,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "הבקשה לקבלת הכלי אושרה.",
       tool_call_was_rejected: "בקשת השימוש בכלי נדחתה.",
     },
+    memories: {
+      title: "זיכרונות",
+      empty:
+        "עד כה, אין זיכרונות. לאחר שתתקשרו עם הצ'אטבוט, זיכרונות נוספים יתמלאו.",
+      tab_workspace: "חלל עבודה",
+      tab_global: "גלובלי",
+      toggle: {
+        label: "אפשרות להתאים אישית",
+        description:
+          "כשיהיה פעיל, מודל ה-AnythingLLM ילמד את העדפות המשתמש ואת ההקשר מהשיחות.",
+      },
+      menu: {
+        edit: "עריכה",
+        delete: "מחיקה",
+        move_to_global: "מעבר לשוק הגלובלי",
+        move_to_workspace: "מעבר למרחב העבודה",
+      },
+      modal: {
+        create_title: "צור זיכרון",
+        edit_title: "ערוך זיכרון",
+        create_description:
+          "זיכרון זה יישמר וישמש כדי להתאים את התגובות העתידיות.",
+        edit_description: "עדכן את התוכן של הזיכרון הזה.",
+        label: "זיכרון",
+        placeholder: "הזינו תיאור...",
+        create: "צור",
+        save: "שמור",
+        cancel: "בטל",
+      },
+      empty_cta: "ליצור זיכרון חדש",
+    },
   },
   profile_settings: {
     edit_account: "ערוך חשבון",

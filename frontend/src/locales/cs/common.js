@@ -1124,6 +1124,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Žádost o použití nástroje byla schválena.",
       tool_call_was_rejected: "Žádost o použití nástroje byla zamítnuta.",
     },
+    memories: {
+      title: "Paměti",
+      empty:
+        "Dosud žádné vzpomínky. Jak budete více komunikovat s chatbotem, budou se postupně objevovat další.",
+      tab_workspace: "Pracovní prostor",
+      tab_global: "Globální",
+      toggle: {
+        label: "Povolte personalizaci",
+        description:
+          "Po aktivaci se AnythingLLM naučí uživatelské preference a kontext z rozhovorů.",
+      },
+      menu: {
+        edit: "Upravit",
+        delete: "Smazat",
+        move_to_global: "Přechod na mezinárodní úroveň",
+        move_to_workspace: "Přesun do pracovního prostředí",
+      },
+      modal: {
+        create_title: "Vytvořte vzpomínku",
+        edit_title: "Upravit paměť",
+        create_description:
+          "Tato informace bude uložena a použita k přizpůsobení budoucích odpovědí.",
+        edit_description: "Aktualizujte obsah této paměti.",
+        label: "Paměť",
+        placeholder: "Zadejte popis...",
+        create: "Vytvořit",
+        save: "Uložit",
+        cancel: "Zrušit",
+      },
+      empty_cta: "vytvořit novou paměť",
+    },
   },
   profile_settings: {
     edit_account: "Upravit účet",

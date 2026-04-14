@@ -1064,6 +1064,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Vahendite tellimuse kinnitati.",
       tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
     },
+    memories: {
+      title: "Mälestused",
+      empty:
+        "Hetkel pole mälestusi. Kui te interakteerute chatbotiga, siis mälestused hakkavad täituma.",
+      tab_workspace: "Tööruum",
+      tab_global: "Globaalne",
+      toggle: {
+        label: "Aktiveeri isikupärastamine",
+        description:
+          "Kui funktsioon on sisse lülitatud, siis AnythingLLM õpib kasutaja eelistusi ja konteksti vestluste põhjal.",
+      },
+      menu: {
+        edit: "Redigeerimine",
+        delete: "Hüvida",
+        move_to_global: "Liigutage globaalsele tasandile",
+        move_to_workspace: "Liigutage tööruumile",
+      },
+      modal: {
+        create_title: "Loo mälestus",
+        edit_title: "Muuda mälu",
+        create_description:
+          "See teave salvestatakse ja kasutatakse tulevaste vastuste kohandamiseks.",
+        edit_description: "Päivitage selle andmealade sisu.",
+        label: "Mälestus",
+        placeholder: "Sisestage kirjeldus...",
+        create: "Loo",
+        save: "Salvesta",
+        cancel: "Katkuda\nTühista",
+      },
+      empty_cta: "loo uus mälestus",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",

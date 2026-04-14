@@ -1075,6 +1075,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "도구 사용 승인",
       tool_call_was_rejected: "도구 호출이 거부되었습니다.",
     },
+    memories: {
+      title: "추억",
+      empty:
+        "현재까지 기억은 없습니다. 챗봇과 상호작용할수록 기억이 더 채워질 것입니다.",
+      tab_workspace: "업무 공간",
+      tab_global: "글로벌",
+      toggle: {
+        label: "개인 맞춤 설정 활성화",
+        description:
+          '"AnythingLLM을 활성화하면, 사용자의 선호도와 맥락을 대화 내용으로부터 학습합니다."',
+      },
+      menu: {
+        edit: "수정",
+        delete: "삭제",
+        move_to_global: "글로벌로 확장",
+        move_to_workspace: "워크스페이스로 이동",
+      },
+      modal: {
+        create_title: "추억 만들기",
+        edit_title: "메모리 편집",
+        create_description:
+          "이 정보는 저장되어 앞으로의 응답을 개인화하는 데 사용됩니다.",
+        edit_description: "이 메모의 내용을 업데이트하세요.",
+        label: "기억",
+        placeholder: "설명을 입력하세요...",
+        create: "만들다",
+        save: "저장",
+        cancel: "취소",
+      },
+      empty_cta: "새로운 기억을 만들다",
+    },
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

@@ -577,6 +577,37 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
     },
+    memories: {
+      title: "Amintiri",
+      empty:
+        "Până acum, nu există amintiri. Odată ce interacționați mai mult cu chatbot-ul, veți începe să aveți mai multe amintiri.",
+      tab_workspace: "Spațiu de lucru",
+      tab_global: "Global",
+      toggle: {
+        label: "Activează personalizarea",
+        description:
+          "Când este activat, AnythingLLM va învăța preferințele și contextul utilizatorului din conversații.",
+      },
+      menu: {
+        edit: "Editează",
+        delete: "Șterge",
+        move_to_global: "Migrați către nivel global",
+        move_to_workspace: "Mutare în spațiul de lucru",
+      },
+      modal: {
+        create_title: "Creați o amintire",
+        edit_title: "Modifică memoria",
+        create_description:
+          "Această informație va fi salvată și utilizată pentru a personaliza răspunsurile viitoare.",
+        edit_description: "Actualizați conținutul acestei memorii.",
+        label: "Memorie",
+        placeholder: "Introduceți o descriere...",
+        create: "Creați",
+        save: "Salvați",
+        cancel: "Anula",
+      },
+      empty_cta: "crează o nouă memorie",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",

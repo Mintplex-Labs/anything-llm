@@ -999,6 +999,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
       tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
     },
+    memories: {
+      title: "Những kỷ niệm",
+      empty:
+        "Hiện tại chưa có thông tin gì. Khi bạn tương tác với chatbot, thông tin sẽ dần dần được điền vào.",
+      tab_workspace: "Không gian làm việc",
+      tab_global: "Toàn cầu",
+      toggle: {
+        label: "Kích hoạt tùy chỉnh",
+        description:
+          "Khi được kích hoạt, AnythingLLM sẽ học hỏi sở thích và ngữ cảnh của người dùng từ các cuộc trò chuyện.",
+      },
+      menu: {
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        move_to_global: "Di chuyển sang cấp toàn cầu",
+        move_to_workspace: "Di chuyển đến không gian làm việc",
+      },
+      modal: {
+        create_title: "Tạo ra ký ức",
+        edit_title: "Chỉnh sửa bộ nhớ",
+        create_description:
+          "Dữ liệu này sẽ được lưu lại và sử dụng để cá nhân hóa các phản hồi trong tương lai.",
+        edit_description: "Cập nhật nội dung của bộ nhớ này.",
+        label: "Bộ nhớ",
+        placeholder: "Nhập mô tả...",
+        create: "Tạo ra",
+        save: "Lưu",
+        cancel: "Hủy",
+      },
+      empty_cta: "tạo ra một ký ức mới",
+    },
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

@@ -1126,6 +1126,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La solicitud de herramientas ha sido aprobada.",
       tool_call_was_rejected: "La solicitud de herramienta fue rechazada.",
     },
+    memories: {
+      title: "Recuerdos",
+      empty:
+        "Hasta ahora, no hay recuerdos. Sin embargo, a medida que interactúes más con el chatbot, se crearán nuevos recuerdos.",
+      tab_workspace: "Espacio de trabajo",
+      tab_global: "Global",
+      toggle: {
+        label: "Activar la personalización",
+        description:
+          "Cuando esté habilitado, AnythingLLM aprenderá las preferencias y el contexto del usuario a partir de las conversaciones.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Pasar a nivel global",
+        move_to_workspace: "Ir al espacio de trabajo",
+      },
+      modal: {
+        create_title: "Crear recuerdos",
+        edit_title: "Editar memoria",
+        create_description:
+          "Esta información se guardará y se utilizará para personalizar futuras respuestas.",
+        edit_description: "Actualiza el contenido de esta memoria.",
+        label: "Memoria",
+        placeholder: "Introduce una descripción...",
+        create: "Crear",
+        save: "Guardar",
+        cancel: "Cancelar",
+      },
+      empty_cta: "crear un nuevo recuerdo",
+    },
   },
   profile_settings: {
     edit_account: "Editar cuenta",

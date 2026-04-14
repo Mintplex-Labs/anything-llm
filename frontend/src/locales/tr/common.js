@@ -1009,6 +1009,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
     },
+    memories: {
+      title: "Anılar",
+      empty:
+        "Şimdiye kadar herhangi bir anı oluşmadı. Sohbet botuyla daha fazla etkileşimde bulunduktan sonra, anılar otomatik olarak oluşmaya başlayacaktır.",
+      tab_workspace: "Çalışma alanı",
+      tab_global: "Küresel",
+      toggle: {
+        label: "Kişiselleştirme özelliğini etkinleştirin",
+        description:
+          "Etkinleştirildiğinde, AnythingLLM, kullanıcı tercihlerini ve bağlamı sohbetlerden öğrenecektir.",
+      },
+      menu: {
+        edit: "Düzenle",
+        delete: "Sil",
+        move_to_global: "Küresel ölçeğe geçin",
+        move_to_workspace: "Çalışma Alanına Geç",
+      },
+      modal: {
+        create_title: "Anılar Oluştur",
+        edit_title: "Bellek Düzenle",
+        create_description:
+          "Bu bilgi kaydedilecek ve gelecekteki yanıtları kişiselleştirmek için kullanılacaktır.",
+        edit_description: "Bu belleğin içeriğini güncelleyin.",
+        label: "Bellek",
+        placeholder: "Açıklama girin...",
+        create: "Oluştur",
+        save: "Kaydet",
+        cancel: "İptal et",
+      },
+      empty_cta: "yeni bir anı oluştur",
+    },
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

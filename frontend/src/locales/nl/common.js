@@ -1007,6 +1007,37 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    memories: {
+      title: "Herinneringen",
+      empty:
+        "Tot nu toe zijn er geen herinneringen. Naarmate u meer interactie heeft met de chatbot, zullen er meer herinneringen worden gevuld.",
+      tab_workspace: "Werkplek",
+      tab_global: "Wereldwijd",
+      toggle: {
+        label: "Activeer personalisatie",
+        description:
+          "Wanneer AnythingLLM is ingeschakeld, zal het de voorkeuren en context van de gebruiker leren op basis van de gesprekken.",
+      },
+      menu: {
+        edit: "Bewerk",
+        delete: "Verwijderen",
+        move_to_global: "Verplaats naar wereldwijd",
+        move_to_workspace: "Ga naar de werkruimte",
+      },
+      modal: {
+        create_title: "Creëer een herinnering",
+        edit_title: "Bewerk geheugen",
+        create_description:
+          "Deze informatie zal worden opgeslagen en gebruikt om toekomstige antwoorden te personaliseren.",
+        edit_description: "Update de inhoud van dit geheugen.",
+        label: "Geheugen",
+        placeholder: "Voer een beschrijving in...",
+        create: "Creëren",
+        save: "Opslaan",
+        cancel: "Annuleren",
+      },
+      empty_cta: "maak een nieuwe herinnering",
+    },
   },
   profile_settings: {
     edit_account: "Account bewerken",

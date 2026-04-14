@@ -995,6 +995,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
       tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
     },
+    memories: {
+      title: "ذكريات",
+      empty:
+        "لم يتم تذكر أي شيء حتى الآن. بعد التفاعل مع برنامج الدردشة، سيتم ملء المزيد من الذكريات.",
+      tab_workspace: "مساحة العمل",
+      tab_global: "عالمي",
+      toggle: {
+        label: "تمكين التخصيص",
+        description:
+          "عند تفعيلها، سيتعلم نموذج AnythingLLM تفضيلات المستخدم والسياق من خلال المحادثات.",
+      },
+      menu: {
+        edit: "تحرير",
+        delete: "حذف",
+        move_to_global: "انتقل إلى المستوى العالمي",
+        move_to_workspace: "انتقل إلى مساحة العمل",
+      },
+      modal: {
+        create_title: "إنشاء ذاكرة",
+        edit_title: "تحرير الذاكرة",
+        create_description:
+          "سيتم حفظ هذه الذاكرة واستخدامها لتخصيص الردود المستقبلية.",
+        edit_description: "حدث محتوى هذه الذاكرة.",
+        label: "الذاكرة",
+        placeholder: "أدخل وصفًا...",
+        create: "إنشاء",
+        save: "احفظ",
+        cancel: "إلغاء",
+      },
+      empty_cta: "إنشاء ذاكرة جديدة",
+    },
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

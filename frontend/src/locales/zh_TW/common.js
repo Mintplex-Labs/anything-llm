@@ -939,6 +939,35 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具請求已獲得批准。",
       tool_call_was_rejected: "請求已遭拒絕",
     },
+    memories: {
+      title: "回憶",
+      empty: "目前還沒有任何回憶。當您與聊天機器人互動後，記憶會逐漸充盈。",
+      tab_workspace: "工作空間",
+      tab_global: "全球",
+      toggle: {
+        label: "啟用個人化功能",
+        description:
+          "當啟用時，「AnythingLLM」會從對話中學習使用者偏好和情境。",
+      },
+      menu: {
+        edit: "編輯",
+        delete: "刪除",
+        move_to_global: "擴大國際合作",
+        move_to_workspace: "遷移至工作空間",
+      },
+      modal: {
+        create_title: "建立回憶",
+        edit_title: "編輯記憶",
+        create_description: "這段記憶會被儲存下來，並用於個性化未來的回覆。",
+        edit_description: "更新此記憶中的內容。",
+        label: "記憶",
+        placeholder: "請輸入描述...",
+        create: "創造",
+        save: "儲存",
+        cancel: "取消",
+      },
+      empty_cta: "創造新的回憶",
+    },
   },
   profile_settings: {
     edit_account: "編輯帳戶",

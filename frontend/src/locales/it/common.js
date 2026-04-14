@@ -1025,6 +1025,37 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La richiesta di accesso all'attrezzatura è stata rifiutata.",
     },
+    memories: {
+      title: "Ricordi",
+      empty:
+        "Al momento, non ci sono ricordi. Tuttavia, interagendo di più con il chatbot, si formeranno nuovi ricordi.",
+      tab_workspace: "Spazio di lavoro",
+      tab_global: "Globale",
+      toggle: {
+        label: "Abilita la personalizzazione",
+        description:
+          "Quando è abilitato, AnythingLLM imparerà le preferenze e il contesto dell'utente dalle conversazioni.",
+      },
+      menu: {
+        edit: "Modifica",
+        delete: "Elimina",
+        move_to_global: "Passare a livello globale",
+        move_to_workspace: "Passa all'area di lavoro",
+      },
+      modal: {
+        create_title: "Crea un ricordo",
+        edit_title: "Modifica la memoria",
+        create_description:
+          "Queste informazioni saranno salvate e utilizzate per personalizzare le risposte future.",
+        edit_description: "Aggiorna il contenuto di questa memoria.",
+        label: "Memoria",
+        placeholder: "Inserisci una descrizione...",
+        create: "Creare",
+        save: "Salva",
+        cancel: "Annulla",
+      },
+      empty_cta: "creare un nuovo ricordo",
+    },
   },
   profile_settings: {
     edit_account: "Modifica account",

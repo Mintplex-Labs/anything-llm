@@ -1105,6 +1105,37 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Pieprasījums par instrumenta izmantošanu tika atgrūstīts.",
     },
+    memories: {
+      title: "Atmiņas",
+      empty:
+        "Līdz šim nav atmiņu. Kad jūs vairāk iejiegsas ar šo chatbot, atmiņas sāks piepildīties.",
+      tab_workspace: "Darba telpa",
+      tab_global: "Vispārīgs",
+      toggle: {
+        label: "Ierīkojiet personalizāciju",
+        description:
+          "Kad tas ir aktivizēts, AnythingLLM mācīsies no lietotāja preferencēm un konteksta, kas norisinās sarunās.",
+      },
+      menu: {
+        edit: "Rediģēt",
+        delete: "Dzēst",
+        move_to_global: "Migrācija uz globālu",
+        move_to_workspace: "Pārvietoties uz darba telpu",
+      },
+      modal: {
+        create_title: "Izveidot atmiņu",
+        edit_title: "Rediģēt atmiņas",
+        create_description:
+          "Šis atgriezties tiks saglabāts un izmantots, lai pielāgotu nākotnes atbildes.",
+        edit_description: "Atjaunini šī atmiņas saturu.",
+        label: "Atmiņa",
+        placeholder: "Ievietojiet aprakstu...",
+        create: "Izveidot",
+        save: "Saglabāt",
+        cancel: "Atcelt",
+      },
+      empty_cta: "izveidot jaunu atmiņu",
+    },
   },
   profile_settings: {
     edit_account: "Rediģēt kontu",

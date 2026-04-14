@@ -1000,6 +1000,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "درخواست برای تهیه ابزار تأیید شد.",
       tool_call_was_rejected: "درخواست استفاده از ابزار رد شد.",
     },
+    memories: {
+      title: "یادها",
+      empty:
+        "تا به امروز، هیچ خاطره‌ای ثبت نشده است. با استفاده بیشتر از چت‌بات، خاطرات بیشتری به تدریج ثبت خواهند شد.",
+      tab_workspace: "فضای کاری",
+      tab_global: "جهانی",
+      toggle: {
+        label: "فعال کردن شخصی‌سازی",
+        description:
+          "هنگامی که فعال شود، AnythingLLM از طریق مکالمات، ترجیحات و زمینه مورد نظر کاربر را یاد می‌گیرد.",
+      },
+      menu: {
+        edit: "ویرایش",
+        delete: "حذف",
+        move_to_global: "انتقال به سطح جهانی",
+        move_to_workspace: "رفتن به فضای کاری",
+      },
+      modal: {
+        create_title: "ایجاد خاطره",
+        edit_title: "ویرایش حافظه",
+        create_description:
+          "این اطلاعات ذخیره خواهد شد و برای شخصی‌سازی پاسخ‌های بعدی استفاده خواهد شد.",
+        edit_description: "محتوای این حافظه را به‌روزرسانی کنید.",
+        label: "حافظه",
+        placeholder: "یک شرح را وارد کنید...",
+        create: "ایجاد",
+        save: "ذخیره",
+        cancel: "لغو کردن",
+      },
+      empty_cta: "ایجاد یک حافظه جدید",
+    },
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

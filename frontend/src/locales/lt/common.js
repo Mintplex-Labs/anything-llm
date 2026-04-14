@@ -1126,6 +1126,37 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Įrankių užsakymas buvo patvirtintas.",
       tool_call_was_rejected: "Klausimas dėl įrankio buvo atmetamas.",
     },
+    memories: {
+      title: "Atmintys",
+      empty:
+        "Kol kas nėra jokios atminimo. Kai su chatbotu bendrausite, atminimas bus užpildytas arba",
+      tab_workspace: "Darbo zona",
+      tab_global: "Pasaulinis",
+      toggle: {
+        label: "Aaktyvinkite individualizavimą",
+        description:
+          "Kai įjungtas, „AnythingLLM“ išmokys vartotojo preferencijų ir konteksto iš pokalbių.",
+      },
+      menu: {
+        edit: "Redaguoti",
+        delete: "Ištrink",
+        move_to_global: "Perėjus į pasaulinį lygį",
+        move_to_workspace: "Perkelkite į darbo vietą",
+      },
+      modal: {
+        create_title: "Sukurkite atminimą",
+        edit_title: "Redaguoti atmintį",
+        create_description:
+          "Šis įslaptas duomenys bus išsaugomi ir bus naudojami, kad būtų galima individualizuoti ateities atsakymus.",
+        edit_description: "Atnaujink šio įspėjimo turinį.",
+        label: "Atmintis",
+        placeholder: "Įveskite aprašymą...",
+        create: "Sukurti",
+        save: "Išsaugoti",
+        cancel: "Atšaukti",
+      },
+      empty_cta: "sukurti naują atmintį",
+    },
   },
   profile_settings: {
     edit_account: "Redaguoti paskyrą",
