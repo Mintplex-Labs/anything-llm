@@ -35,6 +35,10 @@ const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { webPushEndpoints } = require("./endpoints/webPush");
 const { telegramEndpoints } = require("./endpoints/telegram");
+const {
+  outlookAgentEndpoints,
+} = require("./endpoints/utils/outlookAgentUtils");
+const { gmailAgentEndpoints } = require("./endpoints/utils/gmailAgentUtils");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
@@ -89,6 +93,8 @@ mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
 webPushEndpoints(apiRouter);
 telegramEndpoints(apiRouter);
+outlookAgentEndpoints(apiRouter);
+gmailAgentEndpoints(apiRouter);
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 

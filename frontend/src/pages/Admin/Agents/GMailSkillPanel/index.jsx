@@ -19,6 +19,7 @@ import {
 import GMailIcon from "./gmail.png";
 import Admin from "@/models/admin";
 import System from "@/models/system";
+import GmailAgent from "@/models/gmailAgent";
 import { getGmailSkills, filterSkillCategories } from "./utils";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
@@ -46,22 +47,21 @@ export default function GMailSkillPanel({
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      Admin.systemPreferencesByFields([
-        "disabled_gmail_skills",
-        "gmail_deployment_id",
-        "gmail_api_key",
-      ]),
+      Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
       System.keys(),
+      GmailAgent.getStatus(),
     ])
-      .then(([prefsRes, settingsRes]) => {
-        const loadedDeploymentId =
-          prefsRes?.settings?.gmail_deployment_id ?? "";
-        const loadedApiKey = prefsRes?.settings?.gmail_api_key ?? "";
+      .then(([prefsRes, settingsRes, statusRes]) => {
         setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
-        setDeploymentId(loadedDeploymentId);
-        setApiKey(loadedApiKey);
         setIsMultiUserMode(settingsRes?.MultiUserMode ?? false);
-        setConfigDefaultExpanded(!(loadedDeploymentId && loadedApiKey));
+
+        if (statusRes?.success && statusRes.config) {
+          const loadedDeploymentId = statusRes.config.deploymentId || "";
+          const loadedApiKey = statusRes.config.apiKey || "";
+          setDeploymentId(loadedDeploymentId);
+          setApiKey(loadedApiKey);
+          setConfigDefaultExpanded(!(loadedDeploymentId && loadedApiKey));
+        }
       })
       .catch(() => {
         setDisabledSkills([]);
@@ -73,15 +73,16 @@ export default function GMailSkillPanel({
 
   useEffect(() => {
     if (prevHasChanges.current === true && hasChanges === false) {
-      Admin.systemPreferencesByFields([
-        "disabled_gmail_skills",
-        "gmail_deployment_id",
-        "gmail_api_key",
+      Promise.all([
+        Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
+        GmailAgent.getStatus(),
       ])
-        .then((res) => {
-          setDisabledSkills(res?.settings?.disabled_gmail_skills ?? []);
-          setDeploymentId(res?.settings?.gmail_deployment_id ?? "");
-          setApiKey(res?.settings?.gmail_api_key ?? "");
+        .then(([prefsRes, statusRes]) => {
+          setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
+          if (statusRes?.success && statusRes.config) {
+            setDeploymentId(statusRes.config.deploymentId || "");
+            setApiKey(statusRes.config.apiKey || "");
+          }
         })
         .catch(() => {});
     }
@@ -133,7 +134,7 @@ export default function GMailSkillPanel({
               a: (
                 <Link
                   className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
-                  to={paths.docs("/features/gmail-agent")}
+                  to={paths.docs("/agent/usage/gmail-agent")}
                   target="_blank"
                 />
               ),
@@ -425,6 +426,11 @@ function SkillRow({ skill, disabled, onToggle }) {
 }
 
 function HiddenFormInputs({ disabledSkills, deploymentId, apiKey }) {
+  const configJson = JSON.stringify({
+    deploymentId: deploymentId || "",
+    apiKey: apiKey || "",
+  });
+
   return (
     <>
       <input
@@ -433,11 +439,10 @@ function HiddenFormInputs({ disabledSkills, deploymentId, apiKey }) {
         value={disabledSkills.join(",")}
       />
       <input
-        name="system::gmail_deployment_id"
+        name="system::gmail_agent_config"
         type="hidden"
-        value={deploymentId}
+        value={configJson}
       />
-      <input name="system::gmail_api_key" type="hidden" value={apiKey} />
     </>
   );
 }

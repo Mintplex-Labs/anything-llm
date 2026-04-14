@@ -530,6 +530,103 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Microsoft Outlook – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrer din indbakke via Microsoft Graph API. Se dokumentationen her: <a>.",
+        multiUserWarning:
+          "Integration med Outlook er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Outlook-konfiguration",
+        authType: "Kontotype",
+        authTypeHelp:
+          'Vælg, hvilke typer af Microsoft-konti der kan godkende. "Alle konti" understøtter både personlige og arbejds-/skolekonti. "Kun personlige konti" begrænser til kun personlige Microsoft-konti. "Kun arbejds-/skolekonti" begrænser til arbejds-/skolekonti fra en specifik Azure AD-tenant.',
+        authTypeCommon: "Alle konti (personlige og arbejds-/skolerelaterede)",
+        authTypeConsumers: "Kun personlige Microsoft-konti",
+        authTypeOrganization: "Kun organisationskonti (kræver lejer-ID)",
+        clientId: "Anvendelses-ID (kunde)",
+        clientIdHelp:
+          "Applikations-ID (også kaldet klient-ID) fra din Azure AD applikationsregistrering",
+        tenantId: "Identifikationsnummer (Lejer)",
+        tenantIdHelp:
+          "Identifikationsnummeret (for lejer) fra din Azure AD-applikationsregistrering. Kræves kun til autentificering, der kun er for organisationen.",
+        clientSecret: "Klientens hemmelige nøgle",
+        clientSecretHelp:
+          "Klientens hemmelige værdi fra din Azure AD-applikationsregistrering",
+        configurationRequired:
+          "Vær venligst oprettet Client ID og Client Secret for at aktivere Outlook-funktionaliteten.",
+        authRequired:
+          "Gem dine legitimationsoplysninger først, og derefter skal du autentificere dig hos Microsoft for at fuldføre opsætningen.",
+        authenticateWithMicrosoft: "Bekræft med Microsoft",
+        authenticated: "Succesfuldt bekræftet med Microsoft Outlook.",
+        revokeAccess: "Annullér adgang",
+        configured: "Konfigureret",
+        searchSkills: "Færdigheder inden for søgning...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
+        categories: {
+          search: {
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Outlook-indbakke",
+          },
+          drafts: {
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails.",
+          },
+          send: {
+            title: "Send e-mails",
+            description:
+              "Send nye e-mails eller svar på beskeder med det samme.",
+          },
+          account: {
+            title: "Statistik om integration",
+            description: "Se statistik for din postkasse og kontoinformation.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Åbn indbakken",
+            description: "Få de seneste e-mails fra din Outlook-indbakke.",
+          },
+          search: {
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Microsofts søgesyntaks",
+          },
+          readThread: {
+            title: "Læs samtale",
+            description: "Læs hele e-mail-samtaletråden",
+          },
+          createDraft: {
+            title: "Opret udkast",
+            description:
+              "Opret et nyt udkast til en e-mail eller et udkast til et svar på en eksisterende besked.",
+          },
+          updateDraft: {
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
+          },
+          listDrafts: {
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
+          },
+          deleteDraft: {
+            title: "Slet udkast",
+            description: "Slet en udkast til e-mail",
+          },
+          sendDraft: {
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
+          },
+          sendEmail: {
+            title: "Send e-mail",
+            description:
+              "Send en ny e-mail eller svar på en eksisterende besked med det samme.",
+          },
+          getMailboxStats: {
+            title: "Statistik for postkasse",
+            description: "Få antallet af mapper og statistikker for postkasser",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servere",

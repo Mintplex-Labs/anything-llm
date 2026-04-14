@@ -530,6 +530,106 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook-connector",
+        description:
+          "Laat uw agent in staat zijn om met Microsoft Outlook te communiceren: e-mails zoeken, threads lezen, concepten opstellen, e-mails versturen en uw inbox beheren via de Microsoft Graph API. Raadpleeg de documentatie.",
+        multiUserWarning:
+          "De integratie met Outlook is niet beschikbaar in de modus voor meerdere gebruikers, vanwege veiligheidsoverwegingen. Om deze functie te gebruiken, moet u de modus voor meerdere gebruikers uitschakelen.",
+        configuration: "Outlook-configuratie",
+        authType: "Type account",
+        authTypeHelp:
+          'Kies welke soorten Microsoft-accounts kunnen worden gebruikt voor authenticatie. "Alle accounts" ondersteunt zowel persoonlijke als werk-/schoolaccounts. "Alleen persoonlijke accounts" beperkt zich tot persoonlijke Microsoft-accounts. "Alleen werk-/schoolaccounts" beperkt zich tot werk-/schoolaccounts van een specifieke Azure AD-tenant.',
+        authTypeCommon:
+          "Alle rekeningen (persoonlijke en zakelijke/schoolrekeningen)",
+        authTypeConsumers: "Alleen persoonlijke Microsoft-accounts",
+        authTypeOrganization:
+          "Alleen accounts voor organisaties (vereist Tenant-ID)",
+        clientId: "Toepassings-ID (klant)",
+        clientIdHelp:
+          "De applicatie-ID (ook wel Client ID genoemd) van uw Azure AD-applicatie.",
+        tenantId: "Identificatienummer (huurder)",
+        tenantIdHelp:
+          "De Directory (Tenant) ID uit uw Azure AD-appregistratie. Vereist alleen voor authenticatie binnen een organisatie.",
+        clientSecret: "Geheime sleutel",
+        clientSecretHelp: "De geheime waarde van uw Azure AD-appregistratie",
+        configurationRequired:
+          "Configureer de Client ID en Client Secret om de Outlook-functionaliteit te activeren.",
+        authRequired:
+          "Sla eerst uw gegevens op, en voer vervolgens de authenticatie uit bij Microsoft om het proces te voltooien.",
+        authenticateWithMicrosoft: "Authenticeer met Microsoft",
+        authenticated: "Succesvol verbonden met Microsoft Outlook.",
+        revokeAccess: "Toegang intrekken",
+        configured: "Geconfigureerd",
+        searchSkills: "Vaardigheden op het gebied van zoeken...",
+        noSkillsFound:
+          "Geen overeenkomende vaardigheden zijn gevonden op basis van uw zoekopdracht.",
+        categories: {
+          search: {
+            title: "Zoeken en e-mails lezen",
+            description: "Zoek en lees e-mails uit uw Outlook inbox.",
+          },
+          drafts: {
+            title: "Voorbeeld e-mails",
+            description: "Maak, bewerk en beheer e-mailvoorstellen.",
+          },
+          send: {
+            title: "Verzend e-mails",
+            description:
+              "Verzend nieuwe e-mails of reageer onmiddellijk op berichten.",
+          },
+          account: {
+            title: "Statistieken over integratie",
+            description:
+              "Bekijk statistieken en accountinformatie van uw e-mail.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Open de inbox",
+            description: "Bekijk recente e-mails uit uw Outlook inbox.",
+          },
+          search: {
+            title: "Zoeken in e-mails",
+            description:
+              "Zoek naar e-mails met behulp van de syntax van Microsoft Search",
+          },
+          readThread: {
+            title: "Lees het gesprek",
+            description: "Lees het volledige e-mailgesprek",
+          },
+          createDraft: {
+            title: "Maak een concept",
+            description:
+              "Maak een nieuwe concept-e-mail of een concept-antwoord op een bestaande bericht.",
+          },
+          updateDraft: {
+            title: "Versie",
+            description: "Pas een bestaand concept e-mail aan",
+          },
+          listDrafts: {
+            title: "Ontwerpen",
+            description: "Maak een lijst van alle concept-e-mails.",
+          },
+          deleteDraft: {
+            title: "Verwijder concept",
+            description: "Verwijder een concept-e-mail",
+          },
+          sendDraft: {
+            title: "Verzend concept",
+            description: "Verzend een bestaand e-mailontwerp.",
+          },
+          sendEmail: {
+            title: "Stuur e-mail",
+            description:
+              "Verzend een nieuw e-mail of reageer direct op een bestaande bericht.",
+          },
+          getMailboxStats: {
+            title: "Statistieken van de e-mailbox",
+            description: "Haal de aantallen mappen en mailbox-statistieken op.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servers",
