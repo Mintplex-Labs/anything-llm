@@ -131,13 +131,18 @@ function AttachmentItem({ attachment, onImageClick }) {
               <X size={10} className="flex-shrink-0" />
             </button>
           </div>
-          <img
-            alt={`Preview of ${file.name}`}
-            src={contentString}
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            className={`${iconBgColor} w-[40px] h-[40px] rounded-lg flex items-center justify-center cursor-pointer`}
+          <button
+            type="button"
             onClick={onImageClick}
-          />
+            className="p-0 border-none bg-transparent cursor-pointer"
+          >
+            <img
+              alt={`Preview of ${file.name}`}
+              src={contentString}
+              style={{ objectFit: "cover", objectPosition: "center" }}
+              className={`${iconBgColor} w-[40px] h-[40px] rounded-lg flex items-center justify-center`}
+            />
+          </button>
         </div>
       );
     }

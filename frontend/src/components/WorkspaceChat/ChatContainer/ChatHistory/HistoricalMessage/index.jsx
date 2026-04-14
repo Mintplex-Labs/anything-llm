@@ -214,13 +214,18 @@ function ChatAttachments({ attachments = [] }) {
   return (
     <div className="flex flex-wrap gap-4 mt-4">
       {imageAttachments.map((item, index) => (
-        <img
-          alt={`Attachment: ${item.name}`}
+        <button
+          type="button"
           key={item.name}
-          src={item.contentString}
-          className="w-[120px] h-[120px] object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => openImageLightbox(imageAttachments, index)}
-        />
+          className="p-0 border-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <img
+            alt={`Attachment: ${item.name}`}
+            src={item.contentString}
+            className="w-[120px] h-[120px] object-cover rounded-lg"
+          />
+        </button>
       ))}
     </div>
   );
