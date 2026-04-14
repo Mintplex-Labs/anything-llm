@@ -225,7 +225,7 @@ export default function OutlookSkillPanel({
               a: (
                 <Link
                   className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
-                  to={paths.docs("/features/outlook-agent")}
+                  to={paths.docs("/agent/usage/outlook-agent")}
                   target="_blank"
                 />
               ),

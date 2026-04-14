@@ -13,8 +13,6 @@ import {
   ChartBar,
   FolderOpen,
   FilePlus,
-  EnvelopeSimple,
-  MicrosoftOutlookLogo,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -22,6 +20,8 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
+import GMailIcon from "./GMailSkillPanel/gmail.png";
+import OutlookIcon from "./OutlookSkillPanel/outlook.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -94,12 +94,17 @@ export const getConfigurableSkills = (
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
   },
+});
+
+export const getAppIntegrationSkills = (t) => ({
   "gmail-agent": {
     title: t("agent.skill.gmail.title"),
     description: t("agent.skill.gmail.description"),
     component: GMailSkillPanel,
     skill: "gmail-agent",
-    icon: EnvelopeSimple,
+    Icon: ({ size }) => (
+      <img src={GMailIcon} alt="GMail" width={size} height={size} />
+    ),
     mode: ["singleUserOnly"],
   },
   "outlook-agent": {
@@ -107,7 +112,9 @@ export const getConfigurableSkills = (
     description: t("agent.skill.outlook.description"),
     component: OutlookSkillPanel,
     skill: "outlook-agent",
-    icon: MicrosoftOutlookLogo,
+    Icon: ({ size }) => (
+      <img src={OutlookIcon} alt="Outlook" width={size} height={size} />
+    ),
     mode: ["singleUserOnly"],
   },
 });

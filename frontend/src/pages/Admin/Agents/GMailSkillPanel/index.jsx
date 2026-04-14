@@ -133,7 +133,7 @@ export default function GMailSkillPanel({
               a: (
                 <Link
                   className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
-                  to={paths.docs("/features/gmail-agent")}
+                  to={paths.docs("/agent/usage/gmail-agent")}
                   target="_blank"
                 />
               ),
