@@ -149,6 +149,9 @@ container rebuilds or pulls from Docker Hub.
 
 ## Build locally from source _not recommended for casual use_
 
+> [!IMPORTANT]
+> This project requires docker buildx for installation.
+
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `touch server/storage/anythingllm.db` to create empty SQLite DB file.
 - `cd docker/`
