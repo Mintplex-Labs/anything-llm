@@ -550,6 +550,111 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Conector de Outlook",
+        description:
+          "Permita que su agente interactúe con Microsoft Outlook: buscar correos electrónicos, leer hilos, redactar borradores, enviar correos electrónicos y administrar su bandeja de entrada a través de la API de Microsoft Graph. Consulte la documentación.",
+        multiUserWarning:
+          "La integración con Outlook no está disponible en el modo multiusuario por razones de seguridad. Para utilizar esta función, por favor, desactive el modo multiusuario.",
+        configuration: "Configuración de Outlook",
+        authType: "Tipo de cuenta",
+        authTypeHelp:
+          'Seleccione qué tipos de cuentas de Microsoft pueden autenticarse. "Todas las cuentas" admite tanto cuentas personales como cuentas de trabajo/escuela. "Solo cuentas personales" se limita a cuentas personales de Microsoft. "Solo cuentas de organización" se limita a cuentas de trabajo/escuela de un inquilino específico de Azure AD.',
+        authTypeCommon: "Todas las cuentas (personales y de trabajo/escuela)",
+        authTypeConsumers: "Cuentas personales de Microsoft únicamente.",
+        authTypeOrganization:
+          "Cuentas de organizaciones únicamente (requiere el ID del inquilino)",
+        clientId: "Identificador del cliente (solicitante)",
+        clientIdHelp:
+          "El ID de la aplicación (cliente) de su registro de aplicación en Azure AD",
+        tenantId: "ID del inquilino",
+        tenantIdHelp:
+          "El ID del directorio (del inquilino) de su registro de aplicación en Azure AD. Es necesario únicamente para la autenticación dentro de una organización.",
+        clientSecret: "Clave secreta",
+        clientSecretHelp:
+          "El valor secreto del cliente de su registro de aplicación en Azure AD.",
+        configurationRequired:
+          "Por favor, configure el ID del cliente y la clave secreta para habilitar las funciones de Outlook.",
+        authRequired:
+          "Primero, guarde sus credenciales, y luego, utilice las credenciales para autenticarse con Microsoft y completar la configuración.",
+        authenticateWithMicrosoft: "Autenticarse con Microsoft",
+        authenticated: "Autenticación exitosa con Microsoft Outlook.",
+        revokeAccess: "Revocar el acceso",
+        configured: "Configurado",
+        searchSkills: "Habilidades de búsqueda...",
+        noSkillsFound:
+          "No se encontraron resultados que coincidan con tu búsqueda.",
+        categories: {
+          search: {
+            title: "Buscar y leer correos electrónicos",
+            description:
+              "Busque y lea correos electrónicos desde su bandeja de entrada de Outlook.",
+          },
+          drafts: {
+            title: "Borradores de correos electrónicos",
+            description:
+              "Crea, edita y gestiona borradores de correos electrónicos.",
+          },
+          send: {
+            title: "Enviar correos electrónicos",
+            description:
+              "Envía nuevos correos electrónicos o responde a los mensajes de inmediato.",
+          },
+          account: {
+            title: "Estadísticas de integración",
+            description:
+              "Visualice las estadísticas de la bandeja de entrada y la información de la cuenta.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Acceder a la bandeja de entrada",
+            description:
+              "Consigue los últimos correos electrónicos de tu bandeja de entrada de Outlook.",
+          },
+          search: {
+            title: "Buscar correos electrónicos",
+            description:
+              "Busque correos electrónicos utilizando la sintaxis de búsqueda de Microsoft.",
+          },
+          readThread: {
+            title: "Leer la conversación",
+            description: "Leer toda la conversación por correo electrónico.",
+          },
+          createDraft: {
+            title: "Crear borrador",
+            description:
+              "Cree un nuevo borrador de correo electrónico o un borrador de respuesta a un mensaje existente.",
+          },
+          updateDraft: {
+            title: "Versión actualizada del borrador",
+            description:
+              "Actualizar un borrador de correo electrónico existente",
+          },
+          listDrafts: {
+            title: "Borradores",
+            description: "Enumere todas las correos electrónicos en borrador.",
+          },
+          deleteDraft: {
+            title: "Eliminar borrador",
+            description: "Eliminar un borrador de correo electrónico",
+          },
+          sendDraft: {
+            title: "Enviar borrador",
+            description: "Enviar un borrador de correo electrónico existente",
+          },
+          sendEmail: {
+            title: "Enviar correo electrónico",
+            description:
+              "Envía un nuevo correo electrónico o responde a un mensaje existente de inmediato.",
+          },
+          getMailboxStats: {
+            title: "Estadísticas de la bandeja de entrada",
+            description:
+              "Obtén el número de carpetas y estadísticas de la bandeja de entrada.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

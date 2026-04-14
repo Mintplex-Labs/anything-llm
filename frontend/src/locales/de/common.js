@@ -542,6 +542,110 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, mit Microsoft Outlook zu interagieren – Suchen Sie E-Mails, lesen Sie Threads, erstellen Sie Entwürfe, senden Sie E-Mails und verwalten Sie Ihren Posteingang über die Microsoft Graph API. <a> Lesen Sie die Dokumentation</a>.",
+        multiUserWarning:
+          "Die Integration mit Outlook ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Um diese Funktion nutzen zu können, bitte den Mehrbenutzermodus deaktivieren.",
+        configuration: "Konfiguration von Outlook",
+        authType: "Kontotyp",
+        authTypeHelp:
+          "Wählen Sie, welche Arten von Microsoft-Konten zur Authentifizierung verwendet werden können. „Alle Konten“ unterstützt sowohl persönliche als auch Arbeits-/Schulkonten. „Nur persönliche Konten“ beschränkt sich auf persönliche Microsoft-Konten. „Nur Arbeits-/Schulkonten“ beschränkt sich auf Arbeits-/Schulkonten eines bestimmten Azure AD-Mandanten.",
+        authTypeCommon: "Alle Konten (persönliche und Arbeits-/Schulkonten)",
+        authTypeConsumers: "Nur persönliche Microsoft-Konten",
+        authTypeOrganization:
+          "Nur Konten für Organisationen (benötigt eine Tenant-ID)",
+        clientId: "Anwendungs-ID (Kunden-ID)",
+        clientIdHelp:
+          "Die Anwendungs-ID (Client-ID) von Ihrer Azure AD-Anwendung",
+        tenantId: "Verzeichnis-ID (Mieter)",
+        tenantIdHelp:
+          "Die Verzeichnis-ID (für den Mieter) aus Ihrer Azure AD-App-Registrierung. Dies ist nur für die Authentifizierung innerhalb einer Organisation erforderlich.",
+        clientSecret: "Client-Schlüssel",
+        clientSecretHelp:
+          "Der geheime Wert, den Sie für die Registrierung Ihrer Azure AD-Anwendung festgelegt haben.",
+        configurationRequired:
+          "Bitte konfigurieren Sie die Client-ID und den Client-Schlüssel, um die Outlook-Funktionen zu aktivieren.",
+        authRequired:
+          "Speichern Sie zuerst Ihre Anmeldedaten, und anschließend melden Sie sich bei Microsoft an, um die Einrichtung abzuschließen.",
+        authenticateWithMicrosoft: "Mit Microsoft anmelden",
+        authenticated: "Erfolgreiche Authentifizierung mit Microsoft Outlook.",
+        revokeAccess: "Zugriff widerrufen",
+        configured: "Konfiguriert",
+        searchSkills: "Suchfähigkeiten...",
+        noSkillsFound:
+          "Keine der angebotenen Fähigkeiten passen zu Ihrer Suche.",
+        categories: {
+          search: {
+            title: "Nachrichten suchen und lesen",
+            description:
+              "Suchen und lesen Sie E-Mails aus Ihrem Outlook-Posteingang.",
+          },
+          drafts: {
+            title: "Entwurf-E-Mails",
+            description:
+              "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen",
+          },
+          send: {
+            title: "E-Mails versenden",
+            description:
+              "Neue E-Mails senden oder sofort auf Nachrichten antworten",
+          },
+          account: {
+            title: "Statistiken zur Integration",
+            description:
+              "Anzeigen von Postfachstatistiken und Kontoinformationen",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "E-Mail-Postfach öffnen",
+            description:
+              "Abrufen von aktuellen E-Mails aus Ihrem Outlook-Posteingang",
+          },
+          search: {
+            title: "E-Mails durchsuchen",
+            description:
+              "E-Mails mithilfe der Syntax von Microsoft Search durchsuchen",
+          },
+          readThread: {
+            title: "Lesen der Konversation",
+            description: "Den vollständigen E-Mail-Austausch durchlesen.",
+          },
+          createDraft: {
+            title: "Entwurf erstellen",
+            description:
+              "Erstellen Sie eine neue Entwurf-E-Mail oder einen Entwurf-Antwort auf eine bestehende Nachricht.",
+          },
+          updateDraft: {
+            title: "Entwurf aktualisieren",
+            description: "Aktualisieren Sie eine bestehende Entwurf-E-Mail",
+          },
+          listDrafts: {
+            title: "Entwurf-Listen",
+            description: "Zeigen Sie alle Entwurfse-Mails an",
+          },
+          deleteDraft: {
+            title: "Entwurf löschen",
+            description: "Einen Entwurf einer E-Mail löschen",
+          },
+          sendDraft: {
+            title: "Entwurf senden",
+            description: "Senden Sie eine bestehende E-Mail-Entwurf",
+          },
+          sendEmail: {
+            title: "E-Mail senden",
+            description:
+              "Senden Sie eine neue E-Mail oder antworten Sie sofort auf eine bestehende Nachricht.",
+          },
+          getMailboxStats: {
+            title: "Statistiken für den Posteingang",
+            description:
+              "Erhalten Sie Informationen über die Anzahl der Ordner und Statistiken für E-Mail-Postfächer.",
+          },
+        },
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",

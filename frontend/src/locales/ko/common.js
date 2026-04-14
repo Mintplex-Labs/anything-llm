@@ -523,6 +523,99 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "아웃룩 연결",
+        description:
+          "Microsoft Outlook와 상호 작용할 수 있도록 에이전트에게 Microsoft Graph API를 사용하도록 설정합니다. 이메일 검색, 스레드 읽기, 초안 작성, 이메일 전송, 그리고 Microsoft Graph API를 통해 이메일함을 관리할 수 있습니다. 자세한 내용은 <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Outlook 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해 주십시오.",
+        configuration: "아웃룩 설정",
+        authType: "계정 유형",
+        authTypeHelp:
+          "인증할 수 있는 Microsoft 계정 유형을 선택합니다. '모든 계정'은 개인 및 업무/학교 계정을 모두 지원합니다. '개인 계정만'은 개인 Microsoft 계정에만 적용됩니다. '특정 Azure AD 테넌트의 계정만'은 특정 Azure AD 테넌트의 업무/학교 계정에만 적용됩니다.",
+        authTypeCommon: "모든 계정 (개인 계정 및 직장/학교 계정)",
+        authTypeConsumers: "개인 Microsoft 계정만 해당",
+        authTypeOrganization: "단순히 조직 계정만 (세입자 ID 필요)",
+        clientId: "애플리케이션 (고객) ID",
+        clientIdHelp:
+          "당신의 Azure AD 애플리케이션 등록 시 얻은 애플리케이션(클라이언트) ID",
+        tenantId: "임대인 ID",
+        tenantIdHelp:
+          "Azure AD 애플리케이션 등록 시 얻은 (임차인) ID. 조직 내 사용자만 인증하는 경우에만 필요합니다.",
+        clientSecret: "고객 비밀",
+        clientSecretHelp: "Azure AD 애플리케이션 등록 시 얻은 클라이언트 비밀",
+        configurationRequired:
+          "아웃룩 기능을 사용하려면 클라이언트 ID와 클라이언트 비밀을 설정해 주세요.",
+        authRequired:
+          "먼저 사용자 정보를 저장한 다음, Microsoft를 통해 계정을 인증하여 설정 과정을 완료하십시오.",
+        authenticateWithMicrosoft: "마이크로소프트와 인증",
+        authenticated: "Microsoft Outlook와 성공적으로 인증되었습니다.",
+        revokeAccess: "접근 권한 취소",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          search: {
+            title: "이메일 검색 및 읽기",
+            description: "Outlook 계정의 이메일을 검색하고 읽으세요.",
+          },
+          drafts: {
+            title: "샘플 이메일",
+            description: "이메일 초안을 작성, 편집 및 관리",
+          },
+          send: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나, 즉시 메시지에 응답",
+          },
+          account: {
+            title: "통합 통계",
+            description: "메일함 통계 및 계정 정보 확인",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "메일함 보기",
+            description: "최근에 받은 이메일을 Outlook 계정에서 확인",
+          },
+          search: {
+            title: "이메일 검색",
+            description: "Microsoft 검색 구문을 사용하여 이메일 검색",
+          },
+          readThread: {
+            title: "대화 내용 읽기",
+            description: "전체 이메일 대화 내용을 읽기",
+          },
+          createDraft: {
+            title: "초안 작성",
+            description:
+              "새로운 이메일 초안을 작성하거나 기존 메시지에 대한 답변 초안을 작성합니다.",
+          },
+          updateDraft: {
+            title: "초안 업데이트",
+            description: "기존 이메일 초안을 업데이트합니다.",
+          },
+          listDrafts: {
+            title: "초안 목록",
+            description: "모든 초안 이메일 목록을 표시",
+          },
+          deleteDraft: {
+            title: "초안 삭제",
+            description: "초안 이메일을 삭제",
+          },
+          sendDraft: {
+            title: "초안 보내기",
+            description: "기존 이메일 초안을 보내기",
+          },
+          sendEmail: {
+            title: "이메일 보내기",
+            description: "새로운 이메일을 보내거나 기존 메시지에 즉시 응답",
+          },
+          getMailboxStats: {
+            title: "메일함 통계",
+            description: "폴더 수와 메일함 통계 정보를 확인합니다.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
