@@ -542,6 +542,108 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "„Outlook“ integracija",
+        description:
+          "Įgalinkite savo agentą, kad galėtų bendrauti su „Microsoft Outlook“ – ieškoti pašto, skaityti pokalbį, kurti projektus, siųsti paštą ir valdyti savo pašto dėžę per „Microsoft Graph“ API. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Outlook“ integracija negalima naudoti kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "Outlook konfigūracija",
+        authType: "Sąskaitos tipas",
+        authTypeHelp:
+          "Pasirinkite, kokie Microsoft sąskaitos gali būti patvirtintos. „Visi“ palaiko tiek asmenines, tiek darbo/mokyklos sąskaitas. „Tik asmeninės“ riboja pasirinkimą iki asmeninių Microsoft sąskaitų. „Tik organizacijos“ riboja pasirinkimą iki darbo/mokyklos sąskaitų iš konkretaus „Azure AD“ kliento.",
+        authTypeCommon: "Visos sąskaitos (asmeninės ir darbo/mokyklos)",
+        authTypeConsumers: "Tiesiog asmeninės Microsoft paskyros",
+        authTypeOrganization:
+          "Tiesiog organizacijos sąskaitos (reikia užpildyti „Užimtojo ID“ laukelį)",
+        clientId: "Programos (kliento) ID",
+        clientIdHelp:
+          "Programos (kliento) ID, gautas iš jūsų „Azure AD“ programos registracijos",
+        tenantId: "Identifikavimo numeris (nuomininkas)",
+        tenantIdHelp:
+          "„Tenant“ ID iš jūsų „Azure AD“ programos registracijos. Reikalingas tik, jei autentifikacija vykdoma tik organizacijos naudotojams.",
+        clientSecret: "Kliento slaptas kodas",
+        clientSecretHelp:
+          "Kliento paslaptas reikalas, gautas iš jūsų „Azure AD“ programos registracijos",
+        configurationRequired:
+          "Prašome nustatyti kliento ID ir kliento slaptažodį, kad būtų įgalintos Outlook funkcijos.",
+        authRequired:
+          "Pirmiausia, išsaugokite savo duomenis, o tada, kad užbaigtumėte konfigūraciją, prisijunkite prie „Microsoft“.",
+        authenticateWithMicrosoft: "Patvirtinkite naudodami Microsoft",
+        authenticated: "Sėkmingai prisijungta prie „Microsoft Outlook“.",
+        revokeAccess: "Atšalinti prieigą",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškai.",
+        categories: {
+          search: {
+            title: "Paieškos ir skaitymas el. paštą",
+            description:
+              "Paieškokite ir skaitykite el. pašto laiškus iš savo Outlook sąrašo",
+          },
+          drafts: {
+            title: "Pasiūlytų el. pašto laiškų",
+            description: "Sukurkite, redaguo, ir valdykite el. pašto rašinius.",
+          },
+          send: {
+            title: "Siųstis el. pašto žinutes",
+            description:
+              "Siųkite naujus el. laiškus arba atsakykite į pranešimus nedelskant",
+          },
+          account: {
+            title: "Integracijos statistika",
+            description:
+              "Peržiūrėkite pašto dėžės statistikos ir sąskaitos informaciją.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Peržiūrėti pašto dėžę",
+            description:
+              "Gaukite naujausius el. pašto laiškus iš savo Outlook sąvejos.",
+          },
+          search: {
+            title: "Paieškos el. paštu",
+            description:
+              "Paieškokite el. laiškus naudodami „Microsoft Search“ sintaksę.",
+          },
+          readThread: {
+            title: "Perskaitykite pokalbį",
+            description: "Perskaitykite visą el. pašto pokalbio seką.",
+          },
+          createDraft: {
+            title: "Sukurti projekto variantą",
+            description:
+              "Sukurkite naują el. pašto projekto arba atsakymo projekto į esamą pranešimą.",
+          },
+          updateDraft: {
+            title: "Paskaitos projekto atnaujinimas",
+            description: "Atnaujinkite esamą el. pašto projekto",
+          },
+          listDrafts: {
+            title: "Paskaitų planas",
+            description: "Parodykite visus projekto el. laiškus",
+          },
+          deleteDraft: {
+            title: "Ištrinkti projekto",
+            description: "Ištrinkite projekto el. laišką",
+          },
+          sendDraft: {
+            title: "Siųstis projekto",
+            description: "Siųstis jau esančią el. pašto projekto versiją",
+          },
+          sendEmail: {
+            title: "Siųstis el. paštą",
+            description:
+              "Siųstinkite naują el. laišką arba atsakykite į esamą pranešimą nedelsdami.",
+          },
+          getMailboxStats: {
+            title: "Pašto dėžės statistika",
+            description:
+              "Gaukite folderių skaičius ir pašto dėžutės statistikos duomenis.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveriai",
