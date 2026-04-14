@@ -527,6 +527,104 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Kết nối Outlook",
+        description:
+          "Cho phép đại lý của bạn tương tác với Microsoft Outlook – tìm kiếm email, đọc các cuộc thảo luận, soạn thảo bản nháp, gửi email và quản lý hộp thư đến thông qua Microsoft Graph API. Đọc tài liệu hướng dẫn <a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Outlook không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Outlook",
+        authType: "Loại tài khoản",
+        authTypeHelp:
+          'Chọn loại tài khoản Microsoft nào có thể xác thực. "Tất cả các tài khoản" hỗ trợ cả tài khoản cá nhân và tài khoản làm việc/học. "Chỉ tài khoản cá nhân" giới hạn chỉ ở tài khoản Microsoft cá nhân. "Chỉ tài khoản tổ chức" giới hạn ở tài khoản làm việc/học từ một tenant cụ thể của Azure AD.',
+        authTypeCommon:
+          "Tất cả các tài khoản (cá nhân và tài khoản liên quan đến công việc/học tập)",
+        authTypeConsumers: "Chỉ dành cho tài khoản Microsoft cá nhân",
+        authTypeOrganization:
+          "Chỉ dành cho tài khoản tổ chức (cần ID của người thuê).",
+        clientId: "Mã định danh của khách hàng",
+        clientIdHelp:
+          "Mã định danh ứng dụng (Client ID) từ quá trình đăng ký ứng dụng của bạn trong Azure AD",
+        tenantId: "Mã định danh (cho người thuê)",
+        tenantIdHelp:
+          "Mã định danh (Tenant ID) từ ứng dụng Azure AD của bạn. Yêu cầu chỉ khi thực hiện xác thực cho riêng tổ chức.",
+        clientSecret: "Mật khẩu",
+        clientSecretHelp: "Giá trị bí mật của ứng dụng Azure AD của bạn",
+        configurationRequired:
+          "Vui lòng cấu hình ID và bí mật của ứng dụng để kích hoạt các tính năng của Outlook.",
+        authRequired:
+          "Trước tiên, hãy lưu thông tin đăng nhập của bạn, sau đó xác thực với Microsoft để hoàn thành quá trình thiết lập.",
+        authenticateWithMicrosoft: "Xác minh bằng Microsoft",
+        authenticated: "Đã xác thực thành công với Microsoft Outlook.",
+        revokeAccess: "Thu hồi quyền truy cập",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả nào khớp với tìm kiếm của bạn.",
+        categories: {
+          search: {
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Outlook của bạn.",
+          },
+          drafts: {
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
+          },
+          send: {
+            title: "Gửi email",
+            description: "Gửi email mới hoặc trả lời tin nhắn ngay lập tức.",
+          },
+          account: {
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Truy cập hộp thư",
+            description: "Lấy các email mới nhất từ hộp thư Outlook của bạn",
+          },
+          search: {
+            title: "Tìm kiếm trong thư điện tử",
+            description:
+              "Tìm kiếm trong các email bằng cú pháp tìm kiếm của Microsoft",
+          },
+          readThread: {
+            title: "Đọc cuộc hội thoại",
+            description: "Đọc toàn bộ chuỗi email.",
+          },
+          createDraft: {
+            title: "Tạo bản nháp",
+            description:
+              "Tạo một bản nháp email mới hoặc một bản nháp trả lời cho một tin nhắn hiện có.",
+          },
+          updateDraft: {
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật một bản nháp email đã có",
+          },
+          listDrafts: {
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
+          },
+          deleteDraft: {
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
+          },
+          sendDraft: {
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
+          },
+          sendEmail: {
+            title: "Gửi email",
+            description:
+              "Gửi một email mới hoặc trả lời một tin nhắn hiện có ngay lập tức.",
+          },
+          getMailboxStats: {
+            title: "Thống kê hộp thư",
+            description: "Lấy số lượng thư mục và thống kê hộp thư.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Máy chủ MCP",
