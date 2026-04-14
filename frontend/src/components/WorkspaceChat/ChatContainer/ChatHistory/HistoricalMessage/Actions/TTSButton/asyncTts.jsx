@@ -59,7 +59,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
         setLoading(false);
         setSpeaking(false);
         setAudioSrc(null);
-        showToast("Failed to play TTS audio", "error", { clear: true });
+        showToast(t("toast.components.tts-play-error"), "error", { clear: true });
       });
     }
     setupPlayer();

@@ -10,6 +10,7 @@ import { useTheme } from "@/hooks/useTheme";
 import HeaderMenu from "./HeaderMenu";
 import paths from "@/utils/paths";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_BLOCKS = [
   {
@@ -41,6 +42,7 @@ export default function AgentBuilder() {
   const { flowId } = useParams();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [agentName, setAgentName] = useState("");
   const [_, setAgentDescription] = useState("");
   const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
@@ -77,7 +79,7 @@ export default function AgentBuilder() {
       setAvailableFlows(flows);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load available flows", "error", { clear: true });
+      showToast(t("toast.admin.agent-flow-load-error"), "error", { clear: true });
     }
   };
 
@@ -122,7 +124,7 @@ export default function AgentBuilder() {
       setBlocks(flowBlocks);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load flow", "error", { clear: true });
+      showToast(t("toast.admin.agent-flow-load-single-error"), "error", { clear: true });
     }
   };
 
@@ -185,7 +187,7 @@ export default function AgentBuilder() {
         descriptionRef.current?.focus();
       }
       showToast(
-        "Please provide both a name and description for your flow",
+        t("toast.admin.agent-flow-name-desc-required"),
         "error",
         {
           clear: true,
@@ -219,11 +221,11 @@ export default function AgentBuilder() {
       if (!success) throw new Error(error);
 
       setCurrentFlowUuid(flow.uuid);
-      showToast("Agent flow saved successfully!", "success", { clear: true });
+      showToast(t("toast.admin.agent-flow-saved"), "success", { clear: true });
       await loadAvailableFlows();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast(`Failed to save agent flow. ${error.message}`, "error", {
+      showToast(t("toast.admin.agent-flow-save-error", { error: error.message }), "error", {
         clear: true,
       });
     }

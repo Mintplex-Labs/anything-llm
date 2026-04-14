@@ -13,6 +13,7 @@ import {
   FlowArrow,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
+import { useTranslation } from "react-i18next";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
 import { defaultSkills, configurableSkills } from "./skills";
@@ -29,6 +30,7 @@ import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
 
 export default function AdminAgents() {
+  const { t } = useTranslation();
   const formEl = useRef(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
@@ -347,7 +349,7 @@ export default function AdminAgents() {
                   >
                     <div className="flex items-center text-sky-400">
                       <CaretLeft size={24} />
-                      <div>Back</div>
+                      <div>{t("toast.admin.back")}</div>
                     </div>
                   </button>
                 </div>

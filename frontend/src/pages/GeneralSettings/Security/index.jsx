@@ -57,7 +57,7 @@ function MultiUserMode() {
 
       const { success, error } = await System.setupMultiUser(data);
       if (success) {
-        showToast("Multi-User mode enabled successfully.", "success");
+        showToast(t("toast.security.multi-user-enabled"), "success");
         setSaving(false);
         setTimeout(() => {
           window.localStorage.removeItem(AUTH_USER);
@@ -68,7 +68,7 @@ function MultiUserMode() {
         return;
       }
 
-      showToast(`Failed to enable Multi-User mode: ${error}`, "error");
+      showToast(t("toast.security.multi-user-error", { error }), "error");
       setSaving(false);
       return;
     }
@@ -215,7 +215,7 @@ function PasswordProtection() {
 
     if (!PW_REGEX.test(form.get("password"))) {
       showToast(
-        `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`,
+        t("toast.security.password-chars"),
         "error"
       );
       setSaving(false);
@@ -231,7 +231,7 @@ function PasswordProtection() {
 
     const { success, error } = await System.updateSystemPassword(data);
     if (success) {
-      showToast("Your page will refresh in a few seconds.", "success");
+      showToast(t("toast.security.page-refresh"), "success");
       setSaving(false);
       setTimeout(() => {
         window.localStorage.removeItem(AUTH_USER);
@@ -241,7 +241,7 @@ function PasswordProtection() {
       }, 3_000);
       return;
     } else {
-      showToast(`Failed to update password: ${error}`, "error");
+      showToast(t("toast.security.password-error", { error }), "error");
       setSaving(false);
     }
   };

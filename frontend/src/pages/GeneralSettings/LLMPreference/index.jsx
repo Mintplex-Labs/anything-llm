@@ -430,9 +430,9 @@ export default function GeneralLLMPreference() {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(t("toast.llm.save-error", { error }), "error");
     } else {
-      showToast("LLM preferences saved successfully.", "success");
+      showToast(t("toast.llm.save-success"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);

@@ -14,7 +14,7 @@ export default function ResetDatabase({ workspace }) {
     if (!success) {
       showToast(
         t("vector-workspace.reset.error"),
-        t("vector-workspace.common.error"),
+        "error",
         {
           clear: true,
         }
@@ -25,7 +25,7 @@ export default function ResetDatabase({ workspace }) {
 
     showToast(
       t("vector-workspace.reset.success"),
-      t("vector-workspace.common.success"),
+      "success",
       {
         clear: true,
       }

@@ -11,8 +11,10 @@ import AddVariableModal from "./AddVariableModal";
 import { useModal } from "@/hooks/useModal";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useTranslation } from "react-i18next";
 
 export default function SystemPromptVariables() {
+  const { t } = useTranslation();
   const [variables, setVariables] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isOpen, openModal, closeModal } = useModal();
@@ -28,7 +30,7 @@ export default function SystemPromptVariables() {
       setVariables(variables || []);
     } catch (error) {
       console.error("Error fetching variables:", error);
-      showToast("No variables found", "error");
+      showToast(t("toast.admin.variables-not-found"), "error");
     } finally {
       setLoading(false);
     }

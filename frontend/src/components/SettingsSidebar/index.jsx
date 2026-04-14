@@ -427,6 +427,7 @@ const SidebarOptions = ({ user = null, t }) => (
 );
 
 function HoldToReveal({ children, holdForMs = 3_000 }) {
+  const { t } = useTranslation();
   let timeout = null;
   const [showing, setShowing] = useState(
     window.localStorage.getItem(
@@ -440,7 +441,7 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
       timeout = setTimeout(() => {
         setShowing(true);
         // Setting toastId prevents hook spam from holding control too many times or the event not detaching
-        showToast("Experimental feature previews unlocked!");
+        showToast(t("toast.components.experimental-unlocked"));
         window.localStorage.setItem(
           "anythingllm_experimental_feature_preview_unlocked",
           "enabled"

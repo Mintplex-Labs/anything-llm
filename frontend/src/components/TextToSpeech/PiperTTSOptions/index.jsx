@@ -4,6 +4,7 @@ import { titleCase } from "text-case";
 import { humanFileSize } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import { CircleNotch, PauseCircle, PlayCircle } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function PiperTTSOptions({ settings }) {
   return (
@@ -37,6 +38,7 @@ function voiceDisplayName(voice) {
 }
 
 function PiperTTSModelSelection({ settings }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(
@@ -46,7 +48,7 @@ function PiperTTSModelSelection({ settings }) {
   function flushVoices() {
     PiperTTSClient.flush()
       .then(() =>
-        showToast("All voices flushed from browser storage", "info", {
+        showToast(t("toast.components.piper-voices-flushed"), "info", {
           clear: true,
         })
       )

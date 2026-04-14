@@ -73,6 +73,231 @@ const TRANSLATIONS = {
     back: "Zurück",
     username_requirements:
       "Der Benutzername muss 2-32 Zeichen lang sein, mit einem Kleinbuchstaben beginnen und darf nur Kleinbuchstaben, Zahlen, Unterstriche, Bindestriche und Punkte enthalten.",
+    "save-success": "Einstellungen erfolgreich gespeichert.",
+    "save-error": "Fehler beim Speichern der Einstellungen.",
+  },
+  toast: {
+    "workspace-updated": "Workspace aktualisiert!",
+    "workspace-update-error": "Fehler: {{message}}",
+    "workspace-delete-error": "Workspace konnte nicht gelöscht werden!",
+    "users-updated": "Benutzer erfolgreich aktualisiert.",
+    "llm-settings-save-error":
+      "Fehler beim Speichern der {{name}}-Einstellungen: {{error}}",
+    "welcome-messages-update-error":
+      "Fehler beim Aktualisieren der Willkommensnachrichten: {{error}}",
+    "welcome-messages-updated":
+      "Willkommensnachrichten erfolgreich aktualisiert.",
+    "welcome-messages-max": "Maximal 4 Nachrichten erlaubt.",
+    "pfp-upload-error":
+      "Fehler beim Hochladen des Profilbilds: {{error}}",
+    "pfp-uploaded": "Profilbild hochgeladen.",
+    "pfp-remove-error":
+      "Fehler beim Entfernen des Profilbilds: {{error}}",
+    llm: {
+      "save-success": "LLM-Einstellungen erfolgreich gespeichert.",
+      "save-error": "Fehler beim Speichern der LLM-Einstellungen: {{error}}",
+    },
+    api: {
+      copied: "API-Schlüssel in die Zwischenablage kopiert",
+      deleted: "API-Schlüssel dauerhaft gelöscht",
+    },
+    audio: {
+      "stt-saved": "Sprache-zu-Text-Einstellungen erfolgreich gespeichert.",
+      "stt-error":
+        "Fehler beim Speichern der Sprache-zu-Text-Einstellungen: {{error}}",
+      "tts-saved": "Text-zu-Sprache-Einstellungen erfolgreich gespeichert.",
+      "tts-error":
+        "Fehler beim Speichern der Text-zu-Sprache-Einstellungen: {{error}}",
+    },
+    vector: {
+      "save-success":
+        "Vektordatenbank-Einstellungen erfolgreich gespeichert.",
+      "save-error":
+        "Fehler beim Speichern der Vektordatenbank-Einstellungen: {{error}}",
+    },
+    embedding: {
+      "save-success": "Einbettungs-Einstellungen erfolgreich gespeichert.",
+      "save-error":
+        "Fehler beim Speichern der Einbettungs-Einstellungen: {{error}}",
+    },
+    transcription: {
+      "save-success":
+        "Transkriptions-Einstellungen erfolgreich gespeichert.",
+      "save-error":
+        "Fehler beim Speichern der Transkriptions-Einstellungen: {{error}}",
+    },
+    settings: {
+      "app-name-success": "App-Name erfolgreich aktualisiert.",
+      "app-name-error":
+        "Fehler beim Aktualisieren des App-Namens: {{error}}",
+      "welcome-messages-success":
+        "Willkommensnachrichten erfolgreich aktualisiert.",
+      "welcome-messages-error":
+        "Fehler beim Aktualisieren der Willkommensnachrichten: {{error}}",
+      "support-email-success": "Support-E-Mail erfolgreich aktualisiert.",
+      "support-email-error":
+        "Fehler beim Aktualisieren der Support-E-Mail: {{error}}",
+      "footer-icons-success": "Footer-Icons erfolgreich aktualisiert.",
+      "footer-icons-error":
+        "Fehler beim Aktualisieren der Footer-Icons: {{error}}",
+      "logo-uploaded": "Bild erfolgreich hochgeladen.",
+      "logo-upload-error": "Fehler beim Hochladen des Logos: {{error}}",
+      "logo-removed": "Bild erfolgreich entfernt.",
+      "logo-remove-error": "Fehler beim Entfernen des Logos: {{error}}",
+    },
+    security: {
+      "multi-user-enabled":
+        "Mehrbenutzermodus erfolgreich aktiviert.",
+      "multi-user-error":
+        "Fehler beim Aktivieren des Mehrbenutzermodus: {{error}}",
+      "page-refresh":
+        "Die Seite wird in wenigen Sekunden aktualisiert.",
+      "password-error":
+        "Fehler beim Aktualisieren des Passworts: {{error}}",
+      "password-chars":
+        "Ihr Passwort enthält unzulässige Zeichen. Erlaubte Symbole sind _,-,!,@,$,%,^,&,*,(,),;",
+    },
+    community: {
+      "key-saved": "API-Schlüssel erfolgreich gespeichert",
+      "key-error": "Fehler beim Speichern des API-Schlüssels",
+      disconnected: "Vom AnythingLLM Community Hub getrennt",
+      "disconnect-error": "Fehler beim Trennen vom Hub",
+      "enter-item-id": "Bitte geben Sie eine Element-ID ein",
+      "applying-prompt":
+        "Systemprompt wird auf den Workspace angewendet...",
+      "apply-prompt-error":
+        "Fehler beim Anwenden des Systemprompts. {{error}}",
+      "prompt-applied": "Systemprompt auf Workspace angewendet.",
+    },
+    "browser-ext": {
+      revoked:
+        "Browser-Extension API-Schlüssel dauerhaft widerrufen",
+      "revoke-error": "Fehler beim Widerrufen des API-Schlüssels",
+      copied: "Verbindungszeichenfolge in die Zwischenablage kopiert",
+      connecting:
+        "Verbindung zur Browser-Extension wird hergestellt...",
+    },
+    mobile: {
+      granted: "Gerätezugriff gewährt",
+      denied: "Gerätezugriff verweigert",
+    },
+    "embed-chats": {
+      "export-success":
+        "Embed-Chats erfolgreich als {{name}} exportiert.",
+      "export-error": "Fehler beim Exportieren der Embed-Chats.",
+    },
+    "text-splitter": {
+      "save-success":
+        "Einstellungen für die Text-Chunking-Strategie gespeichert.",
+      "save-error":
+        "Fehler beim Speichern der Text-Chunking-Strategie-Einstellungen.",
+      "overlap-error":
+        "Der Chunk-Overlap darf nicht größer oder gleich der Chunk-Größe sein.",
+    },
+    admin: {
+      "agent-flow-load-error":
+        "Verfügbare Flows konnten nicht geladen werden",
+      "agent-flow-load-single-error": "Flow konnte nicht geladen werden",
+      "agent-flow-saved": "Agenten-Flow erfolgreich gespeichert!",
+      "agent-flow-save-error":
+        "Agenten-Flow konnte nicht gespeichert werden. {{error}}",
+      "agent-flow-name-desc-required":
+        "Bitte geben Sie sowohl einen Namen als auch eine Beschreibung für Ihren Flow an",
+      "flow-deleted": "Flow erfolgreich gelöscht.",
+      "flow-delete-error": "Flow konnte nicht gelöscht werden.",
+      "flow-status-updated": "Flow-Status erfolgreich aktualisiert",
+      "flow-toggle-error": "Flow konnte nicht umgeschaltet werden",
+      "skill-activated": "Skill aktiviert.",
+      "skill-deactivated": "Skill deaktiviert.",
+      "skill-config-updated":
+        "Skill-Konfiguration erfolgreich aktualisiert.",
+      "skill-deleted": "Skill erfolgreich gelöscht.",
+      "skill-delete-error": "Skill konnte nicht gelöscht werden.",
+      "mcp-server-deleted": "MCP-Server erfolgreich gelöscht.",
+      "mcp-server-delete-error":
+        "MCP-Server konnte nicht gelöscht werden.",
+      "mcp-server-toggled":
+        "MCP-Server {{name}} erfolgreich {{state}}.",
+      "mcp-server-toggle-error":
+        "MCP-Server konnte nicht umgeschaltet werden.",
+      "default-prompt-updated":
+        "Standard-Systemprompt erfolgreich aktualisiert.",
+      "default-prompt-update-error":
+        "Fehler beim Aktualisieren des Standard-Systemprompts: {{error}}",
+      "variable-updated": "Variable erfolgreich aktualisiert",
+      "variable-deleted": "Variable erfolgreich gelöscht",
+      "variable-delete-error":
+        "Variable konnte nicht gelöscht werden",
+      "variable-created": "Variable erfolgreich erstellt",
+      "variables-not-found": "Keine Variablen gefunden",
+      "user-deleted": "Benutzer aus dem System gelöscht.",
+      "user-suspended": "Benutzer wurde gesperrt.",
+      "user-unsuspended": "Benutzer ist nicht mehr gesperrt.",
+      "logs-cleared": "Ereignisprotokolle erfolgreich gelöscht.",
+      "logs-clear-error":
+        "Fehler beim Löschen der Protokolle: {{error}}",
+      "invite-copied":
+        "Einladungslink in die Zwischenablage kopiert",
+      "feature-update-error":
+        "Fehler beim Aktualisieren des Feature-Status.",
+      "livesync-enabled":
+        "Live-Dokumentinhaltssynchronisierung wurde aktiviert.",
+      "livesync-disabled":
+        "Live-Dokumentinhaltssynchronisierung wurde deaktiviert.",
+      back: "Zurück",
+      permissions: "Berechtigungen",
+      "select-experimental-feature":
+        "Wählen Sie ein experimentelles Feature aus",
+    },
+    components: {
+      "password-reset-success": "Passwort erfolgreich zurückgesetzt",
+      "invalid-reset-token": "Ungültiger Zurücksetzungs-Token",
+      "link-uploaded": "Link erfolgreich hochgeladen",
+      "link-upload-error": "Fehler beim Hochladen des Links: {{error}}",
+      "workspace-updating": "Workspace wird aktualisiert...",
+      "workspace-updated": "Workspace erfolgreich aktualisiert.",
+      "workspace-update-error":
+        "Workspace-Aktualisierung fehlgeschlagen: {{error}}",
+      "workspace-update-msg-error": "Fehler: {{message}}",
+      "recovery-codes-copied":
+        "Wiederherstellungscodes in die Zwischenablage kopiert",
+      "experimental-unlocked":
+        "Experimentelle Feature-Vorschauen freigeschaltet!",
+      "thread-update-error":
+        "Thread konnte nicht aktualisiert werden! {{message}}",
+      "thread-delete-error": "Thread konnte nicht gelöscht werden!",
+      "thread-deleted": "Thread erfolgreich gelöscht!",
+      "workspace-reorder-error":
+        "Workspaces konnten nicht neu sortiert werden",
+      "files-embedded":
+        "{{count}} {{fileWord}} erfolgreich eingebettet",
+      "files-embed-error":
+        "Dateien konnten nicht eingebettet werden",
+      "tts-play-error":
+        "TTS-Audio konnte nicht abgespielt werden",
+      "piper-voices-flushed":
+        "Alle Stimmen aus dem Browserspeicher gelöscht",
+      "obsidian-importing":
+        "Obsidian-Vault wird importiert – dies kann eine Weile dauern.",
+      "obsidian-import-success":
+        "{{count}} Dateien erfolgreich aus Ihrem Vault importiert!",
+      "obsidian-import-partial":
+        "{{successCount}} Dateien importiert, {{failCount}} fehlgeschlagen",
+      "website-scraping":
+        "Website wird gescrapt – dies kann eine Weile dauern.",
+      "website-scrape-success":
+        "{{count}} {{pageWord}} erfolgreich gescrapt!",
+      "youtube-fetching":
+        "Transkript für YouTube-Video wird abgerufen.",
+      "youtube-transcription-complete":
+        "{{title}} von {{author}} – Transkription abgeschlossen. Ausgabeordner ist {{destination}}.",
+    },
+    hooks: {
+      "provider-endpoint-discovered":
+        "Provider-Endpunkt automatisch erkannt.",
+      "provider-endpoint-manual":
+        "Provider-Endpunkt konnte nicht automatisch erkannt werden. Bitte geben Sie ihn manuell ein.",
+    },
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -664,11 +889,25 @@ const TRANSLATIONS = {
     title: "Konversationen",
     "load-error": "Fehler beim Laden der Konversationsdaten.",
     "all-time": "Gesamt",
+    "statistics-title": "STATISTIKEN",
     stats: {
       "total-chats": "KI Nachrichten",
       conversations: "Konversationen",
       "words-prompt": "Wortanzahl Anfragen",
       "avg-per-conv": "Ø pro Konversation",
+      "conversations-label": "Konversationen",
+      "conversations-desc": "Gesamtzahl aller Konversationen",
+      "messages-label": "Nachrichten",
+      "messages-desc": "Gesamtzahl aller Chat-Nachrichten",
+      "avg-messages-label": "Ø Nachrichten",
+      "avg-messages-desc": "Durchschnittliche Nachrichten pro Konversation",
+      "avg-words-prompt-label": "Ø Wörter/Anfrage",
+      "avg-words-prompt-desc": "Durchschnittliche Wortanzahl pro User-Anfrage",
+      "avg-words-response-label": "Ø Wörter/Antwort",
+      "avg-words-response-desc": "Durchschnittliche Wortanzahl pro AI-Antwort",
+      "max-words-prompt-label": "Max Wörter (Anfrage)",
+      "max-words-prompt-desc": "Längste User-Anfrage (Outlier-Indikator)",
+      "show-technical": "Technische Details anzeigen",
     },
     "conversations-title": "KONVERSATIONEN",
     "conversation-number": "Konversation #{{id}}",
@@ -677,7 +916,33 @@ const TRANSLATIONS = {
     response: "Antwort",
     "no-conversations": "Keine Konversationen vorhanden.",
     "session-copied": "Session ID kopiert!",
-    "retention-notice": "ℹ️ DSGVO-Datenlöschung aktiv — Aufbewahrung {{days}} Tage, Chats verfallen am {{expiryDate}}",
+    "retention-notice":
+      "DSGVO-Datenlöschung aktiv — Aufbewahrung {{days}} Tage, Chats verfallen am {{expiryDate}}",
+    "select-embed": "Embed wählen",
+    "embed-label": "Embed #{{id}} ({{workspace}})",
+    conversations: {
+      "seconds-ago": "vor wenigen Sekunden",
+      "minutes-ago_one": "vor {{count}} Minute",
+      "minutes-ago_other": "vor {{count}} Minuten",
+      "hours-ago_one": "vor {{count}} Stunde",
+      "hours-ago_other": "vor {{count}} Stunden",
+      "days-ago_one": "vor {{count}} Tag",
+      "days-ago_other": "vor {{count}} Tagen",
+      "months-ago_one": "vor {{count}} Monat",
+      "months-ago_other": "vor {{count}} Monaten",
+      "years-ago_one": "vor {{count}} Jahr",
+      "years-ago_other": "vor {{count}} Jahren",
+      "conversation-number": "Konversation #{{number}}",
+      "new-badge": "NEU",
+      "no-preview": "Keine Vorschau verfügbar",
+      created: "Erstellt:",
+      "last-message": "Letzte Nachricht:",
+      "message-count_one": "{{count}} Nachricht",
+      "message-count_other": "{{count}} Nachrichten",
+      "no-messages": "Keine Nachrichten gefunden",
+      "copy-id": "Konversations-ID kopieren",
+      "id-copied": "Konversations-ID kopiert",
+    },
   },
   "embed-row": {
     design: "Aussehen",
@@ -767,10 +1032,13 @@ const TRANSLATIONS = {
     title: "Einbettungscode kopieren",
     close: "Schließen",
     copied: "Snippet in Zwischenablage kopiert!",
-    "script-label": "HTML Script Tag Einbettungscode",
-    "script-hint":
-      "Betten Sie Ihr Chat-Widget als Helpdesk-Chat in der Ecke Ihrer Website ein.",
-    "view-options": "Alle Stil- und Konfigurationsoptionen anzeigen →",
+    "script-comment":
+      "Fügen Sie dieses Script-Tag in den <head> oder <body> Ihrer Website ein.",
+    "script-tag": {
+      label: "HTML Script Tag Einbettungscode",
+      hint: "Betten Sie Ihr Chat-Widget als Helpdesk-Chat in der Ecke Ihrer Website ein.",
+      "view-options": "Alle Stil- und Konfigurationsoptionen anzeigen →",
+    },
   },
   "chat-row": {
     delete: "Löschen",
@@ -1264,6 +1532,87 @@ const TRANSLATIONS = {
     notAssigned:
       "Sie sind nicht zugewiesen zu einem Arbeitsbereich.\nBitte kontaktieren Sie Ihren Administrator, um Zugriff auf einen Arbeitsbereich zu erhalten.",
     goToWorkspace: 'Zurück zum Arbeitsbereich "{{workspace}}"',
+  },
+  billing: {
+    customer: {
+      "load-error": "Nutzungsdaten konnten nicht geladen werden.",
+      loading: "Lade Nutzungsdaten...",
+      "your-quota": "Ihr Kontingent",
+      "quota-description":
+        "Übersicht über Ihre Nutzung in diesem Workspace.",
+      "unlimited-quota": "Unbegrenztes Kontingent",
+      "unlimited-description":
+        "Sie können diesen Workspace ohne Einschränkungen nutzen.",
+      consumed: "Verbraucht",
+      remaining: "Verbleibend",
+      used: "genutzt",
+      "billing-cycle": "Abrechnungszyklus",
+      "cycle-info-description":
+        "Informationen zu Ihrem aktuellen Abrechnungszeitraum.",
+      "next-cycle-start": "Nächster Zyklusbeginn",
+      day: "Tag",
+      days: "Tage",
+      "cycle-duration": "Zyklusdauer",
+      "current-cycle": "Aktueller Zyklus",
+      "quota-exhausted": "Kontingent erschöpft",
+      "quota-exhausted-description":
+        "Sie haben Ihr Nachrichtenlimit für diesen Zeitraum erreicht. Ihr Kontingent wird am",
+      "quota-almost-exhausted": "Kontingent fast erschöpft",
+      "quota-almost-description":
+        "Sie haben bereits {{percentage}}% Ihres Kontingents verbraucht. Es verbleiben noch {{remaining}} Nachrichten bis zum",
+      "messages-until": "erneuert.",
+    },
+    admin: {
+      "current-usage": "Aktueller Verbrauch",
+      "usage-description":
+        "Live-Ansicht des Kundenverbrauchs für diesen Workspace.",
+      "loading-usage": "Lade Verbrauchsdaten...",
+      consumed: "Verbraucht",
+      remaining: "Verbleibend",
+      unlimited: "Unbegrenzt",
+      used: "genutzt",
+      "next-cycle-start": "Nächster Zyklusbeginn",
+      day: "Tag",
+      days: "Tage",
+      "cycle-duration": "Zyklusdauer",
+      "current-cycle": "Aktueller Zyklus",
+      "no-usage-data": "Keine Verbrauchsdaten verfügbar",
+      "messages-limit": "Nachrichtenlimit",
+      "messages-limit-description":
+        "Maximale Anzahl an Nachrichten pro Abrechnungszyklus. Leer lassen für unbegrenzt.",
+      "billing-cycle": "Abrechnungszyklus",
+      "cycle-reset-description":
+        "Das Nachrichtenkontingent wird automatisch zum konfigurierten Zeitpunkt zurückgesetzt.",
+      "cycle-start-date": "Zyklus-Startdatum",
+      "cycle-duration-label": "Zyklus-Dauer",
+      "select-placeholder": "-- Auswählen --",
+      "next-cycle-start-label": "Nächster Zyklusbeginn:",
+      "save-success": "Abrechnungseinstellungen aktualisiert!",
+      "save-error": "Fehler: {{message}}",
+      saving: "Speichern...",
+      "update-workspace": "Workspace aktualisieren",
+      "info-title": "Hinweis:",
+      "info-text":
+        "Bei einem Upgrade kann das Startdatum auf das aktuelle Datum gesetzt werden, um den Zyklus sofort zurückzusetzen. Das Kontingent beginnt dann neu zu zählen.",
+    },
+    cycle: {
+      "1-month": "1 Monat",
+      "2-months": "2 Monate",
+      "3-months": "3 Monate (Quartal)",
+      "4-months": "4 Monate",
+      "6-months": "6 Monate (Halbjahr)",
+      "12-months": "12 Monate (Jahr)",
+      months: "Monate",
+    },
+    "messages-limit": {
+      label: "Monatliches Nachrichtenlimit",
+      description:
+        "Bestimmt die maximale Nachrichtenanzahl pro Monat für diesen Workspace. Das Kontingent erneuert sich monatlich.",
+      "default-hint":
+        "Standard: Unbegrenzt. Bei Überschreitung des Limits werden bis zum nächsten Monat keine weiteren KI-Anfragen angenommen.",
+      "optional-hint": "Optional. Leer lassen für keine Begrenzung.",
+      "unlimited-placeholder": "Unbegrenzt",
+    },
   },
 };
 

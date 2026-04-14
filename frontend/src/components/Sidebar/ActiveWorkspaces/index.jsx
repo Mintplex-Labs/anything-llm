@@ -14,8 +14,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 import { LAST_VISITED_WORKSPACE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
 
 export default function ActiveWorkspaces() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ export default function ActiveWorkspaces() {
       reorderedWorkspaces.map((w) => w.id)
     );
     if (!success) {
-      showToast("Failed to reorder workspaces", "error");
+      showToast(t("toast.components.workspace-reorder-error"), "error");
       Workspace.all().then((workspaces) => setWorkspaces(workspaces));
     }
   }

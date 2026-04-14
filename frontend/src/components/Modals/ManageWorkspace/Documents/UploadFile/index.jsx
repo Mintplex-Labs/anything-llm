@@ -32,10 +32,10 @@ export default function UploadFile({
       form.get("link")
     );
     if (!response.ok) {
-      showToast(`Error uploading link: ${data.error}`, "error");
+      showToast(t("toast.components.link-upload-error", { error: data.error }), "error");
     } else {
       fetchKeys(true);
-      showToast("Link uploaded successfully", "success");
+      showToast(t("toast.components.link-uploaded"), "success");
       formEl.reset();
     }
     setLoading(false);

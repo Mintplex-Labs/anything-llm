@@ -36,10 +36,10 @@ export default function SupportEmail() {
     });
 
     if (!success) {
-      showToast(`Failed to update support email: ${error}`, "error");
+      showToast(t("toast.settings.support-email-error", { error }), "error");
       return;
     } else {
-      showToast("Successfully updated support email.", "success");
+      showToast(t("toast.settings.support-email-success"), "success");
       window.localStorage.removeItem(System.cacheKeys.supportEmail);
       setSupportEmail(support_email);
       setOriginalEmail(support_email);

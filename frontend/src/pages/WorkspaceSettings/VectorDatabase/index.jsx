@@ -10,11 +10,13 @@ import VectorCount from "./VectorCount";
 import VectorSearchMode from "./VectorSearchMode";
 import QueryRewriteMode from "./QueryRewriteMode";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function VectorDatabase({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const formEl = useRef(null);
+  const { t } = useTranslation();
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -27,9 +29,9 @@ export default function VectorDatabase({ workspace }) {
       data
     );
     if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast(t("toast.workspace-updated"), "success", { clear: true });
     } else {
-      showToast(`Error: ${message}`, "error", { clear: true });
+      showToast(t("toast.workspace-update-error", { message }), "error", { clear: true });
     }
     setSaving(false);
     setHasChanges(false);

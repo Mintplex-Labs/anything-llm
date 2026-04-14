@@ -67,9 +67,9 @@ export default function EmbedChatsView() {
         exportOptions[exportType];
       const blob = new Blob([chats], { type: mimeType });
       saveAs(blob, `${filenameFunc()}.${fileExtension}`);
-      showToast(`Embed chats exported successfully as ${name}.`, "success");
+      showToast(t("toast.embed-chats.export-success", { name }), "success");
     } else {
-      showToast("Failed to export embed chats.", "error");
+      showToast(t("toast.embed-chats.export-error"), "error");
     }
   };
 

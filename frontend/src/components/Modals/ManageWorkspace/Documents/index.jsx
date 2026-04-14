@@ -5,6 +5,7 @@ import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import { useTranslation } from "react-i18next";
 
 // OpenAI Cost per token
 // ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
@@ -16,6 +17,7 @@ const MODEL_COSTS = {
 };
 
 export default function DocumentSettings({ workspace, systemSettings }) {
+  const { t } = useTranslation();
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setLoading(true);
-    showToast("Updating workspace...", "info", { autoClose: false });
+    showToast(t("toast.components.workspace-updating"), "info", { autoClose: false });
     setLoadingMessage("This may take a while for large documents");
 
     const changesToSend = {
@@ -99,15 +101,15 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     await Workspace.modifyEmbeddings(workspace.slug, changesToSend)
       .then((res) => {
         if (!!res.message) {
-          showToast(`Error: ${res.message}`, "error", { clear: true });
+          showToast(t("toast.components.workspace-update-msg-error", { message: res.message }), "error", { clear: true });
           return;
         }
-        showToast("Workspace updated successfully.", "success", {
+        showToast(t("toast.components.workspace-updated"), "success", {
           clear: true,
         });
       })
       .catch((error) => {
-        showToast(`Workspace update failed: ${error}`, "error", {
+        showToast(t("toast.components.workspace-update-error", { error }), "error", {
           clear: true,
         });
       });

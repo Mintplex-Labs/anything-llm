@@ -6,8 +6,10 @@ import { titleCase } from "text-case";
 import truncate from "truncate";
 import MCPServers from "@/models/mcpServers";
 import pluralize from "pluralize";
+import { useTranslation } from "react-i18next";
 
 function ManageServerMenu({ server, toggleServer, onDelete }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(server.running);
   const menuRef = useRef(null);
@@ -21,10 +23,10 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
       return;
     const { success, error } = await MCPServers.deleteServer(server.name);
     if (success) {
-      showToast("MCP server deleted successfully.", "success");
+      showToast(t("toast.admin.mcp-server-deleted"), "success");
       onDelete(server.name);
     } else {
-      showToast(error || "Failed to delete MCP server.", "error");
+      showToast(error || t("toast.admin.mcp-server-delete-error"), "error");
     }
   }
 
@@ -44,12 +46,12 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
       setRunning(newState);
       toggleServer(server.name);
       showToast(
-        `MCP server ${server.name} ${newState ? "started" : "stopped"} successfully.`,
+        t("toast.admin.mcp-server-toggled", { name: server.name, state: newState ? "started" : "stopped" }),
         "success",
         { clear: true }
       );
     } else {
-      showToast(error || "Failed to toggle MCP server.", "error", {
+      showToast(error || t("toast.admin.mcp-server-toggle-error"), "error", {
         clear: true,
       });
     }

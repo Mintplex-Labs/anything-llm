@@ -33,7 +33,7 @@ export default function EmbeddingTextSplitterPreference() {
       Number(form.get("text_splitter_chunk_size"))
     ) {
       showToast(
-        "Chunk overlap cannot be larger or equal to chunk size.",
+        t("toast.text-splitter.overlap-error"),
         "error"
       );
       return;
@@ -62,9 +62,9 @@ export default function EmbeddingTextSplitterPreference() {
       });
       setHasChanges(false);
       closeModal();
-      showToast("Text chunking strategy settings saved.", "success");
+      showToast(t("toast.text-splitter.save-success"), "success");
     } catch {
-      showToast("Failed to save text chunking strategy settings.", "error");
+      showToast(t("toast.text-splitter.save-error"), "error");
     } finally {
       setSaving(false);
     }

@@ -1,6 +1,7 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import showToast from "@/utils/toast";
@@ -10,6 +11,7 @@ import { Info } from "@phosphor-icons/react";
 import UserItems from "./UserItems";
 
 function useCommunityHubAuthentication() {
+  const { t } = useTranslation();
   const [originalConnectionKey, setOriginalConnectionKey] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const [connectionKey, setConnectionKey] = useState("");
@@ -34,13 +36,13 @@ function useCommunityHubAuthentication() {
         hub_api_key: connectionKey,
       });
       if (!response.success)
-        return showToast("Failed to save API key", "error");
+        return showToast(t("toast.community.key-error"), "error");
       setHasChanges(false);
-      showToast("API key saved successfully", "success");
+      showToast(t("toast.community.key-saved"), "success");
       setOriginalConnectionKey(connectionKey);
     } catch (error) {
       console.error(error);
-      showToast("Failed to save API key", "error");
+      showToast(t("toast.community.key-error"), "error");
     } finally {
       setLoading(false);
     }
@@ -53,14 +55,14 @@ function useCommunityHubAuthentication() {
         hub_api_key: "",
       });
       if (!response.success)
-        return showToast("Failed to disconnect from hub", "error");
+        return showToast(t("toast.community.disconnect-error"), "error");
       setHasChanges(false);
-      showToast("Disconnected from AnythingLLM Community Hub", "success");
+      showToast(t("toast.community.disconnected"), "success");
       setOriginalConnectionKey("");
       setConnectionKey("");
     } catch (error) {
       console.error(error);
-      showToast("Failed to disconnect from hub", "error");
+      showToast(t("toast.community.disconnect-error"), "error");
     } finally {
       setLoading(false);
     }

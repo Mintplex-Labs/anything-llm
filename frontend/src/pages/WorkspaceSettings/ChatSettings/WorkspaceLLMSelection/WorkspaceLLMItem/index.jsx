@@ -8,6 +8,7 @@ import { X, Gear } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const NO_SETTINGS_NEEDED = ["default"];
 export default function WorkspaceLLM({
@@ -108,6 +109,7 @@ function SetupProvider({
   postSubmit,
   settings,
 }) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
   const LLMOption = availableLLMs.find((llm) => llm.value === provider);
   if (!LLMOption) return null;
@@ -120,7 +122,7 @@ function SetupProvider({
     for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save ${LLMOption.name} settings: ${error}`, "error");
+      showToast(t("toast.llm-settings-save-error", { name: LLMOption.name, error }), "error");
       return;
     }
 

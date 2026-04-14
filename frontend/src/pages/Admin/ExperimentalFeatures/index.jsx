@@ -8,8 +8,10 @@ import { configurableFeatures } from "./features";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function ExperimentalFeatures() {
+  const { t } = useTranslation();
   const [featureFlags, setFeatureFlags] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedFeature, setSelectedFeature] = useState(
@@ -93,7 +95,7 @@ export default function ExperimentalFeatures() {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-white/60">
                   <Flask size={40} />
-                  <p className="font-medium">Select an experimental feature</p>
+                  <p className="font-medium">{t("toast.admin.select-experimental-feature")}</p>
                 </div>
               )}
             </div>

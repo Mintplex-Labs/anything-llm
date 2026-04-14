@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import { formatDateTimeDE } from "@/utils/directories";
+import { useTranslation } from "react-i18next";
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -14,6 +15,7 @@ const ModMap = {
 };
 
 export default function UserRow({ currUser, user }) {
+  const { t } = useTranslation();
   const rowRef = useRef(null);
   const canModify = ModMap[currUser?.role || "default"].includes(user.role);
   const [suspended, setSuspended] = useState(user.suspended === 1);
@@ -32,7 +34,7 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       showToast(
-        `User ${!suspended ? "has been suspended" : "is no longer suspended"}.`,
+        t(!suspended ? "toast.admin.user-suspended" : "toast.admin.user-unsuspended"),
         "success",
         { clear: true }
       );
@@ -50,7 +52,7 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       rowRef?.current?.remove();
-      showToast("User deleted from system.", "success", { clear: true });
+      showToast(t("toast.admin.user-deleted"), "success", { clear: true });
     }
   };
 

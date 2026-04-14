@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function EditVariableModal({ variable, closeModal, onRefresh }) {
+  const { t } = useTranslation();
   const [error, setError] = useState(null);
 
   const handleUpdate = async (e) => {
@@ -22,7 +24,7 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
 
     try {
       await System.promptVariables.update(variable.id, updatedVariable);
-      showToast("Variable updated successfully", "success", { clear: true });
+      showToast(t("toast.admin.variable-updated"), "success", { clear: true });
       if (onRefresh) onRefresh();
       closeModal();
     } catch (error) {

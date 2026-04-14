@@ -5,11 +5,13 @@ import { FlowArrow, Gear } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import Toggle from "@/components/lib/Toggle";
+import { useTranslation } from "react-i18next";
 
 function ManageFlowMenu({ flow, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   async function deleteFlow() {
     if (
@@ -20,10 +22,10 @@ function ManageFlowMenu({ flow, onDelete }) {
       return;
     const { success, error } = await AgentFlows.deleteFlow(flow.uuid);
     if (success) {
-      showToast("Flow deleted successfully.", "success");
+      showToast(t("toast.admin.flow-deleted"), "success");
       onDelete(flow.uuid);
     } else {
-      showToast(error || "Failed to delete flow.", "error");
+      showToast(error || t("toast.admin.flow-delete-error"), "error");
     }
   }
 
@@ -72,6 +74,7 @@ function ManageFlowMenu({ flow, onDelete }) {
 }
 
 export default function FlowPanel({ flow, toggleFlow, onDelete }) {
+  const { t } = useTranslation();
   const [isActive, setIsActive] = useState(flow.active);
 
   useEffect(() => {
@@ -87,10 +90,10 @@ export default function FlowPanel({ flow, toggleFlow, onDelete }) {
       if (!success) throw new Error(error);
       setIsActive(!isActive);
       toggleFlow(flow.uuid);
-      showToast("Flow status updated successfully", "success", { clear: true });
+      showToast(t("toast.admin.flow-status-updated"), "success", { clear: true });
     } catch (error) {
       console.error("Failed to toggle flow:", error);
-      showToast("Failed to toggle flow", "error", { clear: true });
+      showToast(t("toast.admin.flow-toggle-error"), "error", { clear: true });
     }
   };
 

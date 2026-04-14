@@ -5,15 +5,17 @@ import { ArrowSquareOut } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Toggle from "@/components/lib/Toggle";
+import { useTranslation } from "react-i18next";
 
 export default function LiveSyncToggle({ enabled = false, onToggle }) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState(enabled);
 
   async function toggleFeatureFlag() {
     const updated =
       await System.experimentalFeatures.liveSync.toggleFeature(!status);
     if (!updated) {
-      showToast("Failed to update status of feature.", "error", {
+      showToast(t("toast.admin.feature-update-error"), "error", {
         clear: true,
       });
       return false;
@@ -21,9 +23,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
 
     setStatus(!status);
     showToast(
-      `Live document content sync has been ${
-        !status ? "enabled" : "disabled"
-      }.`,
+      t(!status ? "toast.admin.livesync-enabled" : "toast.admin.livesync-disabled"),
       "success",
       { clear: true }
     );

@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({
@@ -173,6 +174,7 @@ function OptionsMenu({
   close,
   currentThreadSlug,
 }) {
+  const { t } = useTranslation();
   const menuRef = useRef(null);
 
   // Ref menu options
@@ -222,7 +224,7 @@ function OptionsMenu({
       { name }
     );
     if (!!message) {
-      showToast(`Thread could not be updated! ${message}`, "error", {
+      showToast(t("toast.components.thread-update-error", { message }), "error", {
         clear: true,
       });
       close();
@@ -242,11 +244,11 @@ function OptionsMenu({
       return;
     const success = await Workspace.threads.delete(workspace.slug, thread.slug);
     if (!success) {
-      showToast("Thread could not be deleted!", "error", { clear: true });
+      showToast(t("toast.components.thread-delete-error"), "error", { clear: true });
       return;
     }
     if (success) {
-      showToast("Thread deleted successfully!", "success", { clear: true });
+      showToast(t("toast.components.thread-deleted"), "success", { clear: true });
       onRemove(thread.id);
       // Redirect if deleting the active thread
       if (currentThreadSlug === thread.slug) {

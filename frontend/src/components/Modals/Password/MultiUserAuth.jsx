@@ -246,12 +246,12 @@ export default function MultiUserAuth({ loginLogo, isCustomLogo }) {
       if (success) {
         window.localStorage.removeItem("resetToken");
         setShowResetPasswordForm(false);
-        showToast("Password reset successful", "success", { clear: true });
+        showToast(t("toast.components.password-reset-success"), "success", { clear: true });
       } else {
         showToast(error, "error", { clear: true });
       }
     } else {
-      showToast("Invalid reset token", "error", { clear: true });
+      showToast(t("toast.components.invalid-reset-token"), "error", { clear: true });
     }
   };
 

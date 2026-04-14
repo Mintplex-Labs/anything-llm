@@ -40,10 +40,10 @@ export default function CustomAppName() {
       custom_app_name,
     });
     if (!success) {
-      showToast(`Failed to update custom app name: ${error}`, "error");
+      showToast(t("toast.settings.app-name-error", { error }), "error");
       return;
     } else {
-      showToast("Successfully updated custom app name.", "success");
+      showToast(t("toast.settings.app-name-success"), "success");
       window.localStorage.removeItem(System.cacheKeys.customAppName);
       setCustomAppName(custom_app_name);
       setOriginalAppName(custom_app_name);

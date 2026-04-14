@@ -19,7 +19,7 @@ export default function BillingCustomerView({ workspace }) {
         setUsageData(data);
       } catch (err) {
         console.error("Failed to fetch usage data:", err);
-        setError(t("Nutzungsdaten konnten nicht geladen werden."));
+        setError(t("billing.customer.load-error"));
       }
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export default function BillingCustomerView({ workspace }) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-pulse text-white/60">
-          {t("Lade Nutzungsdaten...")}
+          {t("billing.customer.loading")}
         </div>
       </div>
     );
@@ -83,15 +83,15 @@ export default function BillingCustomerView({ workspace }) {
 
   // Get cycle duration text with description in parentheses
   const getCycleDurationText = () => {
-    if (!cycleInfo?.cycleDurationMonths) return t("1 Monat");
+    if (!cycleInfo?.cycleDurationMonths) return t("billing.cycle.1-month");
     switch (cycleInfo.cycleDurationMonths) {
-      case 1: return t("1 Monat");
-      case 2: return t("2 Monate");
-      case 3: return t("3 Monate (Quartal)");
-      case 4: return t("4 Monate");
-      case 6: return t("6 Monate (Halbjahr)");
-      case 12: return t("12 Monate (Jahr)");
-      default: return `${cycleInfo.cycleDurationMonths} ${t("Monate")}`;
+      case 1: return t("billing.cycle.1-month");
+      case 2: return t("billing.cycle.2-months");
+      case 3: return t("billing.cycle.3-months");
+      case 4: return t("billing.cycle.4-months");
+      case 6: return t("billing.cycle.6-months");
+      case 12: return t("billing.cycle.12-months");
+      default: return `${cycleInfo.cycleDurationMonths} ${t("billing.cycle.months")}`;
     }
   };
 
@@ -108,10 +108,10 @@ export default function BillingCustomerView({ workspace }) {
       <div>
         <div className="flex flex-col gap-y-1">
           <label className="block text-sm font-medium text-white">
-            {t("Ihr Kontingent")}
+            {t("billing.customer.your-quota")}
           </label>
           <p className="text-white/60 text-xs">
-            {t("Übersicht über Ihre Nutzung in diesem Workspace.")}
+            {t("billing.customer.quota-description")}
           </p>
         </div>
 
@@ -120,10 +120,10 @@ export default function BillingCustomerView({ workspace }) {
           <div className="mt-4 text-center py-6">
             <div className="text-4xl mb-2">{"\u221E"}</div>
             <p className="text-xl font-semibold text-white">
-              {t("Unbegrenztes Kontingent")}
+              {t("billing.customer.unlimited-quota")}
             </p>
             <p className="text-white/60 text-sm mt-2">
-              {t("Sie können diesen Workspace ohne Einschränkungen nutzen.")}
+              {t("billing.customer.unlimited-description")}
             </p>
           </div>
         ) : (
@@ -132,7 +132,7 @@ export default function BillingCustomerView({ workspace }) {
             {/* Usage Numbers */}
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-white/60 text-sm">{t("Verbraucht")}</p>
+                <p className="text-white/60 text-sm">{t("billing.customer.consumed")}</p>
                 <p className="text-3xl font-bold text-white">
                   {messageCount.toLocaleString("de-DE")}
                   <span className="text-lg font-normal text-white/60">
@@ -141,7 +141,7 @@ export default function BillingCustomerView({ workspace }) {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-white/60 text-sm">{t("Verbleibend")}</p>
+                <p className="text-white/60 text-sm">{t("billing.customer.remaining")}</p>
                 <p className="text-2xl font-semibold text-white">
                   {Math.max(0, messagesLimit - messageCount).toLocaleString("de-DE")}
                 </p>
@@ -159,7 +159,7 @@ export default function BillingCustomerView({ workspace }) {
             {/* Percentage */}
             <div className="text-sm">
               <span className={`font-medium ${isAtLimit ? "text-red-400" : isNearLimit ? "text-yellow-400" : "text-white/60"}`}>
-                {percentage.toFixed(1)}% {t("genutzt")}
+                {percentage.toFixed(1)}% {t("billing.customer.used")}
               </span>
             </div>
           </div>
@@ -171,17 +171,17 @@ export default function BillingCustomerView({ workspace }) {
         <div>
           <div className="flex flex-col gap-y-1">
             <label className="block text-sm font-medium text-white">
-              {t("Abrechnungszyklus")}
+              {t("billing.customer.billing-cycle")}
             </label>
             <p className="text-white/60 text-xs">
-              {t("Informationen zu Ihrem aktuellen Abrechnungszeitraum.")}
+              {t("billing.customer.cycle-info-description")}
             </p>
           </div>
 
           <div className="flex gap-x-8 mt-4">
             {/* Next Reset */}
             <div>
-              <p className="text-white/60 text-xs block">{t("Nächster Zyklusbeginn")}</p>
+              <p className="text-white/60 text-xs block">{t("billing.customer.next-cycle-start")}</p>
               <p className="text-sm font-medium text-white">
                 {formatNextReset()}
               </p>
@@ -189,15 +189,15 @@ export default function BillingCustomerView({ workspace }) {
 
             {/* Days Remaining */}
             <div>
-              <p className="text-white/60 text-xs block">{t("Verbleibend")}</p>
+              <p className="text-white/60 text-xs block">{t("billing.customer.remaining")}</p>
               <p className="text-sm font-medium text-white">
-                {daysRemaining} {daysRemaining === 1 ? t("Tag") : t("Tage")}
+                {daysRemaining} {daysRemaining === 1 ? t("billing.customer.day") : t("billing.customer.days")}
               </p>
             </div>
 
             {/* Cycle Duration */}
             <div>
-              <p className="text-white/60 text-xs block">{t("Zyklusdauer")}</p>
+              <p className="text-white/60 text-xs block">{t("billing.customer.cycle-duration")}</p>
               <p className="text-sm font-medium text-white">
                 {getCycleDurationText()}
               </p>
@@ -206,7 +206,7 @@ export default function BillingCustomerView({ workspace }) {
             {/* Current Cycle Number */}
             {cycleInfo?.cycleNumber && (
               <div>
-                <p className="text-white/60 text-xs block">{t("Aktueller Zyklus")}</p>
+                <p className="text-white/60 text-xs block">{t("billing.customer.current-cycle")}</p>
                 <p className="text-sm font-medium text-white">
                   {cycleInfo.cycleNumber}
                 </p>
@@ -226,19 +226,19 @@ export default function BillingCustomerView({ workspace }) {
           {isAtLimit ? (
             <>
               <p className="font-semibold text-red-300 mb-1">
-                {t("Kontingent erschöpft")}
+                {t("billing.customer.quota-exhausted")}
               </p>
               <p className="text-sm text-red-300/80">
-                {t("Sie haben Ihr Nachrichtenlimit für diesen Zeitraum erreicht. Ihr Kontingent wird am")} {formatNextReset()} {t("erneuert.")}
+                {t("billing.customer.quota-exhausted-description")} {formatNextReset()} {t("billing.customer.messages-until")}
               </p>
             </>
           ) : (
             <>
               <p className="font-semibold text-yellow-300 mb-1">
-                {t("Kontingent fast erschöpft")}
+                {t("billing.customer.quota-almost-exhausted")}
               </p>
               <p className="text-sm text-yellow-300/80">
-                {t("Sie haben bereits")} {percentage.toFixed(0)}% {t("Ihres Kontingents verbraucht. Es verbleiben noch")} {Math.max(0, messagesLimit - messageCount).toLocaleString("de-DE")} {t("Nachrichten bis zum")} {formatNextReset()}.
+                {t("billing.customer.quota-almost-description", { percentage: percentage.toFixed(0), remaining: Math.max(0, messagesLimit - messageCount).toLocaleString("de-DE") })} {formatNextReset()}.
               </p>
             </>
           )}

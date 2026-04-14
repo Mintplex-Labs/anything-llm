@@ -7,6 +7,7 @@ import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function GeneralInfo({ slug }) {
   const [workspace, setWorkspace] = useState(null);
@@ -14,6 +15,7 @@ export default function GeneralInfo({ slug }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -35,9 +37,9 @@ export default function GeneralInfo({ slug }) {
       data
     );
     if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast(t("toast.workspace-updated"), "success", { clear: true });
     } else {
-      showToast(`Error: ${message}`, "error", { clear: true });
+      showToast(t("toast.workspace-update-error", { message }), "error", { clear: true });
     }
     setSaving(false);
     setHasChanges(false);

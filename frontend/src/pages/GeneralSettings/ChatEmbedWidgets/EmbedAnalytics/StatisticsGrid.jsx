@@ -10,42 +10,42 @@ export default function StatisticsGrid({ stats }) {
 
   const statCards = [
     {
-      label: "Konversationen",
+      label: t("embed-analytics.stats.conversations-label"),
       value: stats.unique_conversations?.toLocaleString("de-DE") || 0,
-      description: "Gesamtzahl aller Konversationen",
+      description: t("embed-analytics.stats.conversations-desc"),
       color: "#3B82F6",
     },
     {
-      label: "Nachrichten",
+      label: t("embed-analytics.stats.messages-label"),
       value: stats.total_chats?.toLocaleString("de-DE") || 0,
-      description: "Gesamtzahl aller Chat-Nachrichten",
+      description: t("embed-analytics.stats.messages-desc"),
       color: "#10B981",
     },
     {
-      label: "Ø Nachrichten",
+      label: t("embed-analytics.stats.avg-messages-label"),
       value: stats.avg_chats_per_conversation?.toFixed(1) || "0.0",
-      description: "Durchschnittliche Nachrichten pro Konversation",
+      description: t("embed-analytics.stats.avg-messages-desc"),
       color: "#F59E0B",
     },
   ];
 
   const technicalStats = [
     {
-      label: "Ø Wörter/Anfrage",
+      label: t("embed-analytics.stats.avg-words-prompt-label"),
       value: stats.avg_words_prompt?.toLocaleString("de-DE") || 0,
-      description: "Durchschnittliche Wortanzahl pro User-Anfrage",
+      description: t("embed-analytics.stats.avg-words-prompt-desc"),
       color: "#8B5CF6",
     },
     {
-      label: "Ø Wörter/Antwort",
+      label: t("embed-analytics.stats.avg-words-response-label"),
       value: stats.avg_words_response?.toLocaleString("de-DE") || 0,
-      description: "Durchschnittliche Wortanzahl pro AI-Antwort",
+      description: t("embed-analytics.stats.avg-words-response-desc"),
       color: "#EC4899",
     },
     {
-      label: "Max Wörter (Anfrage)",
+      label: t("embed-analytics.stats.max-words-prompt-label"),
       value: stats.max_words_prompt?.toLocaleString("de-DE") || 0,
-      description: "Längste User-Anfrage (Outlier-Indikator)",
+      description: t("embed-analytics.stats.max-words-prompt-desc"),
       color: "#EF4444",
     },
   ];
@@ -82,7 +82,7 @@ export default function StatisticsGrid({ stats }) {
             ) : (
               <CaretDown size={20} weight="bold" />
             )}
-            <span className="text-sm font-medium">Technische Details anzeigen</span>
+            <span className="text-sm font-medium">{t("embed-analytics.stats.show-technical")}</span>
           </button>
 
           {showTechnical && (

@@ -3,6 +3,7 @@ import { useEffect, useState, Fragment } from "react";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Highlighter from "react-highlight-words";
@@ -11,6 +12,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 
 export default function DefaultSystemPrompt() {
+  const { t } = useTranslation();
   const [systemPromptForm, setSystemPromptForm] = useState({
     value: "",
     default: "",
@@ -88,7 +90,7 @@ export default function DefaultSystemPrompt() {
           }));
         }
 
-        showToast("Default system prompt updated successfully.", "success");
+        showToast(t("toast.admin.default-prompt-updated"), "success");
         setSystemPromptForm((prev) => ({
           ...prev,
           default: newSystemPrompt,
@@ -98,7 +100,7 @@ export default function DefaultSystemPrompt() {
       })
       .catch((error) => {
         showToast(
-          `Failed to update default system prompt: ${error.message}`,
+          t("toast.admin.default-prompt-update-error", { error: error.message }),
           "error"
         );
         setSystemPromptForm((prev) => ({

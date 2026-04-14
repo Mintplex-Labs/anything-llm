@@ -31,7 +31,7 @@ export default function ObsidianOptions() {
 
     try {
       setLoading(true);
-      showToast("Importing Obsidian vault - this may take a while.", "info", {
+      showToast(t("toast.components.obsidian-importing"), "info", {
         clear: true,
         autoClose: false,
       });
@@ -67,13 +67,13 @@ export default function ObsidianOptions() {
 
       if (successCount === totalCount) {
         showToast(
-          `Successfully imported ${successCount} files from your vault!`,
+          t("toast.components.obsidian-import-success", { count: successCount }),
           "success",
           { clear: true }
         );
       } else {
         showToast(
-          `Imported ${successCount} files, ${failCount} failed`,
+          t("toast.components.obsidian-import-partial", { successCount, failCount }),
           "warning",
           { clear: true }
         );

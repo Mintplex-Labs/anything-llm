@@ -31,19 +31,19 @@ export default function SuggestedChatMessages({ slug }) {
       validMessages
     );
     if (!success) {
-      showToast(`Failed to update welcome messages: ${error}`, "error");
+      showToast(t("toast.welcome-messages-update-error", { error }), "error");
       return;
     }
     setSuggestedMessages(validMessages);
     setEditingIndex(-1);
-    showToast("Successfully updated welcome messages.", "success");
+    showToast(t("toast.welcome-messages-updated"), "success");
     setHasChanges(false);
   };
 
   const addMessage = () => {
     setEditingIndex(-1);
     if (suggestedMessages.length >= 4) {
-      showToast("Maximum of 4 messages allowed.", "warning");
+      showToast(t("toast.welcome-messages-max"), "warning");
       return;
     }
     const defaultMessage = {

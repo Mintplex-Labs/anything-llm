@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import showToast from "@/utils/toast";
 import { Trash, Copy, Check, Plug } from "@phosphor-icons/react";
@@ -10,6 +11,7 @@ export default function BrowserExtensionApiKeyRow({
   connectionString,
   isMultiUser,
 }) {
+  const { t } = useTranslation();
   const rowRef = useRef(null);
   const [copied, setCopied] = useState(false);
 
@@ -24,11 +26,11 @@ export default function BrowserExtensionApiKeyRow({
     const result = await BrowserExtensionApiKey.revoke(apiKey.id);
     if (result.success) {
       removeApiKey(apiKey.id);
-      showToast("Browser Extension API Key permanently revoked", "info", {
+      showToast(t("toast.browser-ext.revoked"), "info", {
         clear: true,
       });
     } else {
-      showToast("Failed to revoke API Key", "error", {
+      showToast(t("toast.browser-ext.revoke-error"), "error", {
         clear: true,
       });
     }
@@ -36,7 +38,7 @@ export default function BrowserExtensionApiKeyRow({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(connectionString);
-    showToast("Connection string copied to clipboard", "success", {
+    showToast(t("toast.browser-ext.copied"), "success", {
       clear: true,
     });
     setCopied(true);
@@ -50,7 +52,7 @@ export default function BrowserExtensionApiKeyRow({
       { type: POPUP_BROWSER_EXTENSION_EVENT, apiKey: connectionString },
       "*"
     );
-    showToast("Attempting to connect to browser extension...", "info", {
+    showToast(t("toast.browser-ext.connecting"), "info", {
       clear: true,
     });
   };

@@ -3,11 +3,13 @@ import CTAButton from "@/components/lib/CTAButton";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Introduction({ settings, setSettings, setStep }) {
+  const { t } = useTranslation();
   const [itemId, setItemId] = useState(settings.itemId);
   const handleContinue = () => {
-    if (!itemId) return showToast("Please enter an item ID", "error");
+    if (!itemId) return showToast(t("toast.community.enter-item-id"), "error");
     setSettings((prev) => ({ ...prev, itemId }));
     setStep(CommunityHubImportItemSteps.itemId.next());
   };

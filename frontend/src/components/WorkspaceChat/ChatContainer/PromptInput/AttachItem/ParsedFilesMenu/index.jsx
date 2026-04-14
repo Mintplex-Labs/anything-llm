@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { PARSED_FILE_ATTACHMENT_REMOVED_EVENT } from "../../../DnDWrapper";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 export default function ParsedFilesMenu({
   onEmbeddingChange,
@@ -19,6 +20,7 @@ export default function ParsedFilesMenu({
   workspaceSlug,
   threadSlug = null,
 }) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const canEmbed = !user || user.role !== "default";
   const initialContextWindowLimitExceeded =
@@ -90,13 +92,13 @@ export default function ParsedFilesMenu({
           contextWindow * Workspace.maxContextWindowLimit
       );
       showToast(
-        `${files.length} ${pluralize("file", files.length)} embedded successfully`,
+        t("toast.components.files-embedded", { count: files.length, fileWord: pluralize("file", files.length) }),
         "success"
       );
       tooltipRef?.current?.close();
     } catch (error) {
       console.error("Failed to embed files:", error);
-      showToast("Failed to embed files", "error");
+      showToast(t("toast.components.files-embed-error"), "error");
     }
     setIsEmbedding(false);
     onEmbeddingChange?.(false);

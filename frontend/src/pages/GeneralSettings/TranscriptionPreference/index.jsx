@@ -53,9 +53,9 @@ export default function TranscriptionModelPreference() {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("toast.transcription.save-error", { error }), "error");
     } else {
-      showToast("Transcription preferences saved successfully.", "success");
+      showToast(t("toast.transcription.save-success"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);

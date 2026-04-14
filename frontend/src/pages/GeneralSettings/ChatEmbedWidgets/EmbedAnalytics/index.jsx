@@ -135,8 +135,8 @@ export default function EmbedAnalyticsView() {
             >
               <span>
                 {embeds.find((e) => e.id === selectedEmbed)
-                  ? `Embed #${selectedEmbed} (${embeds.find((e) => e.id === selectedEmbed)?.workspace?.name})`
-                  : "Embed wählen"}
+                  ? t("embed-analytics.embed-label", { id: selectedEmbed, workspace: embeds.find((e) => e.id === selectedEmbed)?.workspace?.name })
+                  : t("embed-analytics.select-embed")}
               </span>
               <CaretDown
                 size={12}
@@ -156,7 +156,7 @@ export default function EmbedAnalyticsView() {
                     className={`flex items-center justify-between w-full px-3 py-2 text-sm text-left transition-all cursor-pointer
                       ${selectedEmbed === embed.id ? "bg-white/10 text-theme-text-primary font-medium" : "text-theme-text-secondary hover:bg-white/5 hover:text-theme-text-primary"}`}
                   >
-                    <span>Embed #{embed.id} ({embed.workspace?.name})</span>
+                    <span>{t("embed-analytics.embed-label", { id: embed.id, workspace: embed.workspace?.name })}</span>
                     {selectedEmbed === embed.id && (
                       <Check size={14} className="text-theme-text-primary" weight="bold" />
                     )}

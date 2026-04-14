@@ -84,12 +84,12 @@ export default function BillingAdminView({ workspace }) {
   const nextReset = calculateNextReset(cycleStartDate, cycleDurationMonths);
 
   const cycleDurationOptions = [
-    { value: 1, label: t("1 Monat") },
-    { value: 2, label: t("2 Monate") },
-    { value: 3, label: t("3 Monate (Quartal)") },
-    { value: 4, label: t("4 Monate") },
-    { value: 6, label: t("6 Monate (Halbjahr)") },
-    { value: 12, label: t("12 Monate (Jahr)") },
+    { value: 1, label: t("billing.cycle.1-month") },
+    { value: 2, label: t("billing.cycle.2-months") },
+    { value: 3, label: t("billing.cycle.3-months") },
+    { value: 4, label: t("billing.cycle.4-months") },
+    { value: 6, label: t("billing.cycle.6-months") },
+    { value: 12, label: t("billing.cycle.12-months") },
   ];
 
   // Fetch usage data function (reusable)
@@ -114,12 +114,12 @@ export default function BillingAdminView({ workspace }) {
       data
     );
     if (updatedWorkspace) {
-      showToast("Abrechnungseinstellungen aktualisiert!", "success", { clear: true });
+      showToast(t("billing.admin.save-success"), "success", { clear: true });
       setHasChanges(false);
       // Reload usage data to reflect new limits
       await fetchUsageData();
     } else {
-      showToast(`Fehler: ${message}`, "error", { clear: true });
+      showToast(t("billing.admin.save-error", { message }), "error", { clear: true });
     }
     setSaving(false);
   };
@@ -131,7 +131,7 @@ export default function BillingAdminView({ workspace }) {
         {hasChanges && (
           <div className="absolute top-0 right-0">
             <CTAButton type="submit" disabled={saving}>
-              {saving ? t("Speichern...") : t("Workspace aktualisieren")}
+              {saving ? t("billing.admin.saving") : t("billing.admin.update-workspace")}
             </CTAButton>
           </div>
         )}
@@ -140,33 +140,33 @@ export default function BillingAdminView({ workspace }) {
         <div>
           <div className="flex flex-col gap-y-1">
             <label className="block text-sm font-medium text-white">
-              {t("Aktueller Verbrauch")}
+              {t("billing.admin.current-usage")}
             </label>
             <p className="text-white/60 text-xs">
-              {t("Live-Ansicht des Kundenverbrauchs für diesen Workspace.")}
+              {t("billing.admin.usage-description")}
             </p>
           </div>
 
           {loadingUsage ? (
             <div className="animate-pulse text-white/60 text-sm mt-4">
-              {t("Lade Verbrauchsdaten...")}
+              {t("billing.admin.loading-usage")}
             </div>
           ) : usageData ? (
             <div className="space-y-3 mt-4">
               {/* Usage Numbers */}
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-white/60 text-sm">{t("Verbraucht")}</p>
+                  <p className="text-white/60 text-sm">{t("billing.admin.consumed")}</p>
                   <p className="text-3xl font-bold text-white">
                     {usageData.messageCount?.toLocaleString("de-DE") ?? 0}
                     <span className="text-lg font-normal text-white/60">
-                      {" / "}{usageData.messagesLimit?.toLocaleString("de-DE") ?? t("Unbegrenzt")}
+                      {" / "}{usageData.messagesLimit?.toLocaleString("de-DE") ?? t("billing.admin.unlimited")}
                     </span>
                   </p>
                 </div>
                 {usageData.messagesLimit && (
                   <div className="text-right">
-                    <p className="text-white/60 text-sm">{t("Verbleibend")}</p>
+                    <p className="text-white/60 text-sm">{t("billing.admin.remaining")}</p>
                     <p className="text-2xl font-semibold text-white">
                       {Math.max(0, usageData.messagesLimit - usageData.messageCount).toLocaleString("de-DE")}
                     </p>
@@ -200,7 +200,7 @@ export default function BillingAdminView({ workspace }) {
                         ? "text-yellow-400"
                         : "text-white/60"
                   }`}>
-                    {((usageData.messageCount / usageData.messagesLimit) * 100).toFixed(1)}% {t("genutzt")}
+                    {((usageData.messageCount / usageData.messagesLimit) * 100).toFixed(1)}% {t("billing.admin.used")}
                   </span>
                 </div>
               )}
@@ -209,7 +209,7 @@ export default function BillingAdminView({ workspace }) {
               {usageData.cycleInfo && (
                 <div className="flex gap-x-8 pt-2">
                   <div>
-                    <span className="text-white/60 text-xs block">{t("Nächster Zyklusbeginn")}</span>
+                    <span className="text-white/60 text-xs block">{t("billing.admin.next-cycle-start")}</span>
                     <p className="text-white text-sm font-medium">
                       {new Date(usageData.cycleInfo.nextReset).toLocaleDateString("de-DE", {
                         day: "numeric",
@@ -219,30 +219,30 @@ export default function BillingAdminView({ workspace }) {
                     </p>
                   </div>
                   <div>
-                    <span className="text-white/60 text-xs block">{t("Verbleibend")}</span>
+                    <span className="text-white/60 text-xs block">{t("billing.admin.remaining")}</span>
                     <p className="text-white text-sm font-medium">
-                      {usageData.cycleInfo.daysRemaining} {usageData.cycleInfo.daysRemaining === 1 ? t("Tag") : t("Tage")}
+                      {usageData.cycleInfo.daysRemaining} {usageData.cycleInfo.daysRemaining === 1 ? t("billing.admin.day") : t("billing.admin.days")}
                     </p>
                   </div>
                   <div>
-                    <span className="text-white/60 text-xs block">{t("Zyklusdauer")}</span>
+                    <span className="text-white/60 text-xs block">{t("billing.admin.cycle-duration")}</span>
                     <p className="text-white text-sm font-medium">
                       {(() => {
                         const months = usageData.cycleInfo.cycleDurationMonths;
                         switch (months) {
-                          case 1: return t("1 Monat");
-                          case 2: return t("2 Monate");
-                          case 3: return t("3 Monate (Quartal)");
-                          case 4: return t("4 Monate");
-                          case 6: return t("6 Monate (Halbjahr)");
-                          case 12: return t("12 Monate (Jahr)");
-                          default: return `${months} ${t("Monate")}`;
+                          case 1: return t("billing.cycle.1-month");
+                          case 2: return t("billing.cycle.2-months");
+                          case 3: return t("billing.cycle.3-months");
+                          case 4: return t("billing.cycle.4-months");
+                          case 6: return t("billing.cycle.6-months");
+                          case 12: return t("billing.cycle.12-months");
+                          default: return `${months} ${t("billing.cycle.months")}`;
                         }
                       })()}
                     </p>
                   </div>
                   <div>
-                    <span className="text-white/60 text-xs block">{t("Aktueller Zyklus")}</span>
+                    <span className="text-white/60 text-xs block">{t("billing.admin.current-cycle")}</span>
                     <p className="text-white text-sm font-medium">
                       {usageData.cycleInfo.cycleNumber}
                     </p>
@@ -252,7 +252,7 @@ export default function BillingAdminView({ workspace }) {
             </div>
           ) : (
             <div className="text-white/60 text-sm mt-4">
-              {t("Keine Verbrauchsdaten verfügbar")}
+              {t("billing.admin.no-usage-data")}
             </div>
           )}
         </div>
@@ -261,10 +261,10 @@ export default function BillingAdminView({ workspace }) {
         <div>
           <div className="flex flex-col gap-y-1">
             <label htmlFor="messagesLimit" className="block text-sm font-medium text-white">
-              {t("Nachrichtenlimit")}
+              {t("billing.admin.messages-limit")}
             </label>
             <p className="text-white/60 text-xs">
-              {t("Maximale Anzahl an Nachrichten pro Abrechnungszyklus. Leer lassen für unbegrenzt.")}
+              {t("billing.admin.messages-limit-description")}
             </p>
           </div>
           <input
@@ -275,7 +275,7 @@ export default function BillingAdminView({ workspace }) {
             onWheel={(e) => e.target.blur()}
             value={messagesLimit}
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-4"
-            placeholder={t("Unbegrenzt")}
+            placeholder={t("billing.admin.unlimited")}
             autoComplete="off"
             onChange={(e) => {
               setMessagesLimit(e.target.value);
@@ -288,10 +288,10 @@ export default function BillingAdminView({ workspace }) {
         <div>
           <div className="flex flex-col gap-y-1">
             <label className="block text-sm font-medium text-white">
-              {t("Abrechnungszyklus")}
+              {t("billing.admin.billing-cycle")}
             </label>
             <p className="text-white/60 text-xs">
-              {t("Das Nachrichtenkontingent wird automatisch zum konfigurierten Zeitpunkt zurückgesetzt.")}
+              {t("billing.admin.cycle-reset-description")}
             </p>
           </div>
 
@@ -302,7 +302,7 @@ export default function BillingAdminView({ workspace }) {
                 htmlFor="cycleStartDate"
                 className="block mb-2 text-sm font-medium text-white"
               >
-                {t("Zyklus-Startdatum")}
+                {t("billing.admin.cycle-start-date")}
               </label>
               <input
                 name="cycleStartDate"
@@ -322,7 +322,7 @@ export default function BillingAdminView({ workspace }) {
                 htmlFor="cycleDurationMonths"
                 className="block mb-2 text-sm font-medium text-white"
               >
-                {t("Zyklus-Dauer")}
+                {t("billing.admin.cycle-duration-label")}
               </label>
               <select
                 name="cycleDurationMonths"
@@ -333,7 +333,7 @@ export default function BillingAdminView({ workspace }) {
                 }}
                 className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               >
-                <option value="">{t("-- Auswählen --")}</option>
+                <option value="">{t("billing.admin.select-placeholder")}</option>
                 {cycleDurationOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -346,7 +346,7 @@ export default function BillingAdminView({ workspace }) {
           {/* Next Reset Info */}
           {nextReset && (
             <p className="text-sm text-white/60 mt-3">
-              {t("Nächster Zyklusbeginn:")}{" "}
+              {t("billing.admin.next-cycle-start-label")}{" "}
               <span className="font-medium text-white">
                 {nextReset.toLocaleDateString("de-DE", {
                   day: "numeric",
@@ -361,8 +361,8 @@ export default function BillingAdminView({ workspace }) {
         {/* Info Box */}
         <div className="p-4 bg-blue-500/15 rounded-lg border border-blue-500/30">
           <p className="text-sm text-blue-400">
-            <strong>Hinweis:</strong>{" "}
-            Bei einem Upgrade kann das Startdatum auf das aktuelle Datum gesetzt werden, um den Zyklus sofort zurückzusetzen. Das Kontingent beginnt dann neu zu zählen.
+            <strong>{t("billing.admin.info-title")}</strong>{" "}
+            {t("billing.admin.info-text")}
           </p>
         </div>
       </form>

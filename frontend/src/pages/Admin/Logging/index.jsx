@@ -36,12 +36,12 @@ export default function AdminLogs() {
       return;
     const { success, error } = await System.clearEventLogs();
     if (success) {
-      showToast("Event logs cleared successfully.", "success");
+      showToast(t("toast.admin.logs-cleared"), "success");
       setLogs([]);
       setCanNext(false);
       setOffset(0);
     } else {
-      showToast(`Failed to clear logs: ${error}`, "error");
+      showToast(t("toast.admin.logs-clear-error", { error }), "error");
     }
   };
 

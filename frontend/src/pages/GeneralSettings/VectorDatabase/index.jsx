@@ -144,10 +144,10 @@ export default function GeneralVectorDatabase() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save vector database settings: ${error}`, "error");
+      showToast(t("toast.vector.save-error", { error }), "error");
       setHasChanges(true);
     } else {
-      showToast("Vector database preferences saved successfully.", "success");
+      showToast(t("toast.vector.save-success"), "success");
       setHasChanges(false);
     }
     setSaving(false);

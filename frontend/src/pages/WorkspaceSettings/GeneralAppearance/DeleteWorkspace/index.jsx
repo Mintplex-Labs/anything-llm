@@ -23,7 +23,7 @@ export default function DeleteWorkspace({ workspace }) {
     setDeleting(true);
     const success = await Workspace.delete(workspace.slug);
     if (!success) {
-      showToast("Workspace could not be deleted!", "error", { clear: true });
+      showToast(t("toast.workspace-delete-error"), "error", { clear: true });
       setDeleting(false);
       return;
     }

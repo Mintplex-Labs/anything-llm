@@ -7,7 +7,7 @@ import showToast from "@/utils/toast";
 import MarkdownRenderer from "../EmbedChats/MarkdownRenderer";
 import Pagination from "@/components/Pagination";
 
-function timeAgo(timestamp) {
+function timeAgo(timestamp, t) {
   const now = Date.now();
   const diff = now - timestamp;
   const seconds = Math.floor(diff / 1000);
@@ -15,16 +15,16 @@ function timeAgo(timestamp) {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return "vor wenigen Sekunden";
-  if (minutes < 60) return `vor ${minutes} ${minutes === 1 ? "Minute" : "Minuten"}`;
-  if (hours < 24) return `vor ${hours} ${hours === 1 ? "Stunde" : "Stunden"}`;
-  if (days < 30) return `vor ${days} ${days === 1 ? "Tag" : "Tagen"}`;
+  if (seconds < 60) return t("embed-analytics.conversations.seconds-ago");
+  if (minutes < 60) return t("embed-analytics.conversations.minutes-ago", { count: minutes });
+  if (hours < 24) return t("embed-analytics.conversations.hours-ago", { count: hours });
+  if (days < 30) return t("embed-analytics.conversations.days-ago", { count: days });
 
   const months = Math.floor(days / 30);
-  if (months < 12) return `vor ${months} ${months === 1 ? "Monat" : "Monaten"}`;
+  if (months < 12) return t("embed-analytics.conversations.months-ago", { count: months });
 
   const years = Math.floor(months / 12);
-  return `vor ${years} ${years === 1 ? "Jahr" : "Jahren"}`;
+  return t("embed-analytics.conversations.years-ago", { count: years });
 }
 
 export default function ConversationList({ embedId, startDate, endDate }) {
@@ -129,7 +129,7 @@ function ConversationCard({ conversation, embedId }) {
   const handleCopyConversationId = (e) => {
     e.stopPropagation();
     navigator.clipboard.writeText(conversation.conversation_id);
-    showToast("Konversations-ID kopiert", "success");
+    showToast(t("embed-analytics.conversations.id-copied"), "success");
   };
 
   return (
@@ -144,33 +144,33 @@ function ConversationCard({ conversation, embedId }) {
             <div className="flex items-center gap-2 mb-2">
               {/* Workspace Name */}
               <h3 className="text-sm font-semibold text-white truncate">
-                Konversation #{conversation.conversation_number || "?"}
+                {t("embed-analytics.conversations.conversation-number", { number: conversation.conversation_number || "?" })}
               </h3>
               {/* NEU Badge */}
               {isNew && (
                 <span className="px-2 py-0.5 text-xs font-bold bg-green-500/20 text-green-400 rounded border border-green-500/30">
-                  NEU
+                  {t("embed-analytics.conversations.new-badge")}
                 </span>
               )}
             </div>
 
             {/* Preview */}
             <p className="text-xs text-theme-text-secondary mb-3 line-clamp-2 italic">
-              &quot;{conversation.preview || "Keine Vorschau verfügbar"}&quot;
+              &quot;{conversation.preview || t("embed-analytics.conversations.no-preview")}&quot;
             </p>
 
             {/* Metadata */}
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-theme-text-secondary">
               <span>
-                Erstellt: {formatDateTimeDE(conversation.started_at)}
+                {t("embed-analytics.conversations.created")} {formatDateTimeDE(conversation.started_at)}
               </span>
               <span>•</span>
               <span>
-                Letzte Nachricht: {timeAgo(conversation.last_message_at)}
+                {t("embed-analytics.conversations.last-message")} {timeAgo(conversation.last_message_at, t)}
               </span>
               <span>•</span>
               <span>
-                {conversation.message_count} {conversation.message_count === 1 ? "Nachricht" : "Nachrichten"}
+                {t("embed-analytics.conversations.message-count", { count: conversation.message_count })}
               </span>
             </div>
           </div>
@@ -182,7 +182,7 @@ function ConversationCard({ conversation, embedId }) {
               type="button"
               className="relative z-10 flex items-center gap-2 bg-theme-settings-input-bg px-2 py-1 rounded border border-white/10 light:border-gray-300 cursor-pointer hover:bg-white/15 hover:border-white/30 light:hover:bg-gray-100 light:hover:border-gray-400 transition-all group"
               onClick={handleCopyConversationId}
-              title="Konversations-ID kopieren"
+              title={t("embed-analytics.conversations.copy-id")}
             >
               <span className="text-theme-text-secondary text-[10px] font-semibold uppercase">
                 ID:
@@ -262,7 +262,7 @@ function ConversationCard({ conversation, embedId }) {
             </div>
           ) : (
             <div className="text-center py-4 text-theme-text-secondary text-sm">
-              Keine Nachrichten gefunden
+              {t("embed-analytics.conversations.no-messages")}
             </div>
           )}
         </div>

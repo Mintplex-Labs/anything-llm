@@ -1,23 +1,25 @@
 import showToast from "@/utils/toast";
 import MobileConnection from "@/models/mobile";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { BugDroid, AppleLogo } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 
 export default function DeviceRow({ device, removeDevice }) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState(device.approved);
 
   const handleApprove = async () => {
     await MobileConnection.updateDevice(device.id, { approved: true });
-    showToast("Device access granted", "info");
+    showToast(t("toast.mobile.granted"), "info");
     setStatus(true);
   };
 
   const handleDeny = async () => {
     await MobileConnection.deleteDevice(device.id);
-    showToast("Device access denied", "info");
+    showToast(t("toast.mobile.denied"), "info");
     setStatus(false);
     removeDevice(device.id);
   };

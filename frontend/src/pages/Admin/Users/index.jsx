@@ -12,6 +12,7 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import Toggle from "@/components/lib/Toggle";
+import { useTranslation } from "react-i18next";
 
 export default function AdminUsers() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -128,9 +129,10 @@ const ROLE_HINT = {
 };
 
 export function RoleHintDisplay({ role }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-y-1 py-1 pb-4">
-      <p className="text-sm font-medium text-theme-text-primary">Permissions</p>
+      <p className="text-sm font-medium text-theme-text-primary">{t("toast.admin.permissions")}</p>
       <ul className="flex flex-col gap-y-1 list-disc px-4">
         {ROLE_HINT[role ?? "default"].map((hints, i) => {
           return (

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -28,6 +29,7 @@ const PROVIDERS = [
 ];
 
 export default function SpeechToTextProvider({ settings }) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,9 +51,9 @@ export default function SpeechToTextProvider({ settings }) {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("toast.audio.stt-error", { error }), "error");
     } else {
-      showToast("Speech-to-text preferences saved successfully.", "success");
+      showToast(t("toast.audio.stt-saved"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);

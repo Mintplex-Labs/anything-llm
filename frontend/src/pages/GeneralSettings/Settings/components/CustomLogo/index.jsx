@@ -32,7 +32,7 @@ export default function CustomLogo() {
     formData.append("logo", file);
     const { success, error } = await System.uploadLogo(formData);
     if (!success) {
-      showToast(`Failed to upload logo: ${error}`, "error");
+      showToast(t("toast.settings.logo-upload-error", { error }), "error");
       setLogo(_initLogo);
       return;
     }
@@ -40,7 +40,7 @@ export default function CustomLogo() {
     const { logoURL } = await System.fetchLogo();
     _setLogo(logoURL);
 
-    showToast("Image uploaded successfully.", "success");
+    showToast(t("toast.settings.logo-uploaded"), "success");
     setIsDefaultLogo(false);
   };
 
@@ -51,7 +51,7 @@ export default function CustomLogo() {
     const { success, error } = await System.removeCustomLogo();
     if (!success) {
       console.error("Failed to remove logo:", error);
-      showToast(`Failed to remove logo: ${error}`, "error");
+      showToast(t("toast.settings.logo-remove-error", { error }), "error");
       const { logoURL } = await System.fetchLogo();
       setLogo(logoURL);
       setIsDefaultLogo(false);
@@ -61,7 +61,7 @@ export default function CustomLogo() {
     const { logoURL } = await System.fetchLogo();
     _setLogo(logoURL);
 
-    showToast("Image successfully removed.", "success");
+    showToast(t("toast.settings.logo-removed"), "success");
   };
 
   const triggerFileInputClick = () => {

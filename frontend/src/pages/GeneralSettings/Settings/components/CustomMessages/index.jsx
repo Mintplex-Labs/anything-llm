@@ -53,10 +53,10 @@ export default function CustomMessages() {
   const handleMessageSave = async () => {
     const { success, error } = await System.setWelcomeMessages(messages);
     if (!success) {
-      showToast(`Failed to update welcome messages: ${error}`, "error");
+      showToast(t("toast.settings.welcome-messages-error", { error }), "error");
       return;
     }
-    showToast("Successfully updated welcome messages.", "success");
+    showToast(t("toast.settings.welcome-messages-success"), "success");
     setHasChanges(false);
   };
 

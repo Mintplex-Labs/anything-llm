@@ -1,12 +1,14 @@
 import CTAButton from "@/components/lib/CTAButton";
 import CommunityHubImportItemSteps from "../..";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import CommunityHub from "@/models/communityHub";
 
 export default function SystemPrompt({ item, setStep }) {
+  const { t } = useTranslation();
   const [destinationWorkspaceSlug, setDestinationWorkspaceSlug] =
     useState(null);
   const [workspaces, setWorkspaces] = useState([]);
@@ -20,17 +22,17 @@ export default function SystemPrompt({ item, setStep }) {
   }, []);
 
   async function handleSubmit() {
-    showToast("Applying system prompt to workspace...", "info");
+    showToast(t("toast.community.applying-prompt"), "info");
     const { error } = await CommunityHub.applyItem(item.importId, {
       workspaceSlug: destinationWorkspaceSlug,
     });
     if (error) {
-      return showToast(`Failed to apply system prompt. ${error}`, "error", {
+      return showToast(t("toast.community.apply-prompt-error", { error }), "error", {
         clear: true,
       });
     }
 
-    showToast("System prompt applied to workspace.", "success", {
+    showToast(t("toast.community.prompt-applied"), "success", {
       clear: true,
     });
     setStep(CommunityHubImportItemSteps.completed.key);

@@ -7,6 +7,7 @@ import EditVariableModal from "./EditVariableModal";
 import { titleCase } from "text-case";
 import truncate from "truncate";
 import { Trash } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 /**
  * A row component for displaying a system prompt variable
@@ -15,6 +16,7 @@ import { Trash } from "@phosphor-icons/react";
  * @returns {JSX.Element} A JSX element for displaying the variable
  */
 export default function VariableRow({ variable, onRefresh }) {
+  const { t } = useTranslation();
   const rowRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -30,11 +32,11 @@ export default function VariableRow({ variable, onRefresh }) {
     try {
       await System.promptVariables.delete(variable.id);
       rowRef?.current?.remove();
-      showToast("Variable deleted successfully", "success", { clear: true });
+      showToast(t("toast.admin.variable-deleted"), "success", { clear: true });
       if (onRefresh) onRefresh();
     } catch (error) {
       console.error("Error deleting variable:", error);
-      showToast("Failed to delete variable", "error", { clear: true });
+      showToast(t("toast.admin.variable-delete-error"), "error", { clear: true });
     }
   };
 

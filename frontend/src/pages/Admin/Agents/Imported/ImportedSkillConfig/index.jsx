@@ -4,6 +4,7 @@ import { Gear, Plug } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
 import { sentenceCase } from "text-case";
 import Toggle from "@/components/lib/Toggle";
+import { useTranslation } from "react-i18next";
 
 /**
  * Converts setup_args to inputs for the form builder
@@ -36,6 +37,7 @@ export default function ImportedSkillConfig({
   selectedSkill, // imported skill config object
   setImportedSkills, // function to set imported skills since config is file-write
 }) {
+  const { t } = useTranslation();
   const [config, setConfig] = useState(selectedSkill);
   const [hasChanges, setHasChanges] = useState(false);
   const [inputs, setInputs] = useState(
@@ -57,7 +59,7 @@ export default function ImportedSkillConfig({
     );
     setConfig(updatedConfig);
     showToast(
-      `Skill ${updatedConfig.active ? "activated" : "deactivated"}.`,
+      t(updatedConfig.active ? "toast.admin.skill-activated" : "toast.admin.skill-deactivated"),
       "success",
       { clear: true }
     );
@@ -96,7 +98,7 @@ export default function ImportedSkillConfig({
         skill.hubId === config.hubId ? updatedConfig : skill
       )
     );
-    showToast("Skill config updated successfully.", "success");
+    showToast(t("toast.admin.skill-config-updated"), "success");
     setHasChanges(false);
   }
 
@@ -190,6 +192,7 @@ export default function ImportedSkillConfig({
 }
 
 function ManageSkillMenu({ config, setImportedSkills }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -205,10 +208,10 @@ function ManageSkillMenu({ config, setImportedSkills }) {
     );
     if (success) {
       setImportedSkills((prev) => prev.filter((s) => s.hubId !== config.hubId));
-      showToast("Skill deleted successfully.", "success");
+      showToast(t("toast.admin.skill-deleted"), "success");
       setOpen(false);
     } else {
-      showToast("Failed to delete skill.", "error");
+      showToast(t("toast.admin.skill-delete-error"), "error");
     }
   }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Copy, Check } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import paths from "@/utils/paths";
@@ -7,6 +8,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 
 export default function NewApiKeyModal({ closeModal, onSuccess }) {
+  const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -29,7 +31,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
     setCopied(true);
-    showToast("API key copied to clipboard", "success", {
+    showToast(t("toast.api.copied"), "success", {
       clear: true,
     });
   };

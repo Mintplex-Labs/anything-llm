@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function AddVariableModal({ closeModal, onRefresh }) {
+  const { t } = useTranslation();
   const [error, setError] = useState(null);
 
   const handleCreate = async (e) => {
@@ -21,7 +23,7 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
 
     try {
       await System.promptVariables.create(newVariable);
-      showToast("Variable created successfully", "success", { clear: true });
+      showToast(t("toast.admin.variable-created"), "success", { clear: true });
       if (onRefresh) onRefresh();
       closeModal();
     } catch (error) {

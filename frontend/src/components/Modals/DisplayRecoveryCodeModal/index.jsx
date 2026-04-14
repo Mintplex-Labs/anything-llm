@@ -3,12 +3,14 @@ import { DownloadSimple, Key } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
+import { useTranslation } from "react-i18next";
 
 export default function RecoveryCodeModal({
   recoveryCodes,
   onDownloadComplete,
   onClose,
 }) {
+  const { t } = useTranslation();
   const [downloadClicked, setDownloadClicked] = useState(false);
 
   const downloadRecoveryCodes = () => {
@@ -26,7 +28,7 @@ export default function RecoveryCodeModal({
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(recoveryCodes.join(",\n")).then(() => {
-      showToast("Recovery codes copied to clipboard", "success", {
+      showToast(t("toast.components.recovery-codes-copied"), "success", {
         clear: true,
       });
     });

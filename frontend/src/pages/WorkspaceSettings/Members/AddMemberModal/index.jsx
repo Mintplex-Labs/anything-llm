@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function AddMemberModal({ closeModal, workspace, users }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState(workspace?.userIds || []);
+  const { t } = useTranslation();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
       selectedUsers
     );
     if (success) {
-      showToast("Users updated successfully.", "success");
+      showToast(t("toast.users-updated"), "success");
       setTimeout(() => {
         window.location.reload();
       }, 1000);

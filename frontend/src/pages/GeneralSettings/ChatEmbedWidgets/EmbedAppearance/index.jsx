@@ -43,12 +43,16 @@ const DEFAULT_CONFIG = {
   accentColor: "#607D8B",
   chatIcon: "chatBubble",
   position: "bottom-left",
-  name: "",
-  greeting: "",
-  sendMessageText: "",
+  name: "Ihr Online-Berater",
+  greeting:
+    "Hallo und herzlich willkommen! Ich helfe Ihnen gerne weiter und beantworte Ihre Fragen mit intelligenten, KI-gestützten Antworten.",
+  sendMessageText: "Wie kann ich Ihnen helfen?",
   supportEmail: "",
   defaultMessages: [],
-  chatbotBubblesMessages: [],
+  chatbotBubblesMessages: [
+    "Hallo! Ich bin Ihr Online-Berater!",
+    "Möchten Sie mehr über unser Angebot erfahren? Ich helfe gerne weiter!",
+  ],
   logoFilename: null,
   logoUrl: null,
 };

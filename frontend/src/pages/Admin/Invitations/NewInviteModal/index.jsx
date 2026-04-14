@@ -3,8 +3,10 @@ import { X, Copy, Check } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function NewInviteModal({ closeModal, onSuccess }) {
+  const { t } = useTranslation();
   const [invite, setInvite] = useState(null);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -32,7 +34,7 @@ export default function NewInviteModal({ closeModal, onSuccess }) {
       `${window.location.origin}/accept-invite/${invite.code}`
     );
     setCopied(true);
-    showToast("Invite link copied to clipboard", "success", {
+    showToast(t("toast.admin.invite-copied"), "success", {
       clear: true,
     });
   };

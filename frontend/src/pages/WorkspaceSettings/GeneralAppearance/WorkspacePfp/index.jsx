@@ -26,19 +26,19 @@ export default function WorkspacePfp({ workspace, slug }) {
       workspace.slug
     );
     if (!success) {
-      showToast(`Failed to upload profile picture: ${error}`, "error");
+      showToast(t("toast.pfp-upload-error", { error }), "error");
       return;
     }
 
     const pfpUrl = await Workspace.fetchPfp(workspace.slug);
     setPfp(pfpUrl);
-    showToast("Profile picture uploaded.", "success");
+    showToast(t("toast.pfp-uploaded"), "success");
   };
 
   const handleRemovePfp = async () => {
     const { success, error } = await Workspace.removePfp(workspace.slug);
     if (!success) {
-      showToast(`Failed to remove profile picture: ${error}`, "error");
+      showToast(t("toast.pfp-remove-error", { error }), "error");
       return;
     }
 

@@ -9,6 +9,7 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import paths from "@/utils/paths";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const { user } = useUser();
@@ -17,6 +18,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchSettings() {
@@ -61,9 +63,9 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     await System.updateSystem(data.env);
 
     if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast(t("toast.workspace-updated"), "success", { clear: true });
     } else {
-      showToast(`Error: ${message}`, "error", { clear: true });
+      showToast(t("toast.workspace-update-error", { message }), "error", { clear: true });
     }
 
     setSaving(false);

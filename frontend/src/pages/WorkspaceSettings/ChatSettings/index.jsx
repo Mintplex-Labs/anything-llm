@@ -10,11 +10,13 @@ import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { t } = useTranslation();
 
   const formEl = useRef(null);
   useEffect(() => {
@@ -37,10 +39,10 @@ export default function ChatSettings({ workspace }) {
       data
     );
     if (updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast(t("toast.workspace-updated"), "success", { clear: true });
       setHasChanges(false);
     } else {
-      showToast(`Error: ${message}`, "error", { clear: true });
+      showToast(t("toast.workspace-update-error", { message }), "error", { clear: true });
       // Keep hasChanges true on error so user can retry
     }
     setSaving(false);

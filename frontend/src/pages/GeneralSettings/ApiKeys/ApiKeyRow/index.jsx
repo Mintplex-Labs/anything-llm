@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import { Trash } from "@phosphor-icons/react";
@@ -7,6 +8,7 @@ import System from "@/models/system";
 import { formatDateTimeDE } from "@/utils/directories";
 
 export default function ApiKeyRow({ apiKey, removeApiKey }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const handleDelete = async () => {
     if (
@@ -19,14 +21,14 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
     await Model.deleteApiKey(apiKey.id);
-    showToast("API Key permanently deleted", "info");
+    showToast(t("toast.api.deleted"), "info");
     removeApiKey(apiKey.id);
   };
 
   const copyApiKey = () => {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
-    showToast("API Key copied to clipboard", "success");
+    showToast(t("toast.api.copied"), "success");
     setCopied(true);
   };
 
