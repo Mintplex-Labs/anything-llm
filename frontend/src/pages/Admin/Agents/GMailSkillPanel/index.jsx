@@ -19,7 +19,7 @@ import {
 import GMailIcon from "./gmail.png";
 import Admin from "@/models/admin";
 import System from "@/models/system";
-import GmailAgent from "@/models/gmailAgent";
+import GoogleAgentSkills from "@/models/googleAgentSkills";
 import { getGmailSkills, filterSkillCategories } from "./utils";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
@@ -49,7 +49,7 @@ export default function GMailSkillPanel({
     Promise.all([
       Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
       System.keys(),
-      GmailAgent.getStatus(),
+      GoogleAgentSkills.gmail.getStatus(),
     ])
       .then(([prefsRes, settingsRes, statusRes]) => {
         setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
@@ -75,7 +75,7 @@ export default function GMailSkillPanel({
     if (prevHasChanges.current === true && hasChanges === false) {
       Promise.all([
         Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
-        GmailAgent.getStatus(),
+        GoogleAgentSkills.gmail.getStatus(),
       ])
         .then(([prefsRes, statusRes]) => {
           setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
