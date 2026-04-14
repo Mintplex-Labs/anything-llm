@@ -496,6 +496,97 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook 連接器",
+        description:
+          "讓您的代理能夠與 Microsoft Outlook 互動 - 搜尋郵件、閱讀討論串、撰寫草稿、發送郵件，以及透過 Microsoft Graph API 管理您的收件匣。 詳情請參考<a>相關文件</a>。",
+        multiUserWarning:
+          "由於安全原因，Outlook 整合功能在多使用者模式下無法使用。請先停用多使用者模式，才能使用此功能。",
+        configuration: "視圖配置",
+        authType: "帳戶類型",
+        authTypeHelp:
+          "選擇哪些類型的 Microsoft 帳戶可以進行驗證。「所有帳戶」支援個人帳戶和工作/學校帳戶。「僅限個人帳戶」僅支援個人 Microsoft 帳戶。「僅限組織帳戶」僅支援特定 Azure AD 租戶中的工作/學校帳戶。",
+        authTypeCommon: "所有帳戶（個人帳戶及工作/學校帳戶）",
+        authTypeConsumers: "僅限個人 Microsoft 帳戶",
+        authTypeOrganization: "僅限於組織帳戶（需要租戶 ID）",
+        clientId: "申請者（客戶）編號",
+        clientIdHelp: "您的 Azure AD 應用程式註冊產生的應用程式 ID",
+        tenantId: "租戶編號",
+        tenantIdHelp:
+          "您的 Azure AD 應用程式註冊的「租戶 ID」。僅用於組織內單向驗證。",
+        clientSecret: "客戶密鑰",
+        clientSecretHelp: "您的 Azure AD 應用程式註冊時所使用的客戶端秘密值",
+        configurationRequired:
+          "請設定 Client ID 和 Client Secret，以便啟用 Outlook 相關功能。",
+        authRequired:
+          "首先儲存您的帳戶資訊，然後再透過 Microsoft 進行驗證，以完成設定。",
+        authenticateWithMicrosoft: "使用 Microsoft 驗證",
+        authenticated: "已成功與 Microsoft Outlook 驗證連線。",
+        revokeAccess: "撤銷權限",
+        configured: "設定",
+        searchSkills: "搜尋技巧...",
+        noSkillsFound: "沒有符合您搜尋條件的結果。",
+        categories: {
+          search: {
+            title: "搜尋和閱讀電子郵件",
+            description: "搜尋並閱讀您 Outlook 收件匣中的電子郵件",
+          },
+          drafts: {
+            title: "草稿郵件",
+            description: "創建、編輯和管理電子郵件草稿",
+          },
+          send: {
+            title: "發送電子郵件",
+            description: "即時發送新的電子郵件或回覆訊息",
+          },
+          account: {
+            title: "整合統計數據",
+            description: "查看郵箱統計資料和帳戶資訊",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "開啟收件匣",
+            description: "從您的 Outlook 郵箱取得最近的郵件",
+          },
+          search: {
+            title: "搜尋電子郵件",
+            description: "使用 Microsoft 搜尋語法來搜尋電子郵件",
+          },
+          readThread: {
+            title: "閱讀對話",
+            description: "閱讀完整的電子郵件對話紀錄",
+          },
+          createDraft: {
+            title: "建立草稿",
+            description: "建立新的電子郵件草稿，或回覆現有訊息的草稿。",
+          },
+          updateDraft: {
+            title: "更新草稿",
+            description: "更新現有電子郵件草稿",
+          },
+          listDrafts: {
+            title: "草稿清單",
+            description: "列出所有草稿電子郵件",
+          },
+          deleteDraft: {
+            title: "刪除草稿",
+            description: "刪除草稿郵件",
+          },
+          sendDraft: {
+            title: "發送草稿",
+            description: "發送現有電子郵件草稿",
+          },
+          sendEmail: {
+            title: "發送電子郵件",
+            description: "發送新的電子郵件或立即回覆現有訊息",
+          },
+          getMailboxStats: {
+            title: "郵箱統計",
+            description: "取得資料夾數量和郵箱統計數據",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 伺服器",

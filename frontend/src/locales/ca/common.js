@@ -548,6 +548,111 @@ const TRANSLATIONS = {
       },
       default_skill:
         "Per defecte, aquesta habilitat està activada, però pots desactivar-la si no vols que estigui disponible per a l'agent.",
+      outlook: {
+        title: "Connector per a Outlook",
+        description:
+          "Permite que el teu agent interactui amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta drafts, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració d'Outlook no està disponible en mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració d'Outlook",
+        authType: "Tipus de compte",
+        authTypeHelp:
+          "Seleccioneu quins tipus de comptes de Microsoft poden autenticar-se. \"Tots els comptes\" admet tant comptes personals com comptes per a l'ús laboral/escolar. \"Només comptes personals\" limita l'opció a comptes personals de Microsoft. \"Només comptes d'organització\" limita l'opció a comptes per a l'ús laboral/escolar d'un tenant específic d'Azure AD.",
+        authTypeCommon: "Totes les comptes (personals i laborals/escolars)",
+        authTypeConsumers: "Només comptes personals de Microsoft",
+        authTypeOrganization:
+          "Només comptes d'organitzacions (requereix l'ID del llogater)",
+        clientId: "Identificador (Client)",
+        clientIdHelp:
+          "L'ID de l'aplicació (Client) del vostre registre d'aplicació a Azure AD",
+        tenantId: "Identificador (del llogater)",
+        tenantIdHelp:
+          "L'ID del \"Tenant\" (inquilí) del vostre registre d'aplicació a Azure AD. És obligatori només per a l'autenticació dins de l'organització.",
+        clientSecret: "Secret del client",
+        clientSecretHelp:
+          "El valor secret de l'aplicació registrada a Azure AD.",
+        configurationRequired:
+          "Si us plau, configureu l'ID del client i el secret del client per habilitar les funcionalitats d'Outlook.",
+        authRequired:
+          "Primer, guarda les teves credencials, i després autentica't amb Microsoft per completar la configuració.",
+        authenticateWithMicrosoft: "Autentica't amb Microsoft",
+        authenticated: "He estat autentificat amb èxit amb Microsoft Outlook.",
+        revokeAccess: "Revocar l'accés",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          search: {
+            title: "Cerca i llegeix correus electrònics",
+            description:
+              "Cerca i llegeix correus electrònics des de la teva pestanya de correus d'Outlook.",
+          },
+          drafts: {
+            title: "Proposals de correu electrònic",
+            description: "Crea, edita i gestiona els esborralls d'e-mail.",
+          },
+          send: {
+            title: "Enviar correus electrònics",
+            description:
+              "Envieu correus electrònics nous o respondre als missatges immediatament.",
+          },
+          account: {
+            title: "Estadístiques d'integració",
+            description:
+              "Visualitza les estadístiques de la caixa de correu i la informació del compte.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accedeix a la caixa de correu",
+            description:
+              "Obteniu els correus electrònics més recents de la vostra pestanya de correu d'Outlook.",
+          },
+          search: {
+            title: "Cerca correus electrònics",
+            description:
+              "Cerca correus electrònics utilitzant la sintaxi de cerca de Microsoft",
+          },
+          readThread: {
+            title: "Llegir la conversa",
+            description:
+              "Llegeix la totalitat d'una conversa per correu electrònic.",
+          },
+          createDraft: {
+            title: "Crear un esborr",
+            description:
+              "Crea un nou correu electrònic o una resposta a un missatge existent.",
+          },
+          updateDraft: {
+            title: "Versió actualitzada",
+            description:
+              "Actualitza un correu electrònic existent que ja està redactat",
+          },
+          listDrafts: {
+            title: "Proposta de llistats",
+            description: "Mostra totes les correus electrònics en projecte.",
+          },
+          deleteDraft: {
+            title: "Eliminar esbor",
+            description: "Eliminar un correu electrònic en projecte",
+          },
+          sendDraft: {
+            title: "Enviar esborrany",
+            description: "Envia un correu electrònic existent.",
+          },
+          sendEmail: {
+            title: "Enviar correu electrònic",
+            description:
+              "Envieu un correu electrònic nou o respondreu a un missatge existent immediatament.",
+          },
+          getMailboxStats: {
+            title: "Estadístiques de la caixa de correu",
+            description:
+              "Obteniu el nombre de carpetes i les estadístiques de la caixa de correu.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidors MCP",
