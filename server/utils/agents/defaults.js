@@ -90,6 +90,15 @@ async function agentSkillsFromSystemSettings() {
     []
   );
 
+  // Load disabled gmail sub-skills
+  const _disabledGmailSkills = safeJsonParse(
+    await SystemSettings.getValueOrFallback(
+      { label: "disabled_gmail_skills" },
+      "[]"
+    ),
+    []
+  );
+
   // Load non-imported built-in skills that are configurable.
   const _setting = safeJsonParse(
     await SystemSettings.getValueOrFallback(
@@ -98,8 +107,16 @@ async function agentSkillsFromSystemSettings() {
     ),
     []
   );
-  _setting.forEach((skillName) => {
-    if (!AgentPlugins.hasOwnProperty(skillName)) return;
+
+  // Pre-check gmail availability once (async) to avoid await inside loop
+  let gmailAvailable = false;
+  if (_setting.includes("gmail-agent")) {
+    const gmailTool = require("./aibitat/plugins/gmail/lib");
+    gmailAvailable = await gmailTool.GmailBridge.isToolAvailable();
+  }
+
+  for (const skillName of _setting) {
+    if (!AgentPlugins.hasOwnProperty(skillName)) continue;
 
     // This is a plugin module with many sub-children plugins who
     // need to be named via `${parent}#${child}` naming convention
@@ -125,16 +142,26 @@ async function agentSkillsFromSystemSettings() {
           if (_disabledCreateFilesSkills.includes(subPlugin.name)) continue;
         }
 
+        /**
+         * If the gmail tool is not available (multi-user mode or missing config),
+         * or the sub-skill is explicitly disabled, skip it.
+         * Gmail integration is only available in single-user mode for security reasons.
+         */
+        if (skillName === "gmail-agent") {
+          if (!gmailAvailable) continue;
+          if (_disabledGmailSkills.includes(subPlugin.name)) continue;
+        }
+
         systemFunctions.push(
           `${AgentPlugins[skillName].name}#${subPlugin.name}`
         );
       }
-      return;
+      continue;
     }
 
     // This is normal single-stage plugin
     systemFunctions.push(AgentPlugins[skillName].name);
-  });
+  }
   return systemFunctions;
 }
 

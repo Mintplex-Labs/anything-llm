@@ -79,7 +79,7 @@ async function streamResponse({
     (await AgentHandler.isAgentInvocation({
       message,
       workspace,
-      chatMode: workspace.chatMode ?? "chat",
+      chatMode: workspace.chatMode ?? "automatic",
     }))
   ) {
     return await handleAgentResponse(

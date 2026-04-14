@@ -410,6 +410,131 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "GMail Bağlantısı",
+        description:
+          "Ajantınızın Gmail ile etkileşim kurmasını sağlayın: e-postaları aratın, sohbetleri okuyun, taslaklar oluşturun, e-postalar gönderin ve posta kutunuzu yönetin. <a>Dokümantasyonu okuyun</a>.",
+        multiUserWarning:
+          "Gmail entegrasyonu, güvenlik nedenlerinden dolayı çoklu kullanıcı modunda mevcut değildir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Gmail Yapılandırma",
+        deploymentId: "Dağıtım Kimliği",
+        deploymentIdHelp:
+          "Google Apps Script web uygulamanızın uygulama kimliği",
+        apiKey: "API Anahtarı",
+        apiKeyHelp:
+          "Google Apps Script kurulumunuzda yapılandırdığınız API anahtarı",
+        configurationRequired:
+          "Lütfen Dağıtım Kimliğini ve API Anahtarını yapılandırarak Gmail yeteneklerini etkinleştirin.",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Belirttiğiniz kriterlere uyan herhangi bir sonuç bulunamadı.",
+        categories: {
+          search: {
+            title: "E-postaları arayın ve okuyun",
+            description: "Gmail hesabınızdaki e-postaları arayın ve okuyun.",
+          },
+          drafts: {
+            title: "Taslak E-postalar",
+            description:
+              "E-posta taslaklarını oluşturun, düzenleyin ve yönetin.",
+          },
+          send: {
+            title: "E-postaları gönderme ve yanıt verme",
+            description:
+              "E-postalar gönderin ve tartışmalara anında yanıt verin.",
+          },
+          threads: {
+            title: "E-posta dizilerini yönetin",
+            description:
+              "E-posta dizilerini yönetin - okundu/okunmadı olarak işaretleme, arşivleme, çöp kutusuna gönderme",
+          },
+          account: {
+            title: "Entegrasyon İstatistikleri",
+            description:
+              "Post kutunuzdaki istatistikleri ve hesap bilgilerinizi görüntüleyin.",
+          },
+        },
+        skills: {
+          search: {
+            title: "E-postaları arayın",
+            description: "Gmail sorgu sözdizimi kullanarak e-postaları arayın",
+          },
+          readThread: {
+            title: "Makaleyi oku",
+            description:
+              "ID numarasına göre, e-posta iletişimin bütününü okuyun.",
+          },
+          createDraft: {
+            title: "Taslak Oluştur",
+            description: "Yeni bir e-posta taslağı oluşturun",
+          },
+          createDraftReply: {
+            title: "Taslak Yanıt Oluştur",
+            description:
+              "Mevcut bir tartışma başlığına yönelik bir yanıt taslağı oluşturun.",
+          },
+          updateDraft: {
+            title: "Taslak Güncelleme",
+            description: "Mevcut bir e-posta taslağını güncelleyin",
+          },
+          getDraft: {
+            title: "Taslakları görüntüle",
+            description: "Belirli bir taslağı, ID numarası ile alın",
+          },
+          listDrafts: {
+            title: "Taslaklar",
+            description: "Tüm taslak e-postaları listele",
+          },
+          deleteDraft: {
+            title: "Taslağı Sil",
+            description: "Bir taslak e-postayı sil",
+          },
+          sendDraft: {
+            title: "Taslak Gönder",
+            description: "Mevcut bir e-posta taslağını gönderin",
+          },
+          sendEmail: {
+            title: "E-posta gönder",
+            description: "Hemen bir e-posta gönderin",
+          },
+          replyToThread: {
+            title: "Konuya Cevap Ver",
+            description: "Bir e-posta dizisine anında yanıt verin",
+          },
+          markRead: {
+            title: "মার্ক रीड",
+            description: "Bir konuyla ilgili mesajları okundu olarak işaretle.",
+          },
+          markUnread: {
+            title: "Okunmadı olarak işaretle",
+            description: 'Bir gönderiyi "okunmamış" olarak işaretle.',
+          },
+          moveToTrash: {
+            title: "Çöp kutusuna taşı",
+            description: "Bir başlığı çöp kutusuna taşı.",
+          },
+          moveToArchive: {
+            title: "Arşiv",
+            description: "Bir konuyu arşivle",
+          },
+          moveToInbox: {
+            title: "Gelen kutusuna taşı",
+            description:
+              "Bir konuyla ilgili mesajları ana posta kutusuna taşı.",
+          },
+          getMailboxStats: {
+            title: "Posta Kutusu İstatistikleri",
+            description:
+              "Okunmamış mesaj sayılarını ve posta kutusu istatistiklerini görüntüleyin.",
+          },
+          getInbox: {
+            title: "Gelen kutusuna eriş",
+            description:
+              "Gmail'den gelen e-postaları hızlı ve kolay bir şekilde görüntüleme yolu.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -466,12 +591,39 @@ const TRANSLATIONS = {
     },
   },
   api: {
-    title: "API Anahtarları",
+    title: "API anahtarları",
     description:
       "API anahtarları, bu AnythingLLM örneğine programatik olarak erişmeye ve yönetmeye olanak tanır.",
     link: "API dokümantasyonunu okuyun",
     generate: "Yeni API Anahtarı Oluştur",
+    empty: "API anahtarları bulunamadı",
+    actions: "İşlemler",
+    messages: {
+      error: "Hata: {{error}}",
+    },
+    modal: {
+      title: "Yeni API anahtarı oluştur",
+      cancel: "İptal",
+      close: "Kapat",
+      create: "API anahtarı oluştur",
+      helper:
+        "Oluşturulduktan sonra API anahtarı, bu AnythingLLM örneğine programatik olarak erişmek ve onu yapılandırmak için kullanılabilir.",
+      name: {
+        label: "Ad",
+        placeholder: "Üretim entegrasyonu",
+        helper:
+          "İsteğe bağlıdır. Bu anahtarı daha sonra kolayca tanıyabilmek için açıklayıcı bir ad kullanın.",
+      },
+    },
+    row: {
+      copy: "API anahtarını kopyala",
+      copied: "Kopyalandı",
+      unnamed: "--",
+      deleteConfirm:
+        "Bu API anahtarını devre dışı bırakmak istediğinizden emin misiniz?\nBunu yaptıktan sonra artık kullanılamaz.\n\nBu işlem geri alınamaz.",
+    },
     table: {
+      name: "Ad",
       key: "API Anahtarı",
       by: "Oluşturan",
       created: "Oluşturulma Tarihi",
@@ -1127,9 +1279,6 @@ const TRANSLATIONS = {
         description:
           "Aldığınız API token'ı (@BotFather) kopyalayın ve botunuzun iletişim kuracağı varsayılan çalışma alanını seçin.",
         "bot-token": "Bot Token",
-        "default-workspace": "Varsayılan Çalışma Alanı",
-        "no-workspace":
-          "Mevcut çalışma alanları bulunmamaktadır. Yeni bir çalışma alanı oluşturulacaktır.",
         connecting: "Bağlantı kuruluyor...",
         "connect-bot": "Bağlantı Botu",
       },
@@ -1169,20 +1318,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Kullanıcıyı silme işlemi başarısız oldu.",
     },
     users: {
-      "pending-title": "Onay Bekliyor",
       "pending-description":
         "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
-      "approved-title": "Onaylanmış Kullanıcılar",
-      "approved-description":
-        "Botunuzla sohbet etmeye yetkili olan kullanıcılar.",
-      user: "Kullanıcı",
-      "pairing-code": "Eşleştirme Kodu",
-      "no-pending": "Henüz tamamlanmamış herhangi bir istek bulunmamaktadır.",
-      "no-approved": "Onaylanmış kullanıcı bulunmamaktadır",
       unknown: "Bilinmiyor",
-      approve: "Onayla",
-      deny: "İnkar",
-      revoke: "İptal et",
     },
   },
 };

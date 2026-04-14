@@ -411,6 +411,125 @@ const TRANSLATIONS = {
           },
         },
       },
+      gmail: {
+        title: "Gmail-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Gmail – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrere din indbakke. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Gmail er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Gmail",
+        deploymentId: "Implementerings-ID",
+        deploymentIdHelp: "Deployment-ID'en fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Venligst konfigurer Deployment ID og API-nøglen for at aktivere Gmail-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
+        categories: {
+          search: {
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Gmail-indbakke",
+          },
+          drafts: {
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails",
+          },
+          send: {
+            title: "Send og svar på e-mails",
+            description: "Send e-mails og svar på tråde øjeblikkeligt",
+          },
+          threads: {
+            title: "Administrer e-mailtråde",
+            description:
+              "Administrer e-mailtråde – marker som læst/ulæst, arkiver, slet",
+          },
+          account: {
+            title: "Statistik for integration",
+            description:
+              "Se statistik for din e-postindbakke og kontoinformation.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Gmail's forespørgselssprog",
+          },
+          readThread: {
+            title: "Læs tråd",
+            description: "Læs hele e-mailtråden sorteret efter ID",
+          },
+          createDraft: {
+            title: "Opret udkast",
+            description: "Opret et nyt udkast til en e-mail",
+          },
+          createDraftReply: {
+            title: "Opret udkast",
+            description: "Opret et udkast til et svar på en eksisterende tråd.",
+          },
+          updateDraft: {
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
+          },
+          getDraft: {
+            title: "Få udkast",
+            description: "Hent en bestemt udkast baseret på ID",
+          },
+          listDrafts: {
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
+          },
+          deleteDraft: {
+            title: "Slet udkast",
+            description: "Slet et udkast til e-mail",
+          },
+          sendDraft: {
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
+          },
+          sendEmail: {
+            title: "Send e-mail",
+            description: "Send en e-mail med det samme",
+          },
+          replyToThread: {
+            title: "Svar på tråd",
+            description: "Svar på en e-mailtråd med det samme",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marker en tråd som læst",
+          },
+          markUnread: {
+            title: "Marker som ikke læst",
+            description: "Marker en tråd som ikke læst",
+          },
+          moveToTrash: {
+            title: "Flyt til papirkurven",
+            description: "Flyt en tråd til papirkurven",
+          },
+          moveToArchive: {
+            title: "Arkiv",
+            description: "Arkiver tråden",
+          },
+          moveToInbox: {
+            title: "Flyt til indbakken",
+            description: "Flyt en tråd til indbakken",
+          },
+          getMailboxStats: {
+            title: "Statistik for postkasse",
+            description:
+              "Få oplysninger om antallet af ulæste beskeder og statistik for din e-mailindbakke.",
+          },
+          getInbox: {
+            title: "Åbn indbakken",
+            description:
+              "En effektiv måde at hente e-mails fra din Gmail-indbakke",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -472,7 +591,34 @@ const TRANSLATIONS = {
       "API-nøgler giver indehaveren mulighed for programmatisk at få adgang til og administrere denne AnythingLLM-instans.",
     link: "Læs API-dokumentationen",
     generate: "Generér ny API-nøgle",
+    empty: "Ingen API-nøgler fundet",
+    actions: "Handlinger",
+    messages: {
+      error: "Fejl: {{error}}",
+    },
+    modal: {
+      title: "Opret ny API-nøgle",
+      cancel: "Annuller",
+      close: "Luk",
+      create: "Opret API-nøgle",
+      helper:
+        "Når API-nøglen er oprettet, kan den bruges til programmatisk at få adgang til og konfigurere denne AnythingLLM-instans.",
+      name: {
+        label: "Navn",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Valgfrit. Brug et sigende navn, så du nemt kan kende nøglen senere.",
+      },
+    },
+    row: {
+      copy: "Kopiér API-nøgle",
+      copied: "Kopieret",
+      unnamed: "--",
+      deleteConfirm:
+        "Er du sikker på, at du vil deaktivere denne API-nøgle?\nNår du gør det, kan den ikke længere bruges.\n\nDenne handling kan ikke fortrydes.",
+    },
     table: {
+      name: "Navn",
       key: "API-nøgle",
       by: "Oprettet af",
       created: "Oprettet",
@@ -1133,9 +1279,6 @@ const TRANSLATIONS = {
         description:
           "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
         "bot-token": "Bot-token",
-        "default-workspace": "Standardarbejdsområde",
-        "no-workspace":
-          "Ingen ledige arbejdsområder. Et nyt vil blive oprettet.",
         connecting: "Forbindes...",
         "connect-bot": "Connect Bot",
       },
@@ -1176,20 +1319,9 @@ const TRANSLATIONS = {
       "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
     },
     users: {
-      "pending-title": "Afventer godkendelse",
       "pending-description":
         "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
-      "approved-title": "Godkendte brugere",
-      "approved-description":
-        "Brugere, der er blevet godkendt til at kommunikere med din bot.",
-      user: "Bruger",
-      "pairing-code": "Kombinationskode",
-      "no-pending": "Ingen igangværende anmodninger",
-      "no-approved": "Ingen godkendte brugere",
       unknown: "Ukendt",
-      approve: "Godkend",
-      deny: "Afvise",
-      revoke: "Annullere",
     },
   },
 };
