@@ -653,6 +653,95 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Connector per a Google Calendar",
+        description:
+          "Permite que el teu agent interactui amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració amb Google Calendar no està disponible en el mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració de Google Calendar",
+        deploymentId: "Identificador de desplegament",
+        deploymentIdHelp:
+          "L'ID de desplegament de la vostra aplicació web de Google Apps Script",
+        apiKey: "Clau API",
+        apiKeyHelp:
+          "La clau API que has configurat en la implementació del teu Google Apps Script",
+        configurationRequired:
+          "Si us plau, configureu l'ID de l'implementació i la clau API per activar les funcionalitats de Google Calendar.",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          calendars: {
+            title: "Calendari",
+            description: "Visualitza i gestiona els teus calendaris de Google.",
+          },
+          readEvents: {
+            title: "Consulta els esdeveniments",
+            description: "Visualitza i cerca esdeveniments del calendari",
+          },
+          writeEvents: {
+            title: "Crear i actualitzar esdeveniments",
+            description: "Crea esdeveniments nous i modifica els existents.",
+          },
+          rsvp: {
+            title: "Gestió de confirmacions de participació",
+            description: "Gestiona l'estat de resposta per als esdeveniments.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendari de dates",
+            description:
+              "Enumera tots els calendaris que poseu al dia o als quals esteu subscrit.",
+          },
+          getCalendar: {
+            title: "Obteniu detalls del calendari",
+            description:
+              "Obteniu informació detallada sobre un calendari específic.",
+          },
+          getEvent: {
+            title: "Obtenir informació sobre l'esdeveniment",
+            description:
+              "Obteniu informació detallada sobre un esdeveniment específic.",
+          },
+          getEventsForDay: {
+            title: "Troba esdeveniments per a un dia concret",
+            description:
+              "Obteniu tots els esdeveniments programats per a un dia concret.",
+          },
+          getEvents: {
+            title: "Obtenir esdeveniments (interval de dates)",
+            description:
+              "Obtenir esdeveniments dins d'un interval de dates personalitzat",
+          },
+          getUpcomingEvents: {
+            title: "Consulta els esdeveniments pròxims",
+            description:
+              "Troba esdeveniments per avui, aquesta setmana o aquest mes utilitzant paraules clau senzilles.",
+          },
+          quickAdd: {
+            title: "Afegir esdeveniment de forma ràpida",
+            description:
+              'Crea un esdeveniment a partir d\'un text natural (per exemple, "Reunió demà a les 15:00")',
+          },
+          createEvent: {
+            title: "Crear esdeveniment",
+            description:
+              "Crea un esdeveniment nou amb control total sobre totes les propietats.",
+          },
+          updateEvent: {
+            title: "Actualització d'esdeveniments",
+            description: "Actualitza un esdeveniment existent en el calendari",
+          },
+          setMyStatus: {
+            title: "Estat de confirmació de participació",
+            description:
+              "Acceptar, rebutjar o acceptar de manera provisional un esdeveniment.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidors MCP",

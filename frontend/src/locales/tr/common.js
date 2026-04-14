@@ -639,6 +639,93 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Takvim Bağlayıcı",
+        description:
+          "Ajantınızın Google Takvim ile etkileşim kurmasını sağlayın - takvimleri görüntüleyin, etkinlikleri alın, etkinlikleri oluşturun ve güncelleyin, ve katılımcıların yanıtlarını yönetin. Dokümantasyonu okuyun.",
+        multiUserWarning:
+          "Google Takvim entegrasyonu, güvenlik nedeniyle çoklu kullanıcı modunda kullanılabilmektedir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Google Takvim Yapılandırması",
+        deploymentId: "Dağıtım Kimliği",
+        deploymentIdHelp:
+          "Google Apps Script web uygulamanızın dağıtım kimliği",
+        apiKey: "API Anahtarı",
+        apiKeyHelp:
+          "Google Apps Script dağıtımınızda yapılandırdığınız API anahtarı",
+        configurationRequired:
+          "Lütfen Dağıtım Kimliğini ve API Anahtarını yapılandırarak Google Takvim özelliklerini etkinleştirin.",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Arama sonuçlarınızda eşleşen herhangi bir beceri bulunmamaktadır.",
+        categories: {
+          calendars: {
+            title: "Takvimler",
+            description: "Google Takvimlerinizi görüntüleyin ve yönetin",
+          },
+          readEvents: {
+            title: "Etkinlikleri oku",
+            description: "Takvimdeki etkinlikleri görüntüleyin ve arayın",
+          },
+          writeEvents: {
+            title: "Etkinlikleri Oluştur ve Güncelle",
+            description:
+              "Yeni etkinlikler oluşturun ve mevcut olanları değiştirin.",
+          },
+          rsvp: {
+            title: "Katılım Yönetimi",
+            description: "Etkinliklere ilişkin yanıt durumunuzu yönetin",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Takvim Listeleri",
+            description:
+              "Sahip olduğunuz veya abonelik yaptığınız tüm takvimleri listeleyin.",
+          },
+          getCalendar: {
+            title: "Takvim Detaylarını Al",
+            description: "Belirli bir takvim hakkında ayrıntılı bilgi edinin.",
+          },
+          getEvent: {
+            title: "Etkinliği Bul",
+            description: "Belirli bir etkinlikle ilgili ayrıntılı bilgi edinin",
+          },
+          getEventsForDay: {
+            title: "Gün İçindeki Etkinlikleri Öğren",
+            description:
+              "Belirli bir güne ait tüm planlanan etkinlikleri görüntüleyin.",
+          },
+          getEvents: {
+            title: "Etkinlikleri (Tarih Aralığı) görüntüle",
+            description: "Belirli bir tarih aralığındaki etkinlikleri alın",
+          },
+          getUpcomingEvents: {
+            title: "Yaklaşan Etkinlikleri Görüntüleyin",
+            description:
+              "Bugün, bu hafta veya bu ay için etkinlikleri, basit anahtar kelimeler kullanarak bulun.",
+          },
+          quickAdd: {
+            title: "Hızlı Olay Ekle",
+            description:
+              'Doğal dilden bir etkinlik oluşturun (örneğin, "Yarın saat 15:00\'te bir toplantı")',
+          },
+          createEvent: {
+            title: "Etkinlik Oluştur",
+            description:
+              "Tüm özellikler üzerinde tam kontrol sağlayarak yeni bir etkinlik oluşturun.",
+          },
+          updateEvent: {
+            title: "Etkinlik Güncellemesi",
+            description: "Mevcut bir takvim olayını güncelleyin",
+          },
+          setMyStatus: {
+            title: "Davetiyeye Cevap Durumu Ayarla",
+            description:
+              "Bir etkinliğe katılımı kabul etmek, reddetmek veya geçici olarak katılmayı kabul etmek.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP Sunucuları",

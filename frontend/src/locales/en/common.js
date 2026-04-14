@@ -421,7 +421,7 @@ const TRANSLATIONS = {
         },
       },
       gmail: {
-        title: "GMail Connector",
+        title: "GMail",
         description:
           "Enable your agent to interact with Gmail - search emails, read threads, compose drafts, send emails, and manage your inbox. <a>Read the documentation</a>.",
         multiUserWarning:
@@ -537,7 +537,7 @@ const TRANSLATIONS = {
         },
       },
       googleCalendar: {
-        title: "Google Calendar Connector",
+        title: "Google Calendar",
         description:
           "Enable your agent to interact with Google Calendar - view calendars, get events, create and update events, and manage RSVPs. <a>Read the documentation</a>.",
         multiUserWarning:
@@ -619,7 +619,7 @@ const TRANSLATIONS = {
         },
       },
       outlook: {
-        title: "Outlook Connector",
+        title: "Outlook",
         description:
           "Enable your agent to interact with Microsoft Outlook - search emails, read threads, compose drafts, send emails, and manage your inbox via Microsoft Graph API. <a>Read the documentation</a>.",
         multiUserWarning:
