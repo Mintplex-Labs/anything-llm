@@ -616,6 +616,87 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "구글 캘린더 연동",
+        description:
+          "에이전트가 Google 캘린더와 상호 작용할 수 있도록 설정하세요 - 캘린더 보기, 이벤트 확인, 이벤트 생성 및 업데이트, RSVP 관리 등을 수행할 수 있습니다. <a>문서를 참조하세요</a>.",
+        multiUserWarning:
+          "Google 캘린더 통합 기능은 보안상의 이유로 다중 사용자 모드에서는 사용할 수 없습니다. 이 기능을 사용하려면 다중 사용자 모드를 비활성화해주세요.",
+        configuration: "구글 캘린더 설정",
+        deploymentId: "배포 ID",
+        deploymentIdHelp: "당신의 구글 앱스 스크립트 웹 앱의 배포 ID",
+        apiKey: "API 키",
+        apiKeyHelp: "Google Apps Script 배포 시 설정한 API 키",
+        configurationRequired:
+          "구글 캘린더 기능을 사용하려면 배포 ID와 API 키를 설정해 주세요.",
+        configured: "설정됨",
+        searchSkills: "검색 기술...",
+        noSkillsFound: "검색하신 조건과 일치하는 기술이 없습니다.",
+        categories: {
+          calendars: {
+            title: "달력",
+            description: "Google 캘린더를 확인하고 관리하세요.",
+          },
+          readEvents: {
+            title: "이벤트 목록 보기",
+            description: "일정 뷰 및 검색",
+          },
+          writeEvents: {
+            title: "이벤트 생성 및 업데이트",
+            description: "새로운 이벤트를 생성하고 기존 이벤트를 수정",
+          },
+          rsvp: {
+            title: "참석 확인 관리",
+            description: "이벤트에 대한 응답 상태를 관리하세요.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "달력 목록",
+            description:
+              "자신이 소유하거나 구독하고 있는 모든 캘린더 목록을 작성하세요.",
+          },
+          getCalendar: {
+            title: "달력 세부 정보 보기",
+            description: "특정 캘린더에 대한 자세한 정보를 얻으세요.",
+          },
+          getEvent: {
+            title: "이벤트 정보 보기",
+            description: "특정 이벤트에 대한 자세한 정보를 얻으세요.",
+          },
+          getEventsForDay: {
+            title: "오늘의 행사 정보 보기",
+            description: "특정 날짜에 예정된 모든 행사 목록을 확인",
+          },
+          getEvents: {
+            title: "이벤트 검색 (날짜 범위)",
+            description: "사용자 지정 날짜 범위 내의 이벤트 가져오기",
+          },
+          getUpcomingEvents: {
+            title: "다가오는 행사 보기",
+            description:
+              "오늘, 이번 주 또는 이번 달의 이벤트를 간단한 키워드를 사용하여 검색",
+          },
+          quickAdd: {
+            title: "빠르게 이벤트 추가",
+            description:
+              '자연어 (예: "내일 오후 3시에 회의")를 사용하여 이벤트를 생성합니다.',
+          },
+          createEvent: {
+            title: "이벤트 생성",
+            description:
+              "모든 속성에 대한 완전한 제어 기능을 갖춘 새로운 이벤트를 생성합니다.",
+          },
+          updateEvent: {
+            title: "이벤트 업데이트",
+            description: "기존 캘린더 이벤트 업데이트",
+          },
+          setMyStatus: {
+            title: "RSVP 상태 설정",
+            description: "행사 참여 여부를 수락, 거절, 또는 잠정적으로 수락",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP 서버",
