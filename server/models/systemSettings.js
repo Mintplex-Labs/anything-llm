@@ -51,8 +51,7 @@ const SystemSettings = {
     "disabled_filesystem_skills",
     "disabled_create_files_skills",
     "disabled_gmail_skills",
-    "gmail_deployment_id",
-    "gmail_api_key",
+    "gmail_agent_config",
     "disabled_outlook_skills",
     "outlook_agent_config",
     "imported_agent_skills",
@@ -75,8 +74,7 @@ const SystemSettings = {
     "disabled_filesystem_skills",
     "disabled_create_files_skills",
     "disabled_gmail_skills",
-    "gmail_deployment_id",
-    "gmail_api_key",
+    "gmail_agent_config",
     "disabled_outlook_skills",
     "outlook_agent_config",
     "agent_sql_connections",
@@ -208,21 +206,33 @@ const SystemSettings = {
         return JSON.stringify([]);
       }
     },
-    gmail_deployment_id: (update) => {
+    gmail_agent_config: async (update) => {
+      const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
       try {
-        if (!update || typeof update !== "string") return null;
-        return String(update).trim();
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "gmail_agent_config" }))?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(`Could not validate gmail agent config:`, e.message);
+        return JSON.stringify({});
       } finally {
-        const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
-        GmailBridge.reset();
-      }
-    },
-    gmail_api_key: (update) => {
-      try {
-        if (!update || typeof update !== "string") return null;
-        return String(update).trim();
-      } finally {
-        const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
         GmailBridge.reset();
       }
     },
@@ -530,6 +540,8 @@ const SystemSettings = {
             validatedValue = this.validations[key](updates[key]);
           }
         }
+
+        if (validatedValue === undefined) continue;
 
         updatePromises.push(
           prisma.system_settings.upsert({

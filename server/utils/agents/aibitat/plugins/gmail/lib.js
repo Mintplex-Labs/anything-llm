@@ -5,6 +5,7 @@ const mime = require("mime");
 const { SystemSettings } = require("../../../../../models/systemSettings");
 const { CollectorApi } = require("../../../../collectorApi");
 const { humanFileSize } = require("../../../../helpers");
+const { safeJsonParse } = require("../../../../http");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attachments combined
 
@@ -223,6 +224,34 @@ class GmailBridge {
   }
 
   /**
+   * Gets the current Gmail agent configuration from system settings.
+   * @returns {Promise<{deploymentId?: string, apiKey?: string}>}
+   */
+  static async getConfig() {
+    const configJson = await SystemSettings.getValueOrFallback(
+      { label: "gmail_agent_config" },
+      "{}"
+    );
+    return safeJsonParse(configJson, {});
+  }
+
+  /**
+   * Updates the Gmail agent configuration in system settings.
+   * @param {Object} updates - Fields to update
+   * @returns {Promise<{success: boolean, error?: string}>}
+   */
+  static async updateConfig(updates) {
+    try {
+      await SystemSettings.updateSettings({
+        gmail_agent_config: JSON.stringify(updates),
+      });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Initializes the Gmail bridge by fetching configuration from system settings.
    * @returns {Promise<{success: boolean, error?: string}>}
    */
@@ -239,16 +268,8 @@ class GmailBridge {
         };
       }
 
-      const deploymentId = await SystemSettings.getValueOrFallback(
-        { label: "gmail_deployment_id" },
-        null
-      );
-      const apiKey = await SystemSettings.getValueOrFallback(
-        { label: "gmail_api_key" },
-        null
-      );
-
-      if (!deploymentId || !apiKey) {
+      const config = await GmailBridge.getConfig();
+      if (!config.deploymentId || !config.apiKey) {
         return {
           success: false,
           error:
@@ -256,8 +277,8 @@ class GmailBridge {
         };
       }
 
-      this.#deploymentId = deploymentId;
-      this.#apiKey = apiKey;
+      this.#deploymentId = config.deploymentId;
+      this.#apiKey = config.apiKey;
       this.#isInitialized = true;
       return { success: true };
     } catch (error) {
@@ -282,16 +303,8 @@ class GmailBridge {
     const isMultiUser = await SystemSettings.isMultiUserMode();
     if (isMultiUser) return false;
 
-    const deploymentId = await SystemSettings.getValueOrFallback(
-      { label: "gmail_deployment_id" },
-      null
-    );
-    const apiKey = await SystemSettings.getValueOrFallback(
-      { label: "gmail_api_key" },
-      null
-    );
-
-    return !!(deploymentId && apiKey);
+    const config = await GmailBridge.getConfig();
+    return !!(config.deploymentId && config.apiKey);
   }
 
   get maskedDeploymentId() {
