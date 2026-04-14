@@ -31,7 +31,6 @@ async function getMemoriesForPrompt(userId, workspaceId, prompt, rawHistory) {
 
     let selectedWorkspace = workspaceMemories;
     if (workspaceMemories.length > INJECTED_WORKSPACE_LIMIT) {
-      // Skip reranking when there's no query context (agent calls)
       const hasContext = prompt?.trim() || rawHistory?.length > 0;
       selectedWorkspace = hasContext
         ? await rerankMemories(workspaceMemories, prompt, rawHistory)
