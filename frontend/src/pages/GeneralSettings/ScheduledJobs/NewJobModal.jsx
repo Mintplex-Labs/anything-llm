@@ -52,12 +52,8 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
     setForm((prev) => ({ ...prev, scheduleMode: mode }));
   };
 
-  const setSelectedTools = (updater) => {
-    setForm((prev) => ({
-      ...prev,
-      selectedTools:
-        typeof updater === "function" ? updater(prev.selectedTools) : updater,
-    }));
+  const setSelectedTools = (selectedTools) => {
+    setForm((prev) => ({ ...prev, selectedTools }));
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +67,6 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
       setErrors(nextErrors);
       return;
     }
-    setErrors({ name: false, prompt: false, schedule: false });
 
     setSaving(true);
     const data = {

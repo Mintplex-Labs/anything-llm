@@ -30,57 +30,42 @@ function groupTools(tools) {
     if (!groups.has(rootId)) {
       groups.set(rootId, {
         rootId,
-        rootName: prettifyRoot(rootId),
+        rootName: prettify(rootId),
         standalone: false,
         subTools: [],
       });
     }
     groups.get(rootId).subTools.push({
       id: tool.id,
-      name: prettifySubTool(subName),
+      name: prettify(subName),
     });
   }
   return Array.from(groups.values());
 }
 
-function prettifyRoot(id) {
+function prettify(id) {
   return id
-    .split("-")
-    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
-    .join(" ");
-}
-
-function prettifySubTool(name) {
-  return name
     .split(/[-_]/)
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
     .join(" ");
 }
 
-function Checkbox({ state, onClick }) {
-  const checked = state === "checked";
-  const indeterminate = state === "indeterminate";
-  const filled = checked || indeterminate;
+function Checkbox({ state }) {
+  const filled = state === "checked" || state === "indeterminate";
   return (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-      aria-checked={checked ? "true" : indeterminate ? "mixed" : "false"}
-      role="checkbox"
-      className={`relative flex items-center justify-center size-4 rounded border transition-colors shrink-0 ${
-        filled
-          ? "bg-sky-500 border-sky-700"
-          : "bg-zinc-800 border-zinc-600 hover:border-zinc-400"
+    <span
+      aria-hidden="true"
+      className={`flex items-center justify-center size-4 rounded border shrink-0 transition-colors ${
+        filled ? "bg-sky-500 border-sky-700" : "bg-zinc-800 border-zinc-600"
       }`}
     >
-      {checked && <Check size={12} weight="bold" className="text-white" />}
-      {indeterminate && (
+      {state === "checked" && (
+        <Check size={12} weight="bold" className="text-white" />
+      )}
+      {state === "indeterminate" && (
         <Minus size={12} weight="bold" className="text-white" />
       )}
-    </button>
+    </span>
   );
 }
 
@@ -117,8 +102,7 @@ export default function ToolsSelector({
     if (!q) return groups;
     return groups
       .map((group) => {
-        const rootMatches = group.rootName.toLowerCase().includes(q);
-        if (rootMatches) return group;
+        if (group.rootName.toLowerCase().includes(q)) return group;
         const subTools = group.subTools.filter((s) =>
           s.name.toLowerCase().includes(q)
         );
@@ -127,48 +111,36 @@ export default function ToolsSelector({
       .filter(Boolean);
   }, [groups, search]);
 
-  const selectedSet = useMemo(() => new Set(selectedTools), [selectedTools]);
-
-  const toolLabelById = useMemo(() => {
-    const map = new Map();
-    for (const tool of availableTools) map.set(tool.id, tool.name);
-    return map;
-  }, [availableTools]);
-
-  const removeTool = (id) => {
-    onChange((prev) => prev.filter((x) => x !== id));
-  };
-
   const groupState = (group) => {
-    const total = group.subTools.length;
-    const count = group.subTools.reduce(
-      (n, s) => n + (selectedSet.has(s.id) ? 1 : 0),
-      0
-    );
+    const count = group.subTools.filter((s) =>
+      selectedTools.includes(s.id)
+    ).length;
     if (count === 0) return "unchecked";
-    if (count === total) return "checked";
+    if (count === group.subTools.length) return "checked";
     return "indeterminate";
   };
 
   const toggleGroup = (group) => {
-    const state = groupState(group);
     const ids = group.subTools.map((s) => s.id);
-    onChange((prev) => {
-      const next = new Set(prev);
-      if (state === "checked") {
-        ids.forEach((id) => next.delete(id));
-      } else {
-        ids.forEach((id) => next.add(id));
-      }
-      return Array.from(next);
-    });
+    if (groupState(group) === "checked") {
+      onChange(selectedTools.filter((id) => !ids.includes(id)));
+    } else {
+      onChange([...new Set([...selectedTools, ...ids])]);
+    }
   };
 
   const toggleSubTool = (id) => {
-    onChange((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    onChange(
+      selectedTools.includes(id)
+        ? selectedTools.filter((x) => x !== id)
+        : [...selectedTools, id]
     );
   };
+
+  const removeTool = (id) => onChange(selectedTools.filter((x) => x !== id));
+
+  const labelFor = (id) =>
+    availableTools.find((tool) => tool.id === id)?.name || id;
 
   return (
     <div>
@@ -206,48 +178,43 @@ export default function ToolsSelector({
                 {t("scheduledJobs.modal.toolsNoResults", "No tools match")}
               </p>
             ) : (
-              filteredGroups.map((group) => {
-                const state = groupState(group);
-                return (
-                  <div key={group.rootId}>
-                    <button
-                      type="button"
-                      onClick={() => toggleGroup(group)}
-                      className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 hover:bg-zinc-700/60 transition-colors ${
-                        !group.standalone ? "bg-zinc-700 font-medium" : ""
-                      }`}
-                    >
-                      <span className="flex-1 text-left truncate">
-                        {group.rootName}
-                      </span>
-                      <Checkbox
-                        state={state}
-                        onClick={() => toggleGroup(group)}
-                      />
-                    </button>
+              filteredGroups.map((group) => (
+                <div key={group.rootId}>
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(group)}
+                    className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 hover:bg-zinc-700/60 transition-colors ${
+                      !group.standalone ? "bg-zinc-700 font-medium" : ""
+                    }`}
+                  >
+                    <span className="flex-1 text-left truncate">
+                      {group.rootName}
+                    </span>
+                    <Checkbox state={groupState(group)} />
+                  </button>
 
-                    {!group.standalone &&
-                      group.subTools.map((sub) => (
-                        <button
-                          key={sub.id}
-                          type="button"
-                          onClick={() => toggleSubTool(sub.id)}
-                          className="flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-700/60 transition-colors"
-                        >
-                          <span className="flex-1 text-left truncate">
-                            {sub.name}
-                          </span>
-                          <Checkbox
-                            state={
-                              selectedSet.has(sub.id) ? "checked" : "unchecked"
-                            }
-                            onClick={() => toggleSubTool(sub.id)}
-                          />
-                        </button>
-                      ))}
-                  </div>
-                );
-              })
+                  {!group.standalone &&
+                    group.subTools.map((sub) => (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => toggleSubTool(sub.id)}
+                        className="flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-700/60 transition-colors"
+                      >
+                        <span className="flex-1 text-left truncate">
+                          {sub.name}
+                        </span>
+                        <Checkbox
+                          state={
+                            selectedTools.includes(sub.id)
+                              ? "checked"
+                              : "unchecked"
+                          }
+                        />
+                      </button>
+                    ))}
+                </div>
+              ))
             )}
           </div>
         )}
@@ -260,13 +227,11 @@ export default function ToolsSelector({
               key={id}
               className="bg-zinc-800 flex gap-1.5 h-[26px] items-center justify-center px-3.5 py-0.5 rounded-full text-sm text-zinc-300"
             >
-              <span className="whitespace-nowrap">
-                {toolLabelById.get(id) || id}
-              </span>
+              <span className="whitespace-nowrap">{labelFor(id)}</span>
               <button
                 type="button"
                 onClick={() => removeTool(id)}
-                aria-label={`Remove ${toolLabelById.get(id) || id}`}
+                aria-label={`Remove ${labelFor(id)}`}
                 className="text-zinc-400 hover:text-zinc-50 transition-colors"
               >
                 <X size={12} weight="bold" />
