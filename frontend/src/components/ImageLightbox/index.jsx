@@ -49,7 +49,7 @@ export default function ImageLightbox() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [images]);
 
   if (!images || images.length === 0) return null;
   const safeIndex = Math.min(currentIndex, images.length - 1);
