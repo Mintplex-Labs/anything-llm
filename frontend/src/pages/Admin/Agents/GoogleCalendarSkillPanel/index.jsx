@@ -16,16 +16,16 @@ import {
   CheckCircle,
   Info,
 } from "@phosphor-icons/react";
-import GMailIcon from "./gmail.png";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import GoogleAgentSkills from "@/models/googleAgentSkills";
-import { getGmailSkills, filterSkillCategories } from "./utils";
+import { getGoogleCalendarSkills, filterSkillCategories } from "./utils";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import GoogleCalendarIcon from "./google-calendar.png";
 
-export default function GMailSkillPanel({
+export default function GoogleCalendarSkillPanel({
   title,
   skill,
   toggleSkill,
@@ -42,17 +42,19 @@ export default function GMailSkillPanel({
   const [isMultiUserMode, setIsMultiUserMode] = useState(false);
   const [configDefaultExpanded, setConfigDefaultExpanded] = useState(true);
   const prevHasChanges = useRef(hasChanges);
-  const skillCategories = getGmailSkills(t);
+  const skillCategories = getGoogleCalendarSkills(t);
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
+      Admin.systemPreferencesByFields(["disabled_google_calendar_skills"]),
       System.keys(),
-      GoogleAgentSkills.gmail.getStatus(),
+      GoogleAgentSkills.calendar.getStatus(),
     ])
       .then(([prefsRes, settingsRes, statusRes]) => {
-        setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
+        setDisabledSkills(
+          prefsRes?.settings?.disabled_google_calendar_skills ?? []
+        );
         setIsMultiUserMode(settingsRes?.MultiUserMode ?? false);
 
         if (statusRes?.success && statusRes.config) {
@@ -74,11 +76,13 @@ export default function GMailSkillPanel({
   useEffect(() => {
     if (prevHasChanges.current === true && hasChanges === false) {
       Promise.all([
-        Admin.systemPreferencesByFields(["disabled_gmail_skills"]),
-        GoogleAgentSkills.gmail.getStatus(),
+        Admin.systemPreferencesByFields(["disabled_google_calendar_skills"]),
+        GoogleAgentSkills.calendar.getStatus(),
       ])
         .then(([prefsRes, statusRes]) => {
-          setDisabledSkills(prefsRes?.settings?.disabled_gmail_skills ?? []);
+          setDisabledSkills(
+            prefsRes?.settings?.disabled_google_calendar_skills ?? []
+          );
           if (statusRes?.success && statusRes.config) {
             setDeploymentId(statusRes.config.deploymentId || "");
             setApiKey(statusRes.config.apiKey || "");
@@ -89,7 +93,7 @@ export default function GMailSkillPanel({
     prevHasChanges.current = hasChanges;
   }, [hasChanges]);
 
-  function toggleGmailSkill(skillName) {
+  function toggleGoogleCalendarSkill(skillName) {
     setHasChanges(true);
     setDisabledSkills((prev) =>
       prev.includes(skillName)
@@ -105,7 +109,12 @@ export default function GMailSkillPanel({
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
         <div className="flex w-full justify-between items-center">
           <div className="flex items-center gap-x-2">
-            <img src={GMailIcon} alt="GMail" className="w-6 h-6" />
+            <img
+              src={GoogleCalendarIcon}
+              alt="Google Calendar"
+              width={24}
+              height={24}
+            />
             <label className="text-theme-text-primary text-md font-bold">
               {title}
             </label>
@@ -122,19 +131,19 @@ export default function GMailSkillPanel({
           <div className="flex items-center gap-x-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
             <Warning size={20} className="text-yellow-500 shrink-0" />
             <p className="text-yellow-500 text-xs">
-              {t("agent.skill.gmail.multiUserWarning")}
+              {t("agent.skill.googleCalendar.multiUserWarning")}
             </p>
           </div>
         )}
 
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
           <Trans
-            i18nKey="agent.skill.gmail.description"
+            i18nKey="agent.skill.googleCalendar.description"
             components={{
               a: (
                 <Link
                   className="text-sky-400 hover:text-sky-500 text-xs font-medium underline"
-                  to={paths.docs("/agent/usage/gmail-agent")}
+                  to={paths.docs("/agent/usage/google-calendar-agent")}
                   target="_blank"
                 />
               ),
@@ -173,7 +182,7 @@ export default function GMailSkillPanel({
                   <SkillsSection
                     skillCategories={skillCategories}
                     disabledSkills={disabledSkills}
-                    onToggle={toggleGmailSkill}
+                    onToggle={toggleGoogleCalendarSkill}
                   />
                 )}
               </>
@@ -206,13 +215,13 @@ function ConfigurationSection({
       >
         <div className="flex items-center gap-x-2">
           <span className="text-theme-text-primary font-semibold text-sm">
-            {t("agent.skill.gmail.configuration")}
+            {t("agent.skill.googleCalendar.configuration")}
           </span>
           {isConfigured && (
             <div className="flex items-center gap-x-1">
               <CheckCircle size={14} weight="fill" className="text-green-500" />
               <span className="text-xs text-green-500">
-                {t("agent.skill.gmail.configured")}
+                {t("agent.skill.googleCalendar.configured")}
               </span>
             </div>
           )}
@@ -228,20 +237,20 @@ function ConfigurationSection({
           <div className="flex flex-col gap-y-2">
             <div className="flex items-center gap-x-2">
               <label className="text-theme-text-primary text-sm font-medium">
-                {t("agent.skill.gmail.deploymentId")}
+                {t("agent.skill.googleCalendar.deploymentId")}
               </label>
               <Info
-                data-tooltip-id="deployment-id-tooltip"
+                data-tooltip-id="gcal-deployment-id-tooltip"
                 size={16}
                 className="text-theme-text-secondary"
               />
               <Tooltip
-                id="deployment-id-tooltip"
+                id="gcal-deployment-id-tooltip"
                 place="top"
                 delayShow={300}
                 className="tooltip !text-xs !opacity-100"
               >
-                {t("agent.skill.gmail.deploymentIdHelp")}
+                {t("agent.skill.googleCalendar.deploymentIdHelp")}
               </Tooltip>
             </div>
             <input
@@ -259,20 +268,20 @@ function ConfigurationSection({
           <div className="flex flex-col gap-y-2">
             <div className="flex items-center gap-x-2">
               <label className="text-theme-text-primary text-sm font-medium">
-                {t("agent.skill.gmail.apiKey")}
+                {t("agent.skill.googleCalendar.apiKey")}
               </label>
               <Info
-                data-tooltip-id="api-key-tooltip"
+                data-tooltip-id="gcal-api-key-tooltip"
                 size={16}
                 className="text-theme-text-secondary"
               />
               <Tooltip
-                id="api-key-tooltip"
+                id="gcal-api-key-tooltip"
                 place="top"
                 delayShow={300}
                 className="tooltip !text-xs !opacity-100"
               >
-                {t("agent.skill.gmail.apiKeyHelp")}
+                {t("agent.skill.googleCalendar.apiKeyHelp")}
               </Tooltip>
             </div>
             <input
@@ -290,7 +299,7 @@ function ConfigurationSection({
             <div className="flex items-center gap-x-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
               <Warning size={20} className="text-orange-500 shrink-0" />
               <p className="text-orange-500 text-xs">
-                {t("agent.skill.gmail.configurationRequired")}
+                {t("agent.skill.googleCalendar.configurationRequired")}
               </p>
             </div>
           )}
@@ -327,7 +336,7 @@ function SkillSearchInput({ onSearch }) {
       <input
         ref={inputRef}
         type="search"
-        placeholder={t("agent.skill.gmail.searchSkills")}
+        placeholder={t("agent.skill.googleCalendar.searchSkills")}
         onChange={handleChange}
         className="w-full pl-9 pr-3 py-2 bg-theme-bg-primary border border-theme-sidebar-border rounded-lg text-theme-text-primary text-sm placeholder:text-theme-text-secondary/50 search-input"
       />
@@ -371,7 +380,7 @@ function SkillsSection({ skillCategories, disabledSkills, onToggle }) {
         </div>
       ) : (
         <p className="text-theme-text-secondary text-sm text-center py-4">
-          {t("agent.skill.gmail.noSkillsFound")}
+          {t("agent.skill.googleCalendar.noSkillsFound")}
         </p>
       )}
     </div>
@@ -434,12 +443,12 @@ function HiddenFormInputs({ disabledSkills, deploymentId, apiKey }) {
   return (
     <>
       <input
-        name="system::disabled_gmail_skills"
+        name="system::disabled_google_calendar_skills"
         type="hidden"
         value={disabledSkills.join(",")}
       />
       <input
-        name="system::gmail_agent_config"
+        name="system::google_calendar_agent_config"
         type="hidden"
         value={configJson}
       />

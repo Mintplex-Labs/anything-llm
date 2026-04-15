@@ -5,6 +5,7 @@ import DefaultSkillPanel from "./DefaultSkillPanel";
 import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import CreateFileSkillPanel from "./CreateFileSkillPanel";
 import GMailSkillPanel from "./GMailSkillPanel";
+import GoogleCalendarSkillPanel from "./GoogleCalendarSkillPanel";
 import OutlookSkillPanel from "./OutlookSkillPanel";
 import {
   Brain,
@@ -22,6 +23,7 @@ import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import FileSystemImage from "@/media/agents/file-system.png";
 import GMailIcon from "./GMailSkillPanel/gmail.png";
 import OutlookIcon from "./OutlookSkillPanel/outlook.png";
+import GoogleCalendarIcon from "./GoogleCalendarSkillPanel/google-calendar.png";
 
 export const getDefaultSkills = (t) => ({
   "rag-memory": {
@@ -104,6 +106,21 @@ export const getAppIntegrationSkills = (t) => ({
     skill: "gmail-agent",
     Icon: ({ size }) => (
       <img src={GMailIcon} alt="GMail" width={size} height={size} />
+    ),
+    mode: ["singleUserOnly"],
+  },
+  "google-calendar-agent": {
+    title: t("agent.skill.googleCalendar.title"),
+    description: t("agent.skill.googleCalendar.description"),
+    component: GoogleCalendarSkillPanel,
+    skill: "google-calendar-agent",
+    Icon: ({ size }) => (
+      <img
+        src={GoogleCalendarIcon}
+        alt="Google Calendar"
+        width={size}
+        height={size}
+      />
     ),
     mode: ["singleUserOnly"],
   },

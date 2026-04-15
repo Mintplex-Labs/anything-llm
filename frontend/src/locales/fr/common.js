@@ -643,6 +643,97 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Connecteur Google Calendar",
+        description:
+          "Permettez à votre agent d'interagir avec Google Calendar : consulter les calendriers, afficher les événements, créer et modifier des événements, et gérer les confirmations de présence. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Google Calendar n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs pour utiliser cette fonctionnalité.",
+        configuration: "Configuration de Google Calendar",
+        deploymentId: "ID de déploiement",
+        deploymentIdHelp:
+          "L'identifiant de déploiement de votre application web Google Apps Script",
+        apiKey: "Clé API",
+        apiKeyHelp:
+          "La clé API que vous avez configurée dans votre déploiement de Google Apps Script",
+        configurationRequired:
+          "Veuillez configurer l'ID de déploiement et la clé API pour activer les fonctionnalités Google Calendar.",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucun résultat correspondant à votre recherche.",
+        categories: {
+          calendars: {
+            title: "Calendriers",
+            description: "Visualisez et gérez vos calendriers Google.",
+          },
+          readEvents: {
+            title: "Lire les événements",
+            description:
+              "Visualiser et rechercher les événements du calendrier",
+          },
+          writeEvents: {
+            title: "Créer et mettre à jour des événements",
+            description:
+              "Créer de nouveaux événements et modifier les événements existants.",
+          },
+          rsvp: {
+            title: "Gestion des réponses",
+            description: "Gérez votre statut de réponse pour les événements.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendriers",
+            description:
+              "Énumérez tous les calendriers que vous possédez ou auxquels vous êtes abonné.",
+          },
+          getCalendar: {
+            title: "Obtenir les détails du calendrier",
+            description:
+              "Obtenez des informations détaillées sur un calendrier spécifique.",
+          },
+          getEvent: {
+            title: "Obtenir l'événement",
+            description:
+              "Obtenez des informations détaillées sur un événement spécifique.",
+          },
+          getEventsForDay: {
+            title: "Obtenir les événements pour la journée",
+            description:
+              "Consultez tous les événements prévus pour une date spécifique.",
+          },
+          getEvents: {
+            title: "Événements (période)",
+            description:
+              "Récupérer des événements dans une plage de dates personnalisée",
+          },
+          getUpcomingEvents: {
+            title: "Consulter les événements à venir",
+            description:
+              "Trouvez des événements pour aujourd'hui, cette semaine ou ce mois en utilisant des mots-clés simples.",
+          },
+          quickAdd: {
+            title: "Ajouter un événement rapidement",
+            description:
+              "Créer un événement à partir d'une description en langage naturel (par exemple, « Réunion demain à 15h »)",
+          },
+          createEvent: {
+            title: "Créer un événement",
+            description:
+              "Créez un nouvel événement avec un contrôle total sur toutes les propriétés.",
+          },
+          updateEvent: {
+            title: "Mise à jour de l'événement",
+            description:
+              "Mettre à jour un événement existant dans le calendrier",
+          },
+          setMyStatus: {
+            title: "Définir le statut de réponse",
+            description:
+              "Accepter, refuser ou accepter provisoirement un événement.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serveurs MCP",
