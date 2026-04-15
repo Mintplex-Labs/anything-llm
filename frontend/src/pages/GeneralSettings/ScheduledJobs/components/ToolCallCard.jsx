@@ -73,11 +73,11 @@ export default function ToolCallCard({ toolCall }) {
           </span>
           {highlightedArgs ? (
             <pre
-              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar hljs ${getHljsTheme(isLight)}`}
+              className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto white-scrollbar tool-call-scrollbar hljs ${getHljsTheme(isLight)}`}
               dangerouslySetInnerHTML={highlightedArgs}
             />
           ) : (
-            <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto white-scrollbar">
+            <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto white-scrollbar tool-call-scrollbar">
               {typeof toolCall.arguments === "string"
                 ? toolCall.arguments
                 : JSON.stringify(toolCall.arguments, null, 2)}
@@ -100,11 +100,11 @@ export default function ToolCallCard({ toolCall }) {
           {showResult &&
             (highlightedResult ? (
               <pre
-                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar hljs ${getHljsTheme(isLight)}`}
+                className={`text-xs rounded-lg p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar tool-call-scrollbar hljs ${getHljsTheme(isLight)}`}
                 dangerouslySetInnerHTML={highlightedResult}
               />
             ) : (
-              <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar">
+              <pre className="text-xs text-theme-text-primary bg-theme-bg-primary/50 rounded p-2 mt-1 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap white-scrollbar tool-call-scrollbar">
                 {truncatedResult}
               </pre>
             ))}
