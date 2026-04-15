@@ -56,14 +56,16 @@ function Checkbox({ state }) {
     <span
       aria-hidden="true"
       className={`flex items-center justify-center size-4 rounded border shrink-0 transition-colors ${
-        filled ? "bg-sky-500 border-sky-700" : "bg-zinc-800 border-zinc-600"
+        filled
+          ? "bg-sky-500 border-sky-700 light:bg-sky-600 light:border-sky-800"
+          : "bg-zinc-800 border-zinc-600 light:bg-white light:border-zinc-600"
       }`}
     >
       {state === "checked" && (
-        <Check size={12} weight="bold" className="text-white" />
+        <Check size={12} weight="bold" className="text-white light:text-white" />
       )}
       {state === "indeterminate" && (
-        <Minus size={12} weight="bold" className="text-white" />
+        <Minus size={12} weight="bold" className="text-white light:text-white" />
       )}
     </span>
   );
@@ -144,10 +146,10 @@ export default function ToolsSelector({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-50">
+      <label className="block text-sm font-medium text-zinc-50 light:text-slate-700">
         {t("scheduledJobs.modal.toolsLabel", "Tools (Optional)")}
       </label>
-      <p className="text-xs text-zinc-400 mt-1 mb-3">
+      <p className="text-xs text-zinc-400 light:text-slate-600 mt-1 mb-3">
         {t(
           "scheduledJobs.modal.toolsDescription",
           "Select which agent tools this job can use. Leave empty to use all enabled tools."
@@ -163,18 +165,18 @@ export default function ToolsSelector({
             onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}
             placeholder={t("scheduledJobs.modal.toolsSearch", "Search")}
-            className="border-none bg-zinc-800 text-zinc-300 placeholder:text-zinc-400 text-sm rounded-lg focus:outline-sky-500 outline-none block w-full px-3.5 py-2.5 pr-9"
+            className="border border-transparent light:border-slate-300 bg-zinc-800 light:bg-white text-zinc-300 light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-500 text-sm rounded-lg focus:outline-sky-500 outline-none block w-full px-3.5 py-2.5 pr-9"
           />
           <MagnifyingGlass
             size={16}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 light:text-slate-500 pointer-events-none"
           />
         </div>
 
         {open && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-20 max-h-64 overflow-y-auto p-1.5 bg-zinc-800 rounded-lg flex flex-col shadow-[0px_4px_12px_0px_rgba(0,0,0,0.35)] border border-zinc-700">
+          <div className="absolute left-0 right-0 top-full mt-1 z-20 max-h-64 overflow-y-auto p-1.5 bg-zinc-800 light:bg-white rounded-lg flex flex-col shadow-[0px_4px_12px_0px_rgba(0,0,0,0.35)] border border-zinc-700 light:border-slate-300">
             {filteredGroups.length === 0 ? (
-              <p className="text-xs text-zinc-400 px-2 py-3 text-center">
+              <p className="text-xs text-zinc-400 light:text-slate-500 px-2 py-3 text-center">
                 {t("scheduledJobs.modal.toolsNoResults", "No tools match")}
               </p>
             ) : (
@@ -183,8 +185,10 @@ export default function ToolsSelector({
                   <button
                     type="button"
                     onClick={() => toggleGroup(group)}
-                    className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 hover:bg-zinc-700/60 transition-colors ${
-                      !group.standalone ? "bg-zinc-700 font-medium" : ""
+                    className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 light:text-slate-700 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors ${
+                      !group.standalone
+                        ? "bg-zinc-700 light:bg-slate-200 font-medium"
+                        : ""
                     }`}
                   >
                     <span className="flex-1 text-left truncate">
@@ -199,7 +203,7 @@ export default function ToolsSelector({
                         key={sub.id}
                         type="button"
                         onClick={() => toggleSubTool(sub.id)}
-                        className="flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-700/60 transition-colors"
+                        className="flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 light:text-slate-600 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors"
                       >
                         <span className="flex-1 text-left truncate">
                           {sub.name}
@@ -225,14 +229,14 @@ export default function ToolsSelector({
           {selectedTools.map((id) => (
             <div
               key={id}
-              className="bg-zinc-800 flex gap-1.5 h-[26px] items-center justify-center px-3.5 py-0.5 rounded-full text-sm text-zinc-300"
+              className="bg-zinc-800 light:bg-slate-200 flex gap-1.5 h-[26px] items-center justify-center px-3.5 py-0.5 rounded-full text-sm text-zinc-300 light:text-slate-700"
             >
               <span className="whitespace-nowrap">{labelFor(id)}</span>
               <button
                 type="button"
                 onClick={() => removeTool(id)}
                 aria-label={`Remove ${labelFor(id)}`}
-                className="text-zinc-400 hover:text-zinc-50 transition-colors"
+                className="text-zinc-400 light:text-slate-500 hover:text-zinc-50 light:hover:text-slate-900 transition-colors"
               >
                 <X size={12} weight="bold" />
               </button>

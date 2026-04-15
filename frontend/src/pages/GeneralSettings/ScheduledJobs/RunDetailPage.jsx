@@ -20,11 +20,11 @@ import ToolCallCard from "./components/ToolCallCard";
 import GeneratedFileCard from "./components/GeneratedFileCard";
 
 const STATUS_COLORS = {
-  completed: "text-green-400",
-  failed: "text-red-400",
-  timed_out: "text-orange-400",
-  running: "text-yellow-400",
-  queued: "text-blue-400",
+  completed: "text-green-400 light:text-green-600",
+  failed: "text-red-400 light:text-red-600",
+  timed_out: "text-orange-400 light:text-orange-600",
+  running: "text-yellow-400 light:text-yellow-600",
+  queued: "text-blue-400 light:text-blue-600",
 };
 
 export default function RunDetailPage() {
@@ -81,11 +81,11 @@ export default function RunDetailPage() {
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           {loading ? (
-            <p className="text-zinc-400 text-sm">
+            <p className="text-zinc-400 light:text-slate-600 text-sm">
               {t("scheduledJobs.runDetail.loading")}
             </p>
           ) : !run ? (
-            <p className="text-zinc-400 text-sm">
+            <p className="text-zinc-400 light:text-slate-600 text-sm">
               {t("scheduledJobs.runDetail.notFound")}
             </p>
           ) : (
@@ -149,31 +149,33 @@ function RunHeader({
   const statusLabel =
     statusLabels[run.status] || run.status?.replace("_", " ") || "";
   return (
-    <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 border-b-2">
+    <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 light:border-zinc-300 border-b-2">
       <div className="flex flex-col gap-y-2">
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 text-sm transition-colors w-fit"
+          className="flex items-center gap-2 text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 text-sm transition-colors w-fit"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("scheduledJobs.runDetail.back")}
         </button>
-        <p className="text-lg leading-7 font-semibold text-zinc-50">
+        <p className="text-lg leading-7 font-semibold text-zinc-50 light:text-slate-950">
           {t("scheduledJobs.runDetail.runHeading", {
             name: job?.name || t("scheduledJobs.runDetail.unknownJob"),
             id: run.id,
           })}
         </p>
         <div className="flex items-center gap-2 text-xs">
-          <span className={`${STATUS_COLORS[run.status] || "text-zinc-400"}`}>
+          <span
+            className={`${STATUS_COLORS[run.status] || "text-zinc-400 light:text-slate-600"}`}
+          >
             {statusLabel}
           </span>
-          <span className="text-zinc-400">
+          <span className="text-zinc-400 light:text-slate-600">
             {new Date(run.startedAt).toLocaleString()}
           </span>
           {result.duration && (
-            <span className="text-zinc-400">
+            <span className="text-zinc-400 light:text-slate-600">
               {t("scheduledJobs.runDetail.duration", {
                 seconds: (result.duration / 1000).toFixed(1),
               })}
@@ -186,7 +188,7 @@ function RunHeader({
           type="button"
           onClick={onContinueInThread}
           disabled={continuing}
-          className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 shrink-0"
+          className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50 shrink-0"
         >
           {continuing
             ? t("scheduledJobs.runDetail.creating")
@@ -199,11 +201,11 @@ function RunHeader({
 
 function PromptSection({ t, prompt }) {
   return (
-    <div className="border border-zinc-700 rounded-lg p-[18px]">
-      <p className="text-sm font-medium text-white uppercase tracking-[1.4px] mb-1">
+    <div className="border border-zinc-700 light:border-slate-400 rounded-lg p-[18px]">
+      <p className="text-sm font-medium text-white light:text-slate-950 uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.prompt")}
       </p>
-      <p className="text-sm text-zinc-400 whitespace-pre-wrap">
+      <p className="text-sm text-zinc-400 light:text-slate-600 whitespace-pre-wrap">
         {prompt || "—"}
       </p>
     </div>
@@ -212,11 +214,11 @@ function PromptSection({ t, prompt }) {
 
 function ErrorSection({ t, error }) {
   return (
-    <div className="border border-red-500/20 rounded-lg p-[18px] bg-red-500/5">
-      <p className="text-sm font-medium text-red-400 uppercase tracking-[1.4px] mb-1">
+    <div className="border border-red-500/20 light:border-red-300 rounded-lg p-[18px] bg-red-500/5 light:bg-red-50">
+      <p className="text-sm font-medium text-red-400 light:text-red-600 uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.error")}
       </p>
-      <p className="text-sm text-red-300">{error}</p>
+      <p className="text-sm text-red-300 light:text-red-700">{error}</p>
     </div>
   );
 }
@@ -289,7 +291,7 @@ function FinalResponseSection({ t, result }) {
       defaultOpen={true}
     >
       <div
-        className="text-sm text-zinc-50 markdown"
+        className="text-sm text-zinc-50 light:text-slate-950 markdown"
         dangerouslySetInnerHTML={{
           __html: renderMarkdown(result.text),
         }}
@@ -299,21 +301,25 @@ function FinalResponseSection({ t, result }) {
 }
 function MetricsSection({ t, metrics }) {
   return (
-    <div className="border border-zinc-700 rounded-lg p-[18px]">
-      <p className="text-sm font-semibold text-zinc-400 uppercase tracking-[1.4px] mb-1">
+    <div className="border border-zinc-700 light:border-slate-400 rounded-lg p-[18px]">
+      <p className="text-sm font-semibold text-zinc-400 light:text-slate-600 uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.metrics")}
       </p>
-      <div className="flex gap-6 text-sm text-zinc-400">
+      <div className="flex gap-6 text-sm text-zinc-400 light:text-slate-600">
         {metrics.prompt_tokens != null && (
           <span>
             {t("scheduledJobs.runDetail.metrics.promptTokens")}{" "}
-            <span className="text-zinc-50">{metrics.prompt_tokens}</span>
+            <span className="text-zinc-50 light:text-slate-950">
+              {metrics.prompt_tokens}
+            </span>
           </span>
         )}
         {metrics.completion_tokens != null && (
           <span>
             {t("scheduledJobs.runDetail.metrics.completionTokens")}{" "}
-            <span className="text-zinc-50">{metrics.completion_tokens}</span>
+            <span className="text-zinc-50 light:text-slate-950">
+              {metrics.completion_tokens}
+            </span>
           </span>
         )}
       </div>

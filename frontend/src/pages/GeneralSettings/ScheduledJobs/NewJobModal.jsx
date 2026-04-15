@@ -202,7 +202,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                   onClick={() => handleModeChange(tab.value)}
                   className={`px-3 py-1 text-xs rounded-md transition-colors ${
                     form.scheduleMode === tab.value
-                      ? "bg-primary-button text-white"
+                      ? "bg-zinc-50 text-zinc-950 light:bg-zinc-950 light:text-white"
                       : "text-theme-text-secondary hover:text-theme-text-primary"
                   }`}
                 >
@@ -260,14 +260,14 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             <button
               type="button"
               onClick={onClose}
-              className="h-[34px] px-3.5 text-sm font-medium text-zinc-50 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors"
+              className="h-[34px] px-3.5 text-sm font-medium text-zinc-50 light:text-slate-900 border border-zinc-700 light:border-slate-600 rounded-lg hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
             >
               {t("scheduledJobs.modal.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="h-[34px] px-3.5 text-sm font-medium text-zinc-950 bg-zinc-50 hover:bg-zinc-200 rounded-lg transition-colors disabled:opacity-50"
+              className="h-[34px] px-3.5 text-sm font-medium text-zinc-950 light:text-white bg-zinc-50 light:bg-slate-900 hover:bg-zinc-200 light:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
             >
               {saving
                 ? t("scheduledJobs.modal.saving")

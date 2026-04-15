@@ -102,7 +102,7 @@ export default function GeneratedFileCard({ file }) {
   };
 
   return (
-    <div className="flex items-center justify-between bg-zinc-800 rounded-lg p-3">
+    <div className="flex items-center justify-between bg-zinc-800 light:bg-slate-100 rounded-lg p-3">
       <div className="flex items-center gap-3 min-w-0">
         <div
           className={`${bg} ${text} rounded-lg flex items-center justify-center shrink-0 h-10 w-10 text-xs font-semibold`}
@@ -110,10 +110,10 @@ export default function GeneratedFileCard({ file }) {
           {badge}
         </div>
         <div className="flex flex-col min-w-0">
-          <p className="text-sm text-white truncate">
+          <p className="text-sm text-white light:text-slate-950 truncate">
             {file.filename || t("scheduledJobs.file.unknown")}
           </p>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-400 light:text-slate-600">
             {file.fileSize ? `${(file.fileSize / 1024).toFixed(1)} KB` : ""}
             {file.fileSize && type ? " " : ""}
             {type ? `${type} Document` : ""}
@@ -126,7 +126,7 @@ export default function GeneratedFileCard({ file }) {
         disabled={downloading}
         title={t("scheduledJobs.file.download")}
         aria-label={t("scheduledJobs.file.download")}
-        className="text-zinc-400 hover:text-zinc-50 transition-colors shrink-0 ml-4 disabled:opacity-50"
+        className="text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 transition-colors shrink-0 ml-4 disabled:opacity-50"
       >
         {downloading ? (
           <CircleNotch size={16} weight="bold" className="animate-spin" />

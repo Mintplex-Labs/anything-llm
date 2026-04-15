@@ -138,7 +138,7 @@ export default function CronBuilder({ value, onChange }) {
                 minute: parseInt(m, 10) || 0,
               });
             }}
-            className={inputClass}
+            className={`${inputClass} [color-scheme:dark] light:[color-scheme:light]`}
           />
         </div>
       )}
