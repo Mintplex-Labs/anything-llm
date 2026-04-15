@@ -627,6 +627,89 @@ const TRANSLATIONS = {
           },
         },
       },
+      googleCalendar: {
+        title: "Google Kalender-tilslutning",
+        description:
+          "Giv din agent mulighed for at interagere med Google Kalender – se kalendere, få adgang til begivenheder, oprette og opdatere begivenheder, og administrere tilmeldinger. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Google Kalender er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Google Kalender",
+        deploymentId: "Identifikations-ID",
+        deploymentIdHelp: "Deployment-ID fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Vær venligst oprettet Deployment ID og API-nøgle for at aktivere Google Calendar-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater matcher din søgning.",
+        categories: {
+          calendars: {
+            title: "Kalendere",
+            description: "Se og administrer dine Google Kalendere",
+          },
+          readEvents: {
+            title: "Læs begivenheder",
+            description: "Se og søg efter begivenheder i kalenderen",
+          },
+          writeEvents: {
+            title: "Opret og opdater begivenheder",
+            description: "Opret nye begivenheder og rediger eksisterende.",
+          },
+          rsvp: {
+            title: "Håndtering af bekræftelser",
+            description: "Administrer status for dine svar på begivenheder",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalenderlister",
+            description: "Vis alle kalendere, du ejer eller er abonnent på.",
+          },
+          getCalendar: {
+            title: "Få detaljer om kalenderen",
+            description: "Få detaljerede oplysninger om en bestemt kalender",
+          },
+          getEvent: {
+            title: "Find arrangement",
+            description: "Få detaljerede oplysninger om et bestemt arrangement",
+          },
+          getEventsForDay: {
+            title: "Find begivenheder for den pågældende dag",
+            description:
+              "Find alle begivenheder, der er planlagt til en bestemt dato.",
+          },
+          getEvents: {
+            title: "Find begivenheder (datointerval)",
+            description: "Find begivenheder inden for et angivet tidsinterval",
+          },
+          getUpcomingEvents: {
+            title: "Se kommende arrangementer",
+            description:
+              "Find begivenheder for i dag, denne uge eller denne måned ved hjælp af enkle søgeord.",
+          },
+          quickAdd: {
+            title: "Tilføj begivenhed hurtigt",
+            description:
+              'Opret et arrangement ud fra naturligt sprog (f.eks. "Møde i morgen kl. 15:00")',
+          },
+          createEvent: {
+            title: "Opret begivenhed",
+            description:
+              "Opret et nyt arrangement med fuld kontrol over alle indstillinger.",
+          },
+          updateEvent: {
+            title: "Opdatering af begivenhed",
+            description: "Opdater en eksisterende kalenderbegivenhed",
+          },
+          setMyStatus: {
+            title: "Angiv status for bekræftet deltagelse",
+            description:
+              "Accepter, afvise eller midlertidigt acceptere et arrangement",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP-servere",

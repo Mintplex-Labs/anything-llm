@@ -52,6 +52,8 @@ const SystemSettings = {
     "disabled_create_files_skills",
     "disabled_gmail_skills",
     "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
     "disabled_outlook_skills",
     "outlook_agent_config",
     "imported_agent_skills",
@@ -75,6 +77,8 @@ const SystemSettings = {
     "disabled_create_files_skills",
     "disabled_gmail_skills",
     "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
     "disabled_outlook_skills",
     "outlook_agent_config",
     "agent_sql_connections",
@@ -234,6 +238,49 @@ const SystemSettings = {
         return JSON.stringify({});
       } finally {
         GmailBridge.reset();
+      }
+    },
+    disabled_google_calendar_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled google calendar skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    google_calendar_agent_config: async (update) => {
+      const GoogleCalendarBridge = require("../utils/agents/aibitat/plugins/google-calendar/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "google_calendar_agent_config" }))
+            ?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(
+          `Could not validate google calendar agent config:`,
+          e.message
+        );
+        return JSON.stringify({});
+      } finally {
+        GoogleCalendarBridge.reset();
       }
     },
     disabled_outlook_skills: (updates) => {
