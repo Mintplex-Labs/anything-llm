@@ -206,18 +206,19 @@ export default memo(
   }
 );
 
+/**
+ * Currently only renders image attachments as clickable thumbnails that open in the lightbox.
+ * Other attachment types may be supported here in the future.
+ */
 function ChatAttachments({ attachments = [] }) {
-  const imageAttachments = attachments.filter((item) =>
-    item.mime?.startsWith("image/")
-  );
-  if (!imageAttachments.length) return null;
+  if (!attachments.length) return null;
   return (
     <div className="flex flex-wrap gap-4 mt-4">
-      {imageAttachments.map((item, index) => (
+      {attachments.map((item, index) => (
         <button
           type="button"
           key={item.name}
-          onClick={() => openImageLightbox(imageAttachments, index)}
+          onClick={() => openImageLightbox(attachments, index)}
           className="p-0 border-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
         >
           <img
