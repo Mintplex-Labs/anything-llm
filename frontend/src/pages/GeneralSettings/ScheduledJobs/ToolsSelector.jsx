@@ -62,10 +62,18 @@ function Checkbox({ state }) {
       }`}
     >
       {state === "checked" && (
-        <Check size={12} weight="bold" className="text-white light:text-white" />
+        <Check
+          size={12}
+          weight="bold"
+          className="text-white light:text-white"
+        />
       )}
       {state === "indeterminate" && (
-        <Minus size={12} weight="bold" className="text-white light:text-white" />
+        <Minus
+          size={12}
+          weight="bold"
+          className="text-white light:text-white"
+        />
       )}
     </span>
   );
