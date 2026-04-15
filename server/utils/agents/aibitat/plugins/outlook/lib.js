@@ -358,15 +358,19 @@ function isParseableMimeType(contentType) {
 /**
  * Collect attachments from messages and optionally parse them with user approval.
  * Only attachments with parseable MIME types will be offered for parsing.
+ * If two attachments have the same name, only the first one will be kept (handling fwd emails)
  * @param {Object} context - The handler context (this) from the aibitat function
  * @param {Array} messages - Array of message objects
  * @returns {Promise<{allAttachments: Array, parsedContent: string}>}
  */
 async function handleAttachments(context, messages) {
   const allAttachments = [];
+  const uniqueAttachments = new Set();
   messages.forEach((msg, msgIndex) => {
     if (msg.attachments?.length > 0) {
       msg.attachments.forEach((att) => {
+        if (uniqueAttachments.has(att.name)) return;
+        uniqueAttachments.add(att.name);
         allAttachments.push({
           ...att,
           messageIndex: msgIndex + 1,

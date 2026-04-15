@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { chatQueryRefusalResponse } from "@/utils/chat";
 import HistoricalOutputs from "./HistoricalOutputs";
+import { openImageLightbox } from "@/components/ImageLightbox";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -205,17 +206,27 @@ export default memo(
   }
 );
 
+/**
+ * Currently only renders image attachments as clickable thumbnails that open in the lightbox.
+ * Other attachment types may be supported here in the future.
+ */
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
   return (
     <div className="flex flex-wrap gap-4 mt-4">
-      {attachments.map((item) => (
-        <img
-          alt={`Attachment: ${item.name}`}
+      {attachments.map((item, index) => (
+        <button
+          type="button"
           key={item.name}
-          src={item.contentString}
-          className="w-[120px] h-[120px] object-cover rounded-lg"
-        />
+          onClick={() => openImageLightbox(attachments, index)}
+          className="p-0 border-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <img
+            alt={`Attachment: ${item.name}`}
+            src={item.contentString}
+            className="w-[120px] h-[120px] object-cover rounded-lg"
+          />
+        </button>
       ))}
     </div>
   );
