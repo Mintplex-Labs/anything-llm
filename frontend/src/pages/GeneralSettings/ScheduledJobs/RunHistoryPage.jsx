@@ -6,6 +6,7 @@ import { isMobile } from "react-device-detect";
 import { ArrowLeft } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import usePolling from "@/hooks/usePolling";
+import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import RunRow from "./components/RunRow";
 
@@ -16,6 +17,7 @@ export default function RunHistoryPage() {
   const [job, setJob] = useState(null);
   const [runs, setRuns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [triggering, setTriggering] = useState(false);
 
   const fetchRuns = async () => {
     const { runs: foundRuns } = await ScheduledJobs.runs(id);
@@ -31,6 +33,18 @@ export default function RunHistoryPage() {
   // Poll every 5s while visible so new runs appear and running statuses update.
   usePolling(fetchRuns, 5000);
 
+  const handleRunNow = async () => {
+    setTriggering(true);
+    const { success, error } = await ScheduledJobs.trigger(id);
+    setTriggering(false);
+    if (success) {
+      showToast(t("scheduledJobs.toast.triggered"), "success");
+      fetchRuns();
+    } else {
+      showToast(error || t("scheduledJobs.toast.triggerFailed"), "error");
+    }
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -39,68 +53,78 @@ export default function RunHistoryPage() {
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+          <div className="w-full flex flex-col gap-y-2 pb-6 border-white/10 border-b-2">
             <button
               type="button"
               onClick={() => navigate(paths.settings.scheduledJobs())}
-              className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
+              className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 text-sm transition-colors w-fit"
             >
-              <ArrowLeft className="h-4 w-4" />{" "}
+              <ArrowLeft className="h-4 w-4" />
               {t("scheduledJobs.runHistory.back")}
             </button>
-            <p className="text-lg leading-6 font-bold text-theme-text-primary">
+            <p className="text-lg leading-7 font-semibold text-zinc-50">
               {t("scheduledJobs.runHistory.title", {
                 name: job?.name || "...",
               })}
             </p>
             {job && (
-              <p className="text-xs text-theme-text-secondary">
+              <p className="text-xs text-zinc-400">
                 {t("scheduledJobs.runHistory.schedule")}{" "}
                 <code>{job.schedule}</code>
               </p>
             )}
           </div>
 
-          <div className="mt-6">
-            {loading ? (
-              <div className="text-theme-text-secondary text-sm">
-                {t("scheduledJobs.loading")}
+          {loading ? (
+            <div className="text-zinc-400 text-sm pt-8">
+              {t("scheduledJobs.loading")}
+            </div>
+          ) : (
+            <div className="pt-8">
+              <div className="flex items-center px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-500">
+                <span className="w-[200px]">
+                  {t("scheduledJobs.runHistory.table.status")}
+                </span>
+                <span className="w-[260px]">
+                  {t("scheduledJobs.runHistory.table.started")}
+                </span>
+                <span className="w-[160px]">
+                  {t("scheduledJobs.runHistory.table.duration")}
+                </span>
+                <span className="flex-1">
+                  {t("scheduledJobs.runHistory.table.error")}
+                </span>
               </div>
-            ) : runs.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-theme-text-secondary text-sm">
-                  {t("scheduledJobs.runHistory.empty")}
-                </p>
-              </div>
-            ) : (
-              <table className="w-full text-sm text-left rounded-lg overflow-hidden">
-                <thead className="text-theme-text-secondary text-xs uppercase border-b border-white/10">
-                  <tr>
-                    <th className="px-6 py-3">
-                      {t("scheduledJobs.runHistory.table.status")}
-                    </th>
-                    <th className="px-6 py-3">
-                      {t("scheduledJobs.runHistory.table.started")}
-                    </th>
-                    <th className="px-6 py-3">
-                      {t("scheduledJobs.runHistory.table.duration")}
-                    </th>
-                    <th className="px-6 py-3">
-                      {t("scheduledJobs.runHistory.table.error")}
-                    </th>
-                    <th className="px-6 py-3 text-right">
-                      {t("scheduledJobs.runHistory.table.actions")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+              <div className="h-px w-full bg-white/10" />
+
+              {runs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-8 py-24 text-center">
+                  <div className="flex flex-col gap-1.5">
+                    <p className="text-base font-semibold text-zinc-50">
+                      {t("scheduledJobs.runHistory.emptyTitle")}
+                    </p>
+                    <p className="text-sm font-medium text-zinc-400">
+                      {t("scheduledJobs.runHistory.emptySubtitle")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRunNow}
+                    disabled={triggering}
+                    className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                  >
+                    {t("scheduledJobs.runHistory.runNow")}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col divide-y divide-white/5">
                   {runs.map((run) => (
                     <RunRow key={run.id} run={run} jobId={job?.id} />
                   ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

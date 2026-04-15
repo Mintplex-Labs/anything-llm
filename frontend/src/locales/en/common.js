@@ -1499,6 +1499,9 @@ const TRANSLATIONS = {
       title: "Run History: {{name}}",
       schedule: "Schedule:",
       empty: "No runs yet for this job.",
+      emptyTitle: "No runs yet for this job",
+      emptySubtitle: "Run the job now and view it's results.",
+      runNow: "Run Now",
       table: {
         status: "Status",
         started: "Started",
@@ -1529,7 +1532,7 @@ const TRANSLATIONS = {
         error: "Error",
         thinking: "Thinking ({{count}} steps)",
         toolCalls: "Tool Calls ({{count}})",
-        generatedFiles: "Generated Files ({{count}})",
+        files: "Files ({{count}})",
         response: "Response",
         metrics: "Metrics",
       },

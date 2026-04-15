@@ -12,49 +12,49 @@ const FILE_DISPLAY_MAP = {
   pptx: {
     badge: "PPT",
     bg: "bg-orange-100",
-    text: "text-orange-700",
+    text: "text-orange-800",
     typeKey: "powerpoint",
   },
   ppt: {
     badge: "PPT",
     bg: "bg-orange-100",
-    text: "text-orange-700",
+    text: "text-orange-800",
     typeKey: "powerpoint",
   },
   pdf: {
     badge: "PDF",
     bg: "bg-red-100",
-    text: "text-red-700",
+    text: "text-red-800",
     typeKey: "pdf",
   },
   doc: {
     badge: "DOC",
     bg: "bg-blue-100",
-    text: "text-blue-700",
+    text: "text-blue-800",
     typeKey: "word",
   },
   docx: {
     badge: "DOC",
     bg: "bg-blue-100",
-    text: "text-blue-700",
+    text: "text-blue-800",
     typeKey: "word",
   },
   xls: {
     badge: "XLS",
     bg: "bg-green-100",
-    text: "text-green-700",
+    text: "text-green-800",
     typeKey: "spreadsheet",
   },
   xlsx: {
     badge: "XLS",
     bg: "bg-green-100",
-    text: "text-green-700",
+    text: "text-green-800",
     typeKey: "spreadsheet",
   },
   csv: {
     badge: "CSV",
     bg: "bg-green-100",
-    text: "text-green-700",
+    text: "text-green-800",
     typeKey: "spreadsheet",
   },
 };
@@ -64,8 +64,8 @@ function getFileDisplayInfo(filename) {
   return (
     FILE_DISPLAY_MAP[extension] || {
       badge: extension.toUpperCase().slice(0, 4),
-      bg: "bg-slate-200",
-      text: "text-slate-700",
+      bg: "bg-zinc-200",
+      text: "text-zinc-800",
       typeKey: "generic",
     }
   );
@@ -102,21 +102,21 @@ export default function GeneratedFileCard({ file }) {
   };
 
   return (
-    <div className="flex items-center justify-between border border-white/5 rounded-lg p-3 bg-theme-bg-primary/30">
+    <div className="flex items-center justify-between bg-zinc-800 rounded-lg p-3">
       <div className="flex items-center gap-3 min-w-0">
         <div
-          className={`${bg} ${text} rounded-lg flex items-center justify-center flex-shrink-0 h-10 w-10 text-xs font-bold`}
+          className={`${bg} ${text} rounded-lg flex items-center justify-center shrink-0 h-10 w-10 text-xs font-semibold`}
         >
           {badge}
         </div>
         <div className="flex flex-col min-w-0">
-          <p className="text-sm font-medium text-theme-text-primary truncate">
+          <p className="text-sm text-white truncate">
             {file.filename || t("scheduledJobs.file.unknown")}
           </p>
-          <p className="text-xs text-theme-text-secondary">
+          <p className="text-sm text-zinc-400">
             {file.fileSize ? `${(file.fileSize / 1024).toFixed(1)} KB` : ""}
-            {file.fileSize && type ? " · " : ""}
-            {type}
+            {file.fileSize && type ? " " : ""}
+            {type ? `${type} Document` : ""}
           </p>
         </div>
       </div>
@@ -124,16 +124,15 @@ export default function GeneratedFileCard({ file }) {
         type="button"
         onClick={handleDownload}
         disabled={downloading}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-theme-bg-primary/70 transition-colors text-sm text-theme-text-primary flex-shrink-0 ml-4 disabled:opacity-50"
+        title={t("scheduledJobs.file.download")}
+        aria-label={t("scheduledJobs.file.download")}
+        className="text-zinc-400 hover:text-zinc-50 transition-colors shrink-0 ml-4 disabled:opacity-50"
       >
         {downloading ? (
-          <CircleNotch size={14} weight="bold" className="animate-spin" />
+          <CircleNotch size={16} weight="bold" className="animate-spin" />
         ) : (
-          <DownloadSimple size={14} weight="bold" />
+          <DownloadSimple size={16} weight="bold" />
         )}
-        {downloading
-          ? t("scheduledJobs.file.downloading")
-          : t("scheduledJobs.file.download")}
       </button>
     </div>
   );

@@ -19,16 +19,28 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
     ? t(`scheduledJobs.status.${job.latestRun.status}`, job.latestRun.status)
     : t("scheduledJobs.row.neverRun");
 
+  const stop = (handler) => (e) => {
+    e.stopPropagation();
+    handler();
+  };
+
   return (
-    <div className="flex items-center justify-between px-4 h-14 hover:bg-white/5 transition-colors">
-      <button
-        type="button"
-        onClick={() => navigate(paths.settings.scheduledJobRuns(job.id))}
-        className="w-[150px] text-left text-sm font-medium text-white hover:text-zinc-200 truncate"
-        title={t("scheduledJobs.row.viewRuns")}
-      >
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(paths.settings.scheduledJobRuns(job.id))}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(paths.settings.scheduledJobRuns(job.id));
+        }
+      }}
+      className="flex items-center justify-between px-4 h-14 hover:bg-white/5 transition-colors cursor-pointer"
+      title={t("scheduledJobs.row.viewRuns")}
+    >
+      <span className="w-[150px] text-sm font-medium text-white truncate">
         {job.name}
-      </button>
+      </span>
       <span className="w-[180px] text-sm text-zinc-400 truncate">
         {humanizeCron(job.schedule, i18n.language)}
       </span>
@@ -46,7 +58,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
       <div className="w-[140px] flex items-center justify-end gap-3.5">
         <button
           type="button"
-          onClick={() => onDelete(job.id)}
+          onClick={stop(() => onDelete(job.id))}
           className="text-zinc-400 hover:text-red-400 transition-colors"
           title={t("scheduledJobs.row.delete")}
         >
@@ -54,7 +66,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         </button>
         <button
           type="button"
-          onClick={() => onEdit(job)}
+          onClick={stop(() => onEdit(job))}
           className="text-zinc-400 hover:text-white transition-colors"
           title={t("scheduledJobs.row.edit")}
         >
@@ -62,7 +74,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         </button>
         <button
           type="button"
-          onClick={() => onTrigger(job.id)}
+          onClick={stop(() => onTrigger(job.id))}
           disabled={inFlight}
           className="text-zinc-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           title={t("scheduledJobs.row.runNow")}
@@ -73,7 +85,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
           type="button"
           role="switch"
           aria-checked={job.enabled}
-          onClick={() => onToggle(job.id)}
+          onClick={stop(() => onToggle(job.id))}
           title={
             job.enabled
               ? t("scheduledJobs.row.disable")

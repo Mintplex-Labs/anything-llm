@@ -8,7 +8,7 @@ import {
   ChatText,
   Brain,
   Wrench,
-  FileArrowDown,
+  File,
 } from "@phosphor-icons/react";
 import ScheduledJobs from "@/models/scheduledJobs";
 import usePolling from "@/hooks/usePolling";
@@ -81,11 +81,11 @@ export default function RunDetailPage() {
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           {loading ? (
-            <p className="text-theme-text-secondary text-sm">
+            <p className="text-zinc-400 text-sm">
               {t("scheduledJobs.runDetail.loading")}
             </p>
           ) : !run ? (
-            <p className="text-theme-text-secondary text-sm">
+            <p className="text-zinc-400 text-sm">
               {t("scheduledJobs.runDetail.notFound")}
             </p>
           ) : (
@@ -149,65 +149,61 @@ function RunHeader({
   const statusLabel =
     statusLabels[run.status] || run.status?.replace("_", " ") || "";
   return (
-    <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center gap-2 text-theme-text-secondary hover:text-theme-text-primary text-sm mb-2 transition-colors w-fit"
-      >
-        <ArrowLeft className="h-4 w-4" /> {t("scheduledJobs.runDetail.back")}
-      </button>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-lg leading-6 font-bold text-theme-text-primary">
-            {t("scheduledJobs.runDetail.runHeading", {
-              name: job?.name || t("scheduledJobs.runDetail.unknownJob"),
-              id: run.id,
-            })}
-          </p>
-          <div className="flex items-center gap-4 mt-1">
-            <span
-              className={`text-sm font-medium ${STATUS_COLORS[run.status] || "text-gray-400"}`}
-            >
-              {statusLabel}
+    <div className="w-full flex items-end justify-between gap-x-4 pb-6 border-white/10 border-b-2">
+      <div className="flex flex-col gap-y-2">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 text-sm transition-colors w-fit"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("scheduledJobs.runDetail.back")}
+        </button>
+        <p className="text-lg leading-7 font-semibold text-zinc-50">
+          {t("scheduledJobs.runDetail.runHeading", {
+            name: job?.name || t("scheduledJobs.runDetail.unknownJob"),
+            id: run.id,
+          })}
+        </p>
+        <div className="flex items-center gap-2 text-xs">
+          <span className={`${STATUS_COLORS[run.status] || "text-zinc-400"}`}>
+            {statusLabel}
+          </span>
+          <span className="text-zinc-400">
+            {new Date(run.startedAt).toLocaleString()}
+          </span>
+          {result.duration && (
+            <span className="text-zinc-400">
+              {t("scheduledJobs.runDetail.duration", {
+                seconds: (result.duration / 1000).toFixed(1),
+              })}
             </span>
-            <span className="text-xs text-theme-text-secondary">
-              {new Date(run.startedAt).toLocaleString()}
-            </span>
-            {result.duration && (
-              <span className="text-xs text-theme-text-secondary">
-                {t("scheduledJobs.runDetail.duration", {
-                  seconds: (result.duration / 1000).toFixed(1),
-                })}
-              </span>
-            )}
-          </div>
+          )}
         </div>
-        {run.status === "completed" && (
-          <button
-            type="button"
-            onClick={onContinueInThread}
-            disabled={continuing}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-button hover:bg-secondary-btn rounded-lg transition-colors disabled:opacity-50"
-          >
-            <ChatText className="h-4 w-4" />
-            {continuing
-              ? t("scheduledJobs.runDetail.creating")
-              : t("scheduledJobs.runDetail.continueInThread")}
-          </button>
-        )}
       </div>
+      {run.status === "completed" && (
+        <button
+          type="button"
+          onClick={onContinueInThread}
+          disabled={continuing}
+          className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 shrink-0"
+        >
+          {continuing
+            ? t("scheduledJobs.runDetail.creating")
+            : t("scheduledJobs.runDetail.continueInThread")}
+        </button>
+      )}
     </div>
   );
 }
 
 function PromptSection({ t, prompt }) {
   return (
-    <div className="border border-white/10 rounded-lg p-4">
-      <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
+    <div className="border border-zinc-700 rounded-lg p-[18px]">
+      <p className="text-sm font-medium text-white uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.prompt")}
       </p>
-      <p className="text-sm text-theme-text-primary whitespace-pre-wrap">
+      <p className="text-sm text-zinc-400 whitespace-pre-wrap">
         {prompt || "—"}
       </p>
     </div>
@@ -216,8 +212,8 @@ function PromptSection({ t, prompt }) {
 
 function ErrorSection({ t, error }) {
   return (
-    <div className="border border-red-500/20 rounded-lg p-4 bg-red-500/5">
-      <p className="text-xs text-red-400 mb-1 uppercase font-medium">
+    <div className="border border-red-500/20 rounded-lg p-[18px] bg-red-500/5">
+      <p className="text-sm font-medium text-red-400 uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.error")}
       </p>
       <p className="text-sm text-red-300">{error}</p>
@@ -270,10 +266,10 @@ function ToolCallsSection({ t, result }) {
 function GeneratedFilesSection({ t, result }) {
   return (
     <CollapsibleSection
-      title={t("scheduledJobs.runDetail.sections.generatedFiles", {
+      title={t("scheduledJobs.runDetail.sections.files", {
         count: result.generatedFiles.length,
       })}
-      icon={FileArrowDown}
+      icon={File}
       defaultOpen={true}
     >
       <div className="space-y-2">
@@ -293,7 +289,7 @@ function FinalResponseSection({ t, result }) {
       defaultOpen={true}
     >
       <div
-        className="text-sm text-theme-text-primary markdown"
+        className="text-sm text-zinc-50 markdown"
         dangerouslySetInnerHTML={{
           __html: renderMarkdown(result.text),
         }}
@@ -303,25 +299,21 @@ function FinalResponseSection({ t, result }) {
 }
 function MetricsSection({ t, metrics }) {
   return (
-    <div className="border border-white/10 rounded-lg p-4">
-      <p className="text-xs text-theme-text-secondary mb-2 uppercase font-medium">
+    <div className="border border-zinc-700 rounded-lg p-[18px]">
+      <p className="text-sm font-semibold text-zinc-400 uppercase tracking-[1.4px] mb-1">
         {t("scheduledJobs.runDetail.sections.metrics")}
       </p>
-      <div className="flex gap-6 text-xs text-theme-text-secondary">
+      <div className="flex gap-6 text-sm text-zinc-400">
         {metrics.prompt_tokens != null && (
           <span>
             {t("scheduledJobs.runDetail.metrics.promptTokens")}{" "}
-            <span className="text-theme-text-primary">
-              {metrics.prompt_tokens}
-            </span>
+            <span className="text-zinc-50">{metrics.prompt_tokens}</span>
           </span>
         )}
         {metrics.completion_tokens != null && (
           <span>
             {t("scheduledJobs.runDetail.metrics.completionTokens")}{" "}
-            <span className="text-theme-text-primary">
-              {metrics.completion_tokens}
-            </span>
+            <span className="text-zinc-50">{metrics.completion_tokens}</span>
           </span>
         )}
       </div>

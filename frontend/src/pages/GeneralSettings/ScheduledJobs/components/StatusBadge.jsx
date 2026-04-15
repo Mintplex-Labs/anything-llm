@@ -1,15 +1,19 @@
 import { useTranslation } from "react-i18next";
 
-const STATUS_COLORS = {
-  queued: "bg-blue-500/20 text-blue-400",
-  running: "bg-yellow-500/20 text-yellow-400",
-  completed: "bg-green-500/20 text-green-400",
-  failed: "bg-red-500/20 text-red-400",
-  timed_out: "bg-orange-500/20 text-orange-400",
+// Per-status text styling per the run history figma:
+// - non-terminal (queued, running) → italic zinc-400
+// - completed → white medium
+// - failed / timed_out → red-400
+const STATUS_STYLES = {
+  queued: "italic text-zinc-400",
+  running: "italic text-zinc-400",
+  completed: "font-medium text-white",
+  failed: "text-red-400",
+  timed_out: "text-red-400",
 };
 
-// Pill badge for a scheduled-job-run status. Used in the jobs list and the
-// run history table to keep the visual treatment consistent.
+// Status text shown in the run history table. Plain text — no pill — to
+// match the run history figma.
 export default function StatusBadge({ status }) {
   const { t } = useTranslation();
   const statusLabels = {
@@ -21,11 +25,7 @@ export default function StatusBadge({ status }) {
   };
   const label = status ? statusLabels[status] || status.replace("_", " ") : "—";
   return (
-    <span
-      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-        STATUS_COLORS[status] || "bg-gray-500/20 text-gray-400"
-      }`}
-    >
+    <span className={`text-sm ${STATUS_STYLES[status] || "text-zinc-400"}`}>
       {label}
     </span>
   );

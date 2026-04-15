@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Circle, Eye } from "@phosphor-icons/react";
+import { Circle } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import StatusBadge from "./StatusBadge";
 
@@ -15,50 +14,43 @@ function formatDuration(run) {
   return `${(ms / 60000).toFixed(1)}m`;
 }
 
-// One row of the run history table for a job. Shows status, timestamps,
-// duration, error preview, and a link to the run detail page.
+// One row of the run history table. The whole row is clickable and
+// navigates to the run detail page.
 export default function RunRow({ run, jobId }) {
+  const navigate = useNavigate();
   const unreadAndTerminal =
     !run.readAt && run.status !== "running" && run.status !== "queued";
 
-  const { t } = useTranslation();
-  const navigate = useNavigate();
   return (
-    <tr className="border-b border-white/5 hover:bg-theme-bg-primary/30">
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-2 relative">
-          {unreadAndTerminal && (
-            <Circle
-              weight="fill"
-              className="h-2 w-2 text-blue-400 absolute -left-4"
-            />
-          )}
-          <StatusBadge status={run.status} />
-        </div>
-      </td>
-      <td className="px-6 py-4 text-theme-text-secondary text-xs">
+    <button
+      type="button"
+      onClick={() =>
+        navigate(paths.settings.scheduledJobRunDetail(jobId, run.id))
+      }
+      className="flex items-center px-4 h-14 hover:bg-white/5 transition-colors text-left w-full"
+    >
+      <div className="w-[200px] flex items-center gap-2 relative">
+        {unreadAndTerminal && (
+          <Circle
+            weight="fill"
+            className="h-2 w-2 text-blue-400 absolute -left-4"
+          />
+        )}
+        <StatusBadge status={run.status} />
+      </div>
+      <span className="w-[260px] text-sm font-medium text-white truncate">
         {new Date(run.startedAt).toLocaleString()}
-      </td>
-      <td className="px-6 py-4 text-theme-text-secondary text-xs">
+      </span>
+      <span className="w-[160px] text-sm font-medium text-white truncate">
         {formatDuration(run)}
-      </td>
-      <td className="px-6 py-4 text-red-400 text-xs max-w-[200px] truncate">
+      </span>
+      <span
+        className={`flex-1 text-sm truncate pr-4 ${
+          run.error ? "text-red-400 italic" : "font-medium text-white"
+        }`}
+      >
         {run.error || "—"}
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            onClick={() =>
-              navigate(paths.settings.scheduledJobRunDetail(jobId, run.id))
-            }
-            className="p-1.5 rounded-lg hover:bg-theme-bg-primary text-theme-text-secondary hover:text-theme-text-primary transition-colors"
-            title={t("scheduledJobs.runRow.viewDetails")}
-          >
-            <Eye className="h-4 w-4" />
-          </button>
-        </div>
-      </td>
-    </tr>
+      </span>
+    </button>
   );
 }
