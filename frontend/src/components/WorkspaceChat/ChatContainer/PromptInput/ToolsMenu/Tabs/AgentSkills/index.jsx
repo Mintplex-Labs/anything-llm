@@ -48,7 +48,8 @@ export default function AgentSkillsTab({
 
   useEffect(() => {
     fetchSkillSettings();
-    if (!_mcpCache) fetchMcpServers();
+    if (_mcpCache) setMcpServers(_mcpCache);
+    fetchMcpServers();
   }, []);
 
   async function fetchSkillSettings() {
@@ -194,34 +195,39 @@ export default function AgentSkillsTab({
         id: "agent-skills",
         name: t("chat_window.agent_skills"),
         items: skillItems,
+        enabledCount: skillItems.filter((i) => i.enabled).length,
       });
     }
 
     // Custom Skills (imported)
     if (importedSkills.length > 0) {
+      const items = importedSkills.map((skill) => ({
+        id: skill.hubId,
+        name: skill.name,
+        enabled: skill.active,
+        onToggle: () => toggleImportedSkill(skill),
+      }));
       sectionList.push({
         id: "custom-skills",
         name: t("chat_window.custom_skills"),
-        items: importedSkills.map((skill) => ({
-          id: skill.hubId,
-          name: skill.name,
-          enabled: skill.active,
-          onToggle: () => toggleImportedSkill(skill),
-        })),
+        items,
+        enabledCount: items.filter((i) => i.enabled).length,
       });
     }
 
     // Agent Flows
     if (flows.length > 0) {
+      const items = flows.map((flow) => ({
+        id: flow.uuid,
+        name: flow.name,
+        enabled: flow.active,
+        onToggle: () => toggleFlow(flow),
+      }));
       sectionList.push({
         id: "agent-flows",
         name: t("chat_window.agent_flows"),
-        items: flows.map((flow) => ({
-          id: flow.uuid,
-          name: flow.name,
-          enabled: flow.active,
-          onToggle: () => toggleFlow(flow),
-        })),
+        items,
+        enabledCount: items.filter((i) => i.enabled).length,
       });
     }
 
@@ -229,21 +235,23 @@ export default function AgentSkillsTab({
     for (const server of mcpServers) {
       if (!server.running || server.tools.length === 0) continue;
       const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
+      const items = server.tools.map((tool) => ({
+        id: `mcp::${server.name}::${tool.name}`,
+        name: tool.name,
+        enabled: !suppressedTools.includes(tool.name),
+        onToggle: () =>
+          toggleMcpTool(
+            server.name,
+            tool.name,
+            !suppressedTools.includes(tool.name)
+          ),
+      }));
       sectionList.push({
         id: `mcp-${server.name}`,
         name: titleCase(server.name.replace(/[_-]/g, " ")),
         isMcp: true,
-        items: server.tools.map((tool) => ({
-          id: `mcp::${server.name}::${tool.name}`,
-          name: tool.name,
-          enabled: !suppressedTools.includes(tool.name),
-          onToggle: () =>
-            toggleMcpTool(
-              server.name,
-              tool.name,
-              !suppressedTools.includes(tool.name)
-            ),
-        })),
+        items,
+        enabledCount: items.filter((i) => i.enabled).length,
       });
     }
 
@@ -254,6 +262,7 @@ export default function AgentSkillsTab({
     importedSkills,
     flows,
     mcpServers,
+    fileSystemAgentAvailable,
   ]);
 
   // Filter sections by search query
@@ -261,12 +270,16 @@ export default function AgentSkillsTab({
     if (!searchQuery.trim()) return sections;
     const q = searchQuery.toLowerCase();
     return sections
-      .map((section) => ({
-        ...section,
-        items: section.items.filter((item) =>
+      .map((section) => {
+        const items = section.items.filter((item) =>
           item.name.toLowerCase().includes(q)
-        ),
-      }))
+        );
+        return {
+          ...section,
+          items,
+          enabledCount: items.filter((i) => i.enabled).length,
+        };
+      })
       .filter((section) => section.items.length > 0);
   }, [sections, searchQuery]);
 
@@ -297,7 +310,8 @@ export default function AgentSkillsTab({
     items: flatItems,
     highlightedIndex,
     onSelect: (item) => {
-      if (item.type === "header" || !agentSessionActive) item.onToggle();
+      if (item.type === "header") return item.onToggle();
+      if (!agentSessionActive) item.onToggle();
     },
     registerItemCount,
   });
@@ -324,7 +338,7 @@ export default function AgentSkillsTab({
           name={section.name}
           expanded={isSectionExpanded(section.id)}
           onToggle={() => toggleSection(section.id)}
-          enabledCount={section.items.filter((i) => i.enabled).length}
+          enabledCount={section.enabledCount}
           totalCount={section.items.length}
           isMcp={section.isMcp}
           highlighted={highlightedIndex === flatIndexMap[section.id]}
@@ -347,7 +361,7 @@ export default function AgentSkillsTab({
         </p>
       )}
       <Link to={paths.settings.agentSkills()}>
-        <button className="flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">
+        <button className="border-none flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">
           <Wrench size={12} className="text-theme-text-primary" />
           <span className="text-xs text-theme-text-primary">
             {t("chat_window.manage_agent_skills")}

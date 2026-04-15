@@ -29,12 +29,9 @@ export default function SkillRow({
       data-tooltip-id={disabled ? "agent-skill-disabled-tooltip" : undefined}
     >
       <span className="text-xs text-white light:text-slate-900">{name}</span>
-      <SimpleToggleSwitch
-        size="sm"
-        enabled={enabled}
-        onChange={onToggle}
-        disabled={disabled}
-      />
+      <div className="pointer-events-none" aria-hidden="true">
+        <SimpleToggleSwitch size="sm" enabled={enabled} />
+      </div>
     </button>
   );
 }
