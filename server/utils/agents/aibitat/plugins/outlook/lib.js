@@ -364,9 +364,12 @@ function isParseableMimeType(contentType) {
  */
 async function handleAttachments(context, messages) {
   const allAttachments = [];
+  const uniqueAttachments = new Set();
   messages.forEach((msg, msgIndex) => {
     if (msg.attachments?.length > 0) {
       msg.attachments.forEach((att) => {
+        if (uniqueAttachments.has(att.name)) return;
+        uniqueAttachments.add(att.name);
         allAttachments.push({
           ...att,
           messageIndex: msgIndex + 1,
