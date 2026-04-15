@@ -12,6 +12,9 @@ import {
   LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
+import GmailLogo from "@/pages/Admin/Agents/GMailSkillPanel/gmail.png";
+import GoogleCalendarLogo from "@/pages/Admin/Agents/GoogleCalendarSkillPanel/google-calendar.png";
+import OutlookLogo from "@/pages/Admin/Agents/OutlookSkillPanel/outlook.png";
 import { toPercentString } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import { useSourcesSidebar } from "../../SourcesSidebar";
@@ -28,6 +31,14 @@ const CIRCLE_ICONS = {
   paperlessNgx: FileText,
 };
 
+const CIRCLE_IMAGES = {
+  gmailThread: GmailLogo,
+  gmailAttachment: GmailLogo,
+  googleCalendar: GoogleCalendarLogo,
+  outlookThread: OutlookLogo,
+  outlookAttachment: OutlookLogo,
+};
+
 /**
  * Renders a circle with a source type icon inside, or a favicon if URL is provided.
  * @param {"file"|"link"|"youtube"|"github"|"gitlab"|"confluence"|"drupalwiki"|"obsidian"|"paperlessNgx"} props.type
@@ -42,6 +53,7 @@ export function SourceTypeCircle({
   url = null,
 }) {
   const Icon = CIRCLE_ICONS[type] || CIRCLE_ICONS.file;
+  const customImage = CIRCLE_IMAGES[type];
   const [imgError, setImgError] = useState(false);
 
   let faviconUrl = null;
@@ -70,6 +82,13 @@ export function SourceTypeCircle({
           style={{ width: size, height: size }}
           className="object-cover"
           onError={() => setImgError(true)}
+        />
+      ) : customImage ? (
+        <img
+          src={customImage}
+          alt={type}
+          style={{ width: iconSize, height: iconSize }}
+          className="object-contain"
         />
       ) : (
         <Icon size={iconSize} weight="bold" className="text-black" />
@@ -262,6 +281,11 @@ const supportedSources = [
   "youtube://",
   "obsidian://",
   "paperless-ngx://",
+  "gmail-thread://",
+  "gmail-attachment://",
+  "google-calendar://",
+  "outlook-thread://",
+  "outlook-attachment://",
 ];
 
 /**
@@ -340,6 +364,30 @@ export function parseChunkSource({ title = "", chunks = [] }) {
       case "paperless-ngx://":
         text = title;
         icon = "paperlessNgx";
+        break;
+
+      case "gmail-thread://":
+        text = title;
+        icon = "gmailThread";
+        break;
+      case "gmail-attachment://":
+        text = title;
+        icon = "gmailAttachment";
+        break;
+
+      case "google-calendar://":
+        text = title;
+        icon = "googleCalendar";
+        break;
+
+      case "outlook-thread://":
+        text = title;
+        icon = "outlookThread";
+        break;
+
+      case "outlook-attachment://":
+        text = title;
+        icon = "outlookAttachment";
         break;
 
       default:
