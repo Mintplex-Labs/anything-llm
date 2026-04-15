@@ -65,34 +65,42 @@ module.exports.GCalGetEventsForDay = {
                 `${this.caller}: Found ${eventCount} event(s) for ${date}`
               );
 
-              if (eventCount === 0) {
-                return `No events scheduled for ${date}.`;
-              }
+              if (eventCount === 0) return `No events scheduled for ${date}.`;
 
-              const summary = events
-                .map((event, i) => {
-                  let timeStr;
-                  if (event.isAllDayEvent) {
-                    timeStr = "All day";
-                  } else {
-                    const start = new Date(event.startTime).toLocaleTimeString(
-                      [],
-                      { hour: "2-digit", minute: "2-digit" }
-                    );
-                    const end = new Date(event.endTime).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    });
-                    timeStr = `${start} - ${end}`;
-                  }
-                  return (
-                    `${i + 1}. "${event.title}" (${timeStr})\n` +
-                    `   ID: ${event.eventId}` +
-                    (event.location ? `\n   Location: ${event.location}` : "")
+              const summaries = [];
+              const citations = [];
+              events.forEach((event, i) => {
+                let timeStr;
+                if (event.isAllDayEvent) {
+                  timeStr = "All day";
+                } else {
+                  const start = new Date(event.startTime).toLocaleTimeString(
+                    [],
+                    { hour: "2-digit", minute: "2-digit" }
                   );
-                })
-                .join("\n\n");
+                  const end = new Date(event.endTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  timeStr = `${start} - ${end}`;
+                }
+                const eventDetails =
+                  `${i + 1}. "${event.title}" (${timeStr})\n` +
+                  `   ID: ${event.eventId}` +
+                  (event.location ? `\n   Location: ${event.location}` : "");
 
+                summaries.push(eventDetails);
+                citations.push({
+                  id: `google-calendar-${event.eventId}`,
+                  title: event.title,
+                  text: eventDetails,
+                  chunkSource: `google-calendar://${event.eventId}`,
+                  score: null,
+                });
+              });
+
+              const summary = summaries.join("\n\n");
+              citations.forEach((c) => this.super.addCitation?.(c));
               return `Events for ${date} (${eventCount} total):\n\n${summary}`;
             } catch (e) {
               this.super.handlerProps.log(

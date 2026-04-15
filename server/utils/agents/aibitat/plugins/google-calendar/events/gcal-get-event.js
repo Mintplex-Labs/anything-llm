@@ -80,7 +80,7 @@ module.exports.GCalGetEvent = {
                       .join("\n")
                   : "  (none)";
 
-              return (
+              const eventDetails =
                 `Event Details:\n` +
                 `Title: ${event.title}\n` +
                 `Event ID: ${event.eventId}\n` +
@@ -93,8 +93,16 @@ module.exports.GCalGetEvent = {
                 `Owned by me: ${event.isOwnedByMe ? "Yes" : "No"}\n` +
                 `Guests:\n${guestList}\n` +
                 `Created: ${new Date(event.dateCreated).toLocaleString()}\n` +
-                `Last Updated: ${new Date(event.lastUpdated).toLocaleString()}`
-              );
+                `Last Updated: ${new Date(event.lastUpdated).toLocaleString()}`;
+
+              this.super.addCitation?.({
+                id: `google-calendar-${event.eventId}`,
+                title: event.title,
+                text: eventDetails,
+                chunkSource: `google-calendar://${event.eventId}`,
+                score: null,
+              });
+              return eventDetails;
             } catch (e) {
               this.super.handlerProps.log(`gcal-get-event error: ${e.message}`);
               this.super.introspect(`Error: ${e.message}`);

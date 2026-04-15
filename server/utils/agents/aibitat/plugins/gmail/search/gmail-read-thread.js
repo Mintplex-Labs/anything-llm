@@ -87,6 +87,14 @@ module.exports.GmailReadThread = {
                 `${this.caller}: Successfully read thread with ${thread.messageCount} messages`
               );
 
+              this.super.addCitation?.({
+                id: `gmail-thread-${thread.id}`,
+                title: thread.subject,
+                text: messagesFormatted,
+                chunkSource: `gmail-thread://${thread.permalink}`,
+                score: null,
+              });
+
               return (
                 `Thread: "${thread.subject}"\n` +
                 `Thread ID: ${thread.id}\n` +
