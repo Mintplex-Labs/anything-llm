@@ -1,19 +1,26 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { titleCase } from "text-case";
 import paths from "@/utils/paths";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
+import MCPServers from "@/models/mcpServers";
 import {
   getDefaultSkills,
   getConfigurableSkills,
 } from "@/pages/Admin/Agents/skills";
 import useToolsMenuItems from "../../useToolsMenuItems";
 import SkillRow from "./SkillRow";
-import { Wrench } from "@phosphor-icons/react";
+import SkillSection from "./SkillSection";
+import { Wrench, MagnifyingGlass } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+
+const SEARCH_THRESHOLD = 10;
+
+let _mcpCache = null;
 
 export default function AgentSkillsTab({
   highlightedIndex = -1,
@@ -33,11 +40,15 @@ export default function AgentSkillsTab({
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
+  const [mcpServers, setMcpServers] = useState(_mcpCache ?? []);
   const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
   const showAgentCmdActivationAlert = showAgentCommand && !agentSessionActive;
 
   useEffect(() => {
     fetchSkillSettings();
+    if (!_mcpCache) fetchMcpServers();
   }, []);
 
   async function fetchSkillSettings() {
@@ -66,6 +77,16 @@ export default function AgentSkillsTab({
     }
   }
 
+  async function fetchMcpServers() {
+    try {
+      const { servers = [] } = await MCPServers.listServers();
+      _mcpCache = servers;
+      setMcpServers(servers);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   function toggleItem(arr, item) {
     return arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
   }
@@ -74,6 +95,10 @@ export default function AgentSkillsTab({
     return key in defaultSkills
       ? !disabledDefaults.includes(key)
       : enabledConfigurable.includes(key);
+  }
+
+  function isSectionExpanded(sectionId) {
+    return !!(searchQuery.trim() || expandedSections[sectionId]);
   }
 
   async function toggleSkill(key) {
@@ -113,43 +138,167 @@ export default function AgentSkillsTab({
     await AgentFlows.toggleFlow(flow.uuid, newActive);
   }
 
-  // Build list of all skill items for rendering/keyboard navigation
-  const items = useMemo(() => {
-    const list = [];
+  async function toggleMcpTool(serverName, toolName, currentlyEnabled) {
+    const newEnabled = !currentlyEnabled;
+    setMcpServers((prev) => {
+      const updated = prev.map((server) => {
+        if (server.name !== serverName) return server;
+        const currentSuppressed =
+          server.config?.anythingllm?.suppressedTools || [];
+        const newSuppressed = newEnabled
+          ? currentSuppressed.filter((t) => t !== toolName)
+          : [...currentSuppressed, toolName];
+        return {
+          ...server,
+          config: {
+            ...server.config,
+            anythingllm: {
+              ...server.config?.anythingllm,
+              suppressedTools: newSuppressed,
+            },
+          },
+        };
+      });
+      _mcpCache = updated;
+      return updated;
+    });
+    await MCPServers.toggleTool(serverName, toolName, newEnabled);
+  }
+
+  function toggleSection(sectionId) {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  }
+
+  // Build sections of grouped items
+  const sections = useMemo(() => {
+    const sectionList = [];
+
+    // Agent Skills (default + configurable)
+    const skillItems = [];
     for (const [key, { title }] of Object.entries({
       ...defaultSkills,
       ...configurableSkills,
     })) {
-      list.push({
+      skillItems.push({
         id: key,
         name: title,
         enabled: isSkillEnabled(key),
         onToggle: () => toggleSkill(key),
       });
     }
-    for (const skill of importedSkills) {
-      list.push({
-        id: skill.hubId,
-        name: skill.name,
-        enabled: skill.active,
-        onToggle: () => toggleImportedSkill(skill),
+    if (skillItems.length > 0) {
+      sectionList.push({
+        id: "agent-skills",
+        name: t("chat_window.agent_skills"),
+        items: skillItems,
       });
     }
-    for (const flow of flows) {
-      list.push({
-        id: flow.uuid,
-        name: flow.name,
-        enabled: flow.active,
-        onToggle: () => toggleFlow(flow),
+
+    // Custom Skills (imported)
+    if (importedSkills.length > 0) {
+      sectionList.push({
+        id: "custom-skills",
+        name: t("chat_window.custom_skills"),
+        items: importedSkills.map((skill) => ({
+          id: skill.hubId,
+          name: skill.name,
+          enabled: skill.active,
+          onToggle: () => toggleImportedSkill(skill),
+        })),
       });
     }
-    return list;
-  }, [disabledDefaults, enabledConfigurable, importedSkills, flows]);
+
+    // Agent Flows
+    if (flows.length > 0) {
+      sectionList.push({
+        id: "agent-flows",
+        name: t("chat_window.agent_flows"),
+        items: flows.map((flow) => ({
+          id: flow.uuid,
+          name: flow.name,
+          enabled: flow.active,
+          onToggle: () => toggleFlow(flow),
+        })),
+      });
+    }
+
+    // MCP Servers (one section per running server with tools)
+    for (const server of mcpServers) {
+      if (!server.running || server.tools.length === 0) continue;
+      const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
+      sectionList.push({
+        id: `mcp-${server.name}`,
+        name: titleCase(server.name.replace(/[_-]/g, " ")),
+        isMcp: true,
+        items: server.tools.map((tool) => ({
+          id: `mcp::${server.name}::${tool.name}`,
+          name: tool.name,
+          enabled: !suppressedTools.includes(tool.name),
+          onToggle: () =>
+            toggleMcpTool(
+              server.name,
+              tool.name,
+              !suppressedTools.includes(tool.name)
+            ),
+        })),
+      });
+    }
+
+    return sectionList;
+  }, [
+    disabledDefaults,
+    enabledConfigurable,
+    importedSkills,
+    flows,
+    mcpServers,
+  ]);
+
+  // Filter sections by search query
+  const filteredSections = useMemo(() => {
+    if (!searchQuery.trim()) return sections;
+    const q = searchQuery.toLowerCase();
+    return sections
+      .map((section) => ({
+        ...section,
+        items: section.items.filter((item) =>
+          item.name.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((section) => section.items.length > 0);
+  }, [sections, searchQuery]);
+
+  // Flat list of navigable items (headers + visible children) for keyboard nav
+  const { flatItems, flatIndexMap } = useMemo(() => {
+    const items = [];
+    const indexMap = {};
+    for (const section of filteredSections) {
+      indexMap[section.id] = items.length;
+      items.push({
+        type: "header",
+        id: section.id,
+        onToggle: () => toggleSection(section.id),
+      });
+      if (isSectionExpanded(section.id)) {
+        for (const item of section.items) {
+          indexMap[item.id] = items.length;
+          items.push(item);
+        }
+      }
+    }
+    return { flatItems: items, flatIndexMap: indexMap };
+  }, [filteredSections, expandedSections, searchQuery]);
+
+  const totalItemCount = sections.reduce((sum, s) => sum + s.items.length, 0);
 
   useToolsMenuItems({
-    items,
+    items: flatItems,
     highlightedIndex,
-    onSelect: agentSessionActive ? () => {} : (item) => item.onToggle(),
+    onSelect: (item) => {
+      if (item.type === "header" || !agentSessionActive) item.onToggle();
+    },
     registerItemCount,
   });
 
@@ -162,16 +311,41 @@ export default function AgentSkillsTab({
           {t("chat_window.use_agent_session_to_use_tools")}
         </p>
       )}
-      {items.map((item, index) => (
-        <SkillRow
-          key={item.id}
-          name={item.name}
-          enabled={item.enabled}
-          onToggle={item.onToggle}
-          highlighted={highlightedIndex === index}
-          disabled={agentSessionActive}
+      {totalItemCount >= SEARCH_THRESHOLD && (
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder={t("common.search")}
         />
+      )}
+      {filteredSections.map((section) => (
+        <SkillSection
+          key={section.id}
+          name={section.name}
+          expanded={isSectionExpanded(section.id)}
+          onToggle={() => toggleSection(section.id)}
+          enabledCount={section.items.filter((i) => i.enabled).length}
+          totalCount={section.items.length}
+          isMcp={section.isMcp}
+          highlighted={highlightedIndex === flatIndexMap[section.id]}
+        >
+          {section.items.map((item) => (
+            <SkillRow
+              key={item.id}
+              name={item.name}
+              enabled={item.enabled}
+              onToggle={item.onToggle}
+              highlighted={highlightedIndex === flatIndexMap[item.id]}
+              disabled={agentSessionActive}
+            />
+          ))}
+        </SkillSection>
       ))}
+      {filteredSections.length === 0 && searchQuery.trim() && (
+        <p className="text-xs text-zinc-500 light:text-slate-400 text-center py-2">
+          {t("chat_window.no_tools_found")}
+        </p>
+      )}
       <Link to={paths.settings.agentSkills()}>
         <button className="flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">
           <Wrench size={12} className="text-theme-text-primary" />
@@ -181,5 +355,32 @@ export default function AgentSkillsTab({
         </button>
       </Link>
     </>
+  );
+}
+
+function SearchInput({ value, onChange, placeholder }) {
+  return (
+    <div className="relative shrink-0">
+      <MagnifyingGlass
+        size={12}
+        className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400 light:text-slate-400"
+        weight="bold"
+      />
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onMouseDown={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            onChange("");
+            e.target.blur();
+          }
+          if (e.key === "Enter") e.preventDefault();
+        }}
+        className="w-full pl-7 pr-2 py-1 text-xs bg-zinc-700/50 light:bg-slate-100 border border-zinc-600 light:border-slate-300 rounded text-white light:text-slate-900 placeholder:text-zinc-500 light:placeholder:text-slate-400 outline-none focus:border-zinc-500 light:focus:border-slate-400"
+      />
+    </div>
   );
 }

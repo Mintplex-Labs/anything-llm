@@ -1254,6 +1254,9 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    custom_skills: "Custom Skills",
+    agent_flows: "Agent Flows",
+    no_tools_found: "No matching tools found",
     start_agent_session: "Start Agent Session",
     agent_skills_disabled_in_session:
       "Can't modify skills during an active agent session. Use /exit to end the session first.",
