@@ -81,7 +81,7 @@ export default function RunHistoryPage() {
             </div>
           ) : (
             <div className="pt-8">
-              <div className="flex items-center px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-500 light:text-slate-600">
+              <div className="flex items-center px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-400 light:text-slate-600">
                 <span className="w-[200px]">
                   {t("scheduledJobs.runHistory.table.status")}
                 </span>

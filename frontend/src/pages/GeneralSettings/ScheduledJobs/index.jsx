@@ -101,7 +101,7 @@ export default function ScheduledJobsPage() {
             </div>
           ) : (
             <div className="pt-8">
-              <div className="flex items-center justify-between px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-500 light:text-slate-600">
+              <div className="flex items-center justify-between px-4 pb-[18px] text-xs font-semibold uppercase tracking-[1.4px] text-zinc-400 light:text-slate-600">
                 <span className="w-[150px]">
                   {t("scheduledJobs.table.name")}
                 </span>
