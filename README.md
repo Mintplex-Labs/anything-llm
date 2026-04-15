@@ -111,6 +111,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
 - [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
+- [Minimax](https://platform.minimax.io)
 
 **Embedder models:**
 
