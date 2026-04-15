@@ -1498,7 +1498,6 @@ const TRANSLATIONS = {
       back: "Back to jobs",
       title: "Run History: {{name}}",
       schedule: "Schedule:",
-      empty: "No runs yet for this job.",
       emptyTitle: "No runs yet for this job",
       emptySubtitle: "Run the job now and view it's results.",
       runNow: "Run Now",
