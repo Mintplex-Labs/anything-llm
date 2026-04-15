@@ -1217,6 +1217,9 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La richiesta di accesso all'attrezzatura è stata rifiutata.",
     },
+    custom_skills: "Competenze personalizzate",
+    agent_flows: "Flussi di agenti",
+    no_tools_found: "Nessuno strumento corrispondente trovato.",
   },
   profile_settings: {
     edit_account: "Modifica account",

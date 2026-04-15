@@ -1399,6 +1399,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La crida a l'eina ha estat aprovada",
       tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
     },
+    custom_skills: "Habilitats personalitzades",
+    agent_flows: "Fluxos d'agents",
+    no_tools_found: "No s'han trobat eines corresponents.",
   },
   profile_settings: {
     edit_account: "Edita el compte",

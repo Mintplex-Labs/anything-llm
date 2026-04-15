@@ -1247,6 +1247,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Vahendite tellimuse kinnitati.",
       tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
     },
+    custom_skills: "Kohandatud oskused",
+    agent_flows: "Agentide liiklus",
+    no_tools_found: "Välja ei leitud sobivaid tööriistu",
   },
   profile_settings: {
     edit_account: "Muuda kontot",

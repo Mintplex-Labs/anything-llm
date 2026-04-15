@@ -1320,6 +1320,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "La solicitud de herramientas ha sido aprobada.",
       tool_call_was_rejected: "La solicitud de herramienta fue rechazada.",
     },
+    custom_skills: "Habilidades personalizadas",
+    agent_flows: "Flujos de agentes",
+    no_tools_found: "No se encontraron herramientas coincidentes.",
   },
   profile_settings: {
     edit_account: "Editar cuenta",

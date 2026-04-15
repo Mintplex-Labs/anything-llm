@@ -1196,6 +1196,9 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "De aanvraag om het gereedschap te gebruiken is afgewezen.",
     },
+    custom_skills: "Aangepaste vaardigheden",
+    agent_flows: "Stroom van agenten",
+    no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
   },
   profile_settings: {
     edit_account: "Account bewerken",

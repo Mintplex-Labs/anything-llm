@@ -1212,6 +1212,9 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "La demande d'utilisation de l'outil a été rejetée.",
     },
+    custom_skills: "Compétences spécifiques",
+    agent_flows: "Flux des agents",
+    no_tools_found: "Aucun outil correspondant n'a été trouvé.",
   },
   profile_settings: {
     edit_account: "Modifier le compte",

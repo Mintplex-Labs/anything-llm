@@ -1200,6 +1200,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "Araç talebi onaylandı.",
       tool_call_was_rejected: "Ara çağrısı reddedildi.",
     },
+    custom_skills: "Özel Beceri",
+    agent_flows: "Ajans Akışları",
+    no_tools_found: "Uyumlu herhangi bir araç bulunamadı",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

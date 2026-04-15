@@ -1108,6 +1108,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具請求已獲得批准。",
       tool_call_was_rejected: "請求已遭拒絕",
     },
+    custom_skills: "客製化技能",
+    agent_flows: "代理人流",
+    no_tools_found: "未找到匹配的工具",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

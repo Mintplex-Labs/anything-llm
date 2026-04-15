@@ -1195,6 +1195,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "工具使用申请已获得批准。",
       tool_call_was_rejected: "请求获取工具已被拒绝。",
     },
+    custom_skills: "定制技能",
+    agent_flows: "代理人流动",
+    no_tools_found: "未找到匹配的工具",
   },
   profile_settings: {
     edit_account: "编辑帐户",

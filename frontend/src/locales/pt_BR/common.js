@@ -1280,6 +1280,9 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "A solicitação de acesso à ferramenta foi rejeitada.",
     },
+    custom_skills: "Habilidades personalizadas",
+    agent_flows: "Fluxo de Agentes",
+    no_tools_found: "Nenhuma ferramenta correspondente encontrada.",
   },
   profile_settings: {
     edit_account: "Editar conta",

@@ -577,6 +577,9 @@ const TRANSLATIONS = {
       tool_call_was_rejected:
         "Cererea de utilizare a instrumentului a fost respinsă.",
     },
+    custom_skills: "Abilități personalizate",
+    agent_flows: "Fluxuri de agenți",
+    no_tools_found: "Nu au fost găsite instrumente corespunzătoare.",
   },
   profile_settings: {
     edit_account: "Editează contul",

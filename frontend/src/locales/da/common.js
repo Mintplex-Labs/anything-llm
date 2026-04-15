@@ -1188,6 +1188,9 @@ const TRANSLATIONS = {
         "Anmodningen om at bruge værktøjet blev godkendt.",
       tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
     },
+    custom_skills: "Skræddersyede færdigheder",
+    agent_flows: "Agentstrømme",
+    no_tools_found: "Ingen matchende værktøjer fundet",
   },
   profile_settings: {
     edit_account: "Rediger konto",

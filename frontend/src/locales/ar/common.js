@@ -1174,6 +1174,9 @@ const TRANSLATIONS = {
       tool_call_was_approved: "تمت الموافقة على طلب الحصول على الأدوات.",
       tool_call_was_rejected: "تم رفض طلب الاتصال بالأداة.",
     },
+    custom_skills: "المهارات المخصصة",
+    agent_flows: "تدفقات الوكلاء",
+    no_tools_found: "لم يتم العثور على أدوات مطابقة.",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",
