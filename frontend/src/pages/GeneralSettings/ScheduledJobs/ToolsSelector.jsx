@@ -193,7 +193,7 @@ export default function ToolsSelector({
                   <button
                     type="button"
                     onClick={() => toggleGroup(group)}
-                    className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 light:text-slate-700 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors ${
+                    className={`border-none flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-zinc-50 light:text-slate-700 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors ${
                       !group.standalone
                         ? "bg-zinc-700 light:bg-slate-200 font-medium"
                         : ""
@@ -211,7 +211,7 @@ export default function ToolsSelector({
                         key={sub.id}
                         type="button"
                         onClick={() => toggleSubTool(sub.id)}
-                        className="flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 light:text-slate-600 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors"
+                        className="border-none flex items-center gap-2 w-full pl-5 pr-2 py-1.5 rounded-md text-sm text-zinc-300 light:text-slate-600 hover:bg-zinc-700/60 light:hover:bg-slate-100 transition-colors"
                       >
                         <span className="flex-1 text-left truncate">
                           {sub.name}
@@ -244,7 +244,7 @@ export default function ToolsSelector({
                 type="button"
                 onClick={() => removeTool(id)}
                 aria-label={`Remove ${labelFor(id)}`}
-                className="text-zinc-400 light:text-slate-500 hover:text-zinc-50 light:hover:text-slate-900 transition-colors"
+                className="border-none text-zinc-400 light:text-slate-500 hover:text-zinc-50 light:hover:text-slate-900 transition-colors"
               >
                 <X size={12} weight="bold" />
               </button>

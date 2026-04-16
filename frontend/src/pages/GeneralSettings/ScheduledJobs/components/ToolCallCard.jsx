@@ -91,7 +91,7 @@ export default function ToolCallCard({ toolCall }) {
           <button
             type="button"
             onClick={() => setShowResult(!showResult)}
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+            className="border-none text-xs text-blue-400 hover:text-blue-300 transition-colors"
           >
             {showResult
               ? t("scheduledJobs.toolCall.hideResult")

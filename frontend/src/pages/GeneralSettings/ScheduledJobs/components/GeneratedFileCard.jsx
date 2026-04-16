@@ -126,7 +126,7 @@ export default function GeneratedFileCard({ file }) {
         disabled={downloading}
         title={t("scheduledJobs.file.download")}
         aria-label={t("scheduledJobs.file.download")}
-        className="text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 transition-colors shrink-0 ml-4 disabled:opacity-50"
+        className="border-none text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 transition-colors shrink-0 ml-4 disabled:opacity-50"
       >
         {downloading ? (
           <CircleNotch size={16} weight="bold" className="animate-spin" />

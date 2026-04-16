@@ -159,7 +159,7 @@ export default function CronBuilder({ value, onChange }) {
                       : [...state.weekdays, day.value];
                     update({ weekdays: next.length ? next : [day.value] });
                   }}
-                  className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                  className={`border-none px-3 py-1 text-xs rounded-full border transition-colors ${
                     selected
                       ? "bg-primary-button text-white border-primary-button"
                       : "bg-transparent text-theme-text-secondary border-white/10 hover:border-white/30"

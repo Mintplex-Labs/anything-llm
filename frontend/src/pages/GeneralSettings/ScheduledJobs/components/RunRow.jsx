@@ -27,7 +27,7 @@ export default function RunRow({ run, jobId }) {
       onClick={() =>
         navigate(paths.settings.scheduledJobRunDetail(jobId, run.id))
       }
-      className="flex items-center px-4 h-14 hover:bg-white/5 light:hover:bg-slate-200 transition-colors text-left w-full"
+      className="border-none flex items-center px-4 h-14 hover:bg-white/5 light:hover:bg-slate-200 transition-colors text-left w-full"
     >
       <div className="w-[200px] flex items-center gap-2 relative">
         {unreadAndTerminal && (

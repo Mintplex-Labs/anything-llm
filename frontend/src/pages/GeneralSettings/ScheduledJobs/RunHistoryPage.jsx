@@ -57,7 +57,7 @@ export default function RunHistoryPage() {
             <button
               type="button"
               onClick={() => navigate(paths.settings.scheduledJobs())}
-              className="flex items-center gap-2 text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 text-sm transition-colors w-fit"
+              className="border-none flex items-center gap-2 text-zinc-400 light:text-slate-600 hover:text-zinc-50 light:hover:text-slate-950 text-sm transition-colors w-fit"
             >
               <ArrowLeft className="h-4 w-4" />
               {t("scheduledJobs.runHistory.back")}
@@ -111,7 +111,7 @@ export default function RunHistoryPage() {
                     type="button"
                     onClick={handleRunNow}
                     disabled={triggering}
-                    className="h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50"
+                    className="border-none h-9 px-5 rounded-lg bg-zinc-50 text-zinc-950 light:bg-slate-900 light:text-white text-sm font-medium hover:bg-zinc-200 light:hover:bg-slate-800 transition-colors disabled:opacity-50"
                   >
                     {t("scheduledJobs.runHistory.runNow")}
                   </button>

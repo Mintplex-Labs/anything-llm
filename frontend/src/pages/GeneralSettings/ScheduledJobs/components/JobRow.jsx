@@ -59,7 +59,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         <button
           type="button"
           onClick={stop(() => onDelete(job.id))}
-          className="text-zinc-400 light:text-slate-950 hover:text-red-400 light:hover:text-red-600 transition-colors"
+          className="border-none text-zinc-400 light:text-slate-950 hover:text-red-400 light:hover:text-red-600 transition-colors"
           title={t("scheduledJobs.row.delete")}
         >
           <X className="h-4 w-4" />
@@ -67,7 +67,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         <button
           type="button"
           onClick={stop(() => onEdit(job))}
-          className="text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors"
+          className="border-none text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors"
           title={t("scheduledJobs.row.edit")}
         >
           <PencilSimple className="h-4 w-4" />
@@ -76,7 +76,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
           type="button"
           onClick={stop(() => onTrigger(job.id))}
           disabled={inFlight}
-          className="text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="border-none text-zinc-400 light:text-slate-950 hover:text-white light:hover:text-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           title={t("scheduledJobs.row.runNow")}
         >
           <Play className="h-4 w-4" />
@@ -91,7 +91,7 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
               ? t("scheduledJobs.row.disable")
               : t("scheduledJobs.row.enable")
           }
-          className={`relative h-[15px] w-7 rounded-full p-0.5 transition-colors ${
+          className={`border-none relative h-[15px] w-7 rounded-full p-0.5 transition-colors ${
             job.enabled ? "bg-green-400" : "bg-zinc-600 light:bg-slate-300"
           }`}
         >

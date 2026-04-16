@@ -109,7 +109,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             <button
               onClick={onClose}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              className="border-none transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             >
               <X className="text-gray-300 text-lg" />
             </button>
@@ -200,7 +200,7 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
                   key={tab.value}
                   type="button"
                   onClick={() => handleModeChange(tab.value)}
-                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                  className={`border-none px-3 py-1 text-xs rounded-md transition-colors ${
                     form.scheduleMode === tab.value
                       ? "bg-zinc-50 text-zinc-950 light:bg-zinc-950 light:text-white"
                       : "text-theme-text-secondary hover:text-theme-text-primary"
@@ -260,14 +260,14 @@ export default function NewJobModal({ job = null, onClose, onSaved }) {
             <button
               type="button"
               onClick={onClose}
-              className="h-[34px] px-3.5 text-sm font-medium text-zinc-50 light:text-slate-900 border border-zinc-700 light:border-slate-600 rounded-lg hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
+              className="border-none h-[34px] px-3.5 text-sm font-medium text-zinc-50 light:text-slate-900 border border-zinc-700 light:border-slate-600 rounded-lg hover:bg-zinc-800 light:hover:bg-slate-100 transition-colors"
             >
               {t("scheduledJobs.modal.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="h-[34px] px-3.5 text-sm font-medium text-zinc-950 light:text-white bg-zinc-50 light:bg-slate-900 hover:bg-zinc-200 light:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
+              className="border-none h-[34px] px-3.5 text-sm font-medium text-zinc-950 light:text-white bg-zinc-50 light:bg-slate-900 hover:bg-zinc-200 light:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
             >
               {saving
                 ? t("scheduledJobs.modal.saving")
