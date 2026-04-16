@@ -864,6 +864,22 @@ const System = {
       .catch(() => false);
   },
 
+  /**
+   * Fetches Deepgram STT token for WebSocket connection.
+   * @returns {Promise<{token: string | null, error: string | null}>}
+   */
+  getDeepgramSttToken: async function () {
+    return fetch(`${API_BASE}/system/deepgram-stt-token`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error("Failed to fetch Deepgram STT token:", e);
+        return { token: null, error: e.message };
+      });
+  },
+
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,

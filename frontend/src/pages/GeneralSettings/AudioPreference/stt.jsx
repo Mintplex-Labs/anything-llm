@@ -6,6 +6,8 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
+import DeepgramIcon from "@/media/ttsproviders/deepgram.png";
+import DeepgramSttOptions from "@/components/SpeechToText/DeepgramSttOptions";
 
 const PROVIDERS = [
   {
@@ -14,6 +16,13 @@ const PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
     description: "Uses your browser's built in STT service if supported.",
+  },
+  {
+    name: "Deepgram",
+    value: "deepgram",
+    logo: DeepgramIcon,
+    options: (settings) => <DeepgramSttOptions settings={settings} />,
+    description: "Uses Deepgram's high accuracy, live WebSocket STT.",
   },
 ];
 

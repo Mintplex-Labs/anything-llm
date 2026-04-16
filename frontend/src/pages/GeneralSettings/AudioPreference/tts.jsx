@@ -15,6 +15,8 @@ import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import DeepgramTTSOptions from "@/components/TextToSpeech/DeepgramOptions";
+import DeepgramIcon from "@/media/ttsproviders/deepgram.png";
 
 const PROVIDERS = [
   {
@@ -52,6 +54,14 @@ const PROVIDERS = [
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
     description:
       "Connect to an OpenAI compatible TTS service running locally or remotely.",
+  },
+  {
+    name: "Deepgram",
+    value: "deepgram",
+    logo: DeepgramIcon,
+    options: (settings) => <DeepgramTTSOptions settings={settings} />,
+    description:
+      "Use Deepgram's high-quality AI text-to-speech voices.",
   },
 ];
 
