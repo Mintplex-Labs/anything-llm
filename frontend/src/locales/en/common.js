@@ -1448,7 +1448,7 @@ const TRANSLATIONS = {
       currentSchedule: "Current schedule:",
       toolsLabel: "Tools (Optional)",
       toolsDescription:
-        "Select which agent tools this job can use. Leave empty to use all enabled tools.",
+        "Select which agent tools this job can use. If none are selected, the job runs without any tools.",
       toolsSearch: "Search",
       toolsNoResults: "No tools match",
       required: "Required",

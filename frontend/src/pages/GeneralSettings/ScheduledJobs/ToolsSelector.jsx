@@ -160,7 +160,7 @@ export default function ToolsSelector({
       <p className="text-xs text-zinc-400 light:text-slate-600 mt-1 mb-3">
         {t(
           "scheduledJobs.modal.toolsDescription",
-          "Select which agent tools this job can use. Leave empty to use all enabled tools."
+          "Select which agent tools this job can use. If none are selected, the job runs without any tools."
         )}
       </p>
 
