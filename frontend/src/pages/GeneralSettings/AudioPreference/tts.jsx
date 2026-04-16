@@ -60,8 +60,7 @@ const PROVIDERS = [
     value: "deepgram",
     logo: DeepgramIcon,
     options: (settings) => <DeepgramTTSOptions settings={settings} />,
-    description:
-      "Use Deepgram's high-quality AI text-to-speech voices.",
+    description: "Use Deepgram's high-quality AI text-to-speech voices.",
   },
 ];
 

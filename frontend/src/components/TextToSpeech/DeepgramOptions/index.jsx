@@ -27,10 +27,7 @@ export default function DeepgramOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <DeepgramModelSelection
-          settings={settings}
-          apiKey={deepgramApiKey}
-        />
+        <DeepgramModelSelection settings={settings} apiKey={deepgramApiKey} />
       )}
     </div>
   );

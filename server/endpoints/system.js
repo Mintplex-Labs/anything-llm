@@ -1502,8 +1502,7 @@ function systemEndpoints(app) {
     async (_, response) => {
       try {
         // Allow using the TTS key for STT as well (shared Deepgram key)
-        const apiKey =
-          process.env.TTS_DEEPGRAM_API_KEY || null;
+        const apiKey = process.env.TTS_DEEPGRAM_API_KEY || null;
         if (!apiKey) {
           return response
             .status(404)
