@@ -14,6 +14,11 @@ class BackgroundService {
   #scheduledJobQueue = new PQueue({
     concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 1,
   });
+  // Tracks in-flight worker processes per scheduled jobId so we can kill any
+  // active runs when the job is deleted. Without this, a running worker
+  // outlives the cascade-delete of its scheduled_job_runs row and throws when
+  // it tries to write the result back (prisma.update on a missing row).
+  #scheduledJobWorkers = new Map();
 
   #alwaysRunJobs = [
     {
@@ -244,15 +249,28 @@ class BackgroundService {
   }
 
   /**
-   * Remove an in-process cron timer for a scheduled job.
-   * Any in-flight run for this job will continue until the worker exits.
-   * If the job row was deleted, the FK cascade cleans up its scheduled_job_runs.
+   * Remove an in-process cron timer for a scheduled job and kill any in-flight
+   * worker processes for it. Killing in-flight workers prevents them from
+   * writing results back to a scheduled_job_runs row that the FK cascade (from
+   * a subsequent ScheduledJob.delete) is about to remove.
    * @param {number} jobId - scheduled_jobs.id
    */
   removeScheduledJob(jobId) {
     const timer = this.#scheduledJobTimers.get(jobId);
     if (timer) timer.clear();
     this.#scheduledJobTimers.delete(jobId);
+
+    const workers = this.#scheduledJobWorkers.get(jobId);
+    if (workers) {
+      for (const worker of workers) {
+        try {
+          worker.kill("SIGTERM");
+        } catch {
+          /* worker may have already exited */
+        }
+      }
+      this.#scheduledJobWorkers.delete(jobId);
+    }
   }
 
   /**
@@ -304,16 +322,31 @@ class BackgroundService {
     const scriptPath = path.resolve(this.jobsRoot, "run-scheduled-job.js");
     const { worker, jobId: workerId } = await this.spawnWorker(scriptPath);
 
+    if (!this.#scheduledJobWorkers.has(jobId)) {
+      this.#scheduledJobWorkers.set(jobId, new Set());
+    }
+    this.#scheduledJobWorkers.get(jobId).add(worker);
+
     try {
       worker.send({ jobId, runId });
       await new Promise((resolve, reject) => {
-        worker.on("exit", (code) => {
-          if (code === 0 || code == null) resolve();
-          else reject(new Error(`Worker exited with code ${code}`));
+        worker.on("exit", (code, signal) => {
+          // SIGTERM is sent by removeScheduledJob when the job is deleted
+          // mid-run; treat that as a normal exit rather than a worker failure.
+          if (code === 0 || code == null || signal === "SIGTERM") {
+            resolve();
+          } else {
+            reject(new Error(`Worker exited with code ${code}`));
+          }
         });
         worker.on("error", reject);
       });
     } finally {
+      const workers = this.#scheduledJobWorkers.get(jobId);
+      if (workers) {
+        workers.delete(worker);
+        if (workers.size === 0) this.#scheduledJobWorkers.delete(jobId);
+      }
       await this.removeJob(workerId).catch(() => {});
     }
   }
