@@ -541,6 +541,198 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Connettore Outlook",
+        description:
+          "Permetti al tuo agente di interagire con Microsoft Outlook: ricerca email, leggi conversazioni, crea bozze, invia email e gestisci la tua casella di posta elettronica tramite l'API Microsoft Graph. Consulta la documentazione.",
+        multiUserWarning:
+          "L'integrazione con Outlook non è disponibile in modalità multiutente per motivi di sicurezza. Per utilizzare questa funzione, è necessario disattivare la modalità multiutente.",
+        configuration: "Configurazione di Outlook",
+        authType: "Tipo di account",
+        authTypeHelp:
+          "Seleziona quali tipi di account Microsoft possono essere utilizzati per l'autenticazione. L'opzione \"Tutti gli account\" supporta sia account personali che account di lavoro/scuola. L'opzione \"Solo account personali\" limita l'autenticazione a soli account Microsoft personali. L'opzione \"Solo account di organizzazione\" limita l'autenticazione a soli account di lavoro/scuola appartenenti a un tenant specifico di Azure AD.",
+        authTypeCommon: "Tutti i conti (personali e relativi al lavoro/scuola)",
+        authTypeConsumers: "Solo account Microsoft personali",
+        authTypeOrganization:
+          "Solo account per organizzazioni (richiede l'ID del cliente)",
+        clientId: "ID del cliente (richiesta)",
+        clientIdHelp:
+          "L'ID dell'applicazione (Client ID) dal registro della tua app in Azure AD.",
+        tenantId: "ID del locatore",
+        tenantIdHelp:
+          "L'ID del \"Tenant\" (inquilino) dal registro della tua applicazione Azure AD. È necessario solo per l'autenticazione all'interno di un'organizzazione.",
+        clientSecret: "Chiave segreta del cliente",
+        clientSecretHelp:
+          "Il valore segreto fornito dall'applicazione registrata nel tuo Azure AD",
+        configurationRequired:
+          "Si prega di configurare l'ID del cliente e la chiave segreta per abilitare le funzionalità di Outlook.",
+        authRequired:
+          "Salva prima le tue credenziali, quindi effettua l'autenticazione con Microsoft per completare la configurazione.",
+        authenticateWithMicrosoft: "Autenticarsi con Microsoft",
+        authenticated: "Autenticazione riuscita con Microsoft Outlook.",
+        revokeAccess: "Revoca l'accesso",
+        configured: "Configurato",
+        searchSkills: "Competenze di ricerca...",
+        noSkillsFound:
+          "Non sono state trovate corrispondenze per i tuoi criteri di ricerca.",
+        categories: {
+          search: {
+            title: "Cerca e leggi le email",
+            description:
+              "Cerca e leggi le e-mail nella tua casella di posta di Outlook.",
+          },
+          drafts: {
+            title: "Bozze di email",
+            description: "Crea, modifica e gestisci bozze di email.",
+          },
+          send: {
+            title: "Inviare e-mail",
+            description:
+              "Invia nuove email o rispondi immediatamente ai messaggi ricevuti.",
+          },
+          account: {
+            title: "Statistiche sull'integrazione",
+            description:
+              "Visualizza le statistiche della casella di posta e le informazioni sull'account.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accedi alla casella di posta",
+            description:
+              "Recupera le ultime email dalla tua casella di posta di Outlook.",
+          },
+          search: {
+            title: "Cerca nelle email",
+            description:
+              "Cerca email utilizzando la sintassi di ricerca di Microsoft",
+          },
+          readThread: {
+            title: "Leggi la conversazione",
+            description: "Leggi l'intera conversazione via email.",
+          },
+          createDraft: {
+            title: "Crea una bozza",
+            description:
+              "Crea una nuova bozza di email o una bozza di risposta a un messaggio esistente.",
+          },
+          updateDraft: {
+            title: "Versione aggiornata",
+            description: "Aggiornare una bozza di email esistente",
+          },
+          listDrafts: {
+            title: "Proposte",
+            description: "Elenca tutte le email in bozza.",
+          },
+          deleteDraft: {
+            title: "Elimina bozza",
+            description: "Elimina una bozza di email",
+          },
+          sendDraft: {
+            title: "Invia bozza",
+            description: "Invia una bozza di email esistente.",
+          },
+          sendEmail: {
+            title: "Invia e-mail",
+            description:
+              "Invia una nuova email o rispondi a un messaggio esistente immediatamente.",
+          },
+          getMailboxStats: {
+            title: "Statistiche della casella di posta",
+            description:
+              "Ottieni il numero di cartelle e le statistiche della casella di posta.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Connettore per Google Calendar",
+        description:
+          "Permetti al tuo agente di interagire con Google Calendar: visualizza calendari, visualizza eventi, crea e aggiorna eventi, e gestisci le conferme di partecipazione. <a>Consulta la documentazione</a>.",
+        multiUserWarning:
+          "L'integrazione con Google Calendar non è disponibile in modalità multiutente per motivi di sicurezza. Per utilizzare questa funzione, è necessario disattivare la modalità multiutente.",
+        configuration: "Configurazione del calendario Google",
+        deploymentId: "ID di distribuzione",
+        deploymentIdHelp:
+          "L'ID di distribuzione dalla tua applicazione web Google Apps Script",
+        apiKey: "Chiave API",
+        apiKeyHelp:
+          "La chiave API che hai configurato nella tua distribuzione di Google Apps Script",
+        configurationRequired:
+          "Si prega di configurare l'ID di distribuzione e la chiave API per abilitare le funzionalità di Google Calendar.",
+        configured: "Configurato",
+        searchSkills: "Competenze di ricerca...",
+        noSkillsFound:
+          "Non sono state trovate corrispondenze per la tua ricerca.",
+        categories: {
+          calendars: {
+            title: "Calendari",
+            description: "Visualizza e gestisci i tuoi calendari Google.",
+          },
+          readEvents: {
+            title: "Leggi gli eventi",
+            description: "Visualizza e cerca eventi nel calendario",
+          },
+          writeEvents: {
+            title: "Creare e aggiornare eventi",
+            description: "Creare nuovi eventi e modificare quelli esistenti.",
+          },
+          rsvp: {
+            title: "Gestione delle conferme di partecipazione",
+            description: "Gestisci lo stato della tua risposta per gli eventi.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendari personalizzati",
+            description:
+              "Elenca tutti i calendari che possiedi o a cui sei abbonato.",
+          },
+          getCalendar: {
+            title: "Ottieni i dettagli del calendario",
+            description:
+              "Ottenere informazioni dettagliate su un calendario specifico.",
+          },
+          getEvent: {
+            title: "Informazioni sull'evento",
+            description:
+              "Ottenere informazioni dettagliate su un evento specifico.",
+          },
+          getEventsForDay: {
+            title: "Trova eventi per il giorno specifico",
+            description:
+              "Visualizza tutti gli eventi programmati per una data specifica.",
+          },
+          getEvents: {
+            title: "Eventi (Intervallo di date)",
+            description:
+              "Recupera eventi all'interno di un intervallo di date personalizzato.",
+          },
+          getUpcomingEvents: {
+            title: "Consulta gli eventi futuri",
+            description:
+              "Trova eventi per oggi, questa settimana o questo mese utilizzando parole chiave semplici.",
+          },
+          quickAdd: {
+            title: "Aggiungi evento rapidamente",
+            description:
+              'Creare un evento a partire da un testo in linguaggio naturale (ad esempio, "Riunione domani alle 15:00")',
+          },
+          createEvent: {
+            title: "Crea evento",
+            description:
+              "Crea un nuovo evento con il pieno controllo su tutte le proprietà.",
+          },
+          updateEvent: {
+            title: "Aggiornamento evento",
+            description: "Modificare un evento esistente nel calendario",
+          },
+          setMyStatus: {
+            title: "Imposta lo stato della risposta",
+            description:
+              "Accettare, rifiutare o accettare con riserva un evento",
+          },
+        },
+      },
     },
     mcp: {
       title: "Server MCP",

@@ -540,6 +540,197 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Conector do Outlook",
+        description:
+          "Permita que seu agente interaja com o Microsoft Outlook: pesquise e-mails, leia conversas, crie rascunhos, envie e-mails e gerencie sua caixa de entrada através da API Microsoft Graph. <a>Leia a documentação</a>.",
+        multiUserWarning:
+          "A integração com o Outlook não está disponível no modo multiusuário, por razões de segurança. Por favor, desative o modo multiusuário para utilizar esta funcionalidade.",
+        configuration: "Configuração do Outlook",
+        authType: "Tipo de conta",
+        authTypeHelp:
+          'Selecione quais tipos de contas Microsoft podem ser autenticadas. "Todas as contas" suporta tanto contas pessoais quanto contas de trabalho/escola. "Apenas contas pessoais" restringe a contas Microsoft pessoais. "Apenas contas de organização" restringe a contas de trabalho/escola de um tenant específico do Azure AD.',
+        authTypeCommon: "Todas as contas (pessoais e de trabalho/escola)",
+        authTypeConsumers: "Contas pessoais da Microsoft",
+        authTypeOrganization: "Contas de organizações (requer ID do inquilino)",
+        clientId: "Identificador do Cliente",
+        clientIdHelp:
+          "O ID da aplicação (cliente) do seu registo de aplicação no Azure AD",
+        tenantId: "ID do Inquilino",
+        tenantIdHelp:
+          "O ID do diretório (do inquilino) da sua aplicação no Azure AD. É necessário apenas para a autenticação dentro de uma única organização.",
+        clientSecret: "Chave Secreta do Cliente",
+        clientSecretHelp:
+          "O valor secreto do cliente da sua aplicação registada no Azure AD",
+        configurationRequired:
+          "Por favor, configure o ID do Cliente e o Segredo do Cliente para habilitar as funcionalidades do Outlook.",
+        authRequired:
+          "Primeiro, salve suas credenciais, e então autentique-se com a Microsoft para concluir a configuração.",
+        authenticateWithMicrosoft: "Autentique-se com a Microsoft",
+        authenticated: "Autenticação bem-sucedida com o Microsoft Outlook.",
+        revokeAccess: "Revogar o acesso",
+        configured: "Configurado",
+        searchSkills: "Habilidades de pesquisa...",
+        noSkillsFound:
+          "Não encontramos nenhuma correspondência com os seus critérios de pesquisa.",
+        categories: {
+          search: {
+            title: "Pesquisar e ler e-mails",
+            description:
+              "Pesquise e leia e-mails da sua caixa de entrada do Outlook.",
+          },
+          drafts: {
+            title: "Rascunhos de e-mails",
+            description: "Crie, edite e gerencie rascunhos de e-mails.",
+          },
+          send: {
+            title: "Enviar e-mails",
+            description:
+              "Envie novos e-mails ou responda às mensagens imediatamente.",
+          },
+          account: {
+            title: "Estatísticas de integração",
+            description:
+              "Visualize estatísticas da caixa de correio e informações da conta.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Acesse a caixa de entrada",
+            description:
+              "Acesse e-mails recentes da sua caixa de entrada do Outlook.",
+          },
+          search: {
+            title: "Pesquisar e-mails",
+            description:
+              "Pesquise e-mails usando a sintaxe de pesquisa do Microsoft.",
+          },
+          readThread: {
+            title: "Leia a conversa",
+            description: "Leia toda a sequência de e-mails.",
+          },
+          createDraft: {
+            title: "Criar rascunho",
+            description:
+              "Crie um novo rascunho de e-mail ou um rascunho de resposta a uma mensagem existente.",
+          },
+          updateDraft: {
+            title: "Versão atualizada",
+            description: "Atualizar um rascunho de e-mail existente",
+          },
+          listDrafts: {
+            title: "Rascunhos",
+            description: "Liste todos os e-mails em rascunho.",
+          },
+          deleteDraft: {
+            title: "Excluir rascunho",
+            description: "Excluir uma versão preliminar de um e-mail",
+          },
+          sendDraft: {
+            title: "Enviar rascunho",
+            description: "Envie uma versão prévia de um e-mail existente",
+          },
+          sendEmail: {
+            title: "Enviar e-mail",
+            description:
+              "Envie um novo e-mail ou responda a uma mensagem existente imediatamente.",
+          },
+          getMailboxStats: {
+            title: "Estatísticas da caixa de correio",
+            description:
+              "Obtenha o número de pastas e estatísticas da caixa de correio.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Conector do Google Calendar",
+        description:
+          "Permita que seu agente interaja com o Google Agenda – visualize agendas, obter eventos, criar e atualizar eventos, e gerenciar confirmações de presença. <a>Leia a documentação</a>.",
+        multiUserWarning:
+          "A integração com o Google Calendar não está disponível no modo multiusuário, por razões de segurança. Por favor, desative o modo multiusuário para utilizar esta funcionalidade.",
+        configuration: "Configuração do Google Agenda",
+        deploymentId: "ID de implantação",
+        deploymentIdHelp:
+          "O ID de implantação da sua aplicação web do Google Apps Script",
+        apiKey: "Chave de API",
+        apiKeyHelp:
+          "A chave de API que você configurou no seu projeto Google Apps Script",
+        configurationRequired:
+          "Por favor, configure o ID de Implantação e a Chave de API para habilitar as funcionalidades do Google Calendar.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de pesquisa...",
+        noSkillsFound:
+          "Não encontramos nenhum resultado que corresponda à sua pesquisa.",
+        categories: {
+          calendars: {
+            title: "Calendários",
+            description: "Visualize e gerencie seus calendários do Google.",
+          },
+          readEvents: {
+            title: "Ver eventos",
+            description: "Visualize e pesquise eventos no calendário",
+          },
+          writeEvents: {
+            title: "Criar e atualizar eventos",
+            description: "Crie novos eventos e modifique os existentes.",
+          },
+          rsvp: {
+            title: "Gerenciamento de confirmações de presença",
+            description: "Gerencie o status da sua resposta para eventos.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Listar calendários",
+            description:
+              "Liste todos os calendários que você possui ou aos quais está inscrito.",
+          },
+          getCalendar: {
+            title: "Obtenha detalhes do calendário",
+            description:
+              "Obtenha informações detalhadas sobre um calendário específico.",
+          },
+          getEvent: {
+            title: "Obtenha informações sobre o evento",
+            description:
+              "Obtenha informações detalhadas sobre um evento específico.",
+          },
+          getEventsForDay: {
+            title: "Encontre eventos para o dia",
+            description:
+              "Obtenha todos os eventos agendados para uma data específica.",
+          },
+          getEvents: {
+            title: "Obter eventos (período de tempo)",
+            description:
+              "Obtenha eventos dentro de um intervalo de datas personalizado.",
+          },
+          getUpcomingEvents: {
+            title: "Veja os próximos eventos",
+            description:
+              "Encontre eventos para hoje, esta semana ou este mês utilizando palavras-chave simples.",
+          },
+          quickAdd: {
+            title: "Adicionar evento rapidamente",
+            description:
+              'Criar um evento a partir de linguagem natural (por exemplo, "Reunião amanhã às 15h")',
+          },
+          createEvent: {
+            title: "Criar evento",
+            description:
+              "Crie um novo evento com controle total sobre todas as propriedades.",
+          },
+          updateEvent: {
+            title: "Atualização do evento",
+            description: "Atualizar um evento existente no calendário",
+          },
+          setMyStatus: {
+            title: "Definir o status de confirmação de presença",
+            description:
+              "Aceitar, recusar ou aceitar provisoriamente um evento.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

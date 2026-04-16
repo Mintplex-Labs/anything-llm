@@ -536,6 +536,197 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook Bağlayıcı",
+        description:
+          "Ajantınızın Microsoft Outlook ile etkileşim kurmasını sağlayın: e-postaları arayın, tartışmaları okuyun, taslaklar oluşturun, e-posta gönderin ve Microsoft Graph API aracılığıyla posta kutunuzu yönetin. Dokümantasyonu okuyun.",
+        multiUserWarning:
+          "Outlook entegrasyonu, güvenlik nedenleriyle çoklu kullanıcı modunda mevcut değildir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Outlook Yapılandırması",
+        authType: "Hesap Türü",
+        authTypeHelp:
+          'Hangi tür Microsoft hesaplarının kimlik doğrulamasına izin verileceğini seçin. "Tüm hesaplar" hem kişisel hem de iş/okul hesaplarını destekler. "Sadece kişisel hesaplar" yalnızca kişisel Microsoft hesaplarını kısıtlar. "Sadece kuruluş hesapları" belirli bir Azure AD kiracısından iş/okul hesaplarını kısıtlar.',
+        authTypeCommon: "Tüm hesaplar (kişisel ve iş/okul)",
+        authTypeConsumers: "Sadece bireysel Microsoft hesapları",
+        authTypeOrganization:
+          "Sadece kuruluş hesapları (Kira sahibi kimlik numarası gerektirir)",
+        clientId: "Uygulama (Müşteri) Kimliği",
+        clientIdHelp:
+          "Azure AD uygulamanızın kaydından elde ettiğiniz Uygulama (Müşteri) Kimliği",
+        tenantId: "Kiralık Konut Kimlik No",
+        tenantIdHelp:
+          "Azure AD uygulamanızın kayıt bilgilerinden elde edilen (Kiralık Alan) Kimliği. Sadece kuruluş içi kimlik doğrulama için gereklidir.",
+        clientSecret: "Müşteri sırrı",
+        clientSecretHelp:
+          "Azure AD uygulamanızın kaydından elde edilen istemci sır değeri",
+        configurationRequired:
+          "Lütfen, Outlook işlevlerini etkinleştirmek için Client ID ve Client Secret değerlerini yapılandırın.",
+        authRequired:
+          "Öncelikle kimlik bilgilerinizi kaydedin, ardından kurulumu tamamlamak için Microsoft ile kimliğinizi doğrulayın.",
+        authenticateWithMicrosoft: "Microsoft ile kimliğinizi doğrulayın",
+        authenticated:
+          "Microsoft Outlook ile başarılı bir şekilde kimlik doğrulaması tamamlandı.",
+        revokeAccess: "Erişi İptal Et",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Belirttiğiniz kriterlere uyan herhangi bir sonuç bulunamadı.",
+        categories: {
+          search: {
+            title: "E-postaları arayın ve okuyun",
+            description:
+              "Outlook posta kutunuzdan e-postaları arayın ve okuyun.",
+          },
+          drafts: {
+            title: "Örnek E-postalar",
+            description: "E-posta taslaklarını oluştur, düzenle ve yönet",
+          },
+          send: {
+            title: "E-posta gönderme",
+            description:
+              "Yeni e-postalar gönderin veya mesajlara anında cevap verin.",
+          },
+          account: {
+            title: "Entegrasyon İstatistikleri",
+            description:
+              "Post kutunuzdaki istatistikleri ve hesap bilgilerinizi görüntüleyin.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Gelen kutusuna eriş",
+            description:
+              "En son gelen e-postalarınızı Outlook posta kutunuzdan alın.",
+          },
+          search: {
+            title: "E-postaları arayın",
+            description:
+              "Microsoft arama sözdizimi kullanarak e-postaları arayın",
+          },
+          readThread: {
+            title: "Sohbeti okuyun",
+            description: "Tam bir e-posta konuşma dizisini okuyun.",
+          },
+          createDraft: {
+            title: "Taslak Oluştur",
+            description:
+              "Yeni bir e-posta taslağı oluşturun veya mevcut bir mesajın yanıtını taslağına ekleyin.",
+          },
+          updateDraft: {
+            title: "Taslak Güncelleme",
+            description: "Mevcut bir e-posta taslağını güncelleyin",
+          },
+          listDrafts: {
+            title: "Taslaklar",
+            description: "Tüm taslak e-postaları listele",
+          },
+          deleteDraft: {
+            title: "Taslak Sil",
+            description: "Bir taslak e-postayı sil",
+          },
+          sendDraft: {
+            title: "Taslak Gönder",
+            description: "Mevcut bir e-posta taslağını gönderin",
+          },
+          sendEmail: {
+            title: "E-posta gönder",
+            description:
+              "Yeni bir e-posta gönderin veya mevcut bir mesajı hemen yanıtlayın.",
+          },
+          getMailboxStats: {
+            title: "Post kutusu istatistikleri",
+            description:
+              "Klasörlerin ve posta kutusu istatistiklerinin sayısını alın.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Takvim Bağlayıcı",
+        description:
+          "Ajantınızın Google Takvim ile etkileşim kurmasını sağlayın - takvimleri görüntüleyin, etkinlikleri alın, etkinlikleri oluşturun ve güncelleyin, ve katılımcıların yanıtlarını yönetin. Dokümantasyonu okuyun.",
+        multiUserWarning:
+          "Google Takvim entegrasyonu, güvenlik nedeniyle çoklu kullanıcı modunda kullanılabilmektedir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Google Takvim Yapılandırması",
+        deploymentId: "Dağıtım Kimliği",
+        deploymentIdHelp:
+          "Google Apps Script web uygulamanızın dağıtım kimliği",
+        apiKey: "API Anahtarı",
+        apiKeyHelp:
+          "Google Apps Script dağıtımınızda yapılandırdığınız API anahtarı",
+        configurationRequired:
+          "Lütfen Dağıtım Kimliğini ve API Anahtarını yapılandırarak Google Takvim özelliklerini etkinleştirin.",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Arama sonuçlarınızda eşleşen herhangi bir beceri bulunmamaktadır.",
+        categories: {
+          calendars: {
+            title: "Takvimler",
+            description: "Google Takvimlerinizi görüntüleyin ve yönetin",
+          },
+          readEvents: {
+            title: "Etkinlikleri oku",
+            description: "Takvimdeki etkinlikleri görüntüleyin ve arayın",
+          },
+          writeEvents: {
+            title: "Etkinlikleri Oluştur ve Güncelle",
+            description:
+              "Yeni etkinlikler oluşturun ve mevcut olanları değiştirin.",
+          },
+          rsvp: {
+            title: "Katılım Yönetimi",
+            description: "Etkinliklere ilişkin yanıt durumunuzu yönetin",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Takvim Listeleri",
+            description:
+              "Sahip olduğunuz veya abonelik yaptığınız tüm takvimleri listeleyin.",
+          },
+          getCalendar: {
+            title: "Takvim Detaylarını Al",
+            description: "Belirli bir takvim hakkında ayrıntılı bilgi edinin.",
+          },
+          getEvent: {
+            title: "Etkinliği Bul",
+            description: "Belirli bir etkinlikle ilgili ayrıntılı bilgi edinin",
+          },
+          getEventsForDay: {
+            title: "Gün İçindeki Etkinlikleri Öğren",
+            description:
+              "Belirli bir güne ait tüm planlanan etkinlikleri görüntüleyin.",
+          },
+          getEvents: {
+            title: "Etkinlikleri (Tarih Aralığı) görüntüle",
+            description: "Belirli bir tarih aralığındaki etkinlikleri alın",
+          },
+          getUpcomingEvents: {
+            title: "Yaklaşan Etkinlikleri Görüntüleyin",
+            description:
+              "Bugün, bu hafta veya bu ay için etkinlikleri, basit anahtar kelimeler kullanarak bulun.",
+          },
+          quickAdd: {
+            title: "Hızlı Olay Ekle",
+            description:
+              'Doğal dilden bir etkinlik oluşturun (örneğin, "Yarın saat 15:00\'te bir toplantı")',
+          },
+          createEvent: {
+            title: "Etkinlik Oluştur",
+            description:
+              "Tüm özellikler üzerinde tam kontrol sağlayarak yeni bir etkinlik oluşturun.",
+          },
+          updateEvent: {
+            title: "Etkinlik Güncellemesi",
+            description: "Mevcut bir takvim olayını güncelleyin",
+          },
+          setMyStatus: {
+            title: "Davetiyeye Cevap Durumu Ayarla",
+            description:
+              "Bir etkinliğe katılımı kabul etmek, reddetmek veya geçici olarak katılmayı kabul etmek.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP Sunucuları",

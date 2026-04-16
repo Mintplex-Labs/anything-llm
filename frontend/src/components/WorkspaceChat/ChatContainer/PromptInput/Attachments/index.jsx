@@ -11,6 +11,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { REMOVE_ATTACHMENT_EVENT } from "../../DnDWrapper";
+import { openImageLightbox } from "@/components/ImageLightbox";
 
 /**
  * @param {{attachments: import("../../DnDWrapper").Attachment[]}}
@@ -18,10 +19,25 @@ import { REMOVE_ATTACHMENT_EVENT } from "../../DnDWrapper";
  */
 export default function AttachmentManager({ attachments }) {
   if (attachments.length === 0) return null;
+
+  function handleImageClick(attachment) {
+    const imageAttachments = attachments
+      .filter((a) => a.type === "attachment" && a.contentString)
+      .map((a) => ({ contentString: a.contentString, name: a.file.name }));
+    const idx = imageAttachments.findIndex(
+      (img) => img.name === attachment.file?.name
+    );
+    if (idx !== -1) openImageLightbox(imageAttachments, idx);
+  }
+
   return (
     <div className="flex flex-wrap gap-2 mt-2 mb-4">
       {attachments.map((attachment) => (
-        <AttachmentItem key={attachment.uid} attachment={attachment} />
+        <AttachmentItem
+          key={attachment.uid}
+          attachment={attachment}
+          onImageClick={() => handleImageClick(attachment)}
+        />
       ))}
     </div>
   );
@@ -30,7 +46,7 @@ export default function AttachmentManager({ attachments }) {
 /**
  * @param {{attachment: import("../../DnDWrapper").Attachment}}
  */
-function AttachmentItem({ attachment }) {
+function AttachmentItem({ attachment, onImageClick }) {
   const { uid, file, status, error, document, type, contentString } =
     attachment;
   const { iconBgColor, Icon } = displayFromFile(file);
@@ -115,12 +131,18 @@ function AttachmentItem({ attachment }) {
               <X size={10} className="flex-shrink-0" />
             </button>
           </div>
-          <img
-            alt={`Preview of ${file.name}`}
-            src={contentString}
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            className={`${iconBgColor} w-[40px] h-[40px] rounded-lg flex items-center justify-center`}
-          />
+          <button
+            type="button"
+            onClick={onImageClick}
+            className="p-0 border-none bg-transparent cursor-pointer"
+          >
+            <img
+              alt={`Preview of ${file.name}`}
+              src={contentString}
+              style={{ objectFit: "cover", objectPosition: "center" }}
+              className={`${iconBgColor} w-[40px] h-[40px] rounded-lg flex items-center justify-center`}
+            />
+          </button>
         </div>
       );
     }

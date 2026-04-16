@@ -543,6 +543,199 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, mit Microsoft Outlook zu interagieren – Suchen Sie E-Mails, lesen Sie Threads, erstellen Sie Entwürfe, senden Sie E-Mails und verwalten Sie Ihren Posteingang über die Microsoft Graph API. <a> Lesen Sie die Dokumentation</a>.",
+        multiUserWarning:
+          "Die Integration mit Outlook ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Um diese Funktion nutzen zu können, bitte den Mehrbenutzermodus deaktivieren.",
+        configuration: "Konfiguration von Outlook",
+        authType: "Kontotyp",
+        authTypeHelp:
+          "Wählen Sie, welche Arten von Microsoft-Konten zur Authentifizierung verwendet werden können. „Alle Konten“ unterstützt sowohl persönliche als auch Arbeits-/Schulkonten. „Nur persönliche Konten“ beschränkt sich auf persönliche Microsoft-Konten. „Nur Arbeits-/Schulkonten“ beschränkt sich auf Arbeits-/Schulkonten eines bestimmten Azure AD-Mandanten.",
+        authTypeCommon: "Alle Konten (persönliche und Arbeits-/Schulkonten)",
+        authTypeConsumers: "Nur persönliche Microsoft-Konten",
+        authTypeOrganization:
+          "Nur Konten für Organisationen (benötigt eine Tenant-ID)",
+        clientId: "Anwendungs-ID (Kunden-ID)",
+        clientIdHelp:
+          "Die Anwendungs-ID (Client-ID) von Ihrer Azure AD-Anwendung",
+        tenantId: "Verzeichnis-ID (Mieter)",
+        tenantIdHelp:
+          "Die Verzeichnis-ID (für den Mieter) aus Ihrer Azure AD-App-Registrierung. Dies ist nur für die Authentifizierung innerhalb einer Organisation erforderlich.",
+        clientSecret: "Client-Schlüssel",
+        clientSecretHelp:
+          "Der geheime Wert, den Sie für die Registrierung Ihrer Azure AD-Anwendung festgelegt haben.",
+        configurationRequired:
+          "Bitte konfigurieren Sie die Client-ID und den Client-Schlüssel, um die Outlook-Funktionen zu aktivieren.",
+        authRequired:
+          "Speichern Sie zuerst Ihre Anmeldedaten, und anschließend melden Sie sich bei Microsoft an, um die Einrichtung abzuschließen.",
+        authenticateWithMicrosoft: "Mit Microsoft anmelden",
+        authenticated: "Erfolgreiche Authentifizierung mit Microsoft Outlook.",
+        revokeAccess: "Zugriff widerrufen",
+        configured: "Konfiguriert",
+        searchSkills: "Suchfähigkeiten...",
+        noSkillsFound:
+          "Keine der angebotenen Fähigkeiten passen zu Ihrer Suche.",
+        categories: {
+          search: {
+            title: "Nachrichten suchen und lesen",
+            description:
+              "Suchen und lesen Sie E-Mails aus Ihrem Outlook-Posteingang.",
+          },
+          drafts: {
+            title: "Entwurf-E-Mails",
+            description:
+              "Erstellen, bearbeiten und verwalten von E-Mail-Entwürfen",
+          },
+          send: {
+            title: "E-Mails versenden",
+            description:
+              "Neue E-Mails senden oder sofort auf Nachrichten antworten",
+          },
+          account: {
+            title: "Statistiken zur Integration",
+            description:
+              "Anzeigen von Postfachstatistiken und Kontoinformationen",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "E-Mail-Postfach öffnen",
+            description:
+              "Abrufen von aktuellen E-Mails aus Ihrem Outlook-Posteingang",
+          },
+          search: {
+            title: "E-Mails durchsuchen",
+            description:
+              "E-Mails mithilfe der Syntax von Microsoft Search durchsuchen",
+          },
+          readThread: {
+            title: "Lesen der Konversation",
+            description: "Den vollständigen E-Mail-Austausch durchlesen.",
+          },
+          createDraft: {
+            title: "Entwurf erstellen",
+            description:
+              "Erstellen Sie eine neue Entwurf-E-Mail oder einen Entwurf-Antwort auf eine bestehende Nachricht.",
+          },
+          updateDraft: {
+            title: "Entwurf aktualisieren",
+            description: "Aktualisieren Sie eine bestehende Entwurf-E-Mail",
+          },
+          listDrafts: {
+            title: "Entwurf-Listen",
+            description: "Zeigen Sie alle Entwurfse-Mails an",
+          },
+          deleteDraft: {
+            title: "Entwurf löschen",
+            description: "Einen Entwurf einer E-Mail löschen",
+          },
+          sendDraft: {
+            title: "Entwurf senden",
+            description: "Senden Sie eine bestehende E-Mail-Entwurf",
+          },
+          sendEmail: {
+            title: "E-Mail senden",
+            description:
+              "Senden Sie eine neue E-Mail oder antworten Sie sofort auf eine bestehende Nachricht.",
+          },
+          getMailboxStats: {
+            title: "Statistiken für den Posteingang",
+            description:
+              "Erhalten Sie Informationen über die Anzahl der Ordner und Statistiken für E-Mail-Postfächer.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Kalender-Verbindung",
+        description:
+          "Ermöglichen Sie Ihrem Agenten, mit Google Kalender zu interagieren – Kalender anzeigen, Ereignisse einsehen, erstellen und aktualisieren, sowie Rückmeldungen verwalten. <a> Lesen Sie die Dokumentation </a>.",
+        multiUserWarning:
+          "Die Integration mit Google Kalender ist aus Sicherheitsgründen nicht im Mehrbenutzermodus verfügbar. Bitte deaktivieren Sie den Mehrbenutzermodus, um diese Funktion nutzen zu können.",
+        configuration: "Konfiguration des Google Kalenders",
+        deploymentId: "Deployment-ID",
+        deploymentIdHelp:
+          "Die Bereitstellungs-ID Ihrer Google Apps Script Web-Anwendung",
+        apiKey: "API-Schlüssel",
+        apiKeyHelp:
+          "Der API-Schlüssel, den Sie in Ihrer Google Apps Script-Bereitstellung konfiguriert haben",
+        configurationRequired:
+          "Bitte konfigurieren Sie die Deployment-ID und den API-Schlüssel, um die Google Calendar-Funktionen zu aktivieren.",
+        configured: "Konfiguriert",
+        searchSkills: "Suchfähigkeiten...",
+        noSkillsFound: "Keine Übereinstimmungen zu Ihrer Suche.",
+        categories: {
+          calendars: {
+            title: "Kalender",
+            description: "Überprüfen und verwalten Sie Ihre Google-Kalender.",
+          },
+          readEvents: {
+            title: "Veranstaltungen lesen",
+            description: "Kalenderereignisse anzeigen und suchen",
+          },
+          writeEvents: {
+            title: "Erstellen und aktualisieren von Veranstaltungen",
+            description:
+              "Erstellen Sie neue Veranstaltungen und ändern Sie bestehende",
+          },
+          rsvp: {
+            title: "Verwaltung von Rückmeldungen",
+            description:
+              "Verwalten Sie den Status Ihrer Teilnahme an Veranstaltungen",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalenderlisten",
+            description:
+              "Listen Sie alle Kalender auf, die Sie besitzen oder für die Sie ein Abonnement haben.",
+          },
+          getCalendar: {
+            title: "Details zum Kalender anzeigen",
+            description:
+              "Erhalten Sie detaillierte Informationen über einen bestimmten Kalender.",
+          },
+          getEvent: {
+            title: "Veranstaltung finden",
+            description:
+              "Erhalten Sie detaillierte Informationen über ein bestimmtes Ereignis.",
+          },
+          getEventsForDay: {
+            title: "Veranstaltungen für den Tag",
+            description:
+              "Alle Veranstaltungen, die für einen bestimmten Tag geplant sind, anzeigen.",
+          },
+          getEvents: {
+            title: "Veranstaltungen (Zeitraum) anzeigen",
+            description:
+              "Ereignisse innerhalb eines benutzerdefinierten Datumsbereichs abrufen",
+          },
+          getUpcomingEvents: {
+            title: "Anstehende Veranstaltungen anzeigen",
+            description:
+              "Finden Sie Veranstaltungen für heute, diese Woche oder diesen Monat, indem Sie einfache Suchbegriffe verwenden.",
+          },
+          quickAdd: {
+            title: "Schnellere Veranstaltung hinzufügen",
+            description:
+              "Erstellen Sie eine Veranstaltung aus natürlicher Sprache (z. B. „Treffen morgen um 15:00 Uhr“)",
+          },
+          createEvent: {
+            title: "Ereignis erstellen",
+            description:
+              "Erstellen Sie ein neues Ereignis mit vollständiger Kontrolle über alle Eigenschaften.",
+          },
+          updateEvent: {
+            title: "Aktualisierungsereignis",
+            description: "Ein bestehendes Kalendereintrag aktualisieren",
+          },
+          setMyStatus: {
+            title: "Status der Rückmeldung",
+            description: "Teilen, ablehnen oder vorläufig zustimmen",
+          },
+        },
+      },
     },
     "performance-warning":
       "Die Leistung von LLMs, die keine explizite Unterstützung für das Aufrufen von Tools bieten, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",

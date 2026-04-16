@@ -551,6 +551,200 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Conector de Outlook",
+        description:
+          "Permita que su agente interactúe con Microsoft Outlook: buscar correos electrónicos, leer hilos, redactar borradores, enviar correos electrónicos y administrar su bandeja de entrada a través de la API de Microsoft Graph. Consulte la documentación.",
+        multiUserWarning:
+          "La integración con Outlook no está disponible en el modo multiusuario por razones de seguridad. Para utilizar esta función, por favor, desactive el modo multiusuario.",
+        configuration: "Configuración de Outlook",
+        authType: "Tipo de cuenta",
+        authTypeHelp:
+          'Seleccione qué tipos de cuentas de Microsoft pueden autenticarse. "Todas las cuentas" admite tanto cuentas personales como cuentas de trabajo/escuela. "Solo cuentas personales" se limita a cuentas personales de Microsoft. "Solo cuentas de organización" se limita a cuentas de trabajo/escuela de un inquilino específico de Azure AD.',
+        authTypeCommon: "Todas las cuentas (personales y de trabajo/escuela)",
+        authTypeConsumers: "Cuentas personales de Microsoft únicamente.",
+        authTypeOrganization:
+          "Cuentas de organizaciones únicamente (requiere el ID del inquilino)",
+        clientId: "Identificador del cliente (solicitante)",
+        clientIdHelp:
+          "El ID de la aplicación (cliente) de su registro de aplicación en Azure AD",
+        tenantId: "ID del inquilino",
+        tenantIdHelp:
+          "El ID del directorio (del inquilino) de su registro de aplicación en Azure AD. Es necesario únicamente para la autenticación dentro de una organización.",
+        clientSecret: "Clave secreta",
+        clientSecretHelp:
+          "El valor secreto del cliente de su registro de aplicación en Azure AD.",
+        configurationRequired:
+          "Por favor, configure el ID del cliente y la clave secreta para habilitar las funciones de Outlook.",
+        authRequired:
+          "Primero, guarde sus credenciales, y luego, utilice las credenciales para autenticarse con Microsoft y completar la configuración.",
+        authenticateWithMicrosoft: "Autenticarse con Microsoft",
+        authenticated: "Autenticación exitosa con Microsoft Outlook.",
+        revokeAccess: "Revocar el acceso",
+        configured: "Configurado",
+        searchSkills: "Habilidades de búsqueda...",
+        noSkillsFound:
+          "No se encontraron resultados que coincidan con tu búsqueda.",
+        categories: {
+          search: {
+            title: "Buscar y leer correos electrónicos",
+            description:
+              "Busque y lea correos electrónicos desde su bandeja de entrada de Outlook.",
+          },
+          drafts: {
+            title: "Borradores de correos electrónicos",
+            description:
+              "Crea, edita y gestiona borradores de correos electrónicos.",
+          },
+          send: {
+            title: "Enviar correos electrónicos",
+            description:
+              "Envía nuevos correos electrónicos o responde a los mensajes de inmediato.",
+          },
+          account: {
+            title: "Estadísticas de integración",
+            description:
+              "Visualice las estadísticas de la bandeja de entrada y la información de la cuenta.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Acceder a la bandeja de entrada",
+            description:
+              "Consigue los últimos correos electrónicos de tu bandeja de entrada de Outlook.",
+          },
+          search: {
+            title: "Buscar correos electrónicos",
+            description:
+              "Busque correos electrónicos utilizando la sintaxis de búsqueda de Microsoft.",
+          },
+          readThread: {
+            title: "Leer la conversación",
+            description: "Leer toda la conversación por correo electrónico.",
+          },
+          createDraft: {
+            title: "Crear borrador",
+            description:
+              "Cree un nuevo borrador de correo electrónico o un borrador de respuesta a un mensaje existente.",
+          },
+          updateDraft: {
+            title: "Versión actualizada del borrador",
+            description:
+              "Actualizar un borrador de correo electrónico existente",
+          },
+          listDrafts: {
+            title: "Borradores",
+            description: "Enumere todas las correos electrónicos en borrador.",
+          },
+          deleteDraft: {
+            title: "Eliminar borrador",
+            description: "Eliminar un borrador de correo electrónico",
+          },
+          sendDraft: {
+            title: "Enviar borrador",
+            description: "Enviar un borrador de correo electrónico existente",
+          },
+          sendEmail: {
+            title: "Enviar correo electrónico",
+            description:
+              "Envía un nuevo correo electrónico o responde a un mensaje existente de inmediato.",
+          },
+          getMailboxStats: {
+            title: "Estadísticas de la bandeja de entrada",
+            description:
+              "Obtén el número de carpetas y estadísticas de la bandeja de entrada.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Conector para Google Calendar",
+        description:
+          "Permita que su agente interactúe con Google Calendar: visualice calendarios, obtenga información sobre eventos, cree y actualice eventos, y gestione las confirmaciones de asistencia. <a>Consulte la documentación</a>.",
+        multiUserWarning:
+          "La integración con Google Calendar no está disponible en el modo de varios usuarios por razones de seguridad. Para utilizar esta función, por favor, desactive el modo de varios usuarios.",
+        configuration: "Configuración de Google Calendar",
+        deploymentId: "ID de implementación",
+        deploymentIdHelp:
+          "El ID de implementación de su aplicación web de Google Apps Script",
+        apiKey: "Clave de API",
+        apiKeyHelp:
+          "La clave API que configuraste en tu implementación de Google Apps Script.",
+        configurationRequired:
+          "Por favor, configure el ID de implementación y la clave de API para habilitar las funciones de Google Calendar.",
+        configured: "Configurado",
+        searchSkills: "Habilidades de búsqueda...",
+        noSkillsFound:
+          "No se encontraron resultados que coincidan con tu búsqueda.",
+        categories: {
+          calendars: {
+            title: "Calendarios",
+            description: "Visualiza y administra tus calendarios de Google.",
+          },
+          readEvents: {
+            title: "Leer eventos",
+            description: "Visualice y busque eventos en el calendario.",
+          },
+          writeEvents: {
+            title: "Crear y actualizar eventos",
+            description: "Crear nuevos eventos y modificar los existentes.",
+          },
+          rsvp: {
+            title: "Gestión de confirmaciones de asistencia",
+            description: "Gestiona el estado de tus respuestas para eventos.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendarios",
+            description:
+              "Enumere todos los calendarios que posee o a los que esté suscrito.",
+          },
+          getCalendar: {
+            title: "Obtén los detalles del calendario",
+            description:
+              "Obtenga información detallada sobre un calendario específico.",
+          },
+          getEvent: {
+            title: "Obtener información del evento",
+            description:
+              "Obtenga información detallada sobre un evento específico.",
+          },
+          getEventsForDay: {
+            title: "Encuentra eventos para el día.",
+            description:
+              "Obtén todos los eventos programados para una fecha específica.",
+          },
+          getEvents: {
+            title: "Obtener eventos (rango de fechas)",
+            description:
+              "Obtener eventos dentro de un rango de fechas personalizado.",
+          },
+          getUpcomingEvents: {
+            title: "Consulta los próximos eventos",
+            description:
+              "Encuentre eventos para hoy, esta semana o este mes utilizando palabras clave sencillas.",
+          },
+          quickAdd: {
+            title: "Añadir evento rápidamente",
+            description:
+              'Crear un evento a partir de lenguaje natural (por ejemplo, "Reunión mañana a las 3 de la tarde")',
+          },
+          createEvent: {
+            title: "Crear evento",
+            description:
+              "Cree un nuevo evento con control total sobre todas las propiedades.",
+          },
+          updateEvent: {
+            title: "Actualización del evento",
+            description: "Actualizar un evento existente en el calendario",
+          },
+          setMyStatus: {
+            title: "Establecer estado de confirmación",
+            description:
+              "Aceptar, rechazar o aceptar provisionalmente un evento.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servidores MCP",

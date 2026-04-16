@@ -39,23 +39,27 @@ export default function RuleRow({
         />
       </div>
       <div className="flex flex-col gap-y-1 flex-1 min-w-0">
-        <div className="flex items-center gap-x-2">
-          <span className="text-xs font-mono text-zinc-400 light:text-slate-500">
+        <div className="flex items-baseline gap-x-2">
+          <span className="text-xs font-mono text-zinc-400 light:text-slate-500 w-5 shrink-0">
             #{rule.priority}
           </span>
           <span className="text-sm font-semibold text-white light:text-slate-900 truncate">
             {rule.title}
           </span>
-          {rule.type === "llm" && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 light:bg-purple-100 light:text-purple-700">
+          {rule.type === "llm" ? (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 bg-fuchsia-500/20 text-fuchsia-400 light:bg-fuchsia-100 light:text-fuchsia-700">
               LLM
+            </span>
+          ) : (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 bg-blue-500/20 text-blue-400 light:bg-blue-100 light:text-blue-700">
+              Calculated
             </span>
           )}
         </div>
         {rule.type === "llm" ? (
-          <p className="text-xs text-zinc-300 light:text-slate-700 truncate">
+          <p className="text-xs text-zinc-300 light:text-slate-700 truncate ml-7">
             MATCH{" "}
-            <span className="font-mono text-purple-400 light:text-purple-500">
+            <span className="font-mono text-fuchsia-400 light:text-fuchsia-500">
               &quot;{rule.description}&quot;
             </span>{" "}
             THEN{" "}
@@ -64,7 +68,7 @@ export default function RuleRow({
             </span>
           </p>
         ) : (
-          <p className="text-xs text-zinc-300 light:text-slate-700">
+          <p className="text-xs text-zinc-300 light:text-slate-700 ml-7">
             IF{" "}
             <span className="font-mono text-blue-400 light:text-blue-500">
               {rule.property}
@@ -88,13 +92,13 @@ export default function RuleRow({
         />
         <button
           onClick={onEdit}
-          className="text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
+          className="border-none text-zinc-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-colors"
         >
           <PencilSimple className="h-4 w-4" />
         </button>
         <button
           onClick={onDelete}
-          className="text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
+          className="border-none text-zinc-400 light:text-slate-500 hover:text-red-400 light:hover:text-red-500 transition-colors"
         >
           <Trash className="h-4 w-4" />
         </button>

@@ -520,6 +520,185 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Outlook 連携機能",
+        description:
+          "エージェントがMicrosoft Outlookと連携できるようにする - Microsoft Graph APIを使用して、メールの検索、スレッドの閲覧、ドラフトの作成、メールの送信、およびインボックスの管理を行う。詳細については、ドキュメントを参照してください。",
+        multiUserWarning:
+          "Outlookとの連携は、セキュリティ上の理由から、複数ユーザーモードでは利用できません。この機能を使い始めるには、複数ユーザーモードを無効にする必要があります。",
+        configuration: "Outlook の設定",
+        authType: "アカウントの種類",
+        authTypeHelp:
+          "認証に使用できるMicrosoftアカウントの種類を選択します。「すべて」は、個人用アカウントと職場/学校用アカウントの両方をサポートします。「個人用のみ」は、個人用Microsoftアカウントに限定されます。「職場/学校用のみ」は、特定のAzure ADテナントからの職場/学校用アカウントに限定されます。",
+        authTypeCommon: "すべての口座（個人用および仕事/学校用）",
+        authTypeConsumers: "個人のMicrosoftアカウントのみ",
+        authTypeOrganization: "組織アカウントのみ（テナントIDが必要です）",
+        clientId: "アプリケーション（クライアント）ID",
+        clientIdHelp:
+          "あなたのAzure ADアプリケーションの「アプリケーション（クライアント）ID」",
+        tenantId: "テナントID",
+        tenantIdHelp:
+          "あなたの Azure AD アプリの登録から取得した「ディレクトリ（テナント）ID」。組織での認証のみに必要です。",
+        clientSecret: "クライアントの秘密",
+        clientSecretHelp:
+          "Azure AD アプリの登録から取得したクライアントのシークレット値",
+        configurationRequired:
+          "Outlook の機能を有効にするには、クライアント ID とクライアントシークレットを設定してください。",
+        authRequired:
+          "まず、認証情報を保存し、その後、Microsoftとの認証を行い、設定を完了してください。",
+        authenticateWithMicrosoft: "マイクロソフトとの認証",
+        authenticated: "Microsoft Outlookとの認証に成功しました。",
+        revokeAccess: "アクセス権を停止する",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound: "検索条件に一致するスキルは見つかりませんでした。",
+        categories: {
+          search: {
+            title: "メールの検索と閲覧",
+            description: "Outlook の受信トレイから、メールを検索して読み取る。",
+          },
+          drafts: {
+            title: "サンプルメール",
+            description: "メールの作成、編集、および管理",
+          },
+          send: {
+            title: "メールの送信",
+            description:
+              "新しいメールを送信するか、すぐにメッセージに返信してください。",
+          },
+          account: {
+            title: "統合に関する統計",
+            description: "メールボックスの統計情報とアカウント情報を確認する",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "受信トレイを開く",
+            description: "Outlook の受信トレイから、最近のメールを取得する",
+          },
+          search: {
+            title: "メールを検索する",
+            description: "Microsoft の検索構文を使用してメールを検索する",
+          },
+          readThread: {
+            title: "会話の内容を読み取る",
+            description: "メールのやり取り全体を読み込む",
+          },
+          createDraft: {
+            title: "ドラフト作成",
+            description:
+              "新しいメールの草案を作成するか、既存のメッセージへの返信の草案を作成する。",
+          },
+          updateDraft: {
+            title: "ドラフトの更新",
+            description: "既存のメールドラフトを更新する",
+          },
+          listDrafts: {
+            title: "ドラフト案リスト",
+            description: "すべての草案メールの一覧",
+          },
+          deleteDraft: {
+            title: "草案を削除",
+            description: "草案のメールを削除する",
+          },
+          sendDraft: {
+            title: "草案を送信",
+            description: "既存のメールの草稿を送信する",
+          },
+          sendEmail: {
+            title: "メールを送信する",
+            description:
+              "新しいメールを作成するか、既存のメッセージにすぐに返信してください。",
+          },
+          getMailboxStats: {
+            title: "メールボックスの統計",
+            description: "フォルダの数とメールボックスの統計情報を取得する",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google カレンダー 連携機能",
+        description:
+          "エージェントがGoogleカレンダーと連携できるようにする - カレンダーの表示、イベントの取得、イベントの作成と更新、およびRSVPの管理を可能にする。詳細については、ドキュメントを参照してください。",
+        multiUserWarning:
+          "Google カレンダーとの連携は、セキュリティ上の理由から、複数ユーザーモードでは利用できません。この機能をご利用いただくには、複数ユーザーモードを無効にする必要があります。",
+        configuration: "Google カレンダーの設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptのウェブアプリケーションのデプロイID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Google カレンダーの機能を使用するために、デプロイメントIDとAPIキーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound:
+          "あなたの検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          calendars: {
+            title: "カレンダー",
+            description: "Googleカレンダーの表示と管理",
+          },
+          readEvents: {
+            title: "イベント情報",
+            description: "カレンダー上のイベントの表示と検索",
+          },
+          writeEvents: {
+            title: "イベントの作成と更新",
+            description: "新しいイベントを作成し、既存のイベントを修正する",
+          },
+          rsvp: {
+            title: "RSVP（出欠確認）管理",
+            description: "イベントへの参加状況を管理する",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "カレンダーリスト",
+            description:
+              "所有している、または購読しているすべてのカレンダーの一覧",
+          },
+          getCalendar: {
+            title: "カレンダーの詳細を確認する",
+            description: "特定のカレンダーに関する詳細な情報த்தைப்入手する",
+          },
+          getEvent: {
+            title: "イベント情報を入手",
+            description: "特定のイベントに関する詳細な情報த்தைப்入手する",
+          },
+          getEventsForDay: {
+            title: "その日のイベントを検索する",
+            description: "特定の日に予定されているすべてのイベントを取得する",
+          },
+          getEvents: {
+            title: "イベント（期間指定）",
+            description: "指定した期間内のイベントを取得する",
+          },
+          getUpcomingEvents: {
+            title: "今後のイベントをチェックする",
+            description:
+              "今日、今週、または今月のイベントを、簡単なキーワードを使って検索する",
+          },
+          quickAdd: {
+            title: "イベントをすぐに登録",
+            description:
+              "自然言語（例：「明日午後3時に会議」）からイベントを作成する",
+          },
+          createEvent: {
+            title: "イベントを作成する",
+            description:
+              "すべてのプロパティを完全に制御できる、新しいイベントを作成する。",
+          },
+          updateEvent: {
+            title: "イベント情報更新",
+            description: "既存の予定を更新する",
+          },
+          setMyStatus: {
+            title: "返信状況を設定する",
+            description: "イベントへの参加、拒否、または仮の参加",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP サーバー",

@@ -12,6 +12,7 @@ import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import { PWAModeProvider } from "./PWAContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import ImageLightbox from "@/components/ImageLightbox";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
 
@@ -33,6 +34,7 @@ export default function App() {
                     <Outlet />
                     <ToastContainer />
                     <KeyboardShortcutsHelp />
+                    <ImageLightbox />
                   </I18nextProvider>
                 </PfpProvider>
               </LogoProvider>
