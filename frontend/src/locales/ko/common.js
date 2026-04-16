@@ -1252,6 +1252,7 @@ const TRANSLATIONS = {
     custom_skills: "맞춤형 기술",
     agent_flows: "에이전트 흐름",
     no_tools_found: "일치하는 도구가 없습니다.",
+    loading_mcp_servers: "MCP 서버 로딩 중...",
   },
   profile_settings: {
     edit_account: "계정 정보 수정",

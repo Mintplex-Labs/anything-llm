@@ -1198,6 +1198,7 @@ const TRANSLATIONS = {
     custom_skills: "定制技能",
     agent_flows: "代理人流动",
     no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在加载 MCP 服务器…",
   },
   profile_settings: {
     edit_account: "编辑帐户",

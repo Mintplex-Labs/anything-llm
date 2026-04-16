@@ -1191,6 +1191,7 @@ const TRANSLATIONS = {
     custom_skills: "Skræddersyede færdigheder",
     agent_flows: "Agentstrømme",
     no_tools_found: "Ingen matchende værktøjer fundet",
+    loading_mcp_servers: "Indlæser MCP-servere...",
   },
   profile_settings: {
     edit_account: "Rediger konto",

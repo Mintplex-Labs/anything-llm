@@ -1209,6 +1209,7 @@ const TRANSLATIONS = {
     custom_skills: "Индивидуальные навыки",
     agent_flows: "Поток агентов",
     no_tools_found: "Не найдено соответствующих инструментов.",
+    loading_mcp_servers: "Загрузка серверов MCP...",
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

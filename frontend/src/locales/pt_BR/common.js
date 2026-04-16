@@ -1283,6 +1283,7 @@ const TRANSLATIONS = {
     custom_skills: "Habilidades personalizadas",
     agent_flows: "Fluxo de Agentes",
     no_tools_found: "Nenhuma ferramenta correspondente encontrada.",
+    loading_mcp_servers: "Carregando servidores MCP...",
   },
   profile_settings: {
     edit_account: "Editar conta",

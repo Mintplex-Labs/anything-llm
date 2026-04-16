@@ -1203,6 +1203,7 @@ const TRANSLATIONS = {
     custom_skills: "Özel Beceri",
     agent_flows: "Ajans Akışları",
     no_tools_found: "Uyumlu herhangi bir araç bulunamadı",
+    loading_mcp_servers: "MCP sunucularının yüklenmesi...",
   },
   profile_settings: {
     edit_account: "Hesabı Düzenle",

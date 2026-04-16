@@ -1177,6 +1177,7 @@ const TRANSLATIONS = {
     custom_skills: "المهارات المخصصة",
     agent_flows: "تدفقات الوكلاء",
     no_tools_found: "لم يتم العثور على أدوات مطابقة.",
+    loading_mcp_servers: "تحميل خوادم MCP...",
   },
   profile_settings: {
     edit_account: "تحرير الحساب",

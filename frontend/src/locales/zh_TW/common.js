@@ -1111,6 +1111,7 @@ const TRANSLATIONS = {
     custom_skills: "客製化技能",
     agent_flows: "代理人流",
     no_tools_found: "未找到匹配的工具",
+    loading_mcp_servers: "正在載入 MCP 伺服器...",
   },
   profile_settings: {
     edit_account: "編輯帳戶",

@@ -1307,6 +1307,7 @@ const TRANSLATIONS = {
     custom_skills: "Individuelle Fähigkeiten",
     agent_flows: "Datenströme",
     no_tools_found: "Keine passenden Werkzeuge gefunden.",
+    loading_mcp_servers: "MCP-Server laden...",
   },
   profile_settings: {
     edit_account: "Account bearbeiten",

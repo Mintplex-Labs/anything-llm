@@ -1183,6 +1183,7 @@ const TRANSLATIONS = {
     custom_skills: "مهارت‌های تخصصی",
     agent_flows: "جریان‌های نمایندگی",
     no_tools_found: "هیچ ابزار مشابهی یافت نشد.",
+    loading_mcp_servers: "بارگذاری سرورهای MCP...",
   },
   profile_settings: {
     edit_account: "ویرایش حساب",

@@ -1187,6 +1187,7 @@ const TRANSLATIONS = {
     custom_skills: "Kỹ năng tùy chỉnh",
     agent_flows: "Dòng chảy của đại lý",
     no_tools_found: "Không tìm thấy công cụ tương ứng.",
+    loading_mcp_servers: "Đang tải các máy chủ MCP...",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",

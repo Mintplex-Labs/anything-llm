@@ -1199,6 +1199,7 @@ const TRANSLATIONS = {
     custom_skills: "Aangepaste vaardigheden",
     agent_flows: "Stroom van agenten",
     no_tools_found: "Geen overeenkomende gereedschappen gevonden.",
+    loading_mcp_servers: "MCP-servers worden geladen...",
   },
   profile_settings: {
     edit_account: "Account bewerken",

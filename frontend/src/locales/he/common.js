@@ -1239,6 +1239,7 @@ const TRANSLATIONS = {
     custom_skills: "כישורים מותאמים אישית",
     agent_flows: "זרימת סוכנים",
     no_tools_found: "לא נמצאו כלים תואמים.",
+    loading_mcp_servers: "טעינת שרתי ה-MCP...",
   },
   profile_settings: {
     edit_account: "ערוך חשבון",
