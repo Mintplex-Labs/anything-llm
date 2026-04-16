@@ -1499,7 +1499,7 @@ const TRANSLATIONS = {
       title: "Run History: {{name}}",
       schedule: "Schedule:",
       emptyTitle: "No runs yet for this job",
-      emptySubtitle: "Run the job now and view it's results.",
+      emptySubtitle: "Run the job now and view its results.",
       runNow: "Run Now",
       table: {
         status: "Status",
