@@ -30,12 +30,9 @@ export default function CronBuilder({ value, onChange }) {
     { value: 5, label: t("scheduledJobs.builder.weekdays.fri") },
     { value: 6, label: t("scheduledJobs.builder.weekdays.sat") },
   ];
-  const [state, setState] = useState(
-    () => parseCronToBuilderState(value).state
-  );
-  const [wasFallback, setWasFallback] = useState(
-    () => parseCronToBuilderState(value).wasFallback
-  );
+  const initial = parseCronToBuilderState(value);
+  const [state, setState] = useState(initial.state);
+  const [wasFallback, setWasFallback] = useState(initial.wasFallback);
 
   const update = (patch) => {
     const next = { ...state, ...patch };
