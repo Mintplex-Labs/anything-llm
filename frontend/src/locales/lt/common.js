@@ -542,6 +542,192 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "„Outlook“ integracija",
+        description:
+          "Įgalinkite savo agentą, kad galėtų bendrauti su „Microsoft Outlook“ – ieškoti pašto, skaityti pokalbį, kurti projektus, siųsti paštą ir valdyti savo pašto dėžę per „Microsoft Graph“ API. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Outlook“ integracija negalima naudoti kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "Outlook konfigūracija",
+        authType: "Sąskaitos tipas",
+        authTypeHelp:
+          "Pasirinkite, kokie Microsoft sąskaitos gali būti patvirtintos. „Visi“ palaiko tiek asmenines, tiek darbo/mokyklos sąskaitas. „Tik asmeninės“ riboja pasirinkimą iki asmeninių Microsoft sąskaitų. „Tik organizacijos“ riboja pasirinkimą iki darbo/mokyklos sąskaitų iš konkretaus „Azure AD“ kliento.",
+        authTypeCommon: "Visos sąskaitos (asmeninės ir darbo/mokyklos)",
+        authTypeConsumers: "Tiesiog asmeninės Microsoft paskyros",
+        authTypeOrganization:
+          "Tiesiog organizacijos sąskaitos (reikia užpildyti „Užimtojo ID“ laukelį)",
+        clientId: "Programos (kliento) ID",
+        clientIdHelp:
+          "Programos (kliento) ID, gautas iš jūsų „Azure AD“ programos registracijos",
+        tenantId: "Identifikavimo numeris (nuomininkas)",
+        tenantIdHelp:
+          "„Tenant“ ID iš jūsų „Azure AD“ programos registracijos. Reikalingas tik, jei autentifikacija vykdoma tik organizacijos naudotojams.",
+        clientSecret: "Kliento slaptas kodas",
+        clientSecretHelp:
+          "Kliento paslaptas reikalas, gautas iš jūsų „Azure AD“ programos registracijos",
+        configurationRequired:
+          "Prašome nustatyti kliento ID ir kliento slaptažodį, kad būtų įgalintos Outlook funkcijos.",
+        authRequired:
+          "Pirmiausia, išsaugokite savo duomenis, o tada, kad užbaigtumėte konfigūraciją, prisijunkite prie „Microsoft“.",
+        authenticateWithMicrosoft: "Patvirtinkite naudodami Microsoft",
+        authenticated: "Sėkmingai prisijungta prie „Microsoft Outlook“.",
+        revokeAccess: "Atšalinti prieigą",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškai.",
+        categories: {
+          search: {
+            title: "Paieškos ir skaitymas el. paštą",
+            description:
+              "Paieškokite ir skaitykite el. pašto laiškus iš savo Outlook sąrašo",
+          },
+          drafts: {
+            title: "Pasiūlytų el. pašto laiškų",
+            description: "Sukurkite, redaguo, ir valdykite el. pašto rašinius.",
+          },
+          send: {
+            title: "Siųstis el. pašto žinutes",
+            description:
+              "Siųkite naujus el. laiškus arba atsakykite į pranešimus nedelskant",
+          },
+          account: {
+            title: "Integracijos statistika",
+            description:
+              "Peržiūrėkite pašto dėžės statistikos ir sąskaitos informaciją.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Peržiūrėti pašto dėžę",
+            description:
+              "Gaukite naujausius el. pašto laiškus iš savo Outlook sąvejos.",
+          },
+          search: {
+            title: "Paieškos el. paštu",
+            description:
+              "Paieškokite el. laiškus naudodami „Microsoft Search“ sintaksę.",
+          },
+          readThread: {
+            title: "Perskaitykite pokalbį",
+            description: "Perskaitykite visą el. pašto pokalbio seką.",
+          },
+          createDraft: {
+            title: "Sukurti projekto variantą",
+            description:
+              "Sukurkite naują el. pašto projekto arba atsakymo projekto į esamą pranešimą.",
+          },
+          updateDraft: {
+            title: "Paskaitos projekto atnaujinimas",
+            description: "Atnaujinkite esamą el. pašto projekto",
+          },
+          listDrafts: {
+            title: "Paskaitų planas",
+            description: "Parodykite visus projekto el. laiškus",
+          },
+          deleteDraft: {
+            title: "Ištrinkti projekto",
+            description: "Ištrinkite projekto el. laišką",
+          },
+          sendDraft: {
+            title: "Siųstis projekto",
+            description: "Siųstis jau esančią el. pašto projekto versiją",
+          },
+          sendEmail: {
+            title: "Siųstis el. paštą",
+            description:
+              "Siųstinkite naują el. laišką arba atsakykite į esamą pranešimą nedelsdami.",
+          },
+          getMailboxStats: {
+            title: "Pašto dėžės statistika",
+            description:
+              "Gaukite folderių skaičius ir pašto dėžutės statistikos duomenis.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "„Google Kalendoriaus“ integracija",
+        description:
+          "Įgalinkite savo agentą, kad galėtų bendradarbiauti su „Google Calendar“ – peržiūrėti kalendorius, gauti renginių informaciją, kurti ir atnaujinti renginius bei tvarkyti patvirtimus. <a>Peržiūrėkite dokumentaciją</a>.",
+        multiUserWarning:
+          "„Google Kalendro“ integracija negali būti naudojama kelių vartotojų režimu dėl saugumo priežasčių. Norėdami naudoti šią funkciją, prašome išjungti kelių vartotojų režimą.",
+        configuration: "„Google Kalendoriaus“ konfigūracija",
+        deploymentId: "Įrenginio ID",
+        deploymentIdHelp: "Jūsų „Google Apps Script“ svetainės programos ID",
+        apiKey: "API raktas",
+        apiKeyHelp:
+          "„API raktas“, kurį konfigūravoje savo „Google Apps Script“ programoje.",
+        configurationRequired:
+          "Prašome nustatyti „Deployment ID“ ir API raktą, kad būtų įgalintos „Google Calendar“ funkcijos.",
+        configured: "Nustatytas",
+        searchSkills: "Paieškos įgūdžiai...",
+        noSkillsFound: "Nėra atitikčių jūsų paieškos kriterijams.",
+        categories: {
+          calendars: {
+            title: "Kalendoriai",
+            description: "Peržiūrėkite ir valdykite savo „Google Kalendorius“.",
+          },
+          readEvents: {
+            title: "Peržiūrėti renginius",
+            description: "Peržiūrėkite ir paieškokite kalendoriaus renginių",
+          },
+          writeEvents: {
+            title: "Sukurkite ir atnaujinkite renginius",
+            description: "Sukurkite naujas renginius ir keičkite esamus",
+          },
+          rsvp: {
+            title: "Patvirtinimų valdymas",
+            description: "Valdykite savo atsakymo statusą renginiams",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendoriai",
+            description:
+              "Peržiūrėkite visus kalendorius, kuriuos turite arba kuriems yra prenumerata.",
+          },
+          getCalendar: {
+            title: "Gaukite kalendoriaus detales",
+            description:
+              "Gaukite išsamią informaciją apie konkrečią kalendorių",
+          },
+          getEvent: {
+            title: "Gaukite renginį",
+            description: "Gaukite išsamią informaciją apie konkrečią renginį",
+          },
+          getEventsForDay: {
+            title: "Rasti renginius šiam dienai",
+            description: "Gaukite visus įvykius, numatytus konkrečią dieną.",
+          },
+          getEvents: {
+            title: "Rodyti renginius (laiko intervalas)",
+            description: "Gauti renginius už nurodytą datų intervalą",
+          },
+          getUpcomingEvents: {
+            title: "Peržiūrėti ateinančias renginius",
+            description:
+              "Raskite renginius šiandien, šią savaitę arba šį mėnesį naudodami paprastus žodžius.",
+          },
+          quickAdd: {
+            title: "Greitas renginio pridėjimas",
+            description:
+              "Sukurkite renginį iš natūralios kalbos (pvz., „Susitikimas rytoj 15:00 val.“)",
+          },
+          createEvent: {
+            title: "Sukurti renginį",
+            description:
+              "Sukurkite naują renginį, turėdami visišką kontrolę per visas jo savybes.",
+          },
+          updateEvent: {
+            title: "Paskelbimo atnaujinimas",
+            description: "Redaguoti esamą kalendoriaus renginį",
+          },
+          setMyStatus: {
+            title: "Nurodykite atsakymo statusą",
+            description:
+              "Prisitaikyti, atsisakyti arba iš esmės pritarti renginiui.",
+          },
+        },
+      },
     },
     mcp: {
       title: "MCP serveriai",

@@ -544,6 +544,190 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Připojení k Outlooku",
+        description:
+          "Umožněte svému agentovi interakci s Microsoft Outlook – vyhledávání e-mailů, čtení vláken, vytváření návrhů, odesílání e-mailů a správu vaší poštovní schránky prostřednictvím Microsoft Graph API. <a>Prostudujte dokumentaci</a>.",
+        multiUserWarning:
+          "Integrace s Outlookem není dostupná v režimu pro více uživatelů z důvodu bezpečnosti. Pro použití této funkce, prosím, deaktivujte režim pro více uživatelů.",
+        configuration: "Konfigurace Outlooku",
+        authType: "Typ účtu",
+        authTypeHelp:
+          "Vyberte, jaké typy účtů Microsoft mohou být ověřovány. Možnost „Všechny účty“ podporuje jak osobní, tak pracovní/školní účty. Možnost „Pouze osobní účty“ omezuje na osobní účty Microsoft. Možnost „Pouze organizace“ omezuje na pracovní/školní účty z konkrétního tenantu Azure AD.",
+        authTypeCommon: "Všechny účty (osobní a pracovní/školní)",
+        authTypeConsumers: "Pouze osobní účty Microsoft",
+        authTypeOrganization: "Účty organizací (vyžaduje ID pronajímatele)",
+        clientId: "Identifikátor klienta (ID aplikace)",
+        clientIdHelp:
+          "Identifikátor aplikace (klienta) z registrace vaší aplikace v Azure AD",
+        tenantId: "Identifikátor (pro nájemce)",
+        tenantIdHelp:
+          "ID adresáře (uživatele) z registrace vaší aplikace v Azure AD. Je nutné pouze pro ověřování v rámci organizace.",
+        clientSecret: "Tajný klíč klienta",
+        clientSecretHelp:
+          "Tajná hodnota klienta z registrace vaší aplikace v Azure AD",
+        configurationRequired:
+          "Prosím, nakonfigurujte ID klienta a tajný klíč, aby bylo možné využít funkce Outlook.",
+        authRequired:
+          "Nejprve si uložte své přihlašovací údaje, a poté se ověřte u společnosti Microsoft, abyste dokončili nastavení.",
+        authenticateWithMicrosoft: "Ověřte se pomocí Microsoftu",
+        authenticated: "Úspěšně jsem se ověřil pomocí Microsoft Outlook.",
+        revokeAccess: "Odvolat přístup",
+        configured: "Konfigurováno",
+        searchSkills: "Dovednosti pro vyhledávání...",
+        noSkillsFound: "Žádné výsledky neodpovídají vašemu vyhledávání.",
+        categories: {
+          search: {
+            title: "Vyhledávání a čtení e-mailů",
+            description:
+              "Vyhledejte a čtěte e-maily ve vaší poštovní schránce Outlook.",
+          },
+          drafts: {
+            title: "Návrhy e-mailů",
+            description: "Vytvářejte, upravujte a spravujte návrhy e-mailů.",
+          },
+          send: {
+            title: "Odesílejte e-maily",
+            description:
+              "Odešlete nové e-maily nebo okamžitě odpovězte na zprávy.",
+          },
+          account: {
+            title: "Statistiky integrace",
+            description:
+              "Zobrazte statistiky poštovní schránky a informace o účtu.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Otevřít schránku",
+            description: "Získejte nejnovější e-maily z vaší schránky Outlook.",
+          },
+          search: {
+            title: "Vyhledávání v e-mailech",
+            description:
+              "Hledejte e-maily pomocí syntaxe pro vyhledávání od Microsoftu",
+          },
+          readThread: {
+            title: "Přečtěte si konverzaci",
+            description: "Přečtěte si kompletní vedení e-mailové konverzace.",
+          },
+          createDraft: {
+            title: "Vytvořit návrh",
+            description:
+              "Vytvořte nový návrh e-mailu nebo návrh odpovědi na stávající zprávu.",
+          },
+          updateDraft: {
+            title: "Aktualizovaná verze návrhu",
+            description: "Aktualizujte stávající návrh e-mailu",
+          },
+          listDrafts: {
+            title: "Návrhy (seznam)",
+            description: "Vypište všechny návrhy e-mailů.",
+          },
+          deleteDraft: {
+            title: "Smazat návrh",
+            description: "Smazat návrh e-mailu",
+          },
+          sendDraft: {
+            title: "Ode mne návrh",
+            description: "Odešlete existující návrh e-mailu",
+          },
+          sendEmail: {
+            title: "Odešlete e-mail",
+            description:
+              "Odešlete nový e-mail nebo odpověď na stávající zprávu okamžitě.",
+          },
+          getMailboxStats: {
+            title: "Statistiky poštovní schránky",
+            description:
+              "Získejte informace o počtu složek a statistiky poštovní schránky.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Připojení k kalendáři Google",
+        description:
+          "Umožněte svému agentovi interakci s Google Kalendářem – prohlížení kalendářů, získávání událostí, vytváření a aktualizaci událostí a správu potvrzení účasti. <a>Přečtěte si dokumentaci</a>.",
+        multiUserWarning:
+          "Integrace s Google Kalendářem není dostupná v režimu pro více uživatelů z důvodu bezpečnosti. Pro použití této funkce, prosím, deaktivujte režim pro více uživatelů.",
+        configuration: "Konfigurace kalendáře Google",
+        deploymentId: "ID nasazení",
+        deploymentIdHelp:
+          "ID nasazení z vaší webové aplikace Google Apps Script",
+        apiKey: "Klíč API",
+        apiKeyHelp:
+          "Klíč API, který jste nakonfigurovali ve vaší instalaci Google Apps Script",
+        configurationRequired:
+          "Prosím, nakonfigurujte ID nasazení a API klíč, abyste mohli využívat funkce Google Kalendáře.",
+        configured: "Konfigurováno",
+        searchSkills: "Dovednosti pro vyhledávání...",
+        noSkillsFound: "Žádné výsledky neodpovídají vašemu vyhledávání.",
+        categories: {
+          calendars: {
+            title: "Kalendáře",
+            description: "Zobrazte a spravujte své kalendáře Google.",
+          },
+          readEvents: {
+            title: "Seznam událostí",
+            description: "Zobrazte a vyhledejte události v kalendáři",
+          },
+          writeEvents: {
+            title: "Vytvořit a aktualizovat události",
+            description: "Vytvořte nové akce a upravte stávající.",
+          },
+          rsvp: {
+            title: "Správa odpovědí na pozvánky",
+            description: "Spravujte stav své odpovědi pro události",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendáře v seznamu",
+            description:
+              "Vypište všechny kalendáře, které vlastníte nebo máte aktivní předplatné.",
+          },
+          getCalendar: {
+            title: "Získejte podrobné informace o kalendáři",
+            description: "Získejte podrobné informace o konkrétním kalendáři.",
+          },
+          getEvent: {
+            title: "Získejte informace o události",
+            description: "Získejte podrobné informace o konkrétním události",
+          },
+          getEventsForDay: {
+            title: "Získejte události pro daný den",
+            description:
+              "Získejte všechny události naplánované pro konkrétní den.",
+          },
+          getEvents: {
+            title: "Zobrazit události (rozsah dat)",
+            description: "Získejte události v definovaném časovém rozsahu",
+          },
+          getUpcomingEvents: {
+            title: "Zobrazit nadcházející akce",
+            description:
+              "Najděte události pro dnešek, tento týden nebo tento měsíc pomocí jednoduchých klíčových slov.",
+          },
+          quickAdd: {
+            title: "Rychlé přidání události",
+            description:
+              "Vytvořte událost z přirozeného jazyka (např. „Schůzka zítra ve 15:00“)",
+          },
+          createEvent: {
+            title: "Vytvořit událost",
+            description:
+              "Vytvořte nový event s plnou kontrolou nad všemi jeho vlastnostmi.",
+          },
+          updateEvent: {
+            title: "Aktualizace události",
+            description: "Aktualizovat existující událost v kalendáři",
+          },
+          setMyStatus: {
+            title: "Nastavit stav potvrzení účasti",
+            description: "Přijmout, zamítnout nebo přijmout událost s rezervou",
+          },
+        },
+      },
     },
     mcp: {
       title: "Servery společnosti MCP",

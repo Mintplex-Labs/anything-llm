@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Admin from "@/models/admin";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
@@ -34,14 +33,6 @@ import {
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
-  {
-    name: "Please make a selection",
-    value: "none",
-    logo: AnythingLLMIcon,
-    options: () => <React.Fragment />,
-    description:
-      "Web search will be disabled until a provider and keys are provided.",
-  },
   {
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
@@ -132,7 +123,7 @@ export default function AgentWebSearchSelection({
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("none");
+  const [selectedProvider, setSelectedProvider] = useState("duckduckgo-engine");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
 
@@ -162,9 +153,11 @@ export default function AgentWebSearchSelection({
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
-        setSelectedProvider(res?.settings?.agent_search_provider ?? "none")
+        setSelectedProvider(
+          res?.settings?.agent_search_provider ?? "duckduckgo-engine"
+        )
       )
-      .catch(() => setSelectedProvider("none"));
+      .catch(() => setSelectedProvider("duckduckgo-engine"));
   }, []);
 
   const selectedSearchProviderObject =
@@ -282,11 +275,9 @@ export default function AgentWebSearchSelection({
               </button>
             )}
           </div>
-          {selectedProvider !== "none" && (
-            <div className="mt-4 flex flex-col gap-y-1">
-              {selectedSearchProviderObject.options(settings)}
-            </div>
-          )}
+          <div className="mt-4 flex flex-col gap-y-1">
+            {selectedSearchProviderObject.options(settings)}
+          </div>
         </div>
       </div>
     </div>

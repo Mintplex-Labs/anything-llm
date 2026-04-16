@@ -539,6 +539,201 @@ const TRANSLATIONS = {
           },
         },
       },
+      outlook: {
+        title: "Connecteur Outlook",
+        description:
+          "Permettez à votre agent d'interagir avec Microsoft Outlook : rechercher des e-mails, lire les fils de discussion, rédiger des brouillons, envoyer des e-mails et gérer votre boîte de réception via l'API Microsoft Graph. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Outlook n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs afin d'utiliser cette fonctionnalité.",
+        configuration: "Configuration de Outlook",
+        authType: "Type de compte",
+        authTypeHelp:
+          "Choisissez quels types de comptes Microsoft peuvent être utilisés pour l'authentification. « Tous les comptes » prend en charge à la fois les comptes personnels et les comptes professionnels/scolaires. « Seulement les comptes personnels » limite l'utilisation aux comptes Microsoft personnels. « Seulement les comptes professionnels/scolaires » limite l'utilisation aux comptes provenant d'un tenant Azure AD spécifique.",
+        authTypeCommon:
+          "Tous les comptes (personnels et professionnels/scolaires)",
+        authTypeConsumers: "Seuls les comptes Microsoft personnels",
+        authTypeOrganization:
+          "Comptes d'organisations uniquement (nécessite l'identifiant du locataire)",
+        clientId: "Identifiant (Client)",
+        clientIdHelp:
+          "L'identifiant de l'application (client) provenant de votre enregistrement d'application dans Azure AD.",
+        tenantId: "Identifiant (locataire)",
+        tenantIdHelp:
+          "L'ID du répertoire (utilisateur) provenant de votre inscription d'application dans Azure AD. Nécessaire uniquement pour l'authentification au sein d'une seule organisation.",
+        clientSecret: "Clé secrète",
+        clientSecretHelp:
+          "La valeur secrète du client provenant de l'enregistrement de votre application Azure AD.",
+        configurationRequired:
+          "Veuillez configurer l'ID client et le secret client afin d'activer les fonctionnalités Outlook.",
+        authRequired:
+          "Enregistrez d'abord vos informations d'identification, puis authentifiez-vous auprès de Microsoft pour finaliser la configuration.",
+        authenticateWithMicrosoft: "S'authentifier auprès de Microsoft",
+        authenticated: "Connexion réussie avec Microsoft Outlook.",
+        revokeAccess: "Retirer l'accès",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucun résultat correspondant à votre recherche.",
+        categories: {
+          search: {
+            title: "Rechercher et lire des e-mails",
+            description:
+              "Recherchez et lisez vos e-mails dans votre boîte de réception Outlook.",
+          },
+          drafts: {
+            title: "Modèles de courriels",
+            description:
+              "Créer, modifier et gérer des brouillons de courriels.",
+          },
+          send: {
+            title: "Envoyer des e-mails",
+            description:
+              "Envoyer de nouveaux courriels ou répondre immédiatement aux messages.",
+          },
+          account: {
+            title: "Statistiques d'intégration",
+            description:
+              "Consultez les statistiques de votre boîte de réception et les informations de votre compte.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accéder à la boîte de réception",
+            description:
+              "Récupérez les e-mails récents de votre boîte de réception Outlook.",
+          },
+          search: {
+            title: "Rechercher des e-mails",
+            description:
+              "Recherchez des e-mails à l'aide de la syntaxe de recherche de Microsoft.",
+          },
+          readThread: {
+            title: "Lire la conversation",
+            description: "Lire l'intégralité d'une conversation par e-mail.",
+          },
+          createDraft: {
+            title: "Créer une version préliminaire",
+            description:
+              "Créez une nouvelle version d'un courriel ou une réponse à un courriel existant.",
+          },
+          updateDraft: {
+            title: "Version actuelle",
+            description: "Mettre à jour un brouillon de courriel existant",
+          },
+          listDrafts: {
+            title: "Propositions préliminaires",
+            description: "Énumérez tous les courriels en brouillon.",
+          },
+          deleteDraft: {
+            title: "Supprimer la version brouillon",
+            description: "Supprimer une brouillon de courriel",
+          },
+          sendDraft: {
+            title: "Envoyer une version préliminaire",
+            description: "Envoyer une version existante d'un e-mail",
+          },
+          sendEmail: {
+            title: "Envoyer un e-mail",
+            description:
+              "Envoyez un nouvel e-mail ou répondez immédiatement à un message existant.",
+          },
+          getMailboxStats: {
+            title: "Statistiques de la boîte de réception",
+            description:
+              "Obtenez le nombre de dossiers et les statistiques des boîtes aux lettres.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Connecteur Google Calendar",
+        description:
+          "Permettez à votre agent d'interagir avec Google Calendar : consulter les calendriers, afficher les événements, créer et modifier des événements, et gérer les confirmations de présence. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Google Calendar n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs pour utiliser cette fonctionnalité.",
+        configuration: "Configuration de Google Calendar",
+        deploymentId: "ID de déploiement",
+        deploymentIdHelp:
+          "L'identifiant de déploiement de votre application web Google Apps Script",
+        apiKey: "Clé API",
+        apiKeyHelp:
+          "La clé API que vous avez configurée dans votre déploiement de Google Apps Script",
+        configurationRequired:
+          "Veuillez configurer l'ID de déploiement et la clé API pour activer les fonctionnalités Google Calendar.",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucun résultat correspondant à votre recherche.",
+        categories: {
+          calendars: {
+            title: "Calendriers",
+            description: "Visualisez et gérez vos calendriers Google.",
+          },
+          readEvents: {
+            title: "Lire les événements",
+            description:
+              "Visualiser et rechercher les événements du calendrier",
+          },
+          writeEvents: {
+            title: "Créer et mettre à jour des événements",
+            description:
+              "Créer de nouveaux événements et modifier les événements existants.",
+          },
+          rsvp: {
+            title: "Gestion des réponses",
+            description: "Gérez votre statut de réponse pour les événements.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendriers",
+            description:
+              "Énumérez tous les calendriers que vous possédez ou auxquels vous êtes abonné.",
+          },
+          getCalendar: {
+            title: "Obtenir les détails du calendrier",
+            description:
+              "Obtenez des informations détaillées sur un calendrier spécifique.",
+          },
+          getEvent: {
+            title: "Obtenir l'événement",
+            description:
+              "Obtenez des informations détaillées sur un événement spécifique.",
+          },
+          getEventsForDay: {
+            title: "Obtenir les événements pour la journée",
+            description:
+              "Consultez tous les événements prévus pour une date spécifique.",
+          },
+          getEvents: {
+            title: "Événements (période)",
+            description:
+              "Récupérer des événements dans une plage de dates personnalisée",
+          },
+          getUpcomingEvents: {
+            title: "Consulter les événements à venir",
+            description:
+              "Trouvez des événements pour aujourd'hui, cette semaine ou ce mois en utilisant des mots-clés simples.",
+          },
+          quickAdd: {
+            title: "Ajouter un événement rapidement",
+            description:
+              "Créer un événement à partir d'une description en langage naturel (par exemple, « Réunion demain à 15h »)",
+          },
+          createEvent: {
+            title: "Créer un événement",
+            description:
+              "Créez un nouvel événement avec un contrôle total sur toutes les propriétés.",
+          },
+          updateEvent: {
+            title: "Mise à jour de l'événement",
+            description:
+              "Mettre à jour un événement existant dans le calendrier",
+          },
+          setMyStatus: {
+            title: "Définir le statut de réponse",
+            description:
+              "Accepter, refuser ou accepter provisoirement un événement.",
+          },
+        },
+      },
     },
     mcp: {
       title: "Serveurs MCP",
