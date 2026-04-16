@@ -144,7 +144,7 @@ function scheduledJobEndpoints(app) {
           }
         }
 
-        const threadName = `${job.name} - ${new Date(run.startedAt).toLocaleString()}`;
+        const threadName = `${job.name} - ${new Date(run.startedAt).toISOString()}`;
         const { thread, message: threadError } = await WorkspaceThread.new(
           workspace,
           null,
